@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canna Lilies · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the full image in /photos/ */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero-link { display:block;width:100%;height:100%; }
+  /* object-position center center is the neutral default; override per-plant
+     (e.g. 'center 30%') only if a specific photo crops poorly */
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line -- sits directly under the photo */
+  .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
+  .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  /* prose paragraphs inside the dark card need the light text color too */
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid -- slightly larger labels/values for phone readability */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <a class="plant-hero-link" href="../photos/PSBP-00041-Canna-Lilies.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00041-Canna-Lilies.jpg" alt="Canna Lilies at Palma Sola Botanical Park" loading="lazy">
+  </a>
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Culturally &amp; Historically Significant</div>
+    <div class="plant-hero-name">Canna Lilies</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Canna × generalis</span>
+  <a class="plant-family-tag" href="../nature.html?family=Cannaceae">Cannaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    <span class="badge badge-neutral">🌍 Non-Native</span>
+    <span class="badge badge-green">✅ Not Invasive</span>
+    <span class="badge badge-safe">✅ Edible &amp; Safe</span>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>Despite the name, Canna Lilies are not lilies at all — they're the showy tropical relatives of bananas and gingers.</li>
+    <li>The hard, round seeds are so dense they were once loaded into shotguns as improvised pellets — which is how the plant earned its old name, 'Indian Shot.'</li>
+    <li>For years these non-native cannas grew hidden among the heliconia by the office — close enough in looks that nobody noticed they weren't heliconia at all, until a trained eye spotted the difference.</li>
+    <li>They spread so readily by rhizome that volunteers now dig the young cannas out of the heliconia and move them to open ground in the canna area next door.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Native to the tropical and subtropical Americas, from Mexico through Central America into South America. Canna × generalis is the wild species behind most ornamental garden cannas. It was one of the first New World ornamentals traded globally, reaching Europe and Asia centuries ago — and the species name indica ('of India') is a historical mix-up, a relic of the old confusion between the East and West Indies.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>The Canna Lily is a plant of cheerful contradictions. It isn't a lily — it belongs to its own family, Cannaceae, in the same order as bananas, gingers, and the bird of paradise — and its scientific name points to the wrong side of the world.</li>
+    <li>Early European botanists, tangled in the centuries-old confusion between the East and West Indies, named the American plant indica, 'of India.' The name stuck even after the error was understood.</li>
+    <li>At Palma Sola, these non-native cannas come with a hide-and-seek story. For years they grew quietly mixed in among the heliconia by the office — broad paddle leaves close enough to heliconia's that, to the untrained eye, nobody realized there were cannas in there at all.</li>
+    <li>Once you learn the difference it's obvious, and watching a visitor suddenly 'see' the canna they'd been walking past is one of the small pleasures of the bed.</li>
+    <li>The plants also weathered a hurricane. A canna planting by Cypress Pond was hit hard when storm flooding put that corner of western Bradenton under a foot of saltwater, and cannas — with their low salt tolerance — struggled there afterward.</li>
+    <li>Today the park keeps the two kinds sorted: the non-native cannas here by the office, and the Florida-native Golden Canna (Canna flaccida) re-established over by Cypress Pond.</li>
+    <li>That sorting is an ongoing teaching moment. Because canna spreads aggressively by rhizome and keeps popping up among the heliconia, our high school volunteers learn to tell the two plants apart and to lift the wandering canna rhizomes carefully — intact, by the rhizome — and transplant them to open ground in the canna area next door, which is filling back in week by week.</li>
+    <li>Beyond the garden, this is a plant of real human history. Its rhizomes are edible and starchy — grown as a food crop called Queensland arrowroot in parts of Australia and Southeast Asia — and the famously hard seeds have served as beads, as a coffee substitute, and as genuine shotgun pellets.</li>
+    <li>Those seeds are also remarkably long-lived; Canna seeds recovered from old archaeological contexts have germinated after centuries of dormancy.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>Canna Lilies are hummingbird and butterfly plants. The bright red, orange, or yellow flowers are rich in nectar and shaped for hummingbirds, which are primary visitors, while bees and butterflies work them as well.</p><p>Canna leaves serve as a larval host and shelter for the Brazilian (or Canna) skipper, whose caterpillars roll a leaf into a protective tube around themselves. The dense clumping foliage gives cover to small wildlife at the water's edge, and at Palma Sola the canna-and-heliconia bed by the office reads as one continuous block of tropical nectar and shelter through much of the year.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Spreads readily by underground rhizomes, forming expanding clumps; also reproduces by seed. Easiest to propagate by dividing the rhizomes — which is exactly how the park relocates volunteers that pop up among the heliconia.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Showy red, orange, or yellow blooms in terminal clusters, spring through fall. The colorful 'petals' are actually modified stamens (staminodes). Pollinated chiefly by hummingbirds, with bees and butterflies visiting.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Spiky, warty capsules that split to release hard, round, BB-like black seeds — the 'Indian shot.'</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Large, broad, paddle-shaped, alternate, in green, bronze, or purple depending on cultivar — superficially similar to heliconia and banana foliage, which is exactly why they go unnoticed mixed into a heliconia bed.</p></div>
+<div class="repro-item"><div class="repro-label">Telling canna from heliconia</div><p>Canna leaves spiral around an upright stem and the plant arises from a knobby underground rhizome; heliconia leaves tend to fan in a flatter plane from a more clumping base. Up close the difference is clear — the skill our student volunteers are taught.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>Bold upright clumps of broad tropical leaves topped with vivid red-orange-yellow flower spikes. By the office, play spot-the-canna: see if you can pick out the cannas tucked in among the heliconia before reading the leaf tips. Look for hummingbirds working the blooms and for rolled-up leaf tubes that signal Canna skipper caterpillars inside, plus the newly transplanted clumps filling in the canna area next door.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item"><div class="data-label">Height</div><div class="data-value">3 to 6 feet</div></div>
+    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">2 to 3 feet per clump, expanding by rhizome</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">upright, clump-forming from spreading rhizomes</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">coarse, bold tropical foliage — green, bronze, or purple by cultivar</div></div>
+    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to part shade</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">moist, fertile, well-drained; tolerates wet ground and pond margins</div></div>
+    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">moderate</div></div>
+    <div class="data-item full-width"><div class="data-label">Salt tolerance</div><div class="data-value">low — the Cypress Pond planting was hit hard by hurricane saltwater flooding</div></div>
+    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">foliage frost-sensitive; rhizomes survive moderate freezes; USDA zones 7-11</div></div>
+    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">heavy feeder; spreads aggressively by rhizome — easy to divide and relocate</div></div>
+    </div>
+  </div>
+  <div class="plant-safe-section">
+    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>Edible — the starchy rhizomes are eaten and grown as a food crop ('Queensland arrowroot') in parts of Australia and Southeast Asia. Seeds have been used as a coffee substitute. Not a casual trail nibble, but a genuine food plant with long history.</p><p>No known toxicity to humans. Not listed as toxic to dogs by ASPCA. No specific toxicity data — not known to be harmful.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>PARK CONTEXT (confirmed): Non-native ornamental cannas. The only NATIVE cannas at the park are Canna flaccida introduced in 2023 by Cypress Pond (see Golden Canna, PSBP-00034) — everything else is non-native C. indica. These non-native cannas grew for years unnoticed among the heliconia by the office (looked close enough that nobody realized they were cannas).</p><p>Now deliberately separated: non-native by the office, native by Cypress Pond. A Cypress Pond canna planting was hit by ~1 ft saltwater flooding from a 2024 hurricane; cannas struggled there afterward.</p><p>High school volunteers are taught to distinguish canna from heliconia and to lift/transplant wandering canna rhizomes intact to the adjacent canna area (flushing back week by week).</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Indian Shot</span><span class="alias-tag">Canna Lily</span><span class="alias-tag">Garden Canna</span><span class="alias-tag">(hybrids often sold as Canna x generalis)</span></div>
+  </div>
+
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>

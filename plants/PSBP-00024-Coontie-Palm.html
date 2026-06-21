@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coontie Palm · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the full image in /photos/ */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero-link { display:block;width:100%;height:100%; }
+  /* object-position center center is the neutral default; override per-plant
+     (e.g. 'center 30%') only if a specific photo crops poorly */
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line -- sits directly under the photo */
+  .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
+  .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  /* prose paragraphs inside the dark card need the light text color too */
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid -- slightly larger labels/values for phone readability */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <a class="plant-hero-link" href="../photos/PSBP-00024-Coontie-Palm.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00024-Coontie-Palm.jpg" alt="Coontie Palm at Palma Sola Botanical Park" loading="lazy">
+  </a>
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Native Palms &amp; Cycads</div>
+    <div class="plant-hero-name">Coontie Palm</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Zamia integrifolia</span>
+  <a class="plant-family-tag" href="../nature.html?family=Zamiaceae">Zamiaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    <span class="badge badge-native">🌿 Florida Native</span>
+    <span class="badge badge-green">✅ Not Invasive</span>
+    <span class="badge badge-danger">☠️ Toxic</span>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>Florida's only native cycad — and the only native cycad in all of North America. Cycads as a group have barely changed in 300 million years.</li>
+    <li>The starch from its roots fed Seminole communities, Confederate soldiers, and eventually Nabisco — which ground up to 20 tons of coontie per day for animal crackers until the FDA banned it in 1925.</li>
+    <li>It's the sole host plant for the Atala butterfly, which was considered locally extinct in Florida until 1979, when naturalist Roger Hammer rediscovered a colony on Virginia Key near Miami.</li>
+    <li>As the coontie has returned to Florida landscapes, the Atala has followed — watch this plant for the butterfly's brilliant red-and-blue wings.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Native to Florida, Georgia, the Bahamas, and parts of the Caribbean. In Florida found in sandy upland forests, pine flatwoods, coastal hammocks, and shell middens throughout the state. The only native North American cycad.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>Cycad fossils date back to roughly 300 million years ago — this plant was thriving before the Atlantic Ocean existed in its current form. It watched the dinosaurs come and go. Compared to that resume, its brush with extinction at the hands of the animal cracker industry seems almost undignified.</li>
+    <li>The starch industry was relentless. Florida coontie factories ground the roots into flour sold as 'Florida arrowroot' — used in baby food, animal crackers, beer, and WWI rations.</li>
+    <li>Nabisco ran operations grinding up to 20 tons per day. Because each coontie plant takes up to a decade to mature, wild populations collapsed under the harvest pressure.</li>
+    <li>The last commercial factory was destroyed by the 1926 Miami hurricane. The FDA had banned the practice a year earlier.</li>
+    <li>The Atala butterfly story is one of Florida's great conservation turnarounds. Considered locally extinct for decades, it was rediscovered in 1979 by naturalist Roger Hammer on Virginia Key — a small island between Miami and Key Biscayne.</li>
+    <li>Every Atala colony in Florida today is believed to descend from that single group. As coontie has returned to Florida gardens, the Atala has expanded northward into Manatee County.</li>
+    <li>Plant this, and you may well see them here.</li>
+    <li>The pollination system is unusual even by cycad standards: a tiny weevil pollinates the plants and uses the pollen-bearing cones as food for its larvae — but if the larvae try to eat the seed-bearing cones instead, they are poisoned. The plant rewards its pollinator at one cone type while defending the other with toxin.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>The Coontie's ecological value is concentrated in one relationship: it is the sole larval food plant for the Atala butterfly (Eumaeus atala), a species found nowhere outside Florida and the Bahamas. The caterpillars absorb the plant's cycasin toxin and become poisonous themselves — bright red coloring warns predators off.</p><p>The Atala's recovery from near-extinction is directly tied to the return of this plant to Florida landscapes. The echo moth (Sierarctia echo) also uses it as a larval host.</p><p>The dense, low clumping form provides excellent ground-level cover for lizards and small ground-feeding birds.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Dioecious</div><p>each plant is either male or female and produces separate cones. Both needed nearby for seed production.</p></div>
+<div class="repro-item"><div class="repro-label">Male cones</div><p>elongated, pollen-bearing, attracting the tiny weevil pollinators.</p></div>
+<div class="repro-item"><div class="repro-label">Female cones</div><p>larger, seed-bearing, defended by toxins against larval feeding.</p></div>
+<div class="repro-item"><div class="repro-label">Seeds</div><p>fleshy, red-coated. The red seed coat must be removed before germination. Nitrogen-fixing cyanobacteria live in root nodules.</p></div>
+<div class="repro-item"><div class="repro-label">Vegetative</div><p>The underground fleshy stem (caudex) can be substantial in old plants and sends up new leaves quickly after fire or disturbance.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Dark green, glossy, fern-like pinnate fronds rising from the central crown in a low rosette. Stiff and leathery with smooth leaflet edges.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>The low, palm-like rosette of dark glossy fronds is distinctive at ground level. Look at the base for cones — male and female cones look noticeably different and both are worth examining. Most importantly: look for bright red Atala caterpillars with yellow spots feeding on the fronds in warm months, and watch for adult Atala butterflies with their black wings, blue iridescent spots, and vivid red-orange abdomen.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item"><div class="data-label">Height</div><div class="data-value">1 to 5 feet</div></div>
+    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">3 to 5 feet</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">clumping, low-growing palm-like rosette</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">slow</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium — fern-like glossy fronds</div></div>
+    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full shade to full sun — one of the most adaptable natives for light levels</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">any texture, well-drained, acidic to neutral</div></div>
+    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">high once established</div></div>
+    <div class="data-item full-width"><div class="data-label">Salt tolerance</div><div class="data-value">moderate — tolerates salt spray</div></div>
+    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">excellent; USDA zones 8A–11</div></div>
+    <div class="data-item full-width"><div class="data-label">Fire adaptation</div><div class="data-value">underground caudex sends up new growth quickly after fire</div></div>
+    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">wild collection is regulated in Florida — plant only nursery-sourced specimens</div></div>
+    </div>
+  </div>
+  <div class="plant-toxic-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>Processed starch only — highly toxic raw. Florida Indigenous peoples made safe arrowroot flour through an elaborate process of powdering, soaking, and repeated rinsing. Not safe to eat without full processing.</p><p>All parts contain the toxin cycasin. Highly toxic if ingested without processing — causes gastrointestinal and neurological effects. Keep pets away from the plant; dogs are particularly susceptible. The Atala caterpillars absorb the toxin and become poisonous themselves — do not handle red caterpillars on the fronds. Highly toxic to dogs. Coontie/cycads contain cycasin; ingestion can cause severe liver failure and is frequently fatal. Dogs are attracted to the plant — one of the most dangerous in the collection for pets (ASPCA).</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Florida Arrowroot</span><span class="alias-tag">Comptie</span><span class="alias-tag">Koonti</span></div>
+  </div>
+
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>

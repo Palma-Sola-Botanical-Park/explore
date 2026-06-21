@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mauve Indian Mallow · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the full image in /photos/ */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero-link { display:block;width:100%;height:100%; }
+  /* object-position center center is the neutral default; override per-plant
+     (e.g. 'center 30%') only if a specific photo crops poorly */
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line -- sits directly under the photo */
+  .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
+  .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  /* prose paragraphs inside the dark card need the light text color too */
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid -- slightly larger labels/values for phone readability */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <a class="plant-hero-link" href="../photos/PSBP-00055-Mauve-Indian-Mallow.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00055-Mauve-Indian-Mallow.jpg" alt="Mauve Indian Mallow at Palma Sola Botanical Park" loading="lazy">
+  </a>
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Native Wetland &amp; Pond Edge</div>
+    <div class="plant-hero-name">Mauve Indian Mallow</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Abutilon hulseanum</span>
+  <a class="plant-family-tag" href="../nature.html?family=Malvaceae">Malvaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    <span class="badge badge-native">🌿 Florida Native</span>
+    <span class="badge badge-green">✅ Not Invasive</span>
+    <span class="badge badge-safe">✅ Edible &amp; Safe</span>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>A Florida native — and the original type specimen that first gave this plant its scientific identity was collected from Tampa Bay in the 1840s by a US Army surgeon named Hulse. The species is named for him.</li>
+    <li>For most of the year it is a tall, loosely branching shrub that reads as scraggly. The Florida Native Plant Society describes it plainly: rangy, weedy, not really woody. Both things are true.</li>
+    <li>The orange-pink flowers bloom late winter to early spring and are worth the wait. Hummingbirds and native bees work them steadily.</li>
+    <li>Four of these were purchased from a Florida native nursery and planted by the pond alongside the native Cannas. The park has two active grants for pond erosion prevention, and this is one of the species going in.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Native to Florida, Texas, New Mexico, Mexico, Cuba, Jamaica, Puerto Rico, and the Caribbean islands. A member of Malvaceae — same family as hibiscus, okra, cotton, and the park's own Silk Floss Tree and Kapok. The type specimen was collected from Tampa Bay.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>The species name hulseanum honors a US Army surgeon named Hulse who collected the original type specimen from Tampa Bay in the 1840s. The holotype — the single reference specimen that defines what this plant is scientifically — came from essentially this neighborhood.</li>
+    <li>For a Florida native botanic park on Tampa Bay, that is a meaningful connection.</li>
+    <li>Four plants were purchased from a Florida native nursery by Randy and installed at the edge of the Cypress Pond, to the left of the native Cannas as you face the water. The crushed shell path runs right past them. They have grown from roughly a foot tall to about three feet in two years.</li>
+    <li>The Florida Native Plant Society describes the plant honestly: rangy unless cut back periodically, somewhat shrubby but not really woody, noted for being weedy. That assessment is accurate and visible.</li>
+    <li>For much of the year, these plants look like tall weeds at the pond edge. The late winter flowers change that evaluation considerably.</li>
+    <li>They are part of a broader and ongoing effort to stabilize the pond banks with native plantings. The park currently holds two grants supporting this work: a $5,000 grant from the Tampa Bay Estuary Program and a $10,000 grant from the Sarasota Bay Estuary Program.</li>
+    <li>This stretch of the Cypress Pond edge will continue to receive new and varied native species as that work progresses.</li>
+    <li>A note on naming: the plants were purchased under the common name Red Indian Mallow. That name and Mauve Indian Mallow refer to the same species — Abutilon hulseanum — whose flower color ranges from soft mauve-pink to deeper reddish-orange depending on the individual plant.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>Hummingbirds and native bees are documented visitors to the orange-pink flowers. The hibiscus-like flower structure — open, accessible, with a prominent central staminal column — is well-suited to both pollinators.</p><p>As a pond-edge native, it contributes to bank stabilization and provides cover for ground-foraging birds and small wildlife along the water's edge.</p><p>The plant reseeds readily, which means a healthy colony can maintain itself and spread along the bank over time — a useful quality for an erosion-prevention planting.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Orange-pink, hibiscus-like, five petals with a prominent central staminal column typical of the mallow family. Bloom period: late winter to early spring, roughly February through May. Visited by hummingbirds and native bees.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit and Seeds</div><p>Small capsule fruits containing seeds. Reseeds readily — short-lived as individual plants but self-maintaining as a colony. Easily grown from seed.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Maple-like, lobed, covered in fine soft hairs. Medium texture. Alternate arrangement.</p></div>
+<div class="repro-item"><div class="repro-label">Form</div><p>Upright, loosely branching shrub to 7 feet. Stems are softly woody rather than truly woody. Tends toward a rangy, open habit unless periodically cut back.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>Along the pond bank to the left of the native Cannas. The open habit and soft hairy leaves are visible year-round. In late winter, watch for the orange-pink flowers — five petals, central staminal column, the unmistakable mallow family signature.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Size</div><div class="data-value">A short-lived perennial shrub growing to 7 feet</div></div>
+    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">3 to 5 feet. Upright loosely branching</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate to fast</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium, with maple-like lobed leaves covered in fine soft hairs</div></div>
+    <div class="data-item full-width"><div class="data-label">Full sun to part shade. Soil</div><div class="data-value">moist to wet, tolerates periodic flooding — excellent pond edge plant</div></div>
+    <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">moderate</div></div>
+    <div class="data-item full-width"><div class="data-label">USDA zones</div><div class="data-value">8B-11. Adapts readily to disturbed habitats. Short-lived but reseeds readily</div></div>
+    </div>
+  </div>
+  <div class="plant-safe-section">
+    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>Not a significant food plant. Leaves in the mallow family are generally edible, but this species is not used as a food plant in Florida.</p><p>No known toxicity to people. No known toxicity to dogs or cats.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>Purchased from a Florida native nursery. Four specimens planted by pond edge alongside native Cannas.</p></div>
+  </div>
+
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Florida Strangler Fig · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the full image in /photos/ */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero-link { display:block;width:100%;height:100%; }
+  /* object-position center center is the neutral default; override per-plant
+     (e.g. 'center 30%') only if a specific photo crops poorly */
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line -- sits directly under the photo */
+  .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
+  .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  /* prose paragraphs inside the dark card need the light text color too */
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid -- slightly larger labels/values for phone readability */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <a class="plant-hero-link" href="../photos/PSBP-00068-Florida-Strangler-Fig.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00068-Florida-Strangler-Fig.jpg" alt="Florida Strangler Fig at Palma Sola Botanical Park" loading="lazy">
+  </a>
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Native Trees &amp; Large Shrubs</div>
+    <div class="plant-hero-name">Florida Strangler Fig</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Ficus aurea</span>
+  <a class="plant-family-tag" href="../nature.html?family=Moraceae">Moraceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    <span class="badge badge-native">🌿 Florida Native</span>
+    <span class="badge badge-green">✅ Not Invasive</span>
+    <span class="badge badge-warn">⚠️ Mild Caution</span>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>Starts life as a seed deposited by a bird in the fork or bark of another tree. Sends roots downward. Over years those roots reach the soil, thicken, and gradually enclose the host trunk. The host eventually dies, leaving the fig standing hollow around where it used to be.</li>
+    <li>Figs do not flower in the conventional sense. The flowers are inside the fruit — the fig is a hollow structure lined with tiny flowers. A specific species of wasp enters through a small opening to pollinate them, then dies inside. There are no Ficus without fig wasps.</li>
+    <li>Florida Strangler Fig is the native species — distinct from the various ornamental figs sold in nurseries.</li>
+    <li>Provides more wildlife value per tree than almost any other Florida native.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Native to Florida, the Caribbean, southern Mexico, and Central America. Found in hammocks and along waterways throughout the Florida peninsula. Member of Moraceae — the mulberry family. Florida's only native strangler fig.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>The strangler fig's growth strategy is one of the more dramatic in the plant kingdom, and it plays out slowly enough that most people never watch a complete cycle. A bird deposits a seed in the canopy of a host tree.</li>
+    <li>The seedling sends aerial roots downward toward the soil while drawing nutrients from the host bark and from rainwater and debris. Once the roots reach the ground, the fig grows rapidly, the roots thicken and anastomose — fuse together — gradually enclosing the host trunk in a lattice of fig wood.</li>
+    <li>The host tree, unable to expand its trunk against the fig's grip, eventually dies. The fig stands hollow at the center, having used a living tree as its scaffold.</li>
+    <li>Figs are also unusual in their reproductive biology. What appears to be a fruit is technically a syconium — a hollow structure lined on the inside with hundreds of tiny flowers.</li>
+    <li>A species-specific fig wasp enters through a small opening at the tip, pollinates the flowers, lays eggs, and dies inside. The male wasps hatch first, mate with females, and cut exit holes before dying.</li>
+    <li>The females emerge carrying pollen and seek another fig to enter. No Ficus species can reproduce without its specific wasp partner.</li>
+    <li>As a keystone species in Florida hammocks, the fig produces fruit in multiple crops throughout the year, providing food when other trees are not fruiting.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>One of the most wildlife-productive trees in the Florida native plant palette. The small figs ripen in multiple crops throughout the year and are eaten by more than 60 species of birds in Florida alone — including many migratory species that time their passage through the state to coincide with fig fruiting.</p><p>Raccoons, squirrels, and opossums also eat the fruit.</p><p>The large spreading canopy provides nesting and roosting structure for birds and small mammals. The hollow trunk of a mature strangler fig often becomes habitat for owls, bats, and cavity-nesting birds.</p><p>Because it fruits year-round rather than seasonally, the Strangler Fig functions as a baseline food source that supports wildlife through periods when other food plants are dormant.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Figs</div><p>Small, round, green ripening to yellow-orange to red, produced year-round in multiple crops. Eaten by a wide range of wildlife. Each fig is technically a syconium — a hollow structure lined with flowers, pollinated by a specific fig wasp that enters and dies inside.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Oval to oblong, leathery, dark glossy green. Evergreen. Smooth margin.</p></div>
+<div class="repro-item"><div class="repro-label">Aerial Roots</div><p>Long, rope-like roots descending from branches and trunk, characteristic of the species. On mature trees these fuse together forming a distinctive lattice structure around what was once the host trunk.</p></div>
+<div class="repro-item"><div class="repro-label">Milky Latex</div><p>White sap from cut stems or leaves. Mild skin irritant; avoid contact with eyes.</p></div>
+<div class="repro-item"><div class="repro-label">Form</div><p>Large evergreen tree to 50 to 100 feet. Broad spreading canopy. Often hollow at the center on old specimens.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>The aerial roots descending from branches are the year-round identification feature. The small figs in various stages of ripening throughout the year. The hollow center on very old trees.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Size</div><div class="data-value">A large evergreen tree that can reach 50 to 100 feet tall with a broad, spreading canopy often as wide as it is tall. The figs themselves are tiny — about the diameter of a pencil</div></div>
+    <div class="data-item full-width"><div class="data-label">Growing Conditions</div><div class="data-value">Thrives in warm, humid subtropical conditions and is found in hammocks and along mangrove edges throughout central and southern Florida. It tolerates a range of soils and some brackish conditions. USDA zones 10 to 11. Give it plenty of room — its aggressive roots are not for tight spaces</div></div>
+    </div>
+  </div>
+  <div class="plant-caution-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>Small figs edible and eaten by Indigenous peoples of Florida. Not significant as a food plant in landscape use.</p><p>Milky latex sap is a mild skin and eye irritant. Avoid contact with eyes and wash hands after handling cut stems. Not considered seriously toxic. Latex sap may cause mild skin irritation. Figs are not toxic, but the latex warrants caution around pets who chew stems.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Also called golden fig, higueron, or simply strangler fig. Florida's Native peoples are documented to have used the latex sap for chewing gum and the stems and roots for tools, cordage, and medicine.</span></div>
+  </div>
+
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>

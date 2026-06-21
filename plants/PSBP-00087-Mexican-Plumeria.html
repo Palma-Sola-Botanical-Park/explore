@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mexican Plumeria · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the full image in /photos/ */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero-link { display:block;width:100%;height:100%; }
+  /* object-position center center is the neutral default; override per-plant
+     (e.g. 'center 30%') only if a specific photo crops poorly */
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line -- sits directly under the photo */
+  .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
+  .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  /* prose paragraphs inside the dark card need the light text color too */
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid -- slightly larger labels/values for phone readability */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <a class="plant-hero-link" href="../photos/PSBP-00087-Mexican-Plumeria.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00087-Mexican-Plumeria.jpg" alt="Mexican Plumeria at Palma Sola Botanical Park" loading="lazy">
+  </a>
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Flowering Shrubs &amp; Vines</div>
+    <div class="plant-hero-name">Mexican Plumeria</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Plumeria rubra</span>
+  <a class="plant-family-tag" href="../nature.html?family=Apocynaceae">Apocynaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>joanne_walker</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    <span class="badge badge-neutral">🌍 Non-Native</span>
+    <span class="badge badge-green">✅ Not Invasive</span>
+    <span class="badge badge-warn">⚠️ Mild Caution</span>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>The fragrance of plumeria flowers is one of the most recognizable scents in the tropical world — the base of Hawaiian lei culture, a fixture in tropical perfumery, and the scent most visitors associate with warm-climate vacations.</li>
+    <li>The flowers produce no nectar. Sphinx moths visit them at night, attracted by the fragrance, and inadvertently carry pollen between plants without getting anything in return. Botanists call this pollination-by-deceit.</li>
+    <li>The milky white sap is a skin and eye irritant. It is not the same as the related toxic oleanders, but caution is warranted.</li>
+    <li>Deciduous in winter — the bare, blunt-tipped branches look dead and often prompt concern. They are not.</li>
+    <li>Extraordinarily easy to propagate — cut a mature branch, let the wound callus in a shaded spot for a week, push it into sandy soil, and it roots and grows into a new tree. Local gardeners pass cuttings around freely.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Non-native. Native to Mexico, Central America, and the Caribbean. Member of Apocynaceae — the dogbane family, same as oleander and periwinkle. Named for 16th-century Italian botanist Frangipani, who is also credited with developing a perfume of similar scent.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>Plumeria occupies a specific cultural space that few ornamental plants match. In Hawaii it is the primary flower of the lei — the traditional garland given in welcome.</li>
+    <li>In Hindu and Buddhist cultures it is associated with temples and devotion. In Mexico and Central America it has long been associated with funerals and remembrance.</li>
+    <li>The same flower means welcome in one culture and mourning in another, depending entirely on context.</li>
+    <li>The pollination system is a botanical con. The flowers produce abundant fragrance but no nectar reward.</li>
+    <li>Sphinx moths visit after dark, probe for nectar that isn't there, and in doing so transfer pollen between plants. The plant gets pollinated; the moth gets nothing.</li>
+    <li>This pollination-by-deceit strategy is well-documented and works because the moths haven't evolved a way to tell the difference before committing.</li>
+    <li>The bare winter branches consistently alarm visitors who assume the tree is dead or dying. Plumeria is simply deciduous — it drops its leaves in the cooler months and holds its thick blunt-tipped branches naked until warmth returns.</li>
+    <li>Behind the Cypress Pond, a collection of plumeria grows largely out of sight and off the beaten path. Right now they are in full bloom — one of the most fragrant spots in the park — but visitors rarely find their way back there.</li>
+    <li>Off season they are bare sticks covered in lichen, which is a growing concern for the collection's health. Better path signage and a self-guided tour would transform this hidden gem into a destination.</li>
+    <li>If you know where to look, it is worth the detour.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>Sphinx moths are the primary pollinators, working at night. The fragrance is the attractant; no nectar reward is offered. Bees visit during the day with similarly unrewarded results but do transfer some pollen.</p><p>Limited direct wildlife value beyond pollinator visits. The milky sap deters most browsing animals.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Five overlapping petals in white, yellow, pink, or red depending on cultivar. The classic white-with-yellow-center form is most familiar. Intensely fragrant, especially in the evening. No nectar.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Rarely produced on cultivated trees. When present: paired elongated pods releasing winged seeds.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Large, oblong, dark glossy green, clustered at the tips of branches. Deciduous — drop in winter leaving bare blunt-tipped branches.</p></div>
+<div class="repro-item"><div class="repro-label">Trunk and Branches</div><p>Thick, succulent, blunt-tipped. Exude white milky latex when cut or broken. The distinctive Y-branching pattern is recognizable at a distance.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>The Y-branching blunt-tipped form is visible year-round. In bloom, the flower clusters at branch tips are unmistakable. In winter, the bare blunt branches should not be mistaken for a dead tree.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item"><div class="data-label">Height/Length</div><div class="data-value">15 to 25 feet</div></div>
+    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">10 to 20 feet, broad and open</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">small deciduous tree with thick, blunt, candelabra-like branches</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">bold - thick branches, large leaves, big fragrant flower clusters</div></div>
+    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">well-drained; tolerates sandy and rocky soils; rots in wet ground</div></div>
+    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">high - stores water in its thick branches</div></div>
+    <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">moderate to high</div></div>
+    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">frost-tender; drops leaves in winter; USDA zones 10 to 11</div></div>
+    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">easily grown from cuttings; the milky sap irritates skin and eyes - wash after handling cut stems.</div></div>
+    </div>
+  </div>
+  <div class="plant-caution-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>Flowers edible and used in salads and teas in some cultures. All other parts: avoid. Sap is an irritant.</p><p>Milky sap causes skin and eye irritation — wash hands after handling cut stems. Not in the same toxicity category as oleander but caution warranted. Do not ingest sap or leaves. Mildly toxic to dogs and cats (ASPCA). Can cause vomiting and diarrhea if ingested. Sap is the primary concern. Keep pets from chewing stems.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Frangipani</span></div>
+  </div>
+
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>

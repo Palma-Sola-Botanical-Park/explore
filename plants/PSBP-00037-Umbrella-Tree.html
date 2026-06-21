@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Umbrella Tree · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the full image in /photos/ */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero-link { display:block;width:100%;height:100%; }
+  /* object-position center center is the neutral default; override per-plant
+     (e.g. 'center 30%') only if a specific photo crops poorly */
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line -- sits directly under the photo */
+  .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
+  .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  /* prose paragraphs inside the dark card need the light text color too */
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid -- slightly larger labels/values for phone readability */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img src="../photos/PSBP-00037-Umbrella-Tree.jpg" alt="Umbrella Tree at Palma Sola Botanical Park" loading="lazy">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Plants to Watch &amp; Invasive Awareness</div>
+    <div class="plant-hero-name">Umbrella Tree</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Schefflera actinophylla</span>
+  <a class="plant-family-tag" href="../nature.html?family=Araliaceae">Araliaceae</a>
+</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    <span class="badge badge-neutral">🌍 Non-Native</span>
+    <span class="badge badge-danger">🚫 Invasive</span>
+    <span class="badge badge-danger">☠️ Toxic</span>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>One of Florida's problem invaders: birds eat the red berries and drop the seeds in wild hammocks, where a seedling can take root high in a native tree and slowly <strong>strangle</strong> it.</li>
+    <li>In summer the canopy puts out dramatic three-foot-wide clusters of deep red flower spikes that radiate like the arms of an <strong>octopus</strong>.</li>
+    <li>Originally from Queensland and New Guinea, it was a wildly popular ornamental before its <strong>invasive</strong> potential was understood — the park keeps one as a teaching specimen for exactly that reason.</li>
+    <li>Palma Sola once had two of these about twenty yards apart; the 2024 saltwater floods claimed one, and the <strong>survivor</strong> is steadily fighting its way back to life.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Native to tropical rainforests of Australia, New Guinea, and Java. Introduced to Florida as a landscape and houseplant — once extremely popular, now recognized as a serious invasive problem.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>The Umbrella Tree's story is a cautionary tale in Florida horticulture. For years it was a staple landscape plant — easy, fast, dramatic, widely sold.</li>
+    <li>In fact, it remains one of the most common houseplants in North America — perfectly well-behaved in a pot up north, yet an aggressive invader in frost-free South Florida. Then ecologists began finding it in hammocks where no one had planted it.</li>
+    <li>The mechanism was birds: the red berries are eagerly eaten and the seeds deposited intact in natural areas, sometimes miles away. Young Scheffleras start as epiphytes — germinating in the crotch of a native tree, sending roots down the bark — before eventually overtopping and strangling the host.</li>
+    <li>By the time the problem was recognized, it was already established across South Florida's most sensitive hammock habitats. It is now a FISC Category I invasive, the highest designation, and IFAS classifies it as invasive in both Central and South Florida.</li>
+    <li>Large established individuals (over 10 inches trunk diameter) are particularly difficult to eradicate — the recommended treatment is cut-stump application of Triclopyr, which can take up to 9 months to kill a large tree. The park's specimen is maintained as an educational display.</li>
+    <li>It is worth keeping an eye on any volunteer seedlings in surrounding areas.</li>
+    <li>Note: the current accepted scientific name is *Heptapleurum actinophyllum* — the genus was reclassified from Schefflera based on molecular (DNA) analysis showing it is distinct from the true Scheffleras. Most literature and signage still uses Schefflera actinophylla.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>The Umbrella Tree's red berries are actively consumed by birds — which is precisely what makes it invasive. Mockingbirds, robins, and many other fruit-eating species disperse its seeds widely.</p><p>The large compound leaves create heavy shade that reduces ground-level plant diversity beneath it. While it provides fruiting resources and canopy cover, its ecological value in Florida is outweighed by the habitat displacement it causes in natural areas.</p><p>As an educational invasive specimen, it demonstrates exactly how bird-dispersed fruiting plants can escape cultivation — a lesson worth teaching to every visitor who walks past it.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Produces flowers in summer when grown in full sun — an unusual radial arrangement of multiple flower spikes extending from a central point, resembling the legs of an octopus (one of its common names). Can start as an epiphyte, germinating in tree crotches before rooting to the ground.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Small and dark red, borne on radial clusters of stems up to three feet across.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Small, round, dark red to purple, produced prolifically. Highly attractive to birds — the primary dispersal vector.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Large, palmately compound with 7 to 16 glossy oval leaflets arranged in a circular pattern. Each leaflet up to 12 inches long.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>The circular arrangement of leaflets on long petioles creates the 'umbrella' silhouette the name describes — look up into the crown from below for the full effect. The octopus-like flower stalks in summer are distinctive. Watch for volunteer seedlings — small umbrella-leaved plants appearing in unexpected locations.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item"><div class="data-label">Height</div><div class="data-value">up to 40 feet</div></div>
+    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">forms a dense screen</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">single or multi-stemmed; large palmately compound leaves with 7 to 16 leaflets</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">bold, coarse</div></div>
+    <div class="data-item"><div class="data-label">Light</div><div class="data-value">part shade to part sun</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">wide range of soils</div></div>
+    <div class="data-item"><div class="data-label">Cold tolerance</div><div class="data-value">USDA zones 9B-11</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth habit</div><div class="data-value">grows terrestrially or as an epiphyte</div></div>
+    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">bird-dispersed fruits; invasive in hammocks, particularly wet rocky sites — see Invasive Notes</div></div>
+    </div>
+  </div>
+  <div class="plant-toxic-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>Not edible.</p><p>Contains calcium oxalate crystals and other compounds causing significant mouth and throat irritation if ingested. Keep away from children and pets. Sap can cause skin irritation in sensitive individuals. Toxic to dogs. Schefflera contains insoluble calcium oxalates causing oral pain, drooling, vomiting, and difficulty swallowing (ASPCA).</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>In its years at Palma Sola — in the park's particular microclimate — this species has shown no sign of the invasive behavior it's known for elsewhere. We keep a close watch for volunteer seedlings all the same, and never propagate or plant it elsewhere on the property.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Octopus Tree</span><span class="alias-tag">Queensland Umbrella Tree</span><span class="alias-tag">Australian Umbrella Tree</span></div>
+  </div>
+
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
