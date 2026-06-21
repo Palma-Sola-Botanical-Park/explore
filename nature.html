@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nature at Palma Sola · Flora & Fauna</title>
+<link rel="stylesheet" href="css/site.css">
+<style>
+/* ── Nature-page specific ── */
+@media (max-width: 700px) {
+  #recentObsGrid { grid-template-columns: repeat(2,1fr) !important; }
+  /* Stack intro text and green banner vertically on phone */
+  #panel-plants > div:first-child,
+  #panel-wildlife > div:first-child { grid-template-columns: 1fr !important; }
+  /* On phone, collapse hero to minimal size when returning from plant page */
+  .nature-hero { padding: 1.5rem 1rem; }
+  .nature-hero h1 { font-size: 1.6rem; margin-bottom: .4rem; }
+  .nature-hero p { font-size: .95rem; margin-bottom: 1rem; }
+}
+
+.nature-hero {
+  background: var(--green-deep);
+  padding: 3rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.nature-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url('photos/PSBP-00035-Royal-Palm.jpg') center/cover no-repeat;
+  opacity: .18;
+}
+.nature-hero > * { position: relative; z-index: 1; }
+.nature-hero h1 { color: var(--white); font-size: clamp(1.8rem,4vw,2.8rem); margin-bottom: .6rem; }
+.nature-hero p  { color: rgba(255,255,255,.75); font-size: 1rem; max-width: 620px; margin: 0 auto 1.5rem; line-height: 1.72; }
+
+/* ── Tabs ── */
+.two-tabs {
+  display: flex; justify-content: center;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 2.5rem; flex-wrap: wrap;
+}
+.tab-btn {
+  padding: .85rem 2.2rem;
+  font-size: 1rem; font-weight: 700;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-soft);
+  border-bottom: 3px solid transparent;
+  font-family: 'Playfair Display', serif;
+  transition: color .2s, border-color .2s;
+  margin-bottom: -2px;
+}
+.tab-btn:hover { color: var(--green-deep); }
+/* Clear active state */
+.tab-btn.active {
+  color: var(--green-deep);
+  border-bottom-color: var(--gold);
+  background: rgba(197,146,42,.07);
+  border-radius: 4px 4px 0 0;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Wildlife cards ── */
+.wildlife-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 1rem; }
+.wildlife-card {
+  background: var(--white); border-radius: 10px; padding: 1.2rem;
+  border-left: 4px solid var(--green-light);
+  box-shadow: 0 2px 8px rgba(0,0,0,.07);
+}
+.wildlife-card .icon { font-size: 1.6rem; margin-bottom: .5rem; }
+.wildlife-card h4 { font-size: .95rem; color: var(--green-deep); margin-bottom: .3rem; }
+.wildlife-card p { font-size: .82rem; color: var(--text-soft); line-height: 1.55; }
+.wildlife-card .obs-count { font-size: .75rem; color: var(--green-mid); font-weight: 700; margin-top: .4rem; }
+
+/* ── iNat explanation box ── */
+.inat-explain {
+  background: var(--green-deep);
+  border-radius: 14px;
+  padding: 2.5rem;
+  color: var(--white);
+  margin-bottom: 2rem;
+}
+.inat-explain h3 { color: var(--white); font-size: 1.4rem; margin-bottom: .75rem; }
+.inat-explain p  { color: rgba(255,255,255,.72); line-height: 1.72; margin-bottom: 1rem; }
+.inat-explain p:last-of-type { margin-bottom: 0; }
+
+/* ── iNat stats (after explanation) ── */
+.inat-stats-row {
+  display: flex; gap: 2.5rem; flex-wrap: wrap;
+  align-items: center; justify-content: center;
+  background: rgba(255,255,255,.08);
+  border-radius: 10px; padding: 1.25rem 1.5rem;
+  margin-top: 1.75rem;
+}
+.inat-stat { text-align: center; }
+.inat-stat strong {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; color: var(--gold-light); line-height: 1;
+}
+.inat-stat span { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.55); }
+
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+<div id="announcements-bar" style="display:none">
+  <div class="container" style="max-width:1160px;margin:0 auto" id="announcementsList"></div>
+</div>
+
+<!-- HERO -->
+<div class="nature-hero">
+  <div class="label label-light">Flora & Fauna</div>
+  <h1>Everything that lives here</h1>
+  <p>Ten acres of plants, birds, insects, and reptiles — all documented by the people who walk through this park. You don't need to be a scientist. You just need your phone.</p>
+</div>
+
+<!-- TABS SECTION -->
+<section class="bg-cream" id="tabSection">
+  <div class="section-inner">
+    <div class="two-tabs">
+      <button class="tab-btn active" id="tab-plants"   onclick="showTab('plants')">🌿 Plants</button>
+      <button class="tab-btn"        id="tab-wildlife" onclick="showTab('wildlife')">🦜 Wildlife</button>
+      <button class="tab-btn"        id="tab-recent"   onclick="showTab('recent')">📷 Recent Observations</button>
+    </div>
+
+    <!-- ── PLANTS TAB ── -->
+    <div class="tab-panel active" id="panel-plants">
+      <p class="section-sub" style="max-width:780px;margin:0 0 1.25rem">
+        Every plant below was found by someone walking this park — phone in hand, photo posted to <strong>iNaturalist</strong>, identified by the community. The best photo earns a spot here, with full credit to the observer. <span id="plantCollectionCount">Hundreds</span> species so far. <a href="get-started.html" style="color:var(--green-mid);font-weight:700;white-space:nowrap">Get your name on the next one →</a>
+      </p>
+
+      <div id="plants"></div>
+      <div class="filter-bar">
+        <input type="search" id="plantSearch" placeholder="Search by name, family, or keyword…" oninput="filterPlants()">
+        <select id="plantCategory" class="filter-select" onchange="setCategory(this.value)" aria-label="Plant category">
+          <option value="">🏷️ All categories</option>
+        </select>
+        <button class="filter-btn f-native"    data-filter="native"    onclick="toggleFilter('native')">🌿 Native</button>
+        <button class="filter-btn f-butterfly" data-filter="butterfly" onclick="toggleFilter('butterfly')">🦋 Butterfly</button>
+        <button class="filter-btn" onclick="clearFilters()" style="border-color:var(--border)">Clear</button>
+      </div>
+      <p style="font-size:1rem;color:var(--text-soft);margin-bottom:1.5rem">Showing <strong id="plantCount">0</strong> plants
+        <span id="plantPageInfo" style="font-size:.9rem;color:#aaa"></span>
+      </p>
+
+      <div class="grid-auto" id="plantGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-soft)">Loading…</div>
+      </div>
+
+      <!-- Pagination controls -->
+      <div id="plantPagination" style="display:none;display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
+        <button id="plantPrev" onclick="stepPlants(-1)" style="background:var(--green-deep);color:white;border:none;border-radius:6px;padding:.6rem 1.2rem;cursor:pointer;font-size:1rem;font-weight:600">← Previous</button>
+        <span id="plantPageLabel" style="font-size:1rem;color:var(--text-soft)"></span>
+        <button id="plantNext" onclick="stepPlants(1)" style="background:var(--green-deep);color:white;border:none;border-radius:6px;padding:.6rem 1.2rem;cursor:pointer;font-size:1rem;font-weight:600">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── WILDLIFE TAB ── -->
+    <div class="tab-panel" id="panel-wildlife">
+      <p class="section-sub" style="max-width:780px;margin:0 0 1.25rem">
+        Every animal below was photographed by someone walking this park — posted to <strong>iNaturalist</strong>, identified by the community, brought here with the observer's name attached. <span id="wildCollectionCount">Dozens</span> species so far, and the bay and wetlands keep adding more. <a href="get-started.html" style="color:var(--green-mid);font-weight:700;white-space:nowrap">Photograph the next one →</a>
+      </p>
+
+      <div id="wildlife"></div>
+      <div class="filter-bar">
+        <input type="search" id="wildSearch" placeholder="Search by name, family, or keyword…" oninput="filterWildlife()">
+        <span id="wildFilterButtons" style="display:contents"></span>
+        <button class="filter-btn" onclick="clearWildFilters()" style="border-color:var(--border)">Clear</button>
+      </div>
+      <p style="font-size:1rem;color:var(--text-soft);margin-bottom:1.5rem">Showing <strong id="wildCount">0</strong> animals
+        <span id="wildPageInfo" style="font-size:.9rem;color:#aaa"></span>
+      </p>
+
+      <div class="grid-auto" id="wildGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-soft)">Loading…</div>
+      </div>
+
+      <!-- Pagination controls -->
+      <div id="wildPagination" style="display:none;display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:1.5rem;flex-wrap:wrap">
+        <button id="wildPrev" onclick="stepWild(-1)" style="background:var(--green-deep);color:white;border:none;border-radius:6px;padding:.6rem 1.2rem;cursor:pointer;font-size:1rem;font-weight:600">← Previous</button>
+        <span id="wildPageLabel" style="font-size:1rem;color:var(--text-soft)"></span>
+        <button id="wildNext" onclick="stepWild(1)" style="background:var(--green-deep);color:white;border:none;border-radius:6px;padding:.6rem 1.2rem;cursor:pointer;font-size:1rem;font-weight:600">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── RECENT OBSERVATIONS TAB ── -->
+    <div class="tab-panel" id="panel-recent">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;margin-bottom:2rem">
+        <div>
+          <h3 style="font-size:1.2rem;color:var(--green-deep);margin-bottom:.75rem">Raw data. Real people.</h3>
+          <p style="font-size:1rem;color:var(--text-soft);line-height:1.75;margin-bottom:.75rem">
+            What you're looking at below is <strong>tentative</strong> — observations submitted directly from phones in the field,
+            unverified and still being identified by the community. This is science as it happens.
+            Messy, exciting, and real.
+          </p>
+          <p style="font-size:1rem;color:var(--text-soft);line-height:1.75">
+            Once an observation is verified, our volunteers locate the plant in the park, match it to our collection,
+            and move it onto the website — with full photo credit to the person who discovered it.
+            Your name. Your photo. Permanently on the record.
+          </p>
+        </div>
+        <div style="background:var(--green-deep);border-radius:10px;padding:1.5rem;color:white">
+          <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold-light);margin-bottom:.75rem">Want to join the effort?</div>
+          <p style="font-size:1rem;color:rgba(255,255,255,.85);line-height:1.7;margin-bottom:1.1rem">
+            We need people to help sift through incoming observations, verify identifications,
+            and connect discoveries to the park's plant collection. It's genuinely interesting work —
+            and you'll learn the park like nobody else does.
+          </p>
+          <div style="display:flex;flex-direction:column;gap:.6rem">
+            <a href="volunteer.html" class="btn btn-gold btn-sm">Join the Volunteer Team →</a>
+            <a href="get-started.html" class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,.35)">Start Submitting Observations →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cycling 4-at-a-time observation display -->
+      <div id="recentObsWrap">
+        <div id="recentObsGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;transition:opacity .6s ease">
+          <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-soft);font-size:1rem">Loading recent observations…</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:1.25rem;margin-top:1.25rem">
+          <button id="obsPrev" onclick="stepObs(-1)" style="background:none;border:1.5px solid var(--border);border-radius:6px;padding:.4rem .9rem;cursor:pointer;font-size:1rem;color:var(--text-soft)">← Prev</button>
+          <span id="obsPageLabel" style="font-size:.9rem;color:var(--text-soft)"></span>
+          <button id="obsNext" onclick="stepObs(1)" style="background:none;border:1.5px solid var(--border);border-radius:6px;padding:.4rem .9rem;cursor:pointer;font-size:1rem;color:var(--text-soft)">Next →</button>
+        </div>
+      </div>
+
+      <p style="font-size:1rem;color:var(--text-soft);margin-top:1.25rem;font-style:italic;text-align:center;line-height:1.6">
+        Identifications shown are tentative — the community is still weighing in. That's how it works.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- HOW WE KNOW — iNat explanation, THEN stats -->
+<section class="bg-white" id="inat">
+  <div class="section-inner">
+    <span class="label">How we know what's here</span>
+    <h2 class="section-title" style="margin-bottom:1.5rem">We're not scientists.<br>Neither are most of our observers.</h2>
+
+    <div class="inat-explain">
+      <h3>iNaturalist is our field notebook.</h3>
+      <p>
+        We rely on iNaturalist for final species identifications. We're not scientists — we're enthusiasts, volunteers,
+        and community members who care about this place. iNaturalist connects us to a global network of experts
+        who can confirm or correct our identifications. When we're not sure what something is, we post it and let the
+        community weigh in.
+      </p>
+      <p>
+        The project is called <strong style="color:var(--gold-light)">Palma Sola Botanical Park Collection Project</strong>.
+        Every single observation in it was put there by a person walking through this park with their phone.
+        If you think we've misidentified something — bring the debate to the project.
+        That's exactly how it's supposed to work.
+      </p>
+
+      <div style="margin:1.25rem 0 .5rem;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)">Built entirely by our community</div>
+      <div class="inat-stats-row">
+        <div class="inat-stat"><strong id="statSpecies" class="pulse">—</strong><span>Species Documented</span></div>
+        <div class="inat-stat"><strong id="statObservers" class="pulse">—</strong><span>People Who Showed Up</span></div>
+        <div class="inat-stat"><strong id="statTotal" class="pulse">—</strong><span>Observations Made</span></div>
+      </div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.5rem;text-align:center">Every number above is a person who came out here and did something. That's us.</div>
+
+      <div style="margin-top:1.75rem;display:flex;gap:1rem;flex-wrap:wrap">
+        <a href="get-started.html" class="btn btn-gold">📱 Add Your Observations →</a>
+        <a href="https://www.inaturalist.org/projects/palma-sola-botanical-park" target="_blank" rel="noopener" class="btn btn-outline">See the Full Project →</a>
+      </div>
+    </div>
+
+    <div class="grid-2" style="gap:2.5rem;align-items:start;margin-top:2rem">
+      <div>
+        <h3 style="font-size:1.2rem;color:var(--green-deep);margin-bottom:1rem">Why it matters</h3>
+        <ul style="padding-left:1.2rem;color:var(--text-soft);font-size:.95rem;line-height:1.75;display:flex;flex-direction:column;gap:.75rem">
+          <li>Every observation is a permanent, timestamped, geolocated scientific record — yours forever</li>
+          <li>Bloom logs build a seasonal picture over years that no single scientist could create alone</li>
+          <li>Wildlife observations reveal which animals use which plants — connections nobody else is tracking</li>
+          <li>The data belongs to everyone. Researchers, educators, future visitors. You made that.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-size:1.2rem;color:var(--green-deep);margin-bottom:1rem">What to photograph right now</h3>
+        <ul style="padding-left:1.2rem;color:var(--text-soft);font-size:.95rem;line-height:1.75;display:flex;flex-direction:column;gap:.75rem">
+          <li>🌸 Anything in bloom — log it and it enters the permanent seasonal record</li>
+          <li>🦜 Any bird you can photograph — even blurry counts, seriously</li>
+          <li>🦎 Lizards, frogs, and snakes on or near the path</li>
+          <li>🦋 Butterflies on specific plants — the plant-insect connection is real science</li>
+          <li>🍄 Fungi — almost nothing documented yet. This gap is yours to fill.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GET INVOLVED -->
+<section class="bg-deep" style="text-align:center">
+  <div class="section-inner" style="max-width:640px;margin:0 auto">
+    <span class="label label-light">Let's Go</span>
+    <h2 class="section-title" style="color:var(--white);margin-bottom:1rem">Your phone is already the tool.</h2>
+    <p style="color:rgba(255,255,255,.72);font-size:1.05rem;line-height:1.75;margin-bottom:2rem">
+      Point it at something alive. That's it. The park gets richer, the record grows, and your name goes on it.
+      Come back next week and do it again.
+    </p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="get-started.html" class="btn btn-gold">📱 Get Started — It Takes 2 Minutes →</a>
+      <a href="volunteer.html" class="btn btn-outline">Volunteer →</a>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/site.js"></script>
+<script>
+injectShared({ inatBar: false, inatFooter: true });
+
+// Check for ?family= or ?search= URL parameter — pre-populate search
+const _urlParams = new URLSearchParams(window.location.search);
+const _familyParam = _urlParams.get('family');
+const _searchParam = _urlParams.get('search');
+const _wFamilyParam = _urlParams.get('wfamily');
+const _wSearchParam = _urlParams.get('wsearch');
+if (_familyParam || _searchParam) {
+  const searchEl = document.getElementById('plantSearch');
+  if (searchEl) {
+    searchEl.value = _familyParam || _searchParam;
+    const label = document.createElement('div');
+    label.style.cssText = 'font-size:1rem;color:var(--text-soft);margin-bottom:.5rem';
+    if (_familyParam) {
+      label.innerHTML = `Showing all <strong>${_familyParam}</strong> plants in the park &nbsp;<a href="nature.html" style="font-size:.9rem;color:var(--green-mid)">Clear →</a>`;
+    }
+    const ctr = document.getElementById('plantCount');
+    if (ctr && _familyParam) ctr.parentNode.insertBefore(label, ctr);
+    // Scroll to plant grid after a moment to let plants load
+    setTimeout(() => {
+      document.getElementById('plants')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 800);
+  }
+}
+
+loadPlants(); // fetches plants.json, renders all plants, then applies any URL filter
+// modal removed — plant cards link directly to detail pages
+
+// Announcements bar — cycling handled inside loadAnnouncements()
+loadAnnouncements('announcementsList');
+
+// Tab logic
+function showTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name)?.classList.add('active');
+  document.getElementById('panel-' + name)?.classList.add('active');
+
+  if (name === 'wildlife' && !window._wildlifeLoaded) {
+    window._wildlifeLoaded = true;
+    loadWildlife(); // fetches wildlife.json, renders grid + category buttons
+  }
+  if (name === 'recent' && !window._recentLoaded) {
+    window._recentLoaded = true;
+    loadRecentObs({ count:16 }).then(obs => {
+      window._recentObs = obs.filter(o => o.photos?.[0]?.url);
+      window._recentPage = 0;
+      renderRecentPage(0);
+    });
+  }
+}
+
+// ── Cycling 4-at-a-time recent observations ───────────────────
+const PER_PAGE = 4;
+
+function renderRecentPage(page) {
+  const obs   = window._recentObs || [];
+  const total = Math.ceil(obs.length / PER_PAGE);
+  const start = page * PER_PAGE;
+  const slice = obs.slice(start, start + PER_PAGE);
+  const grid  = document.getElementById('recentObsGrid');
+  const label = document.getElementById('obsPageLabel');
+  if (!grid) return;
+
+  // Fade out
+  grid.style.opacity = '0';
+  setTimeout(() => {
+    grid.innerHTML = slice.map(o => {
+      const url  = o.photos[0].url.replace('square', 'large');
+      const name = o.species_guess || o.taxon?.name || 'Unknown species';
+      const by   = o.user?.login || 'observer';
+      const raw  = o.created_at?.slice(0,10);
+      const dt   = raw ? new Date(raw + 'T12:00') : null;
+      const dateStr = dt ? 'Added ' + dt.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' }) : '';
+      return `<div style="border-radius:10px;overflow:hidden;background:var(--white);box-shadow:0 2px 12px rgba(0,0,0,.09)">
+        <div style="height:220px;background-image:url('${url}');background-size:cover;background-position:center"></div>
+        <div style="padding:1rem">
+          <div style="font-size:1.05rem;font-weight:700;color:var(--green-deep);line-height:1.3;margin-bottom:.3rem">${name}</div>
+          <div style="font-size:.95rem;color:var(--text-soft);margin-bottom:.25rem">📷 ${by}</div>
+          ${dateStr ? `<div style="font-size:.88rem;color:#aaa">${dateStr}</div>` : ''}
+          <div style="margin-top:.6rem;display:inline-block;background:var(--sand);border-radius:4px;padding:.2rem .6rem;font-size:.8rem;color:var(--text-soft);font-style:italic">Tentative ID</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    if (label) label.textContent = `${page + 1} of ${total}`;
+    const prev = document.getElementById('obsPrev');
+    const next = document.getElementById('obsNext');
+    if (prev) prev.style.opacity = page === 0 ? '.3' : '1';
+    if (next) next.style.opacity = page >= total - 1 ? '.3' : '1';
+
+    // Fade in
+    grid.style.opacity = '1';
+  }, 300);
+}
+
+function stepObs(dir) {
+  const obs   = window._recentObs || [];
+  const total = Math.ceil(obs.length / PER_PAGE);
+  const next  = Math.max(0, Math.min(total - 1, (window._recentPage || 0) + dir));
+  window._recentPage = next;
+  renderRecentPage(next);
+}
+
+// Wildlife URL params — pre-fill the wildlife search and open that tab.
+// loadWildlife() applies the filter automatically once wildlife.json arrives.
+if (_wFamilyParam || _wSearchParam) {
+  const wSearchEl = document.getElementById('wildSearch');
+  if (wSearchEl) {
+    wSearchEl.value = _wFamilyParam || _wSearchParam;
+    if (_wFamilyParam) {
+      const label = document.createElement('div');
+      label.style.cssText = 'font-size:1rem;color:var(--text-soft);margin-bottom:.5rem';
+      label.innerHTML = `Showing all <strong>${_wFamilyParam}</strong> wildlife in the park &nbsp;<a href="nature.html#wildlife" style="font-size:.9rem;color:var(--green-mid)">Clear →</a>`;
+      const ctr = document.getElementById('wildCount');
+      if (ctr) ctr.parentNode.insertBefore(label, ctr);
+    }
+  }
+  showTab('wildlife');
+  setTimeout(() => {
+    document.getElementById('wildlife')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 800);
+}
+
+if (window.location.hash === '#wildlife') showTab('wildlife');
+
+loadINat();
+</script>
+</body>
+</html>

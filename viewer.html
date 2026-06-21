@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document · Palma Sola Botanical Park</title>
+
+<!-- Shared styles (same path events.html uses) -->
+<link rel="stylesheet" href="css/site.css">
+
+<!-- PDF.js: renders the PDF as clean content, no browser thumbnails/toolbar -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+  /* Swap these for your site.css variables if the names differ */
+  .doc-banner{
+    background: var(--green, #173a1f);
+    color: #fff;
+    padding: 30px 24px;
+    text-align: center;
+    position: relative;
+  }
+  .doc-banner h1{ margin:0; font-size:2rem; line-height:1.2; color:#fff; }
+  .doc-banner .doc-sub{ margin-top:6px; font-size:1rem; color:#e7eee7; opacity:.9; }
+
+  .doc-back{
+    position:absolute; left:24px; top:50%; transform:translateY(-50%);
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(255,255,255,.12); color:#fff;
+    border:1px solid rgba(255,255,255,.35); border-radius:8px;
+    padding:8px 14px; font-size:1rem; cursor:pointer; text-decoration:none;
+  }
+  .doc-back:hover{ background:rgba(255,255,255,.22); }
+
+  .doc-open{
+    position:absolute; right:24px; top:50%; transform:translateY(-50%);
+    color:#e7eee7; font-size:.95rem; text-decoration:none; opacity:.85;
+  }
+  .doc-open:hover{ opacity:1; text-decoration:underline; }
+
+  .pdf-stage{ background: var(--cream, #f5f1e6); padding:32px 16px 64px; min-height:60vh; }
+  #pdfPages{ max-width:900px; margin:0 auto; }
+  .pdf-page{
+    margin:0 auto 24px; background:#fff; width:max-content; max-width:100%;
+    box-shadow:0 2px 14px rgba(0,0,0,.18);
+  }
+  .pdf-page canvas{ display:block; max-width:100%; height:auto; }
+  #pdfStatus{ text-align:center; font-size:1.05rem; color:#4a4a4a; padding:40px 16px; }
+
+  /* Embedded web document (Google Doc, etc.) — same white-sheet look as a PDF page */
+  .doc-frame{
+    display:block; width:100%; max-width:900px; height:82vh;
+    margin:0 auto; border:0; background:#fff;
+    box-shadow:0 2px 14px rgba(0,0,0,.18);
+  }
+
+  @media (max-width:640px){
+    .doc-banner h1{ font-size:1.4rem; }
+    .doc-back{ left:12px; padding:7px 10px; font-size:.95rem; }
+    .doc-open{ display:none; }
+  }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<!-- Green banner the PDF tucks in under -->
+<section class="doc-banner">
+  <a href="#" class="doc-back" id="backBtn">&larr; Back</a>
+  <h1 id="docTitle">Document</h1>
+  <div class="doc-sub">Palma Sola Botanical Park</div>
+  <a href="#" class="doc-open" id="openBtn" target="_blank" rel="noopener">Open / Download &darr;</a>
+</section>
+
+<!-- Clean rendered PDF -->
+<div class="pdf-stage">
+  <div id="pdfStatus">Loading document…</div>
+  <div id="pdfPages"></div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+
+(function(){
+  var params  = new URLSearchParams(location.search);
+  var rawUrl  = params.get('url') || '';
+  var title   = params.get('title') || 'Document';
+  var backUrl = params.get('back') || '';
+
+  // Resolve the PDF location. Accepts a full https:// URL, a site-relative
+  // path ("docs/Newsletters/x.pdf"), or a leading-slash path ("/docs/.../x.pdf").
+  // A leading slash would otherwise point at the domain root and drop the
+  // "/ReworkDemo/" project folder, so we strip it and resolve against this page.
+  function resolveUrl(u){
+    if (!u) return '';
+    if (/^(https?:|blob:|data:)/i.test(u)) return u;
+    return new URL(u.replace(/^\/+/, ''), document.baseURI).href;
+  }
+  var fileUrl = resolveUrl(rawUrl);
+
+  document.getElementById('docTitle').textContent = title;
+  document.title = title + ' · Palma Sola Botanical Park';
+
+  document.getElementById('backBtn').addEventListener('click', function(e){
+    e.preventDefault();
+    if (backUrl)                { location.href = backUrl; }
+    else if (history.length > 1){ history.back(); }
+    else                        { location.href = 'events.html'; }
+  });
+
+  var openBtn = document.getElementById('openBtn');
+  if (fileUrl) openBtn.href = fileUrl;
+
+  var pagesEl  = document.getElementById('pdfPages');
+  var statusEl = document.getElementById('pdfStatus');
+
+  if (!fileUrl){ statusEl.textContent = 'No document specified.'; return; }
+
+  // ── Route by type ──────────────────────────────────────────────
+  // PDFs go through PDF.js (below). Anything else (a published Google
+  // Doc, or another embeddable web page) renders in an iframe so it
+  // still lives inside the site, under the banner, with the Back button.
+  var isPdf = /\.pdf($|\?)/i.test(fileUrl);
+
+  if (!isPdf){
+    var embedUrl = fileUrl;
+    // A published Google Doc/Sheet/Slide needs ?embedded=true to drop
+    // Google's own header/footer so only the document body shows.
+    if (/docs\.google\.com/i.test(fileUrl) && !/[?&]embedded=true/i.test(fileUrl)){
+      embedUrl += (fileUrl.indexOf('?') === -1 ? '?' : '&') + 'embedded=true';
+    }
+    // "Open / Download" link opens the clean (non-embedded) version in a new tab.
+    openBtn.href = fileUrl;
+
+    statusEl.style.display = 'none';
+    var frame = document.createElement('iframe');
+    frame.className = 'doc-frame';
+    frame.src = embedUrl;
+    frame.title = title;
+    frame.setAttribute('loading', 'lazy');
+    pagesEl.appendChild(frame);
+    return;
+  }
+
+  // ── PDF path (unchanged) ───────────────────────────────────────
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  pdfjsLib.getDocument(fileUrl).promise.then(function(pdf){
+    statusEl.style.display = 'none';
+    var dpr  = window.devicePixelRatio || 1;
+    var colW = pagesEl.clientWidth;
+
+    function renderPage(n){
+      return pdf.getPage(n).then(function(page){
+        var base = page.getViewport({ scale: 1 });
+        var cssScale = Math.min(colW / base.width, 1.6);
+        var viewport = page.getViewport({ scale: cssScale * dpr });
+
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        canvas.width  = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
+        canvas.style.width  = Math.floor(viewport.width / dpr) + 'px';
+        canvas.style.height = Math.floor(viewport.height / dpr) + 'px';
+
+        var wrap = document.createElement('div');
+        wrap.className = 'pdf-page';
+        wrap.appendChild(canvas);
+        pagesEl.appendChild(wrap);
+
+        return page.render({ canvasContext: ctx, viewport: viewport }).promise;
+      });
+    }
+
+    var chain = Promise.resolve();
+    for (var n = 1; n <= pdf.numPages; n++){
+      (function(p){ chain = chain.then(function(){ return renderPage(p); }); })(n);
+    }
+  }).catch(function(err){
+    statusEl.textContent = 'Sorry — this document could not be loaded.';
+    console.error(err);
+  });
+})();
+</script>
+</body>
+</html>

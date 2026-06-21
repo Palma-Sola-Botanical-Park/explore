@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feed Health · Palma Sola Botanical Park</title>
+<style>
+  :root{
+    --ink:#1a3a1f; --ink-soft:#3f5a44; --muted:#7a8a7d;
+    --surface:#faf8f3; --panel:#ffffff; --line:#e4ddcd; --sand:#ede8df;
+    --gold:#c5922a;
+    --ok:#3a8f4f;   --ok-bg:#e8f5ea;  --ok-line:#bfe0c6;
+    --warn:#b07d16; --warn-bg:#f8efd6; --warn-line:#ecd79a;
+    --bad:#b23a2e;  --bad-bg:#f7e4e0;  --bad-line:#e6bdb4;
+    --mono:"SF Mono",ui-monospace,"Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--surface); color:var(--ink); font-family:var(--sans);
+    font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  .wrap{max-width:1180px; margin:0 auto; padding:22px 26px 60px}
+
+  /* ── masthead: carries the fleet state as a wash ── */
+  .mast{
+    border:1px solid var(--line); border-radius:14px; overflow:hidden;
+    background:var(--panel); margin-bottom:18px;
+  }
+  .mast-top{display:flex; align-items:center; gap:16px; padding:18px 22px}
+  .mast-state{
+    flex:0 0 auto; display:flex; align-items:center; gap:11px;
+    font-weight:700; font-size:19px; letter-spacing:-.01em;
+  }
+  .mast-state .big-dot{width:13px;height:13px;border-radius:50%}
+  .mast-line{font-size:19px; font-weight:700; letter-spacing:-.01em}
+  .mast-sub{color:var(--muted); font-size:12.5px; margin-left:auto; text-align:right;
+            font-family:var(--mono)}
+  .mast.is-ok   {border-color:var(--ok-line)}
+  .mast.is-warn {border-color:var(--warn-line)}
+  .mast.is-bad  {border-color:var(--bad-line)}
+  .mast.is-ok   .mast-top{background:linear-gradient(0deg,#fff,var(--ok-bg))}
+  .mast.is-warn .mast-top{background:linear-gradient(0deg,#fff,var(--warn-bg))}
+  .mast.is-bad  .mast-top{background:linear-gradient(0deg,#fff,var(--bad-bg))}
+  .is-ok   .big-dot{background:var(--ok)}
+  .is-warn .big-dot{background:var(--warn)}
+  .is-bad  .big-dot{background:var(--bad); animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @media (prefers-reduced-motion:reduce){.big-dot{animation:none !important}}
+
+  /* rollup chips */
+  .rollup{display:flex; flex-wrap:wrap; gap:0; border-top:1px solid var(--line)}
+  .chip{flex:1 1 0; min-width:120px; padding:13px 18px; border-right:1px solid var(--line)}
+  .chip:last-child{border-right:0}
+  .chip .n{font-family:var(--mono); font-size:22px; font-weight:600; letter-spacing:-.02em}
+  .chip .k{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-top:2px}
+  .chip .n.ok{color:var(--ok)} .chip .n.warn{color:var(--warn)} .chip .n.bad{color:var(--bad)}
+
+  /* ── two-column body ── */
+  .cols{display:grid; grid-template-columns:248px 1fr; gap:18px; align-items:start}
+  @media (max-width:780px){.cols{grid-template-columns:1fr}}
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:12px}
+  .panel h2{
+    margin:0; padding:12px 16px; font-size:11px; text-transform:uppercase;
+    letter-spacing:.08em; color:var(--muted); border-bottom:1px solid var(--line); font-weight:700;
+  }
+
+  /* left rail: pipeline pulse */
+  .pulse-row{display:flex; justify-content:space-between; align-items:baseline;
+             padding:9px 16px; border-bottom:1px solid var(--sand)}
+  .pulse-row:last-child{border-bottom:0}
+  .pulse-row .k{color:var(--muted); font-size:12.5px}
+  .pulse-row .v{font-family:var(--mono); font-size:13px; font-weight:600}
+  .pulse-row .v.bad{color:var(--bad)} .pulse-row .v.warn{color:var(--warn)}
+
+  /* recent syncs strip */
+  .syncs{padding:10px 16px 14px}
+  .sync{display:flex; gap:9px; align-items:flex-start; padding:5px 0; font-size:12px}
+  .sync .dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex:0 0 auto}
+  .sync .when{font-family:var(--mono); color:var(--muted); font-size:11px}
+  .sync .what{color:var(--ink-soft)}
+
+  /* feed table */
+  .ftable{width:100%; border-collapse:collapse}
+  .ftable thead th{
+    font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+    text-align:left; font-weight:700; padding:9px 14px; border-bottom:1px solid var(--line);
+  }
+  .ftable thead th.r{text-align:right}
+  .ftable tbody td{padding:12px 14px; border-bottom:1px solid var(--sand); vertical-align:middle}
+  .ftable tbody tr:last-child td{border-bottom:0}
+  .ftable tbody tr:hover{background:#fbfaf6}
+  .feed-name{font-weight:650; letter-spacing:-.01em}
+  .feed-human{font-size:11.5px; color:var(--muted); margin-top:1px; max-width:30ch}
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:3px 9px 3px 7px;
+        border-radius:999px; font-size:11.5px; font-weight:650; white-space:nowrap}
+  .pill .d{width:8px;height:8px;border-radius:50%}
+  .pill.ok{background:var(--ok-bg); color:#1f6b34} .pill.ok .d{background:var(--ok)}
+  .pill.warn{background:var(--warn-bg); color:#8a6210} .pill.warn .d{background:var(--warn)}
+  .pill.bad{background:var(--bad-bg); color:#8f2c22} .pill.bad .d{background:var(--bad)}
+  td.num{font-family:var(--mono); text-align:right; font-variant-numeric:tabular-nums}
+  .edits{font-size:12.5px}
+  .edits .none{color:var(--muted)}
+  .edits .add{color:var(--ok)} .edits .rem{color:var(--bad)} .edits .chg{color:var(--ink-soft)}
+  .when{font-family:var(--mono); font-size:12px; color:var(--ink-soft); white-space:nowrap}
+  .spark{display:block}
+  .links{white-space:nowrap; text-align:right}
+  .links a{display:inline-block; font-size:11.5px; color:var(--ink-soft);
+           text-decoration:none; padding:3px 8px; border:1px solid var(--line);
+           border-radius:7px; margin-left:6px}
+  .links a:hover{border-color:var(--gold); color:var(--gold)}
+  .note{font-size:11.5px; color:var(--muted); padding:0 14px 12px}
+  .note.bad{color:var(--bad)} .note.warn{color:#8a6210}
+
+  .empty{padding:48px 24px; text-align:center; color:var(--muted)}
+  .empty b{color:var(--ink); display:block; font-size:16px; margin-bottom:6px}
+  .foot{margin-top:18px; color:var(--muted); font-size:11.5px; font-family:var(--mono)}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="empty"><b>Loading feed health…</b>reading the published JSON</div>
+</div>
+
+<script>
+const FILES = {
+  health:  "data/published/_health.json",
+  history: "data/published/_history.json",
+  runlog:  "data/published/_runlog.json",
+};
+
+const fmtInt = n => (n==null ? "—" : Number(n).toLocaleString());
+
+function relTime(iso){
+  if(!iso) return "—";
+  const t = new Date(iso); if(isNaN(t)) return "—";
+  const s = Math.floor((Date.now() - t)/1000);
+  if(s < 45) return "just now";
+  if(s < 3600) return Math.floor(s/60)+"m ago";
+  if(s < 86400) return Math.floor(s/3600)+"h ago";
+  const d = Math.floor(s/86400);
+  if(d === 1) return "yesterday";
+  if(d < 7) return d+"d ago";
+  return t.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+}
+
+function editsHTML(f){
+  if(f.first_run) return '<span class="none">initialized</span>';
+  const c = f.changes||{};
+  const bits=[];
+  if(c.added)   bits.push(`<span class="add">${c.added} added</span>`);
+  if(c.changed) bits.push(`<span class="chg">${c.changed} edited</span>`);
+  if(c.removed) bits.push(`<span class="rem">${c.removed} removed</span>`);
+  return bits.length ? bits.join(" · ") : '<span class="none">no change</span>';
+}
+
+function sparkline(points, status){
+  const rows = (points||[]).map(p=>p.rows).filter(n=>typeof n==="number");
+  const stroke = status==="red"?"var(--bad)":status==="amber"?"var(--warn)":"var(--ok)";
+  const W=86,H=26,pad=3;
+  if(rows.length < 2){
+    return `<svg class="spark" width="${W}" height="${H}"><circle cx="${W/2}" cy="${H/2}" r="3" fill="${stroke}" opacity=".7"/></svg>`;
+  }
+  const min=Math.min(...rows), max=Math.max(...rows), span=(max-min)||1;
+  const step=(W-pad*2)/(rows.length-1);
+  const pts=rows.map((v,i)=>{
+    const x=pad+i*step, y=H-pad-((v-min)/span)*(H-pad*2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  const lastX=pad+(rows.length-1)*step, lastY=H-pad-((rows[rows.length-1]-min)/span)*(H-pad*2);
+  return `<svg class="spark" width="${W}" height="${H}" aria-hidden="true">
+    <polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="1.6"
+      stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>
+    <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="2.4" fill="${stroke}"/>
+  </svg>`;
+}
+
+const STATE = {green:"ok", amber:"warn", red:"bad"};
+const OVERALL = {ok:"ok", warn:"warn", blocked:"bad"};
+
+function render(health, history, runlog){
+  const feeds = health.feeds || [];
+  const series = (history && history.series) || {};
+  const ov = OVERALL[health.overall] || "ok";
+
+  const n = {green:0, amber:0, red:0};
+  let liveRows=0, quarantined=0, warnings=0, lastEdit=null;
+  feeds.forEach(f=>{
+    n[f.status] = (n[f.status]||0)+1;
+    liveRows += (f.rows||0);
+    quarantined += (f.open && f.open.quarantined) || 0;
+    warnings += (f.open && f.open.warnings) || 0;
+    if(f.last_changed_at && (!lastEdit || f.last_changed_at > lastEdit)) lastEdit = f.last_changed_at;
+  });
+
+  const stateWord = ov==="ok" ? "All feeds healthy"
+                  : ov==="warn" ? "Feeds need a look"
+                  : "A feed is blocked";
+
+  // masthead + rollup
+  let html = `
+    <div class="mast is-${ov}">
+      <div class="mast-top">
+        <div class="mast-state"><span class="big-dot"></span><span class="mast-line">${stateWord}</span></div>
+        <div class="mast-sub">last sync ${relTime(health.generated_at)}<br>${new Date(health.generated_at).toLocaleString()}</div>
+      </div>
+      <div class="rollup">
+        <div class="chip"><div class="n ok">${n.green}</div><div class="k">Green</div></div>
+        <div class="chip"><div class="n warn">${n.amber}</div><div class="k">Amber</div></div>
+        <div class="chip"><div class="n bad">${n.red}</div><div class="k">Blocked</div></div>
+        <div class="chip"><div class="n">${fmtInt(liveRows)}</div><div class="k">Live rows</div></div>
+        <div class="chip"><div class="n ${quarantined?'warn':''}">${quarantined}</div><div class="k">Quarantined</div></div>
+        <div class="chip"><div class="n ${warnings?'warn':''}">${warnings}</div><div class="k">Warnings</div></div>
+      </div>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="panel" style="margin-bottom:18px">
+          <h2>Pipeline pulse</h2>
+          <div class="pulse-row"><span class="k">Last sync</span><span class="v">${relTime(health.generated_at)}</span></div>
+          <div class="pulse-row"><span class="k">Last edit</span><span class="v">${relTime(lastEdit)}</span></div>
+          <div class="pulse-row"><span class="k">Feeds</span><span class="v">${feeds.length}</span></div>
+          <div class="pulse-row"><span class="k">Total live rows</span><span class="v">${fmtInt(liveRows)}</span></div>
+          <div class="pulse-row"><span class="k">Quarantined</span><span class="v ${quarantined?'warn':''}">${quarantined}</span></div>
+        </div>
+        ${runlogHTML(runlog)}
+      </div>
+      <div class="panel">
+        <h2>Feeds</h2>
+        <table class="ftable">
+          <thead><tr>
+            <th>Feed</th><th>Status</th><th class="r">Rows</th>
+            <th>Last change</th><th>This sync</th><th>Activity</th><th></th>
+          </tr></thead>
+          <tbody>${feeds.map(f=>feedRow(f, series[f.tab])).join("")}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="foot">Bookmark-only ops board · reads validated JSON, never the live sheet · generated ${health.generated_at}</div>
+  `;
+  return html;
+}
+
+function feedRow(f, points){
+  const st = STATE[f.status] || "ok";
+  const human = (f.schema && f.schema.human) || "";
+  const sheet = f.links && f.links.sheet;
+  const detail = `feed.html?tab=${encodeURIComponent(f.tab)}`;
+  const note = (f.messages && f.messages.length && f.status!=="green")
+      ? `<div class="note ${st}">${f.messages.join(" · ")}</div>` : "";
+  const statusWord = f.status==="green"?"green":f.status==="amber"?"amber":"blocked";
+  return `
+    <tr>
+      <td><div class="feed-name">${f.tab}</div><div class="feed-human">${human}</div>${note}</td>
+      <td><span class="pill ${st}"><span class="d"></span>${statusWord}</span></td>
+      <td class="num">${fmtInt(f.rows)}</td>
+      <td><span class="when">${relTime(f.last_changed_at)}</span></td>
+      <td><div class="edits">${editsHTML(f)}</div></td>
+      <td>${sparkline(points, f.status)}</td>
+      <td class="links">
+        ${sheet?`<a href="${sheet}" target="_blank" rel="noopener" title="Open Bev's sheet tab">Sheet</a>`:""}
+        <a href="${detail}" title="Per-rule detail">Detail</a>
+      </td>
+    </tr>`;
+}
+
+function runlogHTML(runlog){
+  const runs = (runlog && runlog.runs) || [];
+  if(!runs.length) return "";
+  const dot = {ok:"var(--ok)", warn:"var(--warn)", blocked:"var(--bad)"};
+  const items = runs.slice(0,8).map(r=>`
+    <div class="sync">
+      <span class="dot" style="background:${dot[r.overall]||'var(--muted)'}"></span>
+      <div><div class="when">${relTime(r.at)}</div><div class="what">${r.summary||"—"}</div></div>
+    </div>`).join("");
+  return `<div class="panel"><h2>Recent syncs</h2><div class="syncs">${items}</div></div>`;
+}
+
+async function load(name){
+  const r = await fetch(FILES[name], {cache:"no-store"});
+  if(!r.ok) throw new Error(`${name} ${r.status}`);
+  return r.json();
+}
+
+(async function(){
+  const app = document.getElementById("app");
+  try{
+    const health = await load("health");
+    let history=null, runlog=null;
+    try{ history = await load("history"); }catch(e){}
+    try{ runlog  = await load("runlog");  }catch(e){}
+    app.innerHTML = render(health, history, runlog);
+  }catch(err){
+    const isFile = (typeof location!=="undefined" && location.protocol==="file:");
+    const why = isFile
+      ? `You opened this as a local file. Browsers block a <code>file://</code> page from reading the JSON next to it — that's a browser rule, not a problem with this page. View it over the server instead: push to the repo and open the GitHub&nbsp;Pages URL.`
+      : `Run the sync, or confirm <code>.nojekyll</code> exists at the repo root so Pages serves the <code>_</code>-prefixed files.`;
+    app.innerHTML = `<div class="mast is-bad"><div class="mast-top">
+      <div class="mast-state"><span class="big-dot"></span><span class="mast-line">No health data yet</span></div></div></div>
+      <div class="empty"><b>Couldn't read _health.json (${err.message})</b>${why}</div>`;
+  }
+})();
+</script>
+</body>
+</html>

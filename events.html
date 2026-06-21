@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Events &amp; Classes · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="css/site.css">
+<style>
+  /* Events layout: single column on phones, main + sidebar on wider screens. */
+  .events-layout { display: grid; grid-template-columns: 1fr; gap: 2.25rem; align-items: start; }
+  @media (min-width: 880px) {
+    .events-layout { grid-template-columns: 1fr 360px; gap: 3rem; }
+  }
+  .agenda-list { display: flex; flex-direction: column; }
+
+  /* Category filter */
+  .event-filters { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 1.25rem; }
+  .ev-filter-btn {
+    border: 1px solid rgba(45,106,53,.3); background: #fff; color: var(--green-deep, #1e3a24);
+    font: inherit; font-size: .82rem; font-weight: 600; padding: .35rem .8rem;
+    border-radius: 999px; cursor: pointer; transition: background .15s, color .15s, border-color .15s;
+  }
+  .ev-filter-btn:hover { border-color: var(--green-mid, #2d6a35); }
+  .ev-filter-btn.active { background: var(--green-mid, #2d6a35); color: #fff; border-color: var(--green-mid, #2d6a35); }
+
+  /* Weekly schedule rows */
+  .sched-list { display: flex; flex-direction: column; gap: .6rem; }
+  .sched-row {
+    background: #fff; border-left: 3px solid var(--green-mid, #2d6a35);
+    border-radius: 8px; padding: .7rem .9rem; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  }
+  .sched-day { font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--green-mid, #2d6a35); }
+  .sched-day span { color: #888; margin-left: .4rem; }
+  .sched-body { font-size: .92rem; margin-top: .15rem; line-height: 1.4; }
+  .sched-cost { color: #7a5a12; }
+  .sched-link, .series-link { color: var(--green-mid, #2d6a35); font-weight: 600; font-size: .85rem; }
+
+  /* Series index cards */
+  .series-list { display: flex; flex-direction: column; gap: .8rem; }
+  .series-card {
+    background: #fff; border-top: 3px solid var(--gold, #c79a3a); border-radius: 10px;
+    padding: 1rem 1.1rem; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .series-card h4 { margin: 0 0 .4rem; font-size: 1.02rem; color: var(--green-deep, #1e3a24); }
+  .series-card p { font-size: .88rem; color: var(--text-soft, #5a5a4f); line-height: 1.55; margin: .5rem 0 .4rem; }
+  .series-actions { margin-top: .3rem; }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<!-- ANNOUNCEMENTS BAR (from sheet, web/both only) -->
+<div id="announcements-bar" style="display:none">
+  <div class="container" style="max-width:1160px;margin:0 auto" id="announcementsList"></div>
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-bg" style="background-image:url('photos/PSBP-00029-Alligator-Flag.jpg')"></div>
+  <div class="page-hero-content" style="text-align:center;margin:0 auto">
+    <div class="label label-light">What's On</div>
+    <h1>Events &amp; Classes</h1>
+    <p>Learning events, community gatherings, weddings, art shows, and regular classes. Always check before a weekend — we sometimes close for private events.</p>
+  </div>
+</div>
+
+<section class="bg-cream">
+  <div class="section-inner">
+    <div class="events-layout">
+
+      <!-- MAIN — toggle between the 2-week agenda and the full calendar -->
+      <div>
+        <div class="ev-viewbar">
+          <div>
+            <span class="label">What's On</span>
+            <h2 class="section-title" id="viewTitle" style="margin:0">The next two weeks</h2>
+          </div>
+          <div class="ev-viewtoggle">
+            <button class="ev-vbtn active" data-view="weeks">Next 2 weeks</button>
+            <button class="ev-vbtn" data-view="calendar">Full calendar</button>
+          </div>
+        </div>
+
+        <!-- 2-WEEK VIEW: rich cards + category filter -->
+        <div id="view-weeks">
+          <div id="eventFilters" class="event-filters"></div>
+          <div id="agenda" class="agenda-list">
+            <p class="text-soft">Loading events…</p>
+          </div>
+        </div>
+
+        <!-- FULL CALENDAR: grouped scrolling list (all screen sizes) -->
+        <div id="view-calendar" style="display:none">
+          <div id="calFilters" class="event-filters"></div>
+          <div id="monthList" class="month-list"></div>
+        </div>
+      </div>
+
+      <!-- RAIL — save the date, weekly rhythm, series index -->
+      <div>
+        <div id="saveDateWrap" style="display:none;margin-bottom:1.9rem">
+          <span class="label">Save the Date</span>
+          <div id="saveDate" class="std-list" style="margin-top:.5rem"></div>
+        </div>
+
+        <span class="label">Every Week</span>
+        <h2 class="section-title" style="font-size:1.3rem;margin-bottom:.9rem">Weekly schedule</h2>
+        <div id="weeklySchedule" class="sched-list">
+          <p class="text-soft" style="font-size:.9rem">Loading classes…</p>
+        </div>
+
+        <span class="label" style="margin-top:1.9rem;display:inline-block">Series &amp; Programs</span>
+        <h2 class="section-title" style="font-size:1.3rem;margin-bottom:.9rem">Ongoing series</h2>
+        <div id="seriesIndex" class="series-list"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="bg-white" style="padding:3rem 1.5rem">
+  <div class="section-inner" style="max-width:680px;margin:0 auto;text-align:center">
+    <span class="label">See a 🔒 "Park closed" day above?</span>
+    <h2 class="section-title" style="margin-bottom:.75rem">That could be your day.</h2>
+    <p style="color:var(--text-soft);line-height:1.75;margin-bottom:1.5rem">
+      We're a free park, open to the public almost every day of the year — so when you spot a "Park closed" note,
+      that's a private event renting the grounds, and that rental quietly helps keep us free for everyone else.
+      Here's the fun part: it could be <em>your</em> event. A wedding, a family reunion, your organization's
+      fundraiser — ten acres of subtropical garden, exclusively yours for a day. Take a look at what we offer,
+      and spread the word.
+    </p>
+    <a href="venue.html" class="btn btn-gold">See the park as a venue →</a>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+
+// Load announcements
+loadAnnouncements('announcementsList').then(() => {
+  const bar = document.getElementById('announcements-bar');
+  const list = document.getElementById('announcementsList');
+  if (list && list.children.length > 0) bar.style.display = 'block';
+});
+
+loadEventsPage({
+  agenda:       'agenda',
+  filters:      'eventFilters',
+  calFilters:   'calFilters',
+  monthList:    'monthList',
+  saveDate:     'saveDate',
+  saveDateWrap: 'saveDateWrap',
+  viewTitle:    'viewTitle',
+  schedule:     'weeklySchedule',
+  series:       'seriesIndex'
+});
+</script>
+</body>
+</html>

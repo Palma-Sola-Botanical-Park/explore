@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Become a Member · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="css/site.css">
+<style>
+/* ── Members-page specific ── */
+.member-hero {
+  background: var(--green-deep);
+  padding: 3.5rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.member-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url('photos/PSBP-00008-Beach-Sunflower.jpg') center/cover no-repeat;
+  opacity: .35;
+}
+.member-hero > * { position: relative; z-index: 1; }
+.member-hero h1 {
+  color: var(--white);
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: .7rem;
+}
+.member-hero p {
+  color: rgba(255,255,255,.82);
+  font-size: 1.12rem;
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* ── Tier cards ── */
+.tier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.4rem;
+  margin-top: 2rem;
+}
+.tier-grid.donor-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+.tier-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2.1rem 1.7rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.tier-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,.13); }
+.tier-card.featured {
+  border: 2px solid var(--gold);
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+}
+.tier-card.donor { background: linear-gradient(170deg, #fffdf6 0%, var(--white) 60%); }
+
+.tier-badge {
+  align-self: flex-start;
+  background: var(--gold);
+  color: #3a2a00;
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: .32rem .8rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+.tier-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--green-deep);
+  line-height: 1.1;
+}
+.tier-sub {
+  font-size: 1rem;
+  color: var(--text-soft);
+  margin: .25rem 0 1.2rem;
+}
+.tier-price {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.7rem;
+  color: var(--green-deep);
+  line-height: 1;
+}
+.tier-per {
+  display: block;
+  font-size: 1rem;
+  color: var(--text-soft);
+  margin: .4rem 0 1.4rem;
+}
+.tier-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+  flex: 1;
+}
+.tier-benefits li {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: #34372c;
+  padding-left: 1.7rem;
+  position: relative;
+}
+.tier-benefits li::before {
+  content: '🌿';
+  position: absolute;
+  left: 0; top: .05rem;
+  font-size: .92rem;
+}
+.tier-join {
+  display: inline-block;
+  text-align: center;
+  background: var(--green-deep);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.06rem;
+  padding: .9rem 1rem;
+  border-radius: 9px;
+  text-decoration: none;
+  transition: background .2s ease;
+}
+.tier-join:hover { background: var(--green-mid); }
+.tier-card.featured .tier-join { background: var(--gold); color: #3a2a00; }
+.tier-card.featured .tier-join:hover { background: var(--gold-light); }
+
+/* ── Perk / gift panels ── */
+.perk-panel {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 2rem;
+  border-left: 5px solid var(--green-light);
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+.perk-panel h3 { font-size: 1.3rem; color: var(--green-deep); margin-bottom: .7rem; }
+.perk-panel p { font-size: 1.02rem; color: var(--text-soft); line-height: 1.7; }
+.perk-panel a { color: var(--green-mid); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+<div id="announcements-bar" style="display:none">
+  <div class="container" style="max-width:1160px;margin:0 auto" id="announcementsList"></div>
+</div>
+
+<!-- HERO -->
+<div class="member-hero">
+  <div class="label label-light">Support the Park</div>
+  <h1>Become a Member</h1>
+  <p>The park is free to everyone, every day — and it stays that way because of members like you.
+     We take no government funding, so an annual membership directly keeps the gates open and the gardens growing.</p>
+</div>
+
+<!-- WHY MEMBERSHIP -->
+<section class="bg-cream">
+  <div class="section-inner" style="max-width:880px;margin:0 auto;text-align:center">
+    <span class="label">Why Join</span>
+    <h2 class="section-title" style="margin-bottom:1rem">Your membership is the park's foundation</h2>
+    <p style="font-size:1.08rem;color:var(--text-soft);line-height:1.8">
+      As a 501(c)(3) nonprofit receiving no federal, state, or local funding, we rely on members to sustain and
+      enhance these ten acres. Every level is tax-deductible under current IRS code — and every level now includes a
+      <strong style="color:var(--green-deep)">Reciprocal Admissions Program</strong> card, opening the gates to
+      <strong style="color:var(--green-deep)">380+ botanical gardens nationwide</strong>.
+    </p>
+  </div>
+</section>
+
+<!-- MEMBERSHIP LEVELS -->
+<section class="bg-white">
+  <div class="section-inner">
+    <span class="label">Membership Levels</span>
+    <h2 class="section-title">Individual &amp; Family</h2>
+
+    <div class="tier-grid">
+      <!-- ACORN -->
+      <div class="tier-card">
+        <div class="tier-name">Acorn</div>
+        <div class="tier-sub">Single Membership</div>
+        <div class="tier-price">$50</div>
+        <span class="tier-per">per year</span>
+        <ul class="tier-benefits">
+          <li>1 Reciprocal Admissions membership card</li>
+          <li>20% off at our Gift Shop</li>
+          <li>20% off at the Hidden Garden Nursery</li>
+          <li>1 admission to Members-Only Events</li>
+        </ul>
+        <a class="tier-join" href="https://palmasolabp.org/product/acorn-single-membership/" target="_blank" rel="noopener">Join as Acorn →</a>
+      </div>
+
+      <!-- SAPLING -->
+      <div class="tier-card">
+        <div class="tier-name">Sapling</div>
+        <div class="tier-sub">Dual Membership</div>
+        <div class="tier-price">$100</div>
+        <span class="tier-per">per year</span>
+        <ul class="tier-benefits">
+          <li>2 Reciprocal Admissions membership cards</li>
+          <li>20% off at our Gift Shop</li>
+          <li>20% off at the Hidden Garden Nursery</li>
+          <li>2 admissions to Members-Only Events</li>
+        </ul>
+        <a class="tier-join" href="https://palmasolabp.org/product/sapling-dual-membership/" target="_blank" rel="noopener">Join as Sapling →</a>
+      </div>
+
+      <!-- LIVE OAK — FAMILY -->
+      <div class="tier-card">
+        <div class="tier-name">Live Oak</div>
+        <div class="tier-sub">Family Membership</div>
+        <div class="tier-price">$150</div>
+        <span class="tier-per">per year</span>
+        <ul class="tier-benefits">
+          <li>4 Reciprocal Admissions membership cards</li>
+          <li>20% off at our Gift Shop</li>
+          <li>20% off at the Hidden Garden Nursery</li>
+          <li>4 admissions to Members-Only Events</li>
+        </ul>
+        <a class="tier-join" href="https://palmasolabp.org/product/live-oak-family-membership/" target="_blank" rel="noopener">Join as Live Oak →</a>
+      </div>
+
+      <!-- LIVE OAK — LARGE FAMILY (featured) -->
+      <div class="tier-card featured">
+        <div class="tier-badge">Most Popular</div>
+        <div class="tier-name">Live Oak</div>
+        <div class="tier-sub">Large Family Membership</div>
+        <div class="tier-price">$250</div>
+        <span class="tier-per">per year</span>
+        <ul class="tier-benefits">
+          <li>6 Reciprocal Admissions membership cards</li>
+          <li>20% off at our Gift Shop</li>
+          <li>20% off at the Hidden Garden Nursery</li>
+          <li>6 admissions to Members-Only Events</li>
+        </ul>
+        <a class="tier-join" href="https://palmasolabp.org/product/live-oak-large-family-membership/" target="_blank" rel="noopener">Join as Large Family →</a>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top:3.5rem">Donor &amp; Legacy</h2>
+    <p style="font-size:1.05rem;color:var(--text-soft);line-height:1.7;max-width:720px">
+      For supporters and businesses who want to make a lasting mark on the park, with recognition and venue benefits.
+    </p>
+
+    <div class="tier-grid donor-grid">
+      <!-- OAK HAMMOCK — DONOR -->
+      <div class="tier-card donor">
+        <div class="tier-name">Oak Hammock</div>
+        <div class="tier-sub">Donor</div>
+        <div class="tier-price">$1,000</div>
+        <span class="tier-per">per year</span>
+        <ul class="tier-benefits">
+          <li>10 Reciprocal Admissions membership cards</li>
+          <li>10% off Venue Rentals</li>
+          <li>Your name or business logo on our website, e-newsletter, Facebook, and marketing materials</li>
+          <li>10 admissions to Members-Only Events</li>
+        </ul>
+        <a class="tier-join" href="https://palmasolabp.org/product/oak-hammock-donor/" target="_blank" rel="noopener">Become a Donor →</a>
+      </div>
+
+      <!-- OAK HAMMOCK — LEGACY -->
+      <div class="tier-card donor">
+        <div class="tier-name">Oak Hammock</div>
+        <div class="tier-sub">Legacy</div>
+        <div class="tier-price">$10,000</div>
+        <span class="tier-per">per year</span>
+        <ul class="tier-benefits">
+          <li>Lifetime Reciprocal Admissions membership cards</li>
+          <li>10% off Venue Rentals</li>
+          <li>Your name or business logo on our website, e-newsletter, Facebook, and marketing materials</li>
+          <li>Unlimited admission to Members-Only Events</li>
+        </ul>
+        <a class="tier-join" href="https://palmasolabp.org/product/oak-hammock-legacy/" target="_blank" rel="noopener">Become a Legacy →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERKS + GIFT -->
+<section class="bg-cream">
+  <div class="section-inner">
+    <div class="grid-2" style="gap:2rem;align-items:stretch">
+      <div class="perk-panel">
+        <h3>🌎 380+ gardens, one card</h3>
+        <p>
+          Every annual membership now includes the Reciprocal Admissions Program — free or discounted entry to more than
+          380 botanical parks and gardens across the country. See the full list at the
+          <a href="https://ahsgardening.org/gardening-programs/rap/" target="_blank" rel="noopener">American Horticultural Society →</a>
+        </p>
+      </div>
+      <div class="perk-panel" style="border-left-color:var(--gold)">
+        <h3>🎁 Give the gift of membership</h3>
+        <p>
+          A membership makes a thoughtful gift for the garden lover in your life — a full year of the park, the
+          discounts, the events, and the reciprocal gardens. Choose any level above, or call us and we'll help you set it up.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DONATE -->
+<section class="bg-deep" id="donate" style="text-align:center">
+  <div class="section-inner" style="max-width:640px;margin:0 auto">
+    <span class="label label-light">Or Give Directly</span>
+    <h2 class="section-title" style="color:var(--white);margin-bottom:1rem">Prefer to make a donation?</h2>
+    <p style="color:rgba(255,255,255,.78);font-size:1.08rem;line-height:1.75;margin-bottom:2rem">
+      Not ready for a membership? Every gift, large or small, helps keep the park free for the whole community.
+      Donations are tax-deductible.
+    </p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="https://www.paypal.com/donate/?hosted_button_id=JS3RF9UEW5ZKL" target="_blank" rel="noopener" class="btn btn-gold">💚 Donate Today →</a>
+      <a href="contact.html" class="btn btn-outline">Questions? Contact Us →</a>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+loadAnnouncements('announcementsList');
+</script>
+</body>
+</html>

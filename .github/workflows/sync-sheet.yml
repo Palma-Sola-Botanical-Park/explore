@@ -1,0 +1,80 @@
+name: Sync sheet → JSON
+
+# Triggers: every ~10 min (best-effort — GitHub's scheduler can lag under load),
+# plus a manual "Run workflow" button (this is the force-now). No push trigger,
+# so the commit this job makes can't retrigger it (no loop).
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write          # needed to commit the refreshed JSON back to the repo
+
+concurrency:
+  group: sheet-sync        # never let two syncs overlap and race the commit
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      # Stage 1 — pull each tab to data/staging/*.json (faithful mirror).
+      # A fetch hiccup keeps last-good staging; don't abort the whole run.
+      - name: Fetch sheet tabs → staging
+        run: python3 data/scripts/fetch_sheets.py
+        continue-on-error: true
+
+      # Stage 2 — the gate. Exits non-zero if a feed is BLOCKED, but we let the
+      # job continue so the red board still gets committed; we fail at the end.
+      - name: Validate + promote (the gate)
+        id: gate
+        run: python3 data/scripts/validate_promote.py
+        continue-on-error: true
+
+      # Commit only when something actually changed (no-op runs leave files
+      # byte-identical → no diff → no commit → clean history). GitHub Pages
+      # redeploys automatically off this commit.
+      #
+      # Push is made race-tolerant: if the remote moved between checkout and push
+      # (a laptop commit, or another manual run landing first — the data/published
+      # "two writers" case, §11.6), re-sync and retry instead of failing the run.
+      # A push that still can't land is treated as STALENESS, not breakage — the
+      # next sync regenerates from the sheet and pushes fresh — so a transient
+      # race never reds the run or sends a false alarm. Only a BLOCKED FEED (the
+      # gate step below) reds the run and emails.
+      - name: Commit refreshed JSON (only if changed)
+        run: |
+          git config user.name  "psbp-sync-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/staging data/published
+          if git diff --cached --quiet; then
+            echo "No changes — nothing to commit."
+            exit 0
+          fi
+          git commit -m "data: sheet sync $(date -u +%Y-%m-%dT%H:%MZ)"
+          pushed=0
+          for attempt in 1 2 3; do
+            if git push; then
+              pushed=1; echo "pushed on attempt $attempt"; break
+            fi
+            echo "push rejected (remote moved) — re-syncing and retrying ($attempt/3)"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || git rebase --abort || true
+          done
+          if [ "$pushed" != "1" ]; then
+            echo "::warning::Sync built clean data but couldn't push this cycle (the remote kept moving). This is staleness, not breakage — the next sync will republish. No action needed."
+          fi
+
+      # If the gate blocked a feed, fail the run AFTER committing the red board —
+      # a red ✗ in the Actions tab plus GitHub's automatic failure email.
+      - name: Fail the run if a feed was blocked
+        if: steps.gate.outcome == 'failure'
+        run: |
+          echo "A feed was BLOCKED (see the run summary). The site is serving last-known-good."
+          exit 1

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Park News · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="css/site.css">
+<style>
+/* ── Hero ── */
+.news-hero-bg {
+  background-image: url('photos/PSBP-00052-Mexican-Flame-Vine.jpg');
+  background-size: cover; background-position: center;
+  opacity: .5;
+}
+/* Compact hero — keep the big headline, just tighten the spacing around it */
+.page-hero { min-height: 150px; }
+.page-hero-content { padding-top: 1.1rem; padding-bottom: 1.1rem; }
+.page-hero h1 { margin-bottom: .3rem; }
+.page-hero p  { margin-bottom: 0; }
+
+/* ── News zone: reader (left) + squares (right) ── */
+.news-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 2.5rem; align-items: start; }
+@media (max-width: 880px) { .news-layout { grid-template-columns: 1fr; gap: 1.75rem; } }
+
+.news-reader { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 3px 18px rgba(0,0,0,.09); }
+.news-reader-hero { position: relative; min-height: 165px; background: var(--green-deep); display: flex; align-items: flex-end; }
+.news-reader-hero .bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: .5; }
+.news-reader-hero .inner { position: relative; z-index: 1; padding: 1.85rem; }
+.news-reader-hero .date { color: #ffb02e; font-size: .92rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.news-reader-hero h2 { color: #fff; font-size: clamp(1.5rem, 3vw, 2rem); margin: .3rem 0 .15rem; }
+.news-reader-hero .subhead { color: rgba(255,255,255,.85); font-size: 1.02rem; line-height: 1.5; }
+.news-reader-body { padding: 1.85rem; }
+.news-reader-body p { color: var(--text); line-height: 1.8; font-size: 1.05rem; margin: 0 0 1.15rem; }
+.news-reader-body figure { margin: 1.6rem 0; }
+.news-reader-body figure img { width: 100%; border-radius: 12px; display: block; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+.news-reader-body figcaption { font-size: .88rem; color: var(--text-soft); font-style: italic; text-align: center; margin-top: .55rem; }
+.news-aside { background: var(--green-pale); border-left: 5px solid var(--gold); border-radius: 0 10px 10px 0; padding: 1.25rem 1.5rem; margin: 1.6rem 0; }
+.news-aside p { margin: 0 0 .6rem; font-size: 1.05rem; line-height: 1.75; color: var(--text); }
+.news-aside p:last-child { margin: 0; }
+
+/* Squares (right column) */
+.news-squares-head { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--green-mid); margin-bottom: .9rem; }
+.news-squares { display: flex; flex-direction: column; gap: .85rem; }
+.news-square {
+  text-align: left; width: 100%; font: inherit; cursor: pointer;
+  background: var(--white); border: 1px solid var(--border); border-left: 4px solid var(--gold);
+  border-radius: 10px; padding: 1rem 1.15rem;
+  transition: transform .12s, box-shadow .12s, background .12s, border-color .12s;
+}
+.news-square:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.1); }
+.news-square.active { border-left-color: var(--green-mid); background: var(--cream); box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+.news-square .sq-date { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green-mid); }
+.news-square h4 { font-size: 1.02rem; color: var(--green-deep); margin: .2rem 0 .25rem; }
+.news-square p { font-size: .9rem; color: var(--text-soft); line-height: 1.5; margin: 0; }
+.show-more { display: block; margin: 1.1rem auto 0; }
+
+/* ── Newsletter archive ── */
+.news-archive {
+  display: flex; gap: 1.25rem;
+  overflow-x: auto;
+  padding: .25rem .25rem 1.1rem;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+.news-archive::-webkit-scrollbar { height: 9px; }
+.news-archive::-webkit-scrollbar-track { background: var(--sand); border-radius: 5px; }
+.news-archive::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 5px; }
+.news-archive { scrollbar-color: var(--gold) var(--sand); scrollbar-width: thin; }
+.nl-card { flex: 0 0 280px; scroll-snap-align: start; background: var(--white); border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.07); border-left: 5px solid var(--gold); padding: 1.5rem 1.5rem 1.6rem; display: flex; flex-direction: column; }
+.nl-card .nl-date { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--green-mid); margin-bottom: .4rem; }
+.nl-card h3 { font-size: 1.2rem; margin: 0 0 .55rem; color: var(--green-deep); }
+.nl-card p { font-size: 1rem; color: var(--text-soft); line-height: 1.6; margin: 0 0 1.15rem; flex: 1; }
+.nl-card .btn { align-self: flex-start; }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="page-hero">
+  <div class="page-hero-bg news-hero-bg"></div>
+  <div class="page-hero-content" style="text-align:center;margin:0 auto">
+    <div class="label label-light">Park News</div>
+    <h1>What's happening at the park</h1>
+    <p>Stories, milestones, and happy little surprises from Palma Sola — with every past newsletter gathered at the bottom.</p>
+  </div>
+</div>
+
+<!-- NEWS ZONE -->
+<section class="bg-cream">
+  <div class="section-inner">
+    <div class="news-layout">
+      <!-- Left: reader pane -->
+      <div class="news-reader" id="newsReader">
+        <div class="news-reader-body"><p class="text-soft">Loading the latest…</p></div>
+      </div>
+
+      <!-- Right: squares -->
+      <div>
+        <div class="news-squares-head">More stories</div>
+        <div class="news-squares" id="newsSquares"></div>
+        <button class="btn btn-outline btn-sm show-more" id="newsMore" style="display:none">Show more news</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER ARCHIVE -->
+<section class="bg-white">
+  <div class="section-inner">
+    <span class="label">The Archive</span>
+    <h2 class="section-title" style="margin-bottom:.5rem">Past newsletters</h2>
+    <p class="section-sub" style="margin-bottom:2rem">Our monthly roundups, newest first — scroll sideways to browse them all. Each opens right here on the site.</p>
+
+    <div id="newsletterList" class="news-archive">
+      <p class="text-soft" style="padding:1rem">Loading newsletters…</p>
+    </div>
+    <button class="btn btn-outline btn-sm show-more" id="nlMore" style="display:none">Show more newsletters</button>
+
+    <p style="margin-top:1.75rem;font-size:.84rem;color:var(--text-soft);background:var(--sand);padding:1rem;border-radius:8px;line-height:1.65">
+      🌿 <strong>Have a park story to share?</strong> Spotted something blooming, snapped a great photo, or got news worth celebrating? Email <a href="mailto:info@palmasolabp.org">info@palmasolabp.org</a> — we love featuring our volunteers and visitors.
+    </p>
+  </div>
+</section>
+
+<!-- JOIN CTA -->
+<section class="bg-deep">
+  <div class="section-inner" style="max-width:680px;margin:0 auto;text-align:center">
+    <span class="label label-light">Want it in your inbox?</span>
+    <h2 class="section-title" style="color:var(--white);margin-bottom:1rem">Join the mailing list</h2>
+    <p style="color:rgba(255,255,255,.72);font-size:1.02rem;line-height:1.78;margin-bottom:2rem">
+      Get the newsletter delivered, plus first word on events, classes, and what's blooming.
+    </p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="contact.html" class="btn btn-gold">Get on the list →</a>
+      <a href="events.html" class="btn btn-outline">See what's coming up</a>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+
+/* ============================================================
+   NEWS — pulls from the News tab.
+   ⚠️ SET THIS to the News tab's gid (the number after #gid= in
+   the sheet URL when the News tab is active). It is NOT the
+   Newsletters gid. Until it points at a real News tab with
+   headline rows, the page shows a friendly "coming soon".
+   ============================================================ */
+const NEWS_GID = TAB.news;
+
+const readerEl  = document.getElementById('newsReader');
+const squaresEl = document.getElementById('newsSquares');
+const moreBtn   = document.getElementById('newsMore');
+const NEWS_STEP = 5;
+let newsItems = [], newsShown = 0, newsActive = 0;
+
+// Split a cell into paragraphs on "||" (avoids hard line breaks, which CSV can't carry)
+function paras(t){ return (t||'').split('||').map(s=>s.trim()).filter(Boolean).map(s=>`<p>${s}</p>`).join(''); }
+
+function newsCTA(n){
+  const { url, text } = PSBP.rowLink(n);
+  if (!url) return '';
+  const isDoc = PSBP.linkKind(url) === 'document';
+  const label = isDoc ? ('📄 ' + (text || 'Read the full story') + ' →')
+                      : ((text || 'Read more') + ' →');
+  return PSBP.linkTag(url, label, {
+    title: n.headline || 'Park News',
+    back: 'news.html',
+    className: isDoc ? 'btn btn-gold' : 'btn btn-green'
+  });
+}
+
+function fmtDate(raw, opts){ const d = raw ? new Date(raw+'T12:00') : null; return (d && !isNaN(d)) ? d.toLocaleDateString('en-US', opts) : (raw||''); }
+
+function articleHTML(n){
+  const dateLabel = fmtDate(n.date, { month:'long', day:'numeric', year:'numeric' });
+  const heroBg = n.hero_image ? `<div class="bg" style="background-image:url('${n.hero_image}')"></div>` : '';
+  let body = '';
+  if (n.intro)  body += paras(n.intro);
+  if (n.image1) body += `<figure><img src="${n.image1}" alt="" onerror="this.closest('figure').style.display='none'">${n.image1_caption?`<figcaption>${n.image1_caption}</figcaption>`:''}</figure>`;
+  if (n.aside)  body += `<div class="news-aside">${paras(n.aside)}</div>`;
+  if (n.body2)  body += paras(n.body2);
+  const cta = newsCTA(n);
+  if (!body && !cta) body = `<p class="text-soft">${n.blurb||''}</p>`;
+  return `<div class="news-reader-hero">${heroBg}<div class="inner">
+      ${dateLabel?`<div class="date">${dateLabel}</div>`:''}
+      <h2>${n.headline||'Park News'}</h2>
+      ${n.subhead?`<div class="subhead">${n.subhead}</div>`:''}
+    </div></div>
+    <div class="news-reader-body">${body}${cta}</div>`;
+}
+
+function selectNews(i){
+  newsActive = i;
+  readerEl.innerHTML = articleHTML(newsItems[i]);
+  squaresEl.querySelectorAll('.news-square').forEach(b => b.classList.toggle('active', +b.dataset.idx === i));
+  if (window.matchMedia('(max-width:880px)').matches) readerEl.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function renderSquares(){
+  squaresEl.innerHTML = newsItems.slice(0, newsShown).map((n, i) => {
+    const dateLabel = fmtDate(n.date, { month:'short', day:'numeric', year:'numeric' });
+    return `<button class="news-square ${i===newsActive?'active':''}" data-idx="${i}">
+      <div class="sq-date">${dateLabel}</div>
+      <h4>${n.headline||'Park News'}</h4>
+      ${n.blurb?`<p>${n.blurb}</p>`:''}
+    </button>`;
+  }).join('');
+  squaresEl.querySelectorAll('.news-square').forEach(b => b.addEventListener('click', () => selectNews(+b.dataset.idx)));
+  moreBtn.style.display = (newsShown < newsItems.length) ? 'block' : 'none';
+}
+
+function newsComingSoon(){
+  readerEl.innerHTML = `<div class="news-reader-hero"><div class="inner"><h2>News is coming soon</h2><div class="subhead">We're getting our news corner ready — check back shortly.</div></div></div>`;
+  document.querySelector('.news-squares-head').style.display = 'none';
+}
+
+async function loadNews(){
+  try {
+    const rows = await fetchTab(NEWS_GID);
+    newsItems = rows.filter(isWebVisible).filter(r => r.headline)
+                    .sort((a,b) => new Date(b.date) - new Date(a.date));
+    if (!newsItems.length) { newsComingSoon(); return; }
+    newsShown = Math.min(NEWS_STEP, newsItems.length);
+
+    // Deep-link: news.html?story=Horticulture+Mag opens that story
+    let startIdx = 0;
+    const storyParam = new URLSearchParams(location.search).get('story')
+                    || new URLSearchParams(location.search).get('Story');
+    if (storyParam) {
+      const q = storyParam.toLowerCase();
+      const match = newsItems.findIndex(n => (n.headline || '').toLowerCase().includes(q));
+      if (match >= 0) {
+        startIdx = match;
+        // Ensure the sidebar shows enough items to include the target
+        newsShown = Math.max(newsShown, match + 1);
+      }
+    }
+
+    selectNews(startIdx);
+    renderSquares();
+    moreBtn.addEventListener('click', () => { newsShown = Math.min(newsShown + NEWS_STEP, newsItems.length); renderSquares(); });
+  } catch (e) { newsComingSoon(); console.error(e); }
+}
+
+/* ============================================================
+   NEWSLETTERS — archive, 3 shown + "Show more"
+   ============================================================ */
+const nlEl = document.getElementById('newsletterList');
+const nlMore = document.getElementById('nlMore');
+const NL_STEP = 3;
+let nlItems = [], nlShown = 0;
+
+function nlCardHTML(n){
+  const dateLabel = fmtDate(n.date, { month:'long', year:'numeric' });
+  const nl = PSBP.rowLink(n);
+  const btn = nl.url ? PSBP.linkTag(nl.url, '📄 ' + (nl.text || 'Read Newsletter') + ' →', { title: n.title || 'Newsletter', back: 'news.html', className: 'btn btn-gold btn-sm' }) : '';
+  return `<div class="nl-card"><div class="nl-date">${dateLabel}</div><h3>${n.title||'Newsletter'}</h3><p>${n.description||''}</p>${btn}</div>`;
+}
+function renderNL(){
+  nlEl.innerHTML = nlItems.slice(0, nlShown).map(nlCardHTML).join('');
+  nlMore.style.display = (nlShown < nlItems.length) ? 'block' : 'none';
+}
+async function loadNewsletters(){
+  try {
+    const rows = await fetchTab(TAB.newsletters);
+    nlItems = rows.filter(isWebVisible).filter(r => r.title || PSBP.rowLink(r).url)
+                  .sort((a,b) => new Date(b.date) - new Date(a.date));
+    if (!nlItems.length) { nlEl.innerHTML = '<p class="text-soft" style="padding:1rem">Newsletters are on the way — check back soon.</p>'; return; }
+    nlShown = nlItems.length;
+    renderNL();
+  } catch (e) { nlEl.innerHTML = '<p class="text-soft" style="padding:1rem">Could not load newsletters right now.</p>'; console.error(e); }
+}
+
+loadNews();
+loadNewsletters();
+</script>
+</body>
+</html>

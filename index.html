@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palma Sola Botanical Park · Bradenton, FL</title>
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/photo-credits.css">
+<style>
+/* ── HOME-SPECIFIC ── */
+.hero {
+  min-height: calc(67vh - 64px);
+  display: grid; grid-template-columns: 1fr 1fr;
+  background: var(--green-deep);
+  overflow: hidden;
+}
+.hero-left {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 4rem 3rem 4rem 3.5rem;
+  position: relative; z-index: 1;
+}
+.hero-right { position: relative; overflow: hidden; }
+.hero-slideshow { position: absolute; inset: 0; }
+.hero-slide {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 1.6s ease;
+}
+.hero-slide.on { opacity: 1; }
+.slide-caption {
+  position: absolute; bottom: 1rem; right: 1rem;
+  background: rgba(0,0,0,.55); color: rgba(255,255,255,.88);
+  font-size: .72rem; line-height: 1.5;
+  padding: .35rem .8rem; border-radius: 5px;
+  backdrop-filter: blur(3px); text-align: right;
+}
+.slide-caption em { font-style: italic; }
+.slide-credit { display: block; font-style: normal; opacity: .7; font-size: .65rem; }
+
+/* Standing statement over the rotating hero photos — sets the tone:
+   every image on the site is community-made. Distinct from the per-slide
+   species/photographer credit pinned at the bottom of each slide. */
+.hero-photo-note {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+  padding: 1.05rem 1.3rem 2.4rem;
+  background: linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,.26) 55%, transparent);
+  color: rgba(255,255,255,.9);
+  font-size: .83rem; line-height: 1.55;
+  pointer-events: none;
+}
+.hero-photo-note strong {
+  display: block; color: #fff; font-weight: 700;
+  font-size: .98rem; line-height: 1.34; margin-bottom: .25rem; letter-spacing: .005em;
+}
+@media (max-width: 860px) {
+  .hero-photo-note { font-size: .78rem; padding: .85rem 1rem 1.7rem; }
+  .hero-photo-note strong { font-size: .9rem; }
+}
+.hero-kicker { color: var(--gold-light); font-size: .82rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 1rem; }
+.hero-title { font-size: clamp(2.2rem, 4.5vw, 3.6rem); color: var(--white); line-height: 1.12; margin-bottom: 1.1rem; }
+.hero-title em { color: var(--gold-light); font-style: italic; }
+.hero-body { color: rgba(255,255,255,.82); font-size: 1.05rem; line-height: 1.72; max-width: 560px; margin-bottom: 1rem; }
+.hero-badges { display: flex; flex-wrap: wrap; gap: .55rem; margin-bottom: 2rem; }
+.hero-badge { background: rgba(255,255,255,.1); color: rgba(255,255,255,.82); font-size: .78rem; font-weight: 600; padding: .3rem .8rem; border-radius: 20px; border: 1px solid rgba(255,255,255,.18); }
+
+/* ── Announcements bar ── */
+#announcements-bar {
+  /* inherits from site.css .announcement-card styles */
+}
+#announcements-bar > div {
+  max-width: 870px; /* ~75% of 1160px content width */
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+/* Slow fade cycling for announcements */
+.ann-cycle-wrap { position: relative; min-height: 32px; }
+.ann-cycle-item {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; gap: 1rem;
+  opacity: 0; transition: opacity 1.2s ease;
+  padding: .6rem 0;
+}
+.ann-cycle-item.active { opacity: 1; position: relative; }
+
+/* ── Three things ── */
+.three-things { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; }
+.thing {
+  padding: 2.5rem 2rem; border-right: 1px solid rgba(255,255,255,.08);
+  text-align: center;
+}
+.thing:last-child { border-right: none; }
+.thing-icon { font-size: 2.2rem; margin-bottom: .75rem; }
+.thing h3 { color: var(--white); font-size: 1.2rem; margin-bottom: .6rem; }
+.thing p { color: rgba(255,255,255,.65); font-size: .92rem; line-height: 1.65; }
+
+/* ── Mosaic — species name inside the photo, photographer byline below ── */
+.live-mosaic {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.4rem;
+}
+.mosaic-card {
+  background: var(--white);
+  border-radius: 12px; overflow: hidden;
+  position: relative; cursor: default;
+  display: flex; flex-direction: column;
+  box-shadow: 0 1px 2px rgba(26,58,31,.06), 0 10px 26px rgba(26,58,31,.07);
+  opacity: 0; animation: mosaicFadeIn .7s ease forwards;
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+.mosaic-card:hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(26,58,31,.08), 0 16px 36px rgba(26,58,31,.12); }
+/* Stagger mosaic cards */
+.mosaic-card:nth-child(1)  { animation-delay: .05s; }
+.mosaic-card:nth-child(2)  { animation-delay: .10s; }
+.mosaic-card:nth-child(3)  { animation-delay: .15s; }
+.mosaic-card:nth-child(4)  { animation-delay: .20s; }
+.mosaic-card:nth-child(5)  { animation-delay: .25s; }
+.mosaic-card:nth-child(6)  { animation-delay: .30s; }
+.mosaic-card:nth-child(7)  { animation-delay: .35s; }
+.mosaic-card:nth-child(8)  { animation-delay: .40s; }
+@keyframes mosaicFadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@media (prefers-reduced-motion: reduce) { .mosaic-card { animation: none; opacity: 1; transition: none; } .mosaic-card:hover { transform: none; } }
+
+.mosaic-img {
+  position: relative;
+  width: 100%; aspect-ratio: 4 / 3;
+  background-size: cover; background-position: center;
+  background-color: var(--sand);
+  overflow: hidden;
+}
+.mosaic-img > .mosaic-photo { position:absolute; inset:0; background-size:cover; background-position:center; transition: transform .5s ease; }
+.mosaic-card:hover .mosaic-img > .mosaic-photo { transform: scale(1.05); }
+
+/* .species-tag and .credit-plate now live in css/photo-credits.css */
+
+@media (max-width: 980px) { .live-mosaic { grid-template-columns: repeat(3, 1fr); } .mosaic-card:nth-child(7), .mosaic-card:nth-child(8) { display: none; } }
+@media (max-width: 680px) { .live-mosaic { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .mosaic-card:nth-child(7), .mosaic-card:nth-child(8) { display: flex; } }
+@media (max-width: 380px) { .live-mosaic { grid-template-columns: 1fr; } }
+
+/* ── iNat summary inline ── */
+.inat-inline {
+  display: inline-flex; gap: 1.5rem; flex-wrap: wrap;
+  background: rgba(26,58,31,0.06);
+  border-radius: 8px; padding: .75rem 1.25rem;
+  margin: 1.25rem 0;
+}
+.inat-inline-stat { text-align: center; }
+.inat-inline-stat strong {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem; color: var(--green-deep); line-height: 1;
+}
+.inat-inline-stat span { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-soft); }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-right { height: 280px; }
+  .three-things { grid-template-columns: 1fr; }
+  .thing { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); padding: 1.75rem 1.5rem; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Photo attribution primitives (.photo-attr, .cc-badge, .species-tag,
+   .credit-plate) now live in css/photo-credits.css — shared across pages.
+   What stays below is layout specific to THIS page.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* "Ten acres" mosaic — real attributed hero photos from photo_credits.json */
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.hero-grid-tile {
+  position: relative; margin: 0; border-radius: 10px; overflow: hidden;
+  aspect-ratio: 1; background-size: cover; background-position: center;
+  background-color: var(--sand);
+}
+.hero-grid-tile:nth-child(2) { margin-top: 1.5rem; }
+.hero-grid-tile:nth-child(3) { margin-top: -1.5rem; }
+.hero-grid-tile .photo-attr { padding: .55rem .65rem .5rem; }
+.hero-grid-tile .attr-species { font-size: .86rem; }
+.hero-grid-tile .attr-line { font-size: .76rem; }
+
+@media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } }
+</style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<!-- ANNOUNCEMENTS BAR — replaces iNat bar at top; cycles one at a time, slow fade -->
+<div id="announcements-bar" style="display:none">
+  <div style="max-width:1160px;margin:0 auto;padding:.1rem 1.5rem">
+    <div class="ann-cycle-wrap" id="annCycleWrap"></div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" style="padding:0;margin-top:0">
+  <div class="hero-left">
+    <div class="hero-kicker">Bradenton, Florida · Free · 8am–Dusk Daily</div>
+    <h1 class="hero-title">Nature is here.<br><em>Come be part of it.</em></h1>
+    <p class="hero-body">Ten acres on the shore of Palma Sola Bay — open every day, free forever, run by the community that loves it.</p>
+    <p class="hero-body">Come for a walk and stay for a class. Spot a gallinule on the pond or an anhinga drying its wings in the sun. Volunteer on a Saturday, catch a live music night, or browse the art gallery. The plants have names and stories. The birds have been coming for decades.</p>
+    <p class="hero-body">You don't have to be a botanist or a birder. You just have to show up.</p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap">
+      <a href="nature.html" class="btn btn-gold">Explore Nature</a>
+      <a href="visit.html" class="btn btn-outline">Plan Your Visit</a>
+      <a href="news.html" class="btn btn-outline">Park News</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-photo-note">
+      <strong>Every nature photo here was taken by our community.</strong>
+      Regular people, honoring a place they love.
+    </div>
+    <!-- Filled at runtime by photo-credits.js with random plant + wildlife heroes.
+         These two static slides are the last-known-good fallback if the JSON
+         or network is unavailable — the block is never blank. -->
+    <div class="hero-slideshow" id="heroSlides">
+      <div class="hero-slide on" style="background-image:url('photos/PSBP-00004-Silk-Floss-Tree.jpg')">
+        <div class="photo-attr">
+          <span class="attr-species">Silk Floss Tree · <em>Ceiba speciosa</em></span>
+          <span class="attr-line"><span class="attr-by">📷 randall_carter</span><span class="attr-dot">·</span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span></span><span class="attr-dot">·</span><span class="attr-src">via iNaturalist</span></span>
+        </div>
+      </div>
+      <div class="hero-slide" style="background-image:url('photos/PSBP-00002-Weeping-Bottlebrush.jpg')">
+        <div class="photo-attr">
+          <span class="attr-species">Weeping Bottlebrush · <em>Melaleuca viminalis</em></span>
+          <span class="attr-line"><span class="attr-by">📷 kathynoran88</span><span class="attr-dot">·</span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span></span><span class="attr-dot">·</span><span class="attr-src">via iNaturalist</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THREE DECLARATIONS -->
+<section style="padding:0;background:var(--green-deep)">
+  <div class="three-things">
+    <div class="thing">
+      <div class="thing-icon">🆓</div>
+      <h3>Always free.</h3>
+      <p>No entrance fee. No government funding. Three donation boxes on-site. Every dollar you leave goes straight back into the park.</p>
+    </div>
+    <div class="thing">
+      <div class="thing-icon">📅</div>
+      <h3>Something's always happening.</h3>
+      <p>Classes, live music, art openings, guided walks, workshops — the calendar keeps growing. <a href="events.html" style="color:var(--gold-light);font-weight:700">See what's coming up →</a></p>
+    </div>
+    <div class="thing">
+      <div class="thing-icon">📱</div>
+      <h3>Your phone is a scientific instrument.</h3>
+      <p>Photograph anything — plant, bird, insect, lizard — and help build a permanent record of what lives here. <a href="get-started.html" style="color:var(--gold-light);font-weight:700">Here's how →</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE NATURE MOSAIC — attribution shown, no outbound links -->
+<section class="bg-cream">
+  <div class="section-inner">
+    <span class="label">Live from the Park</span>
+    <h2 class="section-title">What's been seen lately</h2>
+    <p class="section-sub">
+      Every photo below was taken at Palma Sola Botanical Park by a community member and submitted to our iNaturalist project.
+      Plants and animals together — because that's how a living park works.
+    </p>
+    <div class="live-mosaic" id="mosaicGrid">
+      <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-soft)">Loading recent observations…</div>
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <a href="nature.html" class="btn btn-green">Explore Flora & Fauna →</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IS THIS PLACE — iNat stats woven in contextually -->
+<section class="bg-white">
+  <div class="section-inner">
+    <div class="grid-2" style="align-items:center;gap:3.5rem">
+      <div>
+        <span class="label">The park, plainly</span>
+        <h2 class="section-title">Ten acres.<br>Genuinely yours.</h2>
+        <p style="color:var(--text-soft);line-height:1.78;margin-bottom:1.25rem">
+          This is a place to walk slowly, notice things, and come back again. To bring your dog, your kids, your camera, or just yourself. To volunteer on a Saturday morning and stay for lunch. To hear live music under the palms, celebrate a birthday in the gazebo, or sit quietly by the pond and watch what happens.
+        </p>
+        <p style="color:var(--text-soft);line-height:1.78;margin-bottom:1.25rem">
+          The plants here have names and stories. The birds have been coming for decades. The people who tend this place know it like a neighborhood — because it is one.
+        </p>
+        <p style="color:var(--text-soft);line-height:1.78;margin-bottom:1.25rem">
+          And right now, something is shifting. We're doubling down on making this park truly <em>ours</em> — 
+          self-guided tours, more events for families and kids, ways for you to contribute your own photos and knowledge 
+          to the park's growing record, and rewards for the people who help us learn this place together. 
+          The calendar is filling up. New things are coming. The best reason to visit today is that it'll be even better next month.
+        </p>
+
+        <!-- iNat stats — framed as community achievement -->
+        <div style="background:var(--cream);border:1.5px solid rgba(90,122,74,0.15);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.5rem">
+          <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green-mid);margin-bottom:.9rem">Built by our community</div>
+          <div class="inat-inline" style="background:none;border-radius:0;padding:0;margin:0">
+            <div class="inat-inline-stat"><strong id="statSpecies" class="pulse">—</strong><span>Species Documented</span></div>
+            <div class="inat-inline-stat"><strong id="statObservers" class="pulse">—</strong><span>People Who Showed Up</span></div>
+            <div class="inat-inline-stat"><strong id="statTotal" class="pulse">—</strong><span>Observations Made</span></div>
+          </div>
+          <p style="font-size:.95rem;color:var(--text-soft);margin-top:.9rem;font-style:italic;line-height:1.6">Every number above is a person who came out here and did something.</p>
+        </div>
+
+        <p style="color:var(--text-soft);line-height:1.78;margin-bottom:2rem;margin-top:.75rem">
+          Come in the morning when the birds are active. Come in summer when the pond overflows with life.
+          Come whenever you feel like it — the gate is always open.
+        </p>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap">
+          <a href="nature.html" class="btn btn-gold">Flora & Fauna →</a>
+          <a href="visit.html" class="btn btn-green">Hours & Directions →</a>
+        </div>
+      </div>
+      <!-- Filled at runtime by photo-credits.js — random attributed heroes,
+           offset from the slideshow's pool so they never duplicate it.
+           Static tiles below are the fallback if the JSON is unavailable. -->
+      <div class="hero-grid" id="heroGrid">
+        <figure class="hero-grid-tile" style="background-image:url('images/Quercus_myrtifolia.jpg')"></figure>
+        <figure class="hero-grid-tile" style="background-image:url('images/Trimezia_steyermarkii.jpg')"></figure>
+        <figure class="hero-grid-tile" style="background-image:url('images/Ixora_coccinea.jpg')"></figure>
+        <figure class="hero-grid-tile" style="background-image:url('images/Rhapis_excelsa.jpg')"></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS + QUICK INFO -->
+<section class="bg-sand">
+  <div class="section-inner">
+    <div class="grid-2" style="gap:3rem;align-items:start">
+      <div>
+        <span class="label">Coming Up</span>
+        <h2 class="section-title" style="margin-bottom:1.5rem">Events</h2>
+        <div id="homeEvents"><p class="text-soft">Loading…</p></div>
+        <a href="events.html" class="btn btn-green mt-2">Full Calendar →</a>
+      </div>
+      <div>
+        <span class="label">Quick Info</span>
+        <h2 class="section-title" style="margin-bottom:1.5rem">Find us</h2>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div class="info-card">
+            <div class="info-card-icon">🌅</div>
+            <h3>Hours</h3>
+            <p><strong>8am – Dusk, every day of the year</strong><br>Closed for private events — check the calendar before a weekend visit.</p>
+          </div>
+          <div class="info-card" style="border-top-color:var(--gold)">
+            <div class="info-card-icon">🆓</div>
+            <h3>Admission</h3>
+            <p><span class="free-tag">FREE</span><br><span style="font-size:.85rem">No federal, state, or local government subsidies. Donations keep the lights on.</span></p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">📍</div>
+            <h3>Address</h3>
+            <p>9800 17th Ave NW<br>Bradenton, FL 34209<br><a href="https://maps.google.com/maps?q=Palma+Sola+Botanical+Park" target="_blank" rel="noopener">Open in Maps →</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GET INVOLVED — events, classes, volunteering -->
+<section class="bg-white" style="text-align:center">
+  <div class="section-inner" style="max-width:760px;margin:0 auto">
+    <span class="label">There's Always Something Happening</span>
+    <h2 class="section-title" style="margin-bottom:1rem">Come for a class. Stay for the park.</h2>
+    <p style="color:var(--text-soft);font-size:1.05rem;line-height:1.78;margin-bottom:1.5rem">
+      The calendar here keeps growing — guided plant walks, Zumba under the palms, native gardening workshops, 
+      art openings in the Galleria, and community gatherings that have nothing to do with plants except the backdrop. 
+      Classes are added regularly. Events fill up. The nursery opens every Tuesday and Saturday morning October through May 
+      with plants propagated right here on-site.
+    </p>
+    <p style="color:var(--text-soft);font-size:1.05rem;line-height:1.78;margin-bottom:2rem">
+      And if you want to do more than attend — pull a weed, water something, give a tour, or just show up on a Saturday 
+      and ask what needs doing — this place runs on people exactly like you.
+    </p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="events.html" class="btn btn-gold">See What's Coming Up →</a>
+      <a href="volunteer.html" class="btn btn-green">Get Involved →</a>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY SCIENCE CTA -->
+<section class="bg-deep" style="text-align:center">
+  <div class="section-inner" style="max-width:640px;margin:0 auto">
+    <span class="label label-light">Let's Roll</span>
+    <h2 class="section-title" style="color:var(--white);margin-bottom:1rem">Point your phone at something alive.</h2>
+    <p style="color:rgba(255,255,255,.72);font-size:1.05rem;line-height:1.75;margin-bottom:2rem">
+      That's it. You just contributed to a permanent scientific record of this park.
+      Every bloom logged, every bird photographed, every lizard spotted — it adds up.
+      We track what lives here because people like you show up and look.
+    </p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="get-started.html" class="btn btn-gold">📱 Get Started — 2 Minutes →</a>
+      <a href="nature.html#inat" class="btn btn-outline">Learn More →</a>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/site.js"></script>
+<script src="js/photo-credits.js"></script>
+<script>
+injectShared({ inatBar: false, inatFooter: true });
+
+// Hero slideshow + "Ten acres" grid are now driven by photo_credits.json
+// (random plant + wildlife heroes, with attribution). See js/photo-credits.js.
+PSBPPhotos.mountHeroSlideshow('heroSlides');
+PSBPPhotos.mountHeroGrid('heroGrid');
+
+// Announcements now use the shared loadAnnouncements() from site.js (see call below)
+
+// iNat mosaic — attribution shown, no outbound links
+loadINat().then(async data => {
+  // Populate inline stats
+  if (data.total)     { const el=document.getElementById('statTotal');     if(el){el.textContent=data.total.toLocaleString();el.classList.remove('pulse');} }
+  if (data.species)   { const el=document.getElementById('statSpecies');   if(el){el.textContent=data.species.toLocaleString();el.classList.remove('pulse');} }
+  if (data.observers) { const el=document.getElementById('statObservers'); if(el){el.textContent=data.observers.toLocaleString();el.classList.remove('pulse');} }
+  if (data.week)      { const el=document.getElementById('statWeek');      if(el){el.textContent=data.week.toLocaleString();el.classList.remove('pulse');} }
+
+  const obs  = await loadRecentObs({ count: 8 });
+  const grid = document.getElementById('mosaicGrid');
+  if (!obs.length) {
+    grid.innerHTML = '<p class="text-soft" style="grid-column:1/-1;text-align:center;padding:2rem">No recent observations found.</p>';
+    return;
+  }
+  grid.innerHTML = obs.map(o => {
+    const photo = o.photos?.[0] || {};
+    const url   = photo.url?.replace('square','medium');
+    if (!url) return '';
+    const common = o.species_guess || o.taxon?.preferred_common_name || o.taxon?.name || 'Unknown';
+    const sci    = o.taxon?.name && o.taxon.name !== common ? o.taxon.name : null;
+    const by     = o.user?.login || o.user?.name || 'community member';
+    const license = photo.license_code || o.license_code || null;
+    // "seen lately" = recently SHARED. Show the iNaturalist submission date
+    // (created_at), not when the photo was taken — and no time of day.
+    const submitted = o.created_at_details?.date || o.created_at || null;
+    return `<div class="mosaic-card">
+      <div class="mosaic-img">
+        <div class="mosaic-photo" style="background-image:url('${url}')"></div>
+        ${PSBPPhotos.speciesTag({ species: common, scientific: sci })}
+      </div>
+      ${PSBPPhotos.creditPlate({ by, license, date: submitted, dateLabel: 'Shared' })}
+    </div>`;
+  }).join('');
+});
+
+loadAnnouncements('annCycleWrap');
+loadEvents('homeEvents', 4);
+</script>
+</body>
+</html>
