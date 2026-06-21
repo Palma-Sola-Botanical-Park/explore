@@ -1,0 +1,85 @@
+/* ============================================================================
+   PSBP · photo-credits.css
+   ----------------------------------------------------------------------------
+   The standardized "credit block" styling. Pairs with js/photo-credits.js:
+   the JS emits these class names, this file styles them. Include BOTH on any
+   page that shows community photos and you get identical attribution
+   everywhere — same gold byline, same Creative Commons badge.
+
+       <link rel="stylesheet" href="css/photo-credits.css">
+       <script src="js/photo-credits.js"></script>
+
+   The three building blocks the JS produces:
+     PSBPPhotos.attribution(...) -> .photo-attr   (combined overlay; for big
+                                                    images like heroes/tiles)
+     PSBPPhotos.speciesTag(...)  -> .species-tag  (just the name, sits IN photo)
+     PSBPPhotos.creditPlate(...) -> .credit-plate (byline, sits BELOW a photo)
+
+   Contract: .photo-attr and .species-tag are position:absolute, so their
+   parent must be position:relative. .credit-plate is a normal block. Colors
+   come from the site's CSS variables (--gold, --green-mid, --cream, etc.).
+   ========================================================================== */
+
+/* ── Combined overlay: name + photographer + date + badge, on one dark scrim.
+      Best on large images (hero, "Ten acres" tiles). Larger type on purpose —
+      we credit photographers out loud, not in fine print. ───────────────── */
+.photo-attr {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: .7rem .85rem .6rem;
+  background: linear-gradient(transparent, rgba(0,0,0,.5) 35%, rgba(0,0,0,.82));
+  color: #fff; text-align: left;
+  display: flex; flex-direction: column; gap: .28rem;
+  backdrop-filter: blur(1px);
+}
+.photo-attr .attr-species { font-size: .95rem; font-weight: 600; line-height: 1.3; letter-spacing: .005em; }
+.photo-attr .attr-species em { font-style: italic; font-weight: 400; opacity: .9; }
+.photo-attr .attr-line {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .5rem;
+  font-size: .82rem; line-height: 1.45;
+}
+.photo-attr .attr-credit { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .35rem; }
+.photo-attr .attr-by   { font-weight: 700; color: var(--gold-light); }
+.photo-attr .attr-date { opacity: .95; }
+.photo-attr .attr-src  { opacity: .68; font-style: italic; }
+.photo-attr .attr-dot  { opacity: .45; }
+
+/* ── Creative Commons badge: segmented pill echoing the one iNaturalist shows.
+      Default styling is for DARK contexts (over a photo). The light variant
+      below (.credit-plate .cc-badge) is for use on a pale card. ──────────── */
+.cc-badge {
+  display: inline-flex; align-items: stretch; vertical-align: middle;
+  border: 1px solid rgba(255,255,255,.5); border-radius: 3px; overflow: hidden;
+  font-size: .68rem; font-weight: 700; line-height: 1; letter-spacing: .02em;
+  background: rgba(0,0,0,.45);
+}
+.cc-badge .cc-mark, .cc-badge .cc-term { padding: .3em .44em; display: inline-flex; align-items: center; }
+.cc-badge .cc-mark { font-family: Georgia, 'Times New Roman', serif; text-transform: lowercase; letter-spacing: .05em; }
+.cc-badge .cc-term { border-left: 1px solid rgba(255,255,255,.28); }
+.cc-badge--unknown { opacity: .8; }
+
+/* ── Species name pinned INSIDE a photo (paired with .credit-plate below). ── */
+.species-tag {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 1rem .85rem .6rem;
+  background: linear-gradient(transparent, rgba(0,0,0,.74));
+  color: #fff;
+}
+.species-tag .attr-species { font-size: .92rem; font-weight: 600; line-height: 1.28; letter-spacing: .005em; }
+.species-tag .attr-species em { font-style: italic; font-weight: 400; opacity: .9; }
+
+/* ── Photographer byline, set like a field-guide credit. Sits BELOW a photo,
+      on a pale surface. Photographer name is the featured element. ───────── */
+.credit-plate {
+  display: grid; grid-template-columns: 1fr auto; align-items: center;
+  gap: .5rem .7rem; padding: .72rem .9rem .8rem;
+  border-top: 1px solid var(--green-pale);
+}
+.credit-byline { display: flex; flex-direction: column; gap: .12rem; min-width: 0; }
+.credit-eyebrow { font-size: .6rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--green-mid); }
+.credit-name { font-size: 1rem; font-weight: 700; color: var(--gold); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.credit-date { font-size: .72rem; color: var(--text-soft); }
+.credit-license { display: flex; flex-direction: column; align-items: flex-end; gap: .28rem; }
+.credit-src { font-size: .6rem; font-style: italic; color: var(--text-soft); opacity: .85; }
+/* light CC badge for the pale plate */
+.credit-plate .cc-badge { border-color: rgba(26,58,31,.22); background: var(--cream); color: var(--green-deep); }
+.credit-plate .cc-badge .cc-term { border-left-color: rgba(26,58,31,.16); }
