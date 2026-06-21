@@ -1,0 +1,107 @@
+{
+  "tab": "newsletters",
+  "human": "Newsletter archive — one row per past newsletter.",
+  "generated_at": "2026-06-21T00:22:49+00:00",
+  "status": "green",
+  "published": true,
+  "block_reason": null,
+  "counts": {
+    "staged": 5,
+    "live": 5,
+    "published": 5,
+    "dropped_display": 0,
+    "quarantined": 0,
+    "warned": 0
+  },
+  "volume_guard": {
+    "min": 1,
+    "live": 5,
+    "published": 5,
+    "blocked": false,
+    "reason": null
+  },
+  "rules": [
+    {
+      "id": "date:required",
+      "field": "date",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 5,
+      "passed": 5,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "date:iso_date",
+      "field": "date",
+      "check": "iso_date",
+      "arg": null,
+      "why": "Must be a real date (YYYY-MM-DD).",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 5,
+      "passed": 5,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "display:in_vocab",
+      "field": "display",
+      "check": "in_vocab",
+      "arg": [
+        "web",
+        "both",
+        "screen",
+        "off"
+      ],
+      "why": "Must be web, both, screen, or off — a typo hides the row from everyone.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 5,
+      "passed": 5,
+      "flagged": 0,
+      "examples": []
+    }
+  ],
+  "dropped_rows": [],
+  "timeline": [
+    {
+      "at": "2026-06-20T23:33:40+00:00",
+      "added": 0,
+      "changed": 2,
+      "removed": 0
+    },
+    {
+      "at": "2026-06-21T00:22:49+00:00",
+      "added": 0,
+      "changed": 0,
+      "removed": 1
+    }
+  ],
+  "schema": {
+    "required_headers": [
+      "display",
+      "date"
+    ],
+    "identity": [
+      "date",
+      "title"
+    ],
+    "drop_when_display": [
+      "off",
+      ""
+    ],
+    "volume_min": 1
+  },
+  "links": {
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=1749891854",
+    "published": "data/published/newsletters.json",
+    "detail": "data/published/health/newsletters.json"
+  }
+}

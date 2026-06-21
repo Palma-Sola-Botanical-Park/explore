@@ -1,0 +1,134 @@
+{
+  "tab": "series",
+  "human": "Event series — program umbrellas that events link to by name.",
+  "generated_at": "2026-06-21T00:22:49+00:00",
+  "status": "green",
+  "published": true,
+  "block_reason": null,
+  "counts": {
+    "staged": 4,
+    "live": 4,
+    "published": 4,
+    "dropped_display": 0,
+    "quarantined": 0,
+    "warned": 0
+  },
+  "volume_guard": {
+    "min": 1,
+    "live": 4,
+    "published": 4,
+    "blocked": false,
+    "reason": null
+  },
+  "rules": [
+    {
+      "id": "name:required",
+      "field": "name",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "display:in_vocab",
+      "field": "display",
+      "check": "in_vocab",
+      "arg": [
+        "web",
+        "both",
+        "screen",
+        "off"
+      ],
+      "why": "Must be web, both, screen, or off — a typo hides the row from everyone.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "active:in_vocab",
+      "field": "active",
+      "check": "in_vocab",
+      "arg": [
+        "yes",
+        "no",
+        ""
+      ],
+      "why": "Must be yes, no, or blank.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "category:in_vocab",
+      "field": "category",
+      "check": "in_vocab",
+      "arg": [
+        "Fitness & Wellness",
+        "Talks & Learning",
+        "Workshops",
+        "Family & Kids",
+        "Arts & Music",
+        "Community",
+        "Volunteer",
+        "Private"
+      ],
+      "why": "Must be one of the approved categories.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "flyer_url:url_or_blank",
+      "field": "flyer_url",
+      "check": "url_or_blank",
+      "arg": null,
+      "why": "If set, must start with http:// or https://.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    }
+  ],
+  "dropped_rows": [],
+  "timeline": [],
+  "schema": {
+    "required_headers": [
+      "display",
+      "name"
+    ],
+    "identity": [
+      "name"
+    ],
+    "drop_when_display": [
+      "off",
+      ""
+    ],
+    "volume_min": 1
+  },
+  "links": {
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=926436540",
+    "published": "data/published/series.json",
+    "detail": "data/published/health/series.json"
+  }
+}

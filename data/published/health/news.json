@@ -1,0 +1,109 @@
+{
+  "tab": "news",
+  "human": "Park news stories — one row per story.",
+  "generated_at": "2026-06-21T00:22:49+00:00",
+  "status": "green",
+  "published": true,
+  "block_reason": null,
+  "counts": {
+    "staged": 4,
+    "live": 4,
+    "published": 4,
+    "dropped_display": 0,
+    "quarantined": 0,
+    "warned": 0
+  },
+  "volume_guard": {
+    "min": 1,
+    "live": 4,
+    "published": 4,
+    "blocked": false,
+    "reason": null
+  },
+  "rules": [
+    {
+      "id": "date:required",
+      "field": "date",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "date:iso_date",
+      "field": "date",
+      "check": "iso_date",
+      "arg": null,
+      "why": "Must be a real date (YYYY-MM-DD).",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "headline:required",
+      "field": "headline",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "display:in_vocab",
+      "field": "display",
+      "check": "in_vocab",
+      "arg": [
+        "web",
+        "both",
+        "screen",
+        "off"
+      ],
+      "why": "Must be web, both, screen, or off — a typo hides the row from everyone.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    }
+  ],
+  "dropped_rows": [],
+  "timeline": [],
+  "schema": {
+    "required_headers": [
+      "display",
+      "date",
+      "headline"
+    ],
+    "identity": [
+      "date",
+      "headline"
+    ],
+    "drop_when_display": [
+      "off",
+      ""
+    ],
+    "volume_min": 1
+  },
+  "links": {
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=195499912",
+    "published": "data/published/news.json",
+    "detail": "data/published/health/news.json"
+  }
+}

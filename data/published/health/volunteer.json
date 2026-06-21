@@ -1,0 +1,113 @@
+{
+  "tab": "volunteer",
+  "human": "Volunteer spotlight cards — one row per person.",
+  "generated_at": "2026-06-21T00:22:49+00:00",
+  "status": "green",
+  "published": true,
+  "block_reason": null,
+  "counts": {
+    "staged": 7,
+    "live": 7,
+    "published": 7,
+    "dropped_display": 0,
+    "quarantined": 0,
+    "warned": 0
+  },
+  "volume_guard": {
+    "min": 1,
+    "live": 7,
+    "published": 7,
+    "blocked": false,
+    "reason": null
+  },
+  "rules": [
+    {
+      "id": "title:required",
+      "field": "title",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 7,
+      "passed": 7,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "display:in_vocab",
+      "field": "display",
+      "check": "in_vocab",
+      "arg": [
+        "web",
+        "both",
+        "screen",
+        "off"
+      ],
+      "why": "Must be web, both, screen, or off — a typo hides the row from everyone.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 7,
+      "passed": 7,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "link_url:url_or_blank",
+      "field": "link_url",
+      "check": "url_or_blank",
+      "arg": null,
+      "why": "If set, must start with http:// or https://.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 7,
+      "passed": 7,
+      "flagged": 0,
+      "examples": []
+    }
+  ],
+  "dropped_rows": [],
+  "timeline": [
+    {
+      "at": "2026-06-20T22:29:22+00:00",
+      "added": 1,
+      "changed": 0,
+      "removed": 1
+    },
+    {
+      "at": "2026-06-20T22:37:18+00:00",
+      "added": 1,
+      "changed": 0,
+      "removed": 1
+    },
+    {
+      "at": "2026-06-20T22:40:54+00:00",
+      "added": 1,
+      "changed": 0,
+      "removed": 1
+    }
+  ],
+  "schema": {
+    "required_headers": [
+      "display",
+      "title"
+    ],
+    "identity": [
+      "title",
+      "role"
+    ],
+    "drop_when_display": [
+      "off",
+      ""
+    ],
+    "volume_min": 1
+  },
+  "links": {
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=269225929",
+    "published": "data/published/volunteer.json",
+    "detail": "data/published/health/volunteer.json"
+  }
+}

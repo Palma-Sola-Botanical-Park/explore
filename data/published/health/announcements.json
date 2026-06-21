@@ -1,0 +1,79 @@
+{
+  "tab": "announcements",
+  "human": "Homepage + in-park-screen announcements — one row per message.",
+  "generated_at": "2026-06-21T00:22:49+00:00",
+  "status": "green",
+  "published": true,
+  "block_reason": null,
+  "counts": {
+    "staged": 2,
+    "live": 2,
+    "published": 2,
+    "dropped_display": 0,
+    "quarantined": 0,
+    "warned": 0
+  },
+  "volume_guard": {
+    "min": 0,
+    "live": 2,
+    "published": 2,
+    "blocked": false,
+    "reason": null
+  },
+  "rules": [
+    {
+      "id": "title:required",
+      "field": "title",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 2,
+      "passed": 2,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "display:in_vocab",
+      "field": "display",
+      "check": "in_vocab",
+      "arg": [
+        "web",
+        "both",
+        "screen",
+        "off"
+      ],
+      "why": "Must be web, both, screen, or off — a typo hides the row from everyone.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 2,
+      "passed": 2,
+      "flagged": 0,
+      "examples": []
+    }
+  ],
+  "dropped_rows": [],
+  "timeline": [],
+  "schema": {
+    "required_headers": [
+      "display",
+      "title"
+    ],
+    "identity": [
+      "title"
+    ],
+    "drop_when_display": [
+      "off",
+      ""
+    ],
+    "volume_min": 0
+  },
+  "links": {
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=673905300",
+    "published": "data/published/announcements.json",
+    "detail": "data/published/health/announcements.json"
+  }
+}

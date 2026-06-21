@@ -1,0 +1,229 @@
+{
+  "tab": "classes",
+  "human": "Standing weekly classes — one row per weekday+time slot.",
+  "generated_at": "2026-06-21T00:22:49+00:00",
+  "status": "green",
+  "published": true,
+  "block_reason": null,
+  "counts": {
+    "staged": 4,
+    "live": 4,
+    "published": 4,
+    "dropped_display": 0,
+    "quarantined": 0,
+    "warned": 0
+  },
+  "volume_guard": {
+    "min": 1,
+    "live": 4,
+    "published": 4,
+    "blocked": false,
+    "reason": null
+  },
+  "rules": [
+    {
+      "id": "weekday:required",
+      "field": "weekday",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "weekday:in_vocab",
+      "field": "weekday",
+      "check": "in_vocab",
+      "arg": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
+      "why": "Must be one of Mon, Tue, Wed, Thu, Fri, Sat, Sun.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "title:required",
+      "field": "title",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "active_from:iso_date_or_blank",
+      "field": "active_from",
+      "check": "iso_date_or_blank",
+      "arg": null,
+      "why": "If set, must be a real date (YYYY-MM-DD).",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "active_to:iso_date_or_blank",
+      "field": "active_to",
+      "check": "iso_date_or_blank",
+      "arg": null,
+      "why": "If set, must be a real date (YYYY-MM-DD).",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "active_to:ge_field",
+      "field": "active_to",
+      "check": "ge_field",
+      "arg": "active_from",
+      "why": "If set, can't be earlier than active_from.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "category:in_vocab",
+      "field": "category",
+      "check": "in_vocab",
+      "arg": [
+        "Fitness & Wellness",
+        "Talks & Learning",
+        "Workshops",
+        "Family & Kids",
+        "Arts & Music",
+        "Community",
+        "Volunteer",
+        "Private"
+      ],
+      "why": "Must be one of the 8 approved categories.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "display:in_vocab",
+      "field": "display",
+      "check": "in_vocab",
+      "arg": [
+        "web",
+        "both",
+        "screen",
+        "off"
+      ],
+      "why": "Must be web, both, screen, or off — a typo hides the row from everyone.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "kid_friendly:in_vocab",
+      "field": "kid_friendly",
+      "check": "in_vocab",
+      "arg": [
+        "yes",
+        "no",
+        ""
+      ],
+      "why": "Must be yes, no, or blank.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "registration_url:url_or_blank",
+      "field": "registration_url",
+      "check": "url_or_blank",
+      "arg": null,
+      "why": "If set, must start with http:// or https://.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "link_url:url_or_blank",
+      "field": "link_url",
+      "check": "url_or_blank",
+      "arg": null,
+      "why": "If set, must start with http:// or https://.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    }
+  ],
+  "dropped_rows": [],
+  "timeline": [],
+  "schema": {
+    "required_headers": [
+      "display",
+      "weekday",
+      "title"
+    ],
+    "identity": [
+      "title",
+      "weekday",
+      "time"
+    ],
+    "drop_when_display": [
+      "off",
+      ""
+    ],
+    "volume_min": 1
+  },
+  "links": {
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=141740803",
+    "published": "data/published/classes.json",
+    "detail": "data/published/health/classes.json"
+  }
+}
