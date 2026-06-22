@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nature at Palma Sola · Flora & Fauna</title>
 <link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/photo-credits.css">
 <style>
 /* ── Nature-page specific ── */
 @media (max-width: 700px) {
@@ -101,6 +102,13 @@
   font-size: 2rem; color: var(--gold-light); line-height: 1;
 }
 .inat-stat span { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.55); }
+
+/* Plant index cards: tighten body so the photographer credit plate sits close
+   under the species name, and make all cards equal height with the plate pinned
+   to the bottom (consistent grid even when scientific names wrap to two lines). */
+.plant-card { display: flex; flex-direction: column; }
+.plant-card .card-body { padding: 1rem 1rem .65rem; flex: 1; }
+.plant-card .credit-plate { margin-top: auto; }
 
 </style>
 </head>
@@ -311,6 +319,7 @@
 </section>
 
 <div id="footer-placeholder"></div>
+<script src="js/photo-credits.js"></script>
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false, inatFooter: true });

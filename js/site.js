@@ -1229,32 +1229,34 @@ function plantCard(p) {
   const photoUrl = p.photo || ('plants/' + p.id + '_' + p.common.replace(/[^a-zA-Z0-9]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') + '.jpg');
   const pageUrl  = p.page  || ('plants/' + slug + '.html');
 
+  // Photographer credit. The publisher writes resolved display-name + license
+  // into plants.json at promotion time (credit_name, credit_license); credit is
+  // the raw iNat login, kept as a stable key + last-resort fallback.
+  const creditName = p.credit_name || p.credit || 'community member';
+  const creditPlate = (typeof PSBPPhotos !== 'undefined' && PSBPPhotos.creditPlate)
+    ? PSBPPhotos.creditPlate({ by: creditName, license: p.credit_license })
+    : '<div class="credit-plate"><div class="credit-byline">'
+        + '<span class="credit-eyebrow">Photograph by</span>'
+        + '<span class="credit-name">' + creditName + '</span></div></div>';
+
   return `<a class="card plant-card" href="${pageUrl}" style="text-decoration:none;display:block">
     <div style="height:160px;overflow:hidden;position:relative;background:var(--sand)">
       <img src="${photoUrl}" alt="${p.common}"
-        style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .4s ease"
+        style="width:100%;height:100%;object-fit:cover;object-position:${p.focus || 'center'};display:block;transition:transform .4s ease"
         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
         loading="lazy">
       <div style="display:none;height:100%;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text-soft);opacity:.3">🌿</div>
     </div>
     <div class="card-body">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem;margin-bottom:.25rem">
-        <h4 style="font-size:.97rem;color:var(--green-deep);line-height:1.3">${p.common}</h4>
-        <span style="font-size:.68rem;color:#ccc;white-space:nowrap">${p.id}</span>
-      </div>
-      <div style="font-style:italic;font-size:.82rem;color:var(--text-soft);margin-bottom:.55rem">${p.sci}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
-        ${p.native?'<span class="tag tag-native">🌿 Native</span>':''}
-        ${p.butterfly?'<span class="tag tag-butterfly">🦋</span>':''}
-        ${p.edible?'<span class="tag tag-edible">🍃 Edible</span>':''}
-        ${p.wetland?'<span class="tag tag-wetland">💧</span>':''}
-      </div>
+      <h4 style="font-size:.97rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${p.common}</h4>
+      <div style="font-style:italic;font-size:.82rem;color:var(--text-soft)">${p.sci}</div>
     </div>
+    ${creditPlate}
   </a>`;
 }
 
 // ── PLANT PAGINATION ─────────────────────────────────────────
-const PLANTS_PER_PAGE = 8;
+const PLANTS_PER_PAGE = 12;
 let _plantPage = 0;
 let _filteredPlants = [];
 
