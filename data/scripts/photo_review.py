@@ -249,28 +249,39 @@ function toggleRole(photoId, role, label) {
   markUnsaved();
 }
 
-function makeHero(photoId) {
-  // Remove hero from all photos of this species
-  allData.photos.forEach(p => {
-    if (p.psbp_id === currentSpecies) {
-      p.hero = false;
-      if (p.focus && p.photo_id !== photoId) {
-        // keep focus data but it's now dormant
-      }
-    }
-  });
-  // Set new hero
+async function makeHero(photoId) {
   const photo = allData.photos.find(p => p.photo_id === photoId);
-  if (photo) {
-    photo.hero = true;
-    if (!photo.focus) photo.focus = "50% 50%";
-    // Ensure hero has 'whole' and 'gallery' in roles
-    if (!photo.role.includes('whole')) photo.role.push('whole');
-    if (!photo.role.includes('gallery')) photo.role.push('gallery');
-    if (!photo.primary_for.includes('whole')) photo.primary_for.push('whole');
+  if (!photo) return;
+  const oldHero = allData.photos.find(p => p.psbp_id === currentSpecies && p.hero);
+  const msg = oldHero && oldHero.photo_id !== photoId
+    ? 'Swap hero? The new hero will be downloaded from iNat and the old one becomes a CDN gallery photo.'
+    : 'Make this the hero? The photo will be downloaded from iNat.';
+  if (!confirm(msg)) return;
+
+  document.getElementById('statusMsg').textContent = 'Downloading new hero...';
+
+  const resp = await fetch('/api/swap-hero', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ photo_id: photoId, psbp_id: currentSpecies })
+  });
+  const result = await resp.json();
+
+  if (result.ok) {
+    // Reload fresh data from server
+    const dataResp = await fetch('/api/data');
+    allData = await dataResp.json();
+    buildSpeciesDropdown();
+    document.getElementById('speciesSelect').value = currentSpecies;
+    loadSpecies();
+    document.getElementById('statusMsg').textContent = 'Hero swapped to ' + photoId;
+    hasUnsaved = false;
+    document.getElementById('saveBtn').classList.remove('has-changes');
+    document.getElementById('saveBtn').textContent = 'Save Changes';
+  } else {
+    alert('Error: ' + result.error);
+    document.getElementById('statusMsg').textContent = 'Hero swap failed';
   }
-  markUnsaved();
-  loadSpecies(); // refresh
 }
 
 let focusPhotoId = null;
@@ -448,6 +459,89 @@ class ReviewHandler(http.server.SimpleHTTPRequestHandler):
                 save_credits(data)
                 self.send_json({"ok": True, "count": len(data.get("photos", []))})
             except Exception as e:
+                self.send_json({"ok": False, "error": str(e)})
+            return
+
+        if path == "/api/swap-hero":
+            try:
+                req = json.loads(body)
+                new_hero_id = str(req["photo_id"])
+                psbp_id = req["psbp_id"]
+
+                data = load_credits()
+                old_hero = None
+                new_hero = None
+                for p in data["photos"]:
+                    if p.get("psbp_id") != psbp_id:
+                        continue
+                    if p.get("hero"):
+                        old_hero = p
+                    if str(p.get("photo_id")) == new_hero_id:
+                        new_hero = p
+
+                if not new_hero:
+                    self.send_json({"ok": False, "error": "photo not found in registry"})
+                    return
+
+                if new_hero is old_hero:
+                    self.send_json({"ok": True, "message": "already the hero"})
+                    return
+
+                # Download the new hero from iNat CDN
+                large_url = new_hero.get("photo_url") or ""
+                if not large_url:
+                    self.send_json({"ok": False, "error": "no photo_url for the new hero"})
+                    return
+
+                new_filename = f"{new_hero_id}.jpg"
+                dest = os.path.join(PHOTOS_DIR, psbp_id, new_filename)
+                os.makedirs(os.path.join(PHOTOS_DIR, psbp_id), exist_ok=True)
+
+                import urllib.request as urlreq
+                try:
+                    req_obj = urlreq.Request(large_url, headers={"User-Agent": "PSBP-PhotoReview/1.0"})
+                    with urlreq.urlopen(req_obj, timeout=60) as resp:
+                        img_data = resp.read()
+                    with open(dest, "wb") as f:
+                        f.write(img_data)
+                    print(f"  ✓ Downloaded new hero: {new_filename} ({len(img_data)//1024}KB)")
+                except Exception as e:
+                    self.send_json({"ok": False, "error": f"download failed: {e}"})
+                    return
+
+                # Demote old hero → virtual gallery photo
+                if old_hero:
+                    old_file = os.path.join(PHOTOS_DIR, psbp_id, old_hero.get("filename") or "")
+                    if old_hero.get("filename") and os.path.exists(old_file):
+                        os.remove(old_file)
+                        print(f"  ✓ Deleted old hero: {old_hero['filename']}")
+                    old_hero["hero"] = False
+                    old_hero["filename"] = None
+                    old_hero["virtual"] = True
+                    # Keep photo_url so it still serves as a gallery photo from CDN
+                    if "whole" in (old_hero.get("primary_for") or []):
+                        old_hero["primary_for"].remove("whole")
+
+                # Promote new hero → local file
+                new_hero["hero"] = True
+                new_hero["filename"] = new_filename
+                new_hero["virtual"] = False
+                if not new_hero.get("focus"):
+                    new_hero["focus"] = "50% 50%"
+                if "whole" not in (new_hero.get("role") or []):
+                    new_hero.setdefault("role", []).append("whole")
+                if "gallery" not in (new_hero.get("role") or []):
+                    new_hero["role"].append("gallery")
+                if "whole" not in (new_hero.get("primary_for") or []):
+                    new_hero.setdefault("primary_for", []).append("whole")
+
+                save_credits(data)
+                self.send_json({"ok": True, "new_hero_id": new_hero_id,
+                                "old_hero_id": old_hero.get("photo_id") if old_hero else None})
+                print(f"  ★ Hero swap: {psbp_id} → {new_hero_id}")
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
                 self.send_json({"ok": False, "error": str(e)})
             return
 
