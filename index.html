@@ -133,6 +133,68 @@
 
 /* .species-tag and .credit-plate now live in css/photo-credits.css */
 
+/* ── Flip behavior — tap a card to reveal the observation's "science" side ── */
+.mosaic-card.flip { background: transparent; box-shadow: none; cursor: pointer; perspective: 1200px; }
+.mosaic-card.flip:hover { transform: translateY(-3px); }
+.mosaic-flip-inner {
+  position: relative; width: 100%;
+  transition: transform .6s cubic-bezier(.2,.7,.2,1);
+  transform-style: preserve-3d;
+}
+.mosaic-card.flip.is-flipped .mosaic-flip-inner { transform: rotateY(180deg); }
+.mosaic-face {
+  border-radius: 12px; overflow: hidden;
+  background: var(--white);
+  box-shadow: 0 1px 2px rgba(26,58,31,.06), 0 10px 26px rgba(26,58,31,.07);
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+}
+.mosaic-face-front { display: flex; flex-direction: column; }
+.mosaic-face-back {
+  position: absolute; inset: 0;
+  transform: rotateY(180deg);
+  display: flex; flex-direction: column;
+  padding: .95rem 1.05rem;
+  border: 1px solid rgba(26,58,31,.12);
+  overflow: hidden;
+}
+/* Hint that the card is interactive */
+.mosaic-flip-hint {
+  position: absolute; top: .55rem; right: .6rem; z-index: 2;
+  display: inline-flex; align-items: center; gap: .25rem;
+  background: rgba(26,58,31,.66); color: #fff;
+  font-size: .64rem; font-weight: 600; letter-spacing: .02em;
+  padding: .2rem .45rem; border-radius: 20px;
+  pointer-events: none; opacity: 0; transition: opacity .25s ease;
+}
+.mosaic-card.flip:hover .mosaic-flip-hint { opacity: 1; }
+.mosaic-card.flip.is-flipped .mosaic-flip-hint { display: none; }
+
+/* Back-of-card content */
+.obs-back-head { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.5rem; }
+.obs-back-name { font-weight:700; font-size:.96rem; color:var(--green-deep); line-height:1.15; }
+.obs-status {
+  display:inline-flex; align-items:center; gap:.3rem;
+  font-size:.7rem; font-weight:600; padding:.18rem .5rem; border-radius:16px;
+  white-space:nowrap; flex-shrink:0;
+}
+.obs-status.working { background:#fbeedd; color:#7a5a12; }
+.obs-status.confirmed { background:#e3f0e5; color:#1a3a1f; }
+.obs-rows { width:100%; font-size:.76rem; border-collapse:collapse; }
+.obs-rows td { padding:.28rem 0; vertical-align:top; }
+.obs-rows td.k { color:var(--text-soft); padding-right:.6rem; white-space:nowrap; }
+.obs-rows td.v { text-align:right; color:#2b2e26; font-weight:600; }
+.obs-rows td.v em { font-weight:500; }
+.obs-ladder { border-top:1px solid rgba(26,58,31,.1); margin-top:.55rem; padding-top:.5rem; }
+.obs-ladder-label { font-size:.6rem; letter-spacing:.05em; text-transform:uppercase; color:var(--text-soft); margin-bottom:.2rem; }
+.obs-ladder-path { font-size:.72rem; color:var(--text-soft); line-height:1.5; }
+.obs-ladder-path strong { color:var(--green-deep); }
+.obs-next {
+  margin-top:auto; background:var(--cream,#faf8f3); border-radius:8px;
+  padding:.5rem .6rem; font-size:.72rem; color:var(--text-soft); line-height:1.5;
+}
+.obs-back-foot { margin-top:.5rem; font-size:.64rem; color:var(--text-soft); display:flex; align-items:center; gap:.3rem; }
+.obs-back-foot a { color:var(--green-mid); font-weight:600; text-decoration:none; }
+
 @media (max-width: 980px) { .live-mosaic { grid-template-columns: repeat(3, 1fr); } .mosaic-card:nth-child(7), .mosaic-card:nth-child(8) { display: none; } }
 @media (max-width: 680px) { .live-mosaic { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .mosaic-card:nth-child(7), .mosaic-card:nth-child(8) { display: flex; } }
 @media (max-width: 380px) { .live-mosaic { grid-template-columns: 1fr; } }
@@ -420,32 +482,156 @@ Promise.all([loadINat(), PSBPPhotos.loadPool()]).then(async ([data]) => {
   if (data.observers) { const el=document.getElementById('statObservers'); if(el){el.textContent=data.observers.toLocaleString();el.classList.remove('pulse');} }
   if (data.week)      { const el=document.getElementById('statWeek');      if(el){el.textContent=data.week.toLocaleString();el.classList.remove('pulse');} }
 
-  const obs  = await loadRecentObs({ count: 8 });
+  const obs  = await loadSeenLately(8);
   const grid = document.getElementById('mosaicGrid');
   if (!obs.length) {
     grid.innerHTML = '<p class="text-soft" style="grid-column:1/-1;text-align:center;padding:2rem">No recent observations found.</p>';
     return;
   }
-  grid.innerHTML = obs.map(o => {
-    const photo = o.photos?.[0] || {};
-    const url   = photo.url?.replace('square','medium');
-    if (!url) return '';
-    const common = o.species_guess || o.taxon?.preferred_common_name || o.taxon?.name || 'Unknown';
-    const sci    = o.taxon?.name && o.taxon.name !== common ? o.taxon.name : null;
-    const by     = PSBPPhotos.displayName(o.user?.login) || o.user?.name || 'community member';
-    const license = photo.license_code || o.license_code || null;
-    // "seen lately" = recently SHARED. Show the iNaturalist submission date
-    // (created_at), not when the photo was taken — and no time of day.
-    const submitted = o.created_at_details?.date || o.created_at || null;
-    return `<div class="mosaic-card">
+  grid.innerHTML = obs.map(buildFlipCard).join('');
+
+  // Tap / click / keyboard to flip. Delegated so it covers all cards.
+  grid.addEventListener('click', e => {
+    const card = e.target.closest('.mosaic-card.flip');
+    if (card) card.classList.toggle('is-flipped');
+  });
+  grid.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('.mosaic-card.flip');
+    if (card) { e.preventDefault(); card.classList.toggle('is-flipped'); }
+  });
+});
+
+// ── "What's been seen lately": fetch with the extra fields the flip side needs ──
+// Default iNat objects already carry quality_grade + identifications; we add an
+// explicit field set so taxon.ancestors (the lineage) is guaranteed present.
+async function loadSeenLately(count) {
+  const fields = encodeURIComponent(
+    'id,species_guess,quality_grade,created_at_details,observed_on,' +
+    'user.login,user.name,' +
+    'photos.url,photos.license_code,' +
+    'identifications.id,' +
+    'taxon.name,taxon.rank,taxon.preferred_common_name,' +
+    'taxon.ancestors.name,taxon.ancestors.rank,taxon.ancestors.preferred_common_name'
+  );
+  const url = `https://api.inaturalist.org/v1/observations`
+    + `?project_id=${INAT_PROJECT}&per_page=${count||8}`
+    + `&order=desc&order_by=created_at&photos=true&fields=${fields}`;
+  try {
+    const r = await fetch(url).then(r => r.json());
+    if (r.results && r.results.length) return r.results;
+  } catch (e) { /* fall through to the simpler loader */ }
+  // last-known-good: the original loader (no ancestors, but still renders)
+  return loadRecentObs({ count });
+}
+
+// ── lay-language helpers (no iNat jargon on the card) ──
+// Rank -> a plain word a visitor understands.
+function rankWord(rank) {
+  const map = {
+    kingdom:'Kingdom', phylum:'Major group', subphylum:'Major group',
+    class:'Class', subclass:'Class', order:'Order', suborder:'Order',
+    superfamily:'Family group', family:'Family', subfamily:'Family',
+    tribe:'Group', genus:'Genus', subgenus:'Genus',
+    species:'Species', subspecies:'Type', variety:'Type', hybrid:'Hybrid'
+  };
+  return map[String(rank||'').toLowerCase()] || 'Group';
+}
+
+// How far along the ID is, in friendly terms — never "Research Grade"/"Casual".
+function idStatus(o) {
+  const rank = String(o.taxon?.rank || '').toLowerCase();
+  const settled = (rank === 'species' || rank === 'subspecies');
+  if (o.quality_grade === 'research' && settled) {
+    return { cls:'confirmed', icon:'\u2713', label:'Confirmed by the community' };
+  }
+  if (settled) {
+    return { cls:'working', icon:'\u2026', label:'Narrowed to a species' };
+  }
+  return { cls:'working', icon:'\u2026', label:'Still being identified' };
+}
+
+// Count of people who've weighed in (deduped by identifier is overkill here;
+// the raw count communicates "people are looking at this").
+function idCount(o) {
+  const n = Array.isArray(o.identifications) ? o.identifications.length
+          : (o.identifications_count || 0);
+  if (!n) return 'Just posted';
+  return n === 1 ? '1 person so far' : `${n} people so far`;
+}
+
+// Build the lineage line: a few meaningful rungs, common name when iNat has one.
+function lineage(o) {
+  const anc = (o.taxon?.ancestors || []).slice();
+  if (o.taxon) anc.push(o.taxon);
+  const keepRanks = ['kingdom','phylum','class','order','family','genus','species'];
+  const rungs = anc.filter(a => keepRanks.includes(String(a.rank||'').toLowerCase()));
+  if (!rungs.length) return '';
+  return rungs.map((a, i) => {
+    const label = a.preferred_common_name || a.name || '';
+    const isLast = i === rungs.length - 1;
+    const safe = label.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return isLast ? `<strong>${safe}</strong>` : safe;
+  }).join(' &rsaquo; ');
+}
+
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function buildFlipCard(o) {
+  const photo = o.photos?.[0] || {};
+  const url   = photo.url?.replace('square','medium');
+  if (!url) return '';
+  const common = o.species_guess || o.taxon?.preferred_common_name || o.taxon?.name || 'Unknown';
+  const sci    = o.taxon?.name && o.taxon.name !== common ? o.taxon.name : null;
+  const by     = PSBPPhotos.displayName(o.user?.login) || o.user?.name || 'community member';
+  const license = photo.license_code || o.license_code || null;
+  const submitted = o.created_at_details?.date || o.created_at || null;
+
+  // back-side fields
+  const status = idStatus(o);
+  const identifiedTo = o.taxon
+    ? `${rankWord(o.taxon.rank)} \u00b7 ${o.taxon.preferred_common_name
+        ? esc(o.taxon.preferred_common_name)
+        : '<em>'+esc(o.taxon.name)+'</em>'}`
+    : 'Not yet placed';
+  const observedDate = o.observed_on
+    ? new Date(o.observed_on+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+    : '\u2014';
+  const ladder = lineage(o);
+  const obsUrl = `https://www.inaturalist.org/observations/${o.id}`;
+
+  const front = `<div class="mosaic-face mosaic-face-front">
       <div class="mosaic-img">
         <div class="mosaic-photo" style="background-image:url('${url}')"></div>
         ${PSBPPhotos.speciesTag({ species: common, scientific: sci })}
       </div>
       ${PSBPPhotos.creditPlate({ by, license, date: submitted, dateLabel: 'Shared' })}
     </div>`;
-  }).join('');
-});
+
+  const back = `<div class="mosaic-face mosaic-face-back">
+      <div class="obs-back-head">
+        <span class="obs-back-name">${esc(common)}</span>
+        <span class="obs-status ${status.cls}">${status.icon} ${esc(status.label)}</span>
+      </div>
+      <table class="obs-rows"><tbody>
+        <tr><td class="k">Identified to</td><td class="v">${identifiedTo}</td></tr>
+        <tr><td class="k">Who's looking</td><td class="v">${esc(idCount(o))}</td></tr>
+        <tr><td class="k">Spotted on</td><td class="v">${esc(observedDate)}</td></tr>
+        <tr><td class="k">Found by</td><td class="v">${esc(by)}</td></tr>
+      </tbody></table>
+      ${ladder ? `<div class="obs-ladder">
+        <div class="obs-ladder-label">Where it fits</div>
+        <div class="obs-ladder-path">${ladder}</div>
+      </div>` : ''}
+      <div class="obs-next">An expert will confirm or refine this ID. Strong photos &mdash; or species new to the park &mdash; earn a permanent spot here.</div>
+      <div class="obs-back-foot"><span aria-hidden="true">\u21BA</span> tap to flip back &nbsp;\u00b7&nbsp; <a href="${obsUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">see on iNaturalist</a></div>
+    </div>`;
+
+  return `<div class="mosaic-card flip" tabindex="0" role="button" aria-label="${esc(common)} — tap to see observation details">
+      <span class="mosaic-flip-hint"><span aria-hidden="true">\u21BA</span> tap</span>
+      <div class="mosaic-flip-inner">${front}${back}</div>
+    </div>`;
+}
 
 loadAnnouncements('annCycleWrap');
 loadEvents('homeEvents', 4);
