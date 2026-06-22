@@ -10,6 +10,7 @@ Usage:
     python3 plant_publisher.py --validate       # Compare existing HTML hero paths against photo_credits
     python3 plant_publisher.py --generate PSBP-00003  # Generate one species
     python3 plant_publisher.py --clean          # Remove non-html entries from plants.json
+    python3 plant_publisher.py --demote PSBP-00003  # Pull back html → spotted
 
 Dashboard workflow:
     1. Browse species by status (html / spotted / research)
@@ -842,6 +843,8 @@ DASHBOARD_HTML = """\
   .btn-publish:disabled { background:#333; color:#666; cursor:not-allowed; }
   .btn-preview { background:#3a3a2e; color:#e8e3d8; }
   .btn-preview:hover { background:#4a4a3e; }
+  .btn-demote { background:#6a3520; color:#fff; }
+  .btn-demote:hover { background:#8a4530; }
   .btn-regen { background:#7a5000; color:#fff; }
   .btn-regen:hover { background:#b8942a; }
   .action-msg { font-size:12px; color:#4a9e56; margin-left:auto; }
@@ -996,6 +999,7 @@ function renderDetail(id) {
           ${species.status === 'html' ? '♻️ Regenerate & Publish' : '🚀 Publish to HTML'}
         </button>
         <button class="btn btn-preview" onclick="doPreview('${id}')">👁 Preview HTML</button>
+        ${species.status === 'html' ? `<button class="btn btn-demote" onclick="doDemote('${id}')">⬇ Demote to Spotted</button>` : ''}
         <span class="action-msg" id="action-msg"></span>
       </div>
 
@@ -1130,6 +1134,37 @@ async function doPublish(id) {
 
 async function doPreview(id) {
   window.open('/api/preview?id=' + id, '_blank');
+}
+
+async function doDemote(id) {
+  if (!confirm('Demote this species to spotted? It will be removed from plants.json.')) return;
+  const msg = document.getElementById('action-msg');
+  msg.textContent = 'Demoting…';
+  msg.style.color = '#d4aa40';
+  try {
+    const resp = await fetch('/api/demote', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({id})
+    });
+    const result = await resp.json();
+    if (result.ok) {
+      msg.textContent = '✓ Demoted to spotted';
+      msg.style.color = '#d4aa40';
+      showToast(result.message);
+      const dresp = await fetch('/api/data');
+      DATA = await dresp.json();
+      renderCounts();
+      renderList();
+      renderDetail(id);
+    } else {
+      msg.textContent = '✗ ' + result.error;
+      msg.style.color = '#c44';
+    }
+  } catch(e) {
+    msg.textContent = '✗ Network error';
+    msg.style.color = '#c44';
+  }
 }
 
 function showToast(text) {
@@ -1289,6 +1324,41 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
 
             except Exception as e:
                 self._json_response({"ok": False, "error": str(e)}, 500)
+
+        elif self.path == "/api/demote":
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length))
+            pid = body.get("id")
+            if not pid:
+                self._json_response({"ok": False, "error": "Missing id"}, 400)
+                return
+            try:
+                signage = load_signage()
+                species = build_species_lookup(signage).get(pid)
+                if not species:
+                    self._json_response({"ok": False, "error": f"{pid} not found"}, 404)
+                    return
+                if species["status"] != "html":
+                    self._json_response({"ok": False, "error": f"{pid} is already {species['status']}"}, 400)
+                    return
+
+                update_signage_status(pid, "spotted")
+
+                entries = load_plants_json()
+                entries = [e for e in entries if e["id"] != pid]
+                entries.sort(key=lambda e: e["id"])
+                tmp = PLANTS_JSON.with_suffix(".tmp")
+                tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+                tmp.rename(PLANTS_JSON)
+
+                self._json_response({
+                    "ok": True,
+                    "message": f"{species['common_name']} demoted to spotted",
+                })
+                print(f"  ⬇ Demoted {pid} {species['common_name']} → spotted")
+            except Exception as e:
+                self._json_response({"ok": False, "error": str(e)}, 500)
+
         else:
             self.send_response(404)
             self.end_headers()
@@ -1425,6 +1495,44 @@ def cmd_generate_one(pid):
     print(f"  ✓ plants.json updated for {pid}")
 
 
+def cmd_demote(pid):
+    """Demote a species from html → spotted. Removes from plants.json, keeps HTML file on disk."""
+    signage = load_signage()
+    species_lookup = build_species_lookup(signage)
+
+    species = species_lookup.get(pid)
+    if not species:
+        print(f"  ✗ {pid} not found in plant_signage.json")
+        sys.exit(1)
+
+    if species["status"] != "html":
+        print(f"  ✗ {pid} {species['common_name']} is already status={species['status']}")
+        sys.exit(1)
+
+    # Demote status in signage
+    update_signage_status(pid, "spotted")
+
+    # Remove from plants.json
+    entries = load_plants_json()
+    before = len(entries)
+    entries = [e for e in entries if e["id"] != pid]
+    if len(entries) < before:
+        entries.sort(key=lambda e: e["id"])
+        tmp = PLANTS_JSON.with_suffix(".tmp")
+        tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        tmp.rename(PLANTS_JSON)
+        print(f"  ✓ Removed from plants.json ({before} → {len(entries)} entries)")
+    else:
+        print(f"  ⚠ {pid} was not in plants.json")
+
+    # Note about HTML file
+    html_path = PLANTS_DIR / page_filename(pid, species["common_name"])
+    print(f"  ✓ {pid} {species['common_name']} demoted to spotted")
+    if html_path.exists():
+        print(f"  ℹ HTML file kept on disk: {html_path.name}")
+        print(f"    Delete manually if needed: rm {html_path}")
+
+
 def main():
     if len(sys.argv) < 2:
         cmd_dashboard()
@@ -1436,6 +1544,8 @@ def main():
         cmd_clean()
     elif sys.argv[1] == "--generate" and len(sys.argv) >= 3:
         cmd_generate_one(sys.argv[2])
+    elif sys.argv[1] == "--demote" and len(sys.argv) >= 3:
+        cmd_demote(sys.argv[2])
     else:
         print(__doc__)
         sys.exit(1)

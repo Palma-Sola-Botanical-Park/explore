@@ -10,6 +10,7 @@ Usage:
     python3 wildlife_publisher.py --validate           # Compare existing HTML against JSON sources
     python3 wildlife_publisher.py --generate PSBP-99981  # Generate one species
     python3 wildlife_publisher.py --clean              # Remove non-html entries from wildlife.json
+    python3 wildlife_publisher.py --demote PSBP-99981  # Pull back html → spotted
 
 Gallery photos are served from iNaturalist CDN (not stored locally).
 Hero photos use local paths (photos/PSBP-xxxxx/<filename>.jpg).
@@ -636,6 +637,8 @@ DASHBOARD_HTML = """\
   .btn-publish:disabled { background:#333; color:#666; cursor:not-allowed; }
   .btn-preview { background:#2a3038; color:#e8e3d8; }
   .btn-preview:hover { background:#3a4048; }
+  .btn-demote { background:#6a3520; color:#fff; }
+  .btn-demote:hover { background:#8a4530; }
   .action-msg { font-size:12px; color:#4a9e56; margin-left:auto; }
   .data-section { margin-bottom:16px; background:#181e24; border-radius:10px; overflow:hidden; border:1px solid #2a3038; }
   .data-section-header { padding:10px 16px; background:#235e86; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#d4aa40; cursor:pointer; user-select:none; display:flex; justify-content:space-between; }
@@ -676,10 +679,11 @@ function renderCounts(){const c={html:0,spotted:0,research:0};DATA.species.forEa
 function renderFilters(){const bar=document.getElementById('filters');['html','spotted','research'].forEach(st=>{const b=document.createElement('button');b.className='filter-btn active';b.dataset.status=st;b.textContent=st;b.onclick=()=>{activeFilters.has(st)?activeFilters.delete(st):activeFilters.add(st);b.classList.toggle('active');renderList();};bar.appendChild(b);});}
 function renderList(){const q=(document.getElementById('search').value||'').toLowerCase();const list=document.getElementById('species-list');list.innerHTML='';DATA.species.filter(s=>{if(!activeFilters.has(s.status))return false;if(q){const hay=(s.common_name+' '+s.scientific_name+' '+s.id+' '+(s.animal_group||'')+' '+(s.tags||[]).join(' ')).toLowerCase();if(!hay.includes(q))return false;}return true;}).forEach(s=>{const d=document.createElement('div');d.className='species-item'+(s.id===selectedId?' selected':'');d.innerHTML='<div class="dot '+s.status+'"></div><div class="info"><div class="name">'+esc(s.common_name)+'</div><div class="sci">'+esc(s.scientific_name)+'</div></div><div class="id-tag">'+s.id+'</div>';d.onclick=()=>{selectedId=s.id;renderList();renderDetail(s.id);};list.appendChild(d);});}
 function renderDetail(id){const s=DATA.species.find(x=>x.id===id),hero=DATA.heroes[id]||null,gallery=DATA.galleries[id]||[],hasHero=!!hero;const main=document.getElementById('main');const heroUrl=hasHero?hero.photo_url:'';const heroHtml=hasHero?'<img src="'+esc(heroUrl)+'" alt="'+esc(s.common_name)+'">':'<div class="no-hero">No hero photo</div>';const pj=DATA.wj_lookup[id];
-main.innerHTML='<div class="detail"><div class="detail-header"><div class="detail-hero">'+heroHtml+'</div><div class="detail-meta"><h2>'+esc(s.common_name)+'</h2><div class="sci">'+esc(s.scientific_name)+'</div><div class="meta-row"><strong>ID:</strong> '+s.id+'</div><div class="meta-row"><strong>Group:</strong> '+esc(s.animal_group||'')+'</div><div class="meta-row"><strong>Category:</strong> '+esc(s.category||'')+'</div><div class="meta-row"><strong>Gallery photos:</strong> '+gallery.length+'</div><div class="meta-row"><strong>In wildlife.json:</strong> '+(pj?'Yes':'No')+'</div>'+(hasHero?'<div class="meta-row"><strong>Hero:</strong> '+esc(hero.photographer_name||hero.photographer)+' · '+esc(hero.filename||'')+'</div>':'<div class="meta-row" style="color:#c49a20"><strong>⚠ No hero photo</strong></div>')+'</div></div><div class="action-bar"><span class="status-badge '+s.status+'">'+s.status.toUpperCase()+'</span><button class="btn btn-publish" onclick="doPublish(\''+id+'\')" '+(hasHero?'':'disabled title="Needs hero photo"')+'>'+(s.status==='html'?'♻️ Regenerate':'🚀 Publish')+'</button><button class="btn btn-preview" onclick="window.open(\'/api/preview?id='+id+'\',\'_blank\')">👁 Preview</button><span class="action-msg" id="action-msg"></span></div>'+buildSections(s,gallery)+'</div>';}
+main.innerHTML='<div class="detail"><div class="detail-header"><div class="detail-hero">'+heroHtml+'</div><div class="detail-meta"><h2>'+esc(s.common_name)+'</h2><div class="sci">'+esc(s.scientific_name)+'</div><div class="meta-row"><strong>ID:</strong> '+s.id+'</div><div class="meta-row"><strong>Group:</strong> '+esc(s.animal_group||'')+'</div><div class="meta-row"><strong>Category:</strong> '+esc(s.category||'')+'</div><div class="meta-row"><strong>Gallery photos:</strong> '+gallery.length+'</div><div class="meta-row"><strong>In wildlife.json:</strong> '+(pj?'Yes':'No')+'</div>'+(hasHero?'<div class="meta-row"><strong>Hero:</strong> '+esc(hero.photographer_name||hero.photographer)+' · '+esc(hero.filename||'')+'</div>':'<div class="meta-row" style="color:#c49a20"><strong>⚠ No hero photo</strong></div>')+'</div></div><div class="action-bar"><span class="status-badge '+s.status+'">'+s.status.toUpperCase()+'</span><button class="btn btn-publish" onclick="doPublish(\''+id+'\')" '+(hasHero?'':'disabled title="Needs hero photo"')+'>'+(s.status==='html'?'♻️ Regenerate':'🚀 Publish')+'</button><button class="btn btn-preview" onclick="window.open(\'/api/preview?id='+id+'\',\'_blank\')">👁 Preview</button>'+(s.status==='html'?'<button class="btn btn-demote" onclick="doDemote(\''+id+'\')">⬇ Demote</button>':'')+'<span class="action-msg" id="action-msg"></span></div>'+buildSections(s,gallery)+'</div>';}
 function buildSections(s,gallery){let h='';if(s.quick_hits?.length)h+=ds('Quick Hits',s.quick_hits.map((q,i)=>'<div class="text-block">'+(i+1)+'. '+esc(q)+'</div>').join(''));if(s.identification){let r='';(s.identification.blocks||[]).forEach(b=>{r+='<div class="data-row"><div class="label">'+esc(b.label)+'</div><div class="value">'+esc(b.text)+'</div></div>';});if(s.identification.what_to_look_for)r+='<div class="data-row"><div class="label">Look for</div><div class="value">'+esc(s.identification.what_to_look_for)+'</div></div>';h+=ds('Identification',r);}if(s.diet)h+=ds('Diet','<div class="text-block">'+esc(s.diet)+'</div>');if(s.where_to_look||s.when_to_see)h+=ds('Where & When','<div class="data-row"><div class="label">Where</div><div class="value">'+esc(s.where_to_look||'')+'</div></div><div class="data-row"><div class="label">When</div><div class="value">'+esc(s.when_to_see||'')+'</div></div>');if(s.more_information?.length)h+=ds('More Information',s.more_information.map(p=>'<div class="text-block">'+esc(p)+'</div>').join(''));if(s.interaction)h+=ds('Interaction','<div class="data-row"><div class="label">Level: '+esc(s.interaction.level||'')+'</div><div class="value">'+esc(s.interaction.guidance||'')+'</div></div>');if(gallery.length>1){let g='<div class="gal-preview">';gallery.forEach(p=>{if(p.photo_url)g+='<img src="'+esc(p.photo_url)+'">';});g+='</div>';h+=ds('Gallery ('+gallery.length+' photos)',g);}if(s.tags?.length)h+=ds('Tags','<div>'+s.tags.map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div>');return h;}
 function ds(title,body){return '<div class="data-section"><div class="data-section-header" onclick="this.nextElementSibling.classList.toggle(\'collapsed\')">'+esc(title)+' <span class="toggle">▾</span></div><div class="data-section-body">'+body+'</div></div>';}
 async function doPublish(id){const msg=document.getElementById('action-msg');msg.textContent='Publishing…';msg.style.color='#d4aa40';try{const r=await(await fetch('/api/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})})).json();if(r.ok){msg.textContent='✓ Published';msg.style.color='#4a9e56';showToast('Published '+r.filename);DATA=await(await fetch('/api/data')).json();renderCounts();renderList();renderDetail(id);}else{msg.textContent='✗ '+r.error;msg.style.color='#c44';}}catch(e){msg.textContent='✗ Network error';msg.style.color='#c44';}}
+async function doDemote(id){if(!confirm('Demote this species to spotted? It will be removed from wildlife.json.'))return;const msg=document.getElementById('action-msg');msg.textContent='Demoting…';msg.style.color='#d4aa40';try{const r=await(await fetch('/api/demote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})})).json();if(r.ok){msg.textContent='✓ Demoted';msg.style.color='#d4aa40';showToast(r.message);DATA=await(await fetch('/api/data')).json();renderCounts();renderList();renderDetail(id);}else{msg.textContent='✗ '+r.error;msg.style.color='#c44';}}catch(e){msg.textContent='✗ Network error';msg.style.color='#c44';}}
 function showToast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
 function esc(s){if(!s)return '';const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 document.getElementById('search').addEventListener('input',renderList);
@@ -804,6 +808,35 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 print(f"  ✓ Published {pid} → {path.name}")
             except Exception as e:
                 self._json({"ok": False, "error": str(e)}, 500)
+
+        elif self.path == "/api/demote":
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length))
+            pid = body.get("id")
+            if not pid:
+                self._json({"ok": False, "error": "Missing id"}, 400)
+                return
+            try:
+                signage = load_signage()
+                sp = build_species_lookup(signage).get(pid)
+                if not sp:
+                    self._json({"ok": False, "error": f"{pid} not found"}, 404)
+                    return
+                if sp["status"] != "html":
+                    self._json({"ok": False, "error": f"{pid} is already {sp['status']}"}, 400)
+                    return
+                update_signage_status(pid, "spotted")
+                entries = load_wildlife_json()
+                entries = [e for e in entries if e["id"] != pid]
+                entries.sort(key=lambda e: e["id"])
+                tmp = WILDLIFE_JSON.with_suffix(".tmp")
+                tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+                tmp.rename(WILDLIFE_JSON)
+                self._json({"ok": True, "message": f"{sp['common_name']} demoted to spotted"})
+                print(f"  ⬇ Demoted {pid} {sp['common_name']} → spotted")
+            except Exception as e:
+                self._json({"ok": False, "error": str(e)}, 500)
+
         else:
             self.send_response(404)
             self.end_headers()
@@ -935,8 +968,38 @@ def main():
         cmd_generate_one(sys.argv[2])
     elif sys.argv[1] == "--clean":
         cmd_clean()
+    elif sys.argv[1] == "--demote" and len(sys.argv) >= 3:
+        cmd_demote(sys.argv[2])
     else:
         print(__doc__); sys.exit(1)
+
+
+def cmd_demote(pid):
+    """Demote a species from html → spotted."""
+    signage = load_signage()
+    sp = build_species_lookup(signage).get(pid)
+    if not sp:
+        print(f"  ✗ {pid} not found"); sys.exit(1)
+    if sp["status"] != "html":
+        print(f"  ✗ {pid} {sp['common_name']} is already status={sp['status']}"); sys.exit(1)
+
+    update_signage_status(pid, "spotted")
+
+    entries = load_wildlife_json()
+    before = len(entries)
+    entries = [e for e in entries if e["id"] != pid]
+    if len(entries) < before:
+        entries.sort(key=lambda e: e["id"])
+        tmp = WILDLIFE_JSON.with_suffix(".tmp")
+        tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        tmp.rename(WILDLIFE_JSON)
+        print(f"  ✓ Removed from wildlife.json ({before} → {len(entries)})")
+
+    html_path = WILDLIFE_DIR / page_filename(pid, sp["common_name"])
+    print(f"  ✓ {pid} {sp['common_name']} demoted to spotted")
+    if html_path.exists():
+        print(f"  ℹ HTML kept on disk: {html_path.name}")
+        print(f"    Delete manually if needed: rm {html_path}")
 
 if __name__ == "__main__":
     main()
