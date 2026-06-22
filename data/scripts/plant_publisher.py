@@ -63,6 +63,22 @@ def build_hero_lookup(credits):
             heroes[p["psbp_id"]] = p
     return heroes
 
+def build_gallery_lookup(credits):
+    """Map psbp_id → list of gallery photos (hero first, then others)."""
+    galleries = {}
+    for p in credits["photos"]:
+        if p.get("type") != "Plant":
+            continue
+        if "gallery" not in (p.get("role") or []):
+            continue
+        pid = p["psbp_id"]
+        if pid not in galleries:
+            galleries[pid] = []
+        galleries[pid].append(p)
+    for pid in galleries:
+        galleries[pid].sort(key=lambda p: (not p.get("hero", False), p.get("photo_id", "")))
+    return galleries
+
 def build_species_lookup(signage):
     return {s["id"]: s for s in signage["species"]}
 
@@ -142,10 +158,9 @@ PLANT_CSS = """\
   .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
   @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
 
-  /* Hero -- tap the photo to open the full image in /photos/ */
+  /* Hero -- tap the photo to open the gallery lightbox */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
-  .plant-hero-link { display:block;width:100%;height:100%; }
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:FOCUS_PLACEHOLDER;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -229,6 +244,27 @@ PLANT_CSS = """\
   /* Back to plants link */
   .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
   .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#ccc;font-size:13px;margin-top:10px;font-style:italic; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
 
   /* Fade-in animation */
   .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
@@ -458,7 +494,96 @@ def render_aliases(species):
   </div>"""
 
 
-def generate_html(species, hero):
+def render_gallery(species, gallery_photos, hero):
+    """Render photo gallery section with lightbox.
+
+    Hero (index 0): local path ../photos/PSBP-xxxxx/<filename>.jpg
+    Gallery photos (index 1+): iNaturalist CDN URLs (not stored locally)
+    If only one image (hero), lightbox still works but no prev/next buttons.
+    """
+    if not gallery_photos and not hero:
+        return "", ""
+
+    pid = species["id"]
+    common = species["common_name"]
+
+    # Build lightbox data: hero first, then gallery
+    lb_data = []
+    if hero:
+        lb_data.append({
+            "src": f"../photos/{pid}/{hero['filename']}",
+            "credit": hero.get("photographer", "Unknown"),
+            "license": hero.get("license", ""),
+        })
+
+    grid_items = []
+    for p in (gallery_photos or []):
+        if p.get("hero"):
+            continue
+        url = p.get("photo_url", "")
+        if not url:
+            continue
+        idx = len(lb_data)
+        photographer = p.get("photographer", "Unknown")
+        lb_data.append({
+            "src": url,
+            "credit": photographer,
+            "license": p.get("license", ""),
+        })
+        grid_items.append(
+            f'<div class="gal-item" onclick="openLB({idx})">'
+            f'<img src="{h(url)}" loading="lazy" alt="{h(common)} — photo by {h(photographer)}">'
+            f'<div class="gal-credit">📷 {h(photographer)}</div></div>'
+        )
+
+    # Gallery section (only if there are non-hero photos)
+    if grid_items:
+        gallery_html = (
+            f'  <div class="plant-section"><div class="plant-section-header">'
+            f'<span class="plant-section-icon">📸</span>'
+            f'<span class="plant-section-title">Photo Gallery</span></div>\n'
+            f'    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>\n'
+            f'    <div class="gal-grid">{"".join(grid_items)}</div></div>'
+        )
+    else:
+        gallery_html = ""
+
+    if not lb_data:
+        return "", ""
+
+    # Prev/next buttons only if more than one photo
+    multi = len(lb_data) > 1
+    nav_buttons = (
+        '        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>\n'
+        '        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>\n'
+    ) if multi else ""
+    counter_html = '        <div class="lb-counter" id="lbCounter"></div>' if multi else ""
+    counter_js = "document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;" if multi else ""
+    step_js = "function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}" if multi else ""
+    arrow_js = "if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);" if multi else ""
+
+    lb_json = json.dumps(lb_data, ensure_ascii=False)
+    lightbox_html = f"""    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+{nav_buttons}        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+{counter_html}
+      </div>
+    </div>
+    <script>
+    var lbData={lb_json};
+    var lbIdx=0;
+    function openLB(i){{lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';{counter_js}document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}}
+    function closeLB(e){{if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}}
+    {step_js}
+    document.addEventListener('keydown',function(e){{if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();{arrow_js}}});
+    </script>"""
+
+    return gallery_html, lightbox_html
+
+
+def generate_html(species, hero, gallery_photos=None):
     """Generate the complete HTML page for a species."""
     pid = species["id"]
     common = species["common_name"]
@@ -470,7 +595,7 @@ def generate_html(species, hero):
     cat_html = h(cat_display)  # This properly escapes & to &amp;
 
     focus = hero.get("focus", "50% 50%") if hero else "50% 50%"
-    css = PLANT_CSS.replace("FOCUS_PLACEHOLDER", focus)
+    css = PLANT_CSS
 
     # Hero image path (relative from plants/ directory)
     if hero:
@@ -487,6 +612,7 @@ def generate_html(species, hero):
         credit_html = "📷 Photo credit pending"
 
     # Build all sections
+    gallery_section, lightbox_section = render_gallery(species, gallery_photos, hero)
     sections = []
     sections.append(render_quick_hits(species))
     sections.append(render_origin(species))
@@ -496,6 +622,8 @@ def generate_html(species, hero):
     sections.append(render_size_and_growing(species))
     sections.append(render_safety(species))
     sections.append(render_notes(species))
+    if gallery_section:
+        sections.append(gallery_section)
     sections.append(render_aliases(species))
     content = "\n".join(s for s in sections if s)
 
@@ -515,9 +643,7 @@ def generate_html(species, hero):
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="{hero_path}" target="_blank" rel="noopener">
-    <img src="{hero_path}" alt="{h(common)} at Palma Sola Botanical Park" loading="lazy">
-  </a>
+  <img style="cursor:pointer;object-position:{h(focus)}" src="{hero_path}" alt="{h(common)} at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">{cat_html}</div>
     <div class="plant-hero-name">{h(common)}</div>
@@ -533,7 +659,7 @@ def generate_html(species, hero):
     {render_badges(species)}
   </div>
 {content}
-
+{lightbox_section}
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
 </div>
 </div><!-- /.plant-wrap -->
@@ -550,9 +676,9 @@ injectShared({{ inatBar: false }});
 
 # ── File writers ────────────────────────────────────────────────────────────
 
-def write_html(species, hero, dry_run=False):
+def write_html(species, hero, gallery_photos=None, dry_run=False):
     """Write HTML file to plants/ directory. Returns the path written."""
-    html_content = generate_html(species, hero)
+    html_content = generate_html(species, hero, gallery_photos)
     filename = page_filename(species["id"], species["common_name"])
     path = PLANTS_DIR / filename
     if dry_run:
@@ -1093,6 +1219,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             signage = load_signage()
             credits = load_credits()
             heroes = build_hero_lookup(credits)
+            galleries = build_gallery_lookup(credits)
             species_lookup = build_species_lookup(signage)
             species = species_lookup.get(pid)
             if not species:
@@ -1100,7 +1227,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 return
             hero = heroes.get(pid)
             # Generate preview with absolute image URLs (iNat) for browser viewing
-            preview_html = generate_html(species, hero)
+            preview_html = generate_html(species, hero, galleries.get(pid, []))
             # Replace relative photo paths with absolute iNat URLs for preview
             if hero and hero.get("photo_url"):
                 rel_path = f"../photos/{pid}/{hero['filename']}"
@@ -1130,6 +1257,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 signage = load_signage()
                 credits = load_credits()
                 heroes = build_hero_lookup(credits)
+                galleries = build_gallery_lookup(credits)
                 species_lookup = build_species_lookup(signage)
 
                 species = species_lookup.get(pid)
@@ -1143,7 +1271,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                     return
 
                 # Generate HTML
-                path, _ = write_html(species, hero)
+                path, _ = write_html(species, hero, galleries.get(pid, []))
 
                 # Update plants.json
                 entry = update_plants_json(species, hero)
@@ -1214,6 +1342,7 @@ def cmd_generate_all():
     signage = load_signage()
     credits = load_credits()
     heroes = build_hero_lookup(credits)
+    galleries = build_gallery_lookup(credits)
 
     # Rebuild plants.json from scratch — only status=html species
     fresh_entries = []
@@ -1227,7 +1356,7 @@ def cmd_generate_all():
             print(f"  ⚠ {species['id']} {species['common_name']}: no hero photo, skipping HTML + plants.json")
             skipped += 1
             continue
-        path, _ = write_html(species, hero)
+        path, _ = write_html(species, hero, galleries.get(species["id"], []))
         fresh_entries.append(build_plants_json_entry(species, hero))
         count += 1
 
@@ -1278,6 +1407,7 @@ def cmd_generate_one(pid):
     signage = load_signage()
     credits = load_credits()
     heroes = build_hero_lookup(credits)
+    galleries = build_gallery_lookup(credits)
     species_lookup = build_species_lookup(signage)
 
     species = species_lookup.get(pid)
@@ -1289,7 +1419,7 @@ def cmd_generate_one(pid):
     if not hero:
         print(f"  ⚠ No hero photo for {pid} — generating with placeholder path")
 
-    path, _ = write_html(species, hero)
+    path, _ = write_html(species, hero, galleries.get(pid, []))
     entry = update_plants_json(species, hero)
     print(f"  ✓ {path}")
     print(f"  ✓ plants.json updated for {pid}")
