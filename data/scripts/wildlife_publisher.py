@@ -674,12 +674,12 @@ DASHBOARD_HTML = """\
 <div class="toast" id="toast"></div>
 <script>
 let DATA=null, selectedId=null, activeFilters=new Set(['html','spotted','research']);
-async function init(){DATA=await(await fetch('/api/data')).json();renderCounts();renderFilters();renderList();}
+async function init(){try{const r=await fetch('/api/data');if(!r.ok){document.getElementById('counts').textContent='Error loading data: '+r.status;return;}DATA=await r.json();if(DATA.error){document.getElementById('counts').textContent='Server error: '+DATA.error;return;}renderCounts();renderFilters();renderList();}catch(e){document.getElementById('counts').textContent='Failed to connect: '+e.message;}}
 function renderCounts(){const c={html:0,spotted:0,research:0};DATA.species.forEach(s=>c[s.status]=(c[s.status]||0)+1);document.getElementById('counts').textContent=c.html+' html · '+c.spotted+' spotted · '+c.research+' research · '+DATA.species.length+' total';}
 function renderFilters(){const bar=document.getElementById('filters');['html','spotted','research'].forEach(st=>{const b=document.createElement('button');b.className='filter-btn active';b.dataset.status=st;b.textContent=st;b.onclick=()=>{activeFilters.has(st)?activeFilters.delete(st):activeFilters.add(st);b.classList.toggle('active');renderList();};bar.appendChild(b);});}
 function renderList(){const q=(document.getElementById('search').value||'').toLowerCase();const list=document.getElementById('species-list');list.innerHTML='';DATA.species.filter(s=>{if(!activeFilters.has(s.status))return false;if(q){const hay=(s.common_name+' '+s.scientific_name+' '+s.id+' '+(s.animal_group||'')+' '+(s.tags||[]).join(' ')).toLowerCase();if(!hay.includes(q))return false;}return true;}).forEach(s=>{const d=document.createElement('div');d.className='species-item'+(s.id===selectedId?' selected':'');d.innerHTML='<div class="dot '+s.status+'"></div><div class="info"><div class="name">'+esc(s.common_name)+'</div><div class="sci">'+esc(s.scientific_name)+'</div></div><div class="id-tag">'+s.id+'</div>';d.onclick=()=>{selectedId=s.id;renderList();renderDetail(s.id);};list.appendChild(d);});}
 function renderDetail(id){const s=DATA.species.find(x=>x.id===id),hero=DATA.heroes[id]||null,gallery=DATA.galleries[id]||[],hasHero=!!hero;const main=document.getElementById('main');const heroUrl=hasHero?hero.photo_url:'';const heroHtml=hasHero?'<img src="'+esc(heroUrl)+'" alt="'+esc(s.common_name)+'">':'<div class="no-hero">No hero photo</div>';const pj=DATA.wj_lookup[id];
-main.innerHTML='<div class="detail"><div class="detail-header"><div class="detail-hero">'+heroHtml+'</div><div class="detail-meta"><h2>'+esc(s.common_name)+'</h2><div class="sci">'+esc(s.scientific_name)+'</div><div class="meta-row"><strong>ID:</strong> '+s.id+'</div><div class="meta-row"><strong>Group:</strong> '+esc(s.animal_group||'')+'</div><div class="meta-row"><strong>Category:</strong> '+esc(s.category||'')+'</div><div class="meta-row"><strong>Gallery photos:</strong> '+gallery.length+'</div><div class="meta-row"><strong>In wildlife.json:</strong> '+(pj?'Yes':'No')+'</div>'+(hasHero?'<div class="meta-row"><strong>Hero:</strong> '+esc(hero.photographer_name||hero.photographer)+' · '+esc(hero.filename||'')+'</div>':'<div class="meta-row" style="color:#c49a20"><strong>⚠ No hero photo</strong></div>')+'</div></div><div class="action-bar"><span class="status-badge '+s.status+'">'+s.status.toUpperCase()+'</span><button class="btn btn-publish" onclick="doPublish(\''+id+'\')" '+(hasHero?'':'disabled title="Needs hero photo"')+'>'+(s.status==='html'?'♻️ Regenerate':'🚀 Publish')+'</button><button class="btn btn-preview" onclick="window.open(\'/api/preview?id='+id+'\',\'_blank\')">👁 Preview</button>'+(s.status==='html'?'<button class="btn btn-demote" onclick="doDemote(\''+id+'\')">⬇ Demote</button>':'')+'<span class="action-msg" id="action-msg"></span></div>'+buildSections(s,gallery)+'</div>';}
+main.innerHTML='<div class="detail"><div class="detail-header"><div class="detail-hero">'+heroHtml+'</div><div class="detail-meta"><h2>'+esc(s.common_name)+'</h2><div class="sci">'+esc(s.scientific_name)+'</div><div class="meta-row"><strong>ID:</strong> '+s.id+'</div><div class="meta-row"><strong>Group:</strong> '+esc(s.animal_group||'')+'</div><div class="meta-row"><strong>Category:</strong> '+esc(s.category||'')+'</div><div class="meta-row"><strong>Gallery photos:</strong> '+gallery.length+'</div><div class="meta-row"><strong>In wildlife.json:</strong> '+(pj?'Yes':'No')+'</div>'+(hasHero?'<div class="meta-row"><strong>Hero:</strong> '+esc(hero.photographer_name||hero.photographer)+' · '+esc(hero.filename||'')+'</div>':'<div class="meta-row" style="color:#c49a20"><strong>⚠ No hero photo</strong></div>')+'</div></div><div class="action-bar"><span class="status-badge '+s.status+'">'+s.status.toUpperCase()+'</span><button class="btn btn-publish" onclick="doPublish(&#39;'+id+'&#39;)" '+(hasHero?'':'disabled title="Needs hero photo"')+'>'+(s.status==='html'?'♻️ Regenerate':'🚀 Publish')+'</button><button class="btn btn-preview" onclick="window.open(&#39;/api/preview?id='+id+'&#39;,&#39;_blank&#39;)">👁 Preview</button>'+(s.status==='html'?'<button class="btn btn-demote" onclick="doDemote(&#39;'+id+'&#39;)">⬇ Demote</button>':'')+'<span class="action-msg" id="action-msg"></span></div>'+buildSections(s,gallery)+'</div>';}
 function buildSections(s,gallery){let h='';if(s.quick_hits?.length)h+=ds('Quick Hits',s.quick_hits.map((q,i)=>'<div class="text-block">'+(i+1)+'. '+esc(q)+'</div>').join(''));if(s.identification){let r='';(s.identification.blocks||[]).forEach(b=>{r+='<div class="data-row"><div class="label">'+esc(b.label)+'</div><div class="value">'+esc(b.text)+'</div></div>';});if(s.identification.what_to_look_for)r+='<div class="data-row"><div class="label">Look for</div><div class="value">'+esc(s.identification.what_to_look_for)+'</div></div>';h+=ds('Identification',r);}if(s.diet)h+=ds('Diet','<div class="text-block">'+esc(s.diet)+'</div>');if(s.where_to_look||s.when_to_see)h+=ds('Where & When','<div class="data-row"><div class="label">Where</div><div class="value">'+esc(s.where_to_look||'')+'</div></div><div class="data-row"><div class="label">When</div><div class="value">'+esc(s.when_to_see||'')+'</div></div>');if(s.more_information?.length)h+=ds('More Information',s.more_information.map(p=>'<div class="text-block">'+esc(p)+'</div>').join(''));if(s.interaction)h+=ds('Interaction','<div class="data-row"><div class="label">Level: '+esc(s.interaction.level||'')+'</div><div class="value">'+esc(s.interaction.guidance||'')+'</div></div>');if(gallery.length>1){let g='<div class="gal-preview">';gallery.forEach(p=>{if(p.photo_url)g+='<img src="'+esc(p.photo_url)+'">';});g+='</div>';h+=ds('Gallery ('+gallery.length+' photos)',g);}if(s.tags?.length)h+=ds('Tags','<div>'+s.tags.map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div>');return h;}
 function ds(title,body){return '<div class="data-section"><div class="data-section-header" onclick="this.nextElementSibling.classList.toggle(\'collapsed\')">'+esc(title)+' <span class="toggle">▾</span></div><div class="data-section-body">'+body+'</div></div>';}
 async function doPublish(id){const msg=document.getElementById('action-msg');msg.textContent='Publishing…';msg.style.color='#d4aa40';try{const r=await(await fetch('/api/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})})).json();if(r.ok){msg.textContent='✓ Published';msg.style.color='#4a9e56';showToast('Published '+r.filename);DATA=await(await fetch('/api/data')).json();renderCounts();renderList();renderDetail(id);}else{msg.textContent='✗ '+r.error;msg.style.color='#c44';}}catch(e){msg.textContent='✗ Network error';msg.style.color='#c44';}}
@@ -696,7 +696,11 @@ init();
 # ── HTTP Server ─────────────────────────────────────────────────────────────
 
 class DashboardHandler(http.server.BaseHTTPRequestHandler):
-    def log_message(self, fmt, *args): pass
+    def log_message(self, fmt, *args):
+        # Only suppress routine 200 access logs; show errors
+        if args and str(args[1]).startswith("2"):
+            return
+        sys.stderr.write(f"  {fmt % args}\n")
 
     def _json(self, data, status=200):
         body = json.dumps(data, ensure_ascii=False).encode("utf-8")
@@ -717,10 +721,15 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
         if parsed.path in ("/", ""):
+            print("  → Dashboard page requested")
             self._html(DASHBOARD_HTML)
         elif parsed.path == "/api/data":
+          try:
+            print(f"  → /api/data requested")
             signage = load_signage()
+            print(f"  → Loaded {len(signage['species'])} species from wildlife_signage.json")
             credits = load_credits()
+            print(f"  → Loaded {len(credits['photos'])} photos from photo_credits.json")
             heroes = build_hero_lookup(credits)
             galleries = build_gallery_lookup(credits)
             wj = load_wildlife_json()
@@ -728,19 +737,19 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             heroes_out = {}
             for pid, hr in heroes.items():
                 heroes_out[pid] = {
-                    "filename": hr.get("filename", ""),
-                    "photo_url": hr.get("photo_url", ""),
-                    "photographer_name": hr.get("photographer_name", ""),
-                    "photographer": hr.get("photographer", ""),
-                    "license": hr.get("license", ""),
-                    "focus": hr.get("focus", "50% 50%"),
+                    "filename": hr.get("filename") or "",
+                    "photo_url": hr.get("photo_url") or "",
+                    "photographer_name": hr.get("photographer_name") or hr.get("photographer") or "",
+                    "photographer": hr.get("photographer") or "",
+                    "license": hr.get("license") or "",
+                    "focus": hr.get("focus") or "50% 50%",
                 }
             galleries_out = {}
             for pid, photos in galleries.items():
                 galleries_out[pid] = [{
-                    "photo_url": p.get("photo_url", ""),
-                    "photographer": p.get("photographer", ""),
-                    "license": p.get("license", ""),
+                    "photo_url": p.get("photo_url") or "",
+                    "photographer": p.get("photographer") or "",
+                    "license": p.get("license") or "",
                     "hero": p.get("hero", False),
                 } for p in photos]
             self._json({
@@ -750,6 +759,11 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 "wj_lookup": wj_lookup,
                 "meta": signage["meta"],
             })
+            print(f"  ✓ Sent {len(signage['species'])} species, {len(heroes_out)} heroes, {len(galleries_out)} galleries")
+          except Exception as e:
+            import traceback
+            traceback.print_exc()
+            self._json({"error": str(e)}, 500)
         elif parsed.path == "/api/preview":
             qs = parse_qs(parsed.query)
             pid = qs.get("id", [None])[0]
