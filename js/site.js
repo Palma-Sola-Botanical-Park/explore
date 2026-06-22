@@ -328,12 +328,15 @@ const INAT_BAR_HTML = `
 function injectShared(opts = {}) {
   // Detect if we're in a subfolder (e.g. /plants/) and prefix links accordingly
   const pathParts = window.location.pathname.split('/').filter(Boolean);
-  const repoName = 'ReworkDemo';
-  const repoIdx = pathParts.indexOf(repoName);
+  const repoName = 'explore';   // ← update to '' after custom-domain migration
+  const repoIdx = repoName ? pathParts.indexOf(repoName) : -1;
   // Only treat as subfolder if there's a directory segment between the repo and the file
-  // e.g. /ReworkDemo/plants/PSBP-00001.html → inSubfolder = true
-  // e.g. /ReworkDemo/nature.html → inSubfolder = false
-  const inSubfolder = repoIdx >= 0 && pathParts.length > repoIdx + 2;
+  // e.g. /explore/plants/PSBP-00001.html → inSubfolder = true
+  // e.g. /explore/nature.html → inSubfolder = false
+  // After custom domain: /plants/PSBP-00001.html → use fallback depth check
+  const inSubfolder = repoIdx >= 0
+    ? pathParts.length > repoIdx + 2
+    : pathParts.length >= 2 && pathParts[pathParts.length - 1].includes('.');
   const base = inSubfolder ? '../' : '';
 
   // Replace relative paths in NAV and FOOTER with correct base
@@ -1185,7 +1188,7 @@ async function loadPlants() {
   try {
     // Determine correct path based on subfolder depth
     const pathParts = window.location.pathname.split('/').filter(Boolean);
-    const repoIdx   = pathParts.indexOf('ReworkDemo');
+    const repoIdx   = pathParts.indexOf('explore');
     const inSubfolder = repoIdx >= 0 && pathParts.length > repoIdx + 2;
     const base = inSubfolder ? '../' : '';
 
@@ -1405,7 +1408,7 @@ async function loadWildlife() {
   try {
     // Determine correct path based on subfolder depth (same logic as loadPlants)
     const pathParts = window.location.pathname.split('/').filter(Boolean);
-    const repoIdx   = pathParts.indexOf('ReworkDemo');
+    const repoIdx   = pathParts.indexOf('explore');
     const inSubfolder = repoIdx >= 0 && pathParts.length > repoIdx + 2;
     const base = inSubfolder ? '../' : '';
 
