@@ -28,7 +28,7 @@
 .nature-hero::before {
   content: '';
   position: absolute; inset: 0;
-  background: url('photos/PSBP-00035-Royal-Palm.jpg') center/cover no-repeat;
+  background: url('photos/PSBP-00001/681679773.jpg') 51% 57% / cover no-repeat;
   opacity: .18;
 }
 .nature-hero > * { position: relative; z-index: 1; }
@@ -107,9 +107,6 @@
 <body>
 
 <div id="nav-placeholder"></div>
-<div id="announcements-bar" style="display:none">
-  <div class="container" style="max-width:1160px;margin:0 auto" id="announcementsList"></div>
-</div>
 
 <!-- HERO -->
 <div class="nature-hero">
@@ -344,9 +341,6 @@ if (_familyParam || _searchParam) {
 
 loadPlants(); // fetches plants.json, renders all plants, then applies any URL filter
 // modal removed — plant cards link directly to detail pages
-
-// Announcements bar — cycling handled inside loadAnnouncements()
-loadAnnouncements('announcementsList');
 
 // Tab logic
 function showTab(name) {
