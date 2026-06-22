@@ -39,7 +39,7 @@
   @media (max-width:480px){ .wild-wrap{ margin:0; border-radius:0; box-shadow:none; min-height:100vh; } }
   .wild-hero{ position:relative; height:300px; overflow:hidden;
     background: radial-gradient(120% 80% at 75% 8%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 42%), linear-gradient(160deg, var(--hero-a) 0%, var(--hero-b) 52%, var(--hero-c) 100%); }
-  .wild-hero img{ position:absolute;inset:0;width:100%;height:100%; object-fit:cover;object-position:center 35%;display:block; }
+  .wild-hero img{ position:absolute;inset:0;width:100%;height:100%; object-fit:cover;display:block; }
   .wild-hero-overlay{ position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent 0%, rgba(8,20,30,0.55) 45%, rgba(8,20,30,0.85) 100%); padding:60px 18px 16px; }
   .wild-hero-category{ font-size:11px;font-weight:700;letter-spacing:3px; text-transform:uppercase;color:var(--gold-light);margin-bottom:5px; }
   .wild-hero-name{ font-family:'Playfair Display',Georgia,serif;font-size:38px; font-weight:700;color:#fff;line-height:1.05;text-shadow:0 2px 12px rgba(0,0,0,0.35); }
@@ -85,22 +85,25 @@
   .wild-safe-section{ margin:12px 12px 0;background:var(--safe-light);border-radius:10px;overflow:hidden; box-shadow:0 2px 8px rgba(20,30,40,0.10);border:1.5px solid rgba(26,92,26,0.2); }
   .wild-safe-section .wild-section-header{ background:var(--safe-dark); }
   .wild-safe-section .wild-section-body p{ color:#0a2a0a; }
+  .wild-danger-section{ margin:12px 12px 0;background:var(--danger-light);border-radius:10px;overflow:hidden; box-shadow:0 2px 8px rgba(20,30,40,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .wild-danger-section .wild-section-header{ background:var(--danger); }
+  .wild-danger-section .wild-section-body p{ color:#4a0a0a;font-weight:500; }
   .all-wild-link{ margin:14px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px; background:var(--parchment);border-radius:10px;padding:14px 18px;text-decoration:none; border:1.5px solid rgba(60,90,110,0.22);color:var(--theme-dark);font-weight:700;font-size:15px;transition:background .4s ease; }
   .all-wild-link:hover{ background:var(--cream); }
   .wild-float-back{ position:fixed;bottom:24px;left:50%;transform:translateX(-50%); background:var(--theme);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px; text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px; transition:background .2s,transform .2s;white-space:nowrap; }
   .wild-float-back:hover{ background:var(--theme-dark);transform:translateX(-50%) translateY(-2px);color:#fff; }
   @media (min-width:481px){ .wild-float-back{ bottom:32px; } }
-  .wild-section,.wild-caution-section,.wild-safe-section,.all-wild-link{ animation:wildFadeUp .6s ease both; }
+  .wild-section,.wild-caution-section,.wild-safe-section,.wild-danger-section,.all-wild-link{ animation:wildFadeUp .6s ease both; }
   .wild-section:nth-child(1){animation-delay:.05s}
   .wild-section:nth-child(2){animation-delay:.10s}
   .wild-section:nth-child(3){animation-delay:.15s}
   .wild-section:nth-child(4){animation-delay:.20s}
   .wild-section:nth-child(5){animation-delay:.25s}
   .wild-section:nth-child(6){animation-delay:.30s}
-  .wild-caution-section,.wild-safe-section{animation-delay:.32s}
+  .wild-caution-section,.wild-safe-section,.wild-danger-section{animation-delay:.32s}
   .all-wild-link{animation-delay:.38s}
   @keyframes wildFadeUp{ from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  @media (prefers-reduced-motion:reduce){ .wild-section,.wild-caution-section,.wild-safe-section,.all-wild-link{ animation:none; } }
+  @media (prefers-reduced-motion:reduce){ .wild-section,.wild-caution-section,.wild-safe-section,.wild-danger-section,.all-wild-link{ animation:none; } }
   .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
   .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
   .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
@@ -137,7 +140,7 @@
   </div>
   <div class="wild-credit">📷 Photo by <strong>robcarr52</strong> · CC-BY-NC · via iNaturalist</div>
   <div class="wild-content">
-    <div class="wild-status-row"><span class="badge badge-native">🌿 Native to Florida</span><span class="badge badge-green">✅ Least Concern</span><span class="badge badge-safe">✅ Harmless to people</span></div>
+    <div class="wild-status-row"><span class="badge badge-native">🌿 Native to Florida</span><span class="badge badge-green">✅ Least Concern</span><span class="badge badge-safe">✅ Harmless to people. It keeps to the trees and has no interest in visitors</span></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A crow-sized woodpecker with a flaming red crest, hammering at a tree trunk — that is a pileated woodpecker, now the largest woodpecker in North America since the ivory-billed is almost certainly extinct.</li><li>Listen before you look. Its loud, ringing &quot;kuk-kuk-kuk&quot; and deep, slow drumming carry through the woods well before the bird comes into view.</li><li>The rectangular holes it chisels are a giveaway. Most woodpeckers make round holes; the pileated carves long, squared-off cavities to reach the carpenter ants it loves.</li><li>It is also a quiet landlord. The old nest and feeding holes it abandons become homes for owls, ducks, and other animals that cannot dig their own.</li></ul></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Size and shape</div><p>Crow-sized, with a long neck and a pointed red crest.</p></div><div class="spot-item"><div class="spot-label">Color</div><p>Mostly black with bold white stripes on the face and neck; white shows under the wings in flight.</p></div><div class="spot-item"><div class="spot-label">Male vs. female</div><p>Males have a red &quot;mustache&quot; stripe; females show black there.</p></div><div class="spot-item"><div class="spot-label">Sign left behind</div><p>Large rectangular holes chiseled into tree trunks.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Loud and far-carrying: a ringing, laughing &quot;kuk-kuk-kuk-kuk&quot; that rises and falls, plus deep, resonant drumming on hollow wood used to claim territory.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A big black-and-white woodpecker with a tall red crest, working a tree trunk or flying with deep, slow wingbeats that flash white underwing patches. If you find fresh rectangular holes in a dead trunk, a pileated is likely nearby.</p></div></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Mostly carpenter ants and wood-boring beetle larvae dug out of dead and dying wood, rounded out with other insects, wild fruits, and nuts.</p></div></div>
@@ -145,7 +148,8 @@
     <div class="wild-caution-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Watch and enjoy from a distance, and please do not feed park wildlife. Give a foraging bird room and it will carry on working.</p></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Gallery</span></div>
     <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="../photos/PSBP-99969/662237904.jpg" loading="lazy" alt="Pileated Woodpecker — photo by randall_carter"><div class="gal-credit">📷 randall_carter</div></div><div class="gal-item" onclick="openLB(2)"><img src="../photos/PSBP-99969/681681308.jpg" loading="lazy" alt="Pileated Woodpecker — photo by robcarr52"><div class="gal-credit">📷 robcarr52</div></div></div></div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/681681308/large.jpg" loading="lazy" alt="Pileated Woodpecker — photo by robcarr52"><div class="gal-credit">📷 robcarr52</div></div></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Logcock</span><div class="wild-tags"><span class="wild-tag">Bird</span><span class="wild-tag">Woodpecker</span><span class="wild-tag">Native</span><span class="wild-tag">Predator</span><span class="wild-tag">Daytime</span><span class="wild-tag">Trees</span></div></div></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
@@ -157,14 +161,13 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-99969/681681234.jpg", "credit": "robcarr52", "license": "CC-BY-NC"}, {"src": "../photos/PSBP-99969/662237904.jpg", "credit": "randall_carter", "license": "CC-BY-NC"}, {"src": "../photos/PSBP-99969/681681308.jpg", "credit": "robcarr52", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-99969/681681234.jpg", "credit": "robcarr52", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/681681308/large.jpg", "credit": "robcarr52", "license": "CC-BY-NC"}];
     var lbIdx=0;
     function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
     function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
     document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
     </script>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Logcock</span></div><div class="alias-list" style="padding-top:0"><span class="wild-tag">Bird</span><span class="wild-tag">Woodpecker</span><span class="wild-tag">Native</span><span class="wild-tag">Predator</span><span class="wild-tag">Daytime</span><span class="wild-tag">Trees</span></div></div>
     <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
   </div>
 </div>
