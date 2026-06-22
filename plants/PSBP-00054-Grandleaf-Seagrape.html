@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00054-Grandleaf-Seagrape.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00054-Grandleaf-Seagrape.jpg" alt="Grandleaf Seagrape at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00054/662671954.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00054/662671954.jpg" alt="Grandleaf Seagrape at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Tropical Foliage &amp; Accent Plants</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Coccoloba pubescens</span>
   <a class="plant-family-tag" href="../nature.html?family=Polygonaceae">Polygonaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -157,19 +154,16 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The leaves are the story. They can reach 90 cm — nearly three feet — in diameter on a single leaf, round and stiff with yellow to red veins on the underside.</li>
-    <li>Staff pick them up regularly as they fall. Visitors sometimes ask if they can take one home.</li>
-    <li>The answer, politely, is no — but the impulse is understandable.</li>
+    <li>The leaves are the story. They can reach 90 cm — nearly three feet — in diameter on a single leaf, round and stiff with yellow to red veins on the underside. Staff pick them up regularly as they fall. Visitors sometimes ask if they can take one home. The answer, politely, is no — but the impulse is understandable.</li>
     <li>This is not the Seagrape you see on Florida beaches. That is Coccoloba uvifera, a Florida native. This species — Coccoloba pubescens — is native to Caribbean islands and is rarely cultivated in the United States. It is an unusual specimen to find in a Manatee County garden.</li>
-    <li>One detail that consistently surprises people: juvenile plants produce larger leaves than mature ones. Most trees do the opposite — young plants are modest, older ones impressive.</li>
-    <li>Here it is reversed. A young Grandleaf Seagrape can have leaves that dwarf what the same tree will carry at full maturity.</li>
-    <li>The park's specimen was given specifically to Palma Sola — the story of how it arrived is worth asking about at the office. [PROVENANCE NOTE: origin story to be added when confirmed.]</li>
+    <li>One detail that consistently surprises people: juvenile plants produce larger leaves than mature ones. Most trees do the opposite — young plants are modest, older ones impressive. Here it is reversed. A young Grandleaf Seagrape can have leaves that dwarf what the same tree will carry at full maturity.</li>
+    <li>The park&#x27;s specimen was given specifically to Palma Sola — the story of how it arrived is worth asking about at the office. [PROVENANCE NOTE: origin story to be added when confirmed.]</li>
     <li>A recent visitor — a wildlife photographer who comes regularly to photograph the Screech Owl roosting in the Royal Palm nearby — mentioned that she is often asked by other visitors whether they can take a fallen leaf home. That question, and the fact that people ask it, tells you something about this tree.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The fruit — small, grape-like clusters — is eaten by birds. Related Coccoloba species are documented nectar sources for bees and butterflies, and the dense evergreen canopy provides shade and perching structure.</p><p>As a Caribbean coastal species, it is adapted to the same conditions as Florida's native Seagrape and supports similar invertebrate and bird communities.</p><p>The massive fallen leaves decompose slowly and contribute to ground-layer habitat, though they also require regular cleanup — which is part of daily park operations near this specimen.</p></div>
+    <div class="plant-section-body"><p>The fruit — small, grape-like clusters — is eaten by birds. Related Coccoloba species are documented nectar sources for bees and butterflies, and the dense evergreen canopy provides shade and perching structure.</p><p>As a Caribbean coastal species, it is adapted to the same conditions as Florida&#x27;s native Seagrape and supports similar invertebrate and bird communities.</p><p>The massive fallen leaves decompose slowly and contribute to ground-layer habitat, though they also require regular cleanup — which is part of daily park operations near this specimen.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -181,22 +175,13 @@
 <div class="repro-item"><div class="repro-label">What to Look For</div><p>The leaves are unmistakable — no other tree in the park or in most Florida gardens produces a round leaf anywhere near this size. Look for the yellow-red vein pattern on the underside. Fallen leaves on the ground around the tree are often as interesting as those still attached.</p></div>
     </div>
   </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Size</div><div class="data-value">Medium-sized tree growing to 24 meters (80 feet) tall with an open sparsely branched crown</div></div>
-    <div class="data-item full-width"><div class="data-label">The signature feature</div><div class="data-value">orbicular leaves extremely variable in size, from 2.5 to 45 cm diameter, rarely up to 90 cm (3 feet) diameter — among the largest simple leaves of any tree in cultivation. Trunk can grow to 2 feet or more in diameter</div></div>
-    <div class="data-item full-width"><div class="data-label">Growing Conditions</div><div class="data-value">Full sunshine required. Sandy soil with good drainage. Highly salt and drought tolerant. Branches grow upright</div></div>
-    <div class="data-item"><div class="data-label">USDA zones</div><div class="data-value">10-11. Not invasive</div></div>
-    </div>
-  </div>
   <div class="plant-caution-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
     <div class="plant-section-body"><p>Fruit is edible on related species and similarly edible here, though not a cultivated food plant in Florida landscapes. Not a casual trail snack.</p><p>No known toxicity to people. No known toxicity to dogs.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Eve's Umbrella</span><span class="alias-tag">Tin Roof Tree</span></div>
+    <div class="alias-list"><span class="alias-tag">Eve&#x27;s Umbrella - Tin Roof Tree</span></div>
   </div>
 
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>

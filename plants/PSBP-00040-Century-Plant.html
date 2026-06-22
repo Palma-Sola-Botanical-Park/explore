@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00040-Century-Plant.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00040-Century-Plant.jpg" alt="Century Plant at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00040/58583241.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00040/58583241.jpg" alt="Century Plant at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Culturally &amp; Historically Significant</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Agave americana</span>
   <a class="plant-family-tag" href="../nature.html?family=Asparagaceae">Asparagaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>tom_sinisi</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Tom Sinisi</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -157,19 +154,16 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The Century Plant's life is one of nature's great dramatic gestures: decades of patient, slow growth in service of a single season of spectacular reproduction, followed by death. This is called a monocarpic life cycle — flowering once, then dying — and the common name comes straight from it.</li>
-    <li>People watching a plant grow for 20 or 30 years without blooming assumed it must take a century.</li>
-    <li>Two surprises hide in plain sight. First, despite looking like a desert cousin of aloe, the agave is in the asparagus family — and it shows: when the bloom finally fires, the stalk pushes out of the rosette looking exactly like a gargantuan spear of asparagus before it shoots skyward.</li>
-    <li>Second, this is a night-breather. To survive blazing sun without losing water, it keeps the pores on its leaves shut all day and opens them only at night to take in the air it needs — which is how a plant this lush thrives where little else can.</li>
-    <li>At Palma Sola the cactus garden does something a single plant never could: it shows all three phases of that life cycle side by side. There are younger rosettes still storing energy, at least one living giant in or near its towering flush of bloom, and a fully dead specimen — browned top to bottom with its spent stalk still standing.</li>
-    <li>Walk between them and you are walking through the plant's entire biography in a few steps.</li>
-    <li>When the bloom finally comes, the flowering stalk can grow up to a foot per day — fast enough to notice day to day — and tops out at 20 to 25 feet, one of the tallest flower stalks of any plant. In its native range those night-opening, nectar-rich flowers are pollinated chiefly by nectar-feeding bats (the plant is 'chiropterophilous,' or bat-loving), with bees, hawk moths, and birds joining in.</li>
-    <li>And the plant behind a famous drinks aisle: Agave americana is one of several agaves used to make mezcal and pulque, but true tequila comes specifically from a different species, the Blue Agave (Agave tequilana). The death you see in the dead specimen here isn't quite the end — pups (offsets) sprout around the base of a flowering plant, genetically identical clones that carry the colony forward, sometimes for centuries.</li>
+    <li>The Century Plant&#x27;s life is one of nature&#x27;s great dramatic gestures: decades of patient, slow growth in service of a single season of spectacular reproduction, followed by death. This is called a monocarpic life cycle — flowering once, then dying — and the common name comes straight from it. People watching a plant grow for 20 or 30 years without blooming assumed it must take a century.</li>
+    <li>Two surprises hide in plain sight. First, despite looking like a desert cousin of aloe, the agave is in the asparagus family — and it shows: when the bloom finally fires, the stalk pushes out of the rosette looking exactly like a gargantuan spear of asparagus before it shoots skyward. Second, this is a night-breather. To survive blazing sun without losing water, it keeps the pores on its leaves shut all day and opens them only at night to take in the air it needs — which is how a plant this lush thrives where little else can.</li>
+    <li>At Palma Sola the cactus garden does something a single plant never could: it shows all three phases of that life cycle side by side. There are younger rosettes still storing energy, at least one living giant in or near its towering flush of bloom, and a fully dead specimen — browned top to bottom with its spent stalk still standing. Walk between them and you are walking through the plant&#x27;s entire biography in a few steps.</li>
+    <li>When the bloom finally comes, the flowering stalk can grow up to a foot per day — fast enough to notice day to day — and tops out at 20 to 25 feet, one of the tallest flower stalks of any plant. In its native range those night-opening, nectar-rich flowers are pollinated chiefly by nectar-feeding bats (the plant is &#x27;chiropterophilous,&#x27; or bat-loving), with bees, hawk moths, and birds joining in.</li>
+    <li>And the plant behind a famous drinks aisle: Agave americana is one of several agaves used to make mezcal and pulque, but true tequila comes specifically from a different species, the Blue Agave (Agave tequilana). The death you see in the dead specimen here isn&#x27;t quite the end — pups (offsets) sprout around the base of a flowering plant, genetically identical clones that carry the colony forward, sometimes for centuries.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>In its native Mexico and the southwestern US, the Century Plant is a keystone resource for nectar-feeding bats — including the migratory lesser long-nosed bat, which times its journeys to agave bloom and can pollinate dozens of plants in a single night. The towering stalk's thousands of nectar-rich, night-opening flowers also feed bees, hawk moths, hummingbirds, and other birds.</p><p>In Florida, well outside its bat range, the bloom is still a major nectar event for bees and butterflies. The dense, spiny rosette offers protected shelter for lizards and small creatures, and even the standing dead stalk becomes a perch and a nesting and foraging site for insects and birds.</p></div>
+    <div class="plant-section-body"><p>In its native Mexico and the southwestern US, the Century Plant is a keystone resource for nectar-feeding bats — including the migratory lesser long-nosed bat, which times its journeys to agave bloom and can pollinate dozens of plants in a single night. The towering stalk&#x27;s thousands of nectar-rich, night-opening flowers also feed bees, hawk moths, hummingbirds, and other birds. In Florida, well outside its bat range, the bloom is still a major nectar event for bees and butterflies. The dense, spiny rosette offers protected shelter for lizards and small creatures, and even the standing dead stalk becomes a perch and a nesting and foraging site for insects and birds.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -178,15 +172,15 @@
 <div class="repro-item"><div class="repro-label">Bloom</div><p>After 10 to 30 years, the plant sends up an enormous flowering stalk that emerges looking like a giant asparagus spear, then grows as much as a foot per day, reaching 20 to 25 feet, branching near the top and bearing thousands of yellow flowers.</p></div>
 <div class="repro-item"><div class="repro-label">Flowers</div><p>Six-petaled, yellow, rich in nectar, opening at night; bat-pollinated in the native range, with bees, moths, and birds also visiting.</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>Thick, succulent, gray-green to blue-green, 3 to 6 feet long, arranged in a massive rosette. Margins lined with hooked teeth and tipped with a single sharp, rigid terminal spine that can pierce deeply.</p></div>
-<div class="repro-item"><div class="repro-label">Pups</div><p>Clonal offsets around the base — the plant's continuation after the bloom.</p></div>
+<div class="repro-item"><div class="repro-label">Pups</div><p>Clonal offsets around the base — the plant&#x27;s continuation after the bloom.</p></div>
 <div class="repro-item"><div class="repro-label">What to Look For</div><p>Here, compare the three life stages directly. A young plant is a tight rosette of spine-edged blue-green blades with no stalk. A plant just starting to bloom pushes up what looks like a colossal asparagus spear; a fully flowering one carries the giant branched stalk overhead — look (carefully) for bees working it. The dead plant is browned top to bottom with the bare stalk still standing — and look at its base for the next generation of pups already coming up. Respect the leaf tips: the terminal spine is genuinely dangerous.</p></div>
     </div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item"><div class="data-label">Rosette height</div><div class="data-value">4 to 8 feet</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">6 to 10 feet</div></div>
+    <div class="data-item"><div class="data-label">Rosette height</div><div class="data-value">4 to 8 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Flowering stalk</div><div class="data-value">20 to 25 feet — among the tallest flower stalks of any plant</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">massive solitary rosette that produces basal pups</div></div>
     <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">slow (then explosively fast at bloom)</div></div>
@@ -201,11 +195,11 @@
   </div>
   <div class="plant-caution-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Edible with preparation — historically one of Mexico's most important food and drink plants. The roasted heart (piña), young flower stalk, and sap (aguamiel) are consumed, and fermented sap becomes pulque; distilled, it becomes mezcal. (True tequila comes from a different species, Blue Agave.) Not a casual nibble — raw tissue is irritating and the plant requires roasting or fermentation.</p><p>Caution. The rigid terminal spine causes serious puncture injuries and the leaf margins are toothed. The raw sap contains calcium oxalate crystals and saponins that irritate skin, and can cause phototoxic dermatitis — skin contact followed by sunlight may bring on rash and blistering. Wear long sleeves and gloves when working near it. Caution for dogs. The sap's saponins and calcium oxalates can cause drooling, vomiting, and mouth irritation if chewed, and the spine-tipped leaves are a physical hazard. Not among the deadly plants, but discourage chewing and contact.</p></div>
+    <div class="plant-section-body"><p>Edible with preparation — historically one of Mexico&#x27;s most important food and drink plants. The roasted heart (piña), young flower stalk, and sap (aguamiel) are consumed, and fermented sap becomes pulque; distilled, it becomes mezcal. (True tequila comes from a different species, Blue Agave.) Not a casual nibble — raw tissue is irritating and the plant requires roasting or fermentation.</p><p>Caution. The rigid terminal spine causes serious puncture injuries and the leaf margins are toothed. The raw sap contains calcium oxalate crystals and saponins that irritate skin, and can cause phototoxic dermatitis — skin contact followed by sunlight may bring on rash and blistering. Wear long sleeves and gloves when working near it. Caution for dogs. The sap&#x27;s saponins and calcium oxalates can cause drooling, vomiting, and mouth irritation if chewed, and the spine-tipped leaves are a physical hazard. Not among the deadly plants, but discourage chewing and contact.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>The cactus garden intentionally displays all three life-cycle phases at once — young pre-bloom rosettes, a living plant with the large flowering stalk, and a fully dead browned specimen with the spent stalk standing. Strong interpretive teaching opportunity for monocarpic life cycles.</p><p>Note the pups at the base of the dead plant as the cycle's continuation.</p></div>
+    <div class="plant-section-body"><p>PARK CONTEXT: The cactus garden intentionally displays all three life-cycle phases at once — young pre-bloom rosettes, a living plant with the large flowering stalk, and a fully dead browned specimen with the spent stalk standing. Strong interpretive teaching opportunity for monocarpic life cycles. Note the pups at the base of the dead plant as the cycle&#x27;s continuation.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>

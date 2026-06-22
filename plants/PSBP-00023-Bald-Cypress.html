@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00023-Bald-Cypress.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00023-Bald-Cypress.jpg" alt="Bald Cypress at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00023/635346946.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00023/635346946.jpg" alt="Bald Cypress at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Wetland &amp; Pond Edge</div>
@@ -134,12 +131,12 @@
   <span class="plant-sci-name">Taxodium distichum</span>
   <a class="plant-family-tag" href="../nature.html?family=Cupressaceae">Cupressaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>coleguyton</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Cole Guyton</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
     <span class="badge badge-green">✅ Not Invasive</span>
-    <span class="badge badge-safe">✅ Edible &amp; Safe</span>
+    <span class="badge badge-green">✅ Safe</span>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
@@ -152,21 +149,20 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to the southeastern and Gulf Coastal Plains of the United States, from southern Delaware south through Florida and west along the Gulf Coast to Texas. One of Florida's most iconic native trees, found naturally in swamps, pond edges, river margins, and seasonally flooded forests throughout the state.</p></div>
+    <div class="plant-section-body"><p>Native to the southeastern and Gulf Coastal Plains of the United States, from southern Delaware south through Florida and west along the Gulf Coast to Texas. One of Florida&#x27;s most iconic native trees, found naturally in swamps, pond edges, river margins, and seasonally flooded forests throughout the state.</p></div>
   </div>
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>Bald Cypress wood was the timber of choice for anything built in or near water. Its heartwood is extraordinarily rot-resistant — specimens have been recovered from riverbeds after centuries submerged, still sound enough to use.</li>
-    <li>It built boats, bridges, water tanks, and the foundations of buildings across the Gulf South. New Orleans was substantially framed with it.</li>
+    <li>Bald Cypress wood was the timber of choice for anything built in or near water. Its heartwood is extraordinarily rot-resistant — specimens have been recovered from riverbeds after centuries submerged, still sound enough to use. It built boats, bridges, water tanks, and the foundations of buildings across the Gulf South. New Orleans was substantially framed with it.</li>
     <li>The oldest known individual — 2,624 years old in North Carolina — predates the Roman Empire. Scientists core these ancient trees to reconstruct centuries of rainfall and drought patterns across the southeastern US. The rings are a climate archive going back thousands of years.</li>
-    <li>The cypress introduced to England in 1640 by plant collector John Tradescant the Younger — Charles I's head gardener — is still the same species growing beside the pond here. It was among the first New World trees seen by European eyes.</li>
+    <li>The cypress introduced to England in 1640 by plant collector John Tradescant the Younger — Charles I&#x27;s head gardener — is still the same species growing beside the pond here. It was among the first New World trees seen by European eyes.</li>
     <li>The knobby knees have fascinated people for centuries. The most accepted explanation is that they help the roots breathe in low-oxygen swamp water — but knees also appear on dry-site specimens, and the USDA has noted no function has been definitively proven. The tree grows them anyway.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The Bald Cypress is one of Florida's most productive native wildlife trees, and the specimen beside Palma Sola's pond is doing real ecological work. Its small round cones feed Wood Ducks, wild turkeys, Evening Grosbeaks, and squirrels.</p><p>The tall crown is a documented nesting platform for Bald Eagles and Ospreys. The submerged roots and emergent knees create critical aquatic habitat for fish, frogs, turtles, and invertebrates.</p><p>The feathery deciduous foliage supports caterpillars of several moth species, and as a keystone native, its overall structure makes it the ecological anchor of the park's pond edge.</p></div>
+    <div class="plant-section-body"><p>The Bald Cypress is one of Florida&#x27;s most productive native wildlife trees, and the specimen beside Palma Sola&#x27;s pond is doing real ecological work. Its small round cones feed Wood Ducks, wild turkeys, Evening Grosbeaks, and squirrels. The tall crown is a documented nesting platform for Bald Eagles and Ospreys. The submerged roots and emergent knees create critical aquatic habitat for fish, frogs, turtles, and invertebrates. The feathery deciduous foliage supports caterpillars of several moth species, and as a keystone native, its overall structure makes it the ecological anchor of the park&#x27;s pond edge.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -177,7 +173,7 @@
 <div class="repro-item"><div class="repro-label">Bark</div><p>Grayish-brown to reddish-brown, thin and fibrous with a stringy texture and a vertically interwoven pattern of shallow ridges. Exfoliates in reddish-brown strips on younger trees.</p></div>
 <div class="repro-item"><div class="repro-label">Knees</div><p>Woody, knobby projections rising from the roots around pond-grown specimens. Can extend a foot or more above the waterline. Not produced — or smaller — on dry-site trees.</p></div>
 <div class="repro-item"><div class="repro-label">Trunk base</div><p>Dramatically flared and buttressed on mature trees, narrowing upward.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>In fall, the feathery foliage turns warm russet-red — one of the park's best color moments, especially reflected in the pond water. In winter, the bare silhouette and prominent knees rising from the water are unmistakable. Watch the crown for Osprey activity.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>In fall, the feathery foliage turns warm russet-red — one of the park&#x27;s best color moments, especially reflected in the pond water. In winter, the bare silhouette and prominent knees rising from the water are unmistakable. Watch the crown for Osprey activity.</p></div>
     </div>
   </div>
   <div class="plant-section">
@@ -187,14 +183,14 @@
     <div class="data-item"><div class="data-label">Width</div><div class="data-value">20 to 30 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Trunk diameter</div><div class="data-value">3 to 6 feet on old trees; dramatically flared base</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">pyramidal when young, irregular flat top with age</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">fine and feathery in leaf; bold architectural silhouette in winter</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">saturated soils, seasonally flooded areas, swamps, and stream banks; also adapts to drier upland sites without producing knees</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">moderate once established</div></div>
+    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">moderate once established</div></div>
     <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">slight</div></div>
     <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">excellent — hardy throughout the US; USDA zones 4–11</div></div>
-    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">no serious pests or diseases</div></div>
+    <div class="data-item"><div class="data-label">Note</div><div class="data-value">no serious pests or diseases</div></div>
     </div>
   </div>
   <div class="plant-safe-section">

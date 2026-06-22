@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00057-Wax-Myrtle.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00057-Wax-Myrtle.jpg" alt="Wax Myrtle at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00057/667867407.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00057/667867407.jpg" alt="Wax Myrtle at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Trees &amp; Large Shrubs</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Morella cerifera</span>
   <a class="plant-family-tag" href="../nature.html?family=Myricaceae">Myricaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
@@ -157,15 +154,10 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The wax myrtles at the park line the far side of the cypress pond, forming a screen that separates the pond from the back section where the plumeria and palms are. They do this job without being asked about, without being photographed, and without anyone stopping to read a sign — there is no sign.</li>
-    <li>They have been trimmed twice, when they encroached on the path between the pond and the plumeria. That is the sum of the human attention they have received.</li>
-    <li>What they have been doing the whole time, unobserved: fixing nitrogen from the air through a symbiotic relationship with soil microorganisms, improving the pond bank soil at a rate that exceeds what most legumes manage. Stabilizing the shoreline.</li>
-    <li>Producing winter berries that feed migrating warblers, bluebirds, and tree swallows. Hosting the larvae of the Red-banded Hairstreak butterfly.</li>
-    <li>Providing cover for birds, turtles, and small animals along the water.</li>
-    <li>The bayberry candle tradition in America — still alive as a holiday custom — traces directly to this plant and its northern relative. Colonial Americans boiled the waxy berry coating off by the bushel to make candles that burned cleaner and smelled better than tallow.</li>
-    <li>It was labor-intensive enough that bayberry candles were considered a luxury.</li>
-    <li>The Yellow-rumped Warbler, one of the most common winter migrants through Florida, was once called the Myrtle Warbler specifically because of its relationship with this plant. It can digest the waxy berry coating that most other birds cannot.</li>
-    <li>When the warblers move through in winter, the wax myrtles along the pond are doing real ecological work.</li>
+    <li>The wax myrtles at the park line the far side of the cypress pond, forming a screen that separates the pond from the back section where the plumeria and palms are. They do this job without being asked about, without being photographed, and without anyone stopping to read a sign — there is no sign. They have been trimmed twice, when they encroached on the path between the pond and the plumeria. That is the sum of the human attention they have received.</li>
+    <li>What they have been doing the whole time, unobserved: fixing nitrogen from the air through a symbiotic relationship with soil microorganisms, improving the pond bank soil at a rate that exceeds what most legumes manage. Stabilizing the shoreline. Producing winter berries that feed migrating warblers, bluebirds, and tree swallows. Hosting the larvae of the Red-banded Hairstreak butterfly. Providing cover for birds, turtles, and small animals along the water.</li>
+    <li>The bayberry candle tradition in America — still alive as a holiday custom — traces directly to this plant and its northern relative. Colonial Americans boiled the waxy berry coating off by the bushel to make candles that burned cleaner and smelled better than tallow. It was labor-intensive enough that bayberry candles were considered a luxury.</li>
+    <li>The Yellow-rumped Warbler, one of the most common winter migrants through Florida, was once called the Myrtle Warbler specifically because of its relationship with this plant. It can digest the waxy berry coating that most other birds cannot. When the warblers move through in winter, the wax myrtles along the pond are doing real ecological work.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -182,28 +174,17 @@
 <div class="repro-item"><div class="repro-label">What to Look For</div><p>Along the far side of the cypress pond. The narrow olive-green aromatic leaves and smooth gray multi-stemmed trunks are the year-round markers. In late summer and fall, clusters of small gray waxy berries on female plants. Crush a leaf to release the distinctive bayberry fragrance.</p></div>
     </div>
   </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Size</div><div class="data-value">Typically grows to 10 to 15 feet tall and 8 to 10 feet wide, sometimes to 20 feet or more. Multi-trunked shrub to small tree, upright to irregular</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast. Evergreen. Small multiple twisted trunks with smooth light grey bark and aromatic olive-green leaves</div></div>
-    <div class="data-item full-width"><div class="data-label">Growing Conditions</div><div class="data-value">Full sun to part shade. Grows well from low wet mucky soils to high well-drained sandy soils</div></div>
-    <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">high</div></div>
-    <div class="data-item"><div class="data-label">Hurricane wind resistance</div><div class="data-value">noted</div></div>
-    <div class="data-item full-width"><div class="data-label">USDA zones</div><div class="data-value">6A-10B. Fixes nitrogen with its roots like a legume — tolerates poor soils. Good for rain gardens or bioswales</div></div>
-    </div>
-  </div>
   <div class="plant-caution-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
     <div class="plant-section-body"><p>Leaves and seeds edible and historically used as a bay leaf substitute. Berries not typically consumed by people. Not a significant food plant in Florida landscapes.</p><p>Generally non-toxic to people. Generally non-toxic to dogs and cats.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>Often still listed as Myrica cerifera. Modern treatments (USDA PLANTS, Flora of the Southeastern US) place it in Morella as Morella cerifera, separating the evergreen, fleshy-fruited southern species from the deciduous true Myrica. Both names appear in current literature; family Myricaceae is unchanged.</p></div>
+    <div class="plant-section-body"><p>NOMENCLATURE: Often still listed as Myrica cerifera. Modern treatments (USDA PLANTS, Flora of the Southeastern US) place it in Morella as Morella cerifera, separating the evergreen, fleshy-fruited southern species from the deciduous true Myrica. Both names appear in current literature; family Myricaceae is unchanged.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Southern Bayberry; Formerly classified as Myrica cerifera</span></div>
+    <div class="alias-list"><span class="alias-tag">Southern Bayberry</span><span class="alias-tag">Formerly classified as Myrica cerifera</span></div>
   </div>
 
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>

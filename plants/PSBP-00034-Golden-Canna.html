@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00034-Golden-Canna.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00034-Golden-Canna.jpg" alt="Golden Canna at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00034/667863800.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00034/667863800.jpg" alt="Golden Canna at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Wetland &amp; Pond Edge</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Canna flaccida</span>
   <a class="plant-family-tag" href="../nature.html?family=Cannaceae">Cannaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
@@ -152,33 +149,30 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Broadly distributed throughout Florida, found in most of the state's 67 counties, with native populations west to Texas and north to South Carolina. The only Canna species able to grow in partially inundated conditions, it occurs naturally in freshwater marshes, wet prairies, and along pond and lake margins.</p><p>Its striking common name, Bandanna-of-the-Everglades, honors that wetland home.</p></div>
+    <div class="plant-section-body"><p>Broadly distributed throughout Florida, found in most of the state&#x27;s 67 counties, with native populations west to Texas and north to South Carolina. The only Canna species able to grow in partially inundated conditions, it occurs naturally in freshwater marshes, wet prairies, and along pond and lake margins. Its striking common name, Bandanna-of-the-Everglades, honors that wetland home.</p></div>
   </div>
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>Canna seeds are legendary for their longevity and toughness. They are encased in an extraordinarily hard seed coat — hard enough that they were historically used as buckshot in the Caribbean, loaded into firearms where conventional shot was unavailable.</li>
-    <li>More remarkably, intact Canna seeds found in pre-Columbian archaeological sites in Argentina have been successfully germinated after an estimated 600 years in storage — among the longest confirmed seed viability records for any flowering plant.</li>
-    <li>Most cannas sold in Florida garden centers are not this species but hybrid cultivars bred for larger, showier flowers in a range of colors. The native Canna flaccida is more subtle — graceful yellow flowers on tall stalks above broad blue-green leaves — but ecologically far more valuable, and it is the only canna that belongs in Florida's wild wetlands.</li>
-    <li>At Palma Sola, this plant carries a small restoration story. The park's native cannas were introduced by Cypress Pond in 2023 — the only truly native cannas on the grounds — and from a starting handful of about ten they thrived, spreading to more than a hundred plants.</li>
-    <li>Then hurricane flooding drove a foot of saltwater across that corner of western Bradenton. As a freshwater wetland species with little salt tolerance, the planting was knocked back hard, down to around twenty survivors.</li>
-    <li>Those survivors are hanging on and slowly recovering — a quiet lesson in both the resilience and the limits of a native plant pushed outside the conditions it evolved for. (The park's non-native ornamental cannas, a different species, grow separately by the office — see Canna Lilies, Canna indica.)</li>
-    <li>The rhizomes contain a starch that has been commercially produced as an easily digestible food ingredient — historically valued for the sick and for infants — and marketed in Australia as 'Queensland arrowroot.'</li>
+    <li>Canna seeds are legendary for their longevity and toughness. They are encased in an extraordinarily hard seed coat — hard enough that they were historically used as buckshot in the Caribbean, loaded into firearms where conventional shot was unavailable. More remarkably, intact Canna seeds found in pre-Columbian archaeological sites in Argentina have been successfully germinated after an estimated 600 years in storage — among the longest confirmed seed viability records for any flowering plant.</li>
+    <li>Most cannas sold in Florida garden centers are not this species but hybrid cultivars bred for larger, showier flowers in a range of colors. The native Canna flaccida is more subtle — graceful yellow flowers on tall stalks above broad blue-green leaves — but ecologically far more valuable, and it is the only canna that belongs in Florida&#x27;s wild wetlands.</li>
+    <li>At Palma Sola, this plant carries a small restoration story. The park&#x27;s native cannas were introduced by Cypress Pond in 2023 — the only truly native cannas on the grounds — and from a starting handful of about ten they thrived, spreading to more than a hundred plants. Then hurricane flooding drove a foot of saltwater across that corner of western Bradenton. As a freshwater wetland species with little salt tolerance, the planting was knocked back hard, down to around twenty survivors. Those survivors are hanging on and slowly recovering — a quiet lesson in both the resilience and the limits of a native plant pushed outside the conditions it evolved for. (The park&#x27;s non-native ornamental cannas, a different species, grow separately by the office — see Canna Lilies, Canna indica.)</li>
+    <li>The rhizomes contain a starch that has been commercially produced as an easily digestible food ingredient — historically valued for the sick and for infants — and marketed in Australia as &#x27;Queensland arrowroot.&#x27;</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The Golden Canna is one of the park's best hummingbird plants. The large, vivid yellow flowers are shaped and colored for hummingbird pollination — Ruby-throated Hummingbirds are primary pollinators, hovering at the blooms in spring and summer.</p><p>Bees and large butterflies also visit. It is a larval host for the Brazilian (or Canna) skipper, whose caterpillars roll a leaf into a protective tube; dragonfly larvae have also been recorded sheltering in the foliage.</p><p>The seeds — extraordinarily hard and dense — are eaten by birds and waterfowl when accessible. The broad, paddle-shaped leaves provide cover at the pond edge for frogs, lizards, and small wading birds, and the rhizome mass stabilizes soft pond margins and supports aquatic invertebrates.</p><p>Because the park's planting sits right at the edge of Cypress Pond, it is doing this ecological work in almost exactly the freshwater-wetland setting it evolved for.</p></div>
+    <div class="plant-section-body"><p>The Golden Canna is one of the park&#x27;s best hummingbird plants. The large, vivid yellow flowers are shaped and colored for hummingbird pollination — Ruby-throated Hummingbirds are primary pollinators, hovering at the blooms in spring and summer. Bees and large butterflies also visit. It is a larval host for the Brazilian (or Canna) skipper, whose caterpillars roll a leaf into a protective tube; dragonfly larvae have also been recorded sheltering in the foliage. The seeds — extraordinarily hard and dense — are eaten by birds and waterfowl when accessible. The broad, paddle-shaped leaves provide cover at the pond edge for frogs, lizards, and small wading birds, and the rhizome mass stabilizes soft pond margins and supports aquatic invertebrates. Because the park&#x27;s planting sits right at the edge of Cypress Pond, it is doing this ecological work in almost exactly the freshwater-wetland setting it evolved for.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
     <div class="repro-list">
 <div class="repro-item"><div class="repro-label">Reproduction</div><p>Primarily reproduces through seeds, which require scarification or soaking to germinate due to the exceptionally hard seed coat. Also spreads by rhizomes.</p></div>
 <div class="repro-item"><div class="repro-label">Flowers</div><p>Large, yellow, 3 inches long, in terminal clusters atop stalks reaching 6 feet. Hermaphroditic and self-fertile. Peak bloom spring through summer. Primary pollinators: Ruby-throated Hummingbirds and large bees. Bats also documented as pollinators.</p></div>
-<div class="repro-item"><div class="repro-label">Seeds</div><p>Round, very hard, dark brown to black — described as 'like ball bearings.' Among the hardest seeds of any flowering plant.</p></div>
+<div class="repro-item"><div class="repro-label">Seeds</div><p>Round, very hard, dark brown to black — described as &#x27;like ball bearings.&#x27; Among the hardest seeds of any flowering plant.</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>Large, oblong, blue-green, paddle-shaped — similar to a Canna lily but softer in color than most garden cultivars.</p></div>
 <div class="repro-item"><div class="repro-label">Rhizomes</div><p>Fleshy, starch-rich, spreading slowly.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>The tall yellow flower spikes rising above broad blue-green leaves at the water's edge are distinctive in Florida's wetland flora. Very few native wetland plants produce flowers this large and this yellow. Rattle a mature seed pod — the hard seeds knock audibly against each other.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>The tall yellow flower spikes rising above broad blue-green leaves at the water&#x27;s edge are distinctive in Florida&#x27;s wetland flora. Very few native wetland plants produce flowers this large and this yellow. Rattle a mature seed pod — the hard seeds knock audibly against each other.</p></div>
     </div>
   </div>
   <div class="plant-section">
@@ -187,9 +181,9 @@
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">up to 6 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">spreading colony by rhizomes over time</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">upright, clump-forming wetland perennial</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">bold, with large paddle-shaped leaves</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
+    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">wetland species; wet to saturated soils; standing water tolerated</div></div>
     <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">low — requires consistently moist to wet conditions</div></div>
     <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">dies back in freezes, resprouts from rhizomes; USDA zones 7–11</div></div>
@@ -202,7 +196,7 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>PARK CONTEXT (confirmed): The park's only native cannas — Canna flaccida — introduced by Cypress Pond in 2023. Spread from ~10 to 100+ plants, then knocked back to ~20 by ~1 ft saltwater flooding from a 2024 hurricane (low salt tolerance); survivors slowly recovering.</p><p>Deliberately kept separate from the non-native ornamental cannas (C. indica) by the office. Cross-reference: Canna Lilies row, PSBP-00041.</p></div>
+    <div class="plant-section-body"><p>PARK CONTEXT (confirmed): The park&#x27;s only native cannas — Canna flaccida — introduced by Cypress Pond in 2023. Spread from ~10 to 100+ plants, then knocked back to ~20 by ~1 ft saltwater flooding from a 2024 hurricane (low salt tolerance); survivors slowly recovering. Deliberately kept separate from the non-native ornamental cannas (C. indica) by the office. Cross-reference: Canna Lilies row, PSBP-00041.</p></div>
   </div>
 
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>

@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00028-Red-Mangrove.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00028-Red-Mangrove.jpg" alt="Red Mangrove at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00028/661605296.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00028/661605296.jpg" alt="Red Mangrove at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Wetland &amp; Pond Edge</div>
@@ -134,12 +131,12 @@
   <span class="plant-sci-name">Rhizophora mangle</span>
   <a class="plant-family-tag" href="../nature.html?family=Rhizophoraceae">Rhizophoraceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
     <span class="badge badge-green">✅ Not Invasive</span>
-    <span class="badge badge-safe">✅ Edible &amp; Safe</span>
+    <span class="badge badge-green">✅ Safe</span>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
@@ -157,25 +154,22 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The Red Mangrove doesn't just grow in the water — it engineers the coast. Sediments trapped in the prop root matrix gradually build up over decades, converting open water into land.</li>
-    <li>Florida's southern coastline is substantially shaped by mangrove action over thousands of years. Remove the mangroves and the shore retreats; plant them and the shore advances.</li>
-    <li>The prop roots are not just structural — they breathe. The roots absorb oxygen directly through pores in the bark, allowing the tree to survive in waterlogged, oxygen-depleted sediment that would kill virtually any other tree.</li>
-    <li>The entire architecture is a solution to a problem other plants never solved.</li>
-    <li>The viviparous seeds are one of botany's more elegant adaptations. The propagule — a fully developed seedling — can float for over a year, surviving in salt water and traveling enormous distances.</li>
-    <li>When it finally touches sediment of the right depth, it roots within hours. Single propagules have established new mangrove populations on distant islands.</li>
+    <li>The Red Mangrove doesn&#x27;t just grow in the water — it engineers the coast. Sediments trapped in the prop root matrix gradually build up over decades, converting open water into land. Florida&#x27;s southern coastline is substantially shaped by mangrove action over thousands of years. Remove the mangroves and the shore retreats; plant them and the shore advances.</li>
+    <li>The prop roots are not just structural — they breathe. The roots absorb oxygen directly through pores in the bark, allowing the tree to survive in waterlogged, oxygen-depleted sediment that would kill virtually any other tree. The entire architecture is a solution to a problem other plants never solved.</li>
+    <li>The viviparous seeds are one of botany&#x27;s more elegant adaptations. The propagule — a fully developed seedling — can float for over a year, surviving in salt water and traveling enormous distances. When it finally touches sediment of the right depth, it roots within hours. Single propagules have established new mangrove populations on distant islands.</li>
     <li>In Florida, all three native mangrove species are legally protected. Trimming or removal without a permit is illegal under Florida Statute 403.9326 — a recognition by the state that these trees are infrastructure, not just vegetation.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The Red Mangrove's prop root matrix is one of the most productive wildlife habitats on Florida's coast. The underwater tangle of roots serves as a nursery for juvenile snook, tarpon, redfish, snapper, and dozens of other fish species — providing the complex structure and predator refuge that young fish require to survive.</p><p>Crabs, shrimp, oysters, sponges, and barnacles colonize the submerged roots. The emergent structure hosts nesting and roosting colonies of herons, egrets, roseate spoonbills, cormorants, and Anhingas.</p><p>Alligators rest in the root zones. Manatees shelter in mangrove-fringed bays.</p><p>Almost every commercially important seafood species in Florida spends part of its juvenile life in a mangrove root system.</p></div>
+    <div class="plant-section-body"><p>The Red Mangrove&#x27;s prop root matrix is one of the most productive wildlife habitats on Florida&#x27;s coast. The underwater tangle of roots serves as a nursery for juvenile snook, tarpon, redfish, snapper, and dozens of other fish species — providing the complex structure and predator refuge that young fish require to survive. Crabs, shrimp, oysters, sponges, and barnacles colonize the submerged roots. The emergent structure hosts nesting and roosting colonies of herons, egrets, roseate spoonbills, cormorants, and Anhingas. Alligators rest in the root zones. Manatees shelter in mangrove-fringed bays. Almost every commercially important seafood species in Florida spends part of its juvenile life in a mangrove root system.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
     <div class="repro-list">
 <div class="repro-item"><div class="repro-label">Viviparous</div><p>seeds germinate on the parent tree while still attached. The propagule (a fully formed seedling) drops into the water when mature and can float for over a year before rooting.</p></div>
 <div class="repro-item"><div class="repro-label">Flowers</div><p>Small, pale yellow, four-petaled, appearing year-round. Self-compatible — can produce propagules without cross-pollination.</p></div>
-<div class="repro-item"><div class="repro-label">Propagules</div><p>6 to 12 inches long, cigar-shaped, green. The most distinctive reproductive structure in Florida's native flora.</p></div>
+<div class="repro-item"><div class="repro-label">Propagules</div><p>6 to 12 inches long, cigar-shaped, green. The most distinctive reproductive structure in Florida&#x27;s native flora.</p></div>
 <div class="repro-item"><div class="repro-label">Roots</div><p>Arching, reddish-brown prop roots descending from the trunk and lower branches into the water, creating the iconic mangrove silhouette. Roots absorb oxygen through lenticel pores.</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>Dark green, leathery, elliptic, 1.5 to 6 inches long — thick with a short petiole.</p></div>
 <div class="repro-item"><div class="repro-label">Bark</div><p>Gray and furrowed on mature trunks; smooth and reddish on young stems. Inner bark, roots, and twigs reveal reddish-pink coloring when cut — the source of the common name.</p></div>
@@ -188,13 +182,12 @@
     <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">typically 10 to 25 feet in Florida; can reach 75 feet in highly productive tropical range</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">20 to 40 feet as an established clonal stand</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">arching prop roots visible above water; dense evergreen canopy</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium, with leathery dark green leaves</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">intertidal sediments, brackish to saline conditions; also tolerates freshwater</div></div>
     <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">very high</div></div>
     <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">sensitive to freezing; range limited by cold in Florida; USDA zones 10–11</div></div>
-    <div class="data-item full-width"><div class="data-label">Legal note</div><div class="data-value">protected by Florida law — no trimming or removal without permit</div></div>
     </div>
   </div>
   <div class="plant-safe-section">

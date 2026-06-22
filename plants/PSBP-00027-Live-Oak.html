@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00027-Live-Oak.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00027-Live-Oak.jpg" alt="Live Oak at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00027/661720593.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00027/661720593.jpg" alt="Live Oak at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Trees &amp; Large Shrubs</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Quercus virginiana</span>
   <a class="plant-family-tag" href="../nature.html?family=Fagaceae">Fagaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
@@ -157,22 +154,19 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The USS Constitution story is one of the great moments in American tree history. The ship's frame was built from Live Oak harvested from St. Simons Island, Georgia — the wood is so extraordinarily dense that during the War of 1812, British cannonballs fired at close range literally bounced off the hull.</li>
-    <li>A witness reportedly cried out 'her sides are made of iron!' and the name Old Ironsides stuck. The ship is still commissioned, still docked in Boston, and still maintained by the Navy — the oldest commissioned warship in the world.</li>
-    <li>Live Oak built her.</li>
-    <li>The ecological significance is equally outsized. Entomologist Doug Tallamy's research established that oak trees in the genus Quercus support more caterpillar species than any other tree genus in North America — over 500 species on a single mature tree.</li>
-    <li>Since most songbirds feed caterpillars to their nestlings almost exclusively, every Live Oak is essentially a caterpillar farm that powers the local bird population. Every large Live Oak in the park is doing more wildlife work than any other plant here.</li>
-    <li>The name 'live' refers simply to the fact that it stays green in winter — unlike the deciduous oaks that shed their leaves. It was novel enough to early European settlers that it warranted a name.</li>
+    <li>The USS Constitution story is one of the great moments in American tree history. The ship&#x27;s frame was built from Live Oak harvested from St. Simons Island, Georgia — the wood is so extraordinarily dense that during the War of 1812, British cannonballs fired at close range literally bounced off the hull. A witness reportedly cried out &#x27;her sides are made of iron!&#x27; and the name Old Ironsides stuck. The ship is still commissioned, still docked in Boston, and still maintained by the Navy — the oldest commissioned warship in the world. Live Oak built her.</li>
+    <li>The ecological significance is equally outsized. Entomologist Doug Tallamy&#x27;s research established that oak trees in the genus Quercus support more caterpillar species than any other tree genus in North America — over 500 species on a single mature tree. Since most songbirds feed caterpillars to their nestlings almost exclusively, every Live Oak is essentially a caterpillar farm that powers the local bird population. Every large Live Oak in the park is doing more wildlife work than any other plant here.</li>
+    <li>The name &#x27;live&#x27; refers simply to the fact that it stays green in winter — unlike the deciduous oaks that shed their leaves. It was novel enough to early European settlers that it warranted a name.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The Live Oak at Palma Sola is one of the most ecologically productive plants in the collection. As an oak, it supports more caterpillar species than almost any other tree genus in North America — and those caterpillars are the primary food source for nearly every songbird feeding nestlings.</p><p>Acorns feed black bears, white-tailed deer, turkeys, Blue Jays, Wood Ducks, squirrels, and many other species. The dense canopy hosts nesting songbirds.</p><p>The branches support Spanish moss, bromeliads, and other epiphytes that create micro-habitats within the tree. The bark hosts lichens, mosses, and cavity-nesting insects.</p><p>A mature Live Oak is less a tree than an ecosystem.</p></div>
+    <div class="plant-section-body"><p>The Live Oak at Palma Sola is one of the most ecologically productive plants in the collection. As an oak, it supports more caterpillar species than almost any other tree genus in North America — and those caterpillars are the primary food source for nearly every songbird feeding nestlings. Acorns feed black bears, white-tailed deer, turkeys, Blue Jays, Wood Ducks, squirrels, and many other species. The dense canopy hosts nesting songbirds. The branches support Spanish moss, bromeliads, and other epiphytes that create micro-habitats within the tree. The bark hosts lichens, mosses, and cavity-nesting insects. A mature Live Oak is less a tree than an ecosystem.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
     <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Semi-evergreen — retains its leaves through winter and drops them as new leaves emerge in spring. Never bare, never holding truly old leaves — a continuous rolling turnover of foliage.</p></div>
+<div class="repro-item"><div class="repro-label">Semi-evergreen</div><p>retains its leaves through winter and drops them as new leaves emerge in spring. Never bare, never holding truly old leaves — a continuous rolling turnover of foliage.</p></div>
 <div class="repro-item"><div class="repro-label">Flowers</div><p>Small, inconspicuous, wind-pollinated catkins in spring, before or as new leaves emerge.</p></div>
 <div class="repro-item"><div class="repro-label">Acorns</div><p>Small, dark, oblong — ripening in fall. Sweet relative to other oaks; historically eaten by Indigenous peoples after tannin leaching or roasting. A sweet oil extracted from them was compared to olive oil.</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>1 to 4 inches long, elliptic, leathery, dark glossy green above, paler and often fuzzy below. Margins mostly entire (untoothed).</p></div>
@@ -194,7 +188,7 @@
     <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">high once established</div></div>
     <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">high</div></div>
     <div class="data-item"><div class="data-label">Wind resistance</div><div class="data-value">excellent</div></div>
-    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">excellent; USDA zones 7B–11</div></div>
+    <div class="data-item"><div class="data-label">Cold tolerance</div><div class="data-value">excellent; USDA zones 7B–11</div></div>
     <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">requires significant space — allow for full spread; surface roots can affect nearby paving but not typically a problem in landscape settings</div></div>
     </div>
   </div>

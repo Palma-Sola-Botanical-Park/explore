@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00067-Madagascar-Periwinkle.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00067-Madagascar-Periwinkle.jpg" alt="Madagascar Periwinkle at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00067/340715783.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00067/340715783.jpg" alt="Madagascar Periwinkle at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Flowering Shrubs &amp; Vines</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Catharanthus roseus</span>
   <a class="plant-family-tag" href="../nature.html?family=Apocynaceae">Apocynaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>pammy63</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Pammy63</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -144,10 +141,10 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
-    <li>One of the most medically significant plants in the world — the source of <strong>vincristine and vinblastine</strong>, chemotherapy drugs used against leukemia and Hodgkin's lymphoma.</li>
-    <li>A pharmaceutical powerhouse that is nonetheless <strong>toxic</strong> to eat, in every part. For admiring, not ingesting.</li>
-    <li>Genuinely native to <strong>Madagascar</strong> — the name is accurate — though it has naturalized so widely across the tropics that many assume otherwise.</li>
-    <li>Blooms nearly year-round in Florida, and ranks among the more <strong>heat and drought tolerant</strong> flowering plants available.</li>
+    <li>One of the most medically significant plants in the world — the source of **vincristine and vinblastine**, chemotherapy drugs used against leukemia and Hodgkin's lymphoma.</li>
+    <li>A pharmaceutical powerhouse that is nonetheless **toxic** to eat, in every part. For admiring, not ingesting.</li>
+    <li>Genuinely native to **Madagascar** — the name is accurate — though it has naturalized so widely across the tropics that many assume otherwise.</li>
+    <li>Blooms nearly year-round in Florida, and ranks among the more **heat and drought tolerant** flowering plants available.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -158,14 +155,11 @@
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
     <li>Madagascar Periwinkle is one of the most medically important plants in the world. Two alkaloids extracted from it - vincristine and vinblastine - became frontline chemotherapy drugs, and vincristine in particular helped turn childhood leukemia from a near-certain death sentence into a largely survivable disease.</li>
-    <li>The way those drugs were found is a textbook case of scientific serendipity. In the 1950s, researchers at Eli Lilly and the University of Western Ontario were studying the plant not for cancer but for diabetes — folk medicine in places like Jamaica and the Philippines held that it lowered blood sugar.</li>
-    <li>It did not. What they noticed instead was that it suppressed white blood cells, a dead end for diabetes that proved to be exactly the property needed against leukemia.</li>
-    <li>The same chemistry makes the whole plant toxic to eat: it is for admiring, not ingesting. The name, for once, is accurate — it really is from Madagascar, where its genus is almost entirely endemic.</li>
-    <li>It simply naturalized so thoroughly across the tropics that many people assume it came from somewhere closer to home.</li>
-    <li>One naming wrinkle worth knowing: gardeners still call it vinca, a holdover from its old classification as Vinca rosea. Taxonomists later moved it into its own genus, Catharanthus — Greek for 'pure flower.' The nursery trade kept the familiar name; botany uses the precise one.</li>
+    <li>The way those drugs were found is a textbook case of scientific serendipity. In the 1950s, researchers at Eli Lilly and the University of Western Ontario were studying the plant not for cancer but for diabetes — folk medicine in places like Jamaica and the Philippines held that it lowered blood sugar. It did not. What they noticed instead was that it suppressed white blood cells, a dead end for diabetes that proved to be exactly the property needed against leukemia.</li>
+    <li>The same chemistry makes the whole plant toxic to eat: it is for admiring, not ingesting. The name, for once, is accurate — it really is from Madagascar, where its genus is almost entirely endemic. It simply naturalized so thoroughly across the tropics that many people assume it came from somewhere closer to home.</li>
+    <li>One naming wrinkle worth knowing: gardeners still call it vinca, a holdover from its old classification as Vinca rosea. Taxonomists later moved it into its own genus, Catharanthus — Greek for ‘pure flower.’ The nursery trade kept the familiar name; botany uses the precise one.</li>
     <li>It is tough and unfussy - blooming in heat, drought, and poor soil with flat, five-petaled pinwheel flowers in white, pink, or rose, often with a contrasting eye - which is exactly why it is so widely planted, and why it sometimes escapes into disturbed ground.</li>
-    <li>This common landscape border plant is one of modern medicine's quietest triumphs — a contrast made sharper by the threatened status of its wild ancestors in Madagascar. The species is among the most widely planted bedding plants on Earth, yet its native populations have declined under pressure from slash-and-burn agriculture and charcoal production.</li>
-    <li>A plant you can buy at any garden center is, in its true home, far less secure than its global ubiquity suggests.</li>
+    <li>This common landscape border plant is one of modern medicine&#x27;s quietest triumphs — a contrast made sharper by the threatened status of its wild ancestors in Madagascar. The species is among the most widely planted bedding plants on Earth, yet its native populations have declined under pressure from slash-and-burn agriculture and charcoal production. A plant you can buy at any garden center is, in its true home, far less secure than its global ubiquity suggests.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -184,10 +178,10 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height/Length</div><div class="data-value">1 to 2 feet</div></div>
+    <div class="data-item"><div class="data-label">Height length</div><div class="data-value">1 to 2 feet</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">1 to 2 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">low, bushy evergreen perennial (often grown as an annual)</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
     <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to part shade</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">well-drained; tolerates poor, sandy, dry soils</div></div>

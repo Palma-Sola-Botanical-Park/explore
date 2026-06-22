@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00102-Red-Silk-Cotton-Tree.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00102-Red-Silk-Cotton-Tree.jpg" alt="Red Silk Cotton Tree at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00102/625123687.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00102/625123687.jpg" alt="Red Silk Cotton Tree at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Tropical Specimen Trees</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Bombax ceiba</span>
   <a class="plant-family-tag" href="../nature.html?family=Malvaceae">Malvaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>katyperry</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>katyperry</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -158,17 +155,14 @@
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
     <li>The Red Silk Cotton Tree and the Kapok stand in a row with the Baobab nearby — a deliberate or fortunate alignment of three members of the same subfamily, all with spiny trunks, all deciduous, all flowering on bare branches. Standing between them and looking at the trunk structure, the branch pattern, and the seed pod design, the family resemblance is clear in a way that a label alone cannot convey.</li>
-    <li>The flowering is the seasonal event this tree is known for — peaking in late winter into early spring, typically March to early April in Bradenton. Visitors who arrive in January will find bare spiny branches; visitors who arrive in March will find a canopy on fire.</li>
-    <li>When the leaves are off and the scarlet blooms cover the bare branches, the tree is visible from considerable distance. It is one of the more striking winter-flowering trees available for Central Florida gardens, and one that relatively few visitors will have seen before.</li>
-    <li>In its native range across South and Southeast Asia the tree has deep cultural roots. In India it is associated with the deity Brahma and planted near temples.</li>
-    <li>The flowers are used in ritual offerings. The cotton from the seed pods was historically used to stuff pillows and for insulation — the same practical role as the Kapok.</li>
-    <li>The park decorates this tree with lights every year. It is not a task for the faint of heart — the conical spines on the trunk and branches are exactly as formidable as they look.</li>
-    <li>When the seed pods release their silk in spring, the white fluff drifts across the park and puzzles visitors who look around wondering where it is all coming from. Looking up is always the reveal.</li>
+    <li>The flowering is the seasonal event this tree is known for — peaking in late winter into early spring, typically March to early April in Bradenton. Visitors who arrive in January will find bare spiny branches; visitors who arrive in March will find a canopy on fire. When the leaves are off and the scarlet blooms cover the bare branches, the tree is visible from considerable distance. It is one of the more striking winter-flowering trees available for Central Florida gardens, and one that relatively few visitors will have seen before.</li>
+    <li>In its native range across South and Southeast Asia the tree has deep cultural roots. In India it is associated with the deity Brahma and planted near temples. The flowers are used in ritual offerings. The cotton from the seed pods was historically used to stuff pillows and for insulation — the same practical role as the Kapok.</li>
+    <li>The park decorates this tree with lights every year. It is not a task for the faint of heart — the conical spines on the trunk and branches are exactly as formidable as they look. When the seed pods release their silk in spring, the white fluff drifts across the park and puzzles visitors who look around wondering where it is all coming from. Looking up is always the reveal.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Hummingbirds, sunbirds in its native range, and bats work the flowers. The large red blooms and the winter timing — when few other trees are in bloom — make this tree a significant nectar source during a period of relative scarcity.</p><p>The seed pod cotton is collected by birds for nest lining. The spiny trunk deters climbing predators, making the canopy a relatively secure nesting site.</p><p>As a member of the bat-pollination themed collection alongside the Kapok, Silk Floss Tree, and Baobab, it contributes to the "Night Shift" story — the park's cluster of trees whose primary pollinator relationship is nocturnal.</p><p>In Florida, the large nectar-feeding bats of tropical Asia are absent, so local wildlife has taken over the pollination role entirely. When the tree blooms in Bradenton it becomes a daytime free-for-all — migrating Baltimore Orioles and Tanagers, honeybees, and mockingbirds all work the flowers heavily.</p><p>The tree's original nocturnal design has been repurposed by an entirely different cast of visitors.</p></div>
+    <div class="plant-section-body"><p>Hummingbirds, sunbirds in its native range, and bats work the flowers. The large red blooms and the winter timing — when few other trees are in bloom — make this tree a significant nectar source during a period of relative scarcity.</p><p>The seed pod cotton is collected by birds for nest lining. The spiny trunk deters climbing predators, making the canopy a relatively secure nesting site.</p><p>As a member of the bat-pollination themed collection alongside the Kapok, Silk Floss Tree, and Baobab, it contributes to the &quot;Night Shift&quot; story — the park&#x27;s cluster of trees whose primary pollinator relationship is nocturnal.</p><p>In Florida, the large nectar-feeding bats of tropical Asia are absent, so local wildlife has taken over the pollination role entirely. When the tree blooms in Bradenton it becomes a daytime free-for-all — migrating Baltimore Orioles and Tanagers, honeybees, and mockingbirds all work the flowers heavily. The tree&#x27;s original nocturnal design has been repurposed by an entirely different cast of visitors.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -183,10 +177,10 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height/Length</div><div class="data-value">a large deciduous tree, commonly 40 to 80 feet in cultivation and taller in its native range</div></div>
+    <div class="data-item full-width"><div class="data-label">Height length</div><div class="data-value">a large deciduous tree, commonly 40 to 80 feet in cultivation and taller in its native range</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">broad, spreading crown</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">tall, straight-trunked tree, the young trunk armed with stout conical spines; tiered branches</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">bold - large leaves, big red flowers, stout spines</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">deep, well-drained soils; tolerates a range</div></div>

@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00004-Silk-Floss-Tree.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00004-Silk-Floss-Tree.jpg" alt="Silk Floss Tree at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00004/663359491.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00004/663359491.jpg" alt="Silk Floss Tree at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Tropical Specimen Trees</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Ceiba speciosa</span>
   <a class="plant-family-tag" href="../nature.html?family=Malvaceae">Malvaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -144,10 +141,10 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
-    <li>The conical spines on the trunk are thought to be defenses left over from <strong>now-extinct South American megafauna</strong> — giant ground sloths and gomphotheres.</li>
-    <li>The silky floss from its seed pods is <strong>buoyant and water-resistant</strong>; its close relative's floss (true kapok) filled Navy life jackets through both World Wars.</li>
-    <li>The young green bark <strong>photosynthesizes</strong> even after the tree drops its leaves in fall. Our tree is older and gray-barked now, but green still runs down its grooves: that part isn't chlorophyll, it's a film of algae living in the moist channels where rainwater funnels down.</li>
-    <li>One survey of a single tree in Mexico counted nearly <strong>80 insect species</strong>, 8 bird species, and a nectar-feeding bat at its flowers.</li>
+    <li>The conical spines on the trunk are thought to be defenses left over from now-extinct South American megafauna — giant ground sloths and gomphotheres.</li>
+    <li>The silky floss from its seed pods is buoyant and water-resistant; its close relative's floss (true kapok) filled Navy life jackets through both World Wars.</li>
+    <li>The young green bark photosynthesizes even after the tree drops its leaves in fall. Ours is past that stage — too mature now, its bark long since turned gray — yet green still runs down the trunk's grooves. We're not certain why: our best guess is a film of algae settling into the damp channels where rainwater funnels down, but it's a question we're still looking into.</li>
+    <li>One survey of a single tree in Mexico counted nearly 80 insect species, 8 bird species, and a nectar-feeding bat at its flowers.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -157,11 +154,9 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The Silk Floss Tree is essentially a Swiss Army knife of a tree. The silky floss bursting from its seed pods is buoyant and water-resistant — so similar to true kapok that it has been used as a substitute for stuffing pillows and upholstery.</li>
-    <li>True kapok, from its close cousin Ceiba pentandra, was used by the U.S. Navy to fill life jackets through both World Wars. Its wood is light enough to make canoes, and seed oils serve both culinary and industrial purposes.</li>
+    <li>The Silk Floss Tree is essentially a Swiss Army knife of a tree. The silky floss bursting from its seed pods is buoyant and water-resistant — so similar to true kapok that it has been used as a substitute for stuffing pillows and upholstery. True kapok, from its close cousin Ceiba pentandra, was used by the U.S. Navy to fill life jackets through both World Wars. Its wood is light enough to make canoes, and seed oils serve both culinary and industrial purposes.</li>
     <li>In younger trees, the green-tinted bark is rich enough in chlorophyll to photosynthesize even after the leaves drop — an evolutionary trick to maximize energy capture during the leafless flowering season.</li>
-    <li>Older trees lose the green as the bark matures to gray, as you can see in this specimen. Those fierce conical spines covering younger trunks are thought to be relics of defenses against now-extinct South American megafauna — giant ground sloths and elephant-like gomphotheres that vanished around ten thousand years ago.</li>
-    <li>Its closest relatives include the Kapok tree and the African Baobab, both of which are also growing at this park — making Palma Sola home to three of the most extraordinary trunk architectures in the plant kingdom.</li>
+    <li>As the bark matures to gray, an older tree loses that green photosynthesizing layer — and our specimen is well into that mature stage. Yet green still lingers in the grooves of its trunk, which has us curious. We suspect a film of algae taking hold in the damp channels rather than the tree&#x27;s own chlorophyll, though it&#x27;s an open question we&#x27;re still looking into. Those fierce conical spines covering younger trunks are thought to be relics of defenses against now-extinct South American megafauna — giant ground sloths and elephant-like gomphotheres that vanished around ten thousand years ago. Its closest relatives include the Kapok tree and the African Baobab, both of which are also growing at this park — making Palma Sola home to three of the most extraordinary trunk architectures in the plant kingdom.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -185,7 +180,7 @@
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">30 to 60 feet</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">20 to 50 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">upright with spreading crown, bottle-shaped trunk</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast when water is abundant</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast when water is abundant</div></div>
     <div class="data-item"><div class="data-label">Texture</div><div class="data-value">coarse</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">moist, well-drained · wide range of soil types</div></div>
@@ -201,7 +196,9 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>In Bolivia the tree is called toborochi — "tree of refuge" or "sheltering tree" in Guaraní — and is the subject of one of that country's most beloved legends.</p><p>A pregnant princess named Araverá, pursued by spirits of darkness, hid inside the swollen trunk of a toborochi tree to give birth to a son who would defeat them. The tree's bottle-shaped form is said to shelter her spirit still.</p><p>The toborochi is the symbol of Santa Cruz, Bolivia, and appears on the city's coat of arms.</p><p>NOMENCLATURE: Silk Floss was formerly Chorisia speciosa in the family Bombacaceae; it is now Ceiba speciosa in Malvaceae (subfamily Bombacoideae).</p></div>
+    <div class="plant-section-body"><p>In Bolivia the tree is called toborochi — &quot;tree of refuge&quot; or &quot;sheltering tree&quot; in Guaraní — and is the subject of one of that country&#x27;s most beloved legends.   A pregnant princess named Araverá, pursued by spirits of darkness, hid inside the swollen trunk of a toborochi tree to give birth to a son who would defeat them. The tree&#x27;s bottle-shaped form is said to shelter her spirit still. The toborochi is the symbol of Santa Cruz, Bolivia, and appears on the city&#x27;s coat of arms.
+
+NOMENCLATURE: Silk Floss was formerly Chorisia speciosa in the family Bombacaceae; it is now Ceiba speciosa in Malvaceae (subfamily Bombacoideae).</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>

@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00062-Candelabra-Bush.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00062-Candelabra-Bush.jpg" alt="Candelabra Bush at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00062/245520188.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00062/245520188.jpg" alt="Candelabra Bush at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Plants to Watch &amp; Invasive Awareness</div>
@@ -134,20 +131,20 @@
   <span class="plant-sci-name">Senna alata</span>
   <a class="plant-family-tag" href="../nature.html?family=Fabaceae">Fabaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>teschaim</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>teschaim</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
-    <span class="badge badge-danger">🚫 Invasive</span>
+    <span class="badge badge-danger">⚠️ Invasive</span>
     <span class="badge badge-danger">☠️ Toxic</span>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
-    <li>The large yellow flower clusters and bold compound leaves make this one of the more visually assertive shrubs in the collection — <strong>hard to walk past</strong> without noticing.</li>
-    <li>A member of the senna family (Fabaceae/Cassieae) and closely related to the Golden Shower Tree. The pods are large, <strong>four-winged</strong>, and distinctive.</li>
-    <li>The leaves and seeds are toxic. Historically used as a medicinal plant throughout its native range in tropical America, with particular use as an antifungal skin treatment — the leaves were rubbed on ringworm infections, which is why it is also called <strong>Ringworm Bush</strong>.</li>
-    <li><strong>FISC Category I</strong> invasive in Florida — Florida's highest invasive designation. Self-seeds freely and establishes in disturbed areas.</li>
+    <li>The large yellow flower clusters and bold compound leaves make this one of the more visually assertive shrubs in the collection — **hard to walk past** without noticing.</li>
+    <li>A member of the senna family (Fabaceae/Cassieae) and closely related to the Golden Shower Tree. The pods are large, **four-winged**, and distinctive.</li>
+    <li>The leaves and seeds are toxic. Historically used as a medicinal plant throughout its native range in tropical America, with particular use as an antifungal skin treatment — the leaves were rubbed on ringworm infections, which is why it is also called **Ringworm Bush**.</li>
+    <li>**FISC Category I** invasive in Florida — Florida's highest invasive designation. Self-seeds freely and establishes in disturbed areas.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -157,9 +154,9 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>Candelabra Bush is named for its flower spikes: stiff, upright spikes of bright yellow buds that open from the bottom up, standing above the foliage like rows of golden candles - the source of its other names, Emperor's Candlesticks and Christmas Candle. The bold, ladder-like compound leaves fold closed at night.</li>
+    <li>Candelabra Bush is named for its flower spikes: stiff, upright spikes of bright yellow buds that open from the bottom up, standing above the foliage like rows of golden candles - the source of its other names, Emperor&#x27;s Candlesticks and Christmas Candle. The bold, ladder-like compound leaves fold closed at night.</li>
     <li>Its oldest common name, Ringworm Bush, points to a long history in folk medicine: a crushed-leaf paste has been used across the tropics against ringworm and other fungal skin conditions, and the plant does contain compounds with documented antifungal activity. It is not, however, a plant to eat - the leaves and seeds contain anthraquinone glycosides and act as a strong laxative.</li>
-    <li>It is a fast, short-lived tropical shrub from the Americas, now naturalized worldwide. In Florida it is a FISC Category I invasive — the state's highest designation — that self-seeds freely, so it is never one to plant near natural areas.</li>
+    <li>It is a fast, short-lived tropical shrub from the Americas, now naturalized worldwide. In Florida it is a FISC Category I invasive — the state&#x27;s highest designation — that self-seeds freely, so it is never one to plant near natural areas.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -179,10 +176,10 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height/Length</div><div class="data-value">6 to 12 feet</div></div>
+    <div class="data-item"><div class="data-label">Height length</div><div class="data-value">6 to 12 feet</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">4 to 8 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">fast-growing, short-lived, open shrub with bold compound leaves</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">bold - large ladder-like leaves and candle-like flower spikes</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">moist, fertile, well-drained; tolerates a range</div></div>
@@ -198,11 +195,11 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>The Candelabra Bush recorded at Palma Sola grew near the front gate, where all park observations date to 2024 and earlier. As a FISC Category I invasive it was targeted for removal — a stubborn one to clear — and as of 2025 we believe it has been fully taken out.</p><p>A related Christmas senna still grows in the park's butterfly garden, where it makes a far better-behaved garden plant.</p></div>
+    <div class="plant-section-body"><p>The Candelabra Bush recorded at Palma Sola grew near the front gate, where all park observations date to 2024 and earlier. As a FISC Category I invasive it was targeted for removal — a stubborn one to clear — and as of 2025 we believe it has been fully taken out. A related Christmas senna still grows in the park&#x27;s butterfly garden, where it makes a far better-behaved garden plant.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Ringworm Bush</span><span class="alias-tag">Emperor's Candlesticks</span><span class="alias-tag">Christmas Candle</span></div>
+    <div class="alias-list"><span class="alias-tag">Ringworm Bush</span><span class="alias-tag">Emperor&#x27;s Candlesticks</span><span class="alias-tag">Christmas Candle</span></div>
   </div>
 
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>

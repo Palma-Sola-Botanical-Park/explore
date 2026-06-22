@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00024-Coontie-Palm.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00024-Coontie-Palm.jpg" alt="Coontie Palm at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00024/667875500.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00024/667875500.jpg" alt="Coontie Palm at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Palms &amp; Cycads</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Zamia integrifolia</span>
   <a class="plant-family-tag" href="../nature.html?family=Zamiaceae">Zamiaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
@@ -158,18 +155,14 @@
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
     <li>Cycad fossils date back to roughly 300 million years ago — this plant was thriving before the Atlantic Ocean existed in its current form. It watched the dinosaurs come and go. Compared to that resume, its brush with extinction at the hands of the animal cracker industry seems almost undignified.</li>
-    <li>The starch industry was relentless. Florida coontie factories ground the roots into flour sold as 'Florida arrowroot' — used in baby food, animal crackers, beer, and WWI rations.</li>
-    <li>Nabisco ran operations grinding up to 20 tons per day. Because each coontie plant takes up to a decade to mature, wild populations collapsed under the harvest pressure.</li>
-    <li>The last commercial factory was destroyed by the 1926 Miami hurricane. The FDA had banned the practice a year earlier.</li>
-    <li>The Atala butterfly story is one of Florida's great conservation turnarounds. Considered locally extinct for decades, it was rediscovered in 1979 by naturalist Roger Hammer on Virginia Key — a small island between Miami and Key Biscayne.</li>
-    <li>Every Atala colony in Florida today is believed to descend from that single group. As coontie has returned to Florida gardens, the Atala has expanded northward into Manatee County.</li>
-    <li>Plant this, and you may well see them here.</li>
+    <li>The starch industry was relentless. Florida coontie factories ground the roots into flour sold as &#x27;Florida arrowroot&#x27; — used in baby food, animal crackers, beer, and WWI rations. Nabisco ran operations grinding up to 20 tons per day. Because each coontie plant takes up to a decade to mature, wild populations collapsed under the harvest pressure. The last commercial factory was destroyed by the 1926 Miami hurricane. The FDA had banned the practice a year earlier.</li>
+    <li>The Atala butterfly story is one of Florida&#x27;s great conservation turnarounds. Considered locally extinct for decades, it was rediscovered in 1979 by naturalist Roger Hammer on Virginia Key — a small island between Miami and Key Biscayne. Every Atala colony in Florida today is believed to descend from that single group. As coontie has returned to Florida gardens, the Atala has expanded northward into Manatee County. Plant this, and you may well see them here.</li>
     <li>The pollination system is unusual even by cycad standards: a tiny weevil pollinates the plants and uses the pollen-bearing cones as food for its larvae — but if the larvae try to eat the seed-bearing cones instead, they are poisoned. The plant rewards its pollinator at one cone type while defending the other with toxin.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The Coontie's ecological value is concentrated in one relationship: it is the sole larval food plant for the Atala butterfly (Eumaeus atala), a species found nowhere outside Florida and the Bahamas. The caterpillars absorb the plant's cycasin toxin and become poisonous themselves — bright red coloring warns predators off.</p><p>The Atala's recovery from near-extinction is directly tied to the return of this plant to Florida landscapes. The echo moth (Sierarctia echo) also uses it as a larval host.</p><p>The dense, low clumping form provides excellent ground-level cover for lizards and small ground-feeding birds.</p></div>
+    <div class="plant-section-body"><p>The Coontie&#x27;s ecological value is concentrated in one relationship: it is the sole larval food plant for the Atala butterfly (Eumaeus atala), a species found nowhere outside Florida and the Bahamas. The caterpillars absorb the plant&#x27;s cycasin toxin and become poisonous themselves — bright red coloring warns predators off. The Atala&#x27;s recovery from near-extinction is directly tied to the return of this plant to Florida landscapes. The echo moth (Sierarctia echo) also uses it as a larval host. The dense, low clumping form provides excellent ground-level cover for lizards and small ground-feeding birds.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -189,14 +182,13 @@
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">1 to 5 feet</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">3 to 5 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">clumping, low-growing palm-like rosette</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">slow</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">slow</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium — fern-like glossy fronds</div></div>
     <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full shade to full sun — one of the most adaptable natives for light levels</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">any texture, well-drained, acidic to neutral</div></div>
     <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">high once established</div></div>
     <div class="data-item full-width"><div class="data-label">Salt tolerance</div><div class="data-value">moderate — tolerates salt spray</div></div>
-    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">excellent; USDA zones 8A–11</div></div>
-    <div class="data-item full-width"><div class="data-label">Fire adaptation</div><div class="data-value">underground caudex sends up new growth quickly after fire</div></div>
+    <div class="data-item"><div class="data-label">Cold tolerance</div><div class="data-value">excellent; USDA zones 8A–11</div></div>
     <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">wild collection is regulated in Florida — plant only nursery-sourced specimens</div></div>
     </div>
   </div>

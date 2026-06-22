@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00078-Swamp-Milkweed.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00078-Swamp-Milkweed.jpg" alt="Swamp Milkweed at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00078/668445054.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00078/668445054.jpg" alt="Swamp Milkweed at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Wetland &amp; Pond Edge</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Asclepias incarnata</span>
   <a class="plant-family-tag" href="../nature.html?family=Apocynaceae">Apocynaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>frankymca</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Franky McArthur</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
@@ -157,14 +154,14 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>Swamp Milkweed is the park's native milkweed and, like all milkweeds, a host plant for the Monarch butterfly: the caterpillars eat the leaves, take up the plant's toxic cardiac glycosides, and carry that chemical defense into adulthood, advertising it with bold orange-and-black warning colors. The pink to rose flower clusters are also a strong nectar source for adult Monarchs, other butterflies, and bees.</li>
-    <li>As the name says, it likes wet feet - native to marsh edges, wet meadows, and pond margins across eastern North America, including Florida - which suits the park's pond edges. It dies back in winter and returns from the roots.</li>
+    <li>Swamp Milkweed is the park&#x27;s native milkweed and, like all milkweeds, a host plant for the Monarch butterfly: the caterpillars eat the leaves, take up the plant&#x27;s toxic cardiac glycosides, and carry that chemical defense into adulthood, advertising it with bold orange-and-black warning colors. The pink to rose flower clusters are also a strong nectar source for adult Monarchs, other butterflies, and bees.</li>
+    <li>As the name says, it likes wet feet - native to marsh edges, wet meadows, and pond margins across eastern North America, including Florida - which suits the park&#x27;s pond edges. It dies back in winter and returns from the roots.</li>
     <li>It is the milkweed to plant for Monarchs in Florida, recommended over the widely sold non-native Tropical Milkweed, whose year-round foliage can disrupt Monarch migration and harbor a harmful parasite. Every part is toxic if eaten, and the milky sap irritates skin and eyes.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Monarch butterflies use this plant as a larval host. The caterpillars eat the foliage and sequester toxic cardiac glycosides that protect them from predation as adults. The Viceroy butterfly mimics the Monarch's warning coloration for the same protection without eating milkweed.</p><p>The flowers produce abundant nectar and attract a wide range of butterflies, bees, and other pollinators. The seed pod silk is collected by birds for nest lining.</p><p>As a native wetland plant it contributes to pond bank habitat for frogs, insects, and small wildlife.</p></div>
+    <div class="plant-section-body"><p>Monarch butterflies use this plant as a larval host. The caterpillars eat the foliage and sequester toxic cardiac glycosides that protect them from predation as adults. The Viceroy butterfly mimics the Monarch&#x27;s warning coloration for the same protection without eating milkweed.</p><p>The flowers produce abundant nectar and attract a wide range of butterflies, bees, and other pollinators. The seed pod silk is collected by birds for nest lining.</p><p>As a native wetland plant it contributes to pond bank habitat for frogs, insects, and small wildlife.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -179,10 +176,10 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height/Length</div><div class="data-value">3 to 5 feet</div></div>
+    <div class="data-item"><div class="data-label">Height length</div><div class="data-value">3 to 5 feet</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">2 to 3 feet, clumping</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">upright herbaceous perennial; dies back in winter, returns from the roots</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate to fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate to fast</div></div>
     <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to part shade</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">moist to wet; marsh edges, pond margins, wet meadows; tolerates average garden moisture</div></div>

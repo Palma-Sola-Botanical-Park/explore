@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00029-Alligator-Flag.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00029-Alligator-Flag.jpg" alt="Alligator Flag at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00029/667875759.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00029/667875759.jpg" alt="Alligator Flag at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Wetland &amp; Pond Edge</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Thalia geniculata</span>
   <a class="plant-family-tag" href="../nature.html?family=Marantaceae">Marantaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
@@ -152,26 +149,25 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to Florida throughout most of the peninsula and a few Panhandle counties. Also native to tropical Africa, Mexico, Central America, and the West Indies — an unusual range spanning two continents with a wide Atlantic gap.</p><p>Found in fresh to slightly brackish marshes, pond edges, and slow-moving waterways.</p></div>
+    <div class="plant-section-body"><p>Native to Florida throughout most of the peninsula and a few Panhandle counties. Also native to tropical Africa, Mexico, Central America, and the West Indies — an unusual range spanning two continents with a wide Atlantic gap. Found in fresh to slightly brackish marshes, pond edges, and slow-moving waterways.</p></div>
   </div>
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The name Alligator Flag is one of the most descriptive plant names in Florida's native flora. In the Everglades, these tall, broad leaves stand 8 to 10 feet above the water and sway dramatically when anything large moves through the stand — an alligator's path through a marsh is traced in real time by the waving leaves.</li>
-    <li>Florida wildlife photographers and Everglades guides have relied on this visual signal for generations.</li>
+    <li>The name Alligator Flag is one of the most descriptive plant names in Florida&#x27;s native flora. In the Everglades, these tall, broad leaves stand 8 to 10 feet above the water and sway dramatically when anything large moves through the stand — an alligator&#x27;s path through a marsh is traced in real time by the waving leaves. Florida wildlife photographers and Everglades guides have relied on this visual signal for generations.</li>
     <li>The Seminole food uses are well-documented. Fresh roots, flowers, rhizomes, and stem bases were eaten. The enormous leaves were used to wrap food for pit-cooking, similar to how banana leaves are used across the tropics. It is one of the most culinarily versatile native plants in Florida.</li>
-    <li>The genus is named for Johann Thal (1542–1583), a German physician and botanist who wrote one of the first regional plant catalogues in European history — the Sylva Hercynia, documenting the plants of the Harz Mountains in Germany in 1588. The species name geniculata means 'knee-jointed' in Latin, referring to the zigzag bends in the flower stalk.</li>
+    <li>The genus is named for Johann Thal (1542–1583), a German physician and botanist who wrote one of the first regional plant catalogues in European history — the Sylva Hercynia, documenting the plants of the Harz Mountains in Germany in 1588. The species name geniculata means &#x27;knee-jointed&#x27; in Latin, referring to the zigzag bends in the flower stalk.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The Alligator Flag is becoming an important wetland wildlife plant along Palma Sola's pond edges, starting to use since 2025. Get up close and personal to several near the pond bridge.</p><p>It is the larval host for the Brazilian Skipper butterfly (Calpodes ethlius), whose caterpillars roll the leaves into silk-tied tubes and feed from inside — look for the rolled tubes as evidence of their presence. The seeds are a documented food source for Purple Gallinules, which walk on aquatic vegetation to forage.</p><p>The dense emergent stems provide nesting structure for Red-winged Blackbirds and other marsh birds. The rhizome mass stabilizes pond edges and provides shelter for fish, frogs, and invertebrates at the water line.</p></div>
+    <div class="plant-section-body"><p>The Alligator Flag is becoming an important wetland wildlife plant along Palma Sola&#x27;s pond edges, starting to use since 2025. Get up close and personal to several near the pond bridge. It is the larval host for the Brazilian Skipper butterfly (Calpodes ethlius), whose caterpillars roll the leaves into silk-tied tubes and feed from inside — look for the rolled tubes as evidence of their presence. The seeds are a documented food source for Purple Gallinules, which walk on aquatic vegetation to forage. The dense emergent stems provide nesting structure for Red-winged Blackbirds and other marsh birds. The rhizome mass stabilizes pond edges and provides shelter for fish, frogs, and invertebrates at the water line.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
     <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Spreads vigorously by rhizomes, forming dense clonal colonies in wet conditions. Deciduous in colder winters in North Florida.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, purple, on tall branching stalks that bend at angles (the geniculata — 'knee-jointed' — character). Appearing summer through fall. Visited by bees.</p></div>
+<div class="repro-item"><div class="repro-label">Habit</div><p>Spreads vigorously by rhizomes, forming dense clonal colonies in wet conditions. Deciduous in colder winters in North Florida.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, purple, on tall branching stalks that bend at angles (the geniculata — &#x27;knee-jointed&#x27; — character). Appearing summer through fall. Visited by bees.</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>Enormous — blade 1 to 2 feet long on petioles up to 3 feet, reaching 6 to 10 feet total height. Oval, bright green, with prominent midrib. The large paddle-shaped leaves wave conspicuously in any air movement.</p></div>
 <div class="repro-item"><div class="repro-label">Rhizomes</div><p>Fleshy, edible. The historically important food part.</p></div>
 <div class="repro-item"><div class="repro-label">What to Look For</div><p>The tall, broad, paddle-shaped leaves standing above the waterline are unmistakable in the pond margin. Look for rolled leaf tubes tied with silk — evidence of Brazilian Skipper caterpillars feeding inside. Watch for Purple Gallinule activity on and around the leaves. Note the zigzag bend in the flower stalk that gives the species its name.</p></div>
@@ -183,9 +179,9 @@
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">6 to 10 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">spreading colony by rhizomes — individual clumps variable</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">upright emergent aquatic perennial; forms dense stands</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast in wet conditions</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast in wet conditions</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">bold, coarse — large paddle-shaped leaves</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
+    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">wet, rich, acidic soils; does well in standing water</div></div>
     <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">low — requires consistently wet conditions</div></div>
     <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">root-hardy; deciduous in colder winters; USDA zones 9–11</div></div>

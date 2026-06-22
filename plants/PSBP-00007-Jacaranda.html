@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00007-Jacaranda.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00007-Jacaranda.jpg" alt="Jacaranda at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00007/366864093.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00007/366864093.jpg" alt="Jacaranda at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Tropical Specimen Trees</div>
@@ -134,12 +131,12 @@
   <span class="plant-sci-name">Jacaranda mimosifolia</span>
   <a class="plant-family-tag" href="../nature.html?family=Bignoniaceae">Bignoniaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>nigrosh60</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Sherry Nigro</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
     <span class="badge badge-warn">⚠️ Watch List</span>
-    <span class="badge badge-safe">✅ Edible &amp; Safe</span>
+    <span class="badge badge-green">✅ Safe</span>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
@@ -152,23 +149,25 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to the dry inter-Andean valleys and piedmont forests of northwestern Argentina and southern Bolivia. Sources differ on whether southern Brazil, Uruguay, and Paraguay are part of the native range — Kew's Plants of the World Online lists only Bolivia to NW Argentina, while other references include a broader South American range.</p><p>The discrepancy likely reflects a long cultivation history obscuring original wild boundaries.</p><p>One of the most celebrated flowering trees in the world — planted on streets, in parks, and in gardens across every tropical and subtropical continent. Widely naturalized in South Africa, Australia, Spain, and throughout the Americas.</p><p>Listed as Vulnerable by the IUCN in its native wild range, threatened by logging and agricultural clearing — even as millions of specimens flourish in cultivation worldwide.</p><p>The name Jacaranda comes from a Guaraní word meaning 'fragrant.'</p></div>
+    <div class="plant-section-body"><p>Native to the dry inter-Andean valleys and piedmont forests of northwestern Argentina and southern Bolivia. Sources differ on whether southern Brazil, Uruguay, and Paraguay are part of the native range — Kew&#x27;s Plants of the World Online lists only Bolivia to NW Argentina, while other references include a broader South American range. The discrepancy likely reflects a long cultivation history obscuring original wild boundaries.
+
+One of the most celebrated flowering trees in the world — planted on streets, in parks, and in gardens across every tropical and subtropical continent. Widely naturalized in South Africa, Australia, Spain, and throughout the Americas. Listed as Vulnerable by the IUCN in its native wild range, threatened by logging and agricultural clearing — even as millions of specimens flourish in cultivation worldwide.
+
+The name Jacaranda comes from a Guaraní word meaning &#x27;fragrant.&#x27;</p></div>
   </div>
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The Blue Jacaranda is arguably the most widely planted ornamental tree on earth — entire cities are famous for their Jacaranda seasons. Pretoria, South Africa is called the Jacaranda City for its 70,000 street trees.</li>
-    <li>Grafton, Australia holds an annual Jacaranda Festival. In Lisbon, Portugal the trees line entire boulevards.</li>
-    <li>In all these places the tree is a beloved non-native that arrived from South America and never left.</li>
-    <li>The flowering is triggered partly by mild cold stress — meaning Bradenton's occasional cool winters may actually improve the bloom. Flowering is also reportedly best in poor soil: a well-fertilized, well-watered Jacaranda puts energy into leaves, not flowers.</li>
-    <li>Here's the conservation paradox: the Blue Jacaranda is listed as Vulnerable on the IUCN Red List in its native Argentine and Bolivian range, threatened by logging and agricultural clearing — yet it is simultaneously one of the most abundant ornamental trees on earth. Millions of cultivated specimens flourish globally while the wild population quietly declines.</li>
+    <li>The Blue Jacaranda is arguably the most widely planted ornamental tree on earth — entire cities are famous for their Jacaranda seasons. Pretoria, South Africa is called the Jacaranda City for its 70,000 street trees. Grafton, Australia holds an annual Jacaranda Festival. In Lisbon, Portugal the trees line entire boulevards. In all these places the tree is a beloved non-native that arrived from South America and never left.</li>
+    <li>The flowering is triggered partly by mild cold stress — meaning Bradenton&#x27;s occasional cool winters may actually improve the bloom. Flowering is also reportedly best in poor soil: a well-fertilized, well-watered Jacaranda puts energy into leaves, not flowers.</li>
+    <li>Here&#x27;s the conservation paradox: the Blue Jacaranda is listed as Vulnerable on the IUCN Red List in its native Argentine and Bolivian range, threatened by logging and agricultural clearing — yet it is simultaneously one of the most abundant ornamental trees on earth. Millions of cultivated specimens flourish globally while the wild population quietly declines.</li>
     <li>Older botanical sources may list this tree as Jacaranda acutifolia — now considered a synonym, or in some modern treatments a distinct Peruvian species. All cultivated Jacarandas are believed to derive from Argentine stock and are correctly called J. mimosifolia.</li>
     <li>In Pretoria, planting new Jacarandas is now forbidden due to invasive concerns — yet removing the beloved adult trees proved politically impossible. The Jacaranda City will eventually lose its trees to old age with no replacements allowed.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>When the Jacaranda erupts in lavender, it becomes a pollinator magnet — its long tubular flowers are built for large bees, especially carpenter bees, and also draw butterflies and hummingbirds to their nectar. The blanket of fallen blossoms feeds insects at ground level, and decomposing flowers and leaves cycle nutrients back into the soil beneath the canopy.</p><p>Its broad, fern-like canopy provides birds with shade, perches, and nesting cover. The persistent woody seed pods offer food for seed-eating birds through summer and fall.</p></div>
+    <div class="plant-section-body"><p>When the Jacaranda erupts in lavender, it becomes a pollinator magnet — its long tubular flowers are built for large bees, especially carpenter bees, and also draw butterflies and hummingbirds to their nectar.   The blanket of fallen blossoms feeds insects at ground level, and decomposing flowers and leaves cycle nutrients back into the soil beneath the canopy.   Its broad, fern-like canopy provides birds with shade, perches, and nesting cover.   The persistent woody seed pods offer food for seed-eating birds through summer and fall.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -187,7 +186,7 @@
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">25 to 40 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">45 to 60 feet — often wider than tall at maturity</div></div>
     <div class="data-item"><div class="data-label">Crown shape</div><div class="data-value">vase, spreading, arching</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
     <div class="data-item"><div class="data-label">Texture</div><div class="data-value">fine, feathery</div></div>
     <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun — flowering heaviest in full sun</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">any texture · slightly acid to slightly alkaline · well-drained</div></div>

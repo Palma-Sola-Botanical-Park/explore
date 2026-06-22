@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00074-Firebush.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00074-Firebush.jpg" alt="Firebush at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00074/661595420.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00074/661595420.jpg" alt="Firebush at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Trees &amp; Large Shrubs</div>
@@ -134,37 +131,36 @@
   <span class="plant-sci-name">Hamelia patens</span>
   <a class="plant-family-tag" href="../nature.html?family=Rubiaceae">Rubiaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
     <span class="badge badge-green">✅ Not Invasive</span>
-    <span class="badge badge-safe">✅ Edible &amp; Safe</span>
+    <span class="badge badge-green">✅ Safe</span>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
-    <li>Firebush is one of the most important <strong>native plants</strong> in South Florida for wildlife — hummingbirds, butterflies, and more than two dozen bird species use it for nectar, fruit, or cover through the entire year.</li>
-    <li>It <strong>blooms and fruits simultaneously</strong>, making it a multi-function wildlife station.</li>
-    <li><strong>Seminole</strong> people used the plant medicinally, applying crushed leaves to skin irritations.</li>
-    <li>It grows fast, tolerates drought, and in frost-free areas becomes a sizeable shrub — one of the first recommendations any Florida naturalist makes for a <strong>wildlife-friendly yard</strong>.</li>
+    <li>Firebush is one of the most important **native plants** in South Florida for wildlife — hummingbirds, butterflies, and more than two dozen bird species use it for nectar, fruit, or cover through the entire year.</li>
+    <li>It **blooms and fruits simultaneously**, making it a multi-function wildlife station.</li>
+    <li>**Seminole** people used the plant medicinally, applying crushed leaves to skin irritations.</li>
+    <li>It grows fast, tolerates drought, and in frost-free areas becomes a sizeable shrub — one of the first recommendations any Florida naturalist makes for a **wildlife-friendly yard**.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to the American subtropics and tropics, with the widest range of any plant in its genus — from central Florida south through the Keys, the West Indies, and Mexico, all the way to Argentina. It belongs to the coffee family (Rubiaceae).</p><p>The genus name Hamelia honors the 18th-century French botanist Henri-Louis Duhamel du Monceau, and patens means "spreading," for its open, spreading branches. The true Florida native is Hamelia patens var. patens.</p><p>In Belize it carries the Mayan name Ix Canaan, "Guardian of the Forest."</p></div>
+    <div class="plant-section-body"><p>Native to the American subtropics and tropics, with the widest range of any plant in its genus — from central Florida south through the Keys, the West Indies, and Mexico, all the way to Argentina. It belongs to the coffee family (Rubiaceae). The genus name Hamelia honors the 18th-century French botanist Henri-Louis Duhamel du Monceau, and patens means &quot;spreading,&quot; for its open, spreading branches. The true Florida native is Hamelia patens var. patens. In Belize it carries the Mayan name Ix Canaan, &quot;Guardian of the Forest.&quot;</p></div>
   </div>
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>For all its value, firebush comes wrapped in a cautionary tale that Florida native-plant lovers call "The Hamelia Mess." Most "firebush" sold in garden centers is not the native at all but a look-alike, Hamelia patens var. glabra, marketed as "African," "Dwarf," or "Compacta" firebush. It has smoother leaves and paler, more yellow-orange flowers, and it can interbreed with and genetically swamp wild native populations.</li>
-    <li>So this unassuming shrub is both a beloved native wildlife powerhouse and a real lesson in why knowing exactly which plant you are planting matters.</li>
-    <li>Gardeners who want a more compact plant without the genetic risk can choose 'Calusa,' a true-native cultivar selected to stay small — the recommended alternative to the non-native dwarf forms.</li>
+    <li>For all its value, firebush comes wrapped in a cautionary tale that Florida native-plant lovers call “The Hamelia Mess.” Most “firebush” sold in garden centers is not the native at all but a look-alike, Hamelia patens var. glabra, marketed as “African,” “Dwarf,” or “Compacta” firebush. It has smoother leaves and paler, more yellow-orange flowers, and it can interbreed with and genetically swamp wild native populations. So this unassuming shrub is both a beloved native wildlife powerhouse and a real lesson in why knowing exactly which plant you are planting matters.</li>
+    <li>Gardeners who want a more compact plant without the genetic risk can choose ‘Calusa,’ a true-native cultivar selected to stay small — the recommended alternative to the non-native dwarf forms.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Firebush is among the very best wildlife plants Florida offers. Its near-constant orange-red tubular flowers are perfectly shaped for the bills of ruby-throated hummingbirds, while zebra longwings — Florida's state butterfly — gulf fritillaries, and sulphurs work the blooms throughout the day.</p><p>The berries, ripening from green to red to purple-black, are eaten by mockingbirds, gray catbirds, and other songbirds. Because the native form blooms and fruits nearly year-round in warm weather, a single plant feeds both pollinators and birds across every season — one of the hardest-working natives in the garden.</p></div>
+    <div class="plant-section-body"><p>Firebush is among the very best wildlife plants Florida offers. Its near-constant orange-red tubular flowers are perfectly shaped for the bills of ruby-throated hummingbirds, while zebra longwings — Florida&#x27;s state butterfly — gulf fritillaries, and sulphurs work the blooms throughout the day. The berries, ripening from green to red to purple-black, are eaten by mockingbirds, gray catbirds, and other songbirds. Because the native form blooms and fruits nearly year-round in warm weather, a single plant feeds both pollinators and birds across every season — one of the hardest-working natives in the garden.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -179,10 +175,9 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height/Length</div><div class="data-value">12 to 15 feet (easily kept to 5 to 8 feet)</div></div>
+    <div class="data-item full-width"><div class="data-label">Height length</div><div class="data-value">12 to 15 feet (easily kept to 5 to 8 feet)</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">fast-growing evergreen shrub to small tree; a root-hardy perennial in central and north Florida (dies back in a freeze, resprouts)</div></div>
     <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun for best flowering; tolerates partial shade (lusher foliage)</div></div>
-    <div class="data-item"><div class="data-label">Soil</div><div class="data-value">wide range, well-drained</div></div>
     <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">heat- and drought-tolerant once established</div></div>
     <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">moderate</div></div>
     <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">USDA zones 8 to 11; top cold-sensitive in cooler zones</div></div>

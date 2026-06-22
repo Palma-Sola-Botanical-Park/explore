@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00003-Buccaneer-Palm.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00003-Buccaneer-Palm.jpg" alt="Buccaneer Palm at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00003/662239153.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00003/662239153.jpg" alt="Buccaneer Palm at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Palms &amp; Cycads</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Pseudophoenix sargentii</span>
   <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
@@ -144,10 +141,10 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
-    <li>One of the <strong>rarest palms</strong> in the United States — the Elliott Key population — the last in Florida — numbers fewer than 50 individuals.</li>
-    <li>Its <strong>blue-gray fronds</strong> shimmer silver on the underside, and clusters of bright red berries ripen throughout the year, giving rise to its alternate name Cherry Palm.</li>
-    <li>Every wild specimen lost to collectors is irreplaceable; every one growing in cultivation is a <strong>conservation choice</strong> someone made.</li>
-    <li><strong>Virtually pest-free</strong> and one of the most ornamental fruiting palms you'll encounter.</li>
+    <li>One of the rarest palms in the United States — the Elliott Key population — the last in Florida — numbers fewer than 50 individuals.</li>
+    <li>Its blue-gray fronds shimmer silver on the underside, and clusters of bright red berries ripen throughout the year, giving rise to its alternate name Cherry Palm.</li>
+    <li>Every wild specimen lost to collectors is irreplaceable; every one growing in cultivation is a conservation choice someone made.</li>
+    <li>Virtually pest-free and one of the most ornamental fruiting palms you'll encounter.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -157,20 +154,18 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>What wiped out the Long Key population of Buccaneer Palms? Gardeners.</li>
-    <li>In the early 20th century, collectors dug and sold the entire wild colony as ornamentals, erasing a natural population that had existed for thousands of years. The palms on Elliott Key — now the last wild Florida population — survived partly by accident, partly by inaccessibility.</li>
-    <li>Today fewer than 50 wild adult specimens remaining there. It takes a Buccaneer Palm roughly 14 years just to reach reproductive maturity in cultivation with irrigation and fertilizer; in the wild, longer.</li>
-    <li>Every specimen growing in a botanic garden collection is, in a very real sense, a vote against that history repeating itself.</li>
+    <li>What wiped out the Long Key population of Buccaneer Palms? Gardeners. In the early 20th century, collectors dug and sold the entire wild colony as ornamentals, erasing a natural population that had existed for thousands of years. The palms on Elliott Key — now the last wild Florida population — survived partly by accident, partly by inaccessibility.</li>
+    <li>Today fewer than 50 wild adult specimens remaining there. It takes a Buccaneer Palm roughly 14 years just to reach reproductive maturity in cultivation with irrigation and fertilizer; in the wild, longer. Every specimen growing in a botanic garden collection is, in a very real sense, a vote against that history repeating itself.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The Buccaneer Palm's nectar-rich flowers are a reliable draw for bees — a meaningful pollinator resource in the sparse coastal hammock habitat it calls home.</p><p>Its seed dispersal strategy is remarkable: the fruits become buoyant when dry and can be carried by ocean currents between islands — a fitting trick for a palm that colonizes rocky Caribbean coastlines.</p><p>The bright red berries are a year-round display that strongly attracts fruit-eating birds, and every healthy specimen in cultivation represents a genuine conservation contribution.</p></div>
+    <div class="plant-section-body"><p>The Buccaneer Palm&#x27;s nectar-rich flowers are a reliable draw for bees — a meaningful pollinator resource in the sparse coastal hammock habitat it calls home.</p><p>Its seed dispersal strategy is remarkable: the fruits become buoyant when dry and can be carried by ocean currents between islands — a fitting trick for a palm that colonizes rocky Caribbean coastlines.</p><p>The bright red berries are a year-round display that strongly attracts fruit-eating birds, and every healthy specimen in cultivation represents a genuine conservation contribution.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
     <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Seed only — no suckering or vegetative reproduction. Fruits become buoyant when dry and may be dispersed by ocean currents between islands.</p></div>
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Seed only — no suckering or vegetative reproduction.  Fruits become buoyant when dry and may be dispersed by ocean currents between islands.</p></div>
 <div class="repro-item"><div class="repro-label">Flowers</div><p>Small yellowish flowers borne on branched inflorescences up to 1 meter long, emerging below the crown and appearing year-round.</p></div>
 <div class="repro-item"><div class="repro-label">Fruit</div><p>Distinctive globular red berries up to 1.7 cm in diameter, often 2 or 3 lobed depending on how many seeds mature, turning bright red at full maturity.</p></div>
 <div class="repro-item"><div class="repro-label">Seeds</div><p>One large seed per lobe inside each berry.</p></div>
@@ -183,7 +178,7 @@
     <div class="data-grid">
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">10 to 25 feet</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">8 to 10 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">upright, solitary trunk</div></div>
+    <div class="data-item"><div class="data-label">Habit</div><div class="data-value">upright, solitary trunk</div></div>
     <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">extremely slow — often 1 to 2 new fronds per year</div></div>
     <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to part sun</div></div>
@@ -205,7 +200,7 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Cherry Palm</span><span class="alias-tag">Florida Cherry Palm</span><span class="alias-tag">Sargent's Cherry Palm</span><span class="alias-tag">Hog Palm</span><span class="alias-tag">Hog Palmetto</span><span class="alias-tag">Datelet</span></div>
+    <div class="alias-list"><span class="alias-tag">Cherry Palm</span><span class="alias-tag">Florida Cherry Palm</span><span class="alias-tag">Sargent&#x27;s Cherry Palm</span><span class="alias-tag">Hog Palm</span><span class="alias-tag">Hog Palmetto</span><span class="alias-tag">Datelet</span></div>
   </div>
 
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>

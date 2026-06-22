@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00033-Wild-Lime.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00033-Wild-Lime.jpg" alt="Wild Lime at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00033/661626447.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00033/661626447.jpg" alt="Wild Lime at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Trees &amp; Large Shrubs</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Zanthoxylum fagara</span>
   <a class="plant-family-tag" href="../nature.html?family=Rutaceae">Rutaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
@@ -152,27 +149,24 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to hammocks throughout Central and South Florida, as well as southern Texas, Mexico, the Caribbean, and South America. Member of the Rutaceae — the citrus family — making it a native Florida relative of oranges, lemons, and limes. The genus Zanthoxylum comes from the Greek xanthos meaning "yellow" and xylon meaning "wood."</p></div>
+    <div class="plant-section-body"><p>Native to hammocks throughout Central and South Florida, as well as southern Texas, Mexico, the Caribbean, and South America. Member of the Rutaceae — the citrus family — making it a native Florida relative of oranges, lemons, and limes. The genus Zanthoxylum comes from the Greek xanthos meaning &quot;yellow&quot; and xylon meaning &quot;wood.&quot;</p></div>
   </div>
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The Giant Swallowtail butterfly (*Papilio cresphontes*) — North America's largest butterfly, wingspan up to 6 inches — hosts on Wild Lime as one of its preferred native plants. The caterpillar is called the 'Orange Dog' by citrus growers because it feeds on citrus family plants and can defoliate a young tree.</li>
-    <li>Its disguise is remarkable: the larva looks almost exactly like a fresh bird dropping — brown, cream-splotched, glistening. When threatened it extends a forked orange scent organ from its head that smells like rancid cheese to deter predators.</li>
-    <li>The butterfly that emerges from this unglamorous larva is spectacular — bold yellow and black, with blue and orange hindwing accents.</li>
-    <li>The plant itself is a member of Rutaceae — the citrus family — which explains why the leaves smell distinctly of citrus when crushed. The hooked spines along the branches are effective deterrents and make it a useful native barrier plant.</li>
-    <li>Despite its modest appearance, it is one of the hardest-working butterfly plants in the Palma Sola collection.</li>
-    <li>The genus name Zanthoxylum comes from the Greek for 'yellow wood,' and the species fagara is from an Arabic term for a spice plant — both pointing to the aromatic, spice-like qualities of the bark and leaves.</li>
+    <li>The Giant Swallowtail butterfly (*Papilio cresphontes*) — North America&#x27;s largest butterfly, wingspan up to 6 inches — hosts on Wild Lime as one of its preferred native plants. The caterpillar is called the &#x27;Orange Dog&#x27; by citrus growers because it feeds on citrus family plants and can defoliate a young tree. Its disguise is remarkable: the larva looks almost exactly like a fresh bird dropping — brown, cream-splotched, glistening. When threatened it extends a forked orange scent organ from its head that smells like rancid cheese to deter predators. The butterfly that emerges from this unglamorous larva is spectacular — bold yellow and black, with blue and orange hindwing accents.</li>
+    <li>The plant itself is a member of Rutaceae — the citrus family — which explains why the leaves smell distinctly of citrus when crushed. The hooked spines along the branches are effective deterrents and make it a useful native barrier plant. Despite its modest appearance, it is one of the hardest-working butterfly plants in the Palma Sola collection.</li>
+    <li>The genus name Zanthoxylum comes from the Greek for &#x27;yellow wood,&#x27; and the species fagara is from an Arabic term for a spice plant — both pointing to the aromatic, spice-like qualities of the bark and leaves.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Wild Lime is a butterfly powerhouse. As a member of the citrus family, it is the larval host for the giant swallowtail — North America's largest butterfly — and for the endangered Schaus's swallowtail of South Florida, whose caterpillars feed on its aromatic leaves.</p><p>Its small fruits feed birds and other wildlife, while the dense, thorny, evergreen growth makes excellent protected cover and nesting habitat, especially for small songbirds. Few native shrubs offer this much at once: a nursery for rare butterflies and a fortress of shelter for nesting birds.</p></div>
+    <div class="plant-section-body"><p>Wild Lime is a butterfly powerhouse. As a member of the citrus family, it is the larval host for the giant swallowtail — North America&#x27;s largest butterfly — and for the endangered Schaus&#x27;s swallowtail of South Florida, whose caterpillars feed on its aromatic leaves. Its small fruits feed birds and other wildlife, while the dense, thorny, evergreen growth makes excellent protected cover and nesting habitat, especially for small songbirds. Few native shrubs offer this much at once: a nursery for rare butterflies and a fortress of shelter for nesting birds.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
     <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Evergreen shrub to small tree. Blooms year-round with peak flowering in winter and spring.</p></div>
+<div class="repro-item"><div class="repro-label">Form</div><p>Evergreen shrub to small tree. Blooms year-round with peak flowering in winter and spring.</p></div>
 <div class="repro-item"><div class="repro-label">Flowers</div><p>Tiny, greenish-yellow, in small clusters. Individually inconspicuous but abundant. Attract small bees, beetles, and insects.</p></div>
 <div class="repro-item"><div class="repro-label">Fruit</div><p>Small, round, reddish-orange to black when ripe, containing a single shiny black seed. Aromatic. Edible but strongly numbing to the tongue.</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>Pinnately compound with small, rounded, winged-rachis leaflets — the rachis (central leaf stem) has narrow flanges between leaflets, a distinctive Zanthoxylum feature. Smell strongly of citrus when crushed.</p></div>
@@ -186,9 +180,9 @@
     <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">5 to 23 feet (typically 5 to 20)</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">3 to 10 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">spreading shrub to small tree; irregular branches armed with hooked spines</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
     <div class="data-item"><div class="data-label">Texture</div><div class="data-value">fine; rough gray bark</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
+    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">moist to very dry; well-drained sandy, loamy, or calcareous soils</div></div>
     <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">high</div></div>
     <div class="data-item full-width"><div class="data-label">Salt tolerance</div><div class="data-value">tolerates salt inundation; only slightly salt-wind tolerant</div></div>

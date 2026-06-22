@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00042-Scorpion-Tail.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00042-Scorpion-Tail.jpg" alt="Scorpion Tail at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00042/626742303.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00042/626742303.jpg" alt="Scorpion Tail at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Native Groundcovers &amp; Wildflowers</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Heliotropium angiospermum</span>
   <a class="plant-family-tag" href="../nature.html?family=Boraginaceae">Boraginaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>jsea</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>jsea</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-native">🌿 Florida Native</span>
@@ -144,39 +141,37 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
-    <li>The flower spike coils like a <strong>scorpion's tail</strong> and slowly uncurls as each tiny white bloom opens in turn, from base to tip.</li>
-    <li>It's a Florida native and a year-round <strong>butterfly magnet</strong> — its nectar feeds the Miami blue, Schaus' swallowtail, gulf fritillary, queen, and a long list of others.</li>
-    <li>It's one of several UF/IFAS-recommended natives Palma Sola is planting along its pond shores for <strong>erosion control</strong> — look for it around most of the park's pond banks.</li>
-    <li>The genus name Heliotropium means '<strong>sun-turning</strong>,' from the old belief that the flowers follow the sun across the sky.</li>
+    <li>The flower spike coils like a **scorpion's tail** and slowly uncurls as each tiny white bloom opens in turn, from base to tip.</li>
+    <li>It's a Florida native and a year-round **butterfly magnet** — its nectar feeds the Miami blue, Schaus' swallowtail, gulf fritillary, queen, and a long list of others.</li>
+    <li>It's one of several UF/IFAS-recommended natives Palma Sola is planting along its pond shores for **erosion control** — look for it around most of the park's pond banks.</li>
+    <li>The genus name Heliotropium means '**sun-turning**,' from the old belief that the flowers follow the sun across the sky.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to Florida's coastal counties — from Pinellas and Volusia south through the Keys — and on through Texas, Mexico, the West Indies, and Central and South America. Grows naturally in coastal hammocks, strands, and open disturbed ground near the coast.</p></div>
+    <div class="plant-section-body"><p>Native to Florida&#x27;s coastal counties — from Pinellas and Volusia south through the Keys — and on through Texas, Mexico, the West Indies, and Central and South America. Grows naturally in coastal hammocks, strands, and open disturbed ground near the coast.</p></div>
   </div>
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The Scorpion Tail's coiled flowering spike is a small marvel of plant engineering. Botanists call it a scorpioid cyme (or cincinnus): the flower axis curls over on itself, and the blossoms open in sequence from the base of the coil toward the tip, so the spike appears to slowly unfurl over days.</li>
-    <li>The common name captures it exactly, and the genus name reaches even further back — Heliotropium comes from the Greek helios ('sun') and trepein ('to turn'), from the old belief that these plants turn their flowers to follow the sun.</li>
-    <li>At Palma Sola, this modest native has become a workhorse of restoration. The park is deploying it aggressively along its pond shorelines under two complementary grants — from the Tampa Bay Estuary Program and the Sarasota Bay Estuary Program — to restore and stabilize pond edges.</li>
-    <li>UF/IFAS consultants selected it as one of several species that perform well for shoreline stabilization in brackish water, where many ornamentals fail. A plant most people walk past as a roadside weed is, in this setting, doing real ecological work holding the park's shorelines together — and feeding an exceptional range of butterflies while it does (see Wildlife Value).</li>
+    <li>The Scorpion Tail&#x27;s coiled flowering spike is a small marvel of plant engineering. Botanists call it a scorpioid cyme (or cincinnus): the flower axis curls over on itself, and the blossoms open in sequence from the base of the coil toward the tip, so the spike appears to slowly unfurl over days. The common name captures it exactly, and the genus name reaches even further back — Heliotropium comes from the Greek helios (&#x27;sun&#x27;) and trepein (&#x27;to turn&#x27;), from the old belief that these plants turn their flowers to follow the sun.</li>
+    <li>At Palma Sola, this modest native has become a workhorse of restoration. The park is deploying it aggressively along its pond shorelines under two complementary grants — from the Tampa Bay Estuary Program and the Sarasota Bay Estuary Program — to restore and stabilize pond edges. UF/IFAS consultants selected it as one of several species that perform well for shoreline stabilization in brackish water, where many ornamentals fail. A plant most people walk past as a roadside weed is, in this setting, doing real ecological work holding the park&#x27;s shorelines together — and feeding an exceptional range of butterflies while it does (see Wildlife Value).</li>
     <li>A note of caution balances the charm: like many in its family, Scorpion Tail contains pyrrolizidine alkaloids, compounds that can harm the liver if the plant is eaten in quantity. It has a history of folk-medicinal use in the Caribbean, but it is not a plant to eat or self-medicate with.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Scorpion Tail is a premier Florida butterfly plant. Blooming nearly year-round, its white flowers are a steady nectar source for an unusually long roster of butterflies — including two of South Florida's rarest, the federally endangered Miami blue and Schaus' swallowtail, alongside gulf fritillaries, queens, great southern whites, gray hairstreaks, cassius blues, and ruddy daggerwings.</p><p>Native bees work the flowers, and birds eat the small seeds. Its fast-spreading, soil-binding roots stabilize pond and shoreline edges, while the low branching cover shelters insects, lizards, and small wildlife at the water's margin — habitat value layered on top of its pollinator value.</p></div>
+    <div class="plant-section-body"><p>Scorpion Tail is a premier Florida butterfly plant. Blooming nearly year-round, its white flowers are a steady nectar source for an unusually long roster of butterflies — including two of South Florida&#x27;s rarest, the federally endangered Miami blue and Schaus&#x27; swallowtail, alongside gulf fritillaries, queens, great southern whites, gray hairstreaks, cassius blues, and ruddy daggerwings. Native bees work the flowers, and birds eat the small seeds. Its fast-spreading, soil-binding roots stabilize pond and shoreline edges, while the low branching cover shelters insects, lizards, and small wildlife at the water&#x27;s margin — habitat value layered on top of its pollinator value.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
     <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Fast-growing and a prolific self-seeder; short-lived (often about 3 years) but readily replaces itself. Propagated by seed or cuttings — useful for the volume planting the park's restoration work requires.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Tiny white flowers with pale yellow throats, borne in two rows along one side of a curved, coiling terminal spike (the 'scorpion tail'), which uncurls as blooms open from base to tip. Blooms year-round. Draws butterflies and native bees.</p></div>
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Fast-growing and a prolific self-seeder; short-lived (often about 3 years) but readily replaces itself. Propagated by seed or cuttings — useful for the volume planting the park&#x27;s restoration work requires.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Tiny white flowers with pale yellow throats, borne in two rows along one side of a curved, coiling terminal spike (the &#x27;scorpion tail&#x27;), which uncurls as blooms open from base to tip. Blooms year-round. Draws butterflies and native bees.</p></div>
 <div class="repro-item"><div class="repro-label">Fruit</div><p>Small dry fruit splitting into seed-bearing nutlets; seeds favored by birds.</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>Lanceolate to elliptic, alternate, stalked, with deeply veined surfaces and softly hairy undersides.</p></div>
 <div class="repro-item"><div class="repro-label">Stems</div><p>Branched, herbaceous to slightly woody, sprawling to upright.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Look for the distinctive coiled flower spike — the namesake scorpion's tail — slowly unfurling as the little white flowers open along it. Watch the blooms for butterfly traffic; this is one of the park's busiest nectar stops. Around most of the park's pond banks, notice it planted in quantity alongside other native shoreline species, knitting the water's edge together.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>Look for the distinctive coiled flower spike — the namesake scorpion&#x27;s tail — slowly unfurling as the little white flowers open along it. Watch the blooms for butterfly traffic; this is one of the park&#x27;s busiest nectar stops. Around most of the park&#x27;s pond banks, notice it planted in quantity alongside other native shoreline species, knitting the water&#x27;s edge together.</p></div>
     </div>
   </div>
   <div class="plant-section">
@@ -185,23 +180,23 @@
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">1 to 3 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">1 to 3 feet (sometimes broader where it sprawls)</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">branching herbaceous perennial to sub-shrub, upright to sprawling; short-lived but self-seeding</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">fine to medium, with small hairy leaves</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
+    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">well-drained sandy, rocky, or calcareous soils; moist to moderately dry</div></div>
     <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">good</div></div>
-    <div class="data-item full-width"><div class="data-label">Salt tolerance</div><div class="data-value">moderate — tolerates brackish shoreline conditions, which is why it suits the park's pond-edge restoration</div></div>
+    <div class="data-item full-width"><div class="data-label">Salt tolerance</div><div class="data-value">moderate — tolerates brackish shoreline conditions, which is why it suits the park&#x27;s pond-edge restoration</div></div>
     <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">frost-sensitive; USDA zones 9-11</div></div>
     <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">prolific self-seeder; deadheading limits volunteer seedlings; easy from seed or cuttings</div></div>
     </div>
   </div>
   <div class="plant-caution-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Not edible. Contains pyrrolizidine alkaloids, which can cause liver damage if consumed. Despite folk-medicinal use in parts of the Caribbean, it should not be eaten or used medicinally without expert guidance.</p><p>Caution. Contains pyrrolizidine alkaloids that can harm the liver if consumed in quantity. Not dangerous to brush against or handle, but not a plant to eat or self-medicate with. Caution for dogs. The plant's pyrrolizidine alkaloids are liver-toxic if eaten in quantity (these compounds are documented as toxic to horses and livestock). Casual contact is not a concern; discourage chewing.</p></div>
+    <div class="plant-section-body"><p>Not edible. Contains pyrrolizidine alkaloids, which can cause liver damage if consumed. Despite folk-medicinal use in parts of the Caribbean, it should not be eaten or used medicinally without expert guidance.</p><p>Caution. Contains pyrrolizidine alkaloids that can harm the liver if consumed in quantity. Not dangerous to brush against or handle, but not a plant to eat or self-medicate with. Caution for dogs. The plant&#x27;s pyrrolizidine alkaloids are liver-toxic if eaten in quantity (these compounds are documented as toxic to horses and livestock). Casual contact is not a concern; discourage chewing.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Scorpionstail</span><span class="alias-tag">Scorpion's Tail</span><span class="alias-tag">Butterfly Heliotrope</span></div>
+    <div class="alias-list"><span class="alias-tag">Scorpionstail</span><span class="alias-tag">Scorpion&#x27;s Tail</span><span class="alias-tag">Butterfly Heliotrope</span></div>
   </div>
 
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>

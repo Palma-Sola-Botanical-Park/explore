@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00041-Canna-Lilies.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00041-Canna-Lilies.jpg" alt="Canna Lilies at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00041/661591681.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00041/661591681.jpg" alt="Canna Lilies at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Culturally &amp; Historically Significant</div>
@@ -134,12 +131,12 @@
   <span class="plant-sci-name">Canna × generalis</span>
   <a class="plant-family-tag" href="../nature.html?family=Cannaceae">Cannaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
     <span class="badge badge-green">✅ Not Invasive</span>
-    <span class="badge badge-safe">✅ Edible &amp; Safe</span>
+    <span class="badge badge-green">✅ Safe</span>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
@@ -152,32 +149,28 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to the tropical and subtropical Americas, from Mexico through Central America into South America. Canna × generalis is the wild species behind most ornamental garden cannas. It was one of the first New World ornamentals traded globally, reaching Europe and Asia centuries ago — and the species name indica ('of India') is a historical mix-up, a relic of the old confusion between the East and West Indies.</p></div>
+    <div class="plant-section-body"><p>Native to the tropical and subtropical Americas, from Mexico through Central America into South America. Canna × generalis is the wild species behind most ornamental garden cannas. It was one of the first New World ornamentals traded globally, reaching Europe and Asia centuries ago — and the species name indica (&#x27;of India&#x27;) is a historical mix-up, a relic of the old confusion between the East and West Indies.</p></div>
   </div>
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The Canna Lily is a plant of cheerful contradictions. It isn't a lily — it belongs to its own family, Cannaceae, in the same order as bananas, gingers, and the bird of paradise — and its scientific name points to the wrong side of the world.</li>
-    <li>Early European botanists, tangled in the centuries-old confusion between the East and West Indies, named the American plant indica, 'of India.' The name stuck even after the error was understood.</li>
-    <li>At Palma Sola, these non-native cannas come with a hide-and-seek story. For years they grew quietly mixed in among the heliconia by the office — broad paddle leaves close enough to heliconia's that, to the untrained eye, nobody realized there were cannas in there at all.</li>
-    <li>Once you learn the difference it's obvious, and watching a visitor suddenly 'see' the canna they'd been walking past is one of the small pleasures of the bed.</li>
-    <li>The plants also weathered a hurricane. A canna planting by Cypress Pond was hit hard when storm flooding put that corner of western Bradenton under a foot of saltwater, and cannas — with their low salt tolerance — struggled there afterward.</li>
-    <li>Today the park keeps the two kinds sorted: the non-native cannas here by the office, and the Florida-native Golden Canna (Canna flaccida) re-established over by Cypress Pond.</li>
+    <li>The Canna Lily is a plant of cheerful contradictions. It isn&#x27;t a lily — it belongs to its own family, Cannaceae, in the same order as bananas, gingers, and the bird of paradise — and its scientific name points to the wrong side of the world. Early European botanists, tangled in the centuries-old confusion between the East and West Indies, named the American plant indica, &#x27;of India.&#x27; The name stuck even after the error was understood.</li>
+    <li>At Palma Sola, these non-native cannas come with a hide-and-seek story. For years they grew quietly mixed in among the heliconia by the office — broad paddle leaves close enough to heliconia&#x27;s that, to the untrained eye, nobody realized there were cannas in there at all. Once you learn the difference it&#x27;s obvious, and watching a visitor suddenly &#x27;see&#x27; the canna they&#x27;d been walking past is one of the small pleasures of the bed.</li>
+    <li>The plants also weathered a hurricane. A canna planting by Cypress Pond was hit hard when storm flooding put that corner of western Bradenton under a foot of saltwater, and cannas — with their low salt tolerance — struggled there afterward. Today the park keeps the two kinds sorted: the non-native cannas here by the office, and the Florida-native Golden Canna (Canna flaccida) re-established over by Cypress Pond.</li>
     <li>That sorting is an ongoing teaching moment. Because canna spreads aggressively by rhizome and keeps popping up among the heliconia, our high school volunteers learn to tell the two plants apart and to lift the wandering canna rhizomes carefully — intact, by the rhizome — and transplant them to open ground in the canna area next door, which is filling back in week by week.</li>
-    <li>Beyond the garden, this is a plant of real human history. Its rhizomes are edible and starchy — grown as a food crop called Queensland arrowroot in parts of Australia and Southeast Asia — and the famously hard seeds have served as beads, as a coffee substitute, and as genuine shotgun pellets.</li>
-    <li>Those seeds are also remarkably long-lived; Canna seeds recovered from old archaeological contexts have germinated after centuries of dormancy.</li>
+    <li>Beyond the garden, this is a plant of real human history. Its rhizomes are edible and starchy — grown as a food crop called Queensland arrowroot in parts of Australia and Southeast Asia — and the famously hard seeds have served as beads, as a coffee substitute, and as genuine shotgun pellets. Those seeds are also remarkably long-lived; Canna seeds recovered from old archaeological contexts have germinated after centuries of dormancy.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Canna Lilies are hummingbird and butterfly plants. The bright red, orange, or yellow flowers are rich in nectar and shaped for hummingbirds, which are primary visitors, while bees and butterflies work them as well.</p><p>Canna leaves serve as a larval host and shelter for the Brazilian (or Canna) skipper, whose caterpillars roll a leaf into a protective tube around themselves. The dense clumping foliage gives cover to small wildlife at the water's edge, and at Palma Sola the canna-and-heliconia bed by the office reads as one continuous block of tropical nectar and shelter through much of the year.</p></div>
+    <div class="plant-section-body"><p>Canna Lilies are hummingbird and butterfly plants. The bright red, orange, or yellow flowers are rich in nectar and shaped for hummingbirds, which are primary visitors, while bees and butterflies work them as well. Canna leaves serve as a larval host and shelter for the Brazilian (or Canna) skipper, whose caterpillars roll a leaf into a protective tube around themselves. The dense clumping foliage gives cover to small wildlife at the water&#x27;s edge, and at Palma Sola the canna-and-heliconia bed by the office reads as one continuous block of tropical nectar and shelter through much of the year.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
     <div class="repro-list">
 <div class="repro-item"><div class="repro-label">Reproduction</div><p>Spreads readily by underground rhizomes, forming expanding clumps; also reproduces by seed. Easiest to propagate by dividing the rhizomes — which is exactly how the park relocates volunteers that pop up among the heliconia.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Showy red, orange, or yellow blooms in terminal clusters, spring through fall. The colorful 'petals' are actually modified stamens (staminodes). Pollinated chiefly by hummingbirds, with bees and butterflies visiting.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Spiky, warty capsules that split to release hard, round, BB-like black seeds — the 'Indian shot.'</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Showy red, orange, or yellow blooms in terminal clusters, spring through fall. The colorful &#x27;petals&#x27; are actually modified stamens (staminodes). Pollinated chiefly by hummingbirds, with bees and butterflies visiting.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Spiky, warty capsules that split to release hard, round, BB-like black seeds — the &#x27;Indian shot.&#x27;</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>Large, broad, paddle-shaped, alternate, in green, bronze, or purple depending on cultivar — superficially similar to heliconia and banana foliage, which is exactly why they go unnoticed mixed into a heliconia bed.</p></div>
 <div class="repro-item"><div class="repro-label">Telling canna from heliconia</div><p>Canna leaves spiral around an upright stem and the plant arises from a knobby underground rhizome; heliconia leaves tend to fan in a flatter plane from a more clumping base. Up close the difference is clear — the skill our student volunteers are taught.</p></div>
 <div class="repro-item"><div class="repro-label">What to Look For</div><p>Bold upright clumps of broad tropical leaves topped with vivid red-orange-yellow flower spikes. By the office, play spot-the-canna: see if you can pick out the cannas tucked in among the heliconia before reading the leaf tips. Look for hummingbirds working the blooms and for rolled-up leaf tubes that signal Canna skipper caterpillars inside, plus the newly transplanted clumps filling in the canna area next door.</p></div>
@@ -189,7 +182,7 @@
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">3 to 6 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">2 to 3 feet per clump, expanding by rhizome</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">upright, clump-forming from spreading rhizomes</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">coarse, bold tropical foliage — green, bronze, or purple by cultivar</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to part shade</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">moist, fertile, well-drained; tolerates wet ground and pond margins</div></div>
@@ -201,11 +194,11 @@
   </div>
   <div class="plant-safe-section">
     <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Edible — the starchy rhizomes are eaten and grown as a food crop ('Queensland arrowroot') in parts of Australia and Southeast Asia. Seeds have been used as a coffee substitute. Not a casual trail nibble, but a genuine food plant with long history.</p><p>No known toxicity to humans. Not listed as toxic to dogs by ASPCA. No specific toxicity data — not known to be harmful.</p></div>
+    <div class="plant-section-body"><p>Edible — the starchy rhizomes are eaten and grown as a food crop (&#x27;Queensland arrowroot&#x27;) in parts of Australia and Southeast Asia. Seeds have been used as a coffee substitute. Not a casual trail nibble, but a genuine food plant with long history.</p><p>No known toxicity to humans. Not listed as toxic to dogs by ASPCA. No specific toxicity data — not known to be harmful.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>PARK CONTEXT (confirmed): Non-native ornamental cannas. The only NATIVE cannas at the park are Canna flaccida introduced in 2023 by Cypress Pond (see Golden Canna, PSBP-00034) — everything else is non-native C. indica. These non-native cannas grew for years unnoticed among the heliconia by the office (looked close enough that nobody realized they were cannas).</p><p>Now deliberately separated: non-native by the office, native by Cypress Pond. A Cypress Pond canna planting was hit by ~1 ft saltwater flooding from a 2024 hurricane; cannas struggled there afterward.</p><p>High school volunteers are taught to distinguish canna from heliconia and to lift/transplant wandering canna rhizomes intact to the adjacent canna area (flushing back week by week).</p></div>
+    <div class="plant-section-body"><p>PARK CONTEXT (confirmed): Non-native ornamental cannas. The only NATIVE cannas at the park are Canna flaccida introduced in 2023 by Cypress Pond (see Golden Canna, PSBP-00034) — everything else is non-native C. indica. These non-native cannas grew for years unnoticed among the heliconia by the office (looked close enough that nobody realized they were cannas). Now deliberately separated: non-native by the office, native by Cypress Pond. A Cypress Pond canna planting was hit by ~1 ft saltwater flooding from a 2024 hurricane; cannas struggled there afterward. High school volunteers are taught to distinguish canna from heliconia and to lift/transplant wandering canna rhizomes intact to the adjacent canna area (flushing back week by week).</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>

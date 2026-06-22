@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00086-Moringa.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00086-Moringa.jpg" alt="Moringa at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00086/366864462.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00086/366864462.jpg" alt="Moringa at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Tropical Specimen Trees</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Moringa oleifera</span>
   <a class="plant-family-tag" href="../nature.html?family=Moringaceae">Moringaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>nigrosh60</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Sherry Nigro</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -149,8 +146,7 @@
     <li>Grows 15 to 20 feet in a single year under good conditions. Can be cut back hard and will resprout from the trunk rapidly.</li>
     <li>The roots smell and taste like horseradish. They are the one part of the tree that carries genuine toxicity concerns and should not be eaten in quantity.</li>
     <li>Local edible landscape gardeners use a technique called coppicing — cutting the trunk down to chest height every winter. This forces the tree to bush out horizontally, keeping the nutritious leaves and pods at arm's reach rather than 30 feet in the air.</li>
-    <li>Visitors interested in edible plants often seek this one out and pull a leaf to taste on the spot. The leaves are nutritious — though opinions on flavor vary.</li>
-    <li>Randy tried one and found it quite bitter. The tree is also remarkably easy to propagate: a cutting stuck directly in the ground will root and grow.</li>
+    <li>Visitors interested in edible plants often seek this one out and pull a leaf to taste on the spot. The leaves are nutritious — though opinions on flavor vary. Randy tried one and found it quite bitter. The tree is also remarkably easy to propagate: a cutting stuck directly in the ground will root and grow.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -161,15 +157,14 @@
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
     <li>Moringa has an unusual position in the plant world: it is simultaneously a standard ornamental tree in warm-climate gardens and one of the most studied food security plants in the world. International aid organizations have promoted it in food-insecure communities across sub-Saharan Africa and South Asia because the leaves can be dried and powdered with minimal processing, retain most of their nutritional value, and grow on a tree that tolerates drought, poor soil, and aggressive cutting.</li>
-    <li>The nutritional density is real and well-documented. The leaves contain levels of essential vitamins and minerals that exceed many conventional food crops on a dry-weight basis.</li>
-    <li>The pods — the drumsticks — are commonly sold fresh in South Asian grocery stores and used in curries and stews, with a flavor somewhere between green beans and asparagus.</li>
+    <li>The nutritional density is real and well-documented. The leaves contain levels of essential vitamins and minerals that exceed many conventional food crops on a dry-weight basis. The pods — the drumsticks — are commonly sold fresh in South Asian grocery stores and used in curries and stews, with a flavor somewhere between green beans and asparagus.</li>
     <li>The tree itself grows fast enough to seem impatient. Left unpruned it becomes leggy; cut back hard it responds within weeks with a flush of new growth. This makes it useful as a managed food plant that stays accessible rather than climbing out of reach.</li>
     <li>The roots and root bark carry the toxicity cautions. They contain spirochin, a potential neuro-paralytic compound, and should not be eaten.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The white flowers attract bees and other pollinators. The seeds, which are sometimes processed into moringa oil, are also used to clarify drinking water — the seed proteins bind to sediment particles, causing them to clump and settle.</p><p>This water purification application has been documented and used in developing-world contexts.</p><p>As a fast-growing canopy tree it provides shade and structure. The pods and leaves are eaten by birds and small mammals in its native range.</p></div>
+    <div class="plant-section-body"><p>The white flowers attract bees and other pollinators. The seeds, which are sometimes processed into moringa oil, are also used to clarify drinking water — the seed proteins bind to sediment particles, causing them to clump and settle. This water purification application has been documented and used in developing-world contexts.</p><p>As a fast-growing canopy tree it provides shade and structure. The pods and leaves are eaten by birds and small mammals in its native range.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -184,7 +179,7 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height/Length</div><div class="data-value">20 to 40 feet if left to grow; usually cut back to 6 to 12 feet for easy leaf and pod harvest</div></div>
+    <div class="data-item full-width"><div class="data-label">Height length</div><div class="data-value">20 to 40 feet if left to grow; usually cut back to 6 to 12 feet for easy leaf and pod harvest</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">8 to 15 feet, open crown</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">fast-growing, slender, soft-wooded deciduous tree</div></div>
     <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">very fast - can reach 10 to 15 feet in its first year</div></div>

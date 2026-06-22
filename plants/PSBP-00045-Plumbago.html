@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00045-Plumbago.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00045-Plumbago.jpg" alt="Plumbago at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00045/661840948.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00045/661840948.jpg" alt="Plumbago at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Flowering Shrubs &amp; Vines</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Plumbago auriculata</span>
   <a class="plant-family-tag" href="../nature.html?family=Plumbaginaceae">Plumbaginaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -158,15 +155,13 @@
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
     <li>Plumbago is grown almost everywhere warm for one reason: few shrubs produce this much soft sky-blue flower for so little effort. It blooms spring through fall (nearly year-round in Florida), shrugs off drought once established, and resprouts cheerfully after hard pruning — which it needs, because left alone it becomes a sprawling, scrambling beast.</li>
-    <li>At Palma Sola there isn't much of it — it's mostly just the one specimen, but it's a memorable one: a large blue-flowered bush on Welcome Island near the front entrance, right beside the Tree Crinum, and notably big for a plumbago. It takes regular cutting and trimming to keep in bounds.</li>
-    <li>The spot has a small sad history, too — the plumbago once grew around a Bismarck palm that was lost in the hurricanes, one of several specimens the storms took from the park.</li>
-    <li>Two nice details reward a close look. The flower's name traces to the Latin plumbum, 'lead': the plant was once thought to cure lead poisoning (and 'leadwort' carries the same idea).</li>
-    <li>And the base of each flower is coated in sticky glandular hairs — sticky enough that in its native South Africa, children press the blossoms onto their ears like little earrings. That same stickiness is the plant's seed-dispersal trick, hitching spent flower capsules onto passing fur and clothing.</li>
+    <li>At Palma Sola there isn&#x27;t much of it — it&#x27;s mostly just the one specimen, but it&#x27;s a memorable one: a large blue-flowered bush on Welcome Island near the front entrance, right beside the Tree Crinum, and notably big for a plumbago. It takes regular cutting and trimming to keep in bounds. The spot has a small sad history, too — the plumbago once grew around a Bismarck palm that was lost in the hurricanes, one of several specimens the storms took from the park.</li>
+    <li>Two nice details reward a close look. The flower&#x27;s name traces to the Latin plumbum, &#x27;lead&#x27;: the plant was once thought to cure lead poisoning (and &#x27;leadwort&#x27; carries the same idea). And the base of each flower is coated in sticky glandular hairs — sticky enough that in its native South Africa, children press the blossoms onto their ears like little earrings. That same stickiness is the plant&#x27;s seed-dispersal trick, hitching spent flower capsules onto passing fur and clothing.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Plumbago is a genuine butterfly magnet. It is the larval host plant for the Cassius blue (Leptotes cassius), a tiny native blue butterfly whose caterpillars feed on the foliage and flowers, and its nectar-rich, long-tubed blue flowers draw butterflies, long-tongued bees, and other pollinators through most of the year.</p><p>The sticky seed capsules enlist passing animals for dispersal. As a large, dense, evergreen shrub, it also offers nesting and shelter cover for small birds — useful structure right at the park's entrance.</p></div>
+    <div class="plant-section-body"><p>Plumbago is a genuine butterfly magnet. It is the larval host plant for the Cassius blue (Leptotes cassius), a tiny native blue butterfly whose caterpillars feed on the foliage and flowers, and its nectar-rich, long-tubed blue flowers draw butterflies, long-tongued bees, and other pollinators through most of the year. The sticky seed capsules enlist passing animals for dispersal. As a large, dense, evergreen shrub, it also offers nesting and shelter cover for small birds — useful structure right at the park&#x27;s entrance.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -176,20 +171,20 @@
 <div class="repro-item"><div class="repro-label">Fruit</div><p>A small, barbed, sticky capsule — the glandular-haired calyx clings to fur and clothing, dispersing the seed.</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>Thin, oval, bright green (greyish beneath), to about 2 inches, arranged alternately on arching semi-woody stems.</p></div>
 <div class="repro-item"><div class="repro-label">Habit</div><p>Mounding to scrambling shrub; can climb or sprawl several feet if unpruned.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>At the front entrance, find the big blue-flowered bush on Welcome Island beside the Tree Crinum. Touch a spent flower cluster — feel how it sticks to your fingertip; that's the seed-dispersal mechanism at work. Watch the blooms for small blue butterflies (the Cassius blue) darting around their host plant.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>At the front entrance, find the big blue-flowered bush on Welcome Island beside the Tree Crinum. Touch a spent flower cluster — feel how it sticks to your fingertip; that&#x27;s the seed-dispersal mechanism at work. Watch the blooms for small blue butterflies (the Cassius blue) darting around their host plant.</p></div>
     </div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">typically 3 to 6 feet (to 10+ if left to scramble); the park's specimen is large for the species</div></div>
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">typically 3 to 6 feet (to 10+ if left to scramble); the park&#x27;s specimen is large for the species</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">3 to 8 feet, wider by suckering</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">mounding, arching, scrambling semi-woody shrub</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">fine to medium; soft mounding form</div></div>
     <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to partial shade (best bloom in sun)</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">wide range, well-drained; tolerates poor and saline soils</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established</div></div>
+    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established</div></div>
     <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">good</div></div>
     <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">frost-sensitive tops; resprouts from base; USDA zones 9-11</div></div>
     <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">vigorous and sprawling — needs regular pruning to stay in bounds; wear gloves (sap irritates skin)</div></div>
@@ -201,7 +196,7 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>One main specimen, on Welcome Island near the front entrance, beside the Tree Crinum — large for a plumbago and needs regular trimming to control its sprawl. Little else of it elsewhere in the park. It formerly grew around a Bismarck palm that was lost in the hurricanes.</p></div>
+    <div class="plant-section-body"><p>PARK CONTEXT: One main specimen, on Welcome Island near the front entrance, beside the Tree Crinum — large for a plumbago and needs regular trimming to control its sprawl. Little else of it elsewhere in the park. It formerly grew around a Bismarck palm that was lost in the hurricanes.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>

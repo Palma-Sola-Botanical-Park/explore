@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Queen's Crepe Myrtle · Palma Sola Botanical Park</title>
+<title>Queen&#x27;s Crepe Myrtle · Palma Sola Botanical Park</title>
 <link rel="stylesheet" href="../css/site.css">
 <style>
   /* Plant page layout */
@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,19 +119,19 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00005-Queens-Crepe-Myrtle.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00005-Queens-Crepe-Myrtle.jpg" alt="Queen's Crepe Myrtle at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00005/662740624.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00005/662740624.jpg" alt="Queen&#x27;s Crepe Myrtle at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Culturally &amp; Historically Significant</div>
-    <div class="plant-hero-name">Queen's Crepe Myrtle</div>
+    <div class="plant-hero-name">Queen&#x27;s Crepe Myrtle</div>
   </div>
 </div>
 <div class="plant-sci-band">
   <span class="plant-sci-name">Lagerstroemia speciosa</span>
   <a class="plant-family-tag" href="../nature.html?family=Lythraceae">Lythraceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>frankymca</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Franky McArthur</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -144,10 +141,10 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
-    <li>Its leaves contain <strong>corosolic acid</strong>, a compound shown in clinical studies to lower blood sugar — making leaf tea a traditional diabetes treatment across the Philippines and India, where it's known as the Banabá plant.</li>
-    <li>The wood is ranked <strong>second only to teak</strong> in parts of Asia and has built homes and boats for centuries.</li>
-    <li>Each flower runs a quiet <strong>con on its pollinators</strong> — producing generous dummy pollen purely as a bee food reward while hiding the real fertile pollen nearby.</li>
-    <li>The state of Maharashtra in India claims this as their <strong>official state flower</strong>.</li>
+    <li>Its leaves contain corosolic acid, a compound shown in clinical studies to lower blood sugar — making leaf tea a traditional diabetes treatment across the Philippines and India, where it's known as the Banabá plant.</li>
+    <li>The wood is ranked second only to teak in parts of Asia and has built homes and boats for centuries.</li>
+    <li>Each flower runs a quiet con on its pollinators — producing generous dummy pollen purely as a bee food reward while hiding the real fertile pollen nearby.</li>
+    <li>The state of Maharashtra in India claims this as their official state flower.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -158,12 +155,10 @@
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
     <li>The Giant Crepe Myrtle is one of the most medicinally significant trees in Asian traditional medicine — its leaves contain corosolic acid, a compound shown in clinical trials to lower blood sugar levels in Type II diabetics, making leaf tea a traditional treatment used across the Philippines and India.</li>
-    <li>The wood is extraordinarily strong, ranked second only to teak in parts of Asia, and has been used for centuries to build homes, boats, and railroad ties. Despite reaching 60 feet in its homeland, this fast grower blooms even as a young tree — you don't have to wait decades for the show.</li>
-    <li>Its bark peels in attractive gray and tan patches like a sycamore, making it a living sculpture in every season.</li>
-    <li>Here's the botanical con hidden inside every flower: each bloom produces two completely different types of pollen simultaneously — a generous offering of nutritious yellow dummy pollen that exists purely to reward visiting bees, and a small hidden batch of fertile blue-green pollen that actually does the reproductive work. The tree feeds the bees lavishly while quietly getting its real pollination done on the side.</li>
+    <li>The wood is extraordinarily strong, ranked second only to teak in parts of Asia, and has been used for centuries to build homes, boats, and railroad ties. Despite reaching 60 feet in its homeland, this fast grower blooms even as a young tree — you don&#x27;t have to wait decades for the show. Its bark peels in attractive gray and tan patches like a sycamore, making it a living sculpture in every season.</li>
+    <li>Here&#x27;s the botanical con hidden inside every flower: each bloom produces two completely different types of pollen simultaneously — a generous offering of nutritious yellow dummy pollen that exists purely to reward visiting bees, and a small hidden batch of fertile blue-green pollen that actually does the reproductive work. The tree feeds the bees lavishly while quietly getting its real pollination done on the side.</li>
     <li>The state of Maharashtra in India recognizes it as their official state flower. One of its close relatives, the common Crepe Myrtle (Lagerstroemia indica), is one of the most planted street trees in the American South — but this giant version dwarfs it in every way.</li>
-    <li>In Theravada Buddhism, this tree is associated with enlightenment — the eleventh and twelfth Buddhas are said to have achieved Bodhi beneath it. In Hindu tradition, the flowers are associated with Lord Brahma, and their blossoming is considered a sign of prosperity for the household.</li>
-    <li>The tree is known by dozens of names across its range, reflecting centuries of cultural significance across South and Southeast Asia.</li>
+    <li>In Theravada Buddhism, this tree is associated with enlightenment — the eleventh and twelfth Buddhas are said to have achieved Bodhi beneath it. In Hindu tradition, the flowers are associated with Lord Brahma, and their blossoming is considered a sign of prosperity for the household. The tree is known by dozens of names across its range, reflecting centuries of cultural significance across South and Southeast Asia.</li>
     </ul>
   </div>
   <div class="plant-section">
@@ -187,15 +182,14 @@
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">30 to 60 feet</div></div>
     <div class="data-item"><div class="data-label">Spread</div><div class="data-value">30 to 40 feet</div></div>
     <div class="data-item"><div class="data-label">Crown shape</div><div class="data-value">rounded to vase</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
     <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">wide range · well-drained preferred</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">moderate once established</div></div>
+    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">moderate once established</div></div>
     <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">moderate</div></div>
     <div class="data-item"><div class="data-label">Cold tolerance</div><div class="data-value">frost sensitive</div></div>
     <div class="data-item"><div class="data-label">USDA zones</div><div class="data-value">10B–11</div></div>
-    <div class="data-item full-width"><div class="data-label">UF/IFAS</div><div class="data-value">recommended for North, Central, and South Florida · urban tolerant</div></div>
     </div>
   </div>
   <div class="plant-caution-section">
@@ -204,7 +198,7 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Giant Crape Myrtle</span><span class="alias-tag">Pride of India</span><span class="alias-tag">Queen's Flower</span><span class="alias-tag">Banabá Plant (Philippines)</span><span class="alias-tag">Jarul (India/Bangladesh)</span><span class="alias-tag">Tamhan (Maharashtra)</span><span class="alias-tag">Inthanin (Thailand)</span><span class="alias-tag">Bungur (Malaysia/Indonesia)</span></div>
+    <div class="alias-list"><span class="alias-tag">Giant Crape Myrtle</span><span class="alias-tag">Pride of India</span><span class="alias-tag">Queen&#x27;s Flower</span><span class="alias-tag">Banabá Plant (Philippines)</span><span class="alias-tag">Jarul (India/Bangladesh)</span><span class="alias-tag">Tamhan (Maharashtra)</span><span class="alias-tag">Inthanin (Thailand)</span><span class="alias-tag">Bungur (Malaysia/Indonesia)</span></div>
   </div>
 
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>

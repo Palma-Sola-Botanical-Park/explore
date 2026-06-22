@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00043-African-Iris.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00043-African-Iris.jpg" alt="African Iris at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00043/661606547.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00043/661606547.jpg" alt="African Iris at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Tropical Foliage &amp; Accent Plants</div>
@@ -134,7 +131,7 @@
   <span class="plant-sci-name">Dietes bicolor</span>
   <a class="plant-family-tag" href="../nature.html?family=Iridaceae">Iridaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -152,21 +149,19 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to South Africa, where it grows in open ground and is so tough it's planted along roadsides and in public landscapes throughout its home range. Now one of the most widely used low-maintenance ornamentals in warm climates worldwide.</p></div>
+    <div class="plant-section-body"><p>Native to South Africa, where it grows in open ground and is so tough it&#x27;s planted along roadsides and in public landscapes throughout its home range. Now one of the most widely used low-maintenance ornamentals in warm climates worldwide.</p></div>
   </div>
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The African Iris belongs to the genus Dietes — a small group of South African evergreens in the iris family that are famous, among gardeners, for being nearly impossible to kill. The genus name comes from the Greek for 'having two relatives,' a nod to its kinship with the true irises (Iris) and the African moraeas.</li>
-    <li>Each bloom opens for just one day, but the plant flowers in rhythmic flushes roughly two weeks apart through the warm months, which is how it earned the name Fortnight Lily.</li>
-    <li>At Palma Sola the African Iris has one of the nicer spots in the park: a long row — roughly ten yards of it — running between a bench and the edge of the Front Pond, so anyone sitting down looks out over the irises to the water. To either side, and across the way along the far bank, are the pond-edge restoration plantings — making the bench effectively a viewing seat for the shoreline the park has been rebuilding.</li>
-    <li>Much of that surrounding planting was likely put in by the park's high school volunteers, who earn college-scholarship service hours doing exactly this kind of restoration work.</li>
-    <li>One care note that matters: this plant reblooms from the same flower stalks year after year, so the old stalks must not be trimmed off after the flowers fade — cutting them removes next season's blooms. The spent stalks look untidy but should be left alone.</li>
+    <li>The African Iris belongs to the genus Dietes — a small group of South African evergreens in the iris family that are famous, among gardeners, for being nearly impossible to kill. The genus name comes from the Greek for &#x27;having two relatives,&#x27; a nod to its kinship with the true irises (Iris) and the African moraeas. Each bloom opens for just one day, but the plant flowers in rhythmic flushes roughly two weeks apart through the warm months, which is how it earned the name Fortnight Lily.</li>
+    <li>At Palma Sola the African Iris has one of the nicer spots in the park: a long row — roughly ten yards of it — running between a bench and the edge of the Front Pond, so anyone sitting down looks out over the irises to the water. To either side, and across the way along the far bank, are the pond-edge restoration plantings — making the bench effectively a viewing seat for the shoreline the park has been rebuilding. Much of that surrounding planting was likely put in by the park&#x27;s high school volunteers, who earn college-scholarship service hours doing exactly this kind of restoration work.</li>
+    <li>One care note that matters: this plant reblooms from the same flower stalks year after year, so the old stalks must not be trimmed off after the flowers fade — cutting them removes next season&#x27;s blooms. The spent stalks look untidy but should be left alone.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The African Iris's flowers offer nectar and pollen to bees and other pollinating insects during each two-week flush of bloom. Its dense, clumping fans of stiff evergreen leaves provide year-round ground-level cover for lizards, frogs, and insects — particularly valuable here at the pond edge, where it sits among native restoration plantings and adds to the layered shelter along the bank.</p><p>While it is a non-native ornamental rather than a wildlife powerhouse, in this setting it contributes structure and bloom to a shoreline being managed for habitat.</p></div>
+    <div class="plant-section-body"><p>The African Iris&#x27;s flowers offer nectar and pollen to bees and other pollinating insects during each two-week flush of bloom. Its dense, clumping fans of stiff evergreen leaves provide year-round ground-level cover for lizards, frogs, and insects — particularly valuable here at the pond edge, where it sits among native restoration plantings and adds to the layered shelter along the bank. While it is a non-native ornamental rather than a wildlife powerhouse, in this setting it contributes structure and bloom to a shoreline being managed for habitat.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -175,7 +170,7 @@
 <div class="repro-item"><div class="repro-label">Flowers</div><p>Iris-like blooms on tall, branched stalks — pale yellow with three dark, near-black spots ringed in orange. They open in flushes about every two weeks through the warm season, each flower lasting a single day. Pollinated by bees.</p></div>
 <div class="repro-item"><div class="repro-label">Fruit</div><p>A capsule that can become heavy enough to bend the flower stalk toward the ground; it dries, splits, and releases dark brown seeds.</p></div>
 <div class="repro-item"><div class="repro-label">Leaves</div><p>Stiff, narrow, sword-like, pale green, evergreen, growing in flat fans from the base of the clump — attractive year-round even out of bloom.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Look for the fans of stiff sword-shaped leaves and the wiry branched flower stalks rising above them — topped with yellow, black-spotted, iris-like flowers. Note the day-only blooms and, lower down, the heavy seed capsules bending the stalks. Crucially, notice that the old flower stalks are left uncut — that's deliberate, because the plant reblooms from them. From the bench, look past the iris to the pond-edge restoration plantings flanking it on both sides and across the water.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>Look for the fans of stiff sword-shaped leaves and the wiry branched flower stalks rising above them — topped with yellow, black-spotted, iris-like flowers. Note the day-only blooms and, lower down, the heavy seed capsules bending the stalks. Crucially, notice that the old flower stalks are left uncut — that&#x27;s deliberate, because the plant reblooms from them. From the bench, look past the iris to the pond-edge restoration plantings flanking it on both sides and across the water.</p></div>
     </div>
   </div>
   <div class="plant-section">
@@ -184,11 +179,11 @@
     <div class="data-item"><div class="data-label">Height</div><div class="data-value">2 to 4 feet</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">2 to 3 feet per clump, expanding slowly by rhizome (planted here as a continuous row ~10 yards long)</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">clumping, evergreen, fan-forming perennial with stiff sword-like leaves</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium; architectural foliage attractive year-round</div></div>
     <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to partial shade (best bloom in sun; tolerates shade with fewer flowers)</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">wide range, well-drained to moist; tolerant of poor soils</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established</div></div>
+    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established</div></div>
     <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">moderate</div></div>
     <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">hardy to about 20°F; USDA zones 8-11</div></div>
     <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">very low maintenance; do NOT cut spent flower stalks — the plant reblooms from them</div></div>
@@ -200,7 +195,7 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>Front Pond, a continuous row about 10 yards long between a bench and the water, flanked by pond-edge restoration plantings (likely installed by high school scholarship volunteers).</p></div>
+    <div class="plant-section-body"><p>PLACEMENT: Front Pond, a continuous row about 10 yards long between a bench and the water, flanked by pond-edge restoration plantings (likely installed by high school scholarship volunteers).</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>

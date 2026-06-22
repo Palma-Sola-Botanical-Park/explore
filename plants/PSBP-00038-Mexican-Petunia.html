@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,8 +119,8 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00038-Mexican-Petunia.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00038-Mexican-Petunia.jpg" alt="Mexican Petunia at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00038/635348437.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00038/635348437.jpg" alt="Mexican Petunia at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Plants to Watch &amp; Invasive Awareness</div>
@@ -134,12 +131,12 @@
   <span class="plant-sci-name">Ruellia simplex</span>
   <a class="plant-family-tag" href="../nature.html?family=Acanthaceae">Acanthaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>coleguyton</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Cole Guyton</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
-    <span class="badge badge-danger">🚫 Invasive</span>
-    <span class="badge badge-safe">✅ Edible &amp; Safe</span>
+    <span class="badge badge-danger">⚠️ Invasive</span>
+    <span class="badge badge-green">✅ Safe</span>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
@@ -157,19 +154,15 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>Mexican Petunia is a textbook case of a beautiful plant that became an ecological problem. It is a FISC Category I invasive — the worst category, reserved for plants that alter how natural ecosystems function by displacing native species and changing community structure.</li>
-    <li>The concern is sharpest in Florida wetlands, where it can shift not just plant-animal relationships but the hydrology of an entire watershed.</li>
-    <li>Its success comes from a rare combination of traits. It produces seed year-round with no need for cold or scarification, severed stem pieces root readily — so mowing or weed-eating only spreads it — and its seed-launching machinery is genuinely remarkable.</li>
-    <li>Like other members of the Acanthaceae family, each capsule holds its seeds on tiny hook-shaped levers called retinacula (or jaculators). When rain wets the ripe capsule it splits open and these levers catapult the seeds outward.</li>
-    <li>Once a seed lands on damp ground, microscopic hairs on its coat swell into a sticky mucilage that holds moisture against the seed and speeds germination. Removal requires taking out the entire plant, roots and all.</li>
-    <li>There is a constructive side to the story. Since 2007, a UF/IFAS breeding program led by Rosanna Freyre has developed sterile cultivars — the Mayan series ('Mayan Purple,' 'Mayan White,' 'Mayan Pink,' 'Mayan Compact Purple') plus the older 'Purple Showers' — that give gardeners the same showy flower without the seed-driven invasion.</li>
-    <li>At Palma Sola the plant is presented in the Plants to Watch and Invasive Awareness area precisely so visitors can recognize it and understand why the sterile alternatives matter.</li>
+    <li>Mexican Petunia is a textbook case of a beautiful plant that became an ecological problem. It is a FISC Category I invasive — the worst category, reserved for plants that alter how natural ecosystems function by displacing native species and changing community structure. The concern is sharpest in Florida wetlands, where it can shift not just plant-animal relationships but the hydrology of an entire watershed.</li>
+    <li>Its success comes from a rare combination of traits. It produces seed year-round with no need for cold or scarification, severed stem pieces root readily — so mowing or weed-eating only spreads it — and its seed-launching machinery is genuinely remarkable. Like other members of the Acanthaceae family, each capsule holds its seeds on tiny hook-shaped levers called retinacula (or jaculators). When rain wets the ripe capsule it splits open and these levers catapult the seeds outward. Once a seed lands on damp ground, microscopic hairs on its coat swell into a sticky mucilage that holds moisture against the seed and speeds germination. Removal requires taking out the entire plant, roots and all.</li>
+    <li>There is a constructive side to the story. Since 2007, a UF/IFAS breeding program led by Rosanna Freyre has developed sterile cultivars — the Mayan series (&#x27;Mayan Purple,&#x27; &#x27;Mayan White,&#x27; &#x27;Mayan Pink,&#x27; &#x27;Mayan Compact Purple&#x27;) plus the older &#x27;Purple Showers&#x27; — that give gardeners the same showy flower without the seed-driven invasion. At Palma Sola the plant is presented in the Plants to Watch and Invasive Awareness area precisely so visitors can recognize it and understand why the sterile alternatives matter.</li>
     <li>Native alternatives for home gardens include the native Wild Petunia (Ruellia caroliniensis), Blue Curls, Butterfly Weed, and Swamp Milkweed.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Mexican Petunia's purple trumpet flowers do attract butterflies and some native bees, and it is a nectar source and a minor larval host for certain butterflies. But its wildlife value is outweighed by the harm it does: by forming dense monocultures it displaces the diverse native plant communities that support far richer wildlife, and in wetlands it can crowd out the native species that specialist insects and birds depend on.</p><p>The honest assessment is that its ecological costs exceed its pollinator benefits — which is why native alternatives are recommended.</p></div>
+    <div class="plant-section-body"><p>Mexican Petunia&#x27;s purple trumpet flowers do attract butterflies and some native bees, and it is a nectar source and a minor larval host for certain butterflies. But its wildlife value is outweighed by the harm it does: by forming dense monocultures it displaces the diverse native plant communities that support far richer wildlife, and in wetlands it can crowd out the native species that specialist insects and birds depend on. The honest assessment is that its ecological costs exceed its pollinator benefits — which is why native alternatives are recommended.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -185,16 +178,16 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">2 to 4 feet (dwarf 'Katie' cultivars stay under 1 foot)</div></div>
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">2 to 4 feet (dwarf &#x27;Katie&#x27; cultivars stay under 1 foot)</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">indefinite — forms expanding colonies by rhizome</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">upright herbaceous perennial, clump- and mat-forming</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
     <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium-fine, with lance-shaped leaves</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to full shade</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">virtually any — thrives from standing water and wetland margins to nearly xeric upland sites</div></div>
     <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">high</div></div>
     <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">moderate</div></div>
-    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">root-hardy; USDA zones 8 to 11</div></div>
+    <div class="data-item"><div class="data-label">Cold tolerance</div><div class="data-value">root-hardy; USDA zones 8 to 11</div></div>
     <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">extreme adaptability across light, moisture, and soil is exactly what makes it such an effective invader</div></div>
     </div>
   </div>
@@ -204,7 +197,7 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Britton's Wild Petunia</span><span class="alias-tag">Mexican Bluebell</span><span class="alias-tag">(also sold as Ruellia brittoniana, R. tweediana, R. caerulea)</span></div>
+    <div class="alias-list"><span class="alias-tag">Britton&#x27;s Wild Petunia</span><span class="alias-tag">Mexican Bluebell</span><span class="alias-tag">(also sold as Ruellia brittoniana, R. tweediana, R. caerulea)</span></div>
   </div>
 
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>

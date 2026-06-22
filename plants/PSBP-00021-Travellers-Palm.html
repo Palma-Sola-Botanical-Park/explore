@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Traveller's Palm · Palma Sola Botanical Park</title>
+<title>Traveller&#x27;s Palm · Palma Sola Botanical Park</title>
 <link rel="stylesheet" href="../css/site.css">
 <style>
   /* Plant page layout */
@@ -13,9 +13,7 @@
   /* Hero -- tap the photo to open the full image in /photos/ */
   .plant-hero { position:relative;height:310px;overflow:hidden; }
   .plant-hero-link { display:block;width:100%;height:100%; }
-  /* object-position center center is the neutral default; override per-plant
-     (e.g. 'center 30%') only if a specific photo crops poorly */
-  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:center center;display:block; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block; }
   .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
   .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
   .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
@@ -26,7 +24,7 @@
   .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .plant-family-tag:hover { background:#c49a20; }
 
-  /* Photo credit line -- sits directly under the photo */
+  /* Photo credit line */
   .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
   .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
 
@@ -51,7 +49,7 @@
   .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
   .plant-section-body p + p { margin-top:10px; }
 
-  /* Quick hits -- one fact per row, key phrase bolded, space between topics */
+  /* Quick hits */
   .quick-hits-list { list-style:none;padding:6px 16px 10px; }
   .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
   .quick-hits-list li:last-child { border-bottom:none; }
@@ -61,7 +59,6 @@
   .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
   .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
   .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
-  /* prose paragraphs inside the dark card need the light text color too */
   .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
   .plant-more-info .plant-section-body em { color:#e9e3d6; }
   .more-info-list { list-style:none;padding:0; }
@@ -79,7 +76,7 @@
   .plant-caution-section .plant-section-header { background:#7a5000; }
   .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
 
-  /* Data grid -- slightly larger labels/values for phone readability */
+  /* Data grid */
   .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
   .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
   .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
@@ -122,19 +119,19 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <a class="plant-hero-link" href="../photos/PSBP-00021-Travellers-Palm.jpg" target="_blank" rel="noopener">
-    <img src="../photos/PSBP-00021-Travellers-Palm.jpg" alt="Traveller's Palm at Palma Sola Botanical Park" loading="lazy">
+  <a class="plant-hero-link" href="../photos/PSBP-00021/662214871.jpg" target="_blank" rel="noopener">
+    <img src="../photos/PSBP-00021/662214871.jpg" alt="Traveller&#x27;s Palm at Palma Sola Botanical Park" loading="lazy">
   </a>
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Tropical &amp; Exotic Palms</div>
-    <div class="plant-hero-name">Traveller's Palm</div>
+    <div class="plant-hero-name">Traveller&#x27;s Palm</div>
   </div>
 </div>
 <div class="plant-sci-band">
   <span class="plant-sci-name">Ravenala madagascariensis</span>
   <a class="plant-family-tag" href="../nature.html?family=Strelitziaceae">Strelitziaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC BY-NC · via iNaturalist</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
     <span class="badge badge-neutral">🌍 Non-Native</span>
@@ -157,17 +154,14 @@
   <div class="plant-more-info">
     <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
     <ul class="more-info-list">
-    <li>The famous compass claim — that the fan of leaves always orients east-west, allowing lost travelers to navigate — is appealing but not reliably true. The leaves do track sunlight, but the alignment isn't consistent enough to trust your life to.</li>
-    <li>The name more likely refers to the emergency water supply stored in the leaf bases, which is well-documented and real.</li>
-    <li>The pollination relationship with lemurs is one of the more remarkable in the plant world. Ruffed lemurs and black lemurs are the primary pollinators — they pry open the tough flower bracts with their hands and push their faces in to reach the nectar, coating their snouts in pollen in the process.</li>
-    <li>Lemur nectar feeding from this species accounts for nearly 10% of their daytime feeding at certain times of year. No lemurs in Bradenton, so our specimen relies on large insects, bats, and birds to do that work.</li>
-    <li>The Traveller's Palm is the national symbol of Madagascar — appearing on the logo of Air Madagascar and widely used as a symbol of the island. Standing beside this specimen at Palma Sola, you're looking at Madagascar's national tree.</li>
-    <li>Its close relative — the White Bird of Paradise — is growing just steps away, and the family resemblance in leaf architecture is obvious once you know to look.</li>
+    <li>The famous compass claim — that the fan of leaves always orients east-west, allowing lost travelers to navigate — is appealing but not reliably true. The leaves do track sunlight, but the alignment isn&#x27;t consistent enough to trust your life to. The name more likely refers to the emergency water supply stored in the leaf bases, which is well-documented and real.</li>
+    <li>The pollination relationship with lemurs is one of the more remarkable in the plant world. Ruffed lemurs and black lemurs are the primary pollinators — they pry open the tough flower bracts with their hands and push their faces in to reach the nectar, coating their snouts in pollen in the process. Lemur nectar feeding from this species accounts for nearly 10% of their daytime feeding at certain times of year. No lemurs in Bradenton, so our specimen relies on large insects, bats, and birds to do that work.</li>
+    <li>The Traveller&#x27;s Palm is the national symbol of Madagascar — appearing on the logo of Air Madagascar and widely used as a symbol of the island. Standing beside this specimen at Palma Sola, you&#x27;re looking at Madagascar&#x27;s national tree. Its close relative — the White Bird of Paradise — is growing just steps away, and the family resemblance in leaf architecture is obvious once you know to look.</li>
     </ul>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>In Florida, without its native lemur pollinators, the Traveller's Palm relies on large insects, bats, and birds to access the white flowers tucked inside their boat-shaped spathes. The copious nectar — production peaks at midnight — makes it a nighttime wildlife resource.</p><p>The brilliant blue-ariled seeds are consumed by birds. The enormous leaf bases collect standing rainwater that provides drinking and bathing opportunities for birds and insects year-round.</p><p>The broad paddle-shaped leaves also shelter lizards and small animals at the base of the crown.</p></div>
+    <div class="plant-section-body"><p>In Florida, without its native lemur pollinators, the Traveller&#x27;s Palm relies on large insects, bats, and birds to access the white flowers tucked inside their boat-shaped spathes. The copious nectar — production peaks at midnight — makes it a nighttime wildlife resource. The brilliant blue-ariled seeds are consumed by birds. The enormous leaf bases collect standing rainwater that provides drinking and bathing opportunities for birds and insects year-round. The broad paddle-shaped leaves also shelter lizards and small animals at the base of the crown.</p></div>
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
@@ -183,14 +177,14 @@
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
     <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">30 to 50 feet at maturity</div></div>
+    <div class="data-item"><div class="data-label">Height</div><div class="data-value">30 to 50 feet at maturity</div></div>
     <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">the single-plane fan can reach 15 to 20 feet wide</div></div>
     <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">unbranched trunk, dramatic fan-shaped single-plane crown</div></div>
     <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast — up to 1 meter per year under optimal conditions</div></div>
     <div class="data-item"><div class="data-label">Texture</div><div class="data-value">coarse, bold tropical</div></div>
     <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
     <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">well-draining loamy soils; consistently moist preferred</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">low — needs regular water</div></div>
+    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">low — needs regular water</div></div>
     <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">frost sensitive; damaged below 28°F; USDA zones 10–11</div></div>
     <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">protect from strong winds — the large leaves shred easily but the plant recovers</div></div>
     </div>
@@ -201,7 +195,7 @@
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Traveler's Tree</span><span class="alias-tag">Ravenala</span></div>
+    <div class="alias-list"><span class="alias-tag">Traveler&#x27;s Tree</span><span class="alias-tag">Ravenala</span></div>
   </div>
 
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
