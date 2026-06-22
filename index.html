@@ -215,16 +215,16 @@
          These two static slides are the last-known-good fallback if the JSON
          or network is unavailable — the block is never blank. -->
     <div class="hero-slideshow" id="heroSlides">
-      <div class="hero-slide on" style="background-image:url('photos/PSBP-00004-Silk-Floss-Tree.jpg')">
+      <div class="hero-slide on" style="background-image:url('photos/PSBP-00004/663359491.jpg')">
         <div class="photo-attr">
           <span class="attr-species">Silk Floss Tree · <em>Ceiba speciosa</em></span>
-          <span class="attr-line"><span class="attr-by">📷 randall_carter</span><span class="attr-dot">·</span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span></span><span class="attr-dot">·</span><span class="attr-src">via iNaturalist</span></span>
+          <span class="attr-line"><span class="attr-by">📷 Randall Carter</span><span class="attr-dot">·</span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span></span><span class="attr-dot">·</span><span class="attr-src">via iNaturalist</span></span>
         </div>
       </div>
-      <div class="hero-slide" style="background-image:url('photos/PSBP-00002-Weeping-Bottlebrush.jpg')">
+      <div class="hero-slide" style="background-image:url('photos/PSBP-00005/662740624.jpg')">
         <div class="photo-attr">
-          <span class="attr-species">Weeping Bottlebrush · <em>Melaleuca viminalis</em></span>
-          <span class="attr-line"><span class="attr-by">📷 kathynoran88</span><span class="attr-dot">·</span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span></span><span class="attr-dot">·</span><span class="attr-src">via iNaturalist</span></span>
+          <span class="attr-species">Queen's Crepe Myrtle · <em>Lagerstroemia speciosa</em></span>
+          <span class="attr-line"><span class="attr-by">📷 Franky McArthur</span><span class="attr-dot">·</span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span></span><span class="attr-dot">·</span><span class="attr-src">via iNaturalist</span></span>
         </div>
       </div>
     </div>
@@ -412,7 +412,8 @@ PSBPPhotos.mountHeroGrid('heroGrid');
 // Announcements now use the shared loadAnnouncements() from site.js (see call below)
 
 // iNat mosaic — attribution shown, no outbound links
-loadINat().then(async data => {
+// Wait for both iNat data AND the photo_credits name map so display names resolve.
+Promise.all([loadINat(), PSBPPhotos.loadPool()]).then(async ([data]) => {
   // Populate inline stats
   if (data.total)     { const el=document.getElementById('statTotal');     if(el){el.textContent=data.total.toLocaleString();el.classList.remove('pulse');} }
   if (data.species)   { const el=document.getElementById('statSpecies');   if(el){el.textContent=data.species.toLocaleString();el.classList.remove('pulse');} }
@@ -431,7 +432,7 @@ loadINat().then(async data => {
     if (!url) return '';
     const common = o.species_guess || o.taxon?.preferred_common_name || o.taxon?.name || 'Unknown';
     const sci    = o.taxon?.name && o.taxon.name !== common ? o.taxon.name : null;
-    const by     = o.user?.login || o.user?.name || 'community member';
+    const by     = PSBPPhotos.displayName(o.user?.login) || o.user?.name || 'community member';
     const license = photo.license_code || o.license_code || null;
     // "seen lately" = recently SHARED. Show the iNaturalist submission date
     // (created_at), not when the photo was taken — and no time of day.

@@ -34,6 +34,7 @@
   var GRID_COUNT = 4;           // tiles in the "Ten acres" mosaic
 
   var _pool = null;             // shuffled, de-duplicated hero pool (Promise-cached)
+  var _nameMap = null;          // login -> display name (Promise-cached)
 
   // ---- small utilities ----------------------------------------------------
   function shuffle(a) {
@@ -177,6 +178,17 @@
       })
       .then(function (data) {
         var photos = (data && data.photos) || [];
+
+        // build login -> display name map from ALL photos (not just heroes)
+        var nm = {};
+        photos.forEach(function (p) {
+          if (p.photographer && p.photographer_name
+              && p.photographer_name !== p.photographer) {
+            nm[p.photographer] = p.photographer_name;
+          }
+        });
+        _nameMap = nm;
+
         var heroes = photos.filter(usableHero);
         // interleave so plants and wildlife both surface near the top
         var plants = shuffle(heroes.filter(function (p) { return p.type === 'Plant'; }));
@@ -235,7 +247,7 @@
     return attribution({
       species:    withSpecies ? p.common_name : null,
       scientific: withSpecies ? p.scientific_name : null,
-      by:         p.photographer,
+      by:         p.photographer_name || p.photographer,
       license:    p.license,
       // reads whichever date field the import pipeline lands on; absent today,
       // appears automatically once observed_on/date is captured at import time.
@@ -333,6 +345,12 @@
   }
 
   // ---- public API ---------------------------------------------------------
+  // Look up display name for a login; returns the login itself if no mapping.
+  // Call after loadPool() has resolved (i.e. inside its .then()).
+  function displayName(login) {
+    return (_nameMap && _nameMap[login]) || login;
+  }
+
   window.PSBPPhotos = {
     attribution:        attribution,
     speciesTag:         speciesTag,
@@ -340,6 +358,7 @@
     ccBadge:            ccBadge,
     fmtDate:            fmtDate,
     loadPool:           loadPool,
+    displayName:        displayName,
     mountHeroSlideshow: mountHeroSlideshow,
     mountHeroGrid:      mountHeroGrid
   };
