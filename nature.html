@@ -107,8 +107,62 @@
    under the species name, and make all cards equal height with the plate pinned
    to the bottom (consistent grid even when scientific names wrap to two lines). */
 .plant-card { display: flex; flex-direction: column; }
-.plant-card .card-body { padding: 1rem 1rem .65rem; flex: 1; }
+.plant-card .card-body { padding: 1rem 1.1rem .7rem; flex: 1; }
 .plant-card .credit-plate { margin-top: auto; }
+
+/* Align plant cards with the home page's photographer-rich look: taller photo,
+   bolder ink name, the full cc/BY/NC badge (photo-credits.css supplies the badge
+   markup; here we just give it room and the home card's proportions). */
+.plant-card > div:first-child { height: 200px !important; }     /* taller photo */
+.plant-card .credit-name { color: var(--green-deep); font-size: 1.04rem; }
+.plant-card .credit-eyebrow { color: var(--green-mid); }
+
+/* ── Search + filter bar: a contained panel, not loose pills on cream ──
+   The row now lives inside one defined surface (border + soft shadow, matching
+   the cards), and the controls use the brand greens instead of stark white. */
+.filter-bar {
+  background: var(--white);
+  border: 1px solid var(--green-pale);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(26,58,31,.06);
+  padding: .9rem 1rem;
+  gap: .7rem;
+}
+.filter-bar input[type="search"] {
+  border: 1px solid var(--green-pale);
+  border-radius: 10px;
+  background: var(--cream);
+  color: var(--green-deep);
+  font-size: 1rem;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.filter-bar input[type="search"]::placeholder { color: var(--text-soft); opacity: .85; }
+.filter-bar input[type="search"]:focus {
+  outline: none; background: var(--white);
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 3px rgba(45,106,53,.12);
+}
+/* Buttons & the category select: defined green-tinted edge, card-radius corners,
+   and a clear filled state in brand green when active. */
+.filter-bar .filter-btn,
+.filter-bar .filter-select {
+  border-radius: 10px;
+  border: 1px solid var(--green-pale);
+  background: var(--cream);
+  color: var(--green-mid);
+  font-size: .95rem;
+}
+.filter-bar .filter-btn:hover,
+.filter-bar .filter-select:hover {
+  border-color: var(--green-mid);
+  background: var(--white);
+  color: var(--green-deep);
+}
+.filter-bar .filter-btn.on {
+  background: var(--green-mid);
+  border-color: var(--green-mid);
+  color: var(--white);
+}
 
 </style>
 </head>
