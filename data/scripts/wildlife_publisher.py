@@ -521,7 +521,7 @@ def generate_html(species, hero, gallery_photos):
   </div>
 </div>
 
-<a class="wild-float-back" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<a class="wild-float-back theme-{theme}" href="../nature.html#wildlife">🦜 All Wildlife</a>
 
 <div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>
