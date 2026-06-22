@@ -578,26 +578,21 @@ function mountSeenLately(grid, pool) {
   }, INTERVAL);
 }
 
-// ── "What's been seen lately": fetch with the extra fields the flip side needs ──
-// Default iNat objects already carry quality_grade + identifications; we add an
-// explicit field set so taxon.ancestors (the lineage) is guaranteed present.
+// ── "What's been seen lately": the iNat default response already includes the
+// full taxon.ancestors chain, quality_grade, and identifications. We deliberately
+// do NOT use a fields= selector — iNat's partial-field syntax for deeply nested
+// arrays (taxon.ancestors.*) can silently return the taxon WITHOUT its ancestors,
+// which collapses "Where it fits" down to just the species. The default (fatter)
+// response is small at this volume and far more dependable.
 async function loadSeenLately(count) {
-  const fields = encodeURIComponent(
-    'id,species_guess,quality_grade,created_at_details,observed_on,' +
-    'user.login,user.name,' +
-    'photos.url,photos.license_code,' +
-    'identifications.id,' +
-    'taxon.name,taxon.rank,taxon.preferred_common_name,' +
-    'taxon.ancestors.name,taxon.ancestors.rank,taxon.ancestors.preferred_common_name'
-  );
   const url = `https://api.inaturalist.org/v1/observations`
     + `?project_id=${INAT_PROJECT}&per_page=${count||8}`
-    + `&order=desc&order_by=created_at&photos=true&fields=${fields}`;
+    + `&order=desc&order_by=created_at&photos=true`;
   try {
     const r = await fetch(url).then(r => r.json());
     if (r.results && r.results.length) return r.results;
   } catch (e) { /* fall through to the simpler loader */ }
-  // last-known-good: the original loader (no ancestors, but still renders)
+  // last-known-good: the original loader
   return loadRecentObs({ count });
 }
 
@@ -639,15 +634,23 @@ function idCount(o) {
 // Build the lineage line: a few meaningful rungs, common name when iNat has one.
 function lineage(o) {
   const anc = (o.taxon?.ancestors || []).slice();
-  if (o.taxon) anc.push(o.taxon);
+  // Append the observation's own taxon as the final rung, unless it's already
+  // the last ancestor (some responses include it, most don't).
+  if (o.taxon && (!anc.length || anc[anc.length - 1]?.id !== o.taxon.id)) {
+    anc.push(o.taxon);
+  }
   const keepRanks = ['kingdom','phylum','class','order','family','genus','species'];
   const rungs = anc.filter(a => keepRanks.includes(String(a.rank||'').toLowerCase()));
   if (!rungs.length) return '';
   return rungs.map((a, i) => {
-    const label = a.preferred_common_name || a.name || '';
+    // Prefer a common name; fall back to the scientific name in italics so a
+    // family like "Cyperaceae" still reads as a name, not a bare word.
+    const common = a.preferred_common_name;
+    const raw = common || a.name || '';
+    const safe = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const shown = common ? safe : `<em>${safe}</em>`;
     const isLast = i === rungs.length - 1;
-    const safe = label.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    return isLast ? `<strong>${safe}</strong>` : safe;
+    return isLast ? `<strong>${shown}</strong>` : shown;
   }).join(' &rsaquo; ');
 }
 
