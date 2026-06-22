@@ -134,7 +134,7 @@
 /* .species-tag and .credit-plate now live in css/photo-credits.css */
 
 /* ── Flip behavior — tap a card to reveal the observation's "science" side ── */
-.mosaic-card.flip { background: transparent; box-shadow: none; cursor: pointer; perspective: 1200px; }
+.mosaic-card.flip { background: transparent; box-shadow: none; cursor: pointer; perspective: 1400px; }
 .mosaic-card.flip:hover { transform: translateY(-3px); }
 .mosaic-flip-inner {
   position: relative; width: 100%;
@@ -153,54 +153,84 @@
   position: absolute; inset: 0;
   transform: rotateY(180deg);
   display: flex; flex-direction: column;
-  padding: .95rem 1.05rem;
+  padding: 1.1rem 1.2rem;
   border: 1px solid rgba(26,58,31,.12);
   overflow: hidden;
 }
 /* Hint that the card is interactive */
 .mosaic-flip-hint {
-  position: absolute; top: .55rem; right: .6rem; z-index: 2;
+  position: absolute; top: .6rem; right: .65rem; z-index: 2;
   display: inline-flex; align-items: center; gap: .25rem;
   background: rgba(26,58,31,.66); color: #fff;
-  font-size: .64rem; font-weight: 600; letter-spacing: .02em;
-  padding: .2rem .45rem; border-radius: 20px;
+  font-size: .66rem; font-weight: 600; letter-spacing: .02em;
+  padding: .2rem .5rem; border-radius: 20px;
   pointer-events: none; opacity: 0; transition: opacity .25s ease;
 }
 .mosaic-card.flip:hover .mosaic-flip-hint { opacity: 1; }
 .mosaic-card.flip.is-flipped .mosaic-flip-hint { display: none; }
 
-/* Back-of-card content */
-.obs-back-head { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.5rem; }
-.obs-back-name { font-weight:700; font-size:.96rem; color:var(--green-deep); line-height:1.15; }
+/* Taller photo on the front — the community photo is the star. */
+.mosaic-card.flip .mosaic-img { aspect-ratio: 4 / 3.4; }
+
+/* Front credit, dialed up: the PERSON is highlighted, not hidden. Scoped to
+   these flip cards so the shared photo-credits.css is left untouched. */
+.mosaic-card.flip .credit-plate { padding: .85rem .95rem .9rem; }
+.mosaic-card.flip .credit-eyebrow {
+  font-size: .6rem; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--green-mid); font-weight: 700;
+}
+.mosaic-card.flip .credit-name {
+  display: block; font-size: 1.04rem; line-height: 1.15;
+  font-weight: 700; color: var(--green-deep); margin: .12rem 0 .18rem;
+}
+.mosaic-card.flip .credit-date { font-size: .72rem; color: var(--text-soft); }
+.mosaic-card.flip .credit-license { margin-top: .5rem; }
+
+/* Crossfade between sets of four (mirrors the hero slideshow treatment). */
+.live-mosaic.cycling { position: relative; display: block; }
+.mosaic-page {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.4rem;
+  position: absolute; inset: 0;
+  opacity: 0; transition: opacity .8s ease; pointer-events: none;
+}
+.mosaic-page.on { opacity: 1; pointer-events: auto; position: relative; }
+
+/* Back-of-card content (roomier now). */
+.obs-back-head { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.6rem; }
+.obs-back-name { font-weight:700; font-size:1rem; color:var(--green-deep); line-height:1.15; }
 .obs-status {
   display:inline-flex; align-items:center; gap:.3rem;
-  font-size:.7rem; font-weight:600; padding:.18rem .5rem; border-radius:16px;
+  font-size:.72rem; font-weight:600; padding:.2rem .55rem; border-radius:16px;
   white-space:nowrap; flex-shrink:0;
 }
 .obs-status.working { background:#fbeedd; color:#7a5a12; }
 .obs-status.confirmed { background:#e3f0e5; color:#1a3a1f; }
-.obs-rows { width:100%; font-size:.76rem; border-collapse:collapse; }
-.obs-rows td { padding:.28rem 0; vertical-align:top; }
+.obs-rows { width:100%; font-size:.8rem; border-collapse:collapse; }
+.obs-rows td { padding:.32rem 0; vertical-align:top; }
 .obs-rows td.k { color:var(--text-soft); padding-right:.6rem; white-space:nowrap; }
 .obs-rows td.v { text-align:right; color:#2b2e26; font-weight:600; }
 .obs-rows td.v em { font-weight:500; }
-/* On narrow phones, drop the "Spotted on" row to keep the "what happens next"
-   note visible — the front already establishes a date, so this is the safe cut. */
-@media (max-width: 420px) { .obs-row-spotted { display:none; } }
-.obs-ladder { border-top:1px solid rgba(26,58,31,.1); margin-top:.55rem; padding-top:.5rem; }
-.obs-ladder-label { font-size:.6rem; letter-spacing:.05em; text-transform:uppercase; color:var(--text-soft); margin-bottom:.2rem; }
-.obs-ladder-path { font-size:.72rem; color:var(--text-soft); line-height:1.5; }
+.obs-ladder { border-top:1px solid rgba(26,58,31,.1); margin-top:.65rem; padding-top:.6rem; }
+.obs-ladder-label { font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:var(--text-soft); margin-bottom:.25rem; }
+.obs-ladder-path { font-size:.78rem; color:var(--text-soft); line-height:1.55; }
 .obs-ladder-path strong { color:var(--green-deep); }
 .obs-next {
   margin-top:auto; background:var(--cream,#faf8f3); border-radius:8px;
-  padding:.5rem .6rem; font-size:.72rem; color:var(--text-soft); line-height:1.5;
+  padding:.6rem .7rem; font-size:.76rem; color:var(--text-soft); line-height:1.55;
 }
-.obs-back-foot { margin-top:.5rem; font-size:.64rem; color:var(--text-soft); display:flex; align-items:center; gap:.3rem; }
+.obs-back-foot { margin-top:.55rem; font-size:.66rem; color:var(--text-soft); display:flex; align-items:center; gap:.3rem; }
 .obs-back-foot a { color:var(--green-mid); font-weight:600; text-decoration:none; }
 
-@media (max-width: 980px) { .live-mosaic { grid-template-columns: repeat(3, 1fr); } .mosaic-card:nth-child(7), .mosaic-card:nth-child(8) { display: none; } }
-@media (max-width: 680px) { .live-mosaic { grid-template-columns: repeat(2, 1fr); gap: 1rem; } .mosaic-card:nth-child(7), .mosaic-card:nth-child(8) { display: flex; } }
-@media (max-width: 380px) { .live-mosaic { grid-template-columns: 1fr; } }
+/* Responsive: the cycling layout always shows 4 per page; reflow the columns
+   so on smaller screens they stack into a 2-col or 1-col grid. */
+@media (max-width: 980px) { .mosaic-page { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 680px) { .mosaic-page { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
+@media (max-width: 440px) { .mosaic-page { grid-template-columns: 1fr; } }
+
+/* Legacy static grid (kept in case .live-mosaic is used without .cycling) */
+@media (max-width: 980px) { .live-mosaic:not(.cycling) { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 680px) { .live-mosaic:not(.cycling) { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
+@media (max-width: 380px) { .live-mosaic:not(.cycling) { grid-template-columns: 1fr; } }
 
 /* ── iNat summary inline ── */
 .inat-inline {
@@ -485,25 +515,68 @@ Promise.all([loadINat(), PSBPPhotos.loadPool()]).then(async ([data]) => {
   if (data.observers) { const el=document.getElementById('statObservers'); if(el){el.textContent=data.observers.toLocaleString();el.classList.remove('pulse');} }
   if (data.week)      { const el=document.getElementById('statWeek');      if(el){el.textContent=data.week.toLocaleString();el.classList.remove('pulse');} }
 
-  const obs  = await loadSeenLately(8);
   const grid = document.getElementById('mosaicGrid');
-  if (!obs.length) {
+  // Pull a deeper pool so we can rotate through several sets of four.
+  const pool = (await loadSeenLately(16)).filter(o => o.photos?.[0]?.url);
+  if (!pool.length) {
     grid.innerHTML = '<p class="text-soft" style="grid-column:1/-1;text-align:center;padding:2rem">No recent observations found.</p>';
     return;
   }
-  grid.innerHTML = obs.map(buildFlipCard).join('');
-
-  // Tap / click / keyboard to flip. Delegated so it covers all cards.
-  grid.addEventListener('click', e => {
-    const card = e.target.closest('.mosaic-card.flip');
-    if (card) card.classList.toggle('is-flipped');
-  });
-  grid.addEventListener('keydown', e => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    const card = e.target.closest('.mosaic-card.flip');
-    if (card) { e.preventDefault(); card.classList.toggle('is-flipped'); }
-  });
+  mountSeenLately(grid, pool);
 });
+
+// Show 4 cards, crossfade a fresh 4 in every ~8s. Pauses while the visitor is
+// hovering or has any card flipped, so it never pulls a card mid-read.
+function mountSeenLately(grid, pool) {
+  const PER = 4, INTERVAL = 8000;
+  grid.classList.add('cycling');
+
+  // Build a page (4 cards) starting at index `start`, wrapping the pool.
+  function pageHtml(start) {
+    let html = '';
+    for (let i = 0; i < PER; i++) html += buildFlipCard(pool[(start + i) % pool.length]);
+    return html;
+  }
+
+  // Two stacked pages we crossfade between.
+  grid.innerHTML =
+    '<div class="mosaic-page on" data-start="0">' + pageHtml(0) + '</div>' +
+    '<div class="mosaic-page" data-start="0"></div>';
+  let pages = grid.querySelectorAll('.mosaic-page');
+  let active = 0, start = 0;
+
+  // Flip on click / tap / keyboard (delegated to the whole grid).
+  function flipFrom(e) {
+    const card = e.target.closest('.mosaic-card.flip');
+    if (!card) return false;
+    if (e.type === 'keydown') {
+      if (e.key !== 'Enter' && e.key !== ' ') return false;
+      e.preventDefault();
+    }
+    card.classList.toggle('is-flipped');
+    return true;
+  }
+  grid.addEventListener('click', flipFrom);
+  grid.addEventListener('keydown', flipFrom);
+
+  // Pause logic: don't rotate while hovering or while anything is flipped.
+  let hovering = false;
+  grid.addEventListener('mouseenter', () => { hovering = true; });
+  grid.addEventListener('mouseleave', () => { hovering = false; });
+  const anyFlipped = () => !!grid.querySelector('.mosaic-card.is-flipped');
+
+  if (pool.length <= PER) return;   // nothing to rotate to
+
+  setInterval(() => {
+    if (hovering || anyFlipped()) return;     // wait for a calm moment
+    start = (start + PER) % pool.length;
+    const incoming = 1 - active;
+    pages[incoming].innerHTML = pageHtml(start);
+    pages[incoming].classList.add('on');
+    pages[active].classList.remove('on');
+    active = incoming;
+  }, INTERVAL);
+}
 
 // ── "What's been seen lately": fetch with the extra fields the flip side needs ──
 // Default iNat objects already carry quality_grade + identifications; we add an
@@ -619,7 +692,7 @@ function buildFlipCard(o) {
       <table class="obs-rows"><tbody>
         <tr><td class="k">Identified to</td><td class="v">${identifiedTo}</td></tr>
         <tr><td class="k">Who's looking</td><td class="v">${esc(idCount(o))}</td></tr>
-        <tr class="obs-row-spotted"><td class="k">Spotted on</td><td class="v">${esc(observedDate)}</td></tr>
+        <tr><td class="k">Spotted on</td><td class="v">${esc(observedDate)}</td></tr>
       </tbody></table>
       ${ladder ? `<div class="obs-ladder">
         <div class="obs-ladder-label">Where it fits</div>
