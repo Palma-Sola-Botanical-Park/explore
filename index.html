@@ -184,6 +184,9 @@
 .obs-rows td.k { color:var(--text-soft); padding-right:.6rem; white-space:nowrap; }
 .obs-rows td.v { text-align:right; color:#2b2e26; font-weight:600; }
 .obs-rows td.v em { font-weight:500; }
+/* On narrow phones, drop the "Spotted on" row to keep the "what happens next"
+   note visible — the front already establishes a date, so this is the safe cut. */
+@media (max-width: 420px) { .obs-row-spotted { display:none; } }
 .obs-ladder { border-top:1px solid rgba(26,58,31,.1); margin-top:.55rem; padding-top:.5rem; }
 .obs-ladder-label { font-size:.6rem; letter-spacing:.05em; text-transform:uppercase; color:var(--text-soft); margin-bottom:.2rem; }
 .obs-ladder-path { font-size:.72rem; color:var(--text-soft); line-height:1.5; }
@@ -616,8 +619,7 @@ function buildFlipCard(o) {
       <table class="obs-rows"><tbody>
         <tr><td class="k">Identified to</td><td class="v">${identifiedTo}</td></tr>
         <tr><td class="k">Who's looking</td><td class="v">${esc(idCount(o))}</td></tr>
-        <tr><td class="k">Spotted on</td><td class="v">${esc(observedDate)}</td></tr>
-        <tr><td class="k">Found by</td><td class="v">${esc(by)}</td></tr>
+        <tr class="obs-row-spotted"><td class="k">Spotted on</td><td class="v">${esc(observedDate)}</td></tr>
       </tbody></table>
       ${ladder ? `<div class="obs-ladder">
         <div class="obs-ladder-label">Where it fits</div>
