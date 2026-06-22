@@ -66,7 +66,7 @@ WORKSPACE = os.path.expanduser("~/Documents/PSBP_photo_workspace")
 # Coverage (the top half of the dashboard) works WITHOUT this. Scanning for
 # new photos needs it — leave blank and the app will tell you to set it.
 # Can also be supplied via the INAT_PROJECT_ID environment variable.
-INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
+INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "")
 
 PORT = 8001
 
@@ -1026,7 +1026,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_error(404)
 
     def log_message(self, fmt, *args):
-        if args and ("/api/" in args[0] or "/photos/" in args[0]):
+        if args and isinstance(args[0], str) and ("/api/" in args[0] or "/photos/" in args[0]):
             return
         super().log_message(fmt, *args)
 

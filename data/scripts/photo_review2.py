@@ -197,9 +197,8 @@ function loadSpecies() {
     card.className = 'card' + (isHero ? ' is-hero' : '');
     card.dataset.photoId = p.photo_id;
 
-    // Determine image path — local file for heroes, iNat CDN for virtual gallery photos
-    const isVirtual = !p.filename;
-    const imgPath = isVirtual ? (p.photo_url || '') : `/photos/${p.psbp_id}/${p.filename}`;
+    // Determine image path
+    const imgPath = `/photos/${p.psbp_id}/${p.filename}`;
 
     card.innerHTML = `
       <div class="card-img-wrap" onclick="${isHero ? `openFocus('${p.photo_id}', '${imgPath}', '${p.focus || '50% 50%'}')` : ''}">
@@ -208,7 +207,7 @@ function loadSpecies() {
       </div>
       <div class="card-body">
         <div class="card-meta">
-          <span class="photographer">📷 ${p.photographer}</span> · ${p.license || 'unknown'} · ${isVirtual ? '<em>iNat CDN</em>' : p.filename}
+          <span class="photographer">📷 ${p.photographer}</span> · ${p.license || 'unknown'} · ${p.filename}
           ${p.focus && isHero ? ` · Focus: ${p.focus}` : ''}
         </div>
         <div class="roles">
@@ -222,7 +221,7 @@ function loadSpecies() {
           <button class="btn-hero ${isHero ? 'active' : ''}" onclick="makeHero('${p.photo_id}')">
             ${isHero ? '★ Hero' : 'Make Hero'}
           </button>
-          <button class="btn-trash" onclick="trashPhoto('${p.photo_id}', '${p.psbp_id}', '${p.filename || ''}')">🗑 Trash</button>
+          <button class="btn-trash" onclick="trashPhoto('${p.photo_id}', '${p.psbp_id}', '${p.filename}')">🗑 Trash</button>
         </div>
       </div>
     `;
@@ -324,8 +323,7 @@ function closeFocus() {
 }
 
 async function trashPhoto(photoId, psbpId, filename) {
-  const msg = filename ? `Delete ${filename}? This removes the file and registry entry.` : `Remove this gallery photo from the registry? (No local file to delete.)`;
-  if (!confirm(msg)) return;
+  if (!confirm(`Delete ${filename}? This removes the file and registry entry.`)) return;
 
   const resp = await fetch('/api/trash', {
     method: 'POST',
