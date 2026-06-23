@@ -99,10 +99,6 @@ def build_plants_json_entry(species, hero):
     wv_text = " ".join(wv) if isinstance(wv, list) else str(wv)
     butterfly = "butterfl" in wv_text.lower()
 
-    # Quick hit: first item
-    quick_hits = species.get("quick_hits") or []
-    quick = quick_hits[0] if quick_hits else ""
-
     # Hero photo path and credit — resolve real name + license
     hero_credit = resolve_hero_credit(hero)
 
@@ -129,7 +125,6 @@ def build_plants_json_entry(species, hero):
         "wetland": wetland,
         "photo": photo,
         "page": f"plants/{page_filename(pid, species['common_name'])}",
-        "quick": quick,
         "credit": hero_credit["credit_name"],
         "credit_name": hero_credit["credit_name"],
         "credit_license": hero_credit["credit_license"],
@@ -159,8 +154,8 @@ PLANT_CSS = """\
   .plant-family-tag:hover { background:#c49a20; }
 
   /* Photo credit line */
-  .plant-credit { font-size:12.5px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);text-align:right; }
-  .plant-credit strong { font-style:normal;color:var(--moss,#2d4a2d); }
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
 
   .plant-content { padding:12px 0 56px; }
 
@@ -246,7 +241,7 @@ PLANT_CSS = """\
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
   .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
-  .lb-credit{ color:#ccc;font-size:13px;margin-top:10px;font-style:italic; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
   .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
   .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
   .lb-prev{ left:8px; }
