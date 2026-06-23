@@ -22,7 +22,8 @@ import os
 import sys
 import time
 import datetime
-from http.server import HTTPServer, BaseHTTPRequestHandler
+import threading
+from http.server import HTTPServer, ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs, quote
 from urllib.request import urlopen, Request
 import urllib.error
@@ -36,6 +37,21 @@ from psbp_common import (
     REPO, write_json_atomic, display_name, build_credit_line,
     load_json, PHOTO_CREDITS_JSON, resolve_hero_credit, CC_LICENSES,
 )
+
+# Import the proven publisher modules for HTML generation + index updates.
+# These are the SINGLE SOURCE OF TRUTH for page output — the Publish tab calls
+# their functions directly rather than re-implementing the templates. Importing
+# is safe: all CLI/server behavior is behind their __main__ guards.
+try:
+    import plant_publisher
+    import wildlife_publisher
+    PUBLISHERS_OK = True
+    PUBLISHER_IMPORT_ERROR = ""
+except Exception as _e:  # pragma: no cover
+    PUBLISHERS_OK = False
+    PUBLISHER_IMPORT_ERROR = str(_e)
+    plant_publisher = None
+    wildlife_publisher = None
 
 PORT = 8700
 
@@ -67,8 +83,7 @@ TABS = [
     {"id": "overview", "label": "Overview",       "route": "/",        "icon": "📊"},
     {"id": "intake",   "label": "Intake",         "route": "/intake",  "icon": "📥"},
     {"id": "photos",   "label": "Photos",         "route": "/photos",  "icon": "📷"},
-    {"id": "edit",     "label": "Edit & Preview",  "route": "/edit",    "icon": "✏️"},
-    {"id": "publish",  "label": "Publish",         "route": "/publish", "icon": "🚀"},
+    {"id": "publish",  "label": "Preview & Publish", "route": "/publish", "icon": "🚀"},
 ]
 
 # Required fields for promotion readiness (per kingdom)
@@ -202,6 +217,7 @@ def get_overview_data():
                         "id": sid,
                         "name": sp.get("common_name", sid),
                         "scientific": sp.get(sci_field, ""),
+                        "status": status,
                         "issues": issues,
                     })
 
@@ -660,38 +676,74 @@ def _build_triage_view(kingdom, species_id, mode="new"):
     mode:
       'new'     — undecided CC photos (YELLOW) only
       'skipped' — undecided + previously skipped (revisit), NOT blocked
+
+    Skipped photos are surfaced from two places:
+      1. The scan cache (if they were in the last scan)
+      2. The ledger directly (covers photos demoted from Review mode, which
+         may not be in the current scan cache)
     Each photo carries a 'state' for shading: 'new' or 'skipped'.
     """
     photos_list = _get_photos_list(_load(PHOTO_CREDITS))
     workbench = load_workbench()
     cache = _read_cache(kingdom, species_id)
-    if not cache:
-        return {"photos": [], "scanned": False}
-
-    registry_ids = {str(p.get("photo_id")) for p in photos_list if p.get("photo_id")}
     decisions = workbench["decisions"]
+    registry_ids = {str(p.get("photo_id")) for p in photos_list if p.get("photo_id")}
 
     out = []
-    for p in cache["cc"]:
-        pid = p["photo_id"]
-        if pid in registry_ids:
-            continue  # already promoted — shows in Review mode, not here
-        verdict = decisions.get(pid, {}).get("decision")
-        if verdict is None:
-            state = "new"
-        elif verdict == "skip":
-            if mode != "skipped":
-                continue  # only show skips when revisiting
-            state = "skipped"
-        else:  # block — never resurface in triage
-            continue
-        item = dict(p)
-        item["state"] = state
-        out.append(item)
+    seen = set()
 
-    return {"photos": out, "scanned": True,
-            "scanned_at": cache.get("scanned_at"),
-            "non_cc": cache.get("non_cc_count", 0)}
+    # ── 1. Walk the scan cache (the YELLOW source + cached skips) ──
+    if cache:
+        for p in cache["cc"]:
+            pid = p["photo_id"]
+            if pid in registry_ids:
+                continue  # already promoted — shows in Review, not here
+            verdict = decisions.get(pid, {}).get("decision")
+            if verdict is None:
+                state = "new"
+            elif verdict == "skip":
+                if mode != "skipped":
+                    continue
+                state = "skipped"
+            else:  # block — never resurface
+                continue
+            item = dict(p)
+            item["state"] = state
+            out.append(item)
+            seen.add(pid)
+
+    # ── 2. In skipped mode, add ledger skips not covered by the cache ──
+    #    (e.g. photos demoted from Review mode — they have a skip verdict
+    #     and stored display fields, but may not be in the scan cache.)
+    if mode == "skipped":
+        for pid, dec in decisions.items():
+            if dec.get("psbp_id") != species_id:
+                continue
+            if dec.get("decision") != "skip":
+                continue
+            if pid in seen or pid in registry_ids:
+                continue
+            # Reconstruct a card from the stored ledger fields.
+            out.append({
+                "photo_id":          pid,
+                "obs_id":            dec.get("obs_id", ""),
+                "thumb_url":         dec.get("thumb_url", ""),
+                "large_url":         dec.get("large_url", ""),
+                "license":           dec.get("license", ""),
+                "photographer":      dec.get("photographer", ""),
+                "photographer_name": dec.get("photographer_name", "")
+                                     or display_name(dec.get("photographer", ""), ""),
+                "observed_on":       dec.get("observed_on"),
+                "shared_on":         dec.get("shared_on"),
+                "source_url":        dec.get("source_url", ""),
+                "state":             "skipped",
+            })
+            seen.add(pid)
+
+    scanned = cache is not None
+    return {"photos": out, "scanned": scanned or mode == "skipped",
+            "scanned_at": cache.get("scanned_at") if cache else None,
+            "non_cc": cache.get("non_cc_count", 0) if cache else 0}
 
 
 def _apply_triage_decision(payload):
@@ -763,16 +815,24 @@ def _apply_triage_decision(payload):
         credits.setdefault("meta", {})["photo_count"] = len(credits["photos"])
         write_json_atomic(PHOTO_CREDITS, credits)
 
-    # Record every decision in the ledger.
+    # Record every decision in the ledger. We store enough display fields that
+    # a skipped photo can be reconstructed for "revisit skipped" even if it's
+    # no longer in the scan cache (e.g. it was demoted from Review mode).
     wb = load_workbench()
     wb["decisions"][pid] = {
-        "decision":     decision,
-        "reviewed_on":  _today(),
-        "psbp_id":      psbp_id,
-        "obs_id":       payload.get("obs_id", ""),
-        "photographer": payload.get("photographer", ""),
-        "license":      payload.get("license", ""),
-        "note":         "",
+        "decision":          decision,
+        "reviewed_on":       _today(),
+        "psbp_id":           psbp_id,
+        "obs_id":            payload.get("obs_id", ""),
+        "photographer":      payload.get("photographer", ""),
+        "photographer_name": payload.get("photographer_name", ""),
+        "license":           payload.get("license", ""),
+        "observed_on":       payload.get("observed_on"),
+        "shared_on":         payload.get("shared_on"),
+        "thumb_url":         payload.get("thumb_url", ""),
+        "large_url":         payload.get("large_url", ""),
+        "source_url":        payload.get("source_url", ""),
+        "note":              "",
     }
     write_json_atomic(PHOTO_WORKBENCH, wb)
 
@@ -844,6 +904,111 @@ def handle_api_triage_scan(params):
         return {"ok": False, "error": res["error"]}
     return {"ok": True, "cc_count": res["cc_count"],
             "non_cc_count": res["non_cc_count"], "scanned_at": res["scanned_at"]}
+
+
+# ── Scan-all background job ────────────────────────────────────────────────
+# A single scan-all runs at a time. Progress lives in this module-level dict
+# so the poll endpoint can report it. The scan runs in a daemon thread, so it
+# survives the browser navigating away — the data still gets written, and the
+# progress can be re-read whenever the page comes back.
+
+_SCAN_JOB = {
+    "running":   False,
+    "kingdom":   None,
+    "done":      0,
+    "total":     0,
+    "current":   "",        # common name of species being scanned
+    "scanned":   0,
+    "failed":    [],
+    "skipped_no_taxon": [],
+    "total_cc_found": 0,
+    "started_at": None,
+    "finished_at": None,
+}
+_SCAN_LOCK = threading.Lock()
+
+
+def _scan_all_worker(kingdom, targets):
+    """Background worker: scan each target species, updating _SCAN_JOB."""
+    global _SCAN_JOB
+    for i, sp in enumerate(targets):
+        with _SCAN_LOCK:
+            _SCAN_JOB["current"] = sp.get("common_name", sp.get("id", ""))
+        res = _scan_species(kingdom, sp)
+        with _SCAN_LOCK:
+            if "error" in res:
+                _SCAN_JOB["failed"].append({"id": sp.get("id"), "error": res["error"]})
+            else:
+                _SCAN_JOB["scanned"] += 1
+                _SCAN_JOB["total_cc_found"] += res.get("cc_count", 0)
+            _SCAN_JOB["done"] = i + 1
+        # Be polite to iNat between species (skip the wait after the last one)
+        if i < len(targets) - 1:
+            time.sleep(API_DELAY)
+    with _SCAN_LOCK:
+        _SCAN_JOB["running"] = False
+        _SCAN_JOB["current"] = ""
+        _SCAN_JOB["finished_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+
+
+def handle_api_triage_scan_all(params):
+    """POST /api/triage/scan-all — start a background scan of all html+spotted species.
+
+    Body: {"kingdom": "plants"}
+    Returns immediately with the total count; the scan runs in a thread.
+    Poll /api/triage/scan-progress for live status.
+    """
+    global _SCAN_JOB
+    body = params.get("_body", {})
+    kingdom = body.get("kingdom", "plants")
+
+    with _SCAN_LOCK:
+        if _SCAN_JOB["running"]:
+            return {"ok": False, "error": "A scan is already running.",
+                    "running": True, "done": _SCAN_JOB["done"],
+                    "total": _SCAN_JOB["total"]}
+
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    species_list = _get_species_list(_load(path))
+    targets = [s for s in species_list
+               if s.get("status") in ("html", "spotted") and s.get("inat_taxon_id")]
+    skipped_no_taxon = [s.get("id") for s in species_list
+                        if s.get("status") in ("html", "spotted") and not s.get("inat_taxon_id")]
+
+    if not targets:
+        return {"ok": False, "error": "No scannable species (need html/spotted status + taxon ID).",
+                "skipped_no_taxon": skipped_no_taxon}
+
+    # Reset job state and launch the worker.
+    with _SCAN_LOCK:
+        _SCAN_JOB.update({
+            "running": True, "kingdom": kingdom,
+            "done": 0, "total": len(targets), "current": "",
+            "scanned": 0, "failed": [], "skipped_no_taxon": skipped_no_taxon,
+            "total_cc_found": 0,
+            "started_at": datetime.datetime.utcnow().isoformat() + "Z",
+            "finished_at": None,
+        })
+
+    t = threading.Thread(target=_scan_all_worker, args=(kingdom, targets), daemon=True)
+    t.start()
+
+    return {"ok": True, "started": True, "kingdom": kingdom, "total": len(targets),
+            "skipped_no_taxon": skipped_no_taxon}
+
+
+def handle_api_triage_scan_progress(params):
+    """GET /api/triage/scan-progress — poll the running scan-all job.
+
+    Returns the live job state. When running flips to False, the caller should
+    fetch fresh picker data once to show the refreshed counts.
+    """
+    with _SCAN_LOCK:
+        job = dict(_SCAN_JOB)  # snapshot
+    # When finished, attach refreshed picker data so the client updates once.
+    if not job["running"] and job["finished_at"] and job["kingdom"]:
+        job["species"] = get_photos_summary(job["kingdom"])
+    return job
 
 
 def handle_api_triage_view(params):
@@ -1007,10 +1172,13 @@ def handle_api_photos_update_roles(params):
 
 
 def handle_api_photos_trash(params):
-    """POST /api/photos/trash — remove a photo from photo_credits.json.
+    """POST /api/photos/trash — demote a photo from the registry.
 
     Body: {"psbp_id": "PSBP-00042", "photo_id": "12345678"}
-    Does NOT delete any files on disk — just removes the registry entry.
+
+    Removes the row from photo_credits.json AND writes a 'skip' verdict to
+    the workbench ledger (with display fields) so the photo can be brought
+    back later via Triage → "revisit skipped". Does NOT delete files on disk.
     """
     body = params.get("_body", {})
     psbp_id = body.get("psbp_id", "")
@@ -1020,23 +1188,104 @@ def handle_api_photos_trash(params):
 
     credits = _load(PHOTO_CREDITS)
     photos = credits.get("photos", [])
-    original_len = len(photos)
+
+    # Grab the row's display fields before removing it (for the ledger).
+    removed_row = None
+    for p in photos:
+        if p.get("psbp_id") == psbp_id and str(p.get("photo_id", "")) == photo_id:
+            removed_row = p
+            break
+
+    if removed_row is None:
+        return {"error": f"Photo {photo_id} not found for {psbp_id}"}
 
     credits["photos"] = [
         p for p in photos
         if not (p.get("psbp_id") == psbp_id and str(p.get("photo_id", "")) == photo_id)
     ]
-
-    if len(credits["photos"]) == original_len:
-        return {"error": f"Photo {photo_id} not found for {psbp_id}"}
-
+    credits.setdefault("meta", {})["photo_count"] = len(credits["photos"])
     write_json_atomic(PHOTO_CREDITS, credits)
+
+    # Write a 'skip' verdict so this photo returns via "revisit skipped".
+    photo_url = removed_row.get("photo_url", "")
+    thumb_url = photo_url.replace("/large.", "/medium.") if photo_url else ""
+    wb = load_workbench()
+    wb["decisions"][photo_id] = {
+        "decision":          "skip",
+        "reviewed_on":       _today(),
+        "psbp_id":           psbp_id,
+        "obs_id":            removed_row.get("observation_id", ""),
+        "photographer":      removed_row.get("photographer", ""),
+        "photographer_name": removed_row.get("photographer_name", ""),
+        "license":           removed_row.get("license", ""),
+        "observed_on":       removed_row.get("observed_on"),
+        "shared_on":         removed_row.get("shared_on"),
+        "thumb_url":         thumb_url,
+        "large_url":         photo_url,
+        "source_url":        removed_row.get("source_url", ""),
+        "note":              "demoted from Review",
+    }
+    write_json_atomic(PHOTO_WORKBENCH, wb)
+
     return {"ok": True, "psbp_id": psbp_id, "removed": photo_id,
-            "remaining": len(credits["photos"])}
+            "remaining": len(credits["photos"]), "demoted_to": "skipped"}
+
+def render_preview_html(kingdom, species_id):
+    """Render a species page in memory using the publisher's generator.
+
+    Returns (html_string, status_code). Never writes files or changes status —
+    a true dry run, so spotted species can be previewed before publishing.
+    """
+    pub = _publisher_for(kingdom)
+    if pub is None:
+        return (f"<h1>Preview unavailable</h1><p>{PUBLISHER_IMPORT_ERROR}</p>", 500)
+
+    try:
+        signage = pub.load_signage()
+        credits = pub.load_credits()
+        heroes = pub.build_hero_lookup(credits)
+        galleries = pub.build_gallery_lookup(credits)
+        species = pub.build_species_lookup(signage).get(species_id)
+        if not species:
+            return (f"<h1>Not found</h1><p>{species_id} is not in {kingdom} signage.</p>", 404)
+
+        hero = heroes.get(species_id)
+        if not hero:
+            return (f"<h1>No hero photo</h1>"
+                    f"<p>{species_id} has no hero photo yet, so there's nothing to preview. "
+                    f"Add one in the Photos tab first.</p>", 400)
+
+        html = pub.generate_html(species, hero, galleries.get(species_id, []))
+
+        # Banner so it's obvious this is a dry-run preview, plus rewrite the
+        # relative photo paths so images resolve against the local server.
+        banner = (
+            '<div style="position:fixed;top:0;left:0;right:0;z-index:99999;'
+            'background:#c5922a;color:#1a3a1f;font:600 13px system-ui;'
+            'padding:7px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);">'
+            f'PREVIEW · {species_id} · status: {species.get("status","?")} · '
+            'not yet published — this is a dry run</div>'
+            '<div style="height:34px;"></div>'
+        )
+        # Photos are referenced as "photos/PSBP-xxxxx/file.jpg" (relative).
+        # Point them at the dashboard's static photo route so they load here.
+        html = html.replace('"photos/', '"/photos-file/').replace("'photos/", "'/photos-file/")
+        # Inject the banner right after <body>
+        if "<body" in html:
+            idx = html.index("<body")
+            close = html.index(">", idx) + 1
+            html = html[:close] + banner + html[close:]
+        else:
+            html = banner + html
+        return (html, 200)
+    except Exception as e:
+        import traceback
+        return (f"<h1>Preview error</h1><pre>{traceback.format_exc()[-800:]}</pre>", 500)
+
 
 def handle_api_preview(params):
-    """GET /api/preview?id=PSBP-00001 — HTML preview. STUB."""
-    return {"status": "stub", "message": "Preview API not yet implemented."}
+    """Deprecated JSON stub — preview is served as raw HTML via /preview route."""
+    return {"status": "moved", "message": "Use /preview?kingdom=&id= for rendered HTML."}
 
 def handle_api_photos_focus(params):
     """POST /api/photos/focus — set the focus point on a photo.
@@ -1091,9 +1340,204 @@ def handle_api_photos_focus(params):
     return result
 
 
+def _publisher_for(kingdom):
+    """Return the right publisher module for a kingdom, or None."""
+    if not PUBLISHERS_OK:
+        return None
+    return plant_publisher if kingdom == "plants" else wildlife_publisher
+
+
+def _publish_readiness(kingdom, species, hero):
+    """Compute the readiness checklist for one species.
+
+    Returns (checks_list, ready_bool). Each check: {label, ok}.
+    """
+    sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
+    checks = []
+
+    has_hero = hero is not None
+    checks.append({"label": "Hero photo", "ok": has_hero})
+
+    hero_on_disk = bool(has_hero and _hero_on_disk(species.get("id", "")))
+    checks.append({"label": "Hero file on disk", "ok": hero_on_disk})
+
+    has_common = bool(species.get("common_name"))
+    checks.append({"label": "Common name", "ok": has_common})
+
+    has_sci = bool(species.get(sci_field))
+    checks.append({"label": "Scientific name", "ok": has_sci})
+
+    # Credit resolves to a real name (not just a handle) when we have a hero
+    credit_ok = False
+    if has_hero:
+        cred = resolve_hero_credit(hero)
+        credit_ok = bool(cred.get("credit_name"))
+    checks.append({"label": "Photo credit resolved", "ok": credit_ok})
+
+    ready = all(c["ok"] for c in checks)
+    return checks, ready
+
+
+def get_publish_list(kingdom):
+    """Species list for the Publish tab: status, readiness, hero presence."""
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
+    type_filter = "Plant" if kingdom == "plants" else "Wildlife"
+
+    species_list = _get_species_list(_load(path))
+    photos_list = _get_photos_list(_load(PHOTO_CREDITS))
+    hero_ids, _ = _build_hero_index(photos_list)
+    heroes = {p["psbp_id"]: p for p in photos_list
+              if p.get("hero") and p.get("type") == type_filter}
+
+    result = []
+    for sp in sorted(species_list, key=lambda s: s.get("id", "")):
+        sid = sp.get("id", "")
+        hero = heroes.get(sid)
+        checks, ready = _publish_readiness(kingdom, sp, hero)
+        result.append({
+            "id": sid,
+            "common_name": sp.get("common_name", ""),
+            "scientific_name": sp.get(sci_field, ""),
+            "status": sp.get("status", "unknown"),
+            "has_hero": sid in hero_ids,
+            "ready": ready,
+            "checks": checks,
+        })
+    return result
+
+
+def handle_api_publish_list(params):
+    """GET /api/publish/list?kingdom=plants — species with readiness for Publish tab."""
+    kingdom = params.get("kingdom", ["plants"])[0]
+    if not PUBLISHERS_OK:
+        return {"kingdom": kingdom, "species": [],
+                "error": f"Publisher modules failed to import: {PUBLISHER_IMPORT_ERROR}"}
+    return {"kingdom": kingdom, "species": get_publish_list(kingdom)}
+
+
 def handle_api_publish_ready(params):
-    """GET /api/publish/ready?id=PSBP-00001 — readiness checklist. STUB."""
-    return {"status": "stub", "message": "Publish readiness API not yet implemented."}
+    """GET /api/publish/ready?kingdom=plants&id=PSBP-00001 — readiness checklist."""
+    kingdom = params.get("kingdom", ["plants"])[0]
+    species_id = params.get("id", [""])[0]
+    if not species_id:
+        return {"error": "Missing id"}
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    species = next((s for s in _get_species_list(_load(path)) if s.get("id") == species_id), None)
+    if not species:
+        return {"error": f"{species_id} not found"}
+    type_filter = "Plant" if kingdom == "plants" else "Wildlife"
+    photos_list = _get_photos_list(_load(PHOTO_CREDITS))
+    hero = next((p for p in photos_list
+                 if p.get("psbp_id") == species_id and p.get("hero")
+                 and p.get("type") == type_filter), None)
+    checks, ready = _publish_readiness(kingdom, species, hero)
+    return {"id": species_id, "kingdom": kingdom, "checks": checks, "ready": ready}
+
+
+def handle_api_publish_promote(params):
+    """POST /api/publish/promote — generate HTML, update index, set status=html.
+
+    Body: {"kingdom": "plants", "id": "PSBP-00005"}
+    Delegates to the publisher module's proven functions.
+    """
+    body = params.get("_body", {})
+    kingdom = body.get("kingdom", "plants")
+    pid = body.get("id", "")
+    if not pid:
+        return {"ok": False, "error": "Missing id"}
+
+    pub = _publisher_for(kingdom)
+    if pub is None:
+        return {"ok": False, "error": f"Publisher unavailable: {PUBLISHER_IMPORT_ERROR}"}
+
+    try:
+        signage = pub.load_signage()
+        credits = pub.load_credits()
+        heroes = pub.build_hero_lookup(credits)
+        galleries = pub.build_gallery_lookup(credits)
+        species_lookup = pub.build_species_lookup(signage)
+
+        species = species_lookup.get(pid)
+        if not species:
+            return {"ok": False, "error": f"{pid} not found in {kingdom} signage"}
+
+        hero = heroes.get(pid)
+        if not hero:
+            return {"ok": False, "error": f"No hero photo for {pid} — can't publish"}
+
+        # Generate the HTML page (publisher's proven template)
+        path, _ = pub.write_html(species, hero, galleries.get(pid, []))
+
+        # Update the search index card
+        if kingdom == "plants":
+            entry = pub.update_plants_json(species, hero)
+        else:
+            entry = pub.update_wildlife_json(species, hero)
+
+        # Flip status to html
+        was_status = species.get("status")
+        if was_status != "html":
+            pub.update_signage_status(pid, "html")
+
+        return {
+            "ok": True,
+            "id": pid,
+            "filename": getattr(path, "name", str(path)),
+            "was_status": was_status,
+            "new_status": "html",
+            "regenerated": was_status == "html",
+        }
+    except Exception as e:
+        import traceback
+        return {"ok": False, "error": str(e), "trace": traceback.format_exc()[-500:]}
+
+
+def handle_api_publish_demote(params):
+    """POST /api/publish/demote — delete HTML, clean index, set status=spotted.
+
+    Body: {"kingdom": "plants", "id": "PSBP-00005"}
+    """
+    body = params.get("_body", {})
+    kingdom = body.get("kingdom", "plants")
+    pid = body.get("id", "")
+    if not pid:
+        return {"ok": False, "error": "Missing id"}
+
+    pub = _publisher_for(kingdom)
+    if pub is None:
+        return {"ok": False, "error": f"Publisher unavailable: {PUBLISHER_IMPORT_ERROR}"}
+
+    try:
+        signage = pub.load_signage()
+        species = pub.build_species_lookup(signage).get(pid)
+        if not species:
+            return {"ok": False, "error": f"{pid} not found"}
+        if species.get("status") != "html":
+            return {"ok": False, "error": f"{pid} is {species.get('status')}, not html"}
+
+        # Set status back to spotted
+        pub.update_signage_status(pid, "spotted")
+
+        # Remove the card from the search index
+        if kingdom == "plants":
+            from psbp_common import PLANTS_JSON as IDX
+        else:
+            from psbp_common import WILDLIFE_JSON as IDX
+        entries = load_json(IDX, [])
+        entries = [e for e in entries if e.get("id") != pid]
+        entries.sort(key=lambda e: e.get("id", ""))
+        write_json_atomic(IDX, entries)
+
+        # Delete the generated HTML file(s)
+        from psbp_common import delete_species_page
+        deleted = delete_species_page(kingdom, pid)
+
+        return {"ok": True, "id": pid, "new_status": "spotted",
+                "deleted_files": deleted}
+    except Exception as e:
+        import traceback
+        return {"ok": False, "error": str(e), "trace": traceback.format_exc()[-500:]}
 
 
 def handle_api_photos_debug(params):
@@ -1347,6 +1791,12 @@ main {
     font-style: italic;
     padding: 12px 0;
     font-size: 13px;
+}
+.attention-intro {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin: -6px 0 12px;
+    line-height: 1.4;
 }
 
 /* ── Photographer badges ────────────────────────────────────── */
@@ -1704,10 +2154,22 @@ main {
 /* ── Triage mode ───────────────────────────────────────────── */
 .photos-controls {
     display: flex;
-    gap: 12px;
-    align-items: center;
+    gap: 28px;
+    align-items: flex-end;
     flex-wrap: wrap;
     margin-bottom: 20px;
+}
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.control-group-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--gray-400);
 }
 .photos-controls .mode-toggle { margin-bottom: 0; }
 
@@ -1726,6 +2188,248 @@ main {
 .picker-legend .dot.green  { background: var(--green-light); }
 .picker-legend .dot.yellow { background: var(--gold); }
 .picker-legend .dot.red    { background: #c62828; }
+
+/* Scan-all button */
+.scan-all-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--green-mid);
+    background: white;
+    color: var(--green-mid);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s;
+}
+.scan-all-btn:hover { background: var(--green-mid); color: white; }
+.scan-all-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+    background: var(--gray-100);
+    color: var(--gray-400);
+    border-color: var(--gray-200);
+}
+
+/* Status pills — shared across picker and overview */
+.status-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 1px 7px;
+    border-radius: 8px;
+    margin-top: 3px;
+}
+.status-pill.html {
+    background: var(--green-deep);
+    color: white;
+}
+.status-pill.spotted {
+    background: var(--gold);
+    color: var(--green-deep);
+}
+.status-pill.research {
+    background: #e4e9ec;
+    color: var(--status-research);
+}
+
+/* Scan-all progress banner */
+.scan-progress {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    width: min(440px, calc(100vw - 40px));
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+    border: 1px solid var(--green-mid);
+    padding: 14px 18px;
+    z-index: 1500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+}
+.scan-progress.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+.scan-progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+.scan-progress-head #scan-progress-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-deep);
+}
+.scan-progress-head #scan-progress-count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-mid);
+    font-variant-numeric: tabular-nums;
+}
+.scan-progress-track {
+    height: 8px;
+    background: var(--gray-100);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.scan-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--green-mid);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.scan-progress-current {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-top: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 16px;
+}
+
+/* ── Publish tab ───────────────────────────────────────────── */
+.pub-layout { max-width: 920px; }
+.pub-intro { margin-bottom: 16px; }
+.pub-intro p {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.6;
+    margin: 0;
+}
+.pub-intro .status-pill { vertical-align: middle; }
+.pub-group { margin-bottom: 16px; }
+.pub-group h2 {
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.pub-group-count {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-400);
+}
+.pub-empty {
+    font-size: 13px;
+    color: var(--gray-400);
+    font-style: italic;
+    padding: 6px 0;
+}
+.pub-row {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+}
+.pub-row:last-child { margin-bottom: 0; }
+.pub-row-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.pub-id {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    color: var(--gray-600);
+    background: var(--gray-100);
+    padding: 2px 7px;
+    border-radius: 3px;
+}
+.pub-names { flex: 1; min-width: 0; }
+.pub-common { font-weight: 600; font-size: 14px; }
+.pub-sci {
+    font-size: 12px;
+    color: var(--gray-400);
+    font-style: italic;
+    margin-left: 6px;
+}
+.pub-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+.pub-check {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+.pub-check.ok { background: #e8f5e9; color: var(--green-mid); }
+.pub-check.no { background: #ffebee; color: #c62828; }
+.pub-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.pub-btn {
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid;
+}
+.pub-btn.promote {
+    background: var(--green-mid);
+    color: white;
+    border-color: var(--green-mid);
+}
+.pub-btn.promote:hover { background: var(--green-deep); }
+.pub-btn.promote:disabled {
+    background: var(--gray-100);
+    color: var(--gray-400);
+    border-color: var(--gray-200);
+    cursor: default;
+}
+.pub-btn.regen {
+    background: white;
+    color: var(--green-mid);
+    border-color: var(--green-mid);
+}
+.pub-btn.regen:hover { background: #e8f5e9; }
+.pub-btn.demote {
+    background: white;
+    color: var(--gray-600);
+    border-color: var(--gray-200);
+}
+.pub-btn.demote:hover { background: var(--gray-100); color: #c62828; border-color: #c62828; }
+.pub-working {
+    font-size: 13px;
+    color: var(--gray-400);
+    font-style: italic;
+}
+.pub-na { color: var(--gray-200); }
+.pub-search {
+    padding: 7px 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    width: 100%;
+}
+.pub-search:focus { border-color: var(--green-mid); }
+.pub-btn.preview {
+    background: white;
+    color: var(--gray-600);
+    border-color: var(--gray-200);
+}
+.pub-btn.preview:hover {
+    background: var(--cream);
+    color: var(--green-deep);
+    border-color: var(--gold);
+}
 
 /* Picker triage counts */
 .pi-counts {
@@ -2162,11 +2866,13 @@ def render_overview():
         <!-- Attention items -->
         <div class="grid-2">
             <div class="card">
-                <h2>⚠️ Plants Needing Attention</h2>
+                <h2>🌱 Plants in progress (spotted)</h2>
+                <p class="attention-intro">Spotted species still being prepped for publish. Missing pieces here are expected — this is the to-do list before they go live.</p>
                 <div id="plants-attention"></div>
             </div>
             <div class="card">
-                <h2>⚠️ Wildlife Needing Attention</h2>
+                <h2>🦎 Wildlife in progress (spotted)</h2>
+                <p class="attention-intro">Spotted species still being prepped for publish. Missing pieces here are expected — this is the to-do list before they go live.</p>
                 <div id="wildlife-attention"></div>
             </div>
         </div>
@@ -2239,6 +2945,7 @@ def render_overview():
         const el = document.getElementById(containerId);
         const total = kingdomData.total || 1;
         const statuses = ['research', 'spotted', 'html'];
+        const statusLabels = { research: 'Research', spotted: 'Spotted', html: 'Published' };
         let html = `<div class="funnel-total">${kingdomData.total}</div>`;
         html += `<div class="funnel-total-label">total species</div>`;
 
@@ -2247,7 +2954,7 @@ def render_overview():
             const pct = Math.round((count / total) * 100);
             html += `
                 <div class="funnel-row">
-                    <span class="funnel-label">${status}</span>
+                    <span class="funnel-label">${statusLabels[status] || status}</span>
                     <div class="funnel-bar-track">
                         <div class="funnel-bar-fill ${status}"
                              style="width: ${Math.max(pct, 1)}%"></div>
@@ -2279,15 +2986,18 @@ def render_overview():
     function renderAttention(containerId, items) {
         const el = document.getElementById(containerId);
         if (!items || items.length === 0) {
-            el.innerHTML = '<div class="attention-empty">All clear — nothing needs attention.</div>';
+            el.innerHTML = '<div class="attention-empty">All spotted species are publish-ready — nothing outstanding.</div>';
             return;
         }
         let html = '';
         for (const item of items) {
+            const st = (item.status || 'spotted').toLowerCase();
+            const stLabel = st === 'html' ? 'Published' : st.charAt(0).toUpperCase() + st.slice(1);
             html += `
                 <div class="attention-item">
                     <span class="attention-id">${item.id}</span>
                     <span class="attention-name">${item.name}</span>
+                    <span class="status-pill ${st}">${stLabel}</span>
                     <span class="attention-issues">${item.issues.join(' · ')}</span>
                 </div>
             `;
@@ -2366,13 +3076,19 @@ def render_photos():
     return f"""
     <!-- Top controls: kingdom + mode -->
     <div class="photos-controls">
-        <div class="mode-toggle" id="photos-mode-toggle">
-            <button class="active" onclick="switchKingdom('plants')">🌱 Plants</button>
-            <button onclick="switchKingdom('wildlife')">🦎 Wildlife</button>
+        <div class="control-group">
+            <span class="control-group-label">Kingdom</span>
+            <div class="mode-toggle" id="photos-mode-toggle">
+                <button class="active" onclick="switchKingdom('plants')">🌱 Plants</button>
+                <button onclick="switchKingdom('wildlife')">🦎 Wildlife</button>
+            </div>
         </div>
-        <div class="mode-toggle" id="photos-workmode-toggle">
-            <button class="active" onclick="switchWorkMode('review')">✓ Review</button>
-            <button onclick="switchWorkMode('triage')">🔍 Triage</button>
+        <div class="control-group">
+            <span class="control-group-label">Mode</span>
+            <div class="mode-toggle" id="photos-workmode-toggle">
+                <button class="active" onclick="switchWorkMode('review')">✓ Review</button>
+                <button onclick="switchWorkMode('triage')">🔍 Find Photos</button>
+            </div>
         </div>
     </div>
 
@@ -2386,9 +3102,11 @@ def render_photos():
                        oninput="filterPicker()">
                 <div class="picker-legend" id="picker-legend" style="display:none;">
                     <span><span class="dot green"></span>in system</span>
-                    <span><span class="dot yellow"></span>undecided</span>
-                    <span><span class="dot red"></span>discarded</span>
+                    <span><span class="dot yellow"></span>to look at</span>
+                    <span><span class="dot red"></span>set aside / blocked</span>
                 </div>
+                <button class="scan-all-btn" id="scan-all-btn" style="display:none;"
+                        onclick="scanAll()">⟳ Scan all for new photos</button>
             </div>
             <div class="picker-list" id="picker-list">
                 <div class="loading">Loading…</div>
@@ -2402,6 +3120,20 @@ def render_photos():
                 <p>Select a species to manage its photos</p>
                 <p style="font-size:12px;">Crown heroes, tag roles, review gallery</p>
             </div>
+        </div>
+    </div>
+
+    <!-- Scan-all progress banner -->
+    <div class="scan-progress" id="scan-progress">
+        <div class="scan-progress-inner">
+            <div class="scan-progress-head">
+                <span id="scan-progress-label">Scanning…</span>
+                <span id="scan-progress-count">0 / 0</span>
+            </div>
+            <div class="scan-progress-track">
+                <div class="scan-progress-fill" id="scan-progress-fill"></div>
+            </div>
+            <div class="scan-progress-current" id="scan-progress-current"></div>
         </div>
     </div>
 
@@ -2422,8 +3154,8 @@ def render_photos():
                     <span class="fc-sub">Scan iNaturalist for CC-licensed photos not yet decided</span>
                 </button>
                 <button class="fetch-choice" onclick="doFetch('skipped')">
-                    <span class="fc-title">↩ Revisit skipped photos</span>
-                    <span class="fc-sub">Bring back photos you previously skipped (blocked stay hidden)</span>
+                    <span class="fc-title">↩ Revisit set-aside photos</span>
+                    <span class="fc-sub">Bring back photos you set aside earlier (blocked stay hidden)</span>
                 </button>
             </div>
         </div>
@@ -2480,16 +3212,18 @@ def render_photos():
         const btns = document.querySelectorAll('#photos-workmode-toggle button');
         btns.forEach(b => b.classList.remove('active'));
         btns[m === 'review' ? 0 : 1].classList.add('active');
-        // Show triage legend only in triage mode
+        // Show triage legend + scan-all only in find-photos mode
         document.getElementById('picker-legend').style.display =
             m === 'triage' ? 'flex' : 'none';
+        document.getElementById('scan-all-btn').style.display =
+            m === 'triage' ? 'block' : 'none';
         renderPicker(allSpecies);
         // Reset the main panel
         const prompt = m === 'triage'
             ? `<div class="photos-select-prompt">
                    <div class="psp-icon">🔍</div>
-                   <p>Select a species to triage its iNaturalist photos</p>
-                   <p style="font-size:12px;">Promote to hero/gallery, skip, or block</p>
+                   <p>Select a species to find more iNaturalist photos</p>
+                   <p style="font-size:12px;">Promote to hero/gallery, set aside, or block</p>
                </div>`
             : `<div class="photos-select-prompt">
                    <div class="psp-icon">📷</div>
@@ -2511,7 +3245,7 @@ def render_photos():
         document.getElementById('photos-main').innerHTML = `
             <div class="photos-select-prompt">
                 <div class="psp-icon">${{icon}}</div>
-                <p>Select a species to ${{workMode === 'triage' ? 'triage' : 'manage'}} its photos</p>
+                <p>Select a species to ${{workMode === 'triage' ? 'find more photos for' : 'manage'}} it</p>
             </div>`;
     }}
 
@@ -2527,6 +3261,13 @@ def render_photos():
         }} catch (err) {{
             list.innerHTML = '<div class="picker-empty">Error loading species</div>';
         }}
+    }}
+
+    function statusPill(status) {{
+        const s = (status || '').toLowerCase();
+        const labels = {{ html: 'Published', spotted: 'Spotted', research: 'Research' }};
+        const label = labels[s] || status || 'unknown';
+        return `<span class="status-pill ${{s}}">${{label}}</span>`;
     }}
 
     function renderPicker(species) {{
@@ -2549,11 +3290,12 @@ def render_photos():
                         <div class="pi-name">
                             <span class="pi-common">${{esc(sp.common_name || sp.id)}} ${{noTaxon}}</span>
                             <span class="pi-sci">${{esc(sp.scientific_name)}}</span>
+                            ${{statusPill(sp.status)}}
                         </div>
                         <span class="pi-counts">
                             <span class="pc green" title="${{g}} in system">${{g}}</span>
-                            <span class="pc yellow" title="${{y}} undecided">${{y}}</span>
-                            <span class="pc red" title="${{r}} discarded">${{r}}</span>
+                            <span class="pc yellow" title="${{y}} to look at">${{y}}</span>
+                            <span class="pc red" title="${{r}} set aside or blocked">${{r}}</span>
                         </span>
                     </div>`;
             }} else {{
@@ -2566,6 +3308,7 @@ def render_photos():
                         <div class="pi-name">
                             <span class="pi-common">${{esc(sp.common_name || sp.id)}}</span>
                             <span class="pi-sci">${{esc(sp.scientific_name)}}</span>
+                            ${{statusPill(sp.status)}}
                         </div>
                         <span class="pi-badge ${{badgeCls}}">${{sp.photo_count}}</span>
                     </div>`;
@@ -2730,8 +3473,8 @@ def render_photos():
                 </button>
                 <button class="photo-action-btn trash-btn"
                         onclick="trashPhoto('${{speciesId}}', '${{pid}}')"
-                        title="Remove from registry">
-                    ✕ Remove
+                        title="Set aside — moves to Find Photos">
+                    ✕ Set aside
                 </button>
             </div>`;
 
@@ -2861,7 +3604,7 @@ def render_photos():
     }}
 
     async function trashPhoto(speciesId, photoId) {{
-        if (!confirm('Remove this photo from the registry? (File on disk is not deleted.)')) return;
+        if (!confirm('Set this photo aside? It leaves the gallery/hero and moves to Find Photos, where you can swap it back in another day. (File on disk is not deleted.)')) return;
         try {{
             const resp = await fetch('/api/photos/trash', {{
                 method: 'POST',
@@ -2870,7 +3613,7 @@ def render_photos():
             }});
             const data = await resp.json();
             if (data.error) {{ toast(data.error, true); return; }}
-            toast('Photo removed');
+            toast('Set aside — find it under Find Photos → revisit');
             await loadPhotos(speciesId);
             loadPickerList();
         }} catch (err) {{ toast('Error: ' + err.message, true); }}
@@ -3002,7 +3745,7 @@ def render_photos():
 
         const photos = data.photos || [];
         const modeLabel = triageMode === 'skipped'
-            ? 'showing new + previously skipped' : 'showing new candidates';
+            ? 'showing new + set-aside' : 'showing new candidates';
 
         let html = header;
         html += `<div class="triage-status">
@@ -3013,8 +3756,8 @@ def render_photos():
         if (photos.length === 0) {{
             html += `<div class="photos-empty">
                 ${{triageMode === 'skipped'
-                    ? 'No new or skipped photos to show. Everything here is decided.'
-                    : 'No new photos. Try “Revisit skipped” from Fetch more, or scan again later.'}}
+                    ? 'No new or set-aside photos to show. Everything here is decided.'
+                    : 'No new photos. Try “Revisit set-aside” from Fetch more, or scan again later.'}}
             </div>`;
             main.innerHTML = html;
             return;
@@ -3039,7 +3782,7 @@ def render_photos():
             <div class="photo-thumb-wrap" onclick="window.open('${{esc(p.source_url)}}','_blank')"
                  title="Open observation on iNaturalist">
                 <img class="photo-thumb" src="${{esc(p.thumb_url)}}" loading="lazy" onerror="imgFail(this)">
-                ${{p.state === 'skipped' ? '<div class="triage-badge skipped">SKIPPED</div>' : ''}}
+                ${{p.state === 'skipped' ? '<div class="triage-badge skipped">SET ASIDE</div>' : ''}}
             </div>
             <div class="photo-info">
                 <div class="photo-credit">
@@ -3052,7 +3795,7 @@ def render_photos():
                 <button class="t-btn promote" onclick='triageDecide("${{speciesId}}", ${{tjs(p)}}, "promoted", this)'>
                     ${{promoteLabel}}
                 </button>
-                <button class="t-btn skip" onclick='triageDecide("${{speciesId}}", ${{tjs(p)}}, "skip", this)'>Skip</button>
+                <button class="t-btn skip" onclick='triageDecide("${{speciesId}}", ${{tjs(p)}}, "skip", this)'>Set aside</button>
                 <button class="t-btn block" onclick='triageDecide("${{speciesId}}", ${{tjs(p)}}, "block", this)'>Block</button>
             </div>
         </div>`;
@@ -3078,6 +3821,7 @@ def render_photos():
             psbp_id: speciesId,
             obs_id: p.obs_id,
             large_url: p.large_url,
+            thumb_url: p.thumb_url,
             source_url: p.source_url,
             photographer: p.photographer,
             photographer_name: p.photographer_name,
@@ -3125,12 +3869,131 @@ def render_photos():
             }}
             toast(decision === 'promoted'
                 ? (res.is_hero ? 'Promoted as hero' : 'Added to gallery')
-                : (decision === 'block' ? 'Blocked' : 'Skipped'));
+                : (decision === 'block' ? 'Blocked' : 'Set aside'));
             renderPicker(allSpecies);
             document.querySelector(`.picker-item[data-id="${{speciesId}}"]`)?.classList.add('active');
         }} catch (err) {{
             toast('Error: ' + err.message, true);
         }}
+    }}
+
+    // ── Scan all species ──────────────────────────────────────
+    let scanPollTimer = null;
+
+    async function scanAll() {{
+        const btn = document.getElementById('scan-all-btn');
+        const kingdomLabel = currentKingdom === 'plants' ? 'plants' : 'wildlife';
+        if (!confirm(`Scan all published + spotted ${{kingdomLabel}} for new iNaturalist photos?\\n\\nThis checks each species one at a time and can take a couple of minutes. A progress bar will show how far along it is — you can keep working while it runs.`)) return;
+
+        btn.disabled = true;
+        btn.textContent = '⟳ Scanning…';
+
+        try {{
+            const resp = await fetch('/api/triage/scan-all', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: currentKingdom}})
+            }});
+            const data = await resp.json();
+            if (!data.ok) {{
+                if (data.running) {{
+                    toast(`A scan is already running (${{data.done}}/${{data.total}})`, true);
+                    showScanProgress();
+                    startScanPoll();
+                }} else {{
+                    toast(data.error || 'Scan-all failed', true);
+                    btn.disabled = false;
+                    btn.textContent = '⟳ Scan all for new photos';
+                }}
+                return;
+            }}
+            // Job started — show the bar and begin polling.
+            showScanProgress();
+            updateScanProgress({{done: 0, total: data.total, current: ''}});
+            startScanPoll();
+        }} catch (err) {{
+            toast('Error: ' + err.message, true);
+            btn.disabled = false;
+            btn.textContent = '⟳ Scan all for new photos';
+        }}
+    }}
+
+    function showScanProgress() {{
+        const label = currentKingdom === 'plants' ? 'Scanning plants…' : 'Scanning wildlife…';
+        document.getElementById('scan-progress-label').textContent = label;
+        document.getElementById('scan-progress').classList.add('show');
+    }}
+    function hideScanProgress() {{
+        document.getElementById('scan-progress').classList.remove('show');
+    }}
+
+    function updateScanProgress(job) {{
+        const done = job.done || 0, total = job.total || 1;
+        const pct = Math.round((done / total) * 100);
+        document.getElementById('scan-progress-count').textContent = `${{done}} / ${{total}}`;
+        document.getElementById('scan-progress-fill').style.width = pct + '%';
+        document.getElementById('scan-progress-current').textContent =
+            job.current ? `Scanning: ${{job.current}}` : '';
+    }}
+
+    function startScanPoll() {{
+        if (scanPollTimer) clearInterval(scanPollTimer);
+        scanPollTimer = setInterval(pollScanProgress, 1000);
+    }}
+
+    async function pollScanProgress() {{
+        try {{
+            const resp = await fetch('/api/triage/scan-progress');
+            const job = await resp.json();
+            updateScanProgress(job);
+
+            if (!job.running) {{
+                // Done — stop polling, refresh counts, summarize.
+                clearInterval(scanPollTimer);
+                scanPollTimer = null;
+
+                if (job.species) {{
+                    allSpecies = job.species;
+                    renderPicker(allSpecies);
+                    if (currentSpeciesId) {{
+                        document.querySelector(`.picker-item[data-id="${{currentSpeciesId}}"]`)?.classList.add('active');
+                    }}
+                }}
+
+                let msg = `Scanned ${{job.scanned}} species · ${{job.total_cc_found}} CC photos found`;
+                if (job.failed && job.failed.length) msg += ` · ${{job.failed.length}} failed`;
+                if (job.skipped_no_taxon && job.skipped_no_taxon.length)
+                    msg += ` · ${{job.skipped_no_taxon.length}} no taxon ID`;
+                toast(msg);
+                console.log('Scan-all report:', job);
+
+                // Leave the bar at 100% briefly, then hide.
+                updateScanProgress({{done: job.total, total: job.total, current: ''}});
+                setTimeout(hideScanProgress, 1500);
+
+                const btn = document.getElementById('scan-all-btn');
+                btn.disabled = false;
+                btn.textContent = '⟳ Scan all for new photos';
+            }}
+        }} catch (err) {{
+            // Network hiccup — keep polling; don't kill the job view.
+            console.warn('progress poll failed', err);
+        }}
+    }}
+
+    // If a scan is already running when the Photos tab loads, resume the bar.
+    async function resumeScanIfRunning() {{
+        try {{
+            const resp = await fetch('/api/triage/scan-progress');
+            const job = await resp.json();
+            if (job.running) {{
+                document.getElementById('scan-all-btn').disabled = true;
+                document.getElementById('scan-all-btn').textContent = '⟳ Scanning…';
+                showScanProgress();
+                updateScanProgress(job);
+                startScanPoll();
+            }}
+        }} catch (err) {{ /* ignore */ }}
     }}
 
     // ── Fetch-more modal ──────────────────────────────────────
@@ -3149,7 +4012,7 @@ def render_photos():
         if (which === 'skipped') {{
             // No network — just switch the view mode to include skipped
             triageMode = 'skipped';
-            toast('Showing skipped photos');
+            toast('Showing set-aside photos');
             await loadTriage(currentSpeciesId);
             return;
         }}
@@ -3205,28 +4068,256 @@ def render_photos():
 
     // ── Init ──────────────────────────────────────────────────
     loadPickerList();
+    resumeScanIfRunning();
     </script>
     """
 
 
-def render_edit():
-    return render_stub("edit", "✏️ Edit & Preview — Signage Content", [
-        "Species picker filtered by status (spotted + html)",
-        "Editable form for all signage fields (names, description, quick hits, native status…)",
-        "Live HTML preview panel — see the page before publishing",
-        "Field-level validation with required fields highlighted",
-        "Save edits back to signage JSON",
-    ], "Pipeline step 3 of 4")
-
-
 def render_publish():
-    return render_stub("publish", "🚀 Publish — Promote & Demote", [
-        "Species list with readiness indicators (hero ✓ credits ✓ fields ✓)",
-        "One-click promote: spotted → html (generate HTML, stamp credits, update search index)",
-        "One-click demote: html → spotted (delete HTML, clean search index)",
-        "Re-generate all button with confirmation gate",
-        "Replaces <code>plant_publisher.py</code> (port 8701) and <code>wildlife_publisher.py</code> (port 8702)",
-    ], "Pipeline step 4 of 4")
+    return f"""
+    <!-- Kingdom toggle + status filter + search -->
+    <div class="photos-controls">
+        <div class="control-group">
+            <span class="control-group-label">Kingdom</span>
+            <div class="mode-toggle" id="pub-kingdom-toggle">
+                <button class="active" onclick="pubSwitchKingdom('plants')">🌱 Plants</button>
+                <button onclick="pubSwitchKingdom('wildlife')">🦎 Wildlife</button>
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="control-group-label">Show</span>
+            <div class="mode-toggle" id="pub-status-toggle">
+                <button class="active" onclick="pubSetFilter('all')">All</button>
+                <button onclick="pubSetFilter('html')">Published</button>
+                <button onclick="pubSetFilter('spotted')">Spotted</button>
+            </div>
+        </div>
+        <div class="control-group" style="flex:1; min-width:180px;">
+            <span class="control-group-label">Search</span>
+            <input type="text" class="pub-search" id="pub-search"
+                   placeholder="Filter by name or ID…" oninput="pubRender()">
+        </div>
+    </div>
+
+    <div class="pub-layout">
+        <div class="pub-intro card">
+            <p>Promote moves a <span class="status-pill spotted">Spotted</span> species to
+            <span class="status-pill html">Published</span> — it generates the HTML page, stamps
+            photo credits, and adds it to the search index. Demote reverses all three.</p>
+        </div>
+
+        <div id="pub-groups">
+            <div class="loading">Loading…</div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+    let pubKingdom = 'plants';
+    let pubFilter = 'all';
+    let pubAllSpecies = [];
+
+    function pubToast(msg, isError) {{
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = 'toast show' + (isError ? ' error' : '');
+        clearTimeout(el._tid);
+        el._tid = setTimeout(() => el.className = 'toast', Math.max(2400, msg.length * 45));
+    }}
+
+    function pubSwitchKingdom(k) {{
+        pubKingdom = k;
+        const btns = document.querySelectorAll('#pub-kingdom-toggle button');
+        btns.forEach(b => b.classList.remove('active'));
+        btns[k === 'plants' ? 0 : 1].classList.add('active');
+        loadPublishList();
+    }}
+
+    function pubSetFilter(f) {{
+        pubFilter = f;
+        const btns = document.querySelectorAll('#pub-status-toggle button');
+        btns.forEach(b => b.classList.remove('active'));
+        const idx = {{all: 0, html: 1, spotted: 2}}[f];
+        btns[idx].classList.add('active');
+        pubRender();
+    }}
+
+    async function loadPublishList() {{
+        const wrap = document.getElementById('pub-groups');
+        wrap.innerHTML = '<div class="loading">Loading…</div>';
+        try {{
+            const resp = await fetch(`/api/publish/list?kingdom=${{pubKingdom}}`);
+            const data = await resp.json();
+            if (data.error) {{
+                wrap.innerHTML = `<div class="card"><p style="color:#c62828;">${{esc(data.error)}}</p></div>`;
+                return;
+            }}
+            pubAllSpecies = data.species || [];
+            pubRender();
+        }} catch (err) {{
+            wrap.innerHTML = '<div class="card"><p>Error loading species.</p></div>';
+        }}
+    }}
+
+    function pubRender() {{
+        const q = (document.getElementById('pub-search')?.value || '').toLowerCase().trim();
+        let species = pubAllSpecies;
+        if (q) {{
+            species = species.filter(s =>
+                (s.common_name || '').toLowerCase().includes(q) ||
+                (s.scientific_name || '').toLowerCase().includes(q) ||
+                (s.id || '').toLowerCase().includes(q));
+        }}
+        renderPublishGroups(species);
+    }}
+
+    function renderPublishGroups(species) {{
+        const wrap = document.getElementById('pub-groups');
+        const spotted = species.filter(s => s.status === 'spotted');
+        const html = species.filter(s => s.status === 'html');
+        const other = species.filter(s => s.status !== 'spotted' && s.status !== 'html');
+        const readySpotted = spotted.filter(s => s.ready).length;
+
+        let out = '';
+        const showSpotted = pubFilter === 'all' || pubFilter === 'spotted';
+        const showHtml = pubFilter === 'all' || pubFilter === 'html';
+
+        if (showSpotted) {{
+            out += `<div class="card pub-group">
+                <h2>🌟 Spotted — ready to publish
+                    <span class="pub-group-count">${{readySpotted}} of ${{spotted.length}} ready</span>
+                </h2>`;
+            out += spotted.length ? spotted.map(pubRow).join('')
+                                  : '<p class="pub-empty">No spotted species.</p>';
+            out += '</div>';
+        }}
+
+        if (showHtml) {{
+            out += `<div class="card pub-group">
+                <h2>✅ Published <span class="pub-group-count">${{html.length}}</span></h2>`;
+            out += html.length ? html.map(pubRow).join('')
+                               : '<p class="pub-empty">Nothing published yet.</p>';
+            out += '</div>';
+        }}
+
+        if (pubFilter === 'all' && other.length) {{
+            out += `<div class="card pub-group">
+                <h2>🔬 Other status <span class="pub-group-count">${{other.length}}</span></h2>`;
+            out += other.map(pubRow).join('');
+            out += '</div>';
+        }}
+
+        if (!out) out = '<div class="card"><p class="pub-empty">No species match.</p></div>';
+        wrap.innerHTML = out;
+    }}
+
+    function pubRow(sp) {{
+        const checksHtml = sp.checks.map(c =>
+            `<span class="pub-check ${{c.ok ? 'ok' : 'no'}}" title="${{esc(c.label)}}">
+                ${{c.ok ? '✓' : '✗'}} ${{esc(c.label)}}
+            </span>`
+        ).join('');
+
+        let actions = '';
+        const previewBtn = sp.has_hero
+            ? `<button class="pub-btn preview" onclick="pubPreview('${{sp.id}}')"
+                       title="Open the generated page in a new browser tab">👁 Preview</button>`
+            : '';
+        if (sp.status === 'spotted') {{
+            const disabled = sp.ready ? '' : 'disabled';
+            const title = sp.ready ? 'Generate page and publish' : 'Complete the checklist first';
+            actions = previewBtn +
+                `<button class="pub-btn promote" ${{disabled}} title="${{title}}"
+                          onclick="pubPromote('${{sp.id}}')">🚀 Publish</button>`;
+        }} else if (sp.status === 'html') {{
+            actions = previewBtn + `
+                <button class="pub-btn regen" onclick="pubPromote('${{sp.id}}')"
+                        title="Regenerate the page from current data">♻️ Regenerate</button>
+                <button class="pub-btn demote" onclick="pubDemote('${{sp.id}}')"
+                        title="Pull back to spotted">⬇ Demote</button>`;
+        }} else {{
+            actions = previewBtn || `<span class="pub-na">—</span>`;
+        }}
+
+        return `<div class="pub-row" id="pubrow-${{sp.id}}">
+            <div class="pub-row-main">
+                <span class="pub-id">${{sp.id}}</span>
+                <div class="pub-names">
+                    <span class="pub-common">${{esc(sp.common_name || sp.id)}}</span>
+                    <span class="pub-sci">${{esc(sp.scientific_name || '')}}</span>
+                </div>
+                <span class="status-pill ${{sp.status}}">${{sp.status === 'html' ? 'Published' : sp.status.charAt(0).toUpperCase()+sp.status.slice(1)}}</span>
+            </div>
+            <div class="pub-checks">${{checksHtml}}</div>
+            <div class="pub-actions">${{actions}}</div>
+        </div>`;
+    }}
+
+    function pubPreview(id) {{
+        window.open(`/preview?kingdom=${{pubKingdom}}&id=${{id}}`, '_blank');
+    }}
+
+    async function pubPromote(id) {{
+        const row = document.getElementById('pubrow-' + id);
+        const actions = row.querySelector('.pub-actions');
+        const prev = actions.innerHTML;
+        actions.innerHTML = '<span class="pub-working">Publishing…</span>';
+        try {{
+            const resp = await fetch('/api/publish/promote', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: pubKingdom, id: id}})
+            }});
+            const res = await resp.json();
+            if (!res.ok) {{
+                pubToast(res.error || 'Publish failed', true);
+                if (res.trace) console.error(res.trace);
+                actions.innerHTML = prev;
+                return;
+            }}
+            pubToast(res.regenerated ? `Regenerated ${{res.filename}}` : `Published ${{res.filename}}`);
+            loadPublishList();
+        }} catch (err) {{
+            pubToast('Error: ' + err.message, true);
+            actions.innerHTML = prev;
+        }}
+    }}
+
+    async function pubDemote(id) {{
+        if (!confirm('Demote to spotted? This deletes the published HTML page and removes it from the search index. (Photos and signage data are kept.)')) return;
+        const row = document.getElementById('pubrow-' + id);
+        const actions = row.querySelector('.pub-actions');
+        const prev = actions.innerHTML;
+        actions.innerHTML = '<span class="pub-working">Demoting…</span>';
+        try {{
+            const resp = await fetch('/api/publish/demote', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: pubKingdom, id: id}})
+            }});
+            const res = await resp.json();
+            if (!res.ok) {{
+                pubToast(res.error || 'Demote failed', true);
+                if (res.trace) console.error(res.trace);
+                actions.innerHTML = prev;
+                return;
+            }}
+            const n = (res.deleted_files || []).length;
+            pubToast(`Demoted to spotted${{n ? ` · ${{n}} file${{n!==1?'s':''}} deleted` : ''}}`);
+            loadPublishList();
+        }} catch (err) {{
+            pubToast('Error: ' + err.message, true);
+            actions.innerHTML = prev;
+        }}
+    }}
+
+    function esc(s) {{
+        if (!s) return '';
+        const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+    }}
+
+    loadPublishList();
+    </script>
+    """
 
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
@@ -3241,7 +4332,6 @@ PAGE_ROUTES = {
     "/":        ("overview", render_overview),
     "/intake":  ("intake",   render_intake),
     "/photos":  ("photos",   render_photos),
-    "/edit":    ("edit",     render_edit),
     "/publish": ("publish",  render_publish),
 }
 
@@ -3258,10 +4348,15 @@ API_ROUTES = {
     "/api/photos/focus":     handle_api_photos_focus,
     "/api/photos/debug":     handle_api_photos_debug,
     "/api/triage/scan":      handle_api_triage_scan,
+    "/api/triage/scan-all":  handle_api_triage_scan_all,
+    "/api/triage/scan-progress": handle_api_triage_scan_progress,
     "/api/triage/view":      handle_api_triage_view,
     "/api/triage/decide":    handle_api_triage_decide,
     "/api/preview":          handle_api_preview,
+    "/api/publish/list":     handle_api_publish_list,
     "/api/publish/ready":    handle_api_publish_ready,
+    "/api/publish/promote":  handle_api_publish_promote,
+    "/api/publish/demote":   handle_api_publish_demote,
 }
 
 
@@ -3276,6 +4371,14 @@ class DashboardHandler(BaseHTTPRequestHandler):
         # Static photo file serving: /photos-file/PSBP-xxxxx/filename.jpg
         if path.startswith("/photos-file/"):
             self._serve_photo_file(path[len("/photos-file/"):])
+            return
+
+        # Live preview: render a species page in memory (no files written)
+        if path == "/preview":
+            kingdom = params.get("kingdom", ["plants"])[0]
+            species_id = params.get("id", [""])[0]
+            html, code = render_preview_html(kingdom, species_id)
+            self._html_response(code, html)
             return
 
         # API routes
@@ -3376,7 +4479,7 @@ def main():
         if idx + 1 < len(sys.argv):
             port = int(sys.argv[idx + 1])
 
-    server = HTTPServer(("", port), DashboardHandler)
+    server = ThreadingHTTPServer(("", port), DashboardHandler)
     print(f"╔══════════════════════════════════════════════════╗")
     print(f"║  PSBP Species Manager                           ║")
     print(f"║  http://localhost:{port:<5}                       ║")
