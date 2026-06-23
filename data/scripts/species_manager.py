@@ -51,35 +51,72 @@ TABS = [
 ]
 
 # Required fields for promotion readiness (per kingdom)
-PLANT_REQUIRED = ["common_name", "scientific_name", "description", "native_status"]
-WILDLIFE_REQUIRED = ["common_name", "scientific_name", "description", "animal_group"]
+# Plants use "botanical_name"; wildlife uses "scientific_name"
+PLANT_REQUIRED = ["common_name", "botanical_name", "more_information"]
+WILDLIFE_REQUIRED = ["common_name", "scientific_name", "animal_group"]
 
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  DATA ACCESS                                                           ║
+# ║                                                                        ║
+# ║  JSON structures (as of schema v1.2 / v1.4):                          ║
+# ║    plant_signage.json:    {"meta": {...}, "species": [list]}           ║
+# ║    wildlife_signage.json: {"meta": {...}, "species": [list]}           ║
+# ║    photo_credits.json:    {"meta": {...}, "photos":  [list]}           ║
+# ║    photographer_names.json: {"handle": "Real Name", ...}              ║
+# ║    plants.json / wildlife.json: [flat list of card objects]            ║
+# ║                                                                        ║
+# ║  Species fields:                                                       ║
+# ║    Plants:   id, common_name, botanical_name, status, native, ...     ║
+# ║    Wildlife: id, common_name, scientific_name, status, animal_group   ║
+# ║  Photo fields:                                                         ║
+# ║    psbp_id, hero, photographer, license, photo_id, ...               ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 def _load(path):
-    """Read and parse a JSON file. Returns empty dict/list on missing file."""
+    """Read and parse a JSON file. Returns empty dict on missing file."""
     try:
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
+        print(f"[WARN] File not found: {path}")
         return {}
     except json.JSONDecodeError as e:
         print(f"[WARN] Bad JSON in {path}: {e}")
         return {}
 
 
-def _species_has_hero(species_id, credits):
-    """Check if a species has at least one hero photo in photo_credits."""
-    # photo_credits.json structure: dict keyed by species_id → list of photo dicts
-    # Each photo dict has "hero": true/false
-    photos = credits.get(species_id, [])
-    if isinstance(photos, list):
-        return any(p.get("hero") for p in photos)
-    # Fallback: if credits is a flat list, scan for matching species
-    return False
+def _get_species_list(raw):
+    """Extract the species list from a signage JSON (handles meta wrapper)."""
+    if isinstance(raw, dict):
+        return raw.get("species", [])
+    if isinstance(raw, list):
+        return raw
+    return []
+
+
+def _get_photos_list(raw):
+    """Extract the photos list from photo_credits.json (handles meta wrapper)."""
+    if isinstance(raw, dict):
+        return raw.get("photos", [])
+    if isinstance(raw, list):
+        return raw
+    return []
+
+
+def _build_hero_index(photos_list):
+    """
+    Build a set of species IDs that have at least one hero photo.
+    Also returns a dict of psbp_id → list of photos for other lookups.
+    """
+    heroes = set()
+    by_species = {}
+    for photo in photos_list:
+        psbp_id = photo.get("psbp_id", "")
+        by_species.setdefault(psbp_id, []).append(photo)
+        if photo.get("hero"):
+            heroes.add(psbp_id)
+    return heroes, by_species
 
 
 def _hero_on_disk(species_id):
@@ -101,18 +138,6 @@ def _check_required_fields(species_data, required):
     return missing
 
 
-def _get_all_photographer_logins(credits):
-    """Extract all unique photographer logins from photo_credits."""
-    logins = set()
-    for species_id, photos in credits.items():
-        if isinstance(photos, list):
-            for p in photos:
-                login = p.get("login") or p.get("photographer") or p.get("user")
-                if login:
-                    logins.add(login)
-    return logins
-
-
 def get_overview_data():
     """
     Compute the full Overview payload.
@@ -120,68 +145,70 @@ def get_overview_data():
     Returns dict with plants, wildlife, photographers, and attention sections.
     This is the single function that powers the Overview tab.
     """
-    plants = _load(PLANT_SIGNAGE)
-    wildlife = _load(WILDLIFE_SIGNAGE)
-    credits = _load(PHOTO_CREDITS)
+    plant_species = _get_species_list(_load(PLANT_SIGNAGE))
+    wildlife_species = _get_species_list(_load(WILDLIFE_SIGNAGE))
+    photos_list = _get_photos_list(_load(PHOTO_CREDITS))
     names = _load(PHOTOGRAPHER_NAMES)
 
-    def analyze_kingdom(signage, required_fields, kingdom_label):
+    # Build hero index once — used by both kingdoms
+    hero_ids, photos_by_species = _build_hero_index(photos_list)
+
+    def analyze_kingdom(species_list, required_fields, sci_field):
+        """sci_field: 'botanical_name' for plants, 'scientific_name' for wildlife."""
         by_status = {}
         attention = []
 
-        for sid, info in signage.items():
-            status = info.get("status", "unknown")
+        for sp in species_list:
+            sid = sp.get("id", "???")
+            status = sp.get("status", "unknown")
             by_status.setdefault(status, []).append(sid)
 
             # Attention checks for spotted species
             if status == "spotted":
                 issues = []
 
-                # Hero photo check
-                if not _species_has_hero(sid, credits):
+                if sid not in hero_ids:
                     issues.append("No hero photo")
                 elif not _hero_on_disk(sid):
                     issues.append("Hero not on disk")
 
-                # Required fields check
-                missing = _check_required_fields(info, required_fields)
+                missing = _check_required_fields(sp, required_fields)
                 if missing:
                     issues.append(f"Missing: {', '.join(missing)}")
 
                 if issues:
                     attention.append({
                         "id": sid,
-                        "name": info.get("common_name", sid),
-                        "scientific": info.get("scientific_name", ""),
+                        "name": sp.get("common_name", sid),
+                        "scientific": sp.get(sci_field, ""),
                         "issues": issues,
                     })
 
         status_counts = {k: len(v) for k, v in by_status.items()}
         return {
-            "total": len(signage),
+            "total": len(species_list),
             "by_status": status_counts,
             "attention": sorted(attention, key=lambda x: x["id"]),
         }
 
     # Photographer analysis
-    all_logins = _get_all_photographer_logins(credits)
+    all_logins = set()
+    for photo in photos_list:
+        login = photo.get("photographer", "")
+        if login:
+            all_logins.add(login)
+
     resolved = {login for login in all_logins if login in names}
     unresolved = sorted(all_logins - resolved)
 
-    # Count total photos
-    total_photos = sum(
-        len(photos) if isinstance(photos, list) else 0
-        for photos in credits.values()
-    )
-
     return {
-        "plants": analyze_kingdom(plants, PLANT_REQUIRED, "Plants"),
-        "wildlife": analyze_kingdom(wildlife, WILDLIFE_REQUIRED, "Wildlife"),
+        "plants": analyze_kingdom(plant_species, PLANT_REQUIRED, "botanical_name"),
+        "wildlife": analyze_kingdom(wildlife_species, WILDLIFE_REQUIRED, "scientific_name"),
         "photographers": {
             "total_logins": len(all_logins),
             "resolved": len(resolved),
             "unresolved": unresolved,
-            "total_photos": total_photos,
+            "total_photos": len(photos_list),
         },
     }
 
@@ -194,15 +221,15 @@ def get_species_list(kingdom):
     kingdom: "plants" or "wildlife"
     """
     path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
-    signage = _load(path)
+    sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
+    species_list = _get_species_list(_load(path))
     result = []
-    for sid in sorted(signage.keys()):
-        info = signage[sid]
+    for sp in sorted(species_list, key=lambda s: s.get("id", "")):
         result.append({
-            "id": sid,
-            "common_name": info.get("common_name", ""),
-            "scientific_name": info.get("scientific_name", ""),
-            "status": info.get("status", "unknown"),
+            "id": sp.get("id", ""),
+            "common_name": sp.get("common_name", ""),
+            "scientific_name": sp.get(sci_field, ""),
+            "status": sp.get("status", "unknown"),
         })
     return result
 
