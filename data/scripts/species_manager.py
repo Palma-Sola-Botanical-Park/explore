@@ -671,6 +671,59 @@ def handle_api_preview(params):
     """GET /api/preview?id=PSBP-00001 — HTML preview. STUB."""
     return {"status": "stub", "message": "Preview API not yet implemented."}
 
+def handle_api_photos_focus(params):
+    """POST /api/photos/focus — set the focus point on a photo.
+
+    Body: {"psbp_id": "PSBP-00042", "photo_id": "12345678", "focus": "35% 60%"}
+
+    Writes to photo_credits.json. If this photo is the hero, also propagates
+    the focus point to the search index card so the published page crops right.
+    """
+    body = params.get("_body", {})
+    psbp_id = body.get("psbp_id", "")
+    photo_id = str(body.get("photo_id", ""))
+    focus = body.get("focus", "")
+    if not psbp_id or not photo_id:
+        return {"error": "Missing psbp_id or photo_id"}
+    if not focus:
+        return {"error": "Missing focus value"}
+
+    credits = _load(PHOTO_CREDITS)
+    photos = credits.get("photos", [])
+    target = None
+    for p in photos:
+        if p.get("psbp_id") == psbp_id and str(p.get("photo_id", "")) == photo_id:
+            p["focus"] = focus
+            target = p
+            break
+
+    if not target:
+        return {"error": f"Photo {photo_id} not found for {psbp_id}"}
+
+    write_json_atomic(PHOTO_CREDITS, credits)
+
+    result = {"ok": True, "psbp_id": psbp_id, "photo_id": photo_id, "focus": focus}
+
+    # If this is the hero, propagate focus to the search index card
+    if target.get("hero"):
+        for idx_path in (PLANTS_INDEX, WILDLIFE_INDEX):
+            idx = _load(idx_path)
+            if not isinstance(idx, list):
+                continue
+            changed = False
+            for card in idx:
+                if card.get("id") == psbp_id and "focus" in card:
+                    card["focus"] = focus
+                    changed = True
+                    break
+            if changed:
+                write_json_atomic(idx_path, idx)
+                result["search_index_updated"] = os.path.basename(idx_path)
+                break
+
+    return result
+
+
 def handle_api_publish_ready(params):
     """GET /api/publish/ready?id=PSBP-00001 — readiness checklist. STUB."""
     return {"status": "stub", "message": "Publish readiness API not yet implemented."}
@@ -1217,6 +1270,11 @@ main {
     font-family: "SF Mono", Menlo, monospace;
     text-transform: uppercase;
 }
+.photo-date {
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-bottom: 6px;
+}
 
 /* Role tags */
 .photo-roles {
@@ -1344,6 +1402,154 @@ main {
 }
 .photos-select-prompt .psp-icon { font-size: 32px; margin-bottom: 8px; }
 .photos-select-prompt p { font-size: 14px; margin: 4px 0; }
+
+/* Thumbnail wrapper (clickable for focus editor) */
+.photo-thumb-wrap {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+.photo-thumb-wrap .focus-hint {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    pointer-events: none;
+}
+.photo-thumb-wrap:hover .focus-hint { opacity: 1; }
+
+/* Focus editor modal */
+.focus-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 24px;
+}
+.focus-modal.open { display: flex; }
+.focus-modal-inner {
+    background: white;
+    border-radius: var(--radius);
+    max-width: 720px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.focus-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--gray-200);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--green-deep);
+}
+.focus-close {
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--gray-400);
+    line-height: 1;
+}
+.focus-close:hover { color: var(--gray-800); }
+.focus-stage {
+    position: relative;
+    flex: 1;
+    overflow: auto;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    cursor: crosshair;
+}
+.focus-stage img {
+    max-width: 100%;
+    max-height: 60vh;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+.focus-crosshair {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+    margin-top: -14px;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,0,0,0.5);
+    pointer-events: none;
+    transition: left 0.05s, top 0.05s;
+}
+.focus-crosshair::before, .focus-crosshair::after {
+    content: '';
+    position: absolute;
+    background: white;
+    box-shadow: 0 0 1px rgba(0,0,0,0.8);
+}
+.focus-crosshair::before {
+    left: 50%; top: 50%;
+    width: 2px; height: 10px;
+    margin-left: -1px; margin-top: -5px;
+}
+.focus-crosshair::after {
+    left: 50%; top: 50%;
+    width: 10px; height: 2px;
+    margin-left: -5px; margin-top: -1px;
+}
+.focus-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-top: 1px solid var(--gray-200);
+}
+.focus-coords {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 13px;
+    color: var(--gray-600);
+    background: var(--gray-100);
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+.focus-actions { display: flex; gap: 8px; }
+.focus-btn-cancel, .focus-btn-save {
+    padding: 7px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--gray-200);
+}
+.focus-btn-cancel { background: white; color: var(--gray-600); }
+.focus-btn-cancel:hover { background: var(--gray-100); }
+.focus-btn-save {
+    background: var(--green-mid);
+    color: white;
+    border-color: var(--green-mid);
+}
+.focus-btn-save:hover { background: var(--green-deep); }
+.focus-btn-save:disabled { opacity: 0.6; cursor: default; }
+.focus-preview-note {
+    padding: 0 18px 14px;
+    font-size: 12px;
+    color: var(--gray-400);
+}
 
 /* Toast notification */
 .toast {
@@ -1666,6 +1872,31 @@ def render_photos():
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <!-- Focus editor modal -->
+    <div class="focus-modal" id="focus-modal" onclick="if(event.target.id==='focus-modal')closeFocusEditor()">
+        <div class="focus-modal-inner">
+            <div class="focus-modal-header">
+                <span>Set focus point — click the image where the subject is</span>
+                <button class="focus-close" onclick="closeFocusEditor()">✕</button>
+            </div>
+            <div class="focus-stage" id="focus-stage" onclick="placeFocus(event)">
+                <img id="focus-img" src="" alt="">
+                <div class="focus-crosshair" id="focus-crosshair"></div>
+            </div>
+            <div class="focus-modal-footer">
+                <span class="focus-coords" id="focus-coords">50% 50%</span>
+                <div class="focus-actions">
+                    <button class="focus-btn-cancel" onclick="closeFocusEditor()">Cancel</button>
+                    <button class="focus-btn-save" id="focus-save" onclick="saveFocus()">Save focus</button>
+                </div>
+            </div>
+            <div class="focus-preview-note">
+                The crop preview on the card updates to match. For the hero,
+                this also sets how the published page crops the image.
+            </div>
+        </div>
+    </div>
+
     <script>
     // ── State ──────────────────────────────────────────────────
     let currentKingdom = 'plants';
@@ -1818,12 +2049,19 @@ def render_photos():
 
             // Thumbnail — use focus point for object-position if available
             const focus = photo.focus && photo.focus !== 'None' ? photo.focus : '50% 50%';
+            // Full-size URL for the focus editor (prefer large, fall back to thumb)
+            const fullUrl = (photo.photo_url || photo.thumb_url || '').replace('/medium.', '/large.');
             if (photo.thumb_url) {{
-                html += `<img class="photo-thumb" src="${{esc(photo.thumb_url)}}"
-                              alt="${{esc(photo.resolved_name)}}"
-                              loading="lazy"
-                              style="object-position: ${{focus}}"
-                              onerror="imgFail(this)">`;
+                html += `<div class="photo-thumb-wrap"
+                              onclick="openFocusEditor('${{speciesId}}', '${{pid}}', '${{esc(fullUrl)}}', '${{focus}}')"
+                              title="Click to set focus point">
+                    <img class="photo-thumb" src="${{esc(photo.thumb_url)}}"
+                         alt="${{esc(photo.resolved_name)}}"
+                         loading="lazy"
+                         style="object-position: ${{focus}}"
+                         onerror="imgFail(this)">
+                    <div class="focus-hint">⊕ focus</div>
+                </div>`;
             }} else {{
                 html += '<div class="photo-thumb-placeholder">🖼</div>';
             }}
@@ -1841,6 +2079,12 @@ def render_photos():
                 <span class="credit-name">${{esc(photo.resolved_name)}}</span>
                 ${{license ? `<span class="photo-license">${{esc(license)}}</span>` : ''}}
             </div>`;
+
+            // Date taken
+            const dateTaken = fmtDate(photo.observed_on);
+            if (dateTaken) {{
+                html += `<div class="photo-date" title="Date observed on iNaturalist">📅 ${{dateTaken}}</div>`;
+            }}
 
             // Gallery toggle — structural, separate from content tags
             const inGallery = roles.includes('gallery');
@@ -2024,6 +2268,75 @@ def render_photos():
         }} catch (err) {{ toast('Error: ' + err.message, true); }}
     }}
 
+    // ── Focus editor ──────────────────────────────────────────
+    let focusState = {{ speciesId: null, photoId: null, x: 50, y: 50 }};
+
+    function openFocusEditor(speciesId, photoId, fullUrl, currentFocus) {{
+        focusState.speciesId = speciesId;
+        focusState.photoId = photoId;
+        // Parse "35% 60%" → x=35, y=60
+        const m = String(currentFocus).match(/([\\d.]+)%\\s+([\\d.]+)%/);
+        focusState.x = m ? parseFloat(m[1]) : 50;
+        focusState.y = m ? parseFloat(m[2]) : 50;
+
+        const img = document.getElementById('focus-img');
+        img.src = fullUrl;
+        document.getElementById('focus-modal').classList.add('open');
+        updateCrosshair();
+    }}
+
+    function closeFocusEditor() {{
+        document.getElementById('focus-modal').classList.remove('open');
+    }}
+
+    function updateCrosshair() {{
+        const ch = document.getElementById('focus-crosshair');
+        ch.style.left = focusState.x + '%';
+        ch.style.top = focusState.y + '%';
+        document.getElementById('focus-coords').textContent =
+            `${{Math.round(focusState.x)}}% ${{Math.round(focusState.y)}}%`;
+    }}
+
+    function placeFocus(e) {{
+        const img = document.getElementById('focus-img');
+        const rect = img.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        focusState.x = Math.max(0, Math.min(100, x));
+        focusState.y = Math.max(0, Math.min(100, y));
+        updateCrosshair();
+    }}
+
+    async function saveFocus() {{
+        const focus = `${{Math.round(focusState.x)}}% ${{Math.round(focusState.y)}}%`;
+        const btn = document.getElementById('focus-save');
+        btn.disabled = true;
+        btn.textContent = 'Saving…';
+        try {{
+            const resp = await fetch('/api/photos/focus', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{
+                    psbp_id: focusState.speciesId,
+                    photo_id: focusState.photoId,
+                    focus: focus
+                }})
+            }});
+            const data = await resp.json();
+            if (data.error) {{ toast(data.error, true); return; }}
+            let msg = 'Focus saved';
+            if (data.search_index_updated) msg += ' ✓ index updated';
+            toast(msg);
+            closeFocusEditor();
+            await loadPhotos(focusState.speciesId);
+        }} catch (err) {{
+            toast('Error: ' + err.message, true);
+        }} finally {{
+            btn.disabled = false;
+            btn.textContent = 'Save focus';
+        }}
+    }}
+
     // ── Utility ───────────────────────────────────────────────
     function esc(s) {{
         if (!s) return '';
@@ -2036,6 +2349,15 @@ def render_photos():
         ph.className = 'photo-thumb-placeholder';
         ph.textContent = '🖼';
         el.replaceWith(ph);
+    }}
+    function fmtDate(iso) {{
+        if (!iso || iso === 'None') return '';
+        // Parse YYYY-MM-DD without timezone shift
+        const m = String(iso).match(/^(\\d{{4}})-(\\d{{2}})-(\\d{{2}})/);
+        if (!m) return esc(iso);
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const mon = months[parseInt(m[2], 10) - 1] || m[2];
+        return `${{mon}} ${{parseInt(m[3], 10)}}, ${{m[1]}}`;
     }}
 
     // ── Init ──────────────────────────────────────────────────
@@ -2090,6 +2412,7 @@ API_ROUTES = {
     "/api/photos/hero":      handle_api_photos_set_hero,
     "/api/photos/roles":     handle_api_photos_update_roles,
     "/api/photos/trash":     handle_api_photos_trash,
+    "/api/photos/focus":     handle_api_photos_focus,
     "/api/photos/debug":     handle_api_photos_debug,
     "/api/preview":          handle_api_preview,
     "/api/publish/ready":    handle_api_publish_ready,
