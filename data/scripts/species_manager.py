@@ -20,9 +20,12 @@ Shared module:     psbp_common.py
 import json
 import os
 import sys
+import time
+import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, quote
 from urllib.request import urlopen, Request
+import urllib.error
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  CONFIGURATION                                                         ║
@@ -31,7 +34,7 @@ from urllib.request import urlopen, Request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from psbp_common import (
     REPO, write_json_atomic, display_name, build_credit_line,
-    load_json, PHOTO_CREDITS_JSON, resolve_hero_credit,
+    load_json, PHOTO_CREDITS_JSON, resolve_hero_credit, CC_LICENSES,
 )
 
 PORT = 8700
@@ -40,10 +43,24 @@ PORT = 8700
 PLANT_SIGNAGE      = os.path.join(REPO, "data", "sources", "plant_signage.json")
 WILDLIFE_SIGNAGE   = os.path.join(REPO, "data", "sources", "wildlife_signage.json")
 PHOTO_CREDITS      = os.path.join(REPO, "data", "sources", "photo_credits.json")
+PHOTO_WORKBENCH    = os.path.join(REPO, "data", "sources", "photo_workbench.json")
 PHOTOGRAPHER_NAMES = os.path.join(REPO, "data", "sources", "photographer_names.json")
 PLANTS_INDEX       = os.path.join(REPO, "plants.json")
 WILDLIFE_INDEX     = os.path.join(REPO, "wildlife.json")
 PHOTOS_DIR         = os.path.join(REPO, "photos")
+
+# ── iNaturalist triage config ──────────────────────────────────────────────
+# Project slug from the URL: inaturalist.org/projects/<THIS-PART>
+# iNat accepts the slug directly as the project_id query parameter.
+# Override with the INAT_PROJECT_ID env var if needed.
+INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
+
+# Scan cache lives OUTSIDE the repo — throwaway, re-fetchable iNat results.
+TRIAGE_WORKSPACE = os.path.expanduser("~/Documents/PSBP_photo_workspace")
+TRIAGE_CACHE_DIR = os.path.join(TRIAGE_WORKSPACE, "cache")
+
+API_DELAY      = 1.0   # seconds between iNat API pages
+DOWNLOAD_DELAY = 0.3   # seconds between web-res downloads
 
 # Tab definitions — order matters for the nav bar
 TABS = [
@@ -296,6 +313,7 @@ def get_photos_summary(kingdom):
     species_list = _get_species_list(_load(path))
     photos_list = _get_photos_list(_load(PHOTO_CREDITS))
     hero_ids, photos_by_species = _build_hero_index(photos_list)
+    workbench = load_workbench()
 
     result = []
     for sp in sorted(species_list, key=lambda s: s.get("id", "")):
@@ -303,6 +321,7 @@ def get_photos_summary(kingdom):
         # Count photos for this species (filter by type if mixed)
         sp_photos = photos_by_species.get(sid, [])
         type_photos = [p for p in sp_photos if p.get("type") == type_filter]
+        counts = _triage_counts(kingdom, sid, photos_list, workbench)
         result.append({
             "id": sid,
             "common_name": sp.get("common_name", ""),
@@ -310,6 +329,11 @@ def get_photos_summary(kingdom):
             "status": sp.get("status", "unknown"),
             "photo_count": len(type_photos),
             "has_hero": sid in hero_ids,
+            "has_taxon": bool(sp.get("inat_taxon_id")),
+            "green": counts["green"],
+            "red": counts["red"],
+            "yellow": counts["yellow"],
+            "scanned": counts["scanned"],
         })
     return result
 
@@ -462,6 +486,301 @@ def _patch_html_hero(species_id, old_photo_id, new_photo_id, old_credit_line, ne
 
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  TRIAGE — iNaturalist photo scanning (ported from photo_workbench.py)  ║
+# ║                                                                        ║
+# ║  Reads only (no auth needed). Decisions written to a ledger:           ║
+# ║    photo_workbench.json  {meta:{cursors}, decisions:{photo_id:{...}}}  ║
+# ║  Verdicts: promoted / skip / block. Scan results cache OUTSIDE repo.   ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+def _today():
+    return datetime.date.today().isoformat()
+
+
+def load_workbench():
+    """Load the triage decision ledger (the 'seen it' memory)."""
+    wb = load_json(PHOTO_WORKBENCH, None)
+    if wb is None:
+        wb = {"meta": {"cursors": {}}, "decisions": {}}
+    wb.setdefault("meta", {}).setdefault("cursors", {})
+    wb.setdefault("decisions", {})
+    return wb
+
+
+def _inat_get(url):
+    """GET a JSON resource from iNat. No auth needed for public CC photos."""
+    headers = {
+        "Accept": "application/json",
+        "User-Agent": "PSBP-SpeciesManager/1.0 (palmasolabp.org)",
+    }
+    token = os.environ.get("INAT_TOKEN")
+    if token:
+        headers["Authorization"] = token
+    req = Request(url, headers=headers)
+    try:
+        with urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        print(f"    HTTP {e.code}: {e.read().decode('utf-8', errors='replace')[:160]}")
+        return None
+    except Exception as e:
+        print(f"    request failed: {e}")
+        return None
+
+
+def _inat_observations(taxon_id):
+    """All park observations for one taxon (project-scoped), paginated."""
+    out, page = [], 1
+    while True:
+        url = ("https://api.inaturalist.org/v1/observations"
+               f"?project_id={quote(str(INAT_PROJECT_ID))}"
+               f"&taxon_id={taxon_id}&per_page=200&page={page}"
+               "&order=desc&order_by=created_at")
+        data = _inat_get(url)
+        if not data:
+            break
+        results = data.get("results", [])
+        out.extend(results)
+        if len(results) < 200:
+            break
+        page += 1
+        if page > 10:
+            break
+        time.sleep(API_DELAY)
+    return out
+
+
+def _cc_photos_from_observations(obs_list):
+    """Flatten observations → CC photo records ready for the triage grid.
+    Non-CC photos are counted but not shown (the park only uses CC)."""
+    cc, non_cc = [], 0
+    for obs in obs_list:
+        user = obs.get("user") or {}
+        login = user.get("login") or "unknown"
+        name = display_name(login, user.get("name"))
+        observed_on = obs.get("observed_on") or (obs.get("time_observed_at") or "")[:10] or None
+        shared_on = (obs.get("created_at") or "")[:10] or None
+        obs_id = str(obs.get("id", ""))
+        src = f"https://www.inaturalist.org/observations/{obs_id}"
+        for p in obs.get("photos", []):
+            lic = (p.get("license_code") or "")
+            if lic.lower() not in CC_LICENSES:
+                non_cc += 1
+                continue
+            base_url = p.get("url", "") or ""
+            cc.append({
+                "photo_id":          str(p.get("id", "")),
+                "obs_id":            obs_id,
+                "thumb_url":         base_url.replace("/square.", "/medium."),
+                "large_url":         base_url.replace("/square.", "/large."),
+                "license":           lic,
+                "photographer":      login,
+                "photographer_name": name,
+                "observed_on":       observed_on,
+                "shared_on":         shared_on,
+                "source_url":        src,
+            })
+    return cc, non_cc
+
+
+# ── Scan cache (workspace, outside the repo) ───────────────────────────────
+
+def _cache_path(kingdom, psbp_id):
+    return os.path.join(TRIAGE_CACHE_DIR, kingdom, f"{psbp_id}.json")
+
+
+def _read_cache(kingdom, psbp_id):
+    return load_json(_cache_path(kingdom, psbp_id), None)
+
+
+def _write_cache(kingdom, psbp_id, cc, non_cc):
+    payload = {
+        "psbp_id": psbp_id,
+        "scanned_at": datetime.datetime.utcnow().isoformat() + "Z",
+        "cc": cc,
+        "cc_count": len(cc),
+        "non_cc_count": non_cc,
+    }
+    write_json_atomic(_cache_path(kingdom, psbp_id), payload)
+    return payload
+
+
+def _scan_species(kingdom, species):
+    """Hit iNat for one species, refresh its cache. Returns cache payload or error."""
+    if not INAT_PROJECT_ID:
+        return {"error": "INAT_PROJECT_ID is not set."}
+    taxon_id = species.get("inat_taxon_id")
+    if not taxon_id:
+        return {"error": f"{species.get('id')} has no inat_taxon_id in the signage JSON."}
+    obs = _inat_observations(taxon_id)
+    cc, non_cc = _cc_photos_from_observations(obs)
+    return _write_cache(kingdom, species["id"], cc, non_cc)
+
+
+def _decided_photo_ids(workbench, photos_list):
+    """A photo is 'decided' if it has a ledger verdict OR is already in the registry."""
+    ids = set(str(k) for k in workbench["decisions"].keys())
+    for p in photos_list:
+        if p.get("photo_id"):
+            ids.add(str(p["photo_id"]))
+    return ids
+
+
+def _triage_counts(kingdom, species_id, photos_list, workbench):
+    """Compute GREEN / RED / YELLOW counts for a species.
+
+    GREEN  = photos in the registry (promoted: hero + gallery)
+    RED    = skipped + blocked in the ledger
+    YELLOW = scanned CC photos with no verdict yet (undecided)
+    """
+    # GREEN — registry rows for this species
+    green = sum(1 for p in photos_list if p.get("psbp_id") == species_id)
+
+    # RED — skip/block decisions in the ledger for this species
+    red = 0
+    for pid, dec in workbench["decisions"].items():
+        if dec.get("psbp_id") == species_id and dec.get("decision") in ("skip", "block"):
+            red += 1
+
+    # YELLOW — scanned CC photos not yet decided
+    yellow = 0
+    scanned = False
+    cache = _read_cache(kingdom, species_id)
+    if cache:
+        scanned = True
+        decided = _decided_photo_ids(workbench, photos_list)
+        yellow = sum(1 for p in cache["cc"] if p["photo_id"] not in decided)
+
+    return {"green": green, "red": red, "yellow": yellow, "scanned": scanned}
+
+
+def _build_triage_view(kingdom, species_id, mode="new"):
+    """Return the candidate photos for the triage workspace.
+
+    mode:
+      'new'     — undecided CC photos (YELLOW) only
+      'skipped' — undecided + previously skipped (revisit), NOT blocked
+    Each photo carries a 'state' for shading: 'new' or 'skipped'.
+    """
+    photos_list = _get_photos_list(_load(PHOTO_CREDITS))
+    workbench = load_workbench()
+    cache = _read_cache(kingdom, species_id)
+    if not cache:
+        return {"photos": [], "scanned": False}
+
+    registry_ids = {str(p.get("photo_id")) for p in photos_list if p.get("photo_id")}
+    decisions = workbench["decisions"]
+
+    out = []
+    for p in cache["cc"]:
+        pid = p["photo_id"]
+        if pid in registry_ids:
+            continue  # already promoted — shows in Review mode, not here
+        verdict = decisions.get(pid, {}).get("decision")
+        if verdict is None:
+            state = "new"
+        elif verdict == "skip":
+            if mode != "skipped":
+                continue  # only show skips when revisiting
+            state = "skipped"
+        else:  # block — never resurface in triage
+            continue
+        item = dict(p)
+        item["state"] = state
+        out.append(item)
+
+    return {"photos": out, "scanned": True,
+            "scanned_at": cache.get("scanned_at"),
+            "non_cc": cache.get("non_cc_count", 0)}
+
+
+def _apply_triage_decision(payload):
+    """Apply a promote/skip/block decision. Ported from photo_workbench.py.
+
+    Promote: heroes download a file + write registry row; gallery = virtual row.
+    All decisions are recorded in the ledger so future scans hide them.
+    """
+    decision = payload.get("decision")
+    pid      = str(payload.get("photo_id", ""))
+    psbp_id  = payload.get("psbp_id", "")
+    kingdom  = payload.get("kingdom", "plants")
+    promoted_as_hero = False
+
+    if decision not in ("promoted", "skip", "block") or not pid or not psbp_id:
+        return {"ok": False, "error": "bad decision payload"}
+
+    if decision == "promoted":
+        credits = _load(PHOTO_CREDITS)
+        credits.setdefault("photos", [])
+        has_hero = any(p.get("psbp_id") == psbp_id and p.get("hero")
+                       for p in credits["photos"])
+        if any(str(p.get("photo_id")) == pid for p in credits["photos"]):
+            return {"ok": False, "error": "already in registry"}
+
+        is_hero = not has_hero
+        promoted_as_hero = is_hero
+        name = payload.get("photographer_name") or display_name(
+            payload.get("photographer"), "")
+        lic = payload.get("license", "")
+
+        if is_hero:
+            filename = f"{pid}.jpg"
+            dest = os.path.join(PHOTOS_DIR, psbp_id, filename)
+            if not _download_hero_file(payload.get("large_url", ""), psbp_id, pid):
+                return {"ok": False, "error": "web-res download failed — nothing recorded"}
+            time.sleep(DOWNLOAD_DELAY)
+        else:
+            filename = None  # virtual — served from iNat CDN
+
+        ctype = "Plant" if kingdom == "plants" else "Wildlife"
+        entry = {
+            "psbp_id":           psbp_id,
+            "type":              payload.get("type", ctype),
+            "common_name":       payload.get("common_name", ""),
+            "scientific_name":   payload.get("scientific_name", ""),
+            "role":              ["whole", "gallery"] if is_hero else ["gallery"],
+            "primary_for":       ["whole"] if is_hero else [],
+            "hero":              is_hero,
+            "focus":             "50% 50%" if is_hero else None,
+            "tags":              [],
+            "photographer":      payload.get("photographer", ""),
+            "photographer_name": name,
+            "license":           lic.upper() if lic else "",
+            "publish_ok":        True,
+            "status":            "OK",
+            "credit_line":       build_credit_line(name, lic),
+            "observed_on":       payload.get("observed_on"),
+            "shared_on":         payload.get("shared_on"),
+            "photo_url":         payload.get("large_url", ""),
+            "source_url":        payload.get("source_url", ""),
+            "observation_id":    payload.get("obs_id", ""),
+            "photo_id":          pid,
+            "filename":          filename,
+            "used_by":           [],
+            "virtual":           not is_hero,
+        }
+        credits["photos"].append(entry)
+        credits.setdefault("meta", {})["photo_count"] = len(credits["photos"])
+        write_json_atomic(PHOTO_CREDITS, credits)
+
+    # Record every decision in the ledger.
+    wb = load_workbench()
+    wb["decisions"][pid] = {
+        "decision":     decision,
+        "reviewed_on":  _today(),
+        "psbp_id":      psbp_id,
+        "obs_id":       payload.get("obs_id", ""),
+        "photographer": payload.get("photographer", ""),
+        "license":      payload.get("license", ""),
+        "note":         "",
+    }
+    write_json_atomic(PHOTO_WORKBENCH, wb)
+
+    return {"ok": True, "decision": decision, "psbp_id": psbp_id,
+            "is_hero": promoted_as_hero}
+
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
 # ║  API HANDLERS                                                          ║
 # ║                                                                        ║
 # ║  Each handler takes (params) and returns a JSON-serializable dict.     ║
@@ -500,6 +819,54 @@ def handle_api_photos_summary(params):
     """GET /api/photos/summary?kingdom=plants — species with photo stats for picker."""
     kingdom = params.get("kingdom", ["plants"])[0]
     return {"kingdom": kingdom, "species": get_photos_summary(kingdom)}
+
+
+def handle_api_triage_scan(params):
+    """POST /api/triage/scan — fetch fresh iNat results for one species.
+
+    Body: {"kingdom": "plants", "id": "PSBP-00005"}
+    Hits iNat (read-only), caches CC photos. Returns the CC count.
+    """
+    body = params.get("_body", {})
+    kingdom = body.get("kingdom", "plants")
+    species_id = body.get("id", "")
+    if not species_id:
+        return {"ok": False, "error": "Missing species id"}
+
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    species_list = _get_species_list(_load(path))
+    sp = next((s for s in species_list if s.get("id") == species_id), None)
+    if not sp:
+        return {"ok": False, "error": f"{species_id} not found in {kingdom} signage"}
+
+    res = _scan_species(kingdom, sp)
+    if "error" in res:
+        return {"ok": False, "error": res["error"]}
+    return {"ok": True, "cc_count": res["cc_count"],
+            "non_cc_count": res["non_cc_count"], "scanned_at": res["scanned_at"]}
+
+
+def handle_api_triage_view(params):
+    """GET /api/triage/view?kingdom=plants&id=PSBP-00005&mode=new — candidates."""
+    kingdom = params.get("kingdom", ["plants"])[0]
+    species_id = params.get("id", [""])[0]
+    mode = params.get("mode", ["new"])[0]
+    if not species_id:
+        return {"error": "Missing species id"}
+    view = _build_triage_view(kingdom, species_id, mode)
+    return {"kingdom": kingdom, "species_id": species_id, "mode": mode, **view}
+
+
+def handle_api_triage_decide(params):
+    """POST /api/triage/decide — apply promote/skip/block.
+
+    Body carries everything needed so we never re-hit the API here:
+      {kingdom, decision, photo_id, psbp_id, obs_id, large_url, source_url,
+       photographer, photographer_name, license, observed_on, shared_on,
+       common_name, scientific_name, type}
+    """
+    body = params.get("_body", {})
+    return _apply_triage_decision(body)
 
 
 def handle_api_photos_set_hero(params):
@@ -1333,6 +1700,164 @@ main {
     background: var(--gray-100);
 }
 .gallery-toggle:hover { opacity: 0.8; }
+
+/* ── Triage mode ───────────────────────────────────────────── */
+.photos-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.photos-controls .mode-toggle { margin-bottom: 0; }
+
+/* Picker legend */
+.picker-legend {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--gray-400);
+}
+.picker-legend span { display: flex; align-items: center; gap: 4px; }
+.picker-legend .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+}
+.picker-legend .dot.green  { background: var(--green-light); }
+.picker-legend .dot.yellow { background: var(--gold); }
+.picker-legend .dot.red    { background: #c62828; }
+
+/* Picker triage counts */
+.pi-counts {
+    display: flex;
+    gap: 3px;
+    flex-shrink: 0;
+}
+.pc {
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+    padding: 1px 5px;
+    border-radius: 8px;
+}
+.pc.green  { background: #e8f5e9; color: var(--green-mid); }
+.pc.yellow { background: #fff8e1; color: #b8860b; }
+.pc.red    { background: #ffebee; color: #c62828; }
+.pi-warn { color: var(--gold); font-size: 12px; }
+
+/* Triage header actions */
+.triage-header-actions { margin-left: auto; }
+.fetch-more-btn {
+    padding: 7px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--green-mid);
+    background: var(--green-mid);
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.fetch-more-btn:hover { background: var(--green-deep); }
+.triage-status {
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-bottom: 14px;
+}
+
+/* Triage cards */
+.triage-card.triage-skipped { box-shadow: 0 0 0 2px #c62828, var(--shadow); }
+.triage-card.triage-new { box-shadow: 0 0 0 2px var(--gold), var(--shadow); }
+.triage-card.triage-decided { opacity: 0.5; }
+.triage-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 3px;
+    color: white;
+    letter-spacing: 0.3px;
+}
+.triage-badge.skipped { background: #c62828; }
+
+.triage-actions {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--gray-100);
+}
+.t-btn {
+    flex: 1;
+    padding: 8px 4px;
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+.t-btn + .t-btn { border-left: 1px solid var(--gray-100); }
+.t-btn.promote { color: var(--green-mid); flex: 1.6; }
+.t-btn.promote:hover { background: #e8f5e9; }
+.t-btn.skip { color: var(--gray-600); }
+.t-btn.skip:hover { background: var(--gray-100); }
+.t-btn.block { color: #c62828; }
+.t-btn.block:hover { background: #ffebee; }
+.t-saving, .t-verdict {
+    flex: 1;
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 12px;
+    color: var(--gray-400);
+    font-style: italic;
+}
+.t-verdict { color: var(--green-mid); font-style: normal; font-weight: 500; }
+
+/* Fetch-more modal */
+.fetch-modal-inner {
+    background: white;
+    border-radius: var(--radius);
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+.fetch-body { padding: 18px; }
+.fetch-species {
+    font-size: 13px;
+    color: var(--gray-600);
+    font-style: italic;
+    margin-bottom: 14px;
+}
+.fetch-choice {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    background: white;
+    cursor: pointer;
+    transition: all 0.12s;
+}
+.fetch-choice:hover {
+    border-color: var(--green-mid);
+    background: #f5faf6;
+}
+.fetch-choice .fc-title {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--green-deep);
+    margin-bottom: 3px;
+}
+.fetch-choice .fc-sub {
+    display: block;
+    font-size: 12px;
+    color: var(--gray-400);
+}
 .photo-action-btn {
     flex: 1;
     padding: 7px 0;
@@ -1839,10 +2364,16 @@ def render_photos():
     plant_tags_js = json.dumps(PLANT_PHOTO_TAGS)
     wildlife_tags_js = json.dumps(WILDLIFE_PHOTO_TAGS)
     return f"""
-    <!-- Kingdom toggle -->
-    <div class="mode-toggle" id="photos-mode-toggle">
-        <button class="active" onclick="switchKingdom('plants')">🌱 Plants</button>
-        <button onclick="switchKingdom('wildlife')">🦎 Wildlife</button>
+    <!-- Top controls: kingdom + mode -->
+    <div class="photos-controls">
+        <div class="mode-toggle" id="photos-mode-toggle">
+            <button class="active" onclick="switchKingdom('plants')">🌱 Plants</button>
+            <button onclick="switchKingdom('wildlife')">🦎 Wildlife</button>
+        </div>
+        <div class="mode-toggle" id="photos-workmode-toggle">
+            <button class="active" onclick="switchWorkMode('review')">✓ Review</button>
+            <button onclick="switchWorkMode('triage')">🔍 Triage</button>
+        </div>
     </div>
 
     <div class="photos-layout">
@@ -1853,6 +2384,11 @@ def render_photos():
                 <input type="text" class="picker-search" id="picker-search"
                        placeholder="Filter by name or ID…"
                        oninput="filterPicker()">
+                <div class="picker-legend" id="picker-legend" style="display:none;">
+                    <span><span class="dot green"></span>in system</span>
+                    <span><span class="dot yellow"></span>undecided</span>
+                    <span><span class="dot red"></span>discarded</span>
+                </div>
             </div>
             <div class="picker-list" id="picker-list">
                 <div class="loading">Loading…</div>
@@ -1871,6 +2407,27 @@ def render_photos():
 
     <!-- Toast -->
     <div class="toast" id="toast"></div>
+
+    <!-- Fetch-more modal -->
+    <div class="focus-modal" id="fetch-modal" onclick="if(event.target.id==='fetch-modal')closeFetchModal()">
+        <div class="fetch-modal-inner">
+            <div class="focus-modal-header">
+                <span>Fetch photos from iNaturalist</span>
+                <button class="focus-close" onclick="closeFetchModal()">✕</button>
+            </div>
+            <div class="fetch-body">
+                <p class="fetch-species" id="fetch-species-name"></p>
+                <button class="fetch-choice" onclick="doFetch('new')">
+                    <span class="fc-title">🔍 Look for new photos</span>
+                    <span class="fc-sub">Scan iNaturalist for CC-licensed photos not yet decided</span>
+                </button>
+                <button class="fetch-choice" onclick="doFetch('skipped')">
+                    <span class="fc-title">↩ Revisit skipped photos</span>
+                    <span class="fc-sub">Bring back photos you previously skipped (blocked stay hidden)</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Focus editor modal -->
     <div class="focus-modal" id="focus-modal" onclick="if(event.target.id==='focus-modal')closeFocusEditor()">
@@ -1902,6 +2459,7 @@ def render_photos():
     let currentKingdom = 'plants';
     let currentSpeciesId = null;
     let allSpecies = [];
+    let workMode = 'review';  // 'review' or 'triage'
     const PLANT_TAGS = {plant_tags_js};
     const WILDLIFE_TAGS = {wildlife_tags_js};
 
@@ -1916,6 +2474,31 @@ def render_photos():
         el._tid = setTimeout(() => el.className = 'toast', dur);
     }}
 
+    // ── Work mode toggle (Review / Triage) ────────────────────
+    function switchWorkMode(m) {{
+        workMode = m;
+        const btns = document.querySelectorAll('#photos-workmode-toggle button');
+        btns.forEach(b => b.classList.remove('active'));
+        btns[m === 'review' ? 0 : 1].classList.add('active');
+        // Show triage legend only in triage mode
+        document.getElementById('picker-legend').style.display =
+            m === 'triage' ? 'flex' : 'none';
+        renderPicker(allSpecies);
+        // Reset the main panel
+        const prompt = m === 'triage'
+            ? `<div class="photos-select-prompt">
+                   <div class="psp-icon">🔍</div>
+                   <p>Select a species to triage its iNaturalist photos</p>
+                   <p style="font-size:12px;">Promote to hero/gallery, skip, or block</p>
+               </div>`
+            : `<div class="photos-select-prompt">
+                   <div class="psp-icon">📷</div>
+                   <p>Select a species to manage its photos</p>
+               </div>`;
+        document.getElementById('photos-main').innerHTML = prompt;
+        if (currentSpeciesId) selectSpecies(currentSpeciesId);
+    }}
+
     // ── Kingdom toggle ────────────────────────────────────────
     function switchKingdom(k) {{
         currentKingdom = k;
@@ -1924,10 +2507,11 @@ def render_photos():
         btns.forEach(b => b.classList.remove('active'));
         btns[k === 'plants' ? 0 : 1].classList.add('active');
         loadPickerList();
+        const icon = workMode === 'triage' ? '🔍' : '📷';
         document.getElementById('photos-main').innerHTML = `
             <div class="photos-select-prompt">
-                <div class="psp-icon">📷</div>
-                <p>Select a species to manage its photos</p>
+                <div class="psp-icon">${{icon}}</div>
+                <p>Select a species to ${{workMode === 'triage' ? 'triage' : 'manage'}} its photos</p>
             </div>`;
     }}
 
@@ -1954,17 +2538,38 @@ def render_photos():
         let html = '';
         for (const sp of species) {{
             const active = sp.id === currentSpeciesId ? ' active' : '';
-            const badgeCls = sp.photo_count > 0 ? 'has-photos' : 'no-photos';
-            const heroCls = sp.has_hero ? '' : ' none';
-            html += `
-                <div class="picker-item${{active}}" onclick="selectSpecies('${{sp.id}}')" data-id="${{sp.id}}">
-                    <div class="pi-hero-dot${{heroCls}}" title="${{sp.has_hero ? 'Has hero' : 'No hero'}}"></div>
-                    <div class="pi-name">
-                        <span class="pi-common">${{esc(sp.common_name || sp.id)}}</span>
-                        <span class="pi-sci">${{esc(sp.scientific_name)}}</span>
-                    </div>
-                    <span class="pi-badge ${{badgeCls}}">${{sp.photo_count}}</span>
-                </div>`;
+            if (workMode === 'triage') {{
+                // Triage: show GREEN / YELLOW / RED counts
+                const g = sp.green || 0, y = sp.yellow || 0, r = sp.red || 0;
+                const noTaxon = !sp.has_taxon
+                    ? '<span class="pi-warn" title="No iNat taxon ID — cannot scan">⚠</span>'
+                    : '';
+                html += `
+                    <div class="picker-item${{active}}" onclick="selectSpecies('${{sp.id}}')" data-id="${{sp.id}}">
+                        <div class="pi-name">
+                            <span class="pi-common">${{esc(sp.common_name || sp.id)}} ${{noTaxon}}</span>
+                            <span class="pi-sci">${{esc(sp.scientific_name)}}</span>
+                        </div>
+                        <span class="pi-counts">
+                            <span class="pc green" title="${{g}} in system">${{g}}</span>
+                            <span class="pc yellow" title="${{y}} undecided">${{y}}</span>
+                            <span class="pc red" title="${{r}} discarded">${{r}}</span>
+                        </span>
+                    </div>`;
+            }} else {{
+                // Review: photo count + hero dot
+                const badgeCls = sp.photo_count > 0 ? 'has-photos' : 'no-photos';
+                const heroCls = sp.has_hero ? '' : ' none';
+                html += `
+                    <div class="picker-item${{active}}" onclick="selectSpecies('${{sp.id}}')" data-id="${{sp.id}}">
+                        <div class="pi-hero-dot${{heroCls}}" title="${{sp.has_hero ? 'Has hero' : 'No hero'}}"></div>
+                        <div class="pi-name">
+                            <span class="pi-common">${{esc(sp.common_name || sp.id)}}</span>
+                            <span class="pi-sci">${{esc(sp.scientific_name)}}</span>
+                        </div>
+                        <span class="pi-badge ${{badgeCls}}">${{sp.photo_count}}</span>
+                    </div>`;
+            }}
         }}
         list.innerHTML = html;
     }}
@@ -1986,11 +2591,14 @@ def render_photos():
     // ── Select & load photos for a species ────────────────────
     async function selectSpecies(id) {{
         currentSpeciesId = id;
-        // Update picker active state
         document.querySelectorAll('.picker-item').forEach(el => {{
             el.classList.toggle('active', el.dataset.id === id);
         }});
-        await loadPhotos(id);
+        if (workMode === 'triage') {{
+            await loadTriage(id);
+        }} else {{
+            await loadPhotos(id);
+        }}
     }}
 
     async function loadPhotos(id) {{
@@ -2337,6 +2945,241 @@ def render_photos():
         }}
     }}
 
+    // ── Triage workspace ──────────────────────────────────────
+    let triageMode = 'new';  // 'new' or 'skipped'
+
+    async function loadTriage(speciesId) {{
+        const main = document.getElementById('photos-main');
+        const sp = allSpecies.find(s => s.id === speciesId) || {{}};
+
+        // Header with fetch-more button
+        let header = `
+            <div class="species-header">
+                <span class="sh-id">${{speciesId}}</span>
+                <div>
+                    <h2>${{esc(sp.common_name || speciesId)}}</h2>
+                    <span class="sh-sci">${{esc(sp.scientific_name || '')}}</span>
+                </div>
+                <div class="triage-header-actions">
+                    <button class="fetch-more-btn" onclick="openFetchModal()">⟳ Fetch more</button>
+                </div>
+            </div>`;
+
+        if (!sp.has_taxon) {{
+            main.innerHTML = header + `<div class="photos-empty">
+                This species has no <code>inat_taxon_id</code> in its signage record.<br>
+                <span style="font-size:12px;color:var(--gray-400);">
+                    Add the iNaturalist taxon ID to enable scanning.
+                </span>
+            </div>`;
+            return;
+        }}
+
+        main.innerHTML = header + '<div class="loading">Loading candidates…</div>';
+
+        try {{
+            const resp = await fetch(`/api/triage/view?kingdom=${{currentKingdom}}&id=${{speciesId}}&mode=${{triageMode}}`);
+            const data = await resp.json();
+            renderTriageGrid(speciesId, data, header);
+        }} catch (err) {{
+            main.innerHTML = header + '<div class="photos-empty">Error loading candidates</div>';
+        }}
+    }}
+
+    function renderTriageGrid(speciesId, data, header) {{
+        const main = document.getElementById('photos-main');
+        const sp = allSpecies.find(s => s.id === speciesId) || {{}};
+
+        if (!data.scanned) {{
+            main.innerHTML = header + `<div class="photos-empty">
+                Not scanned yet.<br>
+                <span style="font-size:12px;color:var(--gray-400);">
+                    Click <strong>⟳ Fetch more</strong> to scan iNaturalist for photos.
+                </span>
+            </div>`;
+            return;
+        }}
+
+        const photos = data.photos || [];
+        const modeLabel = triageMode === 'skipped'
+            ? 'showing new + previously skipped' : 'showing new candidates';
+
+        let html = header;
+        html += `<div class="triage-status">
+            ${{photos.length}} candidate${{photos.length !== 1 ? 's' : ''}} ·
+            ${{modeLabel}}${{data.non_cc ? ` · ${{data.non_cc}} non-CC hidden` : ''}}
+        </div>`;
+
+        if (photos.length === 0) {{
+            html += `<div class="photos-empty">
+                ${{triageMode === 'skipped'
+                    ? 'No new or skipped photos to show. Everything here is decided.'
+                    : 'No new photos. Try “Revisit skipped” from Fetch more, or scan again later.'}}
+            </div>`;
+            main.innerHTML = html;
+            return;
+        }}
+
+        html += '<div class="photos-grid">';
+        for (const p of photos) {{
+            html += triageCard(speciesId, sp, p);
+        }}
+        html += '</div>';
+        main.innerHTML = html;
+    }}
+
+    function triageCard(speciesId, sp, p) {{
+        const hasHero = (sp.green || 0) > 0 && sp.has_hero;
+        const promoteLabel = hasHero ? 'Promote (gallery)' : 'Promote as hero ★';
+        const date = fmtDate(p.observed_on);
+        const license = (p.license || '').toUpperCase();
+        const stateCls = p.state === 'skipped' ? ' triage-skipped' : ' triage-new';
+
+        return `<div class="photo-card triage-card${{stateCls}}" id="tcard-${{p.photo_id}}">
+            <div class="photo-thumb-wrap" onclick="window.open('${{esc(p.source_url)}}','_blank')"
+                 title="Open observation on iNaturalist">
+                <img class="photo-thumb" src="${{esc(p.thumb_url)}}" loading="lazy" onerror="imgFail(this)">
+                ${{p.state === 'skipped' ? '<div class="triage-badge skipped">SKIPPED</div>' : ''}}
+            </div>
+            <div class="photo-info">
+                <div class="photo-credit">
+                    <span class="credit-name">${{esc(p.photographer_name)}}</span>
+                    ${{license ? `<span class="photo-license">${{esc(license)}}</span>` : ''}}
+                </div>
+                ${{date ? `<div class="photo-date">📅 ${{date}}</div>` : ''}}
+            </div>
+            <div class="triage-actions" id="tact-${{p.photo_id}}">
+                <button class="t-btn promote" onclick='triageDecide("${{speciesId}}", ${{tjs(p)}}, "promoted", this)'>
+                    ${{promoteLabel}}
+                </button>
+                <button class="t-btn skip" onclick='triageDecide("${{speciesId}}", ${{tjs(p)}}, "skip", this)'>Skip</button>
+                <button class="t-btn block" onclick='triageDecide("${{speciesId}}", ${{tjs(p)}}, "block", this)'>Block</button>
+            </div>
+        </div>`;
+    }}
+
+    // Safe JSON for inline onclick (escape single quotes)
+    function tjs(o) {{ return JSON.stringify(o).replace(/'/g, "&#39;"); }}
+
+    async function triageDecide(speciesId, p, decision, btn) {{
+        // Block requires confirmation — it's the one verdict with no easy UI undo
+        if (decision === 'block') {{
+            if (!confirm('Block this photo? It will stay hidden from future scans (only recoverable by editing the JSON).')) return;
+        }}
+
+        const actEl = document.getElementById('tact-' + p.photo_id);
+        if (actEl) actEl.innerHTML = '<div class="t-saving">saving…</div>';
+
+        const sp = allSpecies.find(s => s.id === speciesId) || {{}};
+        const payload = {{
+            kingdom: currentKingdom,
+            decision: decision,
+            photo_id: p.photo_id,
+            psbp_id: speciesId,
+            obs_id: p.obs_id,
+            large_url: p.large_url,
+            source_url: p.source_url,
+            photographer: p.photographer,
+            photographer_name: p.photographer_name,
+            license: p.license,
+            observed_on: p.observed_on,
+            shared_on: p.shared_on,
+            common_name: sp.common_name,
+            scientific_name: sp.scientific_name,
+            type: currentKingdom === 'plants' ? 'Plant' : 'Wildlife',
+        }};
+
+        try {{
+            const resp = await fetch('/api/triage/decide', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify(payload)
+            }});
+            const res = await resp.json();
+            if (!res.ok) {{
+                toast(res.error || 'Decision failed', true);
+                if (actEl) actEl.innerHTML = '<div class="t-saving">error — reload</div>';
+                return;
+            }}
+
+            // Update local counts
+            const idx = allSpecies.findIndex(s => s.id === speciesId);
+            if (idx >= 0) {{
+                if (decision === 'promoted') {{
+                    allSpecies[idx].green = (allSpecies[idx].green || 0) + 1;
+                    allSpecies[idx].photo_count = (allSpecies[idx].photo_count || 0) + 1;
+                    if (res.is_hero) allSpecies[idx].has_hero = true;
+                }} else {{
+                    allSpecies[idx].red = (allSpecies[idx].red || 0) + 1;
+                }}
+                allSpecies[idx].yellow = Math.max(0, (allSpecies[idx].yellow || 0) - 1);
+            }}
+
+            // Fade the card out
+            const card = document.getElementById('tcard-' + p.photo_id);
+            if (card) {{
+                let verdict = decision;
+                if (decision === 'promoted') verdict = res.is_hero ? 'promoted as hero ★' : 'added to gallery';
+                card.classList.add('triage-decided');
+                if (actEl) actEl.innerHTML = `<div class="t-verdict">${{verdict}}</div>`;
+            }}
+            toast(decision === 'promoted'
+                ? (res.is_hero ? 'Promoted as hero' : 'Added to gallery')
+                : (decision === 'block' ? 'Blocked' : 'Skipped'));
+            renderPicker(allSpecies);
+            document.querySelector(`.picker-item[data-id="${{speciesId}}"]`)?.classList.add('active');
+        }} catch (err) {{
+            toast('Error: ' + err.message, true);
+        }}
+    }}
+
+    // ── Fetch-more modal ──────────────────────────────────────
+    function openFetchModal() {{
+        const sp = allSpecies.find(s => s.id === currentSpeciesId) || {{}};
+        document.getElementById('fetch-species-name').textContent =
+            (sp.common_name || currentSpeciesId) + ' — ' + (sp.scientific_name || '');
+        document.getElementById('fetch-modal').classList.add('open');
+    }}
+    function closeFetchModal() {{
+        document.getElementById('fetch-modal').classList.remove('open');
+    }}
+
+    async function doFetch(which) {{
+        closeFetchModal();
+        if (which === 'skipped') {{
+            // No network — just switch the view mode to include skipped
+            triageMode = 'skipped';
+            toast('Showing skipped photos');
+            await loadTriage(currentSpeciesId);
+            return;
+        }}
+        // 'new' → scan iNat
+        triageMode = 'new';
+        const main = document.getElementById('photos-main');
+        toast('Scanning iNaturalist…');
+        const sp = allSpecies.find(s => s.id === currentSpeciesId) || {{}};
+        // Keep header visible, show scanning state below it
+        try {{
+            const resp = await fetch('/api/triage/scan', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: currentKingdom, id: currentSpeciesId}})
+            }});
+            const res = await resp.json();
+            if (!res.ok) {{
+                toast(res.error || 'Scan failed', true);
+                return;
+            }}
+            toast(`Found ${{res.cc_count}} CC photo${{res.cc_count !== 1 ? 's' : ''}}` +
+                  (res.non_cc_count ? ` (${{res.non_cc_count}} non-CC skipped)` : ''));
+            // Refresh picker counts then reload the grid
+            await loadPickerList();
+            await loadTriage(currentSpeciesId);
+        }} catch (err) {{
+            toast('Error: ' + err.message, true);
+        }}
+    }}
+
     // ── Utility ───────────────────────────────────────────────
     function esc(s) {{
         if (!s) return '';
@@ -2414,6 +3257,9 @@ API_ROUTES = {
     "/api/photos/trash":     handle_api_photos_trash,
     "/api/photos/focus":     handle_api_photos_focus,
     "/api/photos/debug":     handle_api_photos_debug,
+    "/api/triage/scan":      handle_api_triage_scan,
+    "/api/triage/view":      handle_api_triage_view,
+    "/api/triage/decide":    handle_api_triage_decide,
     "/api/preview":          handle_api_preview,
     "/api/publish/ready":    handle_api_publish_ready,
 }
