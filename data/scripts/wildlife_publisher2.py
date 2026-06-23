@@ -27,17 +27,13 @@ from html import escape as h
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
-from psbp_common import (
-    REPO, SOURCES,
-    WILDLIFE_SIGNAGE_JSON as SIGNAGE_JSON,
-    PHOTO_CREDITS_JSON as CREDITS_JSON,
-    WILDLIFE_JSON, WILDLIFE_DIR, PHOTOS_DIR,
-    load_json, write_json_atomic,
-    display_name, build_credit_line,
-    resolve_hero_credit, resolve_gallery_credits,
-    delete_species_page,
-)
-
+# ── Repo paths ──────────────────────────────────────────────────────────────
+REPO = Path("/Users/fiona/Documents/GitHub/explore")
+DATA = REPO / "data" / "sources"
+SIGNAGE_JSON  = DATA / "wildlife_signage.json"
+CREDITS_JSON  = DATA / "photo_credits.json"
+WILDLIFE_JSON = REPO / "wildlife.json"
+WILDLIFE_DIR  = REPO / "wildlife"
 PORT = 8702
 
 # ── Theme mapping ───────────────────────────────────────────────────────────
@@ -56,24 +52,45 @@ THEME_MAP = {
 def theme_for(animal_group):
     return THEME_MAP.get(animal_group, "amphibian")
 
-# ── Data loading (thin wrappers over psbp_common paths) ─────────────────────
+# ── Data loading ────────────────────────────────────────────────────────────
 
 def load_signage():
-    return load_json(SIGNAGE_JSON, {"species": []})
+    with open(SIGNAGE_JSON) as f:
+        return json.load(f)
 
 def load_credits():
-    return load_json(CREDITS_JSON, {"meta": {}, "photos": []})
+    with open(CREDITS_JSON) as f:
+        return json.load(f)
 
 def load_wildlife_json():
-    return load_json(WILDLIFE_JSON, [])
+    if WILDLIFE_JSON.exists():
+        with open(WILDLIFE_JSON) as f:
+            return json.load(f)
+    return []
 
 def build_hero_lookup(credits):
-    from psbp_common import build_hero_lookup as _bhl
-    return _bhl(credits, type_filter="Wildlife")
+    heroes = {}
+    for p in credits["photos"]:
+        if p.get("type") == "Wildlife" and p.get("hero"):
+            heroes[p["psbp_id"]] = p
+    return heroes
 
 def build_gallery_lookup(credits):
-    from psbp_common import build_gallery_lookup as _bgl
-    return _bgl(credits, type_filter="Wildlife")
+    """Map psbp_id → list of gallery photos (hero first, then others)."""
+    galleries = {}
+    for p in credits["photos"]:
+        if p.get("type") != "Wildlife":
+            continue
+        if "gallery" not in (p.get("role") or []):
+            continue
+        pid = p["psbp_id"]
+        if pid not in galleries:
+            galleries[pid] = []
+        galleries[pid].append(p)
+    # Sort: hero first, then by photo_id
+    for pid in galleries:
+        galleries[pid].sort(key=lambda p: (not p.get("hero", False), p.get("photo_id", "")))
+    return galleries
 
 def build_species_lookup(signage):
     return {s["id"]: s for s in signage["species"]}
@@ -93,14 +110,13 @@ def build_wildlife_json_entry(species, hero):
     theme = theme_for(species.get("animal_group", ""))
     quick_hits = species.get("quick_hits") or []
 
-    # Credit resolution — resolve real name + license from hero record
-    hero_credit = resolve_hero_credit(hero)
-
     if hero:
         photo = f"photos/{pid}/{hero['filename']}"
+        credit = hero.get("photographer", "")
         focus = hero.get("focus", "50% 50%")
     else:
-        photo = ""
+        photo = f"photos/{pid}-{slugify(species['common_name'])}.jpg"
+        credit = ""
         focus = "50% 50%"
 
     return {
@@ -114,10 +130,7 @@ def build_wildlife_json_entry(species, hero):
         "quick": quick_hits[0] if quick_hits else "",
         "aliases": species.get("also_known_as") or [],
         "tags": species.get("tags") or [],
-        "credit": hero_credit["credit_name"],
-        "credit_name": hero_credit["credit_name"],
-        "credit_license": hero_credit["credit_license"],
-        "credit_line": hero_credit["credit_line"],
+        "credit": credit,
         "photo": photo,
         "focus": focus or "50% 50%",
         "page": f"wildlife/{page_filename(pid, species['common_name'])}",
@@ -352,11 +365,10 @@ def render_gallery(species, gallery_photos, hero):
     # Build lightbox data array: hero first, then gallery photos
     lb_data = []
     if hero:
-        hc = resolve_hero_credit(hero)
         lb_data.append({
             "src": f"../photos/{pid}/{hero['filename']}",
-            "credit": hc["credit_name"],
-            "license": hc["credit_license"],
+            "credit": hero.get("photographer", "Unknown"),
+            "license": hero.get("license", ""),
         })
 
     # Gallery items (non-hero photos shown in the grid)
@@ -368,11 +380,11 @@ def render_gallery(species, gallery_photos, hero):
         if not url:
             continue
         idx = len(lb_data)
-        photographer = display_name(p.get("photographer", ""), p.get("photographer_name", ""))
+        photographer = p.get("photographer", "Unknown")
         lb_data.append({
             "src": url,
             "credit": photographer,
-            "license": (p.get("license") or "").upper(),
+            "license": p.get("license", ""),
         })
         grid_items.append(
             f'<div class="gal-item" onclick="openLB({idx})">'
@@ -448,15 +460,12 @@ def generate_html(species, hero, gallery_photos):
     theme = theme_for(species.get("animal_group", ""))
     focus = hero.get("focus", "50% 50%") if hero else "50% 50%"
 
-    # Hero image — credit resolved through photographer_names.json
+    # Hero image
     if hero:
         hero_path = f"../photos/{pid}/{hero['filename']}"
-        hc = resolve_hero_credit(hero)
-        credit_parts = [f'📷 Photo by <strong>{h(hc["credit_name"])}</strong>']
-        if hc["credit_license"]:
-            credit_parts.append(f' · {h(hc["credit_license"])}')
-        credit_parts.append(' · via iNaturalist')
-        credit_html = ''.join(credit_parts)
+        photog = hero.get("photographer", "Unknown")
+        license_str = hero.get("license", "")
+        credit_html = f'📷 Photo by <strong>{h(photog)}</strong> · {h(license_str)} · via iNaturalist'
     else:
         hero_path = f"../photos/{pid}-{slugify(common)}.jpg"
         credit_html = "📷 Photo credit pending"
@@ -473,25 +482,6 @@ def generate_html(species, hero, gallery_photos):
     if gallery_section:
         sections.append(gallery_section)
     sections.append(render_tags(species))
-
-    # Photo credits block — stamped at build time, no runtime lookups
-    all_gallery = list(gallery_photos or [])
-    if hero and hero not in all_gallery:
-        all_gallery.insert(0, hero)
-    gallery_creds = resolve_gallery_credits(all_gallery)
-    if gallery_creds:
-        cred_items = ''.join(
-            f'<li style="font-size:15px;line-height:1.65;color:var(--text-mid);'
-            f'padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">'
-            f'{h(gc["credit_line"])}</li>'
-            for gc in gallery_creds
-        )
-        sections.append(
-            f'<div class="wild-section"><div class="wild-section-header">'
-            f'<span class="wild-section-icon">📸</span>'
-            f'<span class="wild-section-title">Photo Credits</span></div>'
-            f'<ul style="list-style:none;padding:10px 16px">{cred_items}</ul></div>'
-        )
 
     content = "\n    ".join(s for s in sections if s)
 
@@ -568,14 +558,21 @@ def update_wildlife_json(species, hero):
     if not found:
         entries.append(entry)
     entries.sort(key=lambda e: e["id"])
-    write_json_atomic(WILDLIFE_JSON, entries)
+    tmp = WILDLIFE_JSON.with_suffix(".tmp")
+    tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.rename(WILDLIFE_JSON)
     return entry
 
 
 def update_signage_status(species_id, new_status):
-    """Thin wrapper — delegates to psbp_common with corpus='wildlife'."""
-    from psbp_common import update_signage_status as _uss
-    _uss("wildlife", species_id, new_status)
+    signage = load_signage()
+    for s in signage["species"]:
+        if s["id"] == species_id:
+            s["status"] = new_status
+            break
+    tmp = SIGNAGE_JSON.with_suffix(".tmp")
+    tmp.write_text(json.dumps(signage, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.rename(SIGNAGE_JSON)
 
 
 # ── Dashboard HTML ──────────────────────────────────────────────────────────
@@ -739,14 +736,12 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             wj_lookup = {w["id"]: w for w in wj}
             heroes_out = {}
             for pid, hr in heroes.items():
-                hc = resolve_hero_credit(hr)
                 heroes_out[pid] = {
                     "filename": hr.get("filename") or "",
                     "photo_url": hr.get("photo_url") or "",
-                    "photographer_name": hc["credit_name"],
+                    "photographer_name": hr.get("photographer_name") or hr.get("photographer") or "",
                     "photographer": hr.get("photographer") or "",
-                    "license": hc["credit_license"],
-                    "credit_line": hc["credit_line"],
+                    "license": hr.get("license") or "",
                     "focus": hr.get("focus") or "50% 50%",
                 }
             galleries_out = {}
@@ -848,11 +843,9 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 entries = load_wildlife_json()
                 entries = [e for e in entries if e["id"] != pid]
                 entries.sort(key=lambda e: e["id"])
-                write_json_atomic(WILDLIFE_JSON, entries)
-                # Clean up orphan HTML file(s)
-                deleted = delete_species_page("wildlife", pid)
-                for fname in deleted:
-                    print(f"  🗑 Deleted {fname}")
+                tmp = WILDLIFE_JSON.with_suffix(".tmp")
+                tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+                tmp.rename(WILDLIFE_JSON)
                 self._json({"ok": True, "message": f"{sp['common_name']} demoted to spotted"})
                 print(f"  ⬇ Demoted {pid} {sp['common_name']} → spotted")
             except Exception as e:
@@ -898,7 +891,9 @@ def cmd_generate_all():
         fresh.append(build_wildlife_json_entry(sp, hero))
         count += 1
     fresh.sort(key=lambda e: e["id"])
-    write_json_atomic(WILDLIFE_JSON, fresh)
+    tmp = WILDLIFE_JSON.with_suffix(".tmp")
+    tmp.write_text(json.dumps(fresh, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.rename(WILDLIFE_JSON)
     print(f"\n  ✓ Generated {count} HTML files, skipped {skipped}")
     print(f"  ✓ wildlife.json rebuilt with {count} entries (html-only)")
 
@@ -938,7 +933,9 @@ def cmd_clean():
     for pid, name, st in removed:
         print(f"    {pid} {name} (status={st})")
     kept.sort(key=lambda e: e["id"])
-    write_json_atomic(WILDLIFE_JSON, kept)
+    tmp = WILDLIFE_JSON.with_suffix(".tmp")
+    tmp.write_text(json.dumps(kept, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.rename(WILDLIFE_JSON)
     print(f"\n  ✓ wildlife.json: {before} → {len(kept)} entries")
 
 
@@ -1007,15 +1004,16 @@ def cmd_demote(pid):
     entries = [e for e in entries if e["id"] != pid]
     if len(entries) < before:
         entries.sort(key=lambda e: e["id"])
-        write_json_atomic(WILDLIFE_JSON, entries)
+        tmp = WILDLIFE_JSON.with_suffix(".tmp")
+        tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        tmp.rename(WILDLIFE_JSON)
         print(f"  ✓ Removed from wildlife.json ({before} → {len(entries)})")
 
-    # Clean up orphan HTML file(s)
-    deleted = delete_species_page("wildlife", pid)
-    for fname in deleted:
-        print(f"  🗑 Deleted {fname}")
-
+    html_path = WILDLIFE_DIR / page_filename(pid, sp["common_name"])
     print(f"  ✓ {pid} {sp['common_name']} demoted to spotted")
+    if html_path.exists():
+        print(f"  ℹ HTML kept on disk: {html_path.name}")
+        print(f"    Delete manually if needed: rm {html_path}")
 
 if __name__ == "__main__":
     main()

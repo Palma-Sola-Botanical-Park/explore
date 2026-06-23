@@ -58,7 +58,21 @@ import urllib.error
 # ===========================================================================
 # CONFIG  —  the only lines you should ever need to touch
 # ===========================================================================
-REPO      = "/Users/fiona/Documents/GitHub/explore"
+# REPO path now comes from psbp_common.py — change it THERE.
+from psbp_common import (
+    REPO as _REPO,
+    PLANT_SIGNAGE_JSON, WILDLIFE_SIGNAGE_JSON,
+    PHOTO_CREDITS_JSON, PHOTO_WORKBENCH_JSON as WORKBENCH_JSON,
+    PHOTOS_DIR,
+    load_json, write_json_atomic,
+    display_name, build_credit_line, CC_LICENSES,
+)
+
+REPO = str(_REPO)                           # workbench uses string paths throughout
+PLANT_JSON    = str(PLANT_SIGNAGE_JSON)      # local alias — signage, not search index
+WILDLIFE_JSON = str(WILDLIFE_SIGNAGE_JSON)   # local alias — signage, not search index
+SOURCES       = str(PLANT_SIGNAGE_JSON.parent)
+
 WORKSPACE = os.path.expanduser("~/Documents/PSBP_photo_workspace")
 
 # Your iNat project's slug or numeric id. Find it in the project URL:
@@ -70,14 +84,7 @@ INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "")
 
 PORT = 8001
 
-# --- derived paths (don't edit) --------------------------------------------
-SOURCES            = os.path.join(REPO, "data", "sources")
-PLANT_JSON         = os.path.join(SOURCES, "plant_signage.json")
-WILDLIFE_JSON      = os.path.join(SOURCES, "wildlife_signage.json")
-PHOTO_CREDITS_JSON = os.path.join(SOURCES, "photo_credits.json")
-WORKBENCH_JSON     = os.path.join(SOURCES, "photo_workbench.json")
-PHOTOS_DIR         = os.path.join(REPO, "photos")
-CACHE_DIR          = os.path.join(WORKSPACE, "cache")
+CACHE_DIR = os.path.join(WORKSPACE, "cache")
 
 API_DELAY      = 1.0   # between iNat API pages
 DOWNLOAD_DELAY = 0.3   # between web-res downloads
@@ -86,18 +93,6 @@ DOWNLOAD_DELAY = 0.3   # between web-res downloads
 # fewer promoted photos is flagged as wanting more gallery shots.
 THIN_AT = 2
 
-# Keep in sync with backfill_photo_dates.py / download_plant_photos.py.
-NAME_OVERRIDES = {
-    "frankymca":   "Franky McArthur",
-    "cleamon":     "Christine Leamon",
-    "bevburdette": "Beverly Burdette",
-}
-
-CC_LICENSES = {
-    "cc-by", "cc-by-nc", "cc-by-sa", "cc-by-nc-sa",
-    "cc-by-nd", "cc-by-nc-nd", "cc0",
-}
-
 
 # ===========================================================================
 # SMALL HELPERS
@@ -105,37 +100,6 @@ CC_LICENSES = {
 
 def today():
     return datetime.date.today().isoformat()
-
-
-def display_name(login, name):
-    ov = NAME_OVERRIDES.get((login or "").lower())
-    if ov:
-        return ov
-    name = (name or "").strip()
-    return name if name else (login or "")
-
-
-def build_credit_line(name, license_code):
-    lic = (license_code or "").strip()
-    if lic and lic.lower() != "nan":
-        return f"\u00a9 {name} ({lic.upper()}), via iNaturalist"
-    return f"\u00a9 {name}, via iNaturalist"
-
-
-def load_json(path, default):
-    if not os.path.isfile(path):
-        return default
-    with open(path, encoding="utf-8") as f:
-        return json.load(f)
-
-
-def write_json_atomic(path, data):
-    """temp + replace so a crash can't truncate a file we just promoted."""
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    tmp = path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-    os.replace(tmp, path)
 
 
 # ===========================================================================

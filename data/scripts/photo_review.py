@@ -29,11 +29,12 @@ import os
 import sys
 import urllib.parse
 
+from psbp_common import (
+    REPO, PHOTO_CREDITS_JSON, PHOTOS_DIR,
+    load_json, write_json_atomic, display_name,
+)
+
 PORT = 8000
-# === The ONE line to change if you ever move the repo. Run this from ANY folder. ===
-REPO = "/Users/fiona/Documents/GitHub/explore"
-PHOTO_CREDITS = os.path.join(REPO, "data", "sources", "photo_credits.json")
-PHOTOS_DIR = os.path.join(REPO, "photos")
 
 # Wildlife roles
 WILDLIFE_ROLES = ["whole", "portrait", "flight", "feeding", "juvenile", "display", "habitat", "gallery"]
@@ -42,14 +43,12 @@ BUTTERFLY_ROLES = ["adult", "caterpillar", "gallery", "whole"]
 
 
 def load_credits():
-    with open(PHOTO_CREDITS, encoding="utf-8") as f:
-        return json.load(f)
+    return load_json(PHOTO_CREDITS_JSON, {"meta": {}, "photos": []})
 
 
 def save_credits(data):
     data["meta"]["photo_count"] = len(data["photos"])
-    with open(PHOTO_CREDITS, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+    write_json_atomic(PHOTO_CREDITS_JSON, data)
 
 
 HTML_PAGE = r"""<!DOCTYPE html>
@@ -584,9 +583,9 @@ class ReviewHandler(http.server.SimpleHTTPRequestHandler):
 
 def main():
     # Check files exist
-    if not os.path.isfile(PHOTO_CREDITS):
-        print(f"ERROR: {PHOTO_CREDITS} not found in current directory.")
-        print(f"  Run this script from your psbp-photo-run folder.")
+    if not os.path.isfile(PHOTO_CREDITS_JSON):
+        print(f"ERROR: {PHOTO_CREDITS_JSON} not found.")
+        print(f"  Check that psbp_common.py has the right REPO path.")
         sys.exit(1)
 
     if not os.path.isdir(PHOTOS_DIR):

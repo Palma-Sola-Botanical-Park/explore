@@ -31,54 +31,37 @@ from html import escape as h
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
-# ── Repo paths ──────────────────────────────────────────────────────────────
-REPO = Path("/Users/fiona/Documents/GitHub/explore")
-DATA = REPO / "data" / "sources"
-SIGNAGE_JSON = DATA / "plant_signage.json"
-CREDITS_JSON = DATA / "photo_credits.json"
-PLANTS_JSON  = REPO / "plants.json"
-PLANTS_DIR   = REPO / "plants"
+from psbp_common import (
+    REPO, SOURCES,
+    PLANT_SIGNAGE_JSON as SIGNAGE_JSON,
+    PHOTO_CREDITS_JSON as CREDITS_JSON,
+    PLANTS_JSON, PLANTS_DIR, PHOTOS_DIR,
+    load_json, write_json_atomic,
+    display_name, build_credit_line,
+    resolve_hero_credit, resolve_gallery_credits,
+    delete_species_page,
+)
+
 PORT = 8701
 
-# ── Data loading ────────────────────────────────────────────────────────────
+# ── Data loading (thin wrappers over psbp_common paths) ─────────────────────
 
 def load_signage():
-    with open(SIGNAGE_JSON) as f:
-        return json.load(f)
+    return load_json(SIGNAGE_JSON, {"species": []})
 
 def load_credits():
-    with open(CREDITS_JSON) as f:
-        return json.load(f)
+    return load_json(CREDITS_JSON, {"meta": {}, "photos": []})
 
 def load_plants_json():
-    if PLANTS_JSON.exists():
-        with open(PLANTS_JSON) as f:
-            return json.load(f)
-    return []
+    return load_json(PLANTS_JSON, [])
 
 def build_hero_lookup(credits):
-    """Map psbp_id → hero photo record for Plant type."""
-    heroes = {}
-    for p in credits["photos"]:
-        if p.get("type") == "Plant" and p.get("hero"):
-            heroes[p["psbp_id"]] = p
-    return heroes
+    from psbp_common import build_hero_lookup as _bhl
+    return _bhl(credits, type_filter="Plant")
 
 def build_gallery_lookup(credits):
-    """Map psbp_id → list of gallery photos (hero first, then others)."""
-    galleries = {}
-    for p in credits["photos"]:
-        if p.get("type") != "Plant":
-            continue
-        if "gallery" not in (p.get("role") or []):
-            continue
-        pid = p["psbp_id"]
-        if pid not in galleries:
-            galleries[pid] = []
-        galleries[pid].append(p)
-    for pid in galleries:
-        galleries[pid].sort(key=lambda p: (not p.get("hero", False), p.get("photo_id", "")))
-    return galleries
+    from psbp_common import build_gallery_lookup as _bgl
+    return _bgl(credits, type_filter="Plant")
 
 def build_species_lookup(signage):
     return {s["id"]: s for s in signage["species"]}
@@ -120,14 +103,14 @@ def build_plants_json_entry(species, hero):
     quick_hits = species.get("quick_hits") or []
     quick = quick_hits[0] if quick_hits else ""
 
-    # Hero photo path and credit
+    # Hero photo path and credit — resolve real name + license
+    hero_credit = resolve_hero_credit(hero)
+
     if hero:
         photo = f"photos/{pid}/{hero['filename']}"
-        credit = hero.get("photographer", "")
         focus = hero.get("focus", "50% 50%")
     else:
-        photo = f"photos/{pid}-{slugify(species['common_name'])}.jpg"
-        credit = ""
+        photo = ""
         focus = "50% 50%"
 
     return {
@@ -147,7 +130,10 @@ def build_plants_json_entry(species, hero):
         "photo": photo,
         "page": f"plants/{page_filename(pid, species['common_name'])}",
         "quick": quick,
-        "credit": credit,
+        "credit": hero_credit["credit_name"],
+        "credit_name": hero_credit["credit_name"],
+        "credit_license": hero_credit["credit_license"],
+        "credit_line": hero_credit["credit_line"],
         "focus": focus,
     }
 
@@ -511,10 +497,11 @@ def render_gallery(species, gallery_photos, hero):
     # Build lightbox data: hero first, then gallery
     lb_data = []
     if hero:
+        hc = resolve_hero_credit(hero)
         lb_data.append({
             "src": f"../photos/{pid}/{hero['filename']}",
-            "credit": hero.get("photographer", "Unknown"),
-            "license": hero.get("license", ""),
+            "credit": hc["credit_name"],
+            "license": hc["credit_license"],
         })
 
     grid_items = []
@@ -525,11 +512,11 @@ def render_gallery(species, gallery_photos, hero):
         if not url:
             continue
         idx = len(lb_data)
-        photographer = p.get("photographer", "Unknown")
+        photographer = display_name(p.get("photographer", ""), p.get("photographer_name", ""))
         lb_data.append({
             "src": url,
             "credit": photographer,
-            "license": p.get("license", ""),
+            "license": (p.get("license") or "").upper(),
         })
         grid_items.append(
             f'<div class="gal-item" onclick="openLB({idx})">'
@@ -604,11 +591,14 @@ def generate_html(species, hero, gallery_photos=None):
     else:
         hero_path = f"../photos/{pid}-{slugify(common)}.jpg"
 
-    # Credit line
+    # Credit line — resolved through photographer_names.json
     if hero:
-        photog_name = hero.get("photographer_name", hero.get("photographer", "Unknown"))
-        license_str = hero.get("license", "")
-        credit_html = f'📷 Photo by <strong>{h(photog_name)}</strong> · {h(license_str)} · via iNaturalist'
+        hc = resolve_hero_credit(hero)
+        credit_parts = [f'📷 Photo by <strong>{h(hc["credit_name"])}</strong>']
+        if hc["credit_license"]:
+            credit_parts.append(f' · {h(hc["credit_license"])}')
+        credit_parts.append(' · via iNaturalist')
+        credit_html = ''.join(credit_parts)
     else:
         credit_html = "📷 Photo credit pending"
 
@@ -626,6 +616,26 @@ def generate_html(species, hero, gallery_photos=None):
     if gallery_section:
         sections.append(gallery_section)
     sections.append(render_aliases(species))
+
+    # Photo credits block — stamped at build time, no runtime lookups
+    all_gallery = list(gallery_photos or [])
+    if hero and hero not in all_gallery:
+        all_gallery.insert(0, hero)
+    gallery_creds = resolve_gallery_credits(all_gallery)
+    if gallery_creds:
+        cred_items = ''.join(
+            f'<li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);'
+            f'padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">'
+            f'{h(gc["credit_line"])}</li>'
+            for gc in gallery_creds
+        )
+        sections.append(
+            f'<div class="plant-section"><div class="plant-section-header">'
+            f'<span class="plant-section-icon">📸</span>'
+            f'<span class="plant-section-title">Photo Credits</span></div>'
+            f'<ul style="list-style:none;padding:10px 16px">{cred_items}</ul></div>'
+        )
+
     content = "\n".join(s for s in sections if s)
 
     return f"""<!DOCTYPE html>
@@ -696,7 +706,6 @@ def update_plants_json(species, hero):
     """Add or update a species entry in plants.json. Preserves sort order by ID."""
     entries = load_plants_json()
     entry = build_plants_json_entry(species, hero)
-    # Replace existing or append
     found = False
     for i, e in enumerate(entries):
         if e["id"] == entry["id"]:
@@ -705,25 +714,15 @@ def update_plants_json(species, hero):
             break
     if not found:
         entries.append(entry)
-    # Sort by ID
     entries.sort(key=lambda e: e["id"])
-    # Atomic write
-    tmp = PLANTS_JSON.with_suffix(".tmp")
-    tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    tmp.rename(PLANTS_JSON)
+    write_json_atomic(PLANTS_JSON, entries)
     return entry
 
 
 def update_signage_status(species_id, new_status):
-    """Update the status field in plant_signage.json for a species."""
-    signage = load_signage()
-    for s in signage["species"]:
-        if s["id"] == species_id:
-            s["status"] = new_status
-            break
-    tmp = SIGNAGE_JSON.with_suffix(".tmp")
-    tmp.write_text(json.dumps(signage, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    tmp.rename(SIGNAGE_JSON)
+    """Thin wrapper — delegates to psbp_common with corpus='plants'."""
+    from psbp_common import update_signage_status as _uss
+    _uss("plants", species_id, new_status)
 
 
 # ── Validation ──────────────────────────────────────────────────────────────
@@ -1228,14 +1227,15 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             # Serialize heroes for JSON (just the fields the dashboard needs)
             heroes_out = {}
             for pid, hr in heroes.items():
+                hc = resolve_hero_credit(hr)
                 heroes_out[pid] = {
                     "filename": hr["filename"],
                     "photo_url": hr.get("photo_url", ""),
-                    "photographer_name": hr.get("photographer_name", ""),
+                    "photographer_name": hc["credit_name"],
                     "photographer": hr.get("photographer", ""),
-                    "license": hr.get("license", ""),
+                    "license": hc["credit_license"],
+                    "credit_line": hc["credit_line"],
                     "focus": hr.get("focus", "50% 50%"),
-                    "credit_line": hr.get("credit_line", ""),
                 }
 
             self._json_response({
@@ -1347,9 +1347,12 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 entries = load_plants_json()
                 entries = [e for e in entries if e["id"] != pid]
                 entries.sort(key=lambda e: e["id"])
-                tmp = PLANTS_JSON.with_suffix(".tmp")
-                tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-                tmp.rename(PLANTS_JSON)
+                write_json_atomic(PLANTS_JSON, entries)
+
+                # Clean up orphan HTML file(s)
+                deleted = delete_species_page("plants", pid)
+                for fname in deleted:
+                    print(f"  🗑 Deleted {fname}")
 
                 self._json_response({
                     "ok": True,
@@ -1432,9 +1435,7 @@ def cmd_generate_all():
 
     # Atomic write of the complete, clean plants.json
     fresh_entries.sort(key=lambda e: e["id"])
-    tmp = PLANTS_JSON.with_suffix(".tmp")
-    tmp.write_text(json.dumps(fresh_entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    tmp.rename(PLANTS_JSON)
+    write_json_atomic(PLANTS_JSON, fresh_entries)
 
     print(f"\n  ✓ Generated {count} HTML files, skipped {skipped}")
     print(f"  ✓ plants.json rebuilt with {count} entries (html-only)")
@@ -1466,9 +1467,7 @@ def cmd_clean():
         print(f"    {pid} {name} (status={status})")
 
     kept.sort(key=lambda e: e["id"])
-    tmp = PLANTS_JSON.with_suffix(".tmp")
-    tmp.write_text(json.dumps(kept, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    tmp.rename(PLANTS_JSON)
+    write_json_atomic(PLANTS_JSON, kept)
 
     print(f"\n  ✓ plants.json: {before} → {len(kept)} entries")
 
@@ -1496,7 +1495,7 @@ def cmd_generate_one(pid):
 
 
 def cmd_demote(pid):
-    """Demote a species from html → spotted. Removes from plants.json, keeps HTML file on disk."""
+    """Demote a species from html → spotted. Removes from plants.json and deletes HTML file."""
     signage = load_signage()
     species_lookup = build_species_lookup(signage)
 
@@ -1518,19 +1517,17 @@ def cmd_demote(pid):
     entries = [e for e in entries if e["id"] != pid]
     if len(entries) < before:
         entries.sort(key=lambda e: e["id"])
-        tmp = PLANTS_JSON.with_suffix(".tmp")
-        tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        tmp.rename(PLANTS_JSON)
+        write_json_atomic(PLANTS_JSON, entries)
         print(f"  ✓ Removed from plants.json ({before} → {len(entries)} entries)")
     else:
         print(f"  ⚠ {pid} was not in plants.json")
 
-    # Note about HTML file
-    html_path = PLANTS_DIR / page_filename(pid, species["common_name"])
+    # Clean up orphan HTML file(s)
+    deleted = delete_species_page("plants", pid)
+    for fname in deleted:
+        print(f"  🗑 Deleted {fname}")
+
     print(f"  ✓ {pid} {species['common_name']} demoted to spotted")
-    if html_path.exists():
-        print(f"  ℹ HTML file kept on disk: {html_path.name}")
-        print(f"    Delete manually if needed: rm {html_path}")
 
 
 def main():
