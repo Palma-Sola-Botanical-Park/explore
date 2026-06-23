@@ -216,11 +216,12 @@
   </div>
   <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
     <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/366864541/large.jpg" loading="lazy" alt="Moringa — photo by nigrosh60"><div class="gal-credit">📷 nigrosh60</div></div></div></div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/366864541/large.jpg" loading="lazy" alt="Moringa — photo by Sherry Nigro"><div class="gal-credit">📷 Sherry Nigro</div></div></div></div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
     <div class="alias-list"><span class="alias-tag">Drumstick Tree</span></div>
   </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Sherry Nigro (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
@@ -232,7 +233,7 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-00086/366864462.jpg", "credit": "nigrosh60", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/366864541/large.jpg", "credit": "nigrosh60", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-00086/366864462.jpg", "credit": "Sherry Nigro", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/366864541/large.jpg", "credit": "Sherry Nigro", "license": "CC-BY-NC"}];
     var lbIdx=0;
     function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
