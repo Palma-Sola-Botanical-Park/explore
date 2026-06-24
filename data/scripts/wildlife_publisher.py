@@ -227,6 +227,8 @@ WILD_CSS = """\
   .gal-item:hover img{ transform:scale(1.05); }
   .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
   .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
   .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
@@ -356,6 +358,22 @@ def render_interaction(species):
     return f'<div class="{cls}"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>{h(guidance)}</p></div></div>'
 
 
+def _fmt_observed(date_str):
+    """Format an ISO date (2025-11-14) as 'Nov 14, 2025' for display.
+
+    Returns "" if the date is missing or unparseable, so callers can skip it
+    cleanly. Only the date is shown — this is the observation date that lets
+    visitors see *when* each photo was taken (e.g. proving a winter visitor).
+    """
+    if not date_str:
+        return ""
+    try:
+        from datetime import datetime as _dt
+        return _dt.strptime(date_str[:10], "%Y-%m-%d").strftime("%b %-d, %Y")
+    except (ValueError, TypeError):
+        return ""
+
+
 def render_gallery(species, gallery_photos, hero):
     """Render the photo gallery section with lightbox.
 
@@ -376,6 +394,7 @@ def render_gallery(species, gallery_photos, hero):
             "src": f"../photos/{pid}/{hero['filename']}",
             "credit": hc["credit_name"],
             "license": hc["credit_license"],
+            "observed": _fmt_observed(hero.get("observed_on", "")),
         })
 
     # Gallery items (non-hero photos shown in the grid)
@@ -388,15 +407,18 @@ def render_gallery(species, gallery_photos, hero):
             continue
         idx = len(lb_data)
         photographer = display_name(p.get("photographer", ""), p.get("photographer_name", ""))
+        observed = _fmt_observed(p.get("observed_on", ""))
         lb_data.append({
             "src": url,
             "credit": photographer,
             "license": (p.get("license") or "").upper(),
+            "observed": observed,
         })
+        date_html = f'<div class="gal-date">📅 {h(observed)}</div>' if observed else ""
         grid_items.append(
             f'<div class="gal-item" onclick="openLB({idx})">'
             f'<img src="{h(url)}" loading="lazy" alt="{h(common)} — photo by {h(photographer)}">'
-            f'<div class="gal-credit">📷 {h(photographer)}</div></div>'
+            f'<div class="gal-credit">📷 {h(photographer)}</div>{date_html}</div>'
         )
 
     if not grid_items:
@@ -429,7 +451,7 @@ def render_gallery(species, gallery_photos, hero):
     <script>
     var lbData={lb_json};
     var lbIdx=0;
-    function openLB(i){{lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}}
+    function openLB(i){{lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}}
     function closeLB(e){{if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}}
     function stepLB(dir){{lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}}
     document.addEventListener('keydown',function(e){{if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);}});
