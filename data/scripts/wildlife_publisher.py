@@ -272,11 +272,25 @@ def render_badges(species):
     return "".join(badges)
 
 
+def _allow_bold(text):
+    """Escape all HTML, then restore ONLY <b>/</b> tags.
+
+    Lets signage authors bold a keyword with <b>...</b> in quick hits while
+    keeping every other character safely escaped — a stray < or & can't break
+    the page or inject markup. Bold is the only tag permitted.
+    """
+    safe = h(text or "")
+    # html.escape turns "<b>" into "&lt;b&gt;" — turn just those back.
+    safe = safe.replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>")
+    safe = safe.replace("&lt;B&gt;", "<b>").replace("&lt;/B&gt;", "</b>")
+    return safe
+
+
 def render_quick_hits(species):
     items = species.get("quick_hits") or []
     if not items:
         return ""
-    li = "".join(f"<li>{h(q)}</li>" for q in items)
+    li = "".join(f"<li>{_allow_bold(q)}</li>" for q in items)
     return f'<div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list">{li}</ul></div>'
 
 
