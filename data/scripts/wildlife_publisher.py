@@ -432,22 +432,19 @@ def render_gallery(species, gallery_photos, hero):
 
 
 def render_tags(species):
-    tags = species.get("tags") or []
-    aliases = species.get("also_known_as") or []
-    if not tags and not aliases:
-        return ""
-    parts = []
-    if aliases:
-        parts.append("".join(f'<span class="alias-tag">{h(a)}</span>' for a in aliases))
-    if tags:
-        if aliases:
-            parts.append('<div class="wild-tags">' + "".join(f'<span class="wild-tag">{h(t)}</span>' for t in tags) + '</div>')
-        else:
-            parts.append('<div class="alias-list" style="padding-top:0">' + "".join(f'<span class="wild-tag">{h(t)}</span>' for t in tags) + '</div>')
+    """Render the public 'Also Known As' section — REAL alternate names only.
 
-    inner = "".join(parts)
-    if aliases and tags:
-        inner = f'<div class="alias-list">{parts[0]}{parts[1]}</div>'
+    `tags` (Bird, Native, Loud, Cavity nester, etc.) are INTERNAL dashboard
+    metadata used for filtering/organizing species. They are never published.
+    Only genuine alternate common names from `also_known_as` appear here, and
+    the whole section is dropped when there are none.
+    """
+    aliases = species.get("also_known_as") or []
+    if not aliases:
+        return ""
+    inner = ('<div class="alias-list">'
+             + "".join(f'<span class="alias-tag">{h(a)}</span>' for a in aliases)
+             + '</div>')
     return f'<div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div>{inner}</div>'
 
 

@@ -1230,7 +1230,148 @@ def handle_api_photos_trash(params):
     return {"ok": True, "psbp_id": psbp_id, "removed": photo_id,
             "remaining": len(credits["photos"]), "demoted_to": "skipped"}
 
-def render_preview_html(kingdom, species_id):
+# ── Gap audit (preview-only; never touches data or the publisher) ──────────
+#
+# Defines which signage fields matter for a complete page, and what counts as
+# "thin." Used ONLY to render the Gaps overlay in preview. Nothing here is ever
+# written to JSON or seen by a visitor.
+#
+# Each entry: (label, accessor, kind)
+#   kind "text"  → flag if empty/whitespace; thin if very short
+#   kind "list"  → flag if empty; thin if below min_len
+#   kind "blocks"→ list of {label,text}; flag if empty
+#   accessor is a dotted path into the species dict (supports one level of nesting)
+
+PLANT_GAP_SPEC = [
+    ("Common name",       "common_name",        "text",   None),
+    ("Scientific name",   "botanical_name",     "text",   None),
+    ("Family",            "taxonomy.family",    "text",   None),
+    ("Category",          "category",           "text",   None),
+    ("Quick hits",        "quick_hits",         "list",   3),
+    ("Origin",            "origin",             "text",   "prose"),
+    ("More information",  "more_information",   "list",   2),
+    ("Wildlife value",    "wildlife_value",     "list",   1),
+    ("Reproduction blocks", "reproduction.blocks", "blocks", None),
+    ("What to look for",  "reproduction.what_to_look_for", "text", "prose"),
+    ("Size",              "size.height_length", "text",   None),
+    ("Growing light",     "growing_conditions.light", "text", None),
+    ("Edibility detail",  "edibility.detail",   "text",   None),
+    ("Toxicity (people)", "toxicity.people",    "text",   None),
+]
+
+WILDLIFE_GAP_SPEC = [
+    ("Common name",       "common_name",        "text",   None),
+    ("Scientific name",   "scientific_name",    "text",   None),
+    ("Animal group",      "animal_group",       "text",   None),
+    ("Category",          "category",           "text",   None),
+    ("Quick hits",        "quick_hits",         "list",   3),
+    ("Range & origin",    "range_and_origin",   "text",   "prose"),
+    ("More information",  "more_information",   "list",   2),
+    ("Identification blocks", "identification.blocks", "blocks", None),
+    ("What to look for",  "identification.what_to_look_for", "text", "prose"),
+    ("Diet",              "diet",               "text",   "prose"),
+    ("Behavior",          "behavior",           "text",   "prose"),
+    ("Voice / sounds",    "sounds",             "text",   "prose"),
+    ("Where to look",     "where_to_look",      "text",   "prose"),
+    ("When to see",       "when_to_see",        "text",   "prose"),
+    ("Habitat",           "habitat",            "text",   "prose"),
+]
+
+# Placeholder strings that should count as EMPTY even though the field has text.
+_PLACEHOLDER_MARKERS = (
+    "to be expanded", "to be documented", "to be drafted", "first-pass stub",
+    "see full writeup", "see quick hit", "future review", "content to be",
+)
+
+def _dig(species, path):
+    """Follow a dotted path one or two levels deep; return the value or None."""
+    cur = species
+    for part in path.split("."):
+        if not isinstance(cur, dict):
+            return None
+        cur = cur.get(part)
+    return cur
+
+
+def _looks_placeholder(text):
+    t = (text or "").strip().lower()
+    if not t or t == "—" or t == "-":
+        return True
+    return any(m in t for m in _PLACEHOLDER_MARKERS)
+
+
+def audit_gaps(kingdom, species):
+    """Return a list of gap findings for a species. Preview-only.
+
+    Each finding: {"label","level"} where level is "missing" or "thin".
+    """
+    spec = PLANT_GAP_SPEC if kingdom == "plants" else WILDLIFE_GAP_SPEC
+    findings = []
+
+    for label, path, kind, minimum in spec:
+        val = _dig(species, path)
+
+        if kind == "text":
+            if not val or _looks_placeholder(str(val)):
+                findings.append({"label": label, "level": "missing"})
+            elif minimum == "prose" and len(str(val).strip()) < 25:
+                findings.append({"label": label, "level": "thin"})
+
+        elif kind == "list":
+            items = [x for x in (val or []) if not _looks_placeholder(str(x))]
+            if not items:
+                findings.append({"label": label, "level": "missing"})
+            elif minimum and len(items) < minimum:
+                findings.append({"label": label, "level": "thin"})
+
+        elif kind == "blocks":
+            blocks = val or []
+            good = [b for b in blocks
+                    if isinstance(b, dict) and not _looks_placeholder(b.get("text", ""))]
+            if not good:
+                findings.append({"label": label, "level": "missing"})
+
+    return findings
+
+
+def _gaps_overlay_html(findings):
+    """Build the floating Gaps panel injected into preview when gaps=1."""
+    if not findings:
+        return (
+            '<div id="gaps-panel" style="position:fixed;right:16px;top:50px;width:230px;'
+            'z-index:99998;background:#1a3a1f;color:#fff;border-radius:10px;'
+            'padding:14px 16px;font:13px system-ui;box-shadow:0 4px 20px rgba(0,0,0,.3);">'
+            '<strong style="display:block;margin-bottom:4px;">✓ No gaps</strong>'
+            'Every tracked field has real content. Looks publish-ready.</div>'
+        )
+    missing = [f for f in findings if f["level"] == "missing"]
+    thin = [f for f in findings if f["level"] == "thin"]
+    rows = ""
+    for f in missing:
+        rows += (f'<div style="display:flex;gap:6px;align-items:center;margin:3px 0;">'
+                 f'<span style="color:#ff6b6b;">●</span>'
+                 f'<span>{f["label"]}</span>'
+                 f'<span style="margin-left:auto;font-size:10px;opacity:.7;">empty</span></div>')
+    for f in thin:
+        rows += (f'<div style="display:flex;gap:6px;align-items:center;margin:3px 0;">'
+                 f'<span style="color:#ffd24a;">●</span>'
+                 f'<span>{f["label"]}</span>'
+                 f'<span style="margin-left:auto;font-size:10px;opacity:.7;">thin</span></div>')
+    return (
+        '<div id="gaps-panel" style="position:fixed;right:16px;top:50px;width:250px;'
+        'z-index:99998;background:#1a3a1f;color:#fff;border-radius:10px;'
+        'padding:14px 16px;font:13px system-ui;box-shadow:0 4px 20px rgba(0,0,0,.3);'
+        'max-height:80vh;overflow:auto;">'
+        f'<strong style="display:block;margin-bottom:8px;">Gaps to fill '
+        f'({len(missing)} empty, {len(thin)} thin)</strong>'
+        f'{rows}'
+        '<div style="margin-top:10px;font-size:11px;opacity:.7;line-height:1.4;">'
+        'Red = empty/placeholder · Yellow = present but short. '
+        'These flags are preview-only and never publish.</div></div>'
+    )
+
+
+def render_preview_html(kingdom, species_id, gaps_mode=False):
     """Render a species page in memory using the publisher's generator.
 
     Returns (html_string, status_code). Never writes files or changes status —
@@ -1257,26 +1398,40 @@ def render_preview_html(kingdom, species_id):
 
         html = pub.generate_html(species, hero, galleries.get(species_id, []))
 
-        # Banner so it's obvious this is a dry-run preview, plus rewrite the
-        # relative photo paths so images resolve against the local server.
+        # Banner + a toggle between Visitor view and Gaps view. The gaps overlay
+        # is rendered from a preview-only audit — nothing here touches the data
+        # or the published page.
+        other_mode = "0" if gaps_mode else "1"
+        other_label = "Visitor view" if gaps_mode else "Gaps view"
+        toggle = (
+            f'<a href="/preview?kingdom={kingdom}&id={species_id}&gaps={other_mode}" '
+            'style="margin-left:14px;color:#1a3a1f;background:rgba(255,255,255,.55);'
+            'padding:2px 10px;border-radius:10px;text-decoration:none;font-weight:700;">'
+            f'⇄ {other_label}</a>'
+        )
         banner = (
             '<div style="position:fixed;top:0;left:0;right:0;z-index:99999;'
             'background:#c5922a;color:#1a3a1f;font:600 13px system-ui;'
             'padding:7px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);">'
             f'PREVIEW · {species_id} · status: {species.get("status","?")} · '
-            'not yet published — this is a dry run</div>'
-            '<div style="height:34px;"></div>'
+            + ('GAPS VIEW' if gaps_mode else 'not yet published — dry run')
+            + toggle +
+            '</div><div style="height:34px;"></div>'
         )
         # Photos are referenced as "photos/PSBP-xxxxx/file.jpg" (relative).
         # Point them at the dashboard's static photo route so they load here.
         html = html.replace('"photos/', '"/photos-file/').replace("'photos/", "'/photos-file/")
-        # Inject the banner right after <body>
+
+        # Gaps overlay panel (only in gaps mode)
+        overlay = _gaps_overlay_html(audit_gaps(kingdom, species)) if gaps_mode else ""
+
+        # Inject banner + overlay right after <body>
         if "<body" in html:
             idx = html.index("<body")
             close = html.index(">", idx) + 1
-            html = html[:close] + banner + html[close:]
+            html = html[:close] + banner + overlay + html[close:]
         else:
-            html = banner + html
+            html = banner + overlay + html
         return (html, 200)
     except Exception as e:
         import traceback
@@ -1403,6 +1558,8 @@ def get_publish_list(kingdom):
             "has_hero": sid in hero_ids,
             "ready": ready,
             "checks": checks,
+            "tags": sp.get("tags") or [],
+            "aliases": sp.get("also_known_as") or sp.get("alternate_names") or [],
         })
     return result
 
@@ -2411,6 +2568,28 @@ main {
     font-style: italic;
 }
 .pub-na { color: var(--gray-200); }
+.pub-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+.pub-tags-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray-400);
+    margin-right: 2px;
+}
+.pub-tag {
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 3px;
+    background: #eef1f4;
+    color: #5a6b7a;
+    border: 1px dashed #c5cfd8;
+}
 .pub-search {
     padding: 7px 10px;
     border: 1px solid var(--gray-200);
@@ -2430,6 +2609,12 @@ main {
     color: var(--green-deep);
     border-color: var(--gold);
 }
+.pub-btn.gaps {
+    background: white;
+    color: #b8860b;
+    border-color: #e0c66a;
+}
+.pub-btn.gaps:hover { background: #fff8e1; border-color: var(--gold); }
 
 /* Picker triage counts */
 .pi-counts {
@@ -4221,8 +4406,10 @@ def render_publish():
 
         let actions = '';
         const previewBtn = sp.has_hero
-            ? `<button class="pub-btn preview" onclick="pubPreview('${{sp.id}}')"
-                       title="Open the generated page in a new browser tab">👁 Preview</button>`
+            ? `<button class="pub-btn preview" onclick="pubPreview('${{sp.id}}', 0)"
+                       title="Open the generated page in a new browser tab">👁 Preview</button>
+               <button class="pub-btn gaps" onclick="pubPreview('${{sp.id}}', 1)"
+                       title="Preview with missing/thin fields flagged">⚠ Gaps</button>`
             : '';
         if (sp.status === 'spotted') {{
             const disabled = sp.ready ? '' : 'disabled';
@@ -4240,6 +4427,13 @@ def render_publish():
             actions = previewBtn || `<span class="pub-na">—</span>`;
         }}
 
+        const tagsHtml = (sp.tags && sp.tags.length)
+            ? `<div class="pub-tags" title="Internal tags — used in the dashboard, never shown on the public page">
+                 <span class="pub-tags-label">tags</span>
+                 ${{sp.tags.map(t => `<span class="pub-tag">${{esc(t)}}</span>`).join('')}}
+               </div>`
+            : '';
+
         return `<div class="pub-row" id="pubrow-${{sp.id}}">
             <div class="pub-row-main">
                 <span class="pub-id">${{sp.id}}</span>
@@ -4250,12 +4444,14 @@ def render_publish():
                 <span class="status-pill ${{sp.status}}">${{sp.status === 'html' ? 'Published' : sp.status.charAt(0).toUpperCase()+sp.status.slice(1)}}</span>
             </div>
             <div class="pub-checks">${{checksHtml}}</div>
+            ${{tagsHtml}}
             <div class="pub-actions">${{actions}}</div>
         </div>`;
     }}
 
-    function pubPreview(id) {{
-        window.open(`/preview?kingdom=${{pubKingdom}}&id=${{id}}`, '_blank');
+    function pubPreview(id, gaps) {{
+        const g = gaps ? '&gaps=1' : '';
+        window.open(`/preview?kingdom=${{pubKingdom}}&id=${{id}}${{g}}`, '_blank');
     }}
 
     async function pubPromote(id) {{
@@ -4377,7 +4573,8 @@ class DashboardHandler(BaseHTTPRequestHandler):
         if path == "/preview":
             kingdom = params.get("kingdom", ["plants"])[0]
             species_id = params.get("id", [""])[0]
-            html, code = render_preview_html(kingdom, species_id)
+            gaps_mode = params.get("gaps", ["0"])[0] == "1"
+            html, code = render_preview_html(kingdom, species_id, gaps_mode)
             self._html_response(code, html)
             return
 
