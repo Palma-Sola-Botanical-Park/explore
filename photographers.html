@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Park Photographers &middot; Palma Sola Botanical Park</title>
+  <meta name="description" content="The volunteer photographers whose work appears across the Palma Sola Botanical Park species pages, and where you can see more of it.">
+
+  <style>
+    /* Variables are scoped to .pf-page so they never collide with site-wide CSS. */
+    .pf-page {
+      --pf-moss: #4f6238;        /* photographer names, primary */
+      --pf-moss-soft: #6e8055;   /* secondary green */
+      --pf-gold: #c2a14d;        /* accent bar + link underline */
+      --pf-gold-deep: #a8893a;
+      --pf-paper: #faf8f2;       /* page background */
+      --pf-card: #ffffff;
+      --pf-ink: #2c2e26;         /* body text */
+      --pf-ink-soft: #5d6053;
+      --pf-line: #e6e2d6;        /* hairline borders */
+
+      background: var(--pf-paper);
+      color: var(--pf-ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding: 3.5rem 1.25rem 4.5rem;
+    }
+
+    .pf-wrap { max-width: 1040px; margin: 0 auto; }
+
+    /* ---- Header ---- */
+    .pf-head { max-width: 640px; margin: 0 0 2.75rem; }
+    .pf-eyebrow {
+      display: inline-block;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--pf-gold-deep);
+      border-left: 4px solid var(--pf-gold);
+      padding-left: 0.7rem;
+      margin-bottom: 0.9rem;
+    }
+    .pf-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.9rem, 4.5vw, 2.7rem);
+      line-height: 1.1;
+      color: var(--pf-moss);
+      margin: 0 0 0.85rem;
+      font-weight: 600;
+    }
+    .pf-lede { font-size: 1.04rem; color: var(--pf-ink-soft); margin: 0; }
+
+    /* ---- Grid ---- */
+    .pf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* ---- Card (gold left-accent bar is the signature, echoing the hero credit) ---- */
+    .pf-card {
+      position: relative;
+      background: var(--pf-card);
+      border: 1px solid var(--pf-line);
+      border-left: 4px solid var(--pf-gold);
+      border-radius: 6px;
+      padding: 1.4rem 1.5rem 1.5rem;
+      box-shadow: 0 1px 2px rgba(44, 46, 38, 0.04);
+      transition: box-shadow 0.18s ease, transform 0.18s ease;
+    }
+    .pf-card:hover { box-shadow: 0 6px 18px rgba(44, 46, 38, 0.09); transform: translateY(-2px); }
+
+    .pf-name {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--pf-moss);
+      margin: 0 0 0.15rem;
+    }
+    .pf-specialty {
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--pf-moss-soft);
+      margin: 0 0 0.85rem;
+    }
+    .pf-blurb { font-size: 0.95rem; color: var(--pf-ink-soft); margin: 0 0 1.15rem; }
+
+    .pf-links { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+    .pf-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+      text-decoration: none;
+      color: var(--pf-moss);
+      background: #f3f1e8;
+      border: 1px solid var(--pf-line);
+      border-radius: 999px;
+      padding: 0.4rem 0.85rem;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .pf-link:hover { background: #fff; border-color: var(--pf-gold); color: var(--pf-gold-deep); }
+    .pf-link:focus-visible { outline: 2px solid var(--pf-gold-deep); outline-offset: 2px; }
+    .pf-link svg { width: 14px; height: 14px; flex: none; }
+
+    /* ---- States ---- */
+    .pf-note { color: var(--pf-ink-soft); font-size: 0.95rem; }
+    .pf-error {
+      border: 1px solid var(--pf-line);
+      border-left: 4px solid var(--pf-gold);
+      background: #fff;
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      color: var(--pf-ink-soft);
+      font-size: 0.92rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pf-card, .pf-link { transition: none; }
+      .pf-card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- If you use site.js shared-header injection, drop your usual header markup/include here. -->
+
+  <main class="pf-page">
+    <div class="pf-wrap">
+      <header class="pf-head">
+        <span class="pf-eyebrow">Credits</span>
+        <h1 class="pf-title">Park Photographers</h1>
+        <p class="pf-lede">
+          Many of the images across this site come from photographers who volunteer their
+          work to the park. We're grateful for it &mdash; here is where you can see more of theirs.
+        </p>
+      </header>
+
+      <section id="pf-grid" class="pf-grid" aria-live="polite">
+        <p class="pf-note">Loading&hellip;</p>
+      </section>
+    </div>
+  </main>
+
+  <!-- If you use site.js shared-footer injection, drop your usual footer markup/include here. -->
+
+  <script>
+    (function () {
+      var grid = document.getElementById('pf-grid');
+
+      var INAT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 0 0 18M12 3a14 14 0 0 1 0 18"></path></svg>';
+      var SITE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7M10 14 21 3M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"></path></svg>';
+
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+          return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+        });
+      }
+      function has(v) { return v != null && String(v).trim() !== ''; }
+
+      function linkEl(href, label, icon, person) {
+        return '<a class="pf-link" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer"'
+          + ' aria-label="' + esc(label) + ' \u2014 ' + esc(person) + ' (opens in a new tab)">'
+          + icon + '<span>' + esc(label) + '</span></a>';
+      }
+
+      function card(p) {
+        var links = '';
+        if (has(p.inat)) links += linkEl(p.inat, 'iNaturalist', INAT_ICON, p.name);
+        if (has(p.site)) links += linkEl(p.site, has(p.site_label) ? p.site_label : 'Website', SITE_ICON, p.name);
+
+        return '<article class="pf-card">'
+          + '<h2 class="pf-name">' + esc(p.name) + '</h2>'
+          + (has(p.specialty) ? '<p class="pf-specialty">' + esc(p.specialty) + '</p>' : '')
+          + (has(p.blurb) ? '<p class="pf-blurb">' + esc(p.blurb) + '</p>' : '')
+          + (links ? '<div class="pf-links">' + links + '</div>' : '')
+          + '</article>';
+      }
+
+      fetch('data/sources/photographers.json', { cache: 'no-store' })
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function (data) {
+          var list = (data && data.photographers) || [];
+          if (!list.length) {
+            grid.innerHTML = '<p class="pf-note">No photographers listed yet.</p>';
+            return;
+          }
+          grid.innerHTML = list.map(card).join('');
+        })
+        .catch(function (err) {
+          grid.innerHTML = '<div class="pf-error">Couldn\'t load the photographer list. '
+            + 'Make sure <code>data/sources/photographers.json</code> sits beside this page and that '
+            + 'you\'re viewing over your local server (not a file:// path).</div>';
+          if (window.console) console.error('photographers.json load failed:', err);
+        });
+    })();
+  </script>
+
+</body>
+</html>

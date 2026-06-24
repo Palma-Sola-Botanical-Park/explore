@@ -64,12 +64,19 @@ PHOTOGRAPHER_NAMES = os.path.join(REPO, "data", "sources", "photographer_names.j
 PLANTS_INDEX       = os.path.join(REPO, "plants.json")
 WILDLIFE_INDEX     = os.path.join(REPO, "wildlife.json")
 PHOTOS_DIR         = os.path.join(REPO, "photos")
+RESEARCH_JSON      = os.path.join(REPO, "data", "sources", "research.json")
 
 # ── iNaturalist triage config ──────────────────────────────────────────────
 # Project slug from the URL: inaturalist.org/projects/<THIS-PART>
 # iNat accepts the slug directly as the project_id query parameter.
 # Override with the INAT_PROJECT_ID env var if needed.
 INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
+
+# Park centroid for geographic queries — bypasses project-level quality filters
+# that exclude casual (cultivated) observations from collection projects.
+PARK_LAT  = 27.497
+PARK_LNG  = -82.619
+PARK_RADIUS_KM = 0.5   # ~500m covers the 10-acre park with margin
 
 # Scan cache lives OUTSIDE the repo — throwaway, re-fetchable iNat results.
 TRIAGE_WORKSPACE = os.path.expanduser("~/Documents/PSBP_photo_workspace")
@@ -291,6 +298,190 @@ def get_species_list(kingdom):
         })
     return result
 
+
+# ── Intake / Research helpers ────────────────────────────────────────────
+
+# Fields that live only in research.json and don't transfer to signage.
+# Everything else carries over, with status flipped to "spotted".
+_RESEARCH_ONLY_FIELDS = {
+    "import_source",      # how it got into research.json
+    "research_source",    # which source (inat_observed, inventory, etc.)
+    "csv_data",           # bulk import artifact
+    "inat_obs_count",     # snapshot count, not maintained
+    "observation_stats",  # snapshot stats
+    "sources",            # research citation list
+    "last_reviewed",      # research review date
+    "type",               # implicit from which signage file it lands in
+}
+
+# Key content fields per kingdom — used for completeness indicators.
+_PLANT_CONTENT_KEYS = [
+    "quick_hits", "more_information", "origin", "wildlife_value",
+    "reproduction", "growing_conditions", "edibility", "toxicity",
+    "alternate_names", "butterfly_host",
+]
+_WILDLIFE_CONTENT_KEYS = [
+    "quick_hits", "more_information", "range_and_origin", "diet",
+    "behavior", "habitat", "sounds", "identification",
+    "also_known_as", "seasonality", "size",
+]
+
+
+def _is_filled(val):
+    """Check if a field value counts as populated."""
+    if val is None:
+        return False
+    if isinstance(val, str):
+        return bool(val.strip())
+    if isinstance(val, (list, dict)):
+        return bool(val)
+    return True
+
+
+def get_research_list(kingdom):
+    """Return research.json species filtered by kingdom, sorted by ID.
+
+    Each item includes a content_filled / content_total count for the picker
+    badge.  Died/stolen species are included (picker shows them) but the
+    promote button disables for non-research status.
+    """
+    raw = _load(RESEARCH_JSON)
+    species = _get_species_list(raw)
+    type_val = "plant" if kingdom == "plants" else "wildlife"
+    content_keys = _PLANT_CONTENT_KEYS if kingdom == "plants" else _WILDLIFE_CONTENT_KEYS
+
+    result = []
+    for sp in sorted(species, key=lambda s: s.get("id", "")):
+        if sp.get("type", "plant") != type_val:
+            continue
+        sci = sp.get("botanical_name", "") if kingdom == "plants" else sp.get("scientific_name", "")
+        filled = sum(1 for f in content_keys if _is_filled(sp.get(f)))
+        result.append({
+            "id":             sp.get("id", ""),
+            "common_name":    sp.get("common_name", ""),
+            "scientific_name": sci,
+            "status":         sp.get("status", "research"),
+            "category":       sp.get("category", ""),
+            "feature_tier":   sp.get("feature_tier", ""),
+            "native":         sp.get("native"),
+            "has_taxon":      bool(sp.get("inat_taxon_id")),
+            "content_filled": filled,
+            "content_total":  len(content_keys),
+            "has_sign":       sp.get("has_sign", False),
+            "source":         sp.get("research_source", ""),
+            "inat_taxon_id":  sp.get("inat_taxon_id"),
+            "inat_obs_count": sp.get("inat_obs_count"),
+        })
+    return result
+
+
+def get_research_detail(species_id):
+    """Return the full record for one research.json species."""
+    raw = _load(RESEARCH_JSON)
+    species = _get_species_list(raw)
+    sp = next((s for s in species if s.get("id") == species_id), None)
+    return sp
+
+
+def _check_intake_duplicates(kingdom, species):
+    """Check if this species already exists in the target signage JSON.
+
+    Returns a list of matching entries with the reasons for the match.
+    """
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    existing = _get_species_list(_load(path))
+
+    sid = species.get("id", "")
+    taxon_id = species.get("inat_taxon_id")
+    common = (species.get("common_name") or "").lower().strip()
+    sci = (species.get("botanical_name") or species.get("scientific_name") or "").lower().strip()
+
+    dupes = []
+    for ex in existing:
+        reasons = []
+        if ex.get("id") == sid:
+            reasons.append("Same PSBP ID")
+        if taxon_id and ex.get("inat_taxon_id") == taxon_id:
+            reasons.append("Same iNat taxon ID")
+        ex_common = (ex.get("common_name") or "").lower().strip()
+        ex_sci = (ex.get("botanical_name") or ex.get("scientific_name") or "").lower().strip()
+        if common and ex_common and ex_common == common:
+            reasons.append("Same common name")
+        if sci and ex_sci and ex_sci == sci:
+            reasons.append("Same scientific name")
+        if reasons:
+            dupes.append({
+                "id":              ex.get("id", ""),
+                "common_name":     ex.get("common_name", ""),
+                "scientific_name": ex_sci,
+                "status":          ex.get("status", ""),
+                "reasons":         reasons,
+            })
+    return dupes
+
+
+def promote_to_spotted(species_id, kingdom):
+    """Move a species from research.json → signage JSON as 'spotted'.
+
+    Steps:
+      1. Load the species from research.json
+      2. Block if an exact ID duplicate exists in signage
+      3. Build the signage record (strip research-only fields, set status)
+      4. Append to signage JSON (sorted by ID, meta updated)
+      5. Remove from research.json (meta counts updated)
+
+    Returns {ok, id, common_name, kingdom, duplicates_warned}.
+    """
+    # Load research
+    research = _load(RESEARCH_JSON)
+    research_species = _get_species_list(research)
+    sp = next((s for s in research_species if s.get("id") == species_id), None)
+    if not sp:
+        return {"ok": False, "error": f"{species_id} not found in research.json"}
+
+    # Hard-block on exact ID collision
+    dupes = _check_intake_duplicates(kingdom, sp)
+    id_collisions = [d for d in dupes if "Same PSBP ID" in d["reasons"]]
+    if id_collisions:
+        return {"ok": False,
+                "error": f"{species_id} already exists in {kingdom} signage",
+                "duplicates": dupes}
+
+    # Build the signage record — carry over everything except research-only
+    record = {}
+    for k, v in sp.items():
+        if k not in _RESEARCH_ONLY_FIELDS:
+            record[k] = v
+    record["status"] = "spotted"
+
+    # Write to signage
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    signage = _load(path)
+    signage.setdefault("species", []).append(record)
+    signage["species"].sort(key=lambda s: s.get("id", ""))
+    signage.setdefault("meta", {})
+    signage["meta"]["species_count"] = len(signage["species"])
+    write_json_atomic(path, signage)
+
+    # Remove from research.json
+    research["species"] = [s for s in research_species if s.get("id") != species_id]
+    research.setdefault("meta", {})
+    research["meta"]["species_count"] = len(research["species"])
+    plants_left = sum(1 for s in research["species"] if s.get("type") == "plant")
+    wildlife_left = sum(1 for s in research["species"] if s.get("type") == "wildlife")
+    research["meta"]["plant_count"] = plants_left
+    research["meta"]["wildlife_count"] = wildlife_left
+    write_json_atomic(RESEARCH_JSON, research)
+
+    # Non-blocking duplicates to warn about (same name / taxon but different ID)
+    warned = [d for d in dupes if "Same PSBP ID" not in d["reasons"]]
+    return {
+        "ok":                True,
+        "id":                species_id,
+        "common_name":       sp.get("common_name", ""),
+        "kingdom":           kingdom,
+        "duplicates_warned": warned,
+    }
 
 # ── Photo data helpers ────────────────────────────────────────────────────
 
@@ -566,12 +757,17 @@ def _inat_get(url):
 
 
 def _inat_observations(taxon_id):
-    """All park observations for one taxon (project-scoped), paginated."""
+    """All park observations for one taxon, paginated.
+
+    Uses geographic coordinates instead of project_id so that casual
+    (cultivated) observations are included — collection projects silently
+    exclude them regardless of verifiable= parameter.
+    """
     out, page = [], 1
     while True:
         url = ("https://api.inaturalist.org/v1/observations"
-               f"?project_id={quote(str(INAT_PROJECT_ID))}"
-               f"&taxon_id={taxon_id}&per_page=200&page={page}"
+               f"?taxon_id={taxon_id}&per_page=200&page={page}"
+               f"&lat={PARK_LAT}&lng={PARK_LNG}&radius={PARK_RADIUS_KM}"
                "&order=desc&order_by=created_at")
         data = _inat_get(url)
         if not data:
@@ -903,9 +1099,140 @@ def handle_api_species_list(params):
 # These return descriptive placeholders. Replace with real logic as each
 # tab gets built out. The route is already wired up.
 
+def handle_api_intake_list(params):
+    """GET /api/intake/list?kingdom=plants — research.json species for picker."""
+    kingdom = params.get("kingdom", ["plants"])[0]
+    return {"kingdom": kingdom, "species": get_research_list(kingdom)}
+
+
+def handle_api_intake_detail(params):
+    """GET /api/intake/detail?id=PSBP-00123 — full research.json record."""
+    species_id = params.get("id", [""])[0]
+    if not species_id:
+        return {"error": "Missing id"}
+    sp = get_research_detail(species_id)
+    if not sp:
+        return {"error": f"{species_id} not found in research.json"}
+    return {"species": sp}
+
+
 def handle_api_intake_check(params):
-    """POST /api/intake/check — duplicate check before minting. STUB."""
-    return {"status": "stub", "message": "Intake duplicate check not yet implemented."}
+    """POST /api/intake/check — duplicate check before promoting."""
+    body = params.get("_body", {})
+    kingdom = body.get("kingdom", "plants")
+    species_id = body.get("id", "")
+    if not species_id:
+        return {"error": "Missing id"}
+    sp = get_research_detail(species_id)
+    if not sp:
+        return {"error": f"{species_id} not found in research.json"}
+    dupes = _check_intake_duplicates(kingdom, sp)
+    return {"id": species_id, "duplicates": dupes, "has_duplicates": len(dupes) > 0}
+
+
+def handle_api_intake_promote(params):
+    """POST /api/intake/promote — move from research.json to signage as spotted.
+
+    Body: {"kingdom": "plants", "id": "PSBP-00123"}
+    """
+    body = params.get("_body", {})
+    kingdom = body.get("kingdom", "plants")
+    species_id = body.get("id", "")
+    if not species_id:
+        return {"ok": False, "error": "Missing id"}
+    return promote_to_spotted(species_id, kingdom)
+
+
+def handle_api_intake_set_status(params):
+    """POST /api/intake/set-status — change status within research.json.
+
+    Body: {"id": "PSBP-00123", "status": "died"}
+    Valid targets: research, died, stolen.  This does NOT move the record
+    to signage — it only relabels it inside research.json.
+    """
+    body = params.get("_body", {})
+    species_id = body.get("id", "")
+    new_status = body.get("status", "")
+    if not species_id or not new_status:
+        return {"ok": False, "error": "Missing id or status"}
+    if new_status not in ("research", "died", "stolen"):
+        return {"ok": False, "error": f"Invalid status: {new_status}"}
+
+    research = _load(RESEARCH_JSON)
+    species_list = _get_species_list(research)
+    sp = next((s for s in species_list if s.get("id") == species_id), None)
+    if not sp:
+        return {"ok": False, "error": f"{species_id} not found in research.json"}
+
+    old_status = sp.get("status", "research")
+    if old_status == new_status:
+        return {"ok": True, "id": species_id, "note": "No change"}
+
+    sp["status"] = new_status
+    # Update meta status_counts
+    research.setdefault("meta", {})
+    counts = {}
+    for s in species_list:
+        st = s.get("status", "research")
+        counts[st] = counts.get(st, 0) + 1
+    research["meta"]["status_counts"] = counts
+    write_json_atomic(RESEARCH_JSON, research)
+
+    return {
+        "ok": True,
+        "id": species_id,
+        "common_name": sp.get("common_name", ""),
+        "old_status": old_status,
+        "new_status": new_status,
+    }
+
+
+def handle_api_intake_inat_check(params):
+    """GET /api/intake/inat-check?taxon_id=12345 — observation quality from iNat.
+
+    Hits the iNat API for PSBP-project observations of this taxon and returns
+    a summary: total obs, quality grades, unique observers, latest date.
+    Helps Randy judge whether an iNat-only sighting is a fluke or solid.
+    """
+    taxon_id = params.get("taxon_id", [""])[0]
+    if not taxon_id:
+        return {"error": "Missing taxon_id"}
+
+    url = ("https://api.inaturalist.org/v1/observations"
+           f"?taxon_id={taxon_id}&per_page=200"
+           f"&lat={PARK_LAT}&lng={PARK_LNG}&radius={PARK_RADIUS_KM}"
+           "&order=desc&order_by=created_at")
+    data = _inat_get(url)
+    if not data:
+        return {"error": "iNat API request failed"}
+
+    results = data.get("results", [])
+    total = data.get("total_results", len(results))
+
+    quality = {}
+    observers = set()
+    latest_date = None
+    for obs in results:
+        qg = obs.get("quality_grade", "unknown")
+        quality[qg] = quality.get(qg, 0) + 1
+        user = obs.get("user") or {}
+        if user.get("login"):
+            observers.add(user["login"])
+        obs_date = obs.get("observed_on") or ""
+        if obs_date and (not latest_date or obs_date > latest_date):
+            latest_date = obs_date
+
+    return {
+        "taxon_id":           taxon_id,
+        "total_observations": total,
+        "quality_grades":     quality,
+        "unique_observers":   len(observers),
+        "observer_logins":    sorted(observers),
+        "latest_observation": latest_date,
+        "project_url":        (f"https://www.inaturalist.org/observations"
+                               f"?project_id={INAT_PROJECT_ID}&taxon_id={taxon_id}"
+                               f"&verifiable=any"),
+    }
 
 def handle_api_photos_species(params):
     """GET /api/photos/species?id=PSBP-00001 — all photos for a species."""
@@ -1733,6 +2060,117 @@ def handle_api_publish_demote(params):
 
         return {"ok": True, "id": pid, "new_status": "spotted",
                 "deleted_files": deleted}
+    except Exception as e:
+        import traceback
+        return {"ok": False, "error": str(e), "trace": traceback.format_exc()[-500:]}
+
+
+def handle_api_publish_demote_research(params):
+    """POST /api/publish/demote-research — full removal from signage back to research.json.
+
+    Body: {"kingdom": "plants", "id": "PSBP-00005", "reason": "research"|"died"}
+
+    This is a deeper demote than the spotted demote: the species record moves
+    entirely out of the signage JSON back into research.json, hero files are
+    cleaned up, and if the species was published its HTML page and search index
+    card are also removed.
+
+    reason='research' → status 'research' (just not ready, revisit later)
+    reason='died'     → status 'died' (suspected dead/gone from park)
+    """
+    body = params.get("_body", {})
+    kingdom = body.get("kingdom", "plants")
+    pid = body.get("id", "")
+    reason = body.get("reason", "research")
+    if not pid:
+        return {"ok": False, "error": "Missing id"}
+    if reason not in ("research", "died"):
+        return {"ok": False, "error": f"Invalid reason: {reason}"}
+
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    type_val = "plant" if kingdom == "plants" else "wildlife"
+
+    try:
+        # ── 1. Load and find the species in signage ────────────────
+        signage = _load(path)
+        species_list = _get_species_list(signage)
+        sp = next((s for s in species_list if s.get("id") == pid), None)
+        if not sp:
+            return {"ok": False, "error": f"{pid} not found in {kingdom} signage"}
+        was_status = sp.get("status", "unknown")
+
+        # ── 2. If published, clean up HTML page + search index ─────
+        deleted_files = []
+        if was_status == "html":
+            # Remove from search index
+            if kingdom == "plants":
+                from psbp_common import PLANTS_JSON as IDX
+            else:
+                from psbp_common import WILDLIFE_JSON as IDX
+            entries = load_json(IDX, [])
+            entries = [e for e in entries if e.get("id") != pid]
+            entries.sort(key=lambda e: e.get("id", ""))
+            write_json_atomic(IDX, entries)
+
+            # Delete HTML page
+            from psbp_common import delete_species_page
+            deleted_files = delete_species_page(kingdom, pid)
+
+        # ── 3. Delete hero JPG from photos/PSBP-xxxxx/ ────────────
+        hero_dir = os.path.join(PHOTOS_DIR, pid)
+        hero_deleted = []
+        if os.path.isdir(hero_dir):
+            for f in os.listdir(hero_dir):
+                fp = os.path.join(hero_dir, f)
+                if os.path.isfile(fp):
+                    os.remove(fp)
+                    hero_deleted.append(f)
+            try:
+                os.rmdir(hero_dir)
+            except OSError:
+                pass
+
+        # ── 4. Build research.json record ──────────────────────────
+        record = dict(sp)
+        record["status"] = reason     # "research" or "died"
+        record["type"] = type_val
+        record["research_source"] = "prior_research"
+
+        # ── 5. Append to research.json ─────────────────────────────
+        research = _load(RESEARCH_JSON)
+        research.setdefault("species", []).append(record)
+        research["species"].sort(key=lambda s: s.get("id", ""))
+        research.setdefault("meta", {})
+        research["meta"]["species_count"] = len(research["species"])
+        plants_r = sum(1 for s in research["species"] if s.get("type") == "plant")
+        wildlife_r = sum(1 for s in research["species"] if s.get("type") == "wildlife")
+        research["meta"]["plant_count"] = plants_r
+        research["meta"]["wildlife_count"] = wildlife_r
+        # Update status_counts
+        status_counts = {}
+        for s in research["species"]:
+            st = s.get("status", "research")
+            status_counts[st] = status_counts.get(st, 0) + 1
+        research["meta"]["status_counts"] = status_counts
+        write_json_atomic(RESEARCH_JSON, research)
+
+        # ── 6. Remove from signage JSON ────────────────────────────
+        signage["species"] = [s for s in species_list if s.get("id") != pid]
+        signage.setdefault("meta", {})
+        signage["meta"]["species_count"] = len(signage["species"])
+        write_json_atomic(path, signage)
+
+        label = "marked dead" if reason == "died" else "returned to research"
+        return {
+            "ok": True,
+            "id": pid,
+            "common_name": sp.get("common_name", ""),
+            "was_status": was_status,
+            "new_status": reason,
+            "label": label,
+            "deleted_files": deleted_files,
+            "hero_deleted": hero_deleted,
+        }
     except Exception as e:
         import traceback
         return {"ok": False, "error": str(e), "trace": traceback.format_exc()[-500:]}
@@ -2609,6 +3047,24 @@ main {
     font-style: italic;
 }
 .pub-na { color: var(--gray-200); }
+.pub-secondary {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--gray-100);
+}
+.pub-link-btn {
+    border: none;
+    background: none;
+    font-size: 11px;
+    color: var(--gray-400);
+    cursor: pointer;
+    padding: 2px 0;
+    transition: color 0.12s;
+}
+.pub-link-btn:hover { color: var(--gray-600); }
+.pub-link-btn.dead-link:hover { color: #c62828; }
 .pub-tags {
     display: flex;
     flex-wrap: wrap;
@@ -3024,6 +3480,277 @@ main {
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 .toast.error { background: #c62828; }
+
+/* ── Intake tab ───────────────────────────────────────────── */
+.intake-detail-card h2 {
+    font-size: 18px;
+    margin: 0;
+    display: inline;
+}
+.intake-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.intake-header > div { flex: 1; min-width: 0; }
+.intake-sci {
+    font-size: 13px;
+    color: var(--gray-400);
+    font-style: italic;
+    margin-top: 2px;
+}
+.intake-taxonomy {
+    font-size: 12px;
+    color: var(--gray-600);
+    margin-bottom: 12px;
+    padding: 6px 10px;
+    background: var(--gray-100);
+    border-radius: 4px;
+}
+.intake-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+.intake-chip {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 10px;
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-weight: 500;
+}
+.intake-chip.native { background: #e8f5e9; color: var(--green-mid); }
+.intake-chip.non-native { background: #fff3e0; color: #e65100; }
+.intake-chip.sign { background: #e3f2fd; color: #1565c0; }
+.intake-chip.taxon {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    font-family: "SF Mono", Menlo, monospace;
+}
+.intake-section { margin-bottom: 16px; }
+.intake-section h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-deep);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.intake-fill-count {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-400);
+}
+.intake-fields {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+.intake-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--gray-100);
+}
+.intake-field:last-child { border-bottom: none; }
+.intake-field.filled .if-check { color: var(--green-mid); }
+.intake-field.empty .if-check { color: var(--gray-200); }
+.intake-field.empty .if-label { color: var(--gray-400); }
+.if-check {
+    font-size: 12px;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.if-label { font-weight: 500; min-width: 130px; }
+.if-detail {
+    flex: 1;
+    font-size: 12px;
+    color: var(--gray-400);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.intake-qh {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.5;
+    margin-bottom: 6px;
+    padding-left: 4px;
+}
+.intake-qh-more {
+    font-size: 12px;
+    color: var(--gray-400);
+    font-style: italic;
+    padding-left: 4px;
+}
+.intake-notes {
+    font-size: 12px;
+    color: var(--gray-600);
+    background: var(--gray-100);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+.intake-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--gray-200);
+}
+.intake-actions .promote { flex: 1; }
+.pi-badge.has-content { background: #e8f5e9; color: var(--green-mid); }
+.pi-badge.no-content { background: var(--gray-100); color: var(--gray-400); }
+.intake-status-marker {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--status-research);
+    margin-left: 4px;
+}
+
+/* Source tier: left-border accents on picker items */
+.picker-item.src-both      { border-left: 3px solid var(--green-mid); background: #f5faf6; }
+.picker-item.src-prior      { border-left: 3px solid #5c6bc0; }
+.picker-item.src-inat       { border-left: 3px solid var(--gold); }
+.picker-item.src-inventory  { border-left: 3px solid var(--gray-200); }
+
+/* Dead/stolen species in picker */
+.picker-item.is-dead { background: #fef2f2; }
+.picker-item.is-dead .pi-common { text-decoration: line-through; color: var(--gray-400); }
+.picker-item.is-dead .pi-sci { color: var(--gray-200); }
+
+/* Source banner in detail card */
+.intake-source-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 14px;
+}
+.intake-source-banner .isb-icon { font-size: 16px; }
+.intake-source-banner .isb-label { flex: 1; }
+.intake-source-banner .isb-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: inherit;
+    opacity: 0.7;
+    display: block;
+    margin-top: 1px;
+}
+.intake-source-banner.src-both {
+    background: #e8f5e9;
+    color: var(--green-deep);
+    border-left: 4px solid var(--green-mid);
+}
+.intake-source-banner.src-prior {
+    background: #e8eaf6;
+    color: #283593;
+    border-left: 4px solid #5c6bc0;
+}
+.intake-source-banner.src-inat {
+    background: #fff8e1;
+    color: #5d4200;
+    border-left: 4px solid var(--gold);
+}
+.intake-source-banner.src-inventory {
+    background: var(--gray-100);
+    color: var(--gray-600);
+    border-left: 4px solid var(--gray-400);
+}
+
+/* Dead detail card */
+.intake-detail-card.is-dead {
+    border: 2px solid #ef9a9a;
+    background: #fef8f8;
+}
+.intake-dead-banner {
+    background: #ffebee;
+    color: #b71c1c;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* iNat buttons */
+.intake-inat-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.inat-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--gold);
+    background: #fff8e1;
+    color: #5d4200;
+    cursor: pointer;
+    transition: all 0.12s;
+}
+.inat-link-btn:hover { background: var(--gold); color: white; }
+.inat-check-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--gray-200);
+    background: white;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.12s;
+}
+.inat-check-btn:hover { border-color: var(--green-mid); color: var(--green-mid); }
+.inat-check-btn:disabled { opacity: 0.5; cursor: default; }
+.inat-summary {
+    font-size: 12px;
+    color: var(--gray-600);
+    padding: 8px 12px;
+    background: var(--gray-100);
+    border-radius: 4px;
+    margin-bottom: 14px;
+    line-height: 1.6;
+}
+.inat-summary .is-strong { color: var(--green-mid); font-weight: 600; }
+.inat-summary .is-weak { color: #c62828; font-weight: 600; }
+
+/* Dead/revive button */
+.pub-btn.dead-btn {
+    background: white;
+    color: #c62828;
+    border-color: #ef9a9a;
+}
+.pub-btn.dead-btn:hover { background: #ffebee; border-color: #c62828; }
+.pub-btn.revive-btn {
+    background: white;
+    color: var(--green-mid);
+    border-color: var(--green-mid);
+}
+.pub-btn.revive-btn:hover { background: #e8f5e9; }
 """
 
 
@@ -3301,13 +4028,581 @@ def render_stub(tab_id, title, features, pipeline_step):
 
 
 def render_intake():
-    return render_stub("intake", "📥 Intake — Import Species from iNat", [
-        "Paste an iNat observation URL → auto-extract taxon, names, photo",
-        "Fuzzy duplicate check against existing signage entries",
-        "Mint next available PSBP-xxxxx ID",
-        "Plant / Wildlife mode toggle (determines target JSON)",
-        "Write new entry to signage JSON with status <code>spotted</code>",
-    ], "Pipeline step 1 of 4")
+    """Intake tab — browse research.json, preview, promote to spotted."""
+    return f"""
+    <!-- Top controls: kingdom toggle + status filter + count -->
+    <div class="photos-controls">
+        <div class="control-group">
+            <span class="control-group-label">Kingdom</span>
+            <div class="mode-toggle" id="intake-kingdom-toggle">
+                <button class="active" onclick="intakeSwitchKingdom('plants')">🌱 Plants</button>
+                <button onclick="intakeSwitchKingdom('wildlife')">🦎 Wildlife</button>
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="control-group-label">Show</span>
+            <div class="mode-toggle" id="intake-status-toggle">
+                <button class="active" onclick="intakeSetStatus('research')">Research</button>
+                <button onclick="intakeSetStatus('dead')">☠ Dead</button>
+                <button onclick="intakeSetStatus('all')">All</button>
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="control-group-label">Research Pool</span>
+            <span id="intake-count" style="font-size:13px; color:var(--gray-600); font-weight:500;">—</span>
+        </div>
+    </div>
+
+    <!-- Two-column layout: picker + detail -->
+    <div class="photos-layout">
+        <!-- Left: species picker from research.json -->
+        <div class="species-picker">
+            <div class="picker-header">
+                <h3>📥 Research Pool</h3>
+                <input type="text" class="picker-search" id="intake-search"
+                       placeholder="Name, ID, or category…"
+                       oninput="intakeRenderPicker()">
+                <div class="picker-legend" style="margin-top:8px;">
+                    <span><span class="dot" style="background:var(--green-mid);"></span> Both</span>
+                    <span><span class="dot" style="background:#5c6bc0;"></span> Prior</span>
+                    <span><span class="dot" style="background:var(--gold);"></span> iNat</span>
+                    <span><span class="dot" style="background:var(--gray-300,#ccc);"></span> Sheet</span>
+                </div>
+            </div>
+            <div class="picker-list" id="intake-picker-list">
+                <div class="loading">Loading…</div>
+            </div>
+        </div>
+
+        <!-- Right: detail card -->
+        <div class="photos-main" id="intake-detail">
+            <div class="photos-select-prompt">
+                <div class="psp-icon">📥</div>
+                <p>Select a species to preview</p>
+                <p style="font-size:12px; color:var(--gray-400); margin-top:4px;">
+                    Green-bordered = confirmed in inventory + iNat — strongest candidates</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+    let intakeKingdom = 'plants';
+    let intakeStatusFilter = 'research';
+    let intakeSpecies = [];
+    let intakeSelected = null;
+
+    const SOURCE_RANK = {{
+        'park_inventory+inat': 0,
+        'prior_research': 1,
+        'inat_observed': 2,
+        'park_inventory': 3,
+    }};
+    const SOURCE_META = {{
+        'park_inventory+inat': {{
+            cls: 'src-both', icon: '✦', label: 'Confirmed — Inventory + iNat',
+            sub: 'In the park inventory spreadsheet AND observed on iNaturalist. Strongest candidate for promotion.',
+        }},
+        'prior_research': {{
+            cls: 'src-prior', icon: '📋', label: 'Previously Researched',
+            sub: 'Had content written in a prior signage session. Ready for review and promotion.',
+        }},
+        'inat_observed': {{
+            cls: 'src-inat', icon: '🔍', label: 'iNat Observation Only',
+            sub: 'Seen on iNaturalist but not in the park inventory. Verify before promoting.',
+        }},
+        'park_inventory': {{
+            cls: 'src-inventory', icon: '📄', label: 'Inventory Only',
+            sub: 'Listed in the park inventory spreadsheet. Not yet observed on iNaturalist.',
+        }},
+    }};
+
+    function intakeToast(msg, isError) {{
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = 'toast show' + (isError ? ' error' : '');
+        clearTimeout(el._tid);
+        el._tid = setTimeout(() => el.className = 'toast', Math.max(2400, msg.length * 45));
+    }}
+
+    function intakeSwitchKingdom(k) {{
+        intakeKingdom = k;
+        const btns = document.querySelectorAll('#intake-kingdom-toggle button');
+        btns.forEach(b => b.classList.remove('active'));
+        btns[k === 'plants' ? 0 : 1].classList.add('active');
+        intakeSelected = null;
+        intakeLoad();
+    }}
+
+    function intakeSetStatus(f) {{
+        intakeStatusFilter = f;
+        const btns = document.querySelectorAll('#intake-status-toggle button');
+        btns.forEach(b => b.classList.remove('active'));
+        const idx = {{research: 0, dead: 1, all: 2}}[f];
+        btns[idx].classList.add('active');
+        intakeRenderPicker();
+        // Clear detail if the selected species is now hidden
+        if (intakeSelected) {{
+            const visible = intakeFilteredSpecies();
+            if (!visible.find(s => s.id === intakeSelected)) {{
+                intakeSelected = null;
+                document.getElementById('intake-detail').innerHTML =
+                    '<div class="photos-select-prompt"><div class="psp-icon">📥</div>'
+                    + '<p>Select a species to preview</p></div>';
+            }}
+        }}
+    }}
+
+    async function intakeLoad() {{
+        const picker = document.getElementById('intake-picker-list');
+        picker.innerHTML = '<div class="loading">Loading…</div>';
+        document.getElementById('intake-detail').innerHTML =
+            '<div class="photos-select-prompt"><div class="psp-icon">📥</div>'
+            + '<p>Select a species to preview</p></div>';
+        try {{
+            const resp = await fetch(`/api/intake/list?kingdom=${{intakeKingdom}}`);
+            const data = await resp.json();
+            intakeSpecies = data.species || [];
+            intakeRenderPicker();
+        }} catch (err) {{
+            picker.innerHTML = '<div class="picker-empty">Error loading research data.</div>';
+        }}
+    }}
+
+    function intakeFilteredSpecies() {{
+        const q = (document.getElementById('intake-search')?.value || '').toLowerCase();
+        let filtered = intakeSpecies;
+
+        // Status filter
+        if (intakeStatusFilter === 'research') {{
+            filtered = filtered.filter(s => s.status === 'research');
+        }} else if (intakeStatusFilter === 'dead') {{
+            filtered = filtered.filter(s => s.status === 'died' || s.status === 'stolen');
+        }}
+
+        // Search
+        if (q) {{
+            filtered = filtered.filter(s =>
+                (s.common_name || '').toLowerCase().includes(q) ||
+                (s.scientific_name || '').toLowerCase().includes(q) ||
+                (s.id || '').toLowerCase().includes(q) ||
+                (s.category || '').toLowerCase().includes(q)
+            );
+        }}
+
+        // Sort by source priority, then ID
+        filtered.sort((a, b) => {{
+            const ra = SOURCE_RANK[a.source] ?? 9;
+            const rb = SOURCE_RANK[b.source] ?? 9;
+            if (ra !== rb) return ra - rb;
+            return a.id.localeCompare(b.id);
+        }});
+
+        return filtered;
+    }}
+
+    function intakeRenderPicker() {{
+        const list = document.getElementById('intake-picker-list');
+        const filtered = intakeFilteredSpecies();
+
+        // Update count
+        const total = intakeSpecies.length;
+        const researchCount = intakeSpecies.filter(s => s.status === 'research').length;
+        const deadCount = intakeSpecies.filter(s => s.status === 'died' || s.status === 'stolen').length;
+        let countText = `${{filtered.length}} shown`;
+        if (intakeStatusFilter === 'research') countText += ` of ${{researchCount}} research`;
+        else if (intakeStatusFilter === 'dead') countText += ` of ${{deadCount}} dead/stolen`;
+        else countText += ` of ${{total}} total`;
+        document.getElementById('intake-count').textContent = countText;
+
+        if (!filtered.length) {{
+            list.innerHTML = '<div class="picker-empty">'
+                + (intakeStatusFilter === 'dead' ? 'No dead/stolen species.' : 'No species match.')
+                + '</div>';
+            return;
+        }}
+
+        list.innerHTML = filtered.map(s => {{
+            const active = s.id === intakeSelected ? 'active' : '';
+            const name = s.common_name || s.scientific_name || s.id;
+            const sci = s.scientific_name || '';
+            const isDead = s.status === 'died' || s.status === 'stolen';
+            const deadCls = isDead ? 'is-dead' : '';
+            const sm = SOURCE_META[s.source] || {{}};
+            const srcCls = sm.cls || '';
+            const srcIcon = sm.icon || '';
+            const fillCls = s.content_filled > 0 ? 'has-content' : 'no-content';
+            const deadMark = isDead
+                ? `<span class="intake-status-marker" style="color:#c62828;">${{s.status}}</span>` : '';
+            return `<div class="picker-item ${{active}} ${{srcCls}} ${{deadCls}}" onclick="intakeSelect('${{s.id}}')">
+                <div class="pi-name">
+                    <span class="pi-common">${{srcIcon}} ${{esc(name)}}</span>${{deadMark}}
+                    <span class="pi-sci">${{esc(sci)}}</span>
+                </div>
+                <span class="pi-badge ${{fillCls}}" title="${{s.content_filled}} of ${{s.content_total}} content fields">${{s.content_filled}}</span>
+            </div>`;
+        }}).join('');
+    }}
+
+    async function intakeSelect(id) {{
+        intakeSelected = id;
+        intakeRenderPicker();
+        const detail = document.getElementById('intake-detail');
+        detail.innerHTML = '<div class="loading">Loading…</div>';
+        try {{
+            const resp = await fetch(`/api/intake/detail?id=${{id}}`);
+            const data = await resp.json();
+            if (data.error) {{
+                detail.innerHTML = `<div class="card"><p style="color:#c62828">${{esc(data.error)}}</p></div>`;
+                return;
+            }}
+            intakeRenderDetail(data.species);
+        }} catch (err) {{
+            detail.innerHTML = '<div class="card"><p>Error loading details.</p></div>';
+        }}
+    }}
+
+    function isFilled(val) {{
+        if (val === null || val === undefined) return false;
+        if (typeof val === 'string') return val.trim().length > 0;
+        if (Array.isArray(val)) return val.length > 0;
+        if (typeof val === 'object') return Object.keys(val).length > 0;
+        return true;
+    }}
+
+    function fieldSummary(val) {{
+        if (!isFilled(val)) return '';
+        if (Array.isArray(val)) return val.length + ' item' + (val.length !== 1 ? 's' : '');
+        if (typeof val === 'object' && val !== null) {{
+            const blocks = val.blocks;
+            if (Array.isArray(blocks)) return blocks.length + ' section' + (blocks.length !== 1 ? 's' : '');
+            return 'present';
+        }}
+        if (typeof val === 'string') {{
+            return val.length > 60 ? esc(val.substring(0, 57)) + '…' : esc(val);
+        }}
+        return String(val);
+    }}
+
+    function intakeRenderDetail(sp) {{
+        const detail = document.getElementById('intake-detail');
+        const isPlant = intakeKingdom === 'plants';
+        const sciName = isPlant ? (sp.botanical_name || '') : (sp.scientific_name || '');
+        const commonName = sp.common_name || sciName || sp.id;
+        const isDead = sp.status === 'died' || sp.status === 'stolen';
+
+        // Source banner
+        const src = sp.research_source || '';
+        const sm = SOURCE_META[src] || {{ cls: '', icon: '❓', label: 'Unknown source', sub: '' }};
+        const sourceBanner = `<div class="intake-source-banner ${{sm.cls}}">
+            <span class="isb-icon">${{sm.icon}}</span>
+            <span class="isb-label">${{sm.label}}<span class="isb-sub">${{sm.sub}}</span></span>
+        </div>`;
+
+        // Dead banner
+        const deadBanner = isDead
+            ? `<div class="intake-dead-banner">☠ This species is marked <strong>${{sp.status}}</strong>
+                   — it will not appear in the research pool.
+                   <button class="pub-btn revive-btn" style="margin-left:auto;"
+                           onclick="intakeSetSpeciesStatus('${{sp.id}}', 'research')">↩ Revive</button>
+               </div>`
+            : '';
+
+        // Metadata chips
+        const chips = [];
+        if (sp.category) chips.push(`<span class="intake-chip">${{esc(sp.category)}}</span>`);
+        if (sp.feature_tier) chips.push(`<span class="intake-chip">${{esc(sp.feature_tier)}}</span>`);
+        if (sp.native === true) chips.push('<span class="intake-chip native">Native</span>');
+        else if (sp.native === false) chips.push('<span class="intake-chip non-native">Non-native</span>');
+        if (sp.has_sign) chips.push('<span class="intake-chip sign">Has Sign</span>');
+        if (sp.sign_level && sp.sign_level !== 'Species')
+            chips.push(`<span class="intake-chip">${{esc(sp.sign_level)}}</span>`);
+        if (!isPlant && sp.animal_group)
+            chips.push(`<span class="intake-chip">${{esc(sp.animal_group)}}</span>`);
+
+        // iNat row (link + check button)
+        let inatHtml = '';
+        if (sp.inat_taxon_id) {{
+            const obsUrl = `https://www.inaturalist.org/observations?project_id=palma-sola-botanical-park&taxon_id=${{sp.inat_taxon_id}}&verifiable=any`;
+            const taxUrl = `https://www.inaturalist.org/taxa/${{sp.inat_taxon_id}}`;
+            inatHtml = `
+                <div class="intake-inat-row">
+                    <a href="${{obsUrl}}" target="_blank" class="inat-link-btn">
+                        🔍 View PSBP Observations</a>
+                    <a href="${{taxUrl}}" target="_blank" class="inat-link-btn"
+                       style="border-color:var(--gray-200); background:white; color:var(--gray-600);">
+                        📖 iNat Taxon Page</a>
+                    <button class="inat-check-btn" id="inat-check-btn"
+                            onclick="intakeCheckInat(${{sp.inat_taxon_id}})">
+                        🌐 Check Quality</button>
+                </div>
+                <div id="inat-summary"></div>`;
+        }} else {{
+            inatHtml = `<div class="intake-inat-row">
+                <span style="font-size:12px; color:var(--gray-400);">No iNat taxon ID — cannot link to observations</span>
+            </div>`;
+        }}
+
+        // Content field audit
+        const contentFields = isPlant ? [
+            ['quick_hits',        'Quick Hits'],
+            ['more_information',  'Description'],
+            ['origin',            'Origin'],
+            ['wildlife_value',    'Wildlife Value'],
+            ['reproduction',      'Growth & Form'],
+            ['growing_conditions','Growing Conditions'],
+            ['edibility',         'Edibility'],
+            ['toxicity',          'Toxicity'],
+            ['alternate_names',   'Alternate Names'],
+            ['butterfly_host',    'Butterfly Host'],
+        ] : [
+            ['quick_hits',        'Quick Hits'],
+            ['more_information',  'Description'],
+            ['range_and_origin',  'Range & Origin'],
+            ['diet',              'Diet'],
+            ['behavior',          'Behavior'],
+            ['habitat',           'Habitat'],
+            ['sounds',            'Sounds'],
+            ['identification',    'ID Tips'],
+            ['also_known_as',     'Also Known As'],
+            ['seasonality',       'Seasonality'],
+            ['size',              'Size'],
+        ];
+
+        let filled = 0;
+        const fieldRows = contentFields.map(([key, label]) => {{
+            const val = sp[key];
+            const ok = isFilled(val);
+            if (ok) filled++;
+            const det = ok ? fieldSummary(val) : '';
+            return `<div class="intake-field ${{ok ? 'filled' : 'empty'}}">
+                <span class="if-check">${{ok ? '✓' : '✗'}}</span>
+                <span class="if-label">${{label}}</span>
+                ${{det ? `<span class="if-detail">${{det}}</span>` : ''}}
+            </div>`;
+        }}).join('');
+
+        // Quick hits preview
+        let quickHitsHtml = '';
+        if (sp.quick_hits && sp.quick_hits.length) {{
+            const preview = sp.quick_hits.slice(0, 2);
+            quickHitsHtml = `
+                <div class="intake-section">
+                    <h3>Quick Hits Preview</h3>
+                    ${{preview.map(h => `<p class="intake-qh">• ${{esc(h)}}</p>`).join('')}}
+                    ${{sp.quick_hits.length > 2
+                        ? `<p class="intake-qh-more">+ ${{sp.quick_hits.length - 2}} more</p>` : ''}}
+                </div>`;
+        }}
+
+        // Taxonomy
+        let taxHtml = '';
+        if (sp.taxonomy) {{
+            const parts = [];
+            if (sp.taxonomy.family) parts.push(`Family: ${{esc(sp.taxonomy.family)}}`);
+            if (sp.taxonomy.genus) parts.push(`Genus: <em>${{esc(sp.taxonomy.genus)}}</em>`);
+            if (parts.length)
+                taxHtml = `<div class="intake-taxonomy">${{parts.join(' · ')}}</div>`;
+        }}
+
+        // Internal notes
+        let notesHtml = '';
+        if (sp.internal_notes)
+            notesHtml = `<div class="intake-notes"><strong>Notes:</strong> ${{esc(sp.internal_notes)}}</div>`;
+
+        // Tags
+        let tagsHtml = '';
+        if (sp.tags && sp.tags.length) {{
+            tagsHtml = `<div class="pub-tags" style="margin-bottom:12px;">
+                <span class="pub-tags-label">tags</span>
+                ${{sp.tags.map(t => `<span class="pub-tag">${{esc(t)}}</span>`).join('')}}
+            </div>`;
+        }}
+
+        // Action buttons
+        const canPromote = sp.status === 'research';
+        let actionsHtml = '';
+        if (isDead) {{
+            actionsHtml = `<div class="intake-actions">
+                <button class="pub-btn revive-btn" onclick="intakeSetSpeciesStatus('${{sp.id}}', 'research')">
+                    ↩ Revive to Research</button>
+            </div>`;
+        }} else {{
+            actionsHtml = `<div class="intake-actions">
+                <button class="pub-btn promote" ${{canPromote ? '' : 'disabled'}}
+                        title="${{canPromote ? 'Move to signage JSON as spotted' : 'Cannot promote — status is ' + sp.status}}"
+                        onclick="intakePromote('${{sp.id}}')">
+                    ⬆ Promote to Spotted</button>
+                <button class="pub-btn dead-btn"
+                        onclick="intakeSetSpeciesStatus('${{sp.id}}', 'died')"
+                        title="Park this species as dead / no longer in park">
+                    ☠ Mark Dead</button>
+            </div>`;
+        }}
+
+        detail.innerHTML = `
+            <div class="card intake-detail-card ${{isDead ? 'is-dead' : ''}}">
+                <div class="intake-header">
+                    <span class="pub-id">${{sp.id}}</span>
+                    <div>
+                        <h2>${{esc(commonName)}}</h2>
+                        <div class="intake-sci">${{esc(sciName)}}</div>
+                    </div>
+                    <span class="status-pill ${{sp.status === 'research' ? 'research' : 'spotted'}}">${{esc(sp.status)}}</span>
+                </div>
+
+                ${{deadBanner}}
+                ${{sourceBanner}}
+                ${{taxHtml}}
+                <div class="intake-chips">${{chips.join('')}}</div>
+                ${{tagsHtml}}
+                ${{inatHtml}}
+
+                <div class="intake-section">
+                    <h3>Content Fields
+                        <span class="intake-fill-count">${{filled}} of ${{contentFields.length}}</span>
+                    </h3>
+                    <div class="intake-fields">${{fieldRows}}</div>
+                </div>
+
+                ${{quickHitsHtml}}
+                ${{notesHtml}}
+                ${{actionsHtml}}
+            </div>
+        `;
+    }}
+
+    async function intakeCheckInat(taxonId) {{
+        const btn = document.getElementById('inat-check-btn');
+        const sumDiv = document.getElementById('inat-summary');
+        if (btn) {{ btn.disabled = true; btn.textContent = '⏳ Checking…'; }}
+        try {{
+            const resp = await fetch(`/api/intake/inat-check?taxon_id=${{taxonId}}`);
+            const data = await resp.json();
+            if (data.error) {{
+                sumDiv.innerHTML = `<div class="inat-summary" style="color:#c62828;">
+                    Failed: ${{esc(data.error)}}</div>`;
+            }} else {{
+                const rg = data.quality_grades.research || 0;
+                const ni = data.quality_grades.needs_id || 0;
+                const cas = data.quality_grades.casual || 0;
+                const total = data.total_observations;
+                const obs = data.unique_observers;
+                const latest = data.latest_observation || '—';
+
+                const strength = (rg > 0 && obs > 1) ? 'is-strong' : (total <= 1 || obs <= 1) ? 'is-weak' : '';
+                const verdict = rg > 0 && obs > 1
+                    ? '✓ Solid — multiple observers, research-grade IDs'
+                    : total === 0
+                    ? '⚠ No observations found in the PSBP project'
+                    : obs <= 1
+                    ? '⚠ Single observer — needs independent confirmation'
+                    : '⚠ No research-grade IDs yet';
+
+                sumDiv.innerHTML = `<div class="inat-summary">
+                    <strong>${{total}}</strong> observation${{total !== 1 ? 's' : ''}} ·
+                    <strong>${{obs}}</strong> observer${{obs !== 1 ? 's' : ''}} ·
+                    <strong>${{rg}}</strong> research grade ·
+                    <strong>${{ni}}</strong> needs ID
+                    ${{cas ? ` · <strong>${{cas}}</strong> casual` : ''}}
+                    · latest: ${{latest}}<br>
+                    <span class="${{strength}}">${{verdict}}</span>
+                </div>`;
+            }}
+        }} catch (err) {{
+            sumDiv.innerHTML = `<div class="inat-summary" style="color:#c62828;">
+                Network error — is the dashboard online?</div>`;
+        }}
+        if (btn) {{ btn.disabled = false; btn.textContent = '🌐 Check Quality'; }}
+    }}
+
+    async function intakeSetSpeciesStatus(id, newStatus) {{
+        const label = newStatus === 'died' ? 'dead' : 'research';
+        const sp = intakeSpecies.find(s => s.id === id);
+        const name = sp ? (sp.common_name || sp.id) : id;
+
+        if (newStatus === 'died' && !confirm(`Mark ${{name}} as dead?\\nIt will move to the Dead view.`)) return;
+
+        try {{
+            const resp = await fetch('/api/intake/set-status', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{id: id, status: newStatus}})
+            }});
+            const data = await resp.json();
+            if (data.ok) {{
+                const verb = newStatus === 'died' ? 'Marked dead' : 'Revived';
+                intakeToast(`${{verb}}: ${{data.common_name || id}}`);
+                intakeSelected = null;
+                intakeLoad();
+            }} else {{
+                intakeToast(data.error || 'Status change failed', true);
+            }}
+        }} catch (err) {{
+            intakeToast('Error: ' + err.message, true);
+        }}
+    }}
+
+    async function intakePromote(id) {{
+        // Duplicate check first
+        try {{
+            const checkResp = await fetch('/api/intake/check', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: intakeKingdom, id: id}})
+            }});
+            const checkData = await checkResp.json();
+            if (checkData.has_duplicates) {{
+                const dupeList = checkData.duplicates.map(d =>
+                    `  ${{d.id}}  ${{d.common_name}}  (${{d.reasons.join(', ')}})`
+                ).join('\\n');
+                if (!confirm('Potential duplicates found in '
+                    + intakeKingdom + ' signage:\\n\\n' + dupeList
+                    + '\\n\\nPromote anyway?')) {{
+                    return;
+                }}
+            }}
+        }} catch (err) {{
+            if (!confirm('Could not check for duplicates. Promote anyway?')) return;
+        }}
+
+        const btn = document.querySelector('.intake-actions .promote');
+        if (btn) {{ btn.disabled = true; btn.textContent = 'Promoting…'; }}
+
+        try {{
+            const resp = await fetch('/api/intake/promote', {{
+                method: 'POST',
+                headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: intakeKingdom, id: id}})
+            }});
+            const data = await resp.json();
+            if (data.ok) {{
+                let msg = `Promoted ${{data.common_name || data.id}} → spotted`;
+                if (data.duplicates_warned && data.duplicates_warned.length) {{
+                    msg += ` (note: ${{data.duplicates_warned.length}} similar species in signage)`;
+                }}
+                intakeToast(msg);
+                intakeSelected = null;
+                intakeLoad();
+            }} else {{
+                intakeToast(data.error || 'Promote failed', true);
+                if (btn) {{ btn.disabled = false; btn.textContent = '⬆ Promote to Spotted'; }}
+            }}
+        }} catch (err) {{
+            intakeToast('Error: ' + err.message, true);
+            if (btn) {{ btn.disabled = false; btn.textContent = '⬆ Promote to Spotted'; }}
+        }}
+    }}
+
+    function esc(s) {{
+        if (!s) return '';
+        const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+    }}
+
+    intakeLoad();
+    </script>
+    """
 
 
 def render_photos():
@@ -4502,6 +5797,12 @@ def render_publish():
             <div class="pub-checks">${{checksHtml}}</div>
             ${{tagsHtml}}
             <div class="pub-actions">${{actions}}</div>
+            <div class="pub-secondary">
+                <button class="pub-link-btn" onclick="pubDemoteResearch('${{sp.id}}', 'research')"
+                        title="Move back to research.json — not ready yet">↩ Return to Research</button>
+                <button class="pub-link-btn dead-link" onclick="pubDemoteResearch('${{sp.id}}', 'died')"
+                        title="Suspected dead — move to research.json as died">☠ Mark Dead</button>
+            </div>
         </div>`;
     }}
 
@@ -4562,6 +5863,49 @@ def render_publish():
         }}
     }}
 
+    async function pubDemoteResearch(id, reason) {{
+        const isDead = reason === 'died';
+        const label = isDead ? 'Mark dead and move to research?' : 'Return to research pool?';
+        const detail = isDead
+            ? 'The species will be marked as dead in research.json. Hero photo files will be deleted.'
+            : 'The species will move back to research.json for later. Hero photo files will be deleted.';
+        if (!confirm(label + '\\n\\n' + detail)) return;
+
+        const row = document.getElementById('pubrow-' + id);
+        const actions = row.querySelector('.pub-actions');
+        const secondary = row.querySelector('.pub-secondary');
+        const prevA = actions.innerHTML;
+        const prevS = secondary ? secondary.innerHTML : '';
+        actions.innerHTML = '<span class="pub-working">'
+            + (isDead ? 'Marking dead…' : 'Moving…') + '</span>';
+        if (secondary) secondary.innerHTML = '';
+
+        try {{
+            const resp = await fetch('/api/publish/demote-research', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: pubKingdom, id: id, reason: reason}})
+            }});
+            const res = await resp.json();
+            if (!res.ok) {{
+                pubToast(res.error || 'Failed', true);
+                if (res.trace) console.error(res.trace);
+                actions.innerHTML = prevA;
+                if (secondary) secondary.innerHTML = prevS;
+                return;
+            }}
+            const n = (res.deleted_files || []).length;
+            const h = (res.hero_deleted || []).length;
+            let msg = res.label + ': ' + (res.common_name || id);
+            if (n || h) msg += ` · ${{n + h}} file${{(n+h)!==1?'s':''}} cleaned`;
+            pubToast(msg);
+            loadPublishList();
+        }} catch (err) {{
+            pubToast('Error: ' + err.message, true);
+            actions.innerHTML = prevA;
+            if (secondary) secondary.innerHTML = prevS;
+        }}
+    }}
+
     function esc(s) {{
         if (!s) return '';
         const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
@@ -4591,7 +5935,12 @@ PAGE_ROUTES = {
 API_ROUTES = {
     "/api/overview":         handle_api_overview,
     "/api/species":          handle_api_species_list,
+    "/api/intake/list":      handle_api_intake_list,
+    "/api/intake/detail":    handle_api_intake_detail,
     "/api/intake/check":     handle_api_intake_check,
+    "/api/intake/promote":   handle_api_intake_promote,
+    "/api/intake/set-status": handle_api_intake_set_status,
+    "/api/intake/inat-check": handle_api_intake_inat_check,
     "/api/photos/species":   handle_api_photos_species,
     "/api/photos/summary":   handle_api_photos_summary,
     "/api/photos/hero":      handle_api_photos_set_hero,
@@ -4609,6 +5958,7 @@ API_ROUTES = {
     "/api/publish/ready":    handle_api_publish_ready,
     "/api/publish/promote":  handle_api_publish_promote,
     "/api/publish/demote":   handle_api_publish_demote,
+    "/api/publish/demote-research": handle_api_publish_demote_research,
 }
 
 
@@ -4749,7 +6099,6 @@ def main():
     print(f"║  Overview .... http://localhost:{port}/           ║")
     print(f"║  Intake ...... http://localhost:{port}/intake     ║")
     print(f"║  Photos ...... http://localhost:{port}/photos     ║")
-    print(f"║  Edit ........ http://localhost:{port}/edit       ║")
     print(f"║  Publish ..... http://localhost:{port}/publish    ║")
     print(f"╚══════════════════════════════════════════════════╝")
     print(f"  Data: {REPO}")
