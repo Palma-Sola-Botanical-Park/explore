@@ -110,16 +110,37 @@ WILDLIFE_REQUIRED = ["common_name", "scientific_name", "animal_group"]
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 def _load(path):
-    """Read and parse a JSON file. Returns empty dict on missing file."""
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        print(f"[WARN] File not found: {path}")
-        return {}
-    except json.JSONDecodeError as e:
-        print(f"[WARN] Bad JSON in {path}: {e}")
-        return {}
+    """Read and parse a JSON file. Returns empty dict on any read/parse trouble.
+
+    This is deliberately forgiving: a file may be read at the exact moment it's
+    being rewritten (by a publish, the sync pipeline, or another tool), which can
+    raise JSONDecodeError, UnicodeDecodeError, or a transient OSError. Rather than
+    let a half-written file crash a whole dashboard page, we log and return {} —
+    the caller renders with what it has, and the next refresh picks up the
+    finished file. Tolerate one retry for the mid-write race.
+    """
+    import time as _t
+    for attempt in range(2):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except FileNotFoundError:
+            print(f"[WARN] File not found: {path}")
+            return {}
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            # Possibly mid-write — wait a beat and try once more.
+            if attempt == 0:
+                _t.sleep(0.15)
+                continue
+            print(f"[WARN] Unparseable JSON in {path}: {e}")
+            return {}
+        except OSError as e:
+            if attempt == 0:
+                _t.sleep(0.15)
+                continue
+            print(f"[WARN] Could not read {path}: {e}")
+            return {}
+    return {}
 
 
 def _get_species_list(raw):
@@ -848,8 +869,28 @@ def _apply_triage_decision(payload):
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 def handle_api_overview(params):
-    """GET /api/overview — full dashboard stats."""
-    return get_overview_data()
+    """GET /api/overview — full dashboard stats.
+
+    Wrapped so a transient read hiccup (a JSON mid-write on cold start) returns
+    a safe, empty-shaped payload the front-end can render, instead of a 500 that
+    blanks the page. The next refresh shows real numbers.
+    """
+    try:
+        return get_overview_data()
+    except Exception as e:
+        import traceback
+        print(f"[WARN] overview computation failed, returning empty: {e}")
+        traceback.print_exc()
+        empty_kingdom = {"total": 0, "by_status": {}, "attention": []}
+        return {
+            "plants": dict(empty_kingdom),
+            "wildlife": dict(empty_kingdom),
+            "photographers": {
+                "total_logins": 0, "resolved": 0,
+                "unresolved": [], "total_photos": 0,
+            },
+            "_transient_error": True,
+        }
 
 
 def handle_api_species_list(params):
@@ -3070,14 +3111,29 @@ def render_overview():
     </div>
 
     <script>
-    async function loadOverview() {
+    async function loadOverview(attempt) {
+        attempt = attempt || 0;
         try {
             const resp = await fetch('/api/overview');
             const data = await resp.json();
+            // If the server hit a transient read race, retry briefly before showing data.
+            if (data._transient_error && attempt < 3) {
+                document.getElementById('overview-loading').textContent =
+                    'Loading data… (warming up)';
+                setTimeout(() => loadOverview(attempt + 1), 500);
+                return;
+            }
             renderOverview(data);
         } catch (err) {
+            // Network/parse hiccup on cold start — retry a few times before giving up.
+            if (attempt < 3) {
+                document.getElementById('overview-loading').textContent =
+                    'Loading data… (retrying)';
+                setTimeout(() => loadOverview(attempt + 1), 500);
+                return;
+            }
             document.getElementById('overview-loading').textContent =
-                'Error loading data: ' + err.message;
+                'Error loading data: ' + err.message + ' — try refreshing the page.';
         }
     }
 
@@ -4595,9 +4651,18 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._html_response(200, html)
             return
 
-        # 404
+        # Retired routes → redirect somewhere useful (old bookmarks/launchers)
+        if path in ("/edit", "/edit-preview"):
+            self.send_response(302)
+            self.send_header("Location", "/publish")
+            self.end_headers()
+            return
+
+        # 404 — with a way back
         self._html_response(404, page_shell("overview",
-            '<div class="stub-banner"><h2>404 — Page not found</h2></div>'))
+            '<div class="stub-banner"><h2>404 — Page not found</h2>'
+            '<p style="margin-top:8px;"><a href="/" style="color:var(--green-mid);">'
+            'Back to Overview</a></p></div>'))
 
     def do_POST(self):
         parsed = urlparse(self.path)
