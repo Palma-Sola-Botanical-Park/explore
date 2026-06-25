@@ -9,7 +9,7 @@
   <style>
     /* Variables are scoped to .pf-page so they never collide with site-wide CSS. */
     .pf-page {
-      --pf-moss: #4f6238;        /* photographer names, primary */
+      --pf-moss: #4f6238;        /* photographer names + avatar tile, primary */
       --pf-moss-soft: #6e8055;   /* secondary green */
       --pf-gold: #c2a14d;        /* accent bar + link underline */
       --pf-gold-deep: #a8893a;
@@ -71,20 +71,45 @@
     }
     .pf-card:hover { box-shadow: 0 6px 18px rgba(44, 46, 38, 0.09); transform: translateY(-2px); }
 
+    /* ---- Card header: avatar + name ---- */
+    .pf-cardhead { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem; }
+
+    .pf-avatar {
+      position: relative;
+      flex: none;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: var(--pf-moss);
+      color: #fff;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      box-shadow: 0 0 0 1px var(--pf-line);   /* defines edge when a light photo sits on white */
+    }
+    .pf-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+    .pf-id { min-width: 0; }
     .pf-name {
       font-family: Georgia, "Times New Roman", serif;
       font-size: 1.4rem;
       font-weight: 700;
       color: var(--pf-moss);
-      margin: 0 0 0.15rem;
+      margin: 0;
+      line-height: 1.15;
     }
     .pf-specialty {
       font-size: 0.74rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--pf-moss-soft);
-      margin: 0 0 0.85rem;
+      margin: 0.18rem 0 0;
     }
+
     .pf-blurb { font-size: 0.95rem; color: var(--pf-ink-soft); margin: 0 0 1.15rem; }
 
     .pf-links { display: flex; flex-wrap: wrap; gap: 0.55rem; }
@@ -149,6 +174,12 @@
 
   <script>
     (function () {
+      // Avatar convention: images/photographers/<id>.<ext>  (relative path, no leading slash).
+      // AVATAR_EXT must match the file extension you save. macOS Preview can't export webp,
+      // so jpg is the default; change to 'webp' here if you ever convert with another tool.
+      var AVATAR_BASE = 'images/photographers/';
+      var AVATAR_EXT = 'jpg';
+
       var grid = document.getElementById('pf-grid');
 
       var INAT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 0 0 18M12 3a14 14 0 0 1 0 18"></path></svg>';
@@ -161,10 +192,25 @@
       }
       function has(v) { return v != null && String(v).trim() !== ''; }
 
+      function initials(name) {
+        var parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+        if (!parts.length) return '?';
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+      }
+
       function linkEl(href, label, icon, person) {
         return '<a class="pf-link" href="' + esc(href) + '" target="_blank" rel="noopener noreferrer"'
           + ' aria-label="' + esc(label) + ' \u2014 ' + esc(person) + ' (opens in a new tab)">'
           + icon + '<span>' + esc(label) + '</span></a>';
+      }
+
+      function avatar(p) {
+        // Initials show by default; the photo (if its file exists) loads on top and covers them.
+        var img = has(p.id)
+          ? '<img alt="" data-src="' + esc(AVATAR_BASE + p.id + '.' + AVATAR_EXT) + '">'
+          : '';
+        return '<div class="pf-avatar" aria-hidden="true">' + esc(initials(p.name)) + img + '</div>';
       }
 
       function card(p) {
@@ -173,14 +219,29 @@
         if (has(p.site)) links += linkEl(p.site, has(p.site_label) ? p.site_label : 'Website', SITE_ICON, p.name);
 
         return '<article class="pf-card">'
-          + '<h2 class="pf-name">' + esc(p.name) + '</h2>'
-          + (has(p.specialty) ? '<p class="pf-specialty">' + esc(p.specialty) + '</p>' : '')
+          + '<div class="pf-cardhead">'
+          +   avatar(p)
+          +   '<div class="pf-id">'
+          +     '<h2 class="pf-name">' + esc(p.name) + '</h2>'
+          +     (has(p.specialty) ? '<p class="pf-specialty">' + esc(p.specialty) + '</p>' : '')
+          +   '</div>'
+          + '</div>'
           + (has(p.blurb) ? '<p class="pf-blurb">' + esc(p.blurb) + '</p>' : '')
           + (links ? '<div class="pf-links">' + links + '</div>' : '')
           + '</article>';
       }
 
-      fetch('data/sources/photographers.json', { cache: 'no-store' })
+      function wireAvatars() {
+        var imgs = grid.querySelectorAll('.pf-avatar img[data-src]');
+        Array.prototype.forEach.call(imgs, function (img) {
+          // Attach the error handler BEFORE setting src so a missing file reliably
+          // reveals the initials tile underneath.
+          img.addEventListener('error', function () { img.remove(); });
+          img.src = img.getAttribute('data-src');
+        });
+      }
+
+      fetch('data/photographers.json', { cache: 'no-store' })
         .then(function (r) {
           if (!r.ok) throw new Error('HTTP ' + r.status);
           return r.json();
@@ -192,10 +253,11 @@
             return;
           }
           grid.innerHTML = list.map(card).join('');
+          wireAvatars();
         })
         .catch(function (err) {
           grid.innerHTML = '<div class="pf-error">Couldn\'t load the photographer list. '
-            + 'Make sure <code>data/sources/photographers.json</code> sits beside this page and that '
+            + 'Make sure <code>data/photographers.json</code> sits beside this page and that '
             + 'you\'re viewing over your local server (not a file:// path).</div>';
           if (window.console) console.error('photographers.json load failed:', err);
         });
