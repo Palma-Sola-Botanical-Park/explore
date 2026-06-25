@@ -385,10 +385,12 @@ injectShared({ inatBar: false });
         }
         /* Sheet uses "Member" for general directors — display as "Director" */
         var displayRole = p.role === 'Member' ? 'Director' : p.role;
+        var blurbLine = p.blurb ? '<div style="font-size:.82rem;color:var(--text-soft);margin-top:.2rem">' + esc(p.blurb) + '</div>' : '';
         boardGrid.insertAdjacentHTML('beforeend',
           '<div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid ' + borderColor + '">' +
             '<div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:' + roleColor + ';font-weight:700;margin-bottom:.25rem">' + esc(displayRole) + '</div>' +
             '<div style="font-weight:700">' + esc(p.name) + '</div>' +
+            blurbLine +
           '</div>');
       });
     }
