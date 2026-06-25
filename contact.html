@@ -137,69 +137,15 @@
   <div class="section-inner">
     <span class="label">Our Team</span>
     <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1.5rem">The people who run the park</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem">
-      <div class="info-card">
-        <div class="info-card-icon">🌳</div>
-        <h3>Beverly Zoller Burdette</h3>
-        <p>Executive Director · Landscape Architect (RLA)</p>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">📋</div>
-        <h3>Jennifer Gunter</h3>
-        <p>Office Manager &amp; Event Venue Rentals</p>
-      </div>
+    <div id="office-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem">
+      <!-- Populated from data/published/organization.json -->
     </div>
 
-    <!-- BOARD OF DIRECTORS — roles only, no affiliations (per Randy).
-         Could later be driven from a "Board" tab in the master Google Sheet
-         (docID 12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4) via site.js. -->
+    <!-- BOARD OF DIRECTORS — dynamically rendered from organization.json -->
     <span class="label" style="margin-top:2.5rem;display:inline-block">Board of Directors</span>
     <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1.25rem">The board that guides it</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.85rem">
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid var(--green-mid)">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--green-mid);font-weight:700;margin-bottom:.25rem">President</div>
-        <div style="font-weight:700">Kristin Mead</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid var(--green-mid)">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--green-mid);font-weight:700;margin-bottom:.25rem">Vice President</div>
-        <div style="font-weight:700">Tyler Pullen</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid var(--green-mid)">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--green-mid);font-weight:700;margin-bottom:.25rem">Treasurer</div>
-        <div style="font-weight:700">Michael Jaster</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid var(--green-mid)">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--green-mid);font-weight:700;margin-bottom:.25rem">Secretary</div>
-        <div style="font-weight:700">Aedan Stockdale</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid var(--gold)">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft);font-weight:700;margin-bottom:.25rem">Director</div>
-        <div style="font-weight:700">Josh Beyer</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid var(--gold)">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft);font-weight:700;margin-bottom:.25rem">Director</div>
-        <div style="font-weight:700">Barney Hass</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid var(--gold)">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft);font-weight:700;margin-bottom:.25rem">Director</div>
-        <div style="font-weight:700">Jack Hawkins</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid var(--gold)">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft);font-weight:700;margin-bottom:.25rem">Director</div>
-        <div style="font-weight:700">Richard Larsen</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid var(--gold)">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft);font-weight:700;margin-bottom:.25rem">Director</div>
-        <div style="font-weight:700">John Lowenberg</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid #9aa0a6">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft);font-weight:700;margin-bottom:.25rem">Emeritus</div>
-        <div style="font-weight:700">Nick Baden</div>
-      </div>
-      <div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid #9aa0a6">
-        <div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-soft);font-weight:700;margin-bottom:.25rem">Ex-Officio</div>
-        <div style="font-weight:700">Beverly Zoller Burdette</div>
-      </div>
+    <div id="board-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.85rem">
+      <!-- Populated from data/published/organization.json -->
     </div>
 
     <span class="label" style="margin-top:2.5rem;display:inline-block">Volunteers</span>
@@ -391,6 +337,65 @@
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false });
+
+/* ── Organisation cards from the pipeline ──────────────────────────────── */
+(async function loadOrg() {
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  try {
+    var resp = await fetch('data/published/organization.json');
+    if (!resp.ok) throw new Error(resp.status);
+    var org = await resp.json();
+
+    /* ── Front office ─────────────────────────────────────────────────── */
+    var office = org.filter(function(p) { return p.type === 'front office'; });
+    var officeGrid = document.getElementById('office-grid');
+    if (officeGrid) {
+      var ICONS = {
+        'Executive Director':                   '🌳',
+        'Office Manager & Event Venue Rentals': '📋'
+      };
+      office.forEach(function(p) {
+        var icon  = ICONS[p.role] || '🌿';
+        var label = esc(p.role);
+        if (p.blurb) label += ' · ' + esc(p.blurb);
+        officeGrid.insertAdjacentHTML('beforeend',
+          '<div class="info-card">' +
+            '<div class="info-card-icon">' + icon + '</div>' +
+            '<h3>' + esc(p.name) + '</h3>' +
+            '<p>' + label + '</p>' +
+          '</div>');
+      });
+    }
+
+    /* ── Board of Directors ───────────────────────────────────────────── */
+    var board = org.filter(function(p) { return p.type === 'board'; });
+    var boardGrid = document.getElementById('board-grid');
+    if (boardGrid) {
+      var OFFICERS = ['President', 'Vice President', 'Treasurer', 'Secretary'];
+      var SPECIAL  = ['Emeritus', 'Ex-Officio'];
+      board.forEach(function(p) {
+        var borderColor, roleColor;
+        if (OFFICERS.indexOf(p.role) !== -1) {
+          borderColor = 'var(--green-mid)'; roleColor = 'var(--green-mid)';
+        } else if (SPECIAL.indexOf(p.role) !== -1) {
+          borderColor = '#9aa0a6'; roleColor = 'var(--text-soft)';
+        } else {
+          borderColor = 'var(--gold)'; roleColor = 'var(--text-soft)';
+        }
+        /* Sheet uses "Member" for general directors — display as "Director" */
+        var displayRole = p.role === 'Member' ? 'Director' : p.role;
+        boardGrid.insertAdjacentHTML('beforeend',
+          '<div style="background:var(--white);border-radius:10px;padding:1rem 1.1rem;border-top:3px solid ' + borderColor + '">' +
+            '<div style="font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:' + roleColor + ';font-weight:700;margin-bottom:.25rem">' + esc(displayRole) + '</div>' +
+            '<div style="font-weight:700">' + esc(p.name) + '</div>' +
+          '</div>');
+      });
+    }
+  } catch(e) {
+    console.warn('Organization data unavailable:', e);
+  }
+})();
 </script>
 </body>
 </html>
