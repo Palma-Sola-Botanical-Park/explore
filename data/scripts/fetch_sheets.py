@@ -50,14 +50,18 @@ TAB = {
     "venues":           1744975586,
     "wedding_calendar": 1260078193,
     "wedding_gallery":  874456476,
+    "tours":            506852680,
+    "tour_stops":       122035223,
+    "organization":     1115719710,
+    "photographers":    741957779,
 }
 
 # Which tabs this run should pull. PILOT = just events (+ series, which events'
 # referential-integrity check needs to resolve its `series` foreign key).
 # As tabs are templated, add them here.
 PILOT_TABS = ["events", "classes", "series", "volunteer", "announcements",
-              "newsletters", "news", "venues", "wedding_calendar", "wedding_gallery"]
-
+              "newsletters", "news", "venues", "wedding_calendar", "wedding_gallery",
+              "tours", "tour_stops", "organization", "photographers"]
 # Column-name tokens seen across the live tabs. We locate the header row by its
 # CONTENT (the row matching the most of these) rather than trusting a fixed row
 # index — so an inserted blank row or a "Convert to table" wrapper can't shove
@@ -70,7 +74,9 @@ KNOWN_HEADERS = {
     "active_to", "name", "blurb", "flyer_url", "flyer_text", "status", "note",
     "pinned", "headline", "subhead", "hero_image", "photo", "photo_url", "url",
     "order", "id", "scope", "duration", "capacity", "includes", "deposit",
-    "manager", "insurance", "caption", "image",
+    "manager", "insurance", "caption", "image", "tour_id", "tour_name", "stop_number", "type", "psbp_id", "quick_hits",
+    "directions_text", "estimated_minutes", "difficulty", "role", "specialty",
+    "inat", "site", "site_label", "focus",
 }
 
 
