@@ -1,51 +1,69 @@
 {
-  "tab": "wedding_calendar",
-  "human": "Park-closure / not-open dates — one row per closed date.",
+  "tab": "tours",
+  "human": "Tour definitions — one row per curated park walk.",
   "generated_at": "2026-06-25T03:03:01+00:00",
   "status": "green",
   "published": true,
   "block_reason": null,
   "counts": {
-    "staged": 57,
-    "live": 57,
-    "published": 57,
+    "staged": 4,
+    "live": 4,
+    "published": 4,
     "dropped_display": 0,
     "quarantined": 0,
     "warned": 0
   },
   "volume_guard": {
-    "min": 0,
-    "live": 57,
-    "published": 57,
+    "min": 1,
+    "live": 4,
+    "published": 4,
     "blocked": false,
     "reason": null
   },
   "rules": [
     {
-      "id": "date:required",
-      "field": "date",
+      "id": "tour_id:required",
+      "field": "tour_id",
       "check": "required",
       "arg": null,
       "why": "Can't be blank.",
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 57,
-      "passed": 57,
+      "evaluated": 4,
+      "passed": 4,
       "flagged": 0,
       "examples": []
     },
     {
-      "id": "date:iso_date",
-      "field": "date",
-      "check": "iso_date",
+      "id": "tour_name:required",
+      "field": "tour_name",
+      "check": "required",
       "arg": null,
-      "why": "Must be a real date (YYYY-MM-DD).",
+      "why": "Can't be blank.",
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 57,
-      "passed": 57,
+      "evaluated": 4,
+      "passed": 4,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "difficulty:in_vocab",
+      "field": "difficulty",
+      "check": "in_vocab",
+      "arg": [
+        "Easy",
+        "Moderate",
+        "Hard"
+      ],
+      "why": "Must be Easy, Moderate, or Hard.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 4,
+      "passed": 4,
       "flagged": 0,
       "examples": []
     },
@@ -54,33 +72,15 @@
       "field": "status",
       "check": "in_vocab",
       "arg": [
-        "possible",
-        "booked"
+        "Draft",
+        "Published"
       ],
-      "why": "Must be possible or booked.",
+      "why": "Must be Draft or Published.",
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 57,
-      "passed": 57,
-      "flagged": 0,
-      "examples": []
-    },
-    {
-      "id": "closes_park:in_vocab",
-      "field": "closes_park",
-      "check": "in_vocab",
-      "arg": [
-        "yes",
-        "no",
-        ""
-      ],
-      "why": "Must be yes, no, or blank.",
-      "severity": "warn",
-      "scope": "field",
-      "status": "green",
-      "evaluated": 57,
-      "passed": 57,
+      "evaluated": 4,
+      "passed": 4,
       "flagged": 0,
       "examples": []
     }
@@ -89,17 +89,18 @@
   "timeline": [],
   "schema": {
     "required_headers": [
-      "date"
+      "tour_id",
+      "tour_name"
     ],
     "identity": [
-      "date"
+      "tour_id"
     ],
     "drop_when_display": [],
-    "volume_min": 0
+    "volume_min": 1
   },
   "links": {
-    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=1260078193",
-    "published": "data/published/wedding_calendar.json",
-    "detail": "data/published/health/wedding_calendar.json"
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=506852680",
+    "published": "data/published/tours.json",
+    "detail": "data/published/health/tours.json"
   }
 }

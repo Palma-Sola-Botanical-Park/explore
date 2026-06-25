@@ -1,0 +1,105 @@
+{
+  "tab": "tour_stops",
+  "human": "Tour stops and directions — many rows per tour, ordered by stop_number.",
+  "generated_at": "2026-06-25T03:03:01+00:00",
+  "status": "green",
+  "published": true,
+  "block_reason": null,
+  "counts": {
+    "staged": 29,
+    "live": 29,
+    "published": 29,
+    "dropped_display": 0,
+    "quarantined": 0,
+    "warned": 0
+  },
+  "volume_guard": {
+    "min": 1,
+    "live": 29,
+    "published": 29,
+    "blocked": false,
+    "reason": null
+  },
+  "rules": [
+    {
+      "id": "tour_id:required",
+      "field": "tour_id",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 29,
+      "passed": 29,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "stop_number:required",
+      "field": "stop_number",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 29,
+      "passed": 29,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "type:required",
+      "field": "type",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 29,
+      "passed": 29,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "type:in_vocab",
+      "field": "type",
+      "check": "in_vocab",
+      "arg": [
+        "Origin",
+        "Stop",
+        "Directions"
+      ],
+      "why": "Must be Origin, Stop, or Directions.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 29,
+      "passed": 29,
+      "flagged": 0,
+      "examples": []
+    }
+  ],
+  "dropped_rows": [],
+  "timeline": [],
+  "schema": {
+    "required_headers": [
+      "tour_id",
+      "stop_number",
+      "type"
+    ],
+    "identity": [
+      "tour_id",
+      "stop_number"
+    ],
+    "drop_when_display": [],
+    "volume_min": 1
+  },
+  "links": {
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=122035223",
+    "published": "data/published/tour_stops.json",
+    "detail": "data/published/health/tour_stops.json"
+  }
+}

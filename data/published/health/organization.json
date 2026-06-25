@@ -1,37 +1,37 @@
 {
-  "tab": "venues",
-  "human": "Rentable venues and the seasonal price grid — one row per option.",
+  "tab": "organization",
+  "human": "Board members and front office staff — one row per person.",
   "generated_at": "2026-06-25T03:03:01+00:00",
   "status": "green",
   "published": true,
   "block_reason": null,
   "counts": {
-    "staged": 6,
-    "live": 6,
-    "published": 6,
+    "staged": 13,
+    "live": 13,
+    "published": 13,
     "dropped_display": 0,
     "quarantined": 0,
     "warned": 0
   },
   "volume_guard": {
     "min": 1,
-    "live": 6,
-    "published": 6,
+    "live": 13,
+    "published": 13,
     "blocked": false,
     "reason": null
   },
   "rules": [
     {
-      "id": "id:required",
-      "field": "id",
+      "id": "type:required",
+      "field": "type",
       "check": "required",
       "arg": null,
       "why": "Can't be blank.",
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 6,
-      "passed": 6,
+      "evaluated": 13,
+      "passed": 13,
       "flagged": 0,
       "examples": []
     },
@@ -44,43 +44,25 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 6,
-      "passed": 6,
+      "evaluated": 13,
+      "passed": 13,
       "flagged": 0,
       "examples": []
     },
     {
-      "id": "category:in_vocab",
-      "field": "category",
+      "id": "type:in_vocab",
+      "field": "type",
       "check": "in_vocab",
       "arg": [
-        "wedding",
-        "rental"
+        "front office",
+        "board"
       ],
-      "why": "Must be wedding or rental.",
+      "why": "Must be front office or board.",
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 6,
-      "passed": 6,
-      "flagged": 0,
-      "examples": []
-    },
-    {
-      "id": "scope:in_vocab",
-      "field": "scope",
-      "check": "in_vocab",
-      "arg": [
-        "Whole Park",
-        "Building",
-        "Partial"
-      ],
-      "why": "Must be Whole Park, Building, or Partial.",
-      "severity": "warn",
-      "scope": "field",
-      "status": "green",
-      "evaluated": 6,
-      "passed": 6,
+      "evaluated": 13,
+      "passed": 13,
       "flagged": 0,
       "examples": []
     }
@@ -89,18 +71,18 @@
   "timeline": [],
   "schema": {
     "required_headers": [
-      "id",
+      "type",
       "name"
     ],
     "identity": [
-      "id"
+      "name"
     ],
     "drop_when_display": [],
     "volume_min": 1
   },
   "links": {
-    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=1744975586",
-    "published": "data/published/venues.json",
-    "detail": "data/published/health/venues.json"
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=1115719710",
+    "published": "data/published/organization.json",
+    "detail": "data/published/health/organization.json"
   }
 }
