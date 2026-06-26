@@ -223,7 +223,6 @@ const NAV_HTML = `
 <nav id="site-nav">
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
-    <li><a href="nature.html">Nature</a></li>
     <li><a href="visit.html">Visit</a></li>
     <li><a href="events.html">Events</a></li>
     <li><a href="venue.html">Venue</a></li>
@@ -239,7 +238,6 @@ const NAV_HTML = `
 </nav>
 <div class="nav-mobile" id="navMobile">
   <a href="index.html">Home</a>
-  <a href="nature.html">Nature</a>
   <a href="visit.html">Visit</a>
   <a href="events.html">Events</a>
   <a href="venue.html">Venue</a>
