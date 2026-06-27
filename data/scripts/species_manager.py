@@ -72,8 +72,16 @@ RESEARCH_JSON      = os.path.join(REPO, "data", "sources", "research.json")
 # Override with the INAT_PROJECT_ID env var if needed.
 INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
 
-# Park centroid for geographic queries — bypasses project-level quality filters
-# that exclude casual (cultivated) observations from collection projects.
+# Curated iNat place drawn for the park boundary (inaturalist.org/places/233156).
+# Scanning queries this place_id rather than a radius. A radius keys off PUBLIC
+# coordinates, so it structurally misses deliberately-obscured rare species whose
+# public pin scatters miles away (e.g. Buccaneer Palm landing in the Gulf). The
+# place query matches the website and the collection project exactly.
+# Override with the INAT_PLACE_ID env var if the place ever changes.
+INAT_PLACE_ID = os.environ.get("INAT_PLACE_ID", "233156")
+
+# Park centroid — kept for reference / non-scan geographic helpers only.
+# NOTE: no longer used for photo scanning (see _inat_observations).
 PARK_LAT  = 27.497
 PARK_LNG  = -82.619
 PARK_RADIUS_KM = 0.5   # ~500m covers the 10-acre park with margin
@@ -759,15 +767,24 @@ def _inat_get(url):
 def _inat_observations(taxon_id):
     """All park observations for one taxon, paginated.
 
-    Uses geographic coordinates instead of project_id so that casual
-    (cultivated) observations are included — collection projects silently
-    exclude them regardless of verifiable= parameter.
+    Queries the curated place (place_id) rather than a lat/lng radius. A radius
+    keys off PUBLIC coordinates, so it cannot see deliberately-obscured rare
+    species whose public pin lands far outside the park (Buccaneer Palm → Gulf).
+    The place query matches the website and the collection project exactly.
+
+    verifiable=any keeps cultivated/casual-grade observations in — most of a
+    botanical garden's plantings are casual grade.
+
+    To pull OBSCURED rare species back inside the boundary, set the INAT_TOKEN
+    env var to a token for an account trusted with the project's hidden
+    coordinates (a project curator / trusted user). _inat_get already forwards
+    that token. Without it you get everything EXCEPT the obscured rarities.
     """
     out, page = [], 1
     while True:
         url = ("https://api.inaturalist.org/v1/observations"
-               f"?taxon_id={taxon_id}&per_page=200&page={page}"
-               f"&lat={PARK_LAT}&lng={PARK_LNG}&radius={PARK_RADIUS_KM}"
+               f"?taxon_id={taxon_id}&place_id={INAT_PLACE_ID}"
+               f"&per_page=200&page={page}&verifiable=any"
                "&order=desc&order_by=created_at")
         data = _inat_get(url)
         if not data:
@@ -940,12 +957,19 @@ def _build_triage_view(kingdom, species_id, mode="new"):
                 continue
             if pid in seen or pid in registry_ids:
                 continue
-            # Reconstruct a card from the stored ledger fields.
+            # Reconstruct a card from the stored ledger fields. Old skips
+            # (recorded before URLs were stored in the ledger) have no
+            # thumb_url/large_url — derive them from photo_id so the card
+            # renders instead of showing a broken image on a cold cache.
+            _thumb = dec.get("thumb_url", "") or (
+                f"https://inaturalist-open-data.s3.amazonaws.com/photos/{pid}/medium.jpg")
+            _large = dec.get("large_url", "") or (
+                f"https://inaturalist-open-data.s3.amazonaws.com/photos/{pid}/large.jpg")
             out.append({
                 "photo_id":          pid,
                 "obs_id":            dec.get("obs_id", ""),
-                "thumb_url":         dec.get("thumb_url", ""),
-                "large_url":         dec.get("large_url", ""),
+                "thumb_url":         _thumb,
+                "large_url":         _large,
                 "license":           dec.get("license", ""),
                 "photographer":      dec.get("photographer", ""),
                 "photographer_name": dec.get("photographer_name", "")
@@ -1198,10 +1222,11 @@ def handle_api_intake_inat_check(params):
     if not taxon_id:
         return {"error": "Missing taxon_id"}
 
+    # Query the curated place (not a radius) so this matches the photo scan and
+    # doesn't undercount obscured rarities or skip casual-grade plantings.
     url = ("https://api.inaturalist.org/v1/observations"
-           f"?taxon_id={taxon_id}&per_page=200"
-           f"&lat={PARK_LAT}&lng={PARK_LNG}&radius={PARK_RADIUS_KM}"
-           "&order=desc&order_by=created_at")
+           f"?taxon_id={taxon_id}&place_id={INAT_PLACE_ID}&per_page=200"
+           "&verifiable=any&order=desc&order_by=created_at")
     data = _inat_get(url)
     if not data:
         return {"error": "iNat API request failed"}
