@@ -244,6 +244,11 @@ WILD_CSS = """\
 # ── Section renderers ───────────────────────────────────────────────────────
 
 def render_badges(species):
+    # RETAINED BUT NOT RENDERED. The chip/status row was removed from the page
+    # template (pages now go header → credit → Quick Hits). This function and the
+    # .badge CSS are kept so the conditional-chip idea ("show only notable
+    # conditions: Threatened, Dangerous, Invasive") can be revisited later without
+    # rebuilding from scratch. Wire it back into the wild-content template to use.
     badges = []
     # Origin badge. `native_status` (optional) gives a third option for migrants
     # and winter visitors that are native to North America but do NOT live in
@@ -563,7 +568,6 @@ def generate_html(species, hero, gallery_photos):
   </div>
   <div class="wild-credit">{credit_html}</div>
   <div class="wild-content">
-    <div class="wild-status-row">{render_badges(species)}</div>
     {content}
 {lightbox_section}
     <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
