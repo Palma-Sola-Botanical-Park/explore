@@ -73,11 +73,11 @@ RESEARCH_JSON      = os.path.join(REPO, "data", "sources", "research.json")
 INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
 
 # Curated iNat place drawn for the park boundary (inaturalist.org/places/233156).
-# Scanning queries this place_id rather than a radius. A radius keys off PUBLIC
-# coordinates, so it structurally misses deliberately-obscured rare species whose
-# public pin scatters miles away (e.g. Buccaneer Palm landing in the Gulf). The
-# place query matches the website and the collection project exactly.
-# Override with the INAT_PLACE_ID env var if the place ever changes.
+# RETAINED FOR REFERENCE ONLY — the photo scan and intake check query the
+# PROJECT (project_id), not this place, because project membership includes
+# obscured observations whose public pin falls outside the boundary (a place
+# query silently drops those). Kept here in case a future place-based helper
+# wants it. Override with INAT_PLACE_ID if the place ever changes.
 INAT_PLACE_ID = os.environ.get("INAT_PLACE_ID", "233156")
 
 # Park centroid — kept for reference / non-scan geographic helpers only.
@@ -767,23 +767,30 @@ def _inat_get(url):
 def _inat_observations(taxon_id):
     """All park observations for one taxon, paginated.
 
-    Queries the curated place (place_id) rather than a lat/lng radius. A radius
-    keys off PUBLIC coordinates, so it cannot see deliberately-obscured rare
-    species whose public pin lands far outside the park (Buccaneer Palm → Gulf).
-    The place query matches the website and the collection project exactly.
+    Queries the iNat PROJECT (project_id), not a place polygon or a lat/lng
+    radius. The project is the curated MEMBERSHIP list: an observation belongs
+    because it was collected in the park, regardless of where its PUBLIC pin
+    lands. That matters because obscured observations (rare species, or any
+    casual obs with geoprivacy on) have a public coordinate scattered far from
+    the park — so a place_id / radius query silently drops them, while the
+    project still returns them as members. Confirmed in practice: the obscured
+    casual Foxtail Palm (public place "Florida, US") is returned by project_id
+    but NOT by place_id.
+
+    For a collection project keyed on the park, project membership is a superset
+    of a raw place query, so project_id is the most complete single key.
 
     verifiable=any keeps cultivated/casual-grade observations in — most of a
     botanical garden's plantings are casual grade.
 
-    To pull OBSCURED rare species back inside the boundary, set the INAT_TOKEN
-    env var to a token for an account trusted with the project's hidden
-    coordinates (a project curator / trusted user). _inat_get already forwards
-    that token. Without it you get everything EXCEPT the obscured rarities.
+    To pull fully-OBSCURED rare species' true coordinates/photos, set the
+    INAT_TOKEN env var to a token for an account trusted with the project's
+    hidden coordinates (a project curator). _inat_get already forwards it.
     """
     out, page = [], 1
     while True:
         url = ("https://api.inaturalist.org/v1/observations"
-               f"?taxon_id={taxon_id}&place_id={INAT_PLACE_ID}"
+               f"?taxon_id={taxon_id}&project_id={INAT_PROJECT_ID}"
                f"&per_page=200&page={page}&verifiable=any"
                "&order=desc&order_by=created_at")
         data = _inat_get(url)
@@ -855,8 +862,34 @@ def _write_cache(kingdom, psbp_id, cc, non_cc):
     return payload
 
 
-def _scan_species(kingdom, species):
-    """Hit iNat for one species, refresh its cache. Returns cache payload or error."""
+def _count_new_candidates(species_id, cc_list, decided=None, registry_ids=None):
+    """How many scanned CC photos are NEW — not yet decided and not already
+    in the registry. This is the actionable number ('relevant to our species'),
+    as opposed to total CC photos seen (which includes already-adjudicated ones).
+
+    Pass decided/registry_ids to avoid re-reading the JSON on every species
+    during a scan-all; omit them for a one-off single-species scan.
+    """
+    if decided is None:
+        decided = {str(k) for k in load_workbench()["decisions"].keys()}
+    if registry_ids is None:
+        registry_ids = {str(p.get("photo_id"))
+                        for p in _get_photos_list(_load(PHOTO_CREDITS))
+                        if p.get("photo_id")}
+    n = 0
+    for p in cc_list:
+        pid = str(p.get("photo_id", ""))
+        if pid and pid not in decided and pid not in registry_ids:
+            n += 1
+    return n
+
+
+def _scan_species(kingdom, species, decided=None, registry_ids=None):
+    """Hit iNat for one species, refresh its cache. Returns cache payload or error.
+
+    decided/registry_ids are optional pre-loaded sets (used by scan-all so the
+    new-candidate count doesn't re-read JSON for every species).
+    """
     if not INAT_PROJECT_ID:
         return {"error": "INAT_PROJECT_ID is not set."}
     taxon_id = species.get("inat_taxon_id")
@@ -864,7 +897,9 @@ def _scan_species(kingdom, species):
         return {"error": f"{species.get('id')} has no inat_taxon_id in the signage JSON."}
     obs = _inat_observations(taxon_id)
     cc, non_cc = _cc_photos_from_observations(obs)
-    return _write_cache(kingdom, species["id"], cc, non_cc)
+    payload = _write_cache(kingdom, species["id"], cc, non_cc)
+    payload["new_count"] = _count_new_candidates(species["id"], cc, decided, registry_ids)
+    return payload
 
 
 def _decided_photo_ids(workbench, photos_list):
@@ -1222,10 +1257,11 @@ def handle_api_intake_inat_check(params):
     if not taxon_id:
         return {"error": "Missing taxon_id"}
 
-    # Query the curated place (not a radius) so this matches the photo scan and
-    # doesn't undercount obscured rarities or skip casual-grade plantings.
+    # Query the PROJECT (membership), not a place/radius — matches the photo
+    # scan and includes obscured + casual-grade observations that a place query
+    # would drop (their public pin lands outside the park boundary).
     url = ("https://api.inaturalist.org/v1/observations"
-           f"?taxon_id={taxon_id}&place_id={INAT_PLACE_ID}&per_page=200"
+           f"?taxon_id={taxon_id}&project_id={INAT_PROJECT_ID}&per_page=200"
            "&verifiable=any&order=desc&order_by=created_at")
     data = _inat_get(url)
     if not data:
@@ -1295,7 +1331,7 @@ def handle_api_triage_scan(params):
     res = _scan_species(kingdom, sp)
     if "error" in res:
         return {"ok": False, "error": res["error"]}
-    return {"ok": True, "cc_count": res["cc_count"],
+    return {"ok": True, "cc_count": res["cc_count"], "new_count": res.get("new_count", 0),
             "non_cc_count": res["non_cc_count"], "scanned_at": res["scanned_at"]}
 
 
@@ -1304,6 +1340,14 @@ def handle_api_triage_scan(params):
 # so the poll endpoint can report it. The scan runs in a daemon thread, so it
 # survives the browser navigating away — the data still gets written, and the
 # progress can be re-read whenever the page comes back.
+
+# The most recent finished scan-all summary is also persisted here so the
+# results survive a page reload OR a dashboard restart (not just an in-memory
+# toast that flashes once and vanishes). Kept per-kingdom so a wildlife scan
+# doesn't clobber the plants result (Randy works in both).
+def _last_scan_path(kingdom):
+    safe = "wildlife" if kingdom == "wildlife" else "plants"
+    return os.path.join(TRIAGE_WORKSPACE, f"_last_scan_{safe}.json")
 
 _SCAN_JOB = {
     "running":   False,
@@ -1314,26 +1358,60 @@ _SCAN_JOB = {
     "scanned":   0,
     "failed":    [],
     "skipped_no_taxon": [],
-    "total_cc_found": 0,
+    "total_cc_found":   0,   # every CC photo seen (incl. already-adjudicated)
+    "total_new_found":  0,   # NEW candidates only — undecided + not in registry
+    "species_with_new": 0,   # how many species gained at least one new candidate
     "started_at": None,
     "finished_at": None,
 }
 _SCAN_LOCK = threading.Lock()
 
 
+def _write_last_scan_summary(job):
+    """Persist a compact summary of a finished scan-all run to disk."""
+    summary = {
+        "kingdom":          job.get("kingdom"),
+        "total":            job.get("total", 0),
+        "scanned":          job.get("scanned", 0),
+        "total_cc_found":   job.get("total_cc_found", 0),
+        "total_new_found":  job.get("total_new_found", 0),
+        "species_with_new": job.get("species_with_new", 0),
+        "failed":           list(job.get("failed", [])),
+        "skipped_no_taxon": list(job.get("skipped_no_taxon", [])),
+        "started_at":       job.get("started_at"),
+        "finished_at":      job.get("finished_at"),
+    }
+    try:
+        write_json_atomic(_last_scan_path(job.get("kingdom")), summary)
+    except Exception as e:
+        print(f"    could not persist last-scan summary: {e}")
+    return summary
+
+
 def _scan_all_worker(kingdom, targets):
     """Background worker: scan each target species, updating _SCAN_JOB."""
     global _SCAN_JOB
+    # Load the decided-set and registry once up front so the new-candidate count
+    # doesn't re-read JSON for all ~190 species. These don't change during an
+    # automated scan (no human is adjudicating mid-run).
+    decided = {str(k) for k in load_workbench()["decisions"].keys()}
+    registry_ids = {str(p.get("photo_id"))
+                    for p in _get_photos_list(_load(PHOTO_CREDITS))
+                    if p.get("photo_id")}
     for i, sp in enumerate(targets):
         with _SCAN_LOCK:
             _SCAN_JOB["current"] = sp.get("common_name", sp.get("id", ""))
-        res = _scan_species(kingdom, sp)
+        res = _scan_species(kingdom, sp, decided=decided, registry_ids=registry_ids)
         with _SCAN_LOCK:
             if "error" in res:
                 _SCAN_JOB["failed"].append({"id": sp.get("id"), "error": res["error"]})
             else:
                 _SCAN_JOB["scanned"] += 1
                 _SCAN_JOB["total_cc_found"] += res.get("cc_count", 0)
+                nc = res.get("new_count", 0)
+                _SCAN_JOB["total_new_found"] += nc
+                if nc > 0:
+                    _SCAN_JOB["species_with_new"] += 1
             _SCAN_JOB["done"] = i + 1
         # Be polite to iNat between species (skip the wait after the last one)
         if i < len(targets) - 1:
@@ -1342,6 +1420,7 @@ def _scan_all_worker(kingdom, targets):
         _SCAN_JOB["running"] = False
         _SCAN_JOB["current"] = ""
         _SCAN_JOB["finished_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+        _write_last_scan_summary(_SCAN_JOB)
 
 
 def handle_api_triage_scan_all(params):
@@ -1378,7 +1457,7 @@ def handle_api_triage_scan_all(params):
             "running": True, "kingdom": kingdom,
             "done": 0, "total": len(targets), "current": "",
             "scanned": 0, "failed": [], "skipped_no_taxon": skipped_no_taxon,
-            "total_cc_found": 0,
+            "total_cc_found": 0, "total_new_found": 0, "species_with_new": 0,
             "started_at": datetime.datetime.utcnow().isoformat() + "Z",
             "finished_at": None,
         })
@@ -1402,6 +1481,14 @@ def handle_api_triage_scan_progress(params):
     if not job["running"] and job["finished_at"] and job["kingdom"]:
         job["species"] = get_photos_summary(job["kingdom"])
     return job
+
+
+def handle_api_triage_last_scan(params):
+    """GET /api/triage/last-scan?kingdom=plants — the persisted summary of the
+    most recent finished scan-all for that kingdom. Survives page reloads and
+    dashboard restarts so the result banner can be shown again."""
+    kingdom = params.get("kingdom", ["plants"])[0]
+    return load_json(_last_scan_path(kingdom), {}) or {}
 
 
 def handle_api_triage_view(params):
@@ -2850,6 +2937,41 @@ main {
 .picker-legend .dot.yellow { background: var(--gold); }
 .picker-legend .dot.red    { background: #c62828; }
 
+/* New-only toggle (Find Photos picker) */
+.new-only-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 7px 12px;
+    border: 1px solid var(--gold, #c8a02a);
+    background: white;
+    color: #8a6d00;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.15s, color 0.15s;
+}
+.new-only-btn:hover { background: #fffaf0; }
+.new-only-btn.active {
+    background: var(--gold, #c8a02a);
+    color: #3a2e00;
+    border-color: var(--gold, #c8a02a);
+}
+.new-only-btn .no-count {
+    min-width: 20px;
+    padding: 1px 7px;
+    border-radius: 10px;
+    background: #fff3d6;
+    color: #8a6d00;
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+}
+.new-only-btn.active .no-count { background: rgba(255,255,255,0.55); color: #3a2e00; }
+
 /* Scan-all button */
 .scan-all-btn {
     width: 100%;
@@ -2957,6 +3079,53 @@ main {
     text-overflow: ellipsis;
     min-height: 16px;
 }
+
+/* Persistent scan-all result banner — stays until dismissed, unlike a toast. */
+.scan-summary {
+    display: none;
+    margin: 0 0 16px 0;
+    background: var(--green-pale, #eef4ec);
+    border: 1px solid var(--green-mid);
+    border-left: 4px solid var(--green-mid);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+}
+.scan-summary.show { display: block; }
+.scan-summary-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+.scan-summary-headline {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--green-deep);
+}
+.scan-summary-headline .big {
+    font-size: 18px;
+    font-variant-numeric: tabular-nums;
+}
+.scan-summary-sub {
+    font-size: 12.5px;
+    color: var(--gray-500, #5b6b5b);
+    margin-top: 4px;
+    line-height: 1.5;
+}
+.scan-summary-sub .muted { color: var(--gray-400); }
+.scan-summary-warn { color: #9a6a00; }
+.scan-summary-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--gray-400);
+    cursor: pointer;
+    padding: 2px 4px;
+    flex-shrink: 0;
+}
+.scan-summary-close:hover { color: var(--gray-600, #444); }
+.scan-summary-time { font-size: 11px; color: var(--gray-400); margin-top: 6px; }
 
 /* ── Publish tab ───────────────────────────────────────────── */
 .pub-layout { max-width: 920px; }
@@ -4666,6 +4835,10 @@ def render_photos():
                     <span><span class="dot yellow"></span>to look at</span>
                     <span><span class="dot red"></span>set aside / blocked</span>
                 </div>
+                <button class="new-only-btn" id="new-only-btn" style="display:none;"
+                        onclick="toggleNewOnly()">
+                    🟡 New only <span class="no-count" id="new-only-count">0</span>
+                </button>
                 <button class="scan-all-btn" id="scan-all-btn" style="display:none;"
                         onclick="scanAll()">⟳ Scan all for new photos</button>
             </div>
@@ -4681,6 +4854,18 @@ def render_photos():
                 <p>Select a species to manage its photos</p>
                 <p style="font-size:12px;">Crown heroes, tag roles, review gallery</p>
             </div>
+        </div>
+    </div>
+
+    <!-- Persistent scan-all result summary (stays until dismissed) -->
+    <div class="scan-summary" id="scan-summary">
+        <div class="scan-summary-head">
+            <div>
+                <div class="scan-summary-headline" id="scan-summary-headline"></div>
+                <div class="scan-summary-sub" id="scan-summary-sub"></div>
+                <div class="scan-summary-time" id="scan-summary-time"></div>
+            </div>
+            <button class="scan-summary-close" onclick="dismissScanSummary()" title="Dismiss">&times;</button>
         </div>
     </div>
 
@@ -4753,6 +4938,7 @@ def render_photos():
     let currentSpeciesId = null;
     let allSpecies = [];
     let workMode = 'review';  // 'review' or 'triage'
+    let newOnly = false;       // Find Photos: show only species with new photos to review
     const PLANT_TAGS = {plant_tags_js};
     const WILDLIFE_TAGS = {wildlife_tags_js};
 
@@ -4773,12 +4959,15 @@ def render_photos():
         const btns = document.querySelectorAll('#photos-workmode-toggle button');
         btns.forEach(b => b.classList.remove('active'));
         btns[m === 'review' ? 0 : 1].classList.add('active');
-        // Show triage legend + scan-all only in find-photos mode
+        // Show triage legend + scan-all + new-only only in find-photos mode
         document.getElementById('picker-legend').style.display =
             m === 'triage' ? 'flex' : 'none';
         document.getElementById('scan-all-btn').style.display =
             m === 'triage' ? 'block' : 'none';
-        renderPicker(allSpecies);
+        const nob = document.getElementById('new-only-btn');
+        nob.style.display = m === 'triage' ? 'flex' : 'none';
+        if (m !== 'triage') {{ newOnly = false; nob.classList.remove('active'); }}
+        filterPicker();
         // Reset the main panel
         const prompt = m === 'triage'
             ? `<div class="photos-select-prompt">
@@ -4802,6 +4991,7 @@ def render_photos():
         btns.forEach(b => b.classList.remove('active'));
         btns[k === 'plants' ? 0 : 1].classList.add('active');
         loadPickerList();
+        loadLastScanSummary();
         const icon = workMode === 'triage' ? '🔍' : '📷';
         document.getElementById('photos-main').innerHTML = `
             <div class="photos-select-prompt">
@@ -4818,7 +5008,7 @@ def render_photos():
             const resp = await fetch(`/api/photos/summary?kingdom=${{currentKingdom}}`);
             const data = await resp.json();
             allSpecies = data.species || [];
-            renderPicker(allSpecies);
+            filterPicker();
         }} catch (err) {{
             list.innerHTML = '<div class="picker-empty">Error loading species</div>';
         }}
@@ -4878,18 +5068,46 @@ def render_photos():
         list.innerHTML = html;
     }}
 
-    function filterPicker() {{
-        const q = document.getElementById('picker-search').value.toLowerCase().trim();
-        if (!q) {{
-            renderPicker(allSpecies);
-            return;
+    // Combined picker filter: search text + (in triage) the New-only toggle.
+    // When New-only is on, also sort most-new-first so the biggest queues lead.
+    function pickerFiltered() {{
+        let list = allSpecies.slice();
+        if (newOnly && workMode === 'triage') {{
+            list = list.filter(sp => (sp.yellow || 0) > 0);
+            list.sort((a, b) => (b.yellow || 0) - (a.yellow || 0));
         }}
-        const filtered = allSpecies.filter(sp =>
-            sp.common_name.toLowerCase().includes(q) ||
-            sp.scientific_name.toLowerCase().includes(q) ||
-            sp.id.toLowerCase().includes(q)
-        );
-        renderPicker(filtered);
+        const q = document.getElementById('picker-search').value.toLowerCase().trim();
+        if (q) {{
+            list = list.filter(sp =>
+                (sp.common_name || '').toLowerCase().includes(q) ||
+                (sp.scientific_name || '').toLowerCase().includes(q) ||
+                (sp.id || '').toLowerCase().includes(q));
+        }}
+        return list;
+    }}
+
+    function filterPicker() {{
+        const list = pickerFiltered();
+        if (newOnly && workMode === 'triage' && !list.length) {{
+            document.getElementById('picker-list').innerHTML =
+                '<div class="picker-empty">Nothing new to review 🎉</div>';
+        }} else {{
+            renderPicker(list);
+        }}
+        updateNewOnlyCount();
+    }}
+
+    function toggleNewOnly() {{
+        newOnly = !newOnly;
+        document.getElementById('new-only-btn').classList.toggle('active', newOnly);
+        filterPicker();
+    }}
+
+    // Count of species (in the current kingdom) that have photos waiting.
+    function updateNewOnlyCount() {{
+        const n = allSpecies.filter(sp => (sp.yellow || 0) > 0).length;
+        const lbl = document.getElementById('new-only-count');
+        if (lbl) lbl.textContent = n;
     }}
 
     // ── Select & load photos for a species ────────────────────
@@ -5085,7 +5303,7 @@ def render_photos():
             // Refresh picker to update hero dot
             const spIdx = allSpecies.findIndex(sp => sp.id === speciesId);
             if (spIdx >= 0) allSpecies[spIdx].has_hero = true;
-            renderPicker(allSpecies);
+            filterPicker();
             document.querySelector(`.picker-item[data-id="${{speciesId}}"]`)?.classList.add('active');
         }} catch (err) {{
             toast('Error: ' + err.message, true);
@@ -5431,7 +5649,7 @@ def render_photos():
             toast(decision === 'promoted'
                 ? (res.is_hero ? 'Promoted as hero' : 'Added to gallery')
                 : (decision === 'block' ? 'Blocked' : 'Set aside'));
-            renderPicker(allSpecies);
+            filterPicker();
             document.querySelector(`.picker-item[data-id="${{speciesId}}"]`)?.classList.add('active');
         }} catch (err) {{
             toast('Error: ' + err.message, true);
@@ -5515,17 +5733,15 @@ def render_photos():
 
                 if (job.species) {{
                     allSpecies = job.species;
-                    renderPicker(allSpecies);
+                    filterPicker();
                     if (currentSpeciesId) {{
                         document.querySelector(`.picker-item[data-id="${{currentSpeciesId}}"]`)?.classList.add('active');
                     }}
                 }}
 
-                let msg = `Scanned ${{job.scanned}} species · ${{job.total_cc_found}} CC photos found`;
-                if (job.failed && job.failed.length) msg += ` · ${{job.failed.length}} failed`;
-                if (job.skipped_no_taxon && job.skipped_no_taxon.length)
-                    msg += ` · ${{job.skipped_no_taxon.length}} no taxon ID`;
-                toast(msg);
+                // Show the persistent summary banner (replaces the old toast
+                // that flashed once and disappeared).
+                showScanSummary(job);
                 console.log('Scan-all report:', job);
 
                 // Leave the bar at 100% briefly, then hide.
@@ -5540,6 +5756,64 @@ def render_photos():
             // Network hiccup — keep polling; don't kill the job view.
             console.warn('progress poll failed', err);
         }}
+    }}
+
+    // ── Persistent scan-all summary banner ────────────────────
+    // Renders the result of a scan-all and keeps it on screen until dismissed.
+    // The headline number is NEW candidates relevant to our documented species —
+    // not the raw CC total, which counts photos already adjudicated.
+    function renderScanSummary(s) {{
+        const banner   = document.getElementById('scan-summary');
+        const headline = document.getElementById('scan-summary-headline');
+        const sub      = document.getElementById('scan-summary-sub');
+        const timeEl   = document.getElementById('scan-summary-time');
+        if (!s || !s.finished_at) {{ banner.classList.remove('show'); return; }}
+
+        const newN     = s.total_new_found || 0;
+        const withNew  = s.species_with_new || 0;
+        const kLabel   = s.kingdom === 'wildlife' ? 'wildlife' : 'plants';
+
+        headline.innerHTML = newN > 0
+            ? `<span class="big">${{newN}}</span> new photo${{newN !== 1 ? 's' : ''}} to review` +
+              ` · across ${{withNew}} species`
+            : `No new photos — you're all caught up on ${{kLabel}} 🎉`;
+
+        const bits = [];
+        bits.push(`Scanned <strong>${{s.scanned}}</strong> of ${{s.total}} ${{kLabel}}`);
+        bits.push(`<span class="muted">${{s.total_cc_found || 0}} CC photos seen total</span>`);
+        if (s.failed && s.failed.length)
+            bits.push(`<span class="scan-summary-warn">${{s.failed.length}} failed</span>`);
+        if (s.skipped_no_taxon && s.skipped_no_taxon.length)
+            bits.push(`<span class="muted">${{s.skipped_no_taxon.length}} skipped (no taxon ID)</span>`);
+        sub.innerHTML = bits.join(' · ');
+
+        timeEl.textContent = s.finished_at ? `Last scan: ${{fmtScanTime(s.finished_at)}}` : '';
+        banner.classList.add('show');
+    }}
+
+    function fmtScanTime(iso) {{
+        try {{
+            const d = new Date(iso);
+            return d.toLocaleString([], {{month:'short', day:'numeric',
+                hour:'numeric', minute:'2-digit'}});
+        }} catch (e) {{ return iso; }}
+    }}
+
+    // After a fresh scan-all finishes, the job object IS the summary.
+    function showScanSummary(job) {{ renderScanSummary(job); }}
+
+    function dismissScanSummary() {{
+        document.getElementById('scan-summary').classList.remove('show');
+    }}
+
+    // On Photos-tab load, re-show the last scan's result (survives reloads
+    // and dashboard restarts because it's persisted to disk).
+    async function loadLastScanSummary() {{
+        try {{
+            const resp = await fetch(`/api/triage/last-scan?kingdom=${{currentKingdom}}`);
+            const s = await resp.json();
+            if (s && s.finished_at && s.kingdom === currentKingdom) renderScanSummary(s);
+        }} catch (err) {{ /* ignore */ }}
     }}
 
     // If a scan is already running when the Photos tab loads, resume the bar.
@@ -5594,8 +5868,11 @@ def render_photos():
                 toast(res.error || 'Scan failed', true);
                 return;
             }}
-            toast(`Found ${{res.cc_count}} CC photo${{res.cc_count !== 1 ? 's' : ''}}` +
-                  (res.non_cc_count ? ` (${{res.non_cc_count}} non-CC skipped)` : ''));
+            const nn = res.new_count || 0;
+            toast(nn > 0
+                ? `${{nn}} new photo${{nn !== 1 ? 's' : ''}} to review`
+                  + ` (${{res.cc_count}} CC seen)`
+                : `No new photos — ${{res.cc_count}} CC already reviewed`);
             // Refresh picker counts then reload the grid
             await loadPickerList();
             await loadTriage(currentSpeciesId);
@@ -5630,6 +5907,7 @@ def render_photos():
     // ── Init ──────────────────────────────────────────────────
     loadPickerList();
     resumeScanIfRunning();
+    loadLastScanSummary();
     </script>
     """
 
@@ -5976,6 +6254,7 @@ API_ROUTES = {
     "/api/triage/scan":      handle_api_triage_scan,
     "/api/triage/scan-all":  handle_api_triage_scan_all,
     "/api/triage/scan-progress": handle_api_triage_scan_progress,
+    "/api/triage/last-scan": handle_api_triage_last_scan,
     "/api/triage/view":      handle_api_triage_view,
     "/api/triage/decide":    handle_api_triage_decide,
     "/api/preview":          handle_api_preview,
