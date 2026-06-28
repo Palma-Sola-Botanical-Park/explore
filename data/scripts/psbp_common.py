@@ -24,7 +24,7 @@ from pathlib import Path
 # ===========================================================================
 # REPO ROOT — the ONE line to change if you move the repo.
 # ===========================================================================
-REPO = Path("/Users/fiona/Documents/GitHub/explore")
+REPO = Path(__file__).resolve().parents[2]
 
 # ===========================================================================
 # DERIVED PATHS  (don't edit — these all follow from REPO)
