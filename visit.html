@@ -16,7 +16,7 @@
 .parkmap-wrap { display:grid; grid-template-columns: 1.4fr 1fr; gap:2.5rem; align-items:center; }
 .parkmap {
   position:relative; border-radius:14px; overflow:hidden;
-  aspect-ratio: 4/3; background:#dfeadb;
+  aspect-ratio: 704/711; background:#dfeadb;
   border:2px solid rgba(45,106,53,.25);
   box-shadow:0 4px 18px rgba(0,0,0,.10);
 }
@@ -234,24 +234,25 @@
     </div>
     <div class="parkmap-wrap">
       <div class="parkmap">
-        <div class="parkmap-art"></div>
-        <div class="parkmap-placeholder-note">Placeholder — illustrated park map goes here</div>
-        <!-- Pins are positioned by % — reposition once the real map art is in -->
-        <div class="map-pin"      style="left:24%; top:34%"><div class="dot"><span>1</span></div><div class="pin-lbl">Hidden Garden Nursery</div></div>
-        <div class="map-pin"      style="left:58%; top:28%"><div class="dot"><span>2</span></div><div class="pin-lbl">Rare Fruit Trail</div></div>
-        <div class="map-pin gold" style="left:42%; top:58%"><div class="dot"><span>3</span></div><div class="pin-lbl">Cactus Garden</div></div>
-        <div class="map-pin"      style="left:72%; top:62%"><div class="dot"><span>4</span></div><div class="pin-lbl">Palm Alley</div></div>
-        <div class="map-pin gold" style="left:30%; top:74%"><div class="dot"><span>5</span></div><div class="pin-lbl">The Galleria</div></div>
+        <div class="parkmap-art" style="background:url('images/ParkMap.png') center/cover no-repeat"></div>
+        <!-- Pins are positioned by % of the map box — first-pass placements; nudge each against the live page -->
+        <div class="map-pin"      style="left:88%; top:62%"><div class="dot"><span>1</span></div><div class="pin-lbl">Rare Fruit Trail</div></div>
+        <div class="map-pin"      style="left:91%; top:40%"><div class="dot"><span>2</span></div><div class="pin-lbl">Butterfly Garden</div></div>
+        <div class="map-pin"      style="left:52%; top:74%"><div class="dot"><span>3</span></div><div class="pin-lbl">Serenity Garden</div></div>
+        <div class="map-pin"      style="left:47%; top:88%"><div class="dot"><span>4</span></div><div class="pin-lbl">Rare Palms &amp; Plumeria</div></div>
+        <div class="map-pin gold" style="left:62%; top:46%"><div class="dot"><span>5</span></div><div class="pin-lbl">Art at the Galleria</div></div>
+        <div class="map-pin"      style="left:26%; top:46%"><div class="dot"><span>6</span></div><div class="pin-lbl">Hidden Garden Nursery</div></div>
       </div>
       <div class="map-words">
         <p>The whole park is a loop you can walk in about 30 minutes — or spend a whole morning in. There's no wrong way in. Start at the entrance and drift, or aim straight for whatever pulls you.</p>
-        <p>Five places reward a slow look. Pick one below, or read on for guided routes built around what you came to see.</p>
+        <p>Six places reward a slow look. Pick one below, or read on for guided routes built around what you came to see.</p>
         <div class="map-legend">
-          <div class="map-legend-item"><span class="map-legend-num">1</span> Hidden Garden Nursery</div>
-          <div class="map-legend-item"><span class="map-legend-num">2</span> Rare Fruit Trail</div>
-          <div class="map-legend-item"><span class="map-legend-num">3</span> Cactus Garden</div>
-          <div class="map-legend-item"><span class="map-legend-num">4</span> Palm Alley</div>
-          <div class="map-legend-item"><span class="map-legend-num">5</span> The Galleria</div>
+          <div class="map-legend-item"><span class="map-legend-num">1</span> Rare Fruit Trail</div>
+          <div class="map-legend-item"><span class="map-legend-num">2</span> Butterfly Garden</div>
+          <div class="map-legend-item"><span class="map-legend-num">3</span> Serenity Garden</div>
+          <div class="map-legend-item"><span class="map-legend-num">4</span> Rare Palms &amp; Plumeria</div>
+          <div class="map-legend-item"><span class="map-legend-num">5</span> Art in the Park at the Galleria</div>
+          <div class="map-legend-item"><span class="map-legend-num">6</span> Hidden Garden Nursery</div>
         </div>
       </div>
     </div>
@@ -276,21 +277,12 @@
     <!-- ── DIRECTION 1: AREAS ─────────────────────────────── -->
     <div id="panel-areas">
       <div style="text-align:center;max-width:640px;margin:0 auto 2.25rem">
-        <p style="color:var(--text-soft);line-height:1.75">Five corners of the park that reward stopping. Tap any one to read more. <em>(Descriptions below are drafts — confirm details with Bev before publishing.)</em></p>
+        <p style="color:var(--text-soft);line-height:1.75">Six corners of the park that reward stopping. Tap any one to read more. <em>(Descriptions below are drafts — confirm details with Bev before publishing.)</em></p>
       </div>
       <div class="area-grid">
 
-        <a class="area-card" href="#nursery">
-          <div class="area-photo" style="background-image:url('images/Cordyline_fruticosa.jpg')"><div class="area-num">1</div></div>
-          <div class="area-body">
-            <h3>Hidden Garden Nursery</h3>
-            <p>Volunteer-run, near the west entrance. Plants propagated straight from the collection — including Florida natives you won't find at a box store. Open Oct–May, Tue &amp; Sat, 9am–Noon.</p>
-            <span class="area-link">Hours &amp; details →</span>
-          </div>
-        </a>
-
         <a class="area-card" href="#rarefruit">
-          <div class="area-photo" style="background-image:url('images/Cassia_fistula.jpg')"><div class="area-num">2</div></div>
+          <div class="area-photo" style="background-image:url('images/Cassia_fistula.jpg')"><div class="area-num">1</div></div>
           <div class="area-body">
             <h3>Rare Fruit Trail</h3>
             <p>A frost-free pocket lets us grow things that shouldn't survive in Manatee County. Tended by the Manatee Rare Fruit Council since 2008 — star fruit, dragon fruit, jackfruit, lychee and more.</p>
@@ -299,10 +291,19 @@
         </a>
 
         <a class="area-card" href="#" onclick="return false">
+          <div class="area-photo" style="background-image:url('images/Hamelia_patens.jpg')"><div class="area-num">2</div></div>
+          <div class="area-body">
+            <h3>Butterfly Garden</h3>
+            <p><em>[Draft — confirm with Bev]</em> Nectar and host plants chosen to pull butterflies through the season — and feed the caterpillars that become them. Best on a warm, still morning.</p>
+            <span class="area-link">Learn more →</span>
+          </div>
+        </a>
+
+        <a class="area-card" href="#" onclick="return false">
           <div class="area-photo" style="background-image:url('images/Ixora_coccinea.jpg')"><div class="area-num">3</div></div>
           <div class="area-body">
-            <h3>Cactus &amp; Succulent Garden</h3>
-            <p><em>[Draft]</em> A sun-baked bed of cacti, agaves and succulents — a sharp contrast to the shade of the tropical canopy just steps away.</p>
+            <h3>Serenity Garden</h3>
+            <p><em>[Draft]</em> A quiet, shaded corner built for sitting still — benches, soft planting, and a pond just beyond. The place to slow down mid-walk.</p>
             <span class="area-link">Learn more →</span>
           </div>
         </a>
@@ -310,18 +311,27 @@
         <a class="area-card" href="#" onclick="return false">
           <div class="area-photo" style="background-image:url('images/Phoenix_reclinata.jpg')"><div class="area-num">4</div></div>
           <div class="area-body">
-            <h3>Palm Alley</h3>
-            <p><em>[Draft]</em> A corridor of specimen palms and cycads — from Senegal date palms to lady palms — showing off the diversity that thrives in our microclimate.</p>
+            <h3>Rare Palms &amp; Plumeria</h3>
+            <p><em>[Draft]</em> Specimen palms you won't find in a typical yard, paired with fragrant plumeria that perfume the path in summer. <em>[Confirm exact location on map.]</em></p>
             <span class="area-link">Learn more →</span>
           </div>
         </a>
 
         <a class="area-card" href="#" onclick="return false">
-          <div class="area-photo" style="background-image:url('images/Hamelia_patens.jpg')"><div class="area-num">5</div></div>
+          <div class="area-photo" style="background-image:url('images/Ficus_aurea.jpg')"><div class="area-num">5</div></div>
           <div class="area-body">
-            <h3>The Galleria</h3>
-            <p><em>[To be fleshed out]</em> Our indoor gallery space — rotating art shows, community gatherings, and a cool place to pause. Details coming.</p>
+            <h3>Art in the Park at the Galleria</h3>
+            <p><em>[Draft]</em> Our indoor gallery — rotating shows from local artists, community gatherings, and a cool place to pause. Check the calendar for what's hanging now. <em>[Swap in a Galleria photo.]</em></p>
             <span class="area-link">Learn more →</span>
+          </div>
+        </a>
+
+        <a class="area-card" href="#nursery">
+          <div class="area-photo" style="background-image:url('images/Cordyline_fruticosa.jpg')"><div class="area-num">6</div></div>
+          <div class="area-body">
+            <h3>Hidden Garden Nursery</h3>
+            <p>Volunteer-run, near the west entrance. Plants propagated straight from the collection — including Florida natives you won't find at a box store. Open Oct–May, Tue &amp; Sat, 9am–Noon.</p>
+            <span class="area-link">Hours &amp; details →</span>
           </div>
         </a>
 
