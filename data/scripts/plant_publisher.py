@@ -104,7 +104,7 @@ def build_plants_json_entry(species, hero):
 
     if hero:
         photo = f"photos/{pid}/{hero['filename']}"
-        focus = hero.get("focus", "50% 50%")
+        focus = hero.get("focus") or "50% 50%"
     else:
         photo = ""
         focus = "50% 50%"
@@ -577,7 +577,7 @@ def generate_html(species, hero, gallery_photos=None):
     cat_display = species.get("category", "").replace(" and ", " & ")
     cat_html = h(cat_display)  # This properly escapes & to &amp;
 
-    focus = hero.get("focus", "50% 50%") if hero else "50% 50%"
+    focus = (hero.get("focus") if hero else None) or "50% 50%"
     css = PLANT_CSS
 
     # Hero image path (relative from plants/ directory)
@@ -1230,7 +1230,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                     "photographer": hr.get("photographer", ""),
                     "license": hc["credit_license"],
                     "credit_line": hc["credit_line"],
-                    "focus": hr.get("focus", "50% 50%"),
+                    "focus": hr.get("focus") or "50% 50%",
                 }
 
             self._json_response({

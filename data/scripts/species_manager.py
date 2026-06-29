@@ -1570,6 +1570,12 @@ def handle_api_photos_set_hero(params):
             p["hero"] = True
             p["filename"] = f"{photo_id}.jpg"
             p["virtual"] = False
+            # Promoted photos (often from the gallery) carry focus=null.
+            # Give the new hero a sensible default so the registry and the
+            # generated page never inherit a null object-position. Randy can
+            # fine-tune the crop later via the focus control.
+            if not p.get("focus"):
+                p["focus"] = "50% 50%"
         elif p.get("hero"):
             p["hero"] = False
             # Old hero becomes virtual (CDN-only) unless someone

@@ -97,7 +97,7 @@ def build_wildlife_json_entry(species, hero):
 
     if hero:
         photo = f"photos/{pid}/{hero['filename']}"
-        focus = hero.get("focus", "50% 50%")
+        focus = hero.get("focus") or "50% 50%"
     else:
         photo = ""
         focus = "50% 50%"
@@ -489,7 +489,7 @@ def generate_html(species, hero, gallery_photos):
     family = (species.get("taxonomy") or {}).get("family", "")
     category = species.get("category", "")
     theme = theme_for(species.get("animal_group", ""))
-    focus = hero.get("focus", "50% 50%") if hero else "50% 50%"
+    focus = (hero.get("focus") if hero else None) or "50% 50%"
 
     # Hero image — credit resolved through photographer_names.json
     if hero:
