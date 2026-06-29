@@ -98,6 +98,7 @@ TABS = [
     {"id": "overview", "label": "Overview",       "route": "/",        "icon": "📊"},
     {"id": "intake",   "label": "Intake",         "route": "/intake",  "icon": "📥"},
     {"id": "photos",   "label": "Photos",         "route": "/photos",  "icon": "📷"},
+    {"id": "cultivated", "label": "Cultivated",   "route": "/cultivated", "icon": "🏷️"},
     {"id": "publish",  "label": "Preview & Publish", "route": "/publish", "icon": "🚀"},
 ]
 
@@ -838,6 +839,47 @@ def _inat_get(url):
     except Exception as e:
         print(f"    request failed: {e}")
         return None
+
+
+def _inat_get_auth(url, token):
+    """GET as a specific user (session token), for cheap token validation."""
+    headers = {
+        "Accept": "application/json",
+        "Authorization": token,
+        "User-Agent": "PSBP-SpeciesManager/1.0 (palmasolabp.org)",
+    }
+    req = Request(url, headers=headers)
+    try:
+        with urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return None
+
+
+def _inat_post(url, token, params=None):
+    """POST to iNat with a user token. Returns (ok, status, body_snippet).
+
+    Used for data-quality votes (marking observations not-wild / cultivated).
+    Mirrors mark_not_wild.py exactly: query-string params, token in the
+    Authorization header. The token is passed per call and never stored.
+    """
+    if params:
+        from urllib.parse import urlencode
+        url = url + ("&" if "?" in url else "?") + urlencode(params)
+    headers = {
+        "Authorization": token,
+        "Accept": "application/json",
+        "User-Agent": "PSBP-SpeciesManager/1.0 (palmasolabp.org)",
+    }
+    req = Request(url, headers=headers, method="POST", data=b"")
+    try:
+        with urlopen(req, timeout=30) as resp:
+            code = getattr(resp, "status", resp.getcode())
+            return (code in (200, 201, 204), code, "")
+    except urllib.error.HTTPError as e:
+        return (False, e.code, e.read().decode("utf-8", errors="replace")[:200])
+    except Exception as e:
+        return (False, 0, str(e)[:200])
 
 
 def _inat_observations(taxon_id):
@@ -6866,10 +6908,365 @@ def render_publish():
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 # Page routes: path → (tab_id, render_function)
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  CULTIVATED — mark garden plantings "not wild" on iNaturalist.            ║
+# ║                                                                          ║
+# ║  Ported from wild_audit.py (read) + mark_not_wild.py (write). Plants      ║
+# ║  only; animals are correctly wild and never touched. The write votes the  ║
+# ║  "Organism is wild" DQA metric to FALSE — exactly mark_not_wild.py.       ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+def _inat_species_counts_captive(captive_value):
+    """species_counts for the project filtered by captive flag.
+    Returns {taxon_id: {"count": n, "taxon": {...}}}."""
+    out = {}
+    page = 1
+    while True:
+        url = ("https://api.inaturalist.org/v1/observations/species_counts"
+               f"?project_id={INAT_PROJECT_ID}&verifiable=any"
+               f"&captive={captive_value}&per_page=500&page={page}")
+        data = _inat_get(url)
+        if not data:
+            break
+        results = data.get("results", [])
+        for row in results:
+            tx = row.get("taxon") or {}
+            tid = tx.get("id")
+            if tid is not None:
+                out[tid] = {"count": row.get("count", 0), "taxon": tx}
+        total = data.get("total_results", 0)
+        if len(results) < 500 or (page * 500) >= total:
+            break
+        page += 1
+        time.sleep(API_DELAY)
+    return out
+
+
+def cultivated_audit(limit=10):
+    """Read-only worklist: plant taxa with the most still-WILD observations.
+
+    Animals are excluded (birds/insects in the park ARE wild). Returns the top
+    `limit` plant offenders by wild-observation count.
+    """
+    wild = _inat_species_counts_captive("false")
+    cult = _inat_species_counts_captive("true")
+    if not wild and not cult:
+        return {"ok": False,
+                "error": "No data from iNaturalist — offline, or the project "
+                         "slug is wrong. Check INAT_PROJECT_ID."}
+
+    rows = []
+    for tid in (set(wild) | set(cult)):
+        tx = (wild.get(tid) or cult.get(tid))["taxon"]
+        if (tx.get("iconic_taxon_name") or "") != "Plantae":
+            continue
+        w = wild.get(tid, {}).get("count", 0)
+        c = cult.get(tid, {}).get("count", 0)
+        if w <= 0:
+            continue
+        rows.append({
+            "taxon_id":       tid,
+            "scientific_name": tx.get("name", ""),
+            "common_name":    tx.get("preferred_common_name", "") or "",
+            "wild_obs":       w,
+            "cultivated_obs": c,
+            "total_obs":      w + c,
+        })
+    rows.sort(key=lambda r: -r["wild_obs"])
+    return {"ok": True,
+            "offenders":        rows[:limit],
+            "offender_total":   len(rows),
+            "plant_wild_total": sum(r["wild_obs"] for r in rows)}
+
+
+def cultivated_preview(taxon_id):
+    """Read-only: which observations of one taxon would be marked cultivated."""
+    obs = _inat_observations(taxon_id)
+    to_change = [o for o in obs if o.get("captive") is not True]
+    already   = [o for o in obs if o.get("captive") is True]
+    name = ""
+    if obs:
+        name = (obs[0].get("taxon") or {}).get("name", "")
+    wild_list = [{
+        "obs_id":        o.get("id"),
+        "observer":      (o.get("user") or {}).get("login", "?"),
+        "quality_grade": o.get("quality_grade", "?"),
+    } for o in to_change]
+    return {"ok": True, "taxon_id": taxon_id, "scientific_name": name,
+            "wild_count": len(to_change), "cultivated_count": len(already),
+            "total": len(obs), "wild": wild_list}
+
+
+def cultivated_mark(taxon_id, token):
+    """WRITE: vote 'not wild' on every still-wild observation of this taxon.
+
+    Re-derives the wild set server-side (never trusts a client list), validates
+    the token before any write, rate-limits at one vote/second (matching
+    mark_not_wild.py), and returns a per-observation report.
+    """
+    if not token:
+        return {"ok": False, "error": "No iNaturalist token provided"}
+
+    me = _inat_get_auth("https://api.inaturalist.org/v1/users/me", token)
+    if not me or not me.get("results"):
+        return {"ok": False, "error": "Token invalid or expired — paste a fresh "
+                "one from inaturalist.org/users/api_token"}
+
+    obs = _inat_observations(taxon_id)
+    to_change = [o for o in obs if o.get("captive") is not True]
+    if not to_change:
+        return {"ok": True, "marked": 0, "failed": 0, "results": [],
+                "note": "Every observation is already cultivated."}
+
+    results, marked, failed = [], 0, 0
+    for o in to_change:
+        oid = o.get("id")
+        observer = (o.get("user") or {}).get("login", "?")
+        ok, status, body = _inat_post(
+            f"https://api.inaturalist.org/v1/observations/{oid}/quality/wild",
+            token, params={"agree": "false"})
+        if ok:
+            marked += 1
+        else:
+            failed += 1
+        results.append({"obs_id": oid, "observer": observer, "ok": ok,
+                        "status": status, "error": body if not ok else ""})
+        time.sleep(API_DELAY)
+    return {"ok": True, "taxon_id": taxon_id, "marked": marked,
+            "failed": failed, "results": results}
+
+
+def handle_api_cultivated_audit(params):
+    """GET /api/cultivated/audit — read-only plant worklist."""
+    return cultivated_audit()
+
+
+def handle_api_cultivated_preview(params):
+    """GET /api/cultivated/preview?taxon_id= — wild obs for one taxon."""
+    raw = params.get("taxon_id", [""])
+    tid = raw[0] if isinstance(raw, list) else raw
+    try:
+        tid = int(tid)
+    except (TypeError, ValueError):
+        return {"ok": False, "error": "Bad taxon_id"}
+    return cultivated_preview(tid)
+
+
+def handle_api_cultivated_mark(params):
+    """POST /api/cultivated/mark — body {taxon_id, token}."""
+    body = params.get("_body", {})
+    token = (body.get("token") or "").strip()
+    try:
+        tid = int(body.get("taxon_id"))
+    except (TypeError, ValueError):
+        return {"ok": False, "error": "Bad taxon_id"}
+    return cultivated_mark(tid, token)
+
+
+def render_cultivated():
+    """Cultivated tab — audit plant observations and vote them 'not wild'."""
+    return f"""
+    <style>
+    .cult-intro{{background:#fff;border:1px solid #e5e0d5;border-left:4px solid var(--green-mid);border-radius:10px;padding:14px 16px;margin-bottom:16px;}}
+    .cult-intro h2{{font-size:16px;color:var(--green-deep);margin:0 0 4px;}}
+    .cult-intro p{{font-size:13px;color:var(--gray-600);margin:0;}}
+    .cult-scan-btn{{background:var(--green-mid);color:#fff;border:none;border-radius:7px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px;}}
+    .cult-scan-btn:disabled{{opacity:.6;cursor:default;}}
+    .cult-status{{font-size:13px;color:var(--gray-600);margin-top:8px;}}
+    .cult-layout{{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:16px;align-items:start;}}
+    .cult-summary{{font-size:13px;color:var(--green-deep);font-weight:600;margin-bottom:8px;}}
+    .cult-card{{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;border:1px solid #eee;border-radius:8px;background:#fff;cursor:pointer;margin-bottom:6px;}}
+    .cult-card:hover{{background:var(--cream);}}
+    .cult-card.active{{border-left:3px solid var(--green-mid);background:#eef6ef;}}
+    .cult-name{{display:flex;flex-direction:column;min-width:0;}}
+    .cult-common{{font-weight:600;color:var(--green-deep);font-size:14px;}}
+    .cult-sci{{font-style:italic;color:var(--gray-600);font-size:12px;}}
+    .cult-counts{{display:flex;gap:5px;flex:0 0 auto;}}
+    .cult-pill{{font-size:11px;font-weight:700;padding:2px 8px;border-radius:9px;white-space:nowrap;}}
+    .cult-pill.wild{{background:#fdf0d5;color:#9a6b12;}}
+    .cult-pill.cult{{background:#e3f0e5;color:#2d6a35;}}
+    .cult-detail{{background:#fff;border:1px solid #eee;border-radius:10px;padding:16px;min-height:120px;}}
+    .cult-detail-head h3{{margin:0;font-style:italic;color:var(--green-deep);}}
+    .cult-detail-counts{{font-size:13px;color:var(--gray-600);margin-top:6px;}}
+    .cult-obs-list{{margin:12px 0;max-height:200px;overflow:auto;border:1px solid #f0eee8;border-radius:6px;}}
+    .cult-obs-row{{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:4px 10px;border-bottom:1px solid #f5f3ee;}}
+    .cult-obs-more{{font-size:12px;color:#999;padding:6px 10px;}}
+    .cult-token-box{{background:var(--cream);border:1px solid #e5e0d5;border-radius:8px;padding:12px;margin:12px 0;}}
+    .cult-token-box label{{display:block;font-size:12px;font-weight:600;color:var(--green-deep);margin-bottom:6px;}}
+    .cult-token-box input{{width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;font-family:monospace;}}
+    .cult-token-note{{font-size:11px;color:#999;margin-top:5px;}}
+    .cult-mark-btn{{background:var(--gold);color:#3a2c08;border:none;border-radius:7px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;width:100%;}}
+    .cult-mark-btn:disabled{{opacity:.55;cursor:default;}}
+    .cult-empty{{font-size:13px;color:var(--gray-600);padding:8px 0;}}
+    .cult-result-ok{{font-size:14px;font-weight:600;color:var(--green-mid);margin-top:12px;}}
+    .cult-prompt{{color:var(--gray-400);font-size:13px;text-align:center;padding:24px;}}
+    </style>
+
+    <div class="cult-intro">
+        <h2>🏷️ Mark plants cultivated</h2>
+        <p>iNaturalist treats observations as wild by default. Garden plantings should be flagged
+        cultivated so the park's row of Foxtails doesn't read as a wild population. This scans
+        <strong>plants only</strong> (animals in the park really are wild) and votes the worst
+        offenders "not wild" for you — across the whole project, so your team doesn't have to.</p>
+        <button class="cult-scan-btn" id="cult-scan-btn" onclick="cultScan()">🔍 Scan for offenders</button>
+        <div class="cult-status" id="cult-status"></div>
+    </div>
+
+    <div class="cult-layout">
+        <div id="cult-list"></div>
+        <div class="cult-detail" id="cult-detail">
+            <div class="cult-prompt">Scan, then pick a species to review and mark.</div>
+        </div>
+    </div>
+
+    <div class="toast" id="cult-toast"></div>
+
+    <script>
+    let cultAuditData = null;
+    let cultOffenders = [];
+    let cultSelected = null;
+    let cultDetailData = null;
+    let cultToken = '';
+
+    function esc(s) {{
+        if (!s) return '';
+        const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+    }}
+    function cultToast(msg, isErr) {{
+        const el = document.getElementById('cult-toast');
+        if (!el) return;
+        el.textContent = msg; el.className = 'toast show' + (isErr ? ' error' : '');
+        clearTimeout(el._t); el._t = setTimeout(() => el.className = 'toast', 3200);
+    }}
+
+    async function cultScan() {{
+        const btn = document.getElementById('cult-scan-btn');
+        const status = document.getElementById('cult-status');
+        btn.disabled = true; btn.textContent = '⏳ Scanning…';
+        status.textContent = 'Querying iNaturalist for wild vs cultivated plant counts…';
+        try {{
+            const resp = await fetch('/api/cultivated/audit');
+            const data = await resp.json();
+            if (!data.ok) {{ status.textContent = data.error || 'Scan failed.'; }}
+            else {{ cultAuditData = data; cultRenderList(); status.textContent = ''; }}
+        }} catch (e) {{
+            status.innerHTML = '<span style="color:#c62828;">Network error — is the dashboard online?</span>';
+        }}
+        btn.disabled = false; btn.textContent = '🔄 Re-scan';
+    }}
+
+    function cultRenderList() {{
+        const data = cultAuditData || {{}};
+        cultOffenders = data.offenders || [];
+        const list = document.getElementById('cult-list');
+        if (!cultOffenders.length) {{
+            list.innerHTML = '<div class="cult-empty">No wild-marked plants left — all clean. 🎉</div>';
+            return;
+        }}
+        let html = `<div class="cult-summary">${{data.offender_total}} plant taxa still carry wild observations `
+            + `(${{data.plant_wild_total}} total). Worst ${{cultOffenders.length}}:</div>`;
+        html += cultOffenders.map(o => `
+            <div class="cult-card ${{cultSelected === o.taxon_id ? 'active' : ''}}" onclick="cultSelect(${{o.taxon_id}})">
+                <div class="cult-name">
+                    <span class="cult-common">${{esc(o.common_name || o.scientific_name)}}</span>
+                    <span class="cult-sci">${{esc(o.scientific_name)}}</span>
+                </div>
+                <div class="cult-counts">
+                    <span class="cult-pill wild">${{o.wild_obs}} wild</span>
+                    <span class="cult-pill cult">${{o.cultivated_obs}} cult</span>
+                </div>
+            </div>`).join('');
+        list.innerHTML = html;
+    }}
+
+    async function cultSelect(tid) {{
+        cultSelected = tid; cultRenderList();
+        const detail = document.getElementById('cult-detail');
+        detail.innerHTML = '<div class="loading">Loading observations…</div>';
+        try {{
+            const resp = await fetch('/api/cultivated/preview?taxon_id=' + tid);
+            const data = await resp.json();
+            if (!data.ok) {{ detail.innerHTML = `<div class="cult-empty" style="color:#c62828;">${{esc(data.error || 'error')}}</div>`; return; }}
+            cultRenderDetail(data);
+        }} catch (e) {{
+            detail.innerHTML = '<div class="cult-empty">Error loading observations.</div>';
+        }}
+    }}
+
+    function cultRenderDetail(d) {{
+        cultDetailData = d;
+        const detail = document.getElementById('cult-detail');
+        if (d.wild_count === 0) {{
+            detail.innerHTML = `<div class="cult-detail-head"><h3>${{esc(d.scientific_name)}}</h3></div>`
+                + `<div class="cult-empty">All ${{d.total}} observations are already cultivated. Nothing to do. ✓</div>`;
+            return;
+        }}
+        const sample = d.wild.slice(0, 15).map(o =>
+            `<div class="cult-obs-row"><span>obs ${{o.obs_id}}</span>`
+            + `<span style="color:#999;">${{esc(o.observer)}}</span>`
+            + `<span style="color:#aaa;">${{esc(o.quality_grade)}}</span></div>`).join('');
+        const more = d.wild.length > 15 ? `<div class="cult-obs-more">…and ${{d.wild.length - 15}} more</div>` : '';
+        detail.innerHTML = `
+            <div class="cult-detail-head">
+                <h3>${{esc(d.scientific_name)}}</h3>
+                <div class="cult-detail-counts">
+                    <strong style="color:#9a6b12;">${{d.wild_count}}</strong> wild → will be marked cultivated ·
+                    <strong>${{d.cultivated_count}}</strong> already cultivated · ${{d.total}} total
+                </div>
+            </div>
+            <div class="cult-obs-list">${{sample}}${{more}}</div>
+            <div class="cult-token-box">
+                <label>iNaturalist API token <a href="https://www.inaturalist.org/users/api_token" target="_blank" style="font-weight:400;">(get it here)</a></label>
+                <input type="password" id="cult-token" placeholder="Paste token…" value="${{esc(cultToken)}}" oninput="cultToken = this.value">
+                <div class="cult-token-note">Session only — kept in this browser tab, never written to disk.</div>
+            </div>
+            <button class="cult-mark-btn" onclick="cultConfirm()">
+                Mark ${{d.wild_count}} observation${{d.wild_count !== 1 ? 's' : ''}} cultivated
+            </button>
+            <div id="cult-result"></div>`;
+    }}
+
+    async function cultConfirm() {{
+        const d = cultDetailData;
+        if (!d) return;
+        const tid = d.taxon_id, n = d.wild_count, name = d.scientific_name;
+        if (!cultToken.trim()) {{ cultToast('Paste your iNat token first', true); return; }}
+        if (!confirm(`Vote NOT WILD (cultivated) on ${{n}} observation(s) of ${{name}}?\\n\\n`
+            + `This writes to iNaturalist and changes your whole team's observations. It can be undone per-observation on iNat, but do it deliberately.`)) return;
+        const btn = document.querySelector('.cult-mark-btn');
+        const result = document.getElementById('cult-result');
+        btn.disabled = true; btn.textContent = `Marking ${{n}}… (≈${{n}}s)`;
+        result.innerHTML = '<div class="loading">Voting on iNaturalist — one per second, please wait…</div>';
+        try {{
+            const resp = await fetch('/api/cultivated/mark', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{taxon_id: tid, token: cultToken.trim()}})
+            }});
+            const data = await resp.json();
+            if (!data.ok) {{
+                result.innerHTML = `<div class="cult-empty" style="color:#c62828;">${{esc(data.error || 'Failed')}}</div>`;
+                btn.disabled = false; btn.textContent = `Mark ${{n}} observation${{n !== 1 ? 's' : ''}} cultivated`;
+                return;
+            }}
+            const failNote = data.failed ? `, <span style="color:#c62828;">${{data.failed}} failed</span>` : '';
+            result.innerHTML = `<div class="cult-result-ok">✓ ${{data.marked}} marked cultivated${{failNote}}.</div>`;
+            cultToast(`${{data.marked}} marked cultivated`);
+            btn.textContent = '✓ Done';
+            cultScan();  // refresh worklist so this taxon updates/drops
+        }} catch (e) {{
+            result.innerHTML = `<div class="cult-empty" style="color:#c62828;">Error: ${{esc(e.message)}}</div>`;
+            btn.disabled = false; btn.textContent = `Mark ${{n}} observation${{n !== 1 ? 's' : ''}} cultivated`;
+        }}
+    }}
+    </script>
+    """
+
+
 PAGE_ROUTES = {
     "/":        ("overview", render_overview),
     "/intake":  ("intake",   render_intake),
     "/photos":  ("photos",   render_photos),
+    "/cultivated": ("cultivated", render_cultivated),
     "/publish": ("publish",  render_publish),
 }
 
@@ -6904,6 +7301,9 @@ API_ROUTES = {
     "/api/publish/promote":  handle_api_publish_promote,
     "/api/publish/demote":   handle_api_publish_demote,
     "/api/publish/demote-research": handle_api_publish_demote_research,
+    "/api/cultivated/audit":   handle_api_cultivated_audit,
+    "/api/cultivated/preview": handle_api_cultivated_preview,
+    "/api/cultivated/mark":    handle_api_cultivated_mark,
 }
 
 
