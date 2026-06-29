@@ -18,10 +18,10 @@
    fall back to the photo's remote iNaturalist URL. Nothing ever renders broken,
    even if a local filename doesn't match.
 
-   NOTE ON DATES: photo_credits.json has no observed-on field yet, so hero/grid
-   attribution shows photographer + license now and lights up a date the moment
-   the sync pipeline adds `observed_on` (and optional `time_observed_at`) per
-   photo. The live mosaic already gets dates straight from the iNat API.
+   NOTE ON DATES: photo_credits.json now carries `observed_on` per photo (and the
+   import can add optional `time_observed_at`), so hero/grid/plate attribution
+   shows photographer + date + license. The live "What's been seen lately" mosaic
+   gets its dates straight from the iNaturalist API.
    ========================================================================== */
 (function () {
   'use strict';

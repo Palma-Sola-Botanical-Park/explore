@@ -1637,7 +1637,7 @@ function _rnCard(e, rec, cr) {
       <div style="display:${photo ? 'none' : 'flex'};height:100%;align-items:center;justify-content:center;font-size:2.6rem;color:var(--text-soft);opacity:.3">${glyph}</div>
       <span style="position:absolute;top:.6rem;left:.6rem;background:${pillBg};color:${pillFg};font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.22rem .6rem;border-radius:20px;box-shadow:0 1px 5px rgba(0,0,0,.25)">${_rnEsc(pill)}</span>
     </div>
-    <div class="card-body">
+    <div class="card-body" style="flex:1">
       <h4 style="font-size:1rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${_rnEsc(e.common_name)}</h4>
       ${sci ? `<div style="font-style:italic;font-size:.82rem;color:var(--text-soft);margin-bottom:.45rem">${_rnEsc(sci)}</div>` : ''}
       ${e.note ? `<p style="font-size:.86rem;color:var(--text-soft);line-height:1.5;margin:0 0 .55rem">${_rnEsc(e.note)}</p>` : ''}
@@ -1645,8 +1645,8 @@ function _rnCard(e, rec, cr) {
     </div>
     ${plate}`;
   return page
-    ? `<a class="card plant-card" href="${_rnEsc(page)}" style="text-decoration:none;display:flex;flex-direction:column">${inner}</a>`
-    : `<div class="card plant-card" style="display:flex;flex-direction:column">${inner}</div>`;
+    ? `<a class="card plant-card" href="${_rnEsc(page)}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">${inner}</a>`
+    : `<div class="card plant-card" style="display:flex;flex-direction:column;height:100%">${inner}</div>`;
 }
 
 // loadRightNow(targetId, { limit, sectionId })
