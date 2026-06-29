@@ -99,6 +99,7 @@ TABS = [
     {"id": "intake",   "label": "Intake",         "route": "/intake",  "icon": "📥"},
     {"id": "photos",   "label": "Photos",         "route": "/photos",  "icon": "📷"},
     {"id": "cultivated", "label": "Cultivated",   "route": "/cultivated", "icon": "🏷️"},
+    {"id": "phenology", "label": "Phenology",     "route": "/phenology", "icon": "🌸"},
     {"id": "publish",  "label": "Preview & Publish", "route": "/publish", "icon": "🚀"},
 ]
 
@@ -2337,9 +2338,19 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
             + toggle +
             '</div><div style="height:34px;"></div>'
         )
-        # Photos are referenced as "photos/PSBP-xxxxx/file.jpg" (relative).
-        # Point them at the dashboard's static photo route so they load here.
-        html = html.replace('"photos/', '"/photos-file/').replace("'photos/", "'/photos-file/")
+        # Photos are referenced two ways in the published markup:
+        #   gallery / relative :  "photos/PSBP-xxxxx/file.jpg"
+        #   hero & lightbox    :  "../photos/PSBP-xxxxx/file.jpg"  (published pages
+        #                          live in /plants/ or /wildlife/, hence the ../)
+        # The preview server is flat, so the ../ form resolves to /photos/... and
+        # 404s — that's the broken-image "?" on the hero. Rewrite BOTH forms onto
+        # the dashboard's /photos-file/ route, which streams the real file straight
+        # from the local repo. This touches only the in-memory preview; the path the
+        # publisher actually writes is never altered (it'll be regenerated correctly
+        # on publish).
+        for q in ('"', "'", '('):
+            html = html.replace(f'{q}../photos/', f'{q}/photos-file/')
+            html = html.replace(f'{q}photos/',    f'{q}/photos-file/')
 
         # Gaps overlay panel (only in gaps mode)
         overlay = _gaps_overlay_html(audit_gaps(kingdom, species)) if gaps_mode else ""
@@ -3660,6 +3671,55 @@ main {
     cursor: pointer;
     border: 1px solid;
 }
+.pub-btn.aidraft {
+    background: #1a3a5c;
+    color: #fff;
+    border-color: #1a3a5c;
+}
+.pub-btn.aidraft:hover { background: #234d77; }
+.pub-btn.airevise {
+    background: #5c3a6b;
+    color: #fff;
+    border-color: #5c3a6b;
+}
+.pub-btn.airevise:hover { background: #6f4a80; }
+.rev-box { display: flex; flex-direction: column; gap: 8px; }
+.rev-label { font-size: 12px; color: #4a5a6a; }
+.rev-text { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px;
+    padding: 8px 10px; border: 1px solid #cdd6df; border-radius: 7px; resize: vertical; }
+.rev-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.rev-check { font-size: 12px; color: #5a6675; display: flex; align-items: center; gap: 6px; }
+.ai-result {
+    display: none;
+    margin-top: 10px;
+    padding: 12px 14px;
+    border-radius: 9px;
+    font-size: 13px;
+    line-height: 1.5;
+    background: #f4f7fb;
+    border: 1px solid #d9e2ee;
+    color: #2a3a4a;
+}
+.ai-result.working { color: #43566b; }
+.ai-result.error { background: #fdecec; border-color: #f3c4c4; color: #8a2a2a; }
+.ai-spin { display: inline-block; animation: aipulse 1.1s ease-in-out infinite; }
+@keyframes aipulse { 0%,100%{opacity:.4;} 50%{opacity:1;} }
+.ai-summary { font-style: italic; margin-bottom: 8px; color: #3a4a5a; }
+.ai-line { margin: 6px 0; }
+.ai-line.ai-none { color: #6b7a8a; }
+.ai-line.ai-muted { color: #94a3b4; font-size: 12px; }
+.ai-chip {
+    display: inline-block; margin: 2px 4px 2px 0; padding: 1px 8px;
+    border-radius: 10px; font-size: 12px;
+}
+.ai-chip.ok { background: #e3f2e6; color: #2d6a35; }
+.ai-chip.skip { background: #eceff1; color: #607080; }
+.ai-chip.low { background: #fff4d9; color: #8a6300; }
+.ai-sources { margin: 6px 0; }
+.ai-sources summary { cursor: pointer; color: #1a3a5c; font-size: 12px; }
+.ai-sources ul { margin: 6px 0 0 18px; padding: 0; }
+.ai-sources a { color: #1a5276; }
+.ai-raw { background: #fff; border: 1px solid #eee; padding: 6px; font-size: 11px; overflow:auto; max-height: 120px; }
 .pub-btn.promote {
     background: var(--green-mid);
     color: white;
@@ -6800,6 +6860,10 @@ def render_publish():
             const disabled = sp.ready ? '' : 'disabled';
             const title = sp.ready ? 'Generate page and publish' : 'Complete the checklist first';
             actions = previewBtn +
+                `<button class="pub-btn aidraft" onclick="pubAiDraft('${{sp.id}}')"
+                          title="Have Claude research authoritative sources and draft the empty fields">🤖 Draft with Claude</button>` +
+                `<button class="pub-btn airevise" onclick="pubReviseOpen('${{sp.id}}')"
+                          title="Paste feedback (from Gemini, a person, your own notes) and have Claude revise">🔁 Revise with Claude</button>` +
                 `<button class="pub-btn promote" ${{disabled}} title="${{title}}"
                           onclick="pubPromote('${{sp.id}}')">🚀 Publish</button>`;
         }} else if (sp.status === 'html') {{
@@ -6837,7 +6901,126 @@ def render_publish():
                 <button class="pub-link-btn dead-link" onclick="pubDemoteResearch('${{sp.id}}', 'died')"
                         title="Suspected dead — move to research.json as died">☠ Mark Dead</button>
             </div>
+            <div class="ai-result" id="ai-result-${{sp.id}}"></div>
         </div>`;
+    }}
+
+    function pubReviseOpen(id) {{
+        const panel = document.getElementById('ai-result-' + id);
+        panel.style.display = 'block';
+        panel.className = 'ai-result';
+        panel.innerHTML = `
+            <div class="rev-box">
+                <div class="rev-label">Paste feedback for Claude — from Gemini, a person, or your own notes.
+                    Tone, facts, formatting, anything. Claude changes only what you mention.</div>
+                <textarea id="rev-text-${{id}}" class="rev-text" rows="4"
+                    placeholder="e.g. Dave says it does clump here — fix the suckering claim. Also tighten More Information, it's a touch long."></textarea>
+                <div class="rev-row">
+                    <label class="rev-check"><input type="checkbox" id="rev-search-${{id}}" checked>
+                        let Claude web-search to verify facts (uncheck for tone/formatting-only — faster, cheaper)</label>
+                </div>
+                <div class="rev-row">
+                    <button class="pub-btn airevise" onclick="pubReviseSubmit('${{id}}')">🔁 Send to Claude</button>
+                    <button class="pub-link-btn" onclick="document.getElementById('ai-result-${{id}}').style.display='none'">cancel</button>
+                </div>
+            </div>`;
+        const ta = document.getElementById('rev-text-' + id);
+        if (ta) ta.focus();
+    }}
+
+    async function pubReviseSubmit(id) {{
+        const text = (document.getElementById('rev-text-' + id) || {{}}).value || '';
+        const allowSearch = (document.getElementById('rev-search-' + id) || {{}}).checked;
+        if (!text.trim()) {{ pubToast('Add some feedback first', true); return; }}
+        const panel = document.getElementById('ai-result-' + id);
+        panel.className = 'ai-result working';
+        panel.innerHTML = '<span class="ai-spin">🔁</span> Claude is applying your feedback' +
+            (allowSearch ? ' and verifying facts' : '') + '…';
+        try {{
+            const resp = await fetch('/api/ai/revise', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: pubKingdom, id: id, feedback: text, allow_search: allowSearch}})
+            }});
+            const res = await resp.json();
+            if (!res.ok) {{
+                panel.className = 'ai-result error';
+                panel.innerHTML = '⚠️ ' + esc(res.error || 'Revision failed') +
+                    (res.raw_tail ? `<pre class="ai-raw">${{esc(res.raw_tail)}}</pre>` : '');
+                return;
+            }}
+            let html = '';
+            if (res.summary) html += `<div class="ai-summary">${{esc(res.summary)}}</div>`;
+            if (res.changed && res.changed.length) {{
+                html += `<div class="ai-line"><b>✓ Revised (${{res.changed.length}}):</b></div>`;
+                html += res.changed.map(f =>
+                    `<div class="ai-line ai-muted"><span class="ai-chip ok">${{esc(f)}}</span> ${{esc((res.reasons&&res.reasons[f])||'')}}</div>`).join('');
+            }} else {{
+                html += `<div class="ai-line ai-none">No fields changed — Claude didn't find anything in the feedback to act on, or couldn't verify a factual change.</div>`;
+            }}
+            if (res.sources && res.sources.length) {{
+                const items = res.sources.slice(0, 12).map(s =>
+                    `<li><a href="${{esc(s.url)}}" target="_blank" rel="noopener">${{esc(s.title || s.url)}}</a></li>`).join('');
+                html += `<details class="ai-sources"><summary>📚 ${{res.sources.length}} source(s) · ${{res.searches || 0}} search(es)</summary><ul>${{items}}</ul></details>`;
+            }}
+            const inT = res.usage && res.usage.input_tokens, outT = res.usage && res.usage.output_tokens;
+            if (inT || outT) html += `<div class="ai-line ai-muted">${{res.model}} · ${{inT||0}} in / ${{outT||0}} out tokens</div>`;
+            html += `<div class="ai-line">
+                <button class="pub-btn preview" onclick="pubPreview('${{id}}', 0)">👁 Open Preview to review</button>
+                <button class="pub-btn airevise" onclick="pubReviseOpen('${{id}}')">🔁 Another round</button></div>`;
+            panel.className = 'ai-result done';
+            panel.innerHTML = html;
+        }} catch (err) {{
+            panel.className = 'ai-result error';
+            panel.innerHTML = '⚠️ ' + esc(err.message);
+        }}
+    }}
+
+    async function pubAiDraft(id) {{
+        const panel = document.getElementById('ai-result-' + id);
+        panel.style.display = 'block';
+        panel.className = 'ai-result working';
+        panel.innerHTML = '<span class="ai-spin">🤖</span> Claude is researching authoritative sources and drafting the empty fields… this can take up to a minute.';
+        try {{
+            const resp = await fetch('/api/ai/draft', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: pubKingdom, id: id, overwrite: false}})
+            }});
+            const res = await resp.json();
+            if (!res.ok) {{
+                panel.className = 'ai-result error';
+                panel.innerHTML = '⚠️ ' + esc(res.error || 'Draft failed') +
+                    (res.raw_tail ? `<pre class="ai-raw">${{esc(res.raw_tail)}}</pre>` : '');
+                return;
+            }}
+            const chips = (arr, cls) => (arr && arr.length)
+                ? arr.map(f => `<span class="ai-chip ${{cls}}">${{esc(f)}}</span>`).join('') : '';
+            let html = '';
+            if (res.summary) html += `<div class="ai-summary">${{esc(res.summary)}}</div>`;
+            if (res.filled && res.filled.length)
+                html += `<div class="ai-line"><b>✓ Drafted (${{res.filled.length}}):</b> ${{chips(res.filled,'ok')}}</div>`;
+            else
+                html += `<div class="ai-line ai-none">No empty fields were filled — everything was already populated, or Claude couldn't source anything new.</div>`;
+            if (res.skipped_existing && res.skipped_existing.length)
+                html += `<div class="ai-line"><b>↩ Left as-is (already had content):</b> ${{chips(res.skipped_existing,'skip')}}</div>`;
+            if (res.low_confidence && res.low_confidence.length)
+                html += `<div class="ai-line"><b>⚠ Double-check these:</b> ${{chips(res.low_confidence,'low')}}</div>`;
+            if (res.rejected_keys && res.rejected_keys.length)
+                html += `<div class="ai-line ai-muted">Ignored unknown fields: ${{chips(res.rejected_keys,'skip')}}</div>`;
+            if (res.sources && res.sources.length) {{
+                const items = res.sources.slice(0, 12).map(s =>
+                    `<li><a href="${{esc(s.url)}}" target="_blank" rel="noopener">${{esc(s.title || s.url)}}</a></li>`).join('');
+                html += `<details class="ai-sources"><summary>📚 ${{res.sources.length}} source(s) · ${{res.searches || 0}} search(es)</summary><ul>${{items}}</ul></details>`;
+            }}
+            const inT = res.usage && res.usage.input_tokens, outT = res.usage && res.usage.output_tokens;
+            if (inT || outT)
+                html += `<div class="ai-line ai-muted">${{res.model}} · ${{inT||0}} in / ${{outT||0}} out tokens</div>`;
+            html += `<div class="ai-line"><button class="pub-btn preview" onclick="pubPreview('${{id}}', 0)">👁 Open Preview to review</button></div>`;
+            panel.className = 'ai-result done';
+            panel.innerHTML = html;
+        }} catch (err) {{
+            panel.className = 'ai-result error';
+            panel.innerHTML = '⚠️ ' + esc(err.message);
+        }}
     }}
 
     function pubPreview(id, gaps) {{
@@ -7503,15 +7686,1090 @@ def render_cultivated():
     """
 
 
+def render_phenology():
+    """Phenology tab — AI-inferred plant phenology from iNat photos, stored
+    locally. READ-ONLY with respect to iNaturalist."""
+    return """
+<style>
+  .ph-wrap { display: grid; grid-template-columns: 300px 1fr; gap: 18px; }
+  .ph-banner { background:#fff7ef; border:1px solid #f0d9bf; color:#7a5a2e;
+    border-radius:9px; padding:10px 14px; font-size:13px; margin-bottom:14px; }
+  .ph-banner b { color:#5a3e1a; }
+  .ph-pick { max-height:72vh; overflow:auto; }
+  .ph-sp { padding:9px 11px; border:1px solid #e6e9ec; border-radius:8px;
+    margin-bottom:6px; cursor:pointer; background:#fff; }
+  .ph-sp:hover { border-color:#cdd6df; }
+  .ph-sp.active { border-color:#2d6a35; background:#f1f8f2; }
+  .ph-sp-name { font-weight:600; font-size:14px; }
+  .ph-sp-sci { font-style:italic; color:#7a8590; font-size:12px; }
+  .ph-sp-meta { font-size:11px; color:#9aa3ad; margin-top:2px; }
+  .ph-sp-cov { color:#2d6a35; font-weight:600; }
+  .ph-main h2 { margin:0 0 4px; }
+  .ph-scanbar { display:flex; gap:10px; align-items:center; margin:10px 0 16px; }
+  .ph-btn { background:#1a3a5c; color:#fff; border:none; border-radius:7px;
+    padding:8px 14px; font-size:13px; cursor:pointer; }
+  .ph-btn:disabled { background:#9aa3ad; cursor:default; }
+  .ph-note { font-size:12px; color:#7a8590; }
+  .ph-grid { border-collapse:collapse; margin:6px 0 20px; font-size:12px; }
+  .ph-grid th, .ph-grid td { border:1px solid #eef1f3; text-align:center;
+    padding:4px 6px; min-width:30px; }
+  .ph-grid th { background:#f7f9fa; color:#566; font-weight:600; }
+  .ph-grid td.sign { text-align:left; font-weight:600; color:#34404a;
+    white-space:nowrap; background:#fafbfc; }
+  .ph-obs { display:flex; gap:12px; padding:10px; border:1px solid #eef1f3;
+    border-radius:9px; margin-bottom:10px; align-items:flex-start; }
+  .ph-obs img { width:90px; height:90px; object-fit:cover; border-radius:7px;
+    flex-shrink:0; background:#eee; }
+  .ph-obs-body { flex:1; }
+  .ph-obs-top { font-size:12px; color:#7a8590; margin-bottom:6px; }
+  .ph-obs-top a { color:#1a5276; }
+  .ph-chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .ph-chip { font-size:11px; padding:3px 9px; border-radius:11px; cursor:pointer;
+    border:1px solid transparent; user-select:none; }
+  .ph-chip.yes { background:#e3f2e6; color:#2d6a35; }
+  .ph-chip.no  { background:#eceff1; color:#8a929b; }
+  .ph-chip.unsure { background:#fff4d9; color:#8a6300; }
+  .ph-obs-note { font-size:12px; color:#67727c; margin-top:6px; font-style:italic; }
+  .ph-save { font-size:11px; margin-top:8px; }
+  .ph-save button { background:#2d6a35; color:#fff; border:none; border-radius:6px;
+    padding:4px 10px; cursor:pointer; font-size:11px; }
+  .ph-rev { color:#2d6a35; font-size:11px; font-weight:600; }
+  .ph-empty { color:#8a929b; padding:20px; }
+  .ph-sugg { background:#f1f8f2; border:1px solid #cfe6d3; border-radius:8px;
+    padding:10px 12px; font-size:12px; color:#2d5a33; margin-bottom:14px; }
+</style>
+
+<div class="ph-banner">
+  🌸 Phenology readings are <b>AI-inferred from iNaturalist photos</b> and stored only in
+  your local <code>phenology.json</code>. <b>Nothing is ever written back to iNaturalist</b> —
+  you click chips to record a human correction locally. Months shown are suggestions for the
+  <code>seasonality</code> fields; copy what you trust.
+</div>
+
+<div class="ph-wrap">
+  <div>
+    <div class="ph-pick" id="ph-pick"><div class="ph-note">Loading plants…</div></div>
+  </div>
+  <div class="ph-main" id="ph-main">
+    <div class="ph-empty">Select a plant to view and build its phenology.</div>
+  </div>
+</div>
+
+<script>
+  const PH_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let phSpecies = [];
+  let phSelected = null;
+
+  function phEsc(s){ const d=document.createElement('div'); d.textContent=s==null?'':s; return d.innerHTML; }
+
+  async function phLoadSpecies() {
+    try {
+      const r = await fetch('/api/phenology/species');
+      const d = await r.json();
+      phSpecies = d.species || [];
+      phRenderPicker();
+    } catch(e) {
+      document.getElementById('ph-pick').innerHTML = '<div class="ph-note">Error loading: '+phEsc(e.message)+'</div>';
+    }
+  }
+
+  function phRenderPicker() {
+    const el = document.getElementById('ph-pick');
+    if (!phSpecies.length) { el.innerHTML = '<div class="ph-note">No plants with an iNat taxon found.</div>'; return; }
+    el.innerHTML = phSpecies.map(s => `
+      <div class="ph-sp ${phSelected===s.id?'active':''}" onclick="phSelect('${s.id}')">
+        <div class="ph-sp-name">${phEsc(s.common_name||s.id)}</div>
+        <div class="ph-sp-sci">${phEsc(s.scientific_name||'')}</div>
+        <div class="ph-sp-meta">${s.id} · ${phEsc(s.status||'')} ·
+          ${s.analyzed_count ? `<span class="ph-sp-cov">${s.analyzed_count} analyzed</span>` : 'none yet'}</div>
+      </div>`).join('');
+  }
+
+  async function phSelect(id) {
+    phSelected = id;
+    phRenderPicker();
+    const main = document.getElementById('ph-main');
+    main.innerHTML = '<div class="ph-note">Loading…</div>';
+    await phLoadSummary(id);
+  }
+
+  async function phLoadSummary(id) {
+    try {
+      const r = await fetch('/api/phenology/summary?id='+encodeURIComponent(id));
+      const d = await r.json();
+      phRenderSummary(d);
+    } catch(e) {
+      document.getElementById('ph-main').innerHTML = '<div class="ph-note">Error: '+phEsc(e.message)+'</div>';
+    }
+  }
+
+  function phRenderSummary(d) {
+    const sp = phSpecies.find(s => s.id === d.id) || {};
+    const main = document.getElementById('ph-main');
+    let h = `<h2>${phEsc(sp.common_name||d.id)} <span class="ph-sp-sci">${phEsc(sp.scientific_name||'')}</span></h2>`;
+    h += `<div class="ph-scanbar">
+      <button class="ph-btn" id="ph-scan-btn" onclick="phScan('${d.id}')">🔬 Scan up to 8 new observations</button>
+      <span class="ph-note">${d.n_observations} analyzed${d.n_reviewed?` · ${d.n_reviewed} human-reviewed`:''}</span>
+    </div>`;
+    h += `<div id="ph-scan-status"></div>`;
+
+    if (!d.n_observations) {
+      h += '<div class="ph-empty">No observations analyzed yet. Hit “Scan” to have Claude read the iNat photos.</div>';
+      main.innerHTML = h; return;
+    }
+
+    // Suggested seasonality months
+    const fp = (d.months_present.flowers||[]).map(m=>PH_MONTHS[m-1]);
+    const frp = (d.months_present.fruit||[]).map(m=>PH_MONTHS[m-1]);
+    if (fp.length || frp.length) {
+      h += `<div class="ph-sugg">Suggested for <code>seasonality</code>:
+        ${fp.length?`<b>flowering</b> ${fp.join(', ')}`:''}${fp.length&&frp.length?' · ':''}${frp.length?`<b>fruiting</b> ${frp.join(', ')}`:''}
+        <span class="ph-note">(copy into the species' seasonality fields if you agree)</span></div>`;
+    }
+
+    // Monthly grid
+    h += '<table class="ph-grid"><tr><th>sign</th>' + PH_MONTHS.map(m=>`<th>${m}</th>`).join('') + '</tr>';
+    d.signs.forEach(sg => {
+      const row = d.by_sign[sg];
+      h += `<tr><td class="sign">${sg.replace('_',' ')}</td>`;
+      for (let m=1;m<=12;m++){
+        const c = row.months[String(m)]||0;
+        const bg = c>0 ? `background:rgba(45,106,53,${Math.min(0.15+c*0.18,0.85)});color:${c>2?'#fff':'#234'}` : '';
+        h += `<td style="${bg}">${c||''}</td>`;
+      }
+      h += '</tr>';
+    });
+    h += '</table>';
+
+    // Per-observation list
+    h += d.observations.map(o => phObsCard(o, d.signs)).join('');
+    main.innerHTML = h;
+  }
+
+  function phObsCard(o, signs) {
+    const eff = (o.human_reviewed && o.human_signs) ? o.human_signs : (o.signs||{});
+    const chips = signs.map(sg => {
+      const v = eff[sg] || 'unsure';
+      return `<span class="ph-chip ${v}" data-obs="${o.obs_id}" data-sign="${sg}" data-val="${v}"
+                onclick="phCycle(this)">${sg.replace('_',' ')}: ${v}</span>`;
+    }).join('');
+    return `<div class="ph-obs" id="ph-obs-${o.obs_id}">
+      <img src="${phEsc(o.photo_url)}" alt="obs ${o.obs_id}" loading="lazy">
+      <div class="ph-obs-body">
+        <div class="ph-obs-top">${phEsc(o.observed_on||'date?')} ·
+          <a href="${phEsc(o.obs_url)}" target="_blank" rel="noopener">iNat #${o.obs_id}</a>
+          ${o.human_reviewed?'· <span class="ph-rev">✓ human-reviewed</span>':'· AI'}</div>
+        <div class="ph-chips">${chips}</div>
+        ${o.note?`<div class="ph-obs-note">“${phEsc(o.note)}”</div>`:''}
+        <div class="ph-save"><button onclick="phSaveReview('${o.obs_id}')">Save correction</button></div>
+      </div>
+    </div>`;
+  }
+
+  function phCycle(el) {
+    const order = ['yes','no','unsure'];
+    const cur = el.getAttribute('data-val');
+    const next = order[(order.indexOf(cur)+1)%3];
+    el.setAttribute('data-val', next);
+    el.className = 'ph-chip ' + next;
+    el.textContent = el.getAttribute('data-sign').replace('_',' ') + ': ' + next;
+  }
+
+  async function phSaveReview(obsId) {
+    const chips = document.querySelectorAll(`#ph-obs-${obsId} .ph-chip`);
+    const signs = {};
+    chips.forEach(c => signs[c.getAttribute('data-sign')] = c.getAttribute('data-val'));
+    try {
+      const r = await fetch('/api/phenology/review', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({obs_id: obsId, signs: signs})
+      });
+      const d = await r.json();
+      if (d.ok) { await phLoadSummary(phSelected); }
+      else alert(d.error||'save failed');
+    } catch(e){ alert(e.message); }
+  }
+
+  async function phScan(id) {
+    const btn = document.getElementById('ph-scan-btn');
+    const status = document.getElementById('ph-scan-status');
+    if (btn) { btn.disabled = true; btn.textContent = '🔬 Claude is reading photos…'; }
+    status.innerHTML = '<div class="ph-note">Fetching observations from iNaturalist and analyzing photos — this can take a bit.</div>';
+    try {
+      const r = await fetch('/api/phenology/scan', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({id: id, limit: 8})
+      });
+      const d = await r.json();
+      if (!d.ok) { status.innerHTML = '<div class="ph-note" style="color:#a33">⚠️ '+phEsc(d.error)+'</div>'; if(btn){btn.disabled=false;btn.textContent='🔬 Scan up to 8 new observations';} return; }
+      const u = d.usage||{};
+      status.innerHTML = `<div class="ph-note">✓ Analyzed ${d.analyzed_count}` +
+        `${d.remaining?`, ${d.remaining} still unanalyzed (scan again)`:''}` +
+        `${d.no_photos?`, ${d.no_photos} had no photo`:''}` +
+        `${(d.errors&&d.errors.length)?`, ${d.errors.length} error(s)`:''} · ${u.input_tokens||0} in / ${u.output_tokens||0} out tokens</div>`;
+      // refresh species coverage + summary
+      await phLoadSpecies();
+      await phLoadSummary(id);
+    } catch(e) {
+      status.innerHTML = '<div class="ph-note" style="color:#a33">⚠️ '+phEsc(e.message)+'</div>';
+      if(btn){btn.disabled=false;btn.textContent='🔬 Scan up to 8 new observations';}
+    }
+  }
+
+  phLoadSpecies();
+</script>
+"""
+
+
 PAGE_ROUTES = {
+
     "/":        ("overview", render_overview),
     "/intake":  ("intake",   render_intake),
     "/photos":  ("photos",   render_photos),
     "/cultivated": ("cultivated", render_cultivated),
+    "/phenology": ("phenology", render_phenology),
     "/publish": ("publish",  render_publish),
 }
 
 # API routes: path → handler_function
+# ════════════════════════════════════════════════════════════════════════════
+# AI DRAFT — "Draft with Claude"
+#
+# Calls the Anthropic Messages API (with the web_search tool) to produce a
+# first-cut draft of a species' research/content fields, matching the park's
+# established voice and schema. Fills ONLY empty content fields by default —
+# never overwrites human/Gemini-written content, and never touches structural,
+# ID, taxonomy, photo, or URL-load-bearing fields. The API key is read from the
+# ANTHROPIC_API_KEY environment variable and is never stored. A provenance trail
+# is written to data/sources/ai_draft_log.json (a sidecar — the signage schema
+# is left clean).
+# ════════════════════════════════════════════════════════════════════════════
+
+ANTHROPIC_URL      = "https://api.anthropic.com/v1/messages"
+ANTHROPIC_VERSION  = "2023-06-01"
+AI_MODEL           = "claude-sonnet-4-6"   # bump to "claude-opus-4-8" for max quality
+AI_MAX_TOKENS      = 8000
+AI_WEB_SEARCH_USES = 8
+AI_DRAFT_LOG       = os.path.join(REPO, "data", "sources", "ai_draft_log.json")
+
+# Field → (json-shape, instruction). This is the ONLY surface the AI may write.
+# Anything not listed here (id, names, taxonomy, status, photos, observation
+# stats, ID-linked similar_species/plant_links, internal_notes …) is protected.
+_DRAFT_SPEC_PLANTS = {
+    "native":             ("bool", "true if native to Florida / SE United States; false if introduced or cultivated"),
+    "alternate_names":    ("list", "common alternate names — list of short strings"),
+    "butterfly_host":     ("bool", "true ONLY if a documented larval host plant for butterflies/moths; omit if unknown"),
+    "quick_hits":         ("list", "2-4 punchy, surprising one-to-two-sentence facts (list of strings)"),
+    "origin":             ("str",  "one short paragraph: native range and how it came to Florida cultivation"),
+    "more_information":   ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
+    "wildlife_value":     ("list", "1-2 short paragraphs on pollinators / wildlife it supports (list of strings)"),
+    "reproduction":       ("dict", 'object {"blocks":[{"label":str,"text":str}], "what_to_look_for":str}'),
+    "seasonality":        ("dict", 'object {"bloom_months":str|null,"bloom_description":str|null,"leaf_behavior":str|null,"fruiting_months":str|null,"notes":str|null}'),
+    "size":               ("dict", 'object {"height":str,"spread":str,"habit":str,"growth_rate":str,"texture":str}'),
+    "growing_conditions": ("dict", 'object {"light":str,"soil_tolerances":str,"drought_tolerance":str,"spacing":str}'),
+    "edibility":          ("dict", 'object {"level":"Red|Yellow|Green","detail":str}'),
+    "toxicity":           ("dict", 'object {"level":"Red|Yellow|Green","people":str,"dogs_level":"Red|Yellow|Green","dogs":str}'),
+    "invasive":           ("dict", 'object {"level":"Red|Yellow|Green","notes":str} — Florida status (UF/IFAS, FLEPPC)'),
+    "other_notes":        ("str",  "any extra noteworthy info, or omit"),
+}
+
+_DRAFT_SPEC_WILDLIFE = {
+    "native":           ("bool", "true if native to Florida; false if introduced"),
+    "also_known_as":    ("list", "alternate common names — list of strings"),
+    "quick_hits":       ("list", "2-4 punchy one-to-two-sentence facts (list of strings)"),
+    "range_and_origin": ("str",  "short paragraph: native range and status in Florida"),
+    "more_information": ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
+    "identification":   ("dict", 'object {"blocks":[{"label":str,"text":str}], "what_to_look_for":str}'),
+    "diet":             ("str",  "what it eats"),
+    "behavior":         ("str",  "key behaviors"),
+    "sounds":           ("str",  "sounds / vocalizations, or note if essentially silent"),
+    "ecological_role":  ("str",  "role in the local food web / ecosystem"),
+    "habitat":          ("str",  "preferred habitat"),
+    "where_to_look":    ("str",  "where in a Florida park a visitor would spot it"),
+    "when_to_see":      ("str",  "time of day / year it is active and visible"),
+    "size":             ("dict", 'object {"length":str,"lifespan":str}'),
+    "danger":           ("dict", 'object {"people_level":"Red|Yellow|Green","people":str,"pets_level":"Red|Yellow|Green","pets":str}'),
+    "interaction":      ("dict", 'object {"level":"Red|Yellow|Green","guidance":str}'),
+    "invasive":         ("dict", 'object {"level":"Red|Yellow|Green","notes":str}'),
+    "conservation":     ("dict", 'object {"level":"Red|Yellow|Green","status":str}'),
+    "seasonality":      ("dict", 'object {"presence":str,"reliability":str,"months":[ints 1-12],"peak":str|null,"note":str}'),
+    "sources":          ("list", "the authoritative source URLs you actually used (list of strings)"),
+}
+
+_SHAPE_CHECK = {
+    "bool": lambda v: isinstance(v, bool),
+    "list": lambda v: isinstance(v, list),
+    "dict": lambda v: isinstance(v, dict),
+    "str":  lambda v: isinstance(v, str),
+}
+
+
+def _draft_spec(kingdom):
+    return _DRAFT_SPEC_PLANTS if kingdom == "plants" else _DRAFT_SPEC_WILDLIFE
+
+
+def _ai_exemplars(kingdom, n=2):
+    """Pick the most richly-filled published entries, trimmed to draftable keys,
+    as voice/structure references for the model."""
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    spec = _draft_spec(kingdom)
+    species = [s for s in _get_species_list(_load(path)) if s.get("status") == "html"]
+
+    def richness(e):
+        return sum(1 for k in spec if _is_filled(e.get(k)))
+
+    out = []
+    for e in sorted(species, key=richness, reverse=True)[:n]:
+        out.append({k: e[k] for k in spec if _is_filled(e.get(k))})
+    return out
+
+
+def _ai_build_messages(species, kingdom):
+    """Return (system, user_text) for the drafting call."""
+    spec = _draft_spec(kingdom)
+    noun = "plant" if kingdom == "plants" else "animal"
+    sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
+    tax = species.get("taxonomy") or {}
+
+    system = (
+        "You are an interpretation writer for Palma Sola Botanical Park, a public "
+        "botanical garden in Bradenton, Manatee County, Florida. You write accurate, "
+        "engaging signage content in the park's established voice: warm, specific, "
+        "factual, lightly surprising, never flowery or padded. This is public-facing "
+        "educational signage, so accuracy is paramount. Use the web_search tool to "
+        "verify facts against authoritative sources — university extension services and "
+        ".edu sites (especially UF/IFAS), USDA, the Florida Native Plant Society, ADW, "
+        "IUCN, and botanical-garden references. Never invent facts, numbers, or sources. "
+        "If you cannot substantiate a field, omit it. Favor Florida / Gulf-coast-relevant "
+        "information."
+    )
+
+    schema_lines = "\n".join(
+        f'  - "{field}" ({shape}): {instr}' for field, (shape, instr) in spec.items()
+    )
+    exemplars = _ai_exemplars(kingdom, 2)
+    exemplar_json = json.dumps(exemplars, indent=2, ensure_ascii=False)
+
+    target = {
+        "common_name": species.get("common_name", ""),
+        sci_field: species.get(sci_field, ""),
+        "family": tax.get("family", ""),
+        "category": species.get("category", ""),
+    }
+
+    user = (
+        f"Draft first-cut signage content for this {noun}:\n"
+        f"{json.dumps(target, indent=2, ensure_ascii=False)}\n\n"
+        "FIELD SCHEMA — produce ONLY these fields, each in exactly the shape shown. "
+        "Omit any field you cannot responsibly fill from solid sources:\n"
+        f"{schema_lines}\n\n"
+        "Use \"Red\" / \"Yellow\" / \"Green\" for any *_level field "
+        "(Green = safe/fine, Yellow = caution, Red = toxic/dangerous/invasive).\n\n"
+        f"Here are {len(exemplars)} existing published entries from this park, for TONE, "
+        "depth, and structure only — match this quality; do NOT reuse their facts:\n"
+        f"{exemplar_json}\n\n"
+        "Do a few targeted web searches, then write a concise first cut — solid and "
+        "accurate, not exhaustive (I'll deepen it later). Keep the park's voice.\n\n"
+        "OUTPUT CONTRACT: return a single JSON object whose keys are a subset of the "
+        "schema fields above. You may also include \"_summary\" (1-2 sentences on what you "
+        "drafted and your overall confidence) and \"_low_confidence\" (array of field names "
+        "you are least sure about). Wrap the JSON object exactly between a line containing "
+        "<<<JSON>>> and a line containing <<<END>>>, and output nothing after <<<END>>>."
+    )
+    return system, user
+
+
+def _anthropic_messages(system, user_text, model=AI_MODEL,
+                        max_tokens=AI_MAX_TOKENS, web_search=True,
+                        max_uses=AI_WEB_SEARCH_USES, timeout=240):
+    """POST to the Anthropic Messages API using only the stdlib. Returns the
+    parsed response dict, or raises RuntimeError with a friendly message."""
+    import urllib.request
+    import urllib.error
+
+    key = os.environ.get("ANTHROPIC_API_KEY")
+    if not key:
+        raise RuntimeError(
+            "ANTHROPIC_API_KEY is not set. Export it in the shell that launches the "
+            "dashboard (export ANTHROPIC_API_KEY=sk-ant-...), then restart."
+        )
+
+    payload = {
+        "model": model,
+        "max_tokens": max_tokens,
+        "system": system,
+        "messages": [{"role": "user", "content": user_text}],
+    }
+    if web_search:
+        payload["tools"] = [{"type": "web_search_20250305",
+                             "name": "web_search", "max_uses": max_uses}]
+
+    req = urllib.request.Request(
+        ANTHROPIC_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        method="POST",
+        headers={
+            "x-api-key": key,
+            "anthropic-version": ANTHROPIC_VERSION,
+            "content-type": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode("utf-8", "replace")[:600]
+        raise RuntimeError(f"Anthropic API error {e.code}: {detail}")
+    except urllib.error.URLError as e:
+        raise RuntimeError(f"Could not reach the Anthropic API: {e.reason}")
+
+
+def _ai_response_text(api_resp):
+    """Concatenate all assistant text blocks."""
+    return "\n".join(b.get("text", "")
+                     for b in api_resp.get("content", [])
+                     if b.get("type") == "text")
+
+
+def _ai_response_searches(api_resp):
+    """Count web searches Claude ran (server_tool_use blocks)."""
+    return sum(1 for b in api_resp.get("content", [])
+               if b.get("type") == "server_tool_use")
+
+
+def _ai_response_sources(api_resp):
+    """Collect cited source URLs from web_search_tool_result blocks."""
+    seen, out = set(), []
+    for b in api_resp.get("content", []):
+        if b.get("type") != "web_search_tool_result":
+            continue
+        for r in (b.get("content") or []):
+            url = r.get("url") if isinstance(r, dict) else None
+            if url and url not in seen:
+                seen.add(url)
+                out.append({"title": r.get("title", ""), "url": url})
+    return out
+
+
+def _ai_parse_json(text):
+    """Pull the JSON object out of the model's reply (sentinel-first, then a
+    balanced-brace fallback)."""
+    import re
+    if "<<<JSON>>>" in text and "<<<END>>>" in text:
+        chunk = text.split("<<<JSON>>>", 1)[1].split("<<<END>>>", 1)[0]
+    else:
+        chunk = text
+    chunk = re.sub(r"```(?:json)?", "", chunk).strip()
+    i, j = chunk.find("{"), chunk.rfind("}")
+    if i == -1 or j == -1 or j < i:
+        raise ValueError("No JSON object found in the model's reply.")
+    return json.loads(chunk[i:j + 1])
+
+
+def _ai_sanitize(draft, kingdom):
+    """Keep only schema fields with the right top-level shape. Returns
+    (clean_dict, rejected_keys)."""
+    spec = _draft_spec(kingdom)
+    clean, rejected = {}, []
+    for k, v in draft.items():
+        if k.startswith("_"):
+            continue
+        if k not in spec or v is None:
+            if k not in spec and not k.startswith("_"):
+                rejected.append(k)
+            continue
+        if not _SHAPE_CHECK[spec[k][0]](v):
+            rejected.append(k)
+            continue
+        clean[k] = v
+    return clean, rejected
+
+
+def _ai_log_draft(entry):
+    """Append a provenance record to the sidecar log (best-effort)."""
+    try:
+        log = _load(AI_DRAFT_LOG)
+        if not isinstance(log, dict):
+            log = {}
+        log.setdefault("drafts", []).append(entry)
+        write_json_atomic(AI_DRAFT_LOG, log)
+    except Exception:
+        pass
+
+
+def ai_draft_species(kingdom, species_id, overwrite=False):
+    """Orchestrate one AI draft: build prompt → call API → parse → sanitize →
+    fill-empty merge → atomic write → log. Returns a report dict."""
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    entry = next((s for s in _get_species_list(_load(path))
+                  if s.get("id") == species_id), None)
+    if not entry:
+        return {"ok": False, "error": f"{species_id} not found in {kingdom} signage."}
+
+    system, user = _ai_build_messages(entry, kingdom)
+    try:
+        api_resp = _anthropic_messages(system, user)
+    except RuntimeError as e:
+        return {"ok": False, "error": str(e)}
+
+    if api_resp.get("stop_reason") == "max_tokens":
+        # Still try to parse — but warn.
+        pass
+
+    try:
+        draft = _ai_parse_json(_ai_response_text(api_resp))
+    except (ValueError, json.JSONDecodeError) as e:
+        return {"ok": False,
+                "error": f"Could not parse the model's draft: {e}",
+                "raw_tail": _ai_response_text(api_resp)[-400:]}
+
+    summary = draft.get("_summary", "")
+    low_conf = draft.get("_low_confidence", []) or []
+    clean, rejected = _ai_sanitize(draft, kingdom)
+
+    # Re-load immediately before writing so we never clobber a concurrent edit.
+    data = _load(path)
+    species = _get_species_list(data)
+    target = next((s for s in species if s.get("id") == species_id), None)
+    if not target:
+        return {"ok": False, "error": f"{species_id} disappeared from signage before write."}
+
+    filled, skipped_existing, empty_from_ai = [], [], []
+    for k, v in clean.items():
+        if not _is_filled(v):
+            empty_from_ai.append(k)
+            continue
+        if not overwrite and _is_filled(target.get(k)):
+            skipped_existing.append(k)
+            continue
+        target[k] = v
+        filled.append(k)
+
+    if filled:
+        data.setdefault("meta", {})["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
+        write_json_atomic(path, data)
+
+    sources = _ai_response_sources(api_resp)
+    usage = api_resp.get("usage", {}) or {}
+    searches = _ai_response_searches(api_resp)
+
+    _ai_log_draft({
+        "ts": datetime.datetime.now().isoformat(timespec="seconds"),
+        "id": species_id, "kingdom": kingdom, "model": api_resp.get("model", AI_MODEL),
+        "filled": filled, "skipped_existing": skipped_existing,
+        "summary": summary, "sources": sources, "usage": usage, "searches": searches,
+    })
+
+    return {
+        "ok": True,
+        "id": species_id,
+        "kingdom": kingdom,
+        "model": api_resp.get("model", AI_MODEL),
+        "filled": filled,
+        "skipped_existing": skipped_existing,
+        "empty_from_ai": empty_from_ai,
+        "rejected_keys": rejected,
+        "summary": summary,
+        "low_confidence": [k for k in low_conf if isinstance(k, str)],
+        "sources": sources,
+        "searches": searches,
+        "usage": usage,
+        "wrote": bool(filled),
+    }
+
+
+def handle_api_ai_draft(params):
+    """POST /api/ai/draft  body: {kingdom, id, overwrite?}"""
+    body = params.get("_body", {}) or {}
+    kingdom = body.get("kingdom", "plants")
+    species_id = body.get("id", "")
+    overwrite = bool(body.get("overwrite", False))
+    if kingdom not in ("plants", "wildlife"):
+        return {"ok": False, "error": f"bad kingdom: {kingdom}"}
+    if not species_id:
+        return {"ok": False, "error": "missing species id"}
+    return ai_draft_species(kingdom, species_id, overwrite=overwrite)
+
+
+# ── Revise: feed ANY feedback (Gemini, a human, your own notes) back to Claude ──
+# Same machinery as draft, with one inversion: instead of filling empty fields,
+# this OVERWRITES only the fields the feedback implicates and leaves everything
+# else byte-for-byte. Iterative by nature — each round sees the latest content.
+
+def _ai_build_revise_messages(species, kingdom, feedback):
+    spec = _draft_spec(kingdom)
+    sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
+    noun = "plant" if kingdom == "plants" else "animal"
+    current = {k: species[k] for k in spec if _is_filled(species.get(k))}
+
+    system = (
+        "You are an editor refining existing signage content for Palma Sola Botanical "
+        "Park, a public garden in Bradenton, Florida. Apply the reviewer's feedback "
+        "precisely. Change ONLY the fields the feedback actually implicates; leave "
+        "everything else exactly as it is. Preserve the park's established voice — warm, "
+        "specific, factual, lightly surprising, never padded. If the feedback is factual "
+        "(a correction, a disputed claim, a request to verify), use the web_search tool "
+        "to confirm against authoritative sources (UF/IFAS and other .edu, USDA, FNPS, "
+        "ADW, IUCN) before changing it. If the feedback is purely tone, length, or "
+        "formatting, no search is needed. Never invent facts."
+    )
+
+    schema_lines = "\n".join(
+        f'  - "{f}" ({shape}): {instr}' for f, (shape, instr) in spec.items())
+
+    target = {"common_name": species.get("common_name", ""),
+              sci_field: species.get(sci_field, "")}
+
+    user = (
+        f"Revise the signage content for this {noun}: "
+        f"{json.dumps(target, ensure_ascii=False)}.\n\n"
+        "CURRENT CONTENT (JSON):\n"
+        f"{json.dumps(current, indent=2, ensure_ascii=False)}\n\n"
+        "FIELD SCHEMA (shapes you must keep):\n"
+        f"{schema_lines}\n\n"
+        "REVIEWER FEEDBACK — apply this:\n"
+        f"\"\"\"\n{feedback.strip()}\n\"\"\"\n\n"
+        "OUTPUT CONTRACT: return a single JSON object containing ONLY the fields you are "
+        "changing, each with its full new value in the schema shape. Do NOT include fields "
+        "you are leaving unchanged. Also include \"_changes\" (an object mapping each "
+        "changed field to a short reason) and \"_summary\" (1-2 sentences). Wrap the JSON "
+        "exactly between a line <<<JSON>>> and a line <<<END>>>, nothing after <<<END>>>."
+    )
+    return system, user
+
+
+def ai_revise_species(kingdom, species_id, feedback, allow_search=True):
+    """Apply reviewer feedback to an existing entry. Overwrites only the fields
+    Claude returns (the ones it changed); everything else is untouched."""
+    if not (feedback or "").strip():
+        return {"ok": False, "error": "No feedback provided."}
+
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    entry = next((s for s in _get_species_list(_load(path))
+                  if s.get("id") == species_id), None)
+    if not entry:
+        return {"ok": False, "error": f"{species_id} not found in {kingdom} signage."}
+
+    system, user = _ai_build_revise_messages(entry, kingdom, feedback)
+    try:
+        api_resp = _anthropic_messages(system, user, web_search=bool(allow_search),
+                                       max_uses=5)
+    except RuntimeError as e:
+        return {"ok": False, "error": str(e)}
+
+    try:
+        draft = _ai_parse_json(_ai_response_text(api_resp))
+    except (ValueError, json.JSONDecodeError) as e:
+        return {"ok": False, "error": f"Could not parse the revision: {e}",
+                "raw_tail": _ai_response_text(api_resp)[-400:]}
+
+    summary = draft.get("_summary", "")
+    reasons = draft.get("_changes", {}) or {}
+    clean, rejected = _ai_sanitize(draft, kingdom)
+
+    # Re-load right before writing to avoid clobbering a concurrent edit.
+    data = _load(path)
+    target = next((s for s in _get_species_list(data) if s.get("id") == species_id), None)
+    if not target:
+        return {"ok": False, "error": f"{species_id} disappeared before write."}
+
+    changed, empty_returned = [], []
+    for k, v in clean.items():
+        if not _is_filled(v):
+            empty_returned.append(k)   # don't blank a field on an empty value
+            continue
+        target[k] = v
+        changed.append(k)
+
+    if changed:
+        data.setdefault("meta", {})["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
+        write_json_atomic(path, data)
+
+    sources = _ai_response_sources(api_resp)
+    usage = api_resp.get("usage", {}) or {}
+    searches = _ai_response_searches(api_resp)
+
+    _ai_log_draft({
+        "ts": datetime.datetime.now().isoformat(timespec="seconds"),
+        "id": species_id, "kingdom": kingdom, "kind": "revise",
+        "model": api_resp.get("model", AI_MODEL), "feedback": feedback.strip()[:1000],
+        "changed": changed, "summary": summary, "sources": sources,
+        "usage": usage, "searches": searches,
+    })
+
+    return {
+        "ok": True, "id": species_id, "kingdom": kingdom,
+        "model": api_resp.get("model", AI_MODEL),
+        "changed": changed,
+        "reasons": {k: reasons.get(k, "") for k in changed},
+        "empty_returned": empty_returned,
+        "rejected_keys": rejected,
+        "summary": summary,
+        "sources": sources, "searches": searches, "usage": usage,
+        "wrote": bool(changed),
+    }
+
+
+def handle_api_ai_revise(params):
+    """POST /api/ai/revise  body: {kingdom, id, feedback, allow_search?}"""
+    body = params.get("_body", {}) or {}
+    kingdom = body.get("kingdom", "plants")
+    species_id = body.get("id", "")
+    feedback = body.get("feedback", "")
+    allow_search = bool(body.get("allow_search", True))
+    if kingdom not in ("plants", "wildlife"):
+        return {"ok": False, "error": f"bad kingdom: {kingdom}"}
+    if not species_id:
+        return {"ok": False, "error": "missing species id"}
+    return ai_revise_species(kingdom, species_id, feedback, allow_search=allow_search)
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# PHENOLOGY — AI-inferred plant phenology from iNat photos
+#
+# Sends iNat observation photos to Claude (vision) and records which of six
+# signs are visibly evident — flowers, flower buds, leaves, leaf buds, fruit,
+# seeds — per observation, keyed by the iNat observation ID. Everything is
+# stored ONLY in local JSON for website use.
+#
+#   *** READ-ONLY WITH RESPECT TO iNATURALIST ***
+#   This feature NEVER writes to iNat. It only GETs observations and reads
+#   public photo URLs. Phenology annotations on iNat are for humans to set.
+#   (The only place in this dashboard that POSTs to iNat is the Cultivated tab;
+#    nothing here calls _inat_post.)
+#
+# Records carry human_reviewed / human_signs so a human can override the AI
+# reading locally; the monthly summary prefers human truth when present.
+# ════════════════════════════════════════════════════════════════════════════
+
+PHENO_MODEL          = "claude-haiku-4-5-20251001"  # cheap + vision; bump to sonnet/opus for tougher IDs
+PHENOLOGY_JSON       = os.path.join(REPO, "data", "sources", "phenology.json")
+PHENO_SIGNS          = ["flowers", "flower_buds", "leaves", "leaf_buds", "fruit", "seeds"]
+PHENO_PHOTOS_PER_OBS = 3       # photos sent to the model per observation
+PHENO_MAX_TOKENS     = 700
+PHENO_SCAN_DEFAULT   = 8       # observations analyzed per "scan" click
+
+
+def _pheno_load():
+    data = _load(PHENOLOGY_JSON)
+    if not isinstance(data, dict):
+        data = {}
+    data.setdefault("meta", {})
+    data.setdefault("observations", {})
+    return data
+
+
+def _pheno_save(data):
+    data["meta"]["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
+    write_json_atomic(PHENOLOGY_JSON, data)
+
+
+def _pheno_photo_url(photo):
+    """iNat photo objects default to the 'square' thumbnail URL; swap to the
+    ~500px 'medium' size — plenty for phenology, cheap to send."""
+    url = (photo or {}).get("url") or ""
+    return url.replace("square", "medium") if "square" in url else url
+
+
+def _pheno_plant_index():
+    """All plants we could analyze (signage + research) that have an iNat taxon.
+    Returns list of {id, common_name, scientific_name, taxon_id, status}."""
+    seen, out = set(), []
+    sources = [
+        (_get_species_list(_load(PLANT_SIGNAGE)), "scientific_name_fallback"),
+    ]
+    # signage plants
+    for sp in _get_species_list(_load(PLANT_SIGNAGE)):
+        tid = sp.get("inat_taxon_id")
+        if not tid or sp.get("id") in seen:
+            continue
+        seen.add(sp.get("id"))
+        out.append({"id": sp.get("id"), "common_name": sp.get("common_name", ""),
+                    "scientific_name": sp.get("botanical_name", ""),
+                    "taxon_id": tid, "status": sp.get("status", "")})
+    # research plants
+    for sp in get_research_list("plants"):
+        tid = sp.get("inat_taxon_id")
+        if not tid or sp.get("id") in seen:
+            continue
+        seen.add(sp.get("id"))
+        out.append({"id": sp.get("id"), "common_name": sp.get("common_name", ""),
+                    "scientific_name": sp.get("scientific_name", ""),
+                    "taxon_id": tid, "status": sp.get("status", "")})
+    out.sort(key=lambda s: s.get("common_name") or s.get("id"))
+    return out
+
+
+def _pheno_resolve(psbp_id):
+    for sp in _pheno_plant_index():
+        if sp["id"] == psbp_id:
+            return sp
+    return None
+
+
+def _pheno_prompt(common, sci, observed_on):
+    system = (
+        "You are a botanist examining photographs to record plant phenology for a "
+        "botanical garden's database. Report ONLY what is visibly evident in the "
+        "photograph(s) provided — never inferred from prior knowledge of the species. "
+        "For each sign answer exactly \"yes\" (clearly visible), \"no\" (clearly absent "
+        "or simply not visible in frame), or \"unsure\" (ambiguous / can't tell). Be "
+        "conservative: if you cannot clearly see it, use \"unsure\" or \"no\"."
+    )
+    when = f", observed on {observed_on}" if observed_on else ""
+    text = (
+        f"These photo(s) are of {common} ({sci}){when}. Looking ONLY at what is visible "
+        "in the photo(s), report which of these phenological signs are evident:\n"
+        "  - flowers: open blooms\n"
+        "  - flower_buds: unopened flower buds\n"
+        "  - leaves: foliage present\n"
+        "  - leaf_buds: new / emerging leaf buds or fresh growth tips\n"
+        "  - fruit: fruit present\n"
+        "  - seeds: seeds or seed pods evident\n\n"
+        "Output a single JSON object with exactly these keys: flowers, flower_buds, "
+        "leaves, leaf_buds, fruit, seeds (each \"yes\"/\"no\"/\"unsure\"), plus \"note\" "
+        "(one short sentence). Wrap the JSON exactly between a line <<<JSON>>> and a "
+        "line <<<END>>>, with nothing after <<<END>>>."
+    )
+    return system, text
+
+
+def _pheno_coerce_signs(raw):
+    out = {}
+    for s in PHENO_SIGNS:
+        v = str(raw.get(s, "unsure")).strip().lower()
+        out[s] = v if v in ("yes", "no", "unsure") else "unsure"
+    return out
+
+
+def _pheno_analyze_obs(obs, common, sci):
+    """Analyze one observation's photos. Returns a record dict or {'error':...}.
+    READ-ONLY: only reads photo URLs; never writes to iNat."""
+    photos = obs.get("photos") or []
+    urls = [_pheno_photo_url(p) for p in photos if _pheno_photo_url(p)]
+    urls = urls[:PHENO_PHOTOS_PER_OBS]
+    if not urls:
+        return {"error": "no_photos"}
+
+    observed_on = obs.get("observed_on") or (obs.get("observed_on_details") or {}).get("date")
+    system, text = _pheno_prompt(common, sci, observed_on)
+    content = [{"type": "image", "source": {"type": "url", "url": u}} for u in urls]
+    content.append({"type": "text", "text": text})
+
+    try:
+        resp = _anthropic_messages(system, content, model=PHENO_MODEL,
+                                   max_tokens=PHENO_MAX_TOKENS, web_search=False)
+    except RuntimeError as e:
+        return {"error": str(e)}
+
+    try:
+        raw = _ai_parse_json(_ai_response_text(resp))
+    except (ValueError, json.JSONDecodeError) as e:
+        return {"error": f"parse: {e}"}
+
+    month = None
+    if observed_on and len(observed_on) >= 7 and observed_on[4] == "-":
+        try:
+            month = int(observed_on[5:7])
+        except ValueError:
+            month = None
+
+    return {
+        "obs_id": obs.get("id"),
+        "obs_url": f"https://www.inaturalist.org/observations/{obs.get('id')}",
+        "observed_on": observed_on,
+        "month": month,
+        "photo_url": urls[0],
+        "photo_count": len(urls),
+        "signs": _pheno_coerce_signs(raw),
+        "note": str(raw.get("note", ""))[:300],
+        "source": "ai",
+        "model": resp.get("model", PHENO_MODEL),
+        "analyzed_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "human_reviewed": False,
+        "human_signs": None,
+        "usage": resp.get("usage", {}) or {},
+    }
+
+
+def phenology_scan(psbp_id, limit=PHENO_SCAN_DEFAULT, force=False):
+    """Fetch a species' iNat observations (READ-ONLY) and analyze up to `limit`
+    that aren't already recorded. Stores incrementally, keyed by obs id."""
+    sp = _pheno_resolve(psbp_id)
+    if not sp:
+        return {"ok": False, "error": f"{psbp_id} not found as a plant with an iNat taxon."}
+
+    observations = _inat_observations(sp["taxon_id"])   # GET only
+    if observations is None:
+        return {"ok": False, "error": "Could not reach iNaturalist (check network / INAT_TOKEN)."}
+
+    store = _pheno_load()
+    recs = store["observations"]
+
+    analyzed, no_photos, errors = [], 0, []
+    in_u = out_u = 0
+    remaining = 0
+
+    for obs in observations:
+        oid = str(obs.get("id"))
+        if not oid or oid == "None":
+            continue
+        if oid in recs and not force:
+            continue
+        if not (obs.get("photos")):
+            no_photos += 1
+            continue
+        if len(analyzed) >= limit:
+            remaining += 1
+            continue
+
+        rec = _pheno_analyze_obs(obs, sp["common_name"], sp["scientific_name"])
+        if "error" in rec:
+            if rec["error"] == "no_photos":
+                no_photos += 1
+            else:
+                errors.append({"obs_id": oid, "error": rec["error"]})
+            # A hard API/credential error: stop early rather than burn the loop.
+            if rec["error"].startswith("ANTHROPIC_API_KEY") or "401" in rec["error"]:
+                return {"ok": False, "error": rec["error"]}
+            continue
+
+        rec["taxon_id"] = sp["taxon_id"]
+        rec["psbp_id"] = psbp_id
+        rec["kingdom"] = "plants"
+        u = rec.pop("usage", {})
+        in_u += u.get("input_tokens", 0)
+        out_u += u.get("output_tokens", 0)
+        recs[oid] = rec
+        analyzed.append(oid)
+        time.sleep(API_DELAY)
+
+    if analyzed:
+        _pheno_save(store)
+
+    # count any still-unanalyzed (with photos) beyond what we did
+    total_with_photos = sum(1 for o in observations if o.get("photos"))
+    done = sum(1 for o in observations
+               if str(o.get("id")) in recs and o.get("photos"))
+    remaining = max(total_with_photos - done, 0)
+
+    return {
+        "ok": True,
+        "id": psbp_id,
+        "common_name": sp["common_name"],
+        "analyzed": analyzed,
+        "analyzed_count": len(analyzed),
+        "no_photos": no_photos,
+        "errors": errors,
+        "remaining": remaining,
+        "total_observations": len(observations),
+        "model": PHENO_MODEL,
+        "usage": {"input_tokens": in_u, "output_tokens": out_u},
+    }
+
+
+def _pheno_effective_signs(rec):
+    """Human override wins over the AI reading."""
+    if rec.get("human_reviewed") and isinstance(rec.get("human_signs"), dict):
+        return _pheno_coerce_signs(rec["human_signs"])
+    return rec.get("signs", {})
+
+
+def phenology_summary(psbp_id):
+    """Return this species' stored observations + a per-sign monthly summary.
+    'yes' counts toward the month; 'unsure' tallied separately."""
+    store = _pheno_load()
+    recs = [r for r in store["observations"].values() if r.get("psbp_id") == psbp_id]
+
+    by_sign = {s: {"months": {str(m): 0 for m in range(1, 13)},
+                   "yes_total": 0, "unsure_total": 0} for s in PHENO_SIGNS}
+    for r in recs:
+        eff = _pheno_effective_signs(r)
+        m = r.get("month")
+        for s in PHENO_SIGNS:
+            v = eff.get(s, "unsure")
+            if v == "yes":
+                by_sign[s]["yes_total"] += 1
+                if m:
+                    by_sign[s]["months"][str(m)] += 1
+            elif v == "unsure":
+                by_sign[s]["unsure_total"] += 1
+
+    months_present = {s: [int(m) for m, c in by_sign[s]["months"].items() if c > 0]
+                      for s in PHENO_SIGNS}
+    for s in months_present:
+        months_present[s].sort()
+
+    recs_sorted = sorted(recs, key=lambda r: (r.get("observed_on") or ""), reverse=True)
+    reviewed = sum(1 for r in recs if r.get("human_reviewed"))
+    return {
+        "ok": True,
+        "id": psbp_id,
+        "n_observations": len(recs),
+        "n_reviewed": reviewed,
+        "by_sign": by_sign,
+        "months_present": months_present,
+        "observations": recs_sorted,
+        "signs": PHENO_SIGNS,
+    }
+
+
+def phenology_review(obs_id, signs):
+    """Apply a HUMAN override to one observation's signs (local only)."""
+    store = _pheno_load()
+    rec = store["observations"].get(str(obs_id))
+    if not rec:
+        return {"ok": False, "error": f"obs {obs_id} not recorded."}
+    rec["human_signs"] = _pheno_coerce_signs(signs or {})
+    rec["human_reviewed"] = True
+    rec["reviewed_at"] = datetime.datetime.now().isoformat(timespec="seconds")
+    _pheno_save(store)
+    return {"ok": True, "obs_id": obs_id, "human_signs": rec["human_signs"]}
+
+
+def handle_api_phenology_species(params):
+    """GET /api/phenology/species — plant list with analyzed coverage."""
+    store = _pheno_load()
+    counts = {}
+    for r in store["observations"].values():
+        pid = r.get("psbp_id")
+        if pid:
+            counts[pid] = counts.get(pid, 0) + 1
+    out = _pheno_plant_index()
+    for s in out:
+        s["analyzed_count"] = counts.get(s["id"], 0)
+    return {"ok": True, "species": out}
+
+
+def handle_api_phenology_summary(params):
+    """GET /api/phenology/summary?id=PSBP-xxxxx"""
+    pid = params.get("id", [""])[0] if isinstance(params.get("id"), list) else params.get("id", "")
+    if not pid:
+        return {"ok": False, "error": "missing id"}
+    return phenology_summary(pid)
+
+
+def handle_api_phenology_scan(params):
+    """POST /api/phenology/scan  body: {id, limit?, force?}"""
+    body = params.get("_body", {}) or {}
+    pid = body.get("id", "")
+    if not pid:
+        return {"ok": False, "error": "missing id"}
+    limit = int(body.get("limit", PHENO_SCAN_DEFAULT))
+    force = bool(body.get("force", False))
+    return phenology_scan(pid, limit=limit, force=force)
+
+
+def handle_api_phenology_review(params):
+    """POST /api/phenology/review  body: {obs_id, signs:{...}}"""
+    body = params.get("_body", {}) or {}
+    obs_id = body.get("obs_id", "")
+    signs = body.get("signs", {})
+    if not obs_id:
+        return {"ok": False, "error": "missing obs_id"}
+    return phenology_review(obs_id, signs)
+
+
 API_ROUTES = {
     "/api/overview":         handle_api_overview,
     "/api/species":          handle_api_species_list,
@@ -7544,6 +8802,12 @@ API_ROUTES = {
     "/api/publish/demote-research": handle_api_publish_demote_research,
     "/api/cultivated/audit":   handle_api_cultivated_audit,
     "/api/cultivated/preview": handle_api_cultivated_preview,
+    "/api/ai/draft":          handle_api_ai_draft,
+    "/api/ai/revise":         handle_api_ai_revise,
+    "/api/phenology/species": handle_api_phenology_species,
+    "/api/phenology/summary": handle_api_phenology_summary,
+    "/api/phenology/scan":    handle_api_phenology_scan,
+    "/api/phenology/review":  handle_api_phenology_review,
     "/api/cultivated/mark":    handle_api_cultivated_mark,
     "/api/cultivated/keep":    handle_api_cultivated_keep,
 }
