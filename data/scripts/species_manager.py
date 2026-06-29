@@ -428,6 +428,66 @@ def _check_intake_duplicates(kingdom, species):
     return dupes
 
 
+def _auto_import_hero(species_id, kingdom, common_name, scientific_name, taxon_id):
+    """Best-effort: grab the best CC photo from iNat as a provisional hero.
+
+    Returns a small report dict and never raises into the promote path. Queries
+    only the park project's observations (same source as triage), and only
+    CC-licensed photos are eligible — the park publishes CC only. If the species
+    already has a hero, has no taxon id, or iNat offers no CC photo, nothing is
+    written and the reason is reported so the UI can warn at promote time. The
+    imported photo is a placeholder hero — swap/crop it later in the Photos tab.
+    """
+    if not taxon_id:
+        return {"imported": False, "reason": "no iNat taxon id on the record"}
+
+    # Never clobber a hero that already exists.
+    credits = _load(PHOTO_CREDITS)
+    for p in credits.get("photos", []):
+        if p.get("psbp_id") == species_id and p.get("hero"):
+            return {"imported": False, "reason": "already has a hero"}
+
+    obs = _inat_observations(taxon_id)
+    if not obs:
+        return {"imported": False, "reason": "no park observations returned from iNat"}
+
+    cc, non_cc = _cc_photos_from_observations(obs)
+    if not cc:
+        extra = f" ({non_cc} non-CC found)" if non_cc else ""
+        return {"imported": False, "reason": f"no CC photos on iNat{extra} — add your own"}
+
+    best = cc[0]  # newest observation's first CC photo; a placeholder to swap later
+    ctype = "Plant" if kingdom == "plants" else "Wildlife"
+    payload = {
+        "decision":          "promoted",
+        "photo_id":          best.get("photo_id", ""),
+        "psbp_id":           species_id,
+        "kingdom":           kingdom,
+        "type":              ctype,
+        "common_name":       common_name,
+        "scientific_name":   scientific_name,
+        "photographer":      best.get("photographer", ""),
+        "photographer_name": best.get("photographer_name", ""),
+        "license":           best.get("license", ""),
+        "large_url":         best.get("large_url", ""),
+        "thumb_url":         best.get("thumb_url", ""),
+        "source_url":        best.get("source_url", ""),
+        "obs_id":            best.get("obs_id", ""),
+        "observed_on":       best.get("observed_on"),
+        "shared_on":         best.get("shared_on"),
+    }
+    res = _apply_triage_decision(payload)
+    if res.get("ok") and res.get("is_hero"):
+        return {"imported": True, "reason": "imported",
+                "photo_id":     best.get("photo_id", ""),
+                "photographer": best.get("photographer_name") or best.get("photographer", ""),
+                "license":      best.get("license", ""),
+                "cc_available": len(cc)}
+    return {"imported": False,
+            "reason": res.get("error", "photo recorded but not as hero"),
+            "cc_available": len(cc)}
+
+
 def promote_to_spotted(species_id, kingdom):
     """Move a species from research.json → signage JSON as 'spotted'.
 
@@ -481,6 +541,21 @@ def promote_to_spotted(species_id, kingdom):
     research["meta"]["wildlife_count"] = wildlife_left
     write_json_atomic(RESEARCH_JSON, research)
 
+    # ── Best-effort: pull a CC hero from iNat so the species lands in spotted
+    #    already pictured (a placeholder to swap later). The data move above has
+    #    already committed; a slow or photo-less iNat must NEVER undo it, so this
+    #    is fully wrapped and only ever produces a report.
+    hero_report = {"imported": False, "reason": "skipped"}
+    try:
+        hero_report = _auto_import_hero(
+            species_id, kingdom,
+            sp.get("common_name", ""),
+            sp.get("botanical_name") or sp.get("scientific_name") or "",
+            sp.get("inat_taxon_id"),
+        )
+    except Exception as e:
+        hero_report = {"imported": False, "reason": f"import error: {e}"}
+
     # Non-blocking duplicates to warn about (same name / taxon but different ID)
     warned = [d for d in dupes if "Same PSBP ID" not in d["reasons"]]
     return {
@@ -489,6 +564,7 @@ def promote_to_spotted(species_id, kingdom):
         "common_name":       sp.get("common_name", ""),
         "kingdom":           kingdom,
         "duplicates_warned": warned,
+        "hero_report":       hero_report,
     }
 
 # ── Photo data helpers ────────────────────────────────────────────────────
@@ -1157,6 +1233,306 @@ def handle_api_species_list(params):
 # ── Future API stubs ───────────────────────────────────────────────────────
 # These return descriptive placeholders. Replace with real logic as each
 # tab gets built out. The route is already wired up.
+
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  iNAT DISCOVERY — scan the project, diff against everything we track,      ║
+# ║  surface brand-new taxa, and seed them into research.json.                 ║
+# ║                                                                            ║
+# ║  Scan uses the species_counts endpoint (one cheap paginated call returns   ║
+# ║  every distinct taxon in the project with its observation count). The      ║
+# ║  join key is inat_taxon_id, falling back to scientific name.               ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+def _inat_species_counts():
+    """All distinct taxa observed in the PSBP project, with counts.
+
+    Returns a list of dicts: taxon_id, scientific_name, common_name, rank,
+    iconic (Plantae/Aves/...), obs_count, default_photo. Paginated; per_page
+    maxes at 500 on this endpoint. verifiable=any keeps casual/cultivated in,
+    matching _inat_observations' philosophy (a botanical garden is mostly
+    casual-grade plantings).
+    """
+    out, page = [], 1
+    while True:
+        url = ("https://api.inaturalist.org/v1/observations/species_counts"
+               f"?project_id={INAT_PROJECT_ID}&verifiable=any"
+               f"&per_page=500&page={page}")
+        data = _inat_get(url)
+        if not data:
+            break
+        results = data.get("results", [])
+        for r in results:
+            t = r.get("taxon") or {}
+            out.append({
+                "taxon_id":      t.get("id"),
+                "scientific_name": t.get("name", "") or "",
+                "common_name":   t.get("preferred_common_name", "") or "",
+                "rank":          t.get("rank", "") or "",
+                "iconic":        t.get("iconic_taxon_name", "") or "",
+                "obs_count":     r.get("count", 0),
+                "default_photo": ((t.get("default_photo") or {}).get("square_url")) or "",
+            })
+        total = data.get("total_results", len(out))
+        if len(results) < 500 or len(out) >= total:
+            break
+        page += 1
+        if page > 20:   # 10k taxa ceiling — far beyond any park
+            break
+        time.sleep(API_DELAY)
+    return out
+
+
+def _known_taxa_index():
+    """Build lookup maps of everything we already track.
+
+    Returns (by_taxon_id, by_sci_name). Each maps to a record describing where
+    the species lives and its status. Signage ingested AFTER research so a
+    promoted species reflects its further-along signage status, not the stale
+    research row.
+    """
+    by_taxon, by_sci = {}, {}
+
+    def ingest(lst, kingdom, where):
+        for e in lst:
+            tid = e.get("inat_taxon_id")
+            sci = (e.get("botanical_name") or e.get("scientific_name") or "").strip().lower()
+            rec = {
+                "id":              e.get("id", ""),
+                "status":          e.get("status", ""),
+                "kingdom":         kingdom,
+                "where":           where,
+                "common_name":     e.get("common_name", ""),
+                "scientific_name": e.get("botanical_name") or e.get("scientific_name") or "",
+            }
+            if tid:
+                try:
+                    by_taxon[int(tid)] = rec
+                except (TypeError, ValueError):
+                    pass
+            if sci:
+                by_sci[sci] = rec
+
+    for e in _get_species_list(_load(RESEARCH_JSON)):
+        k = "plants" if e.get("type", "plant") == "plant" else "wildlife"
+        ingest([e], k, "research")
+    ingest(_get_species_list(_load(PLANT_SIGNAGE)), "plants", "signage")
+    ingest(_get_species_list(_load(WILDLIFE_SIGNAGE)), "wildlife", "signage")
+    return by_taxon, by_sci
+
+
+def _all_used_psbp_nums():
+    """Every numeric PSBP id in use across research, signage, and the indexes."""
+    import re as _re
+    used = set()
+    sources = [
+        _get_species_list(_load(RESEARCH_JSON)),
+        _get_species_list(_load(PLANT_SIGNAGE)),
+        _get_species_list(_load(WILDLIFE_SIGNAGE)),
+    ]
+    for path in (PLANTS_INDEX, WILDLIFE_INDEX):
+        idx = _load(path)
+        if isinstance(idx, list):
+            sources.append(idx)
+    for lst in sources:
+        for e in lst:
+            m = _re.match(r"PSBP-(\d+)$", str(e.get("id", "")))
+            if m:
+                used.add(int(m.group(1)))
+    return used
+
+
+# Plant ids live below this; wildlife ids live at/above it (the 99xxx band).
+_WILDLIFE_BAND_FLOOR = 90000
+_WILDLIFE_BAND_CEIL  = 99999
+
+
+def _next_psbp_id(kingdom):
+    """Mint the next free PSBP id in the correct kingdom band.
+
+    Plants count up from the low end; wildlife live in 90000–99999. Never
+    overflows the 5-digit format. Returns (id_str, warning_or_None) — or
+    (None, error) if a band is exhausted.
+    """
+    used = _all_used_psbp_nums()
+    if kingdom == "plants":
+        band = [n for n in used if n < _WILDLIFE_BAND_FLOOR]
+        nxt = (max(band) + 1) if band else 1
+        while nxt in used:
+            nxt += 1
+        if nxt >= _WILDLIFE_BAND_FLOOR:
+            return None, "plant ID band collided with the wildlife band — assign manually"
+        return f"PSBP-{nxt:05d}", None
+
+    # wildlife
+    band = [n for n in used if n >= _WILDLIFE_BAND_FLOOR]
+    nxt = (max(band) + 1) if band else (_WILDLIFE_BAND_FLOOR + 1)
+    warn = None
+    if nxt > _WILDLIFE_BAND_CEIL:
+        # Top of the band is taken — fall back to the lowest free slot.
+        nxt = next((c for c in range(_WILDLIFE_BAND_FLOOR + 1, _WILDLIFE_BAND_CEIL + 1)
+                    if c not in used), None)
+        if nxt is None:
+            return None, "wildlife ID band (90000–99999) exhausted — assign manually"
+        warn = "wildlife band nearly full — assigned a gap-fill ID; verify it reads sensibly"
+    while nxt in used:
+        nxt += 1
+    if nxt > _WILDLIFE_BAND_CEIL:
+        return None, "wildlife ID band (90000–99999) exhausted — assign manually"
+    return f"PSBP-{nxt:05d}", warn
+
+
+def discover_reconcile():
+    """Scan the project and bucket every observed taxon as NEW or tracked."""
+    counts = _inat_species_counts()
+    if not counts:
+        return {"ok": False,
+                "error": "No taxa returned from iNaturalist — offline, or the "
+                         "project slug is wrong. Check INAT_PROJECT_ID."}
+    by_taxon, by_sci = _known_taxa_index()
+
+    new_items, ready_items, pipeline_items = [], [], []
+    for c in counts:
+        tid = c.get("taxon_id")
+        sci = (c.get("scientific_name") or "").strip().lower()
+        match = None
+        if tid is not None:
+            try:
+                match = by_taxon.get(int(tid))
+            except (TypeError, ValueError):
+                match = None
+        if not match and sci:
+            match = by_sci.get(sci)
+
+        if not match:
+            new_items.append({**c, "tracked": False})
+            continue
+
+        item = {**c, "tracked": True, "psbp_id": match["id"],
+                "status": match["status"], "where": match["where"],
+                "kingdom": match["kingdom"]}
+        if match["where"] == "research":
+            # In the research pile AND freshly observed → ready to advance.
+            # A died/stolen species you just observed alive is a revive flag.
+            item["revivable"] = match["status"] in ("died", "stolen")
+            ready_items.append(item)
+        else:
+            pipeline_items.append(item)
+
+    new_items.sort(key=lambda x: -(x.get("obs_count") or 0))
+    # Ready: surface dead-but-observed first, then best-observed.
+    ready_items.sort(key=lambda x: (not x.get("revivable"), -(x.get("obs_count") or 0)))
+
+    pipe_summary = {}
+    for t in pipeline_items:
+        key = t.get("status") or "unknown"
+        pipe_summary[key] = pipe_summary.get(key, 0) + 1
+
+    return {"ok": True,
+            "scanned": len(counts),
+            "new_count": len(new_items),
+            "ready_count": len(ready_items),
+            "pipeline_count": len(pipeline_items),
+            "pipeline_summary": pipe_summary,
+            "new": new_items,
+            "ready": ready_items,
+            "pipeline": pipeline_items}
+
+
+def add_discovered_to_research(payload):
+    """Seed one discovered taxon into research.json as a minimal stub.
+
+    Mints a kingdom-correct PSBP id, carries the iNat identity + a best-effort
+    family/genus/species, and leaves all content fields blank for later. iNat
+    kingdom comes from the iconic taxon: Plantae → plant, everything else →
+    wildlife.
+    """
+    taxon_id = payload.get("taxon_id")
+    sci = (payload.get("scientific_name") or "").strip()
+    common = (payload.get("common_name") or "").strip()
+    iconic = (payload.get("iconic") or "").strip().lower()
+    obs_count = payload.get("obs_count")
+
+    if not sci:
+        return {"ok": False, "error": "Missing scientific_name"}
+
+    kingdom = "plants" if iconic == "plantae" else "wildlife"
+
+    # Guard against a double-add or a race with a concurrent promotion.
+    by_taxon, by_sci = _known_taxa_index()
+    existing = None
+    if taxon_id is not None:
+        try:
+            existing = by_taxon.get(int(taxon_id))
+        except (TypeError, ValueError):
+            existing = None
+    if not existing:
+        existing = by_sci.get(sci.lower())
+    if existing:
+        return {"ok": False,
+                "error": f"Already tracked as {existing['id']} "
+                         f"({existing['status']}, {existing['where']})",
+                "existing": existing}
+
+    new_id, warn = _next_psbp_id(kingdom)
+    if not new_id:
+        return {"ok": False, "error": warn or "Could not mint a PSBP id"}
+
+    # Best-effort taxonomy. Genus/species from the binomial; family from a
+    # single taxon lookup (only one extra request, and only on add).
+    parts = sci.split()
+    genus = parts[0] if parts else ""
+    species = parts[1] if len(parts) >= 2 else ""
+    family = ""
+    if taxon_id is not None:
+        tdata = _inat_get(f"https://api.inaturalist.org/v1/taxa/{taxon_id}")
+        if tdata and tdata.get("results"):
+            for a in (tdata["results"][0].get("ancestors") or []):
+                if a.get("rank") == "family":
+                    family = a.get("name", "") or family
+                elif a.get("rank") == "genus":
+                    genus = a.get("name", "") or genus
+
+    sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
+    entry = {
+        "id":              new_id,
+        "common_name":     common or sci,
+        sci_field:         sci,
+        "inat_taxon_id":   int(taxon_id) if taxon_id is not None else None,
+        "taxonomy":        {"family": family, "genus": genus, "species": species},
+        "type":            "plant" if kingdom == "plants" else "wildlife",
+        "status":          "research",
+        "has_sign":        False,
+        "research_source": "inat_observed",
+        "inat_obs_count":  obs_count,
+    }
+
+    research = _load(RESEARCH_JSON)
+    research.setdefault("species", []).append(entry)
+    research["species"].sort(key=lambda s: s.get("id", ""))
+    meta = research.setdefault("meta", {})
+    meta["species_count"]  = len(research["species"])
+    meta["plant_count"]    = sum(1 for s in research["species"] if s.get("type") == "plant")
+    meta["wildlife_count"] = sum(1 for s in research["species"] if s.get("type") == "wildlife")
+    write_json_atomic(RESEARCH_JSON, research)
+
+    return {"ok": True, "id": new_id, "kingdom": kingdom,
+            "common_name": entry["common_name"], "scientific_name": sci,
+            "family": family, "warning": warn}
+
+
+def handle_api_intake_discover(params):
+    """GET /api/intake/discover — scan iNat project, diff against tracked."""
+    return discover_reconcile()
+
+
+def handle_api_intake_add_research(params):
+    """POST /api/intake/add-research — seed a discovered taxon into research.json.
+
+    Body: {taxon_id, scientific_name, common_name, iconic, obs_count}
+    """
+    body = params.get("_body", {})
+    return add_discovered_to_research(body)
+
 
 def handle_api_intake_list(params):
     """GET /api/intake/list?kingdom=plants — research.json species for picker."""
@@ -4230,6 +4606,50 @@ def render_stub(tab_id, title, features, pipeline_step):
 def render_intake():
     """Intake tab — browse research.json, preview, promote to spotted."""
     return f"""
+    <!-- ░░ iNat Discovery panel ░░ -->
+    <style>
+    .discover-panel{{background:#fff;border:1px solid #e5e0d5;border-left:4px solid var(--gold);border-radius:10px;padding:14px 16px;margin-bottom:16px;}}
+    .discover-head{{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}}
+    .discover-title{{font-weight:700;font-size:15px;color:var(--green-deep);}}
+    .discover-sub{{display:block;font-size:12px;color:var(--gray-600);margin-top:2px;}}
+    .discover-scan-btn{{background:var(--green-mid);color:#fff;border:none;border-radius:7px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}}
+    .discover-scan-btn:disabled{{opacity:.6;cursor:default;}}
+    .discover-status{{font-size:13px;color:var(--gray-600);margin-top:8px;}}
+    .discover-summary{{font-size:13px;color:var(--green-deep);font-weight:600;margin:10px 0 6px;}}
+    .discover-new-grid{{display:flex;flex-direction:column;gap:8px;}}
+    .discover-card{{display:flex;align-items:center;gap:12px;padding:8px 10px;border:1px solid #eee;border-radius:8px;background:var(--cream);}}
+    .discover-card img{{width:46px;height:46px;border-radius:6px;object-fit:cover;flex:0 0 auto;background:#ddd;}}
+    .discover-card .dc-body{{flex:1 1 auto;min-width:0;}}
+    .discover-card .dc-name{{font-weight:600;color:var(--green-deep);font-size:14px;}}
+    .discover-card .dc-sci{{font-style:italic;color:var(--gray-600);font-size:12px;}}
+    .discover-card .dc-meta{{font-size:11px;color:#999;margin-top:1px;}}
+    .discover-add-btn{{background:var(--gold);color:#3a2c08;border:none;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}}
+    .discover-add-btn:disabled{{opacity:.55;cursor:default;}}
+    .discover-tracked-toggle{{margin-top:12px;font-size:12px;color:var(--green-mid);cursor:pointer;background:none;border:none;padding:0;text-decoration:underline;}}
+    .discover-tracked-list{{margin-top:8px;max-height:220px;overflow:auto;border-top:1px dashed #ddd;padding-top:8px;}}
+    .discover-tracked-row{{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0;color:var(--gray-600);}}
+    .discover-pill{{font-size:10px;font-weight:700;padding:1px 7px;border-radius:9px;text-transform:uppercase;letter-spacing:.3px;}}
+    .dp-research{{background:#eceff1;color:#546e7a;}}
+    .dp-spotted{{background:#fdf0d5;color:#9a6b12;}}
+    .dp-html{{background:#e3f0e5;color:#2d6a35;}}
+    .discover-section-label{{font-size:12px;font-weight:700;letter-spacing:.3px;color:var(--green-deep);margin:14px 0 6px;}}
+    .discover-card.ready{{border-left:3px solid var(--green-mid);background:#f1f7f1;}}
+    .discover-open-btn{{background:var(--green-mid);color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}}
+    .discover-revive-btn{{background:#c62828;color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;}}
+    .discover-empty{{font-size:13px;color:var(--gray-600);padding:6px 0;}}
+    </style>
+    <div class="discover-panel">
+        <div class="discover-head">
+            <div>
+                <span class="discover-title">🔭 Discover new species</span>
+                <span class="discover-sub">Scan the iNaturalist project and surface taxa not yet in research.json</span>
+            </div>
+            <button class="discover-scan-btn" id="discover-scan-btn" onclick="discoverScan()">🌐 Scan project</button>
+        </div>
+        <div class="discover-status" id="discover-status"></div>
+        <div class="discover-results" id="discover-results"></div>
+    </div>
+
     <!-- Top controls: kingdom toggle + status filter + count -->
     <div class="photos-controls">
         <div class="control-group">
@@ -4782,6 +5202,13 @@ def render_intake():
                 if (data.duplicates_warned && data.duplicates_warned.length) {{
                     msg += ` (note: ${{data.duplicates_warned.length}} similar species in signage)`;
                 }}
+                if (data.hero_report) {{
+                    if (data.hero_report.imported) {{
+                        msg += ` · ✓ hero imported (${{esc(data.hero_report.photographer || 'CC')}})`;
+                    }} else {{
+                        msg += ` · ⚠ no hero: ${{esc(data.hero_report.reason || 'unavailable')}}`;
+                    }}
+                }}
                 intakeToast(msg);
                 intakeSelected = null;
                 intakeLoad();
@@ -4798,6 +5225,176 @@ def render_intake():
     function esc(s) {{
         if (!s) return '';
         const d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+    }}
+
+    // ░░ iNat Discovery ░░
+    let discoverNew = [];
+    function discoverStatusPill(s) {{
+        const k = (s === 'html') ? 'dp-html' : (s === 'spotted') ? 'dp-spotted' : 'dp-research';
+        return `<span class="discover-pill ${{k}}">${{esc(s || '?')}}</span>`;
+    }}
+    async function discoverScan() {{
+        const btn = document.getElementById('discover-scan-btn');
+        const status = document.getElementById('discover-status');
+        const results = document.getElementById('discover-results');
+        btn.disabled = true; btn.textContent = '⏳ Scanning…';
+        status.textContent = 'Querying the iNaturalist project — this can take a few seconds…';
+        results.innerHTML = '';
+        try {{
+            const resp = await fetch('/api/intake/discover');
+            const data = await resp.json();
+            if (!data.ok) {{ status.textContent = data.error || 'Scan failed.'; }}
+            else {{ discoverRender(data); status.textContent = ''; }}
+        }} catch (err) {{
+            status.innerHTML = '<span style="color:#c62828;">Network error — is the dashboard online?</span>';
+        }}
+        btn.disabled = false; btn.textContent = '🌐 Re-scan project';
+    }}
+    function discoverRender(d) {{
+        discoverNew = d.new || [];
+        const ready = d.ready || [];
+        const results = document.getElementById('discover-results');
+        const sm = d.pipeline_summary || {{}};
+        const smBits = Object.keys(sm).sort().map(k => `${{sm[k]}} ${{k}}`).join(' · ');
+        let html = `<div class="discover-summary">Scanned ${{d.scanned}} taxa · `
+            + `<span style="color:var(--gold);">${{d.new_count}} new</span> · `
+            + `<span style="color:var(--green-mid);">${{d.ready_count}} ready to advance</span> · `
+            + `${{d.pipeline_count}} in pipeline${{smBits ? ' (' + smBits + ')' : ''}}</div>`;
+
+        // Ready to advance — in research.json AND now observed on iNat
+        if (ready.length) {{
+            html += '<div class="discover-section-label">⭐ In your research pile and now observed — ready to advance</div>';
+            html += '<div class="discover-new-grid">';
+            ready.forEach(it => {{
+                const photo = it.default_photo ? `<img src="${{esc(it.default_photo)}}" alt="">` : '<img alt="">';
+                const cn = it.common_name || it.scientific_name;
+                const dead = it.revivable;
+                const meta = `${{esc(it.psbp_id)}} · ${{it.obs_count}} obs`
+                    + (dead ? ` · <span style="color:#c62828;font-weight:600;">marked ${{esc(it.status)}} — you observed a live one</span>` : '');
+                const actions = dead
+                    ? `<button class="discover-revive-btn" onclick="discoverRevive('${{it.psbp_id}}', this)">↩ Revive</button>`
+                    : `<button class="discover-open-btn" onclick="discoverOpenInPicker('${{it.psbp_id}}','${{it.kingdom}}','${{it.status}}')">→ Work it</button>`;
+                html += `<div class="discover-card ready">
+                    ${{photo}}
+                    <div class="dc-body">
+                        <div class="dc-name">${{esc(cn)}} ${{discoverStatusPill(it.status)}}</div>
+                        <div class="dc-sci">${{esc(it.scientific_name)}}</div>
+                        <div class="dc-meta">${{meta}}</div>
+                    </div>
+                    ${{actions}}
+                </div>`;
+            }});
+            html += '</div>';
+        }}
+
+        // Brand new — not tracked anywhere
+        if (discoverNew.length) {{
+            html += '<div class="discover-section-label">🆕 Brand new — not in the system yet</div>';
+            html += '<div class="discover-new-grid">';
+            discoverNew.forEach((it, i) => {{
+                const photo = it.default_photo ? `<img src="${{esc(it.default_photo)}}" alt="">` : '<img alt="">';
+                const cn = it.common_name || it.scientific_name;
+                const meta = `${{it.obs_count}} obs · ${{esc(it.iconic || it.rank || '')}}`;
+                html += `<div class="discover-card" id="dcard-${{i}}">
+                    ${{photo}}
+                    <div class="dc-body">
+                        <div class="dc-name">${{esc(cn)}}</div>
+                        <div class="dc-sci">${{esc(it.scientific_name)}}</div>
+                        <div class="dc-meta">${{meta}}</div>
+                    </div>
+                    <button class="discover-add-btn" onclick="discoverAdd(${{i}}, this)">+ Add to research</button>
+                </div>`;
+            }});
+            html += '</div>';
+        }}
+
+        if (!ready.length && !discoverNew.length) {{
+            html += '<div class="discover-empty">Nothing new or newly-observed — everything you\\'ve photographed is already moving through the pipeline. 🎉</div>';
+        }}
+
+        // Already in the pipeline (spotted / published) — collapsed
+        const pipe = d.pipeline || [];
+        if (pipe.length) {{
+            html += `<button class="discover-tracked-toggle" onclick="discoverToggleTracked()">▸ Show ${{pipe.length}} already in the pipeline</button>`;
+            html += '<div class="discover-tracked-list" id="discover-tracked-list" style="display:none;">';
+            pipe.slice().sort((a, b) => (a.scientific_name || '').localeCompare(b.scientific_name || '')).forEach(t => {{
+                html += `<div class="discover-tracked-row">
+                    <span>${{esc(t.common_name || t.scientific_name)}} <span style="color:#aaa;">${{esc(t.psbp_id || '')}}</span></span>
+                    ${{discoverStatusPill(t.status)}}
+                </div>`;
+            }});
+            html += '</div>';
+        }}
+        results.innerHTML = html;
+    }}
+    function discoverOpenInPicker(id, kingdom, status) {{
+        const go = () => {{
+            intakeSelect(id);
+            const el = document.getElementById('intake-detail');
+            if (el) el.scrollIntoView({{behavior: 'smooth', block: 'start'}});
+        }};
+        let delay = 0;
+        if (kingdom && kingdom !== intakeKingdom) {{ intakeSwitchKingdom(kingdom); delay = 450; }}
+        if (status && status !== 'research') {{ intakeSetStatus('all'); }}
+        setTimeout(go, delay);
+    }}
+    async function discoverRevive(id, btn) {{
+        btn.disabled = true; btn.textContent = 'Reviving…';
+        try {{
+            const resp = await fetch('/api/intake/set-status', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{id: id, status: 'research'}})
+            }});
+            const data = await resp.json();
+            if (data.ok) {{
+                intakeToast('Revived ' + (data.common_name || id) + ' → research');
+                btn.textContent = '✓ Revived'; intakeLoad();
+            }} else {{
+                intakeToast(data.error || 'Revive failed', true);
+                btn.disabled = false; btn.textContent = '↩ Revive';
+            }}
+        }} catch (err) {{
+            intakeToast('Error: ' + err.message, true);
+            btn.disabled = false; btn.textContent = '↩ Revive';
+        }}
+    }}
+    function discoverToggleTracked() {{
+        const el = document.getElementById('discover-tracked-list');
+        const btn = document.querySelector('.discover-tracked-toggle');
+        if (!el) return;
+        const open = el.style.display !== 'none';
+        el.style.display = open ? 'none' : 'block';
+        if (btn) btn.textContent = (open ? '▸ Show ' : '▾ Hide ') + el.children.length + ' already in the pipeline';
+    }}
+    async function discoverAdd(i, btn) {{
+        const it = discoverNew[i];
+        if (!it) return;
+        btn.disabled = true; btn.textContent = 'Adding…';
+        try {{
+            const resp = await fetch('/api/intake/add-research', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{
+                    taxon_id: it.taxon_id, scientific_name: it.scientific_name,
+                    common_name: it.common_name, iconic: it.iconic, obs_count: it.obs_count
+                }})
+            }});
+            const data = await resp.json();
+            if (data.ok) {{
+                let msg = `Added ${{data.common_name || data.scientific_name}} → ${{data.id}} (${{data.kingdom}})`;
+                if (data.warning) msg += ` ⚠ ${{data.warning}}`;
+                intakeToast(msg);
+                const card = document.getElementById('dcard-' + i);
+                if (card) card.style.opacity = .4;
+                btn.textContent = '✓ ' + data.id;
+                intakeLoad();
+            }} else {{
+                intakeToast(data.error || 'Add failed', true);
+                btn.disabled = false; btn.textContent = '+ Add to research';
+            }}
+        }} catch (err) {{
+            intakeToast('Error: ' + err.message, true);
+            btn.disabled = false; btn.textContent = '+ Add to research';
+        }}
     }}
 
     intakeLoad();
@@ -6250,6 +6847,8 @@ API_ROUTES = {
     "/api/intake/promote":   handle_api_intake_promote,
     "/api/intake/set-status": handle_api_intake_set_status,
     "/api/intake/inat-check": handle_api_intake_inat_check,
+    "/api/intake/discover":   handle_api_intake_discover,
+    "/api/intake/add-research": handle_api_intake_add_research,
     "/api/photos/species":   handle_api_photos_species,
     "/api/photos/summary":   handle_api_photos_summary,
     "/api/photos/hero":      handle_api_photos_set_hero,
