@@ -163,6 +163,11 @@ section { padding: 3.375rem 1.5rem; }
 .card-body { padding: 1.25rem; }
 .card-img { width: 100%; object-fit: cover; }
 
+/* Species card title matches the photographer byline font (Source Sans 3),
+   not the Playfair heading default — keeps the common name and the credit
+   name visually in sync across plant, wildlife, and Right Now cards. */
+.plant-card h4 { font-family: 'Source Sans 3', 'Segoe UI', sans-serif; }
+
 /* ── TAGS ── */
 .tag {
   display: inline-block; font-size: 1rem; font-weight: 700;
