@@ -1607,19 +1607,33 @@ function _rnEsc(s) {
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function _rnCard(e, rec) {
+function _rnCard(e, rec, cr) {
   const kind  = (e.kind || 'blooming').toLowerCase();
   const pill  = RN_PILL[kind] || 'In the park';
-  const sci   = e.scientific_name || (rec && rec.sci) || '';
-  const photo = (rec && rec.photo) || '';
+  const sci   = e.scientific_name || (rec && rec.sci) || (cr && cr.scientific_name) || '';
+  const photo = (rec && rec.photo) || (cr && cr.photo_url) || '';
   const page  = (rec && rec.page)  || '';
+  const focus = (rec && rec.focus) || (cr && cr.focus) || 'center';
   const isSighting = kind === 'sighting';
   const glyph  = isSighting ? '🦜' : '🌿';
   const pillBg = isSighting ? 'var(--green-deep)' : 'var(--gold)';
   const pillFg = isSighting ? '#fff' : 'var(--green-deep)';
+
+  // Attribution through the shared PSBPPhotos layer — the SAME plate the plant
+  // cards use (photographer + date + CC license). Species already sits in the
+  // card body, so creditPlate (not the fuller attribution overlay) is right.
+  let plate = '';
+  if (cr && typeof PSBPPhotos !== 'undefined' && PSBPPhotos.creditPlate) {
+    plate = PSBPPhotos.creditPlate({
+      by:      cr.photographer_name || cr.photographer,
+      license: cr.license,
+      date:    cr.observed_on || null,
+    });
+  }
+
   const inner = `
     <div style="height:170px;overflow:hidden;position:relative;background:var(--sand)">
-      ${photo ? `<img src="${_rnEsc(photo)}" alt="${_rnEsc(e.common_name)}" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">` : ''}
+      ${photo ? `<img src="${_rnEsc(photo)}" alt="${_rnEsc(e.common_name)}" style="width:100%;height:100%;object-fit:cover;object-position:${_rnEsc(focus)};display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">` : ''}
       <div style="display:${photo ? 'none' : 'flex'};height:100%;align-items:center;justify-content:center;font-size:2.6rem;color:var(--text-soft);opacity:.3">${glyph}</div>
       <span style="position:absolute;top:.6rem;left:.6rem;background:${pillBg};color:${pillFg};font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.22rem .6rem;border-radius:20px;box-shadow:0 1px 5px rgba(0,0,0,.25)">${_rnEsc(pill)}</span>
     </div>
@@ -1628,7 +1642,8 @@ function _rnCard(e, rec) {
       ${sci ? `<div style="font-style:italic;font-size:.82rem;color:var(--text-soft);margin-bottom:.45rem">${_rnEsc(sci)}</div>` : ''}
       ${e.note ? `<p style="font-size:.86rem;color:var(--text-soft);line-height:1.5;margin:0 0 .55rem">${_rnEsc(e.note)}</p>` : ''}
       ${e.area ? `<div style="font-size:.78rem;color:var(--green-mid);font-weight:600">📍 ${_rnEsc(e.area)}</div>` : ''}
-    </div>`;
+    </div>
+    ${plate}`;
   return page
     ? `<a class="card plant-card" href="${_rnEsc(page)}" style="text-decoration:none;display:flex;flex-direction:column">${inner}</a>`
     : `<div class="card plant-card" style="display:flex;flex-direction:column">${inner}</div>`;
@@ -1663,5 +1678,21 @@ async function loadRightNow(targetId, opts) {
     return;
   }
   const byId = await _rnSpeciesIndex(base);
-  el.innerHTML = rows.map(e => _rnCard(e, e.psbp_id ? byId[e.psbp_id] : null)).join('');
+
+  // Attribution via the shared PSBPPhotos layer: map psbp_id -> hero photo record
+  // (photographer, license, observed_on) from photo_credits.json. loadPool() is
+  // Promise-cached, so this reuses the slideshow's fetch rather than re-fetching.
+  let creditById = {};
+  if (typeof PSBPPhotos !== 'undefined' && PSBPPhotos.loadPool) {
+    try {
+      const pool = await PSBPPhotos.loadPool();
+      (pool || []).forEach(p => { if (p.psbp_id && !creditById[p.psbp_id]) creditById[p.psbp_id] = p; });
+    } catch (_) { /* fail-soft: cards render without the credit plate */ }
+  }
+
+  el.innerHTML = rows.map(e => {
+    const rec = e.psbp_id ? byId[e.psbp_id] : null;
+    const cr  = e.psbp_id ? creditById[e.psbp_id] : null;
+    return _rnCard(e, rec, cr);
+  }).join('');
 }
