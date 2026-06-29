@@ -54,6 +54,7 @@ TAB = {
     "tour_stops":       122035223,
     "organization":     1115719710,
     "photographers":    741957779,
+    "right_now":        1545501058,
 }
 
 # Which tabs this run should pull. PILOT = just events (+ series, which events'
@@ -61,7 +62,7 @@ TAB = {
 # As tabs are templated, add them here.
 PILOT_TABS = ["events", "classes", "series", "volunteer", "announcements",
               "newsletters", "news", "venues", "wedding_calendar", "wedding_gallery",
-              "tours", "tour_stops", "organization", "photographers"]
+              "tours", "tour_stops", "organization", "photographers", "right_now"]
 # Column-name tokens seen across the live tabs. We locate the header row by its
 # CONTENT (the row matching the most of these) rather than trusting a fixed row
 # index — so an inserted blank row or a "Convert to table" wrapper can't shove

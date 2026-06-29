@@ -145,7 +145,7 @@ const normHeader = s => (s || '').trim().toLowerCase().replace(/\s+/g, '_');
 // the unguarded client-side parse the gate exists to remove — so flip it back
 // the moment the pipeline recovers.
 const DATA_SOURCE = 'published';            // 'published' (default) | 'live' (break-glass)
-const MIGRATED = new Set(['events', 'classes', 'volunteer', 'news', 'newsletters','series', 'announcements', 'venues', 'wedding_calendar', 'wedding_gallery']);      // tabs served from validated JSON; grow as templated
+const MIGRATED = new Set(['events', 'classes', 'volunteer', 'news', 'newsletters','series', 'announcements', 'venues', 'wedding_calendar', 'wedding_gallery', 'right_now']);      // tabs served from validated JSON; grow as templated
 const GID_TO_NAME = Object.fromEntries(Object.entries(TAB).map(([k, v]) => [v, k]));
 
 async function fetchTab(gid) {

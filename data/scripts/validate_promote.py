@@ -52,7 +52,7 @@ HEALTH_DIR = os.path.join(PUBLISHED, "health")   # per-feed detail files
 # staged for the FK check but never published as its own feed — so it's NOT here.)
 PUBLISH_TABS = ["events", "classes", "series", "volunteer", "announcements",
                 "newsletters", "news", "venues", "wedding_calendar", "wedding_gallery",
-                "tours", "tour_stops", "organization", "photographers"]
+                "tours", "tour_stops", "organization", "photographers", "right_now"]
 RUNLOG_CAP = 30        # _runlog.json: keep the last N runs
 HISTORY_DAYS = 182     # _history.json: keep ~6 months of per-feed points
 TIMELINE_DAYS = 14     # health/<tab>.json edit timeline: keep ~2 weeks
