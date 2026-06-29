@@ -1205,6 +1205,7 @@ async function loadPlants() {
     const collectionCount = document.getElementById('plantCollectionCount');
     if (collectionCount) collectionCount.textContent = PLANTS.length + '+';
     populatePlantCategories();
+    await _ensurePhotoCredits();   // warm the shared credit map before first paint
     renderPlants(orderByFeatured(PLANTS, FEATURED_PLANTS));
     // Apply any URL search/family filter after load
     const searchEl = document.getElementById('plantSearch');
@@ -1219,23 +1220,48 @@ async function loadPlants() {
 let _activeFilters = new Set();
 let _activeCategory = '';
 
+// ── SHARED PHOTO-CREDIT JOIN ──────────────────────────────────
+// One psbp_id -> hero photo record map (photographer, license, observed_on),
+// built once from the PSBPPhotos pool (photo_credits.json) and reused by the
+// plant, wildlife, AND Right Now cards so every credit block looks identical
+// and carries the date. loadPool() is Promise-cached, so this is one fetch.
+let _photoCreditById = null;
+
+async function _ensurePhotoCredits() {
+  if (_photoCreditById) return _photoCreditById;
+  const map = {};
+  if (typeof PSBPPhotos !== 'undefined' && PSBPPhotos.loadPool) {
+    try {
+      const pool = await PSBPPhotos.loadPool();
+      (pool || []).forEach(p => { if (p.psbp_id && !map[p.psbp_id]) map[p.psbp_id] = p; });
+    } catch (_) { /* fail-soft: cards fall back to their own credit fields */ }
+  }
+  _photoCreditById = map;
+  return map;
+}
+
+// Build the standard credit plate for a species record (plant or wildlife).
+// Prefers the hero-pool record (gets the date); falls back to the record's own
+// credit_name/credit_license; last resort is a bare "community member" plate.
+function _speciesCreditPlate(rec) {
+  const cr = (_photoCreditById && rec && _photoCreditById[rec.id]) || null;
+  const by      = (cr && (cr.photographer_name || cr.photographer)) || rec.credit_name || rec.credit || 'community member';
+  const license = (cr && cr.license) || rec.credit_license || '';
+  const date    = (cr && cr.observed_on) || null;
+  if (typeof PSBPPhotos !== 'undefined' && PSBPPhotos.creditPlate) {
+    return PSBPPhotos.creditPlate({ by: by, license: license, date: date });
+  }
+  return '<div class="credit-plate"><div class="credit-byline">'
+       + '<span class="credit-eyebrow">Photograph by</span>'
+       + '<span class="credit-name">' + by + '</span></div></div>';
+}
+
 function plantCard(p) {
-  // Support both old hardcoded format and new JSON format
   const slug = p.id + '-' + p.common.replace(/[^a-zA-Z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
   const photoUrl = p.photo || ('plants/' + p.id + '_' + p.common.replace(/[^a-zA-Z0-9]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') + '.jpg');
   const pageUrl  = p.page  || ('plants/' + slug + '.html');
 
-  // Photographer credit. The publisher writes resolved display-name + license
-  // into plants.json at promotion time (credit_name, credit_license); credit is
-  // the raw iNat login, kept as a stable key + last-resort fallback.
-  const creditName = p.credit_name || p.credit || 'community member';
-  const creditPlate = (typeof PSBPPhotos !== 'undefined' && PSBPPhotos.creditPlate)
-    ? PSBPPhotos.creditPlate({ by: creditName, license: p.credit_license })
-    : '<div class="credit-plate"><div class="credit-byline">'
-        + '<span class="credit-eyebrow">Photograph by</span>'
-        + '<span class="credit-name">' + creditName + '</span></div></div>';
-
-  return `<a class="card plant-card" href="${pageUrl}" style="text-decoration:none;display:block">
+  return `<a class="card plant-card" href="${pageUrl}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">
     <div style="height:160px;overflow:hidden;position:relative;background:var(--sand)">
       <img src="${photoUrl}" alt="${p.common}"
         style="width:100%;height:100%;object-fit:cover;object-position:${p.focus || 'center'};display:block;transition:transform .4s ease"
@@ -1243,11 +1269,11 @@ function plantCard(p) {
         loading="lazy">
       <div style="display:none;height:100%;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text-soft);opacity:.3">🌿</div>
     </div>
-    <div class="card-body">
+    <div class="card-body" style="flex:1">
       <h4 style="font-size:.97rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${p.common}</h4>
       <div style="font-style:italic;font-size:.82rem;color:var(--text-soft)">${p.sci}</div>
     </div>
-    ${creditPlate}
+    ${_speciesCreditPlate(p)}
   </a>`;
 }
 
@@ -1419,6 +1445,7 @@ async function loadWildlife() {
     if (collectionCount) collectionCount.textContent = WILDLIFE.length + '+';
 
     renderWildFilterButtons();
+    await _ensurePhotoCredits();   // warm the shared credit map before first paint
     renderWildlife(orderByFeatured(WILDLIFE, FEATURED_WILDLIFE));
 
     // Apply any URL search filter after load
@@ -1442,27 +1469,22 @@ function renderWildFilterButtons() {
 }
 
 // ── WILDLIFE CARD ─────────────────────────────────────────────
+// Standardized to match plantCard: photo, name, scientific, credit block. No
+// chips — theme + native are selectable from the filter bar above the grid.
 function wildCard(w) {
-  const themeLabel = (WILD_THEMES.find(t => t.key === w.theme) || {}).label || w.category || '';
-  return `<a class="card plant-card" href="${w.page}" style="text-decoration:none;display:block">
+  return `<a class="card plant-card" href="${w.page}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">
     <div style="height:160px;overflow:hidden;position:relative;background:var(--sand)">
       <img src="${w.photo}" alt="${w.common}"
-        style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .4s ease"
+        style="width:100%;height:100%;object-fit:cover;object-position:${w.focus || 'center'};display:block;transition:transform .4s ease"
         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
         loading="lazy">
       <div style="display:none;height:100%;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text-soft);opacity:.3">🦜</div>
     </div>
-    <div class="card-body">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem;margin-bottom:.25rem">
-        <h4 style="font-size:.97rem;color:var(--green-deep);line-height:1.3">${w.common}</h4>
-        <span style="font-size:.68rem;color:#ccc;white-space:nowrap">${w.id}</span>
-      </div>
-      <div style="font-style:italic;font-size:.82rem;color:var(--text-soft);margin-bottom:.55rem">${w.sci}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:.3rem">
-        ${themeLabel?`<span class="tag">${themeLabel}</span>`:''}
-        ${w.native?'<span class="tag tag-native">🌿 Native</span>':''}
-      </div>
+    <div class="card-body" style="flex:1">
+      <h4 style="font-size:.97rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${w.common}</h4>
+      <div style="font-style:italic;font-size:.82rem;color:var(--text-soft)">${w.sci}</div>
     </div>
+    ${_speciesCreditPlate(w)}
   </a>`;
 }
 
@@ -1678,17 +1700,7 @@ async function loadRightNow(targetId, opts) {
     return;
   }
   const byId = await _rnSpeciesIndex(base);
-
-  // Attribution via the shared PSBPPhotos layer: map psbp_id -> hero photo record
-  // (photographer, license, observed_on) from photo_credits.json. loadPool() is
-  // Promise-cached, so this reuses the slideshow's fetch rather than re-fetching.
-  let creditById = {};
-  if (typeof PSBPPhotos !== 'undefined' && PSBPPhotos.loadPool) {
-    try {
-      const pool = await PSBPPhotos.loadPool();
-      (pool || []).forEach(p => { if (p.psbp_id && !creditById[p.psbp_id]) creditById[p.psbp_id] = p; });
-    } catch (_) { /* fail-soft: cards render without the credit plate */ }
-  }
+  const creditById = await _ensurePhotoCredits();   // shared psbp_id -> hero credit map
 
   el.innerHTML = rows.map(e => {
     const rec = e.psbp_id ? byId[e.psbp_id] : null;
