@@ -275,9 +275,24 @@ def get_overview_data():
     resolved = {login for login in all_logins if login in names}
     unresolved = sorted(all_logins - resolved)
 
+    def research_breakdown(kingdom):
+        """Counts of active research.json candidates for a kingdom, by source."""
+        items = [s for s in get_research_list(kingdom)
+                 if s.get("status") == "research"]
+        by_source = {}
+        for s in items:
+            src = s.get("source") or "unknown"
+            by_source[src] = by_source.get(src, 0) + 1
+        return {"total": len(items), "by_source": by_source}
+
+    plants_kd = analyze_kingdom(plant_species, PLANT_REQUIRED, "botanical_name")
+    plants_kd["research"] = research_breakdown("plants")
+    wildlife_kd = analyze_kingdom(wildlife_species, WILDLIFE_REQUIRED, "scientific_name")
+    wildlife_kd["research"] = research_breakdown("wildlife")
+
     return {
-        "plants": analyze_kingdom(plant_species, PLANT_REQUIRED, "botanical_name"),
-        "wildlife": analyze_kingdom(wildlife_species, WILDLIFE_REQUIRED, "scientific_name"),
+        "plants": plants_kd,
+        "wildlife": wildlife_kd,
         "photographers": {
             "total_logins": len(all_logins),
             "resolved": len(resolved),
@@ -2910,6 +2925,16 @@ main {
 .funnel-bar-fill.research { background: var(--status-research); }
 .funnel-bar-fill.spotted  { background: var(--status-spotted); }
 .funnel-bar-fill.html     { background: var(--status-html); }
+.rb-title { margin: 14px 0 6px; font-size: 11px; text-transform: uppercase;
+            letter-spacing: .04em; color: #8a8f96; }
+.rb-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden;
+          background: #eceff1; }
+.rb-seg { height: 100%; }
+.rb-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; }
+.rb-li { display: inline-flex; align-items: center; font-size: 12px; color: #555; }
+.rb-li b { margin-left: 4px; color: #222; }
+.rb-dot { width: 9px; height: 9px; border-radius: 2px; margin-right: 5px;
+          display: inline-block; }
 .funnel-count {
     width: 40px;
     font-size: 14px;
@@ -4545,18 +4570,25 @@ def render_overview():
 
     function renderFunnel(containerId, kingdomData) {
         const el = document.getElementById(containerId);
-        const total = kingdomData.total || 1;
-        const statuses = ['research', 'spotted', 'html'];
-        const statusLabels = { research: 'Research', spotted: 'Spotted', html: 'Published' };
-        let html = `<div class="funnel-total">${kingdomData.total}</div>`;
-        html += `<div class="funnel-total-label">total species</div>`;
+        const research  = (kingdomData.research && kingdomData.research.total) || 0;
+        const spotted   = kingdomData.by_status.spotted || 0;
+        const published = kingdomData.by_status.html || 0;
+        const pipeline  = (research + spotted + published) || 1;
 
-        for (const status of statuses) {
-            const count = kingdomData.by_status[status] || 0;
-            const pct = Math.round((count / total) * 100);
+        const rows = [
+            ['research', 'Research',  research],
+            ['spotted',  'Spotted',   spotted],
+            ['html',     'Published', published],
+        ];
+
+        let html = `<div class="funnel-total">${research + spotted + published}</div>`;
+        html += `<div class="funnel-total-label">in pipeline (research → published)</div>`;
+
+        for (const [status, label, count] of rows) {
+            const pct = Math.round((count / pipeline) * 100);
             html += `
                 <div class="funnel-row">
-                    <span class="funnel-label">${statusLabels[status] || status}</span>
+                    <span class="funnel-label">${label}</span>
                     <div class="funnel-bar-track">
                         <div class="funnel-bar-fill ${status}"
                              style="width: ${Math.max(pct, 1)}%"></div>
@@ -4566,22 +4598,40 @@ def render_overview():
             `;
         }
 
-        // Show any other statuses that aren't in the standard three
-        for (const [status, count] of Object.entries(kingdomData.by_status)) {
-            if (!statuses.includes(status)) {
-                const pct = Math.round((count / total) * 100);
-                html += `
-                    <div class="funnel-row">
-                        <span class="funnel-label">${status}</span>
-                        <div class="funnel-bar-track">
-                            <div class="funnel-bar-fill"
-                                 style="width: ${Math.max(pct, 1)}%; background: #aaa"></div>
-                        </div>
-                        <span class="funnel-count">${count}</span>
-                    </div>
-                `;
+        // Research pile broken down by source — the candidates feeding the funnel.
+        const src = (kingdomData.research && kingdomData.research.by_source) || {};
+        const SRC = [
+            ['inat_observed',       'iNat sighting',  '#c5922a'],
+            ['park_inventory+inat', 'Confirmed',      '#2d6a35'],
+            ['park_inventory',      'Inventory only', '#9aa0a6'],
+            ['prior_research',      'Prior research', '#5c6bc0'],
+        ];
+        const known = SRC.reduce((a, s) => a + (src[s[0]] || 0), 0);
+        const other = research - known;
+
+        if (research > 0) {
+            html += '<div class="rb-title">Research pile by source</div>';
+            html += '<div class="rb-bar">';
+            for (const [key, , color] of SRC) {
+                const n = src[key] || 0;
+                if (n > 0) html += `<div class="rb-seg" title="${n}" `
+                    + `style="width:${(n / research * 100).toFixed(1)}%;background:${color};"></div>`;
             }
+            if (other > 0) html += `<div class="rb-seg" `
+                + `style="width:${(other / research * 100).toFixed(1)}%;background:#ccc;"></div>`;
+            html += '</div>';
+
+            html += '<div class="rb-legend">';
+            for (const [key, label, color] of SRC) {
+                const n = src[key] || 0;
+                if (n > 0) html += `<span class="rb-li">`
+                    + `<i class="rb-dot" style="background:${color};"></i>${label} <b>${n}</b></span>`;
+            }
+            if (other > 0) html += `<span class="rb-li">`
+                + `<i class="rb-dot" style="background:#ccc;"></i>Other <b>${other}</b></span>`;
+            html += '</div>';
         }
+
         el.innerHTML = html;
     }
 
