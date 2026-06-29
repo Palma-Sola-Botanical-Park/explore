@@ -1,0 +1,142 @@
+{
+  "tab": "right_now",
+  "human": "What's worth noticing in the park right now -- blooms and sightings.",
+  "generated_at": "2026-06-29T02:05:48+00:00",
+  "status": "green",
+  "published": true,
+  "block_reason": null,
+  "counts": {
+    "staged": 3,
+    "live": 3,
+    "published": 3,
+    "dropped_display": 0,
+    "quarantined": 0,
+    "warned": 0
+  },
+  "volume_guard": {
+    "min": 0,
+    "live": 3,
+    "published": 3,
+    "blocked": false,
+    "reason": null
+  },
+  "rules": [
+    {
+      "id": "common_name:required",
+      "field": "common_name",
+      "check": "required",
+      "arg": null,
+      "why": "Can't be blank -- it's the card label.",
+      "severity": "error",
+      "scope": "row",
+      "status": "green",
+      "evaluated": 3,
+      "passed": 3,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "kind:in_vocab",
+      "field": "kind",
+      "check": "in_vocab",
+      "arg": [
+        "blooming",
+        "budding",
+        "fruiting",
+        "fading",
+        "sighting"
+      ],
+      "why": "Must be one of: blooming, budding, fruiting, fading, sighting.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 3,
+      "passed": 3,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "display:in_vocab",
+      "field": "display",
+      "check": "in_vocab",
+      "arg": [
+        "web",
+        "both",
+        "screen",
+        "off"
+      ],
+      "why": "Must be web, both, screen, or off.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 3,
+      "passed": 3,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "peak_start:iso_date_or_blank",
+      "field": "peak_start",
+      "check": "iso_date_or_blank",
+      "arg": null,
+      "why": "Must be a date (YYYY-MM-DD) if set.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 3,
+      "passed": 3,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "peak_end:iso_date_or_blank",
+      "field": "peak_end",
+      "check": "iso_date_or_blank",
+      "arg": null,
+      "why": "Must be a date (YYYY-MM-DD) if set.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 3,
+      "passed": 3,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "peak_end:ge_field",
+      "field": "peak_end",
+      "check": "ge_field",
+      "arg": "peak_start",
+      "why": "Should be on or after peak_start.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 3,
+      "passed": 3,
+      "flagged": 0,
+      "examples": []
+    }
+  ],
+  "dropped_rows": [],
+  "timeline": [],
+  "schema": {
+    "required_headers": [
+      "display",
+      "common_name"
+    ],
+    "identity": [
+      "common_name",
+      "area"
+    ],
+    "drop_when_display": [
+      "off",
+      ""
+    ],
+    "volume_min": 0
+  },
+  "links": {
+    "sheet": "https://docs.google.com/spreadsheets/d/12gRB-c4gND8qJWPmwBoV2X4adqTfRROYHtA8jR4-kS4/edit#gid=1545501058",
+    "published": "data/published/right_now.json",
+    "detail": "data/published/health/right_now.json"
+  }
+}
