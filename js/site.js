@@ -1271,7 +1271,7 @@ function plantCard(p) {
     </div>
     <div class="card-body" style="flex:1">
       <h4 style="font-size:.97rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${p.common}</h4>
-      <div style="font-style:italic;font-size:.9rem;color:var(--text-soft)">${p.sci}</div>
+      <div class="sci-name">${p.sci}</div>
     </div>
     ${_speciesCreditPlate(p)}
   </a>`;
@@ -1482,7 +1482,7 @@ function wildCard(w) {
     </div>
     <div class="card-body" style="flex:1">
       <h4 style="font-size:.97rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${w.common}</h4>
-      <div style="font-style:italic;font-size:.9rem;color:var(--text-soft)">${w.sci}</div>
+      <div class="sci-name">${w.sci}</div>
     </div>
     ${_speciesCreditPlate(w)}
   </a>`;
@@ -1661,7 +1661,7 @@ function _rnCard(e, rec, cr) {
     </div>
     <div class="card-body" style="flex:1">
       <h4 style="font-size:1rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${_rnEsc(e.common_name)}</h4>
-      ${sci ? `<div style="font-style:italic;font-size:.9rem;color:var(--text-soft);margin-bottom:.45rem">${_rnEsc(sci)}</div>` : ''}
+      ${sci ? `<div class="sci-name" style="margin-bottom:.45rem">${_rnEsc(sci)}</div>` : ''}
       ${e.note ? `<p style="font-size:.86rem;color:var(--text-soft);line-height:1.5;margin:0 0 .55rem">${_rnEsc(e.note)}</p>` : ''}
       ${e.area ? `<div style="font-size:.78rem;color:var(--green-mid);font-weight:600">📍 ${_rnEsc(e.area)}</div>` : ''}
     </div>
