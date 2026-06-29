@@ -273,9 +273,8 @@ const FOOTER_HTML = `
     <div class="footer-col">
       <h4>Explore</h4>
       <ul>
-        <li><a href="nature.html">Nature at PSBP</a></li>
-        <li><a href="nature.html#plants">Plant Collection</a></li>
-        <li><a href="nature.html#wildlife">Wildlife</a></li>
+        <li><a href="nature.html#right-now">Right Now in the Park</a></li>
+        <li><a href="nature.html#plants">Plants &amp; Wildlife at the Park</a></li>
         <li><a href="news.html">Park News</a></li>
         <li><a href="visit.html#nursery">Hidden Garden Nursery</a></li>
       </ul>

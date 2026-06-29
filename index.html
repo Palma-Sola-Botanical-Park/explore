@@ -359,6 +359,18 @@
     <div class="live-mosaic" id="mosaicGrid">
       <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-soft)">Loading recent observations…</div>
     </div>
+
+    <!-- iNat stats — the running total these observations add up to -->
+    <div style="background:var(--white);border:1.5px solid rgba(90,122,74,0.15);border-radius:10px;padding:1.25rem 1.5rem;margin-top:2rem">
+      <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green-mid);margin-bottom:.9rem">Built by our community</div>
+      <div class="inat-inline" style="background:none;border-radius:0;padding:0;margin:0">
+        <div class="inat-inline-stat"><strong id="statSpecies" class="pulse">—</strong><span>Species Documented</span></div>
+        <div class="inat-inline-stat"><strong id="statObservers" class="pulse">—</strong><span>People Who Showed Up</span></div>
+        <div class="inat-inline-stat"><strong id="statTotal" class="pulse">—</strong><span>Observations Made</span></div>
+      </div>
+      <p style="font-size:.95rem;color:var(--text-soft);margin-top:.9rem;font-style:italic;line-height:1.6">Every number above is a person who came out here and did something.</p>
+    </div>
+
     <div style="text-align:center;margin-top:2rem">
       <a href="nature.html#plants" class="btn btn-green">Plants &amp; Wildlife →</a>
     </div>
@@ -376,7 +388,7 @@
           This is a place to walk slowly, notice things, and come back again. To bring your dog, your kids, your camera, or just yourself. To volunteer on a Saturday morning and stay for lunch. To hear live music under the palms, celebrate a birthday in the gazebo, or sit quietly by the pond and watch what happens.
         </p>
         <p style="color:var(--text-soft);line-height:1.78;margin-bottom:1.25rem">
-          The plants here have names and stories. The birds have been coming for decades. The people who tend this place know it like a neighborhood — because it is one.
+          The people who tend this place know it like a neighborhood — because it is one.
         </p>
         <p style="color:var(--text-soft);line-height:1.78;margin-bottom:1.25rem">
           And right now, something is shifting. We're doubling down on making this park truly <em>ours</em> — 
@@ -384,17 +396,6 @@
           to the park's growing record, and rewards for the people who help us learn this place together. 
           The calendar is filling up. New things are coming. The best reason to visit today is that it'll be even better next month.
         </p>
-
-        <!-- iNat stats — framed as community achievement -->
-        <div style="background:var(--cream);border:1.5px solid rgba(90,122,74,0.15);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1.5rem">
-          <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green-mid);margin-bottom:.9rem">Built by our community</div>
-          <div class="inat-inline" style="background:none;border-radius:0;padding:0;margin:0">
-            <div class="inat-inline-stat"><strong id="statSpecies" class="pulse">—</strong><span>Species Documented</span></div>
-            <div class="inat-inline-stat"><strong id="statObservers" class="pulse">—</strong><span>People Who Showed Up</span></div>
-            <div class="inat-inline-stat"><strong id="statTotal" class="pulse">—</strong><span>Observations Made</span></div>
-          </div>
-          <p style="font-size:.95rem;color:var(--text-soft);margin-top:.9rem;font-style:italic;line-height:1.6">Every number above is a person who came out here and did something.</p>
-        </div>
 
         <p style="color:var(--text-soft);line-height:1.78;margin-bottom:2rem;margin-top:.75rem">
           Come in the morning when the birds are active. Come in summer when the pond overflows with life.
