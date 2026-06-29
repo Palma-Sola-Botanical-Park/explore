@@ -4203,6 +4203,22 @@ main {
 .picker-item.is-dead .pi-common { text-decoration: line-through; color: var(--gray-400); }
 .picker-item.is-dead .pi-sci { color: var(--gray-200); }
 
+/* Discover-style picker cards: name, sci, meta, inline actions */
+.picker-item.card { display: block; padding: 10px 12px; }
+.picker-item.card .pi-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.picker-item.card .pi-name { display: flex; flex-direction: column; min-width: 0; }
+.picker-item.card .pi-common { font-weight: 600; color: var(--green-deep); }
+.picker-item.card .pi-sci { font-style: italic; color: var(--gray-600); font-size: 12px; }
+.pi-content { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px; white-space: nowrap; flex: 0 0 auto; }
+.pi-content.has { background: #e3f0e5; color: #2d6a35; }
+.pi-content.none { background: #f0eee8; color: #b09a5a; }
+.picker-item.card .pi-meta { font-size: 11px; color: #999; margin-top: 3px; }
+.picker-item.card .pi-actions { display: flex; gap: 6px; margin-top: 8px; }
+.pi-btn { border: none; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.pi-work { background: var(--green-mid); color: #fff; }
+.pi-dead { background: #f0eee8; color: #8a6d2f; }
+.pi-revive { background: #c62828; color: #fff; }
+
 /* Source banner in detail card */
 .intake-source-banner {
     display: flex;
@@ -4851,18 +4867,38 @@ def render_intake():
             const deadCls = isDead ? 'is-dead' : '';
             const sm = SOURCE_META[s.source] || {{}};
             const srcCls = sm.cls || '';
-            const srcIcon = sm.icon || '';
-            const fillCls = s.content_filled > 0 ? 'has-content' : 'no-content';
-            const deadMark = isDead
-                ? `<span class="intake-status-marker" style="color:#c62828;">${{s.status}}</span>` : '';
-            return `<div class="picker-item ${{active}} ${{srcCls}} ${{deadCls}}" onclick="intakeSelect('${{s.id}}')">
-                <div class="pi-name">
-                    <span class="pi-common">${{srcIcon}} ${{esc(name)}}</span>${{deadMark}}
-                    <span class="pi-sci">${{esc(sci)}}</span>
+            const srcLabel = ({{
+                'park_inventory+inat': 'Inventory + iNat',
+                'prior_research': 'Prior research',
+                'inat_observed': 'iNat sighting',
+                'park_inventory': 'Inventory'
+            }})[s.source] || '';
+            const obs = (typeof s.inat_obs_count === 'number' && s.inat_obs_count > 0)
+                ? `${{s.inat_obs_count}} obs` : '';
+            const meta = [s.id, obs, srcLabel].filter(Boolean).join(' · ');
+            const content = `<span class="pi-content ${{s.content_filled > 0 ? 'has' : 'none'}}" title="${{s.content_filled}} of ${{s.content_total}} content fields filled">${{s.content_filled}}/${{s.content_total}}</span>`;
+            const actions = isDead
+                ? `<button class="pi-btn pi-revive" onclick="event.stopPropagation(); intakeSetSpeciesStatus('${{s.id}}','research')">↩ Revive</button>`
+                : `<button class="pi-btn pi-work" onclick="event.stopPropagation(); intakeWorkIt('${{s.id}}')">Work it</button>`
+                  + `<button class="pi-btn pi-dead" onclick="event.stopPropagation(); intakeSetSpeciesStatus('${{s.id}}','died')">Mark dead</button>`;
+            return `<div class="picker-item card ${{active}} ${{srcCls}} ${{deadCls}}" onclick="intakeSelect('${{s.id}}')">
+                <div class="pi-top">
+                    <div class="pi-name">
+                        <span class="pi-common">${{esc(name)}}</span>
+                        <span class="pi-sci">${{esc(sci)}}</span>
+                    </div>
+                    ${{content}}
                 </div>
-                <span class="pi-badge ${{fillCls}}" title="${{s.content_filled}} of ${{s.content_total}} content fields">${{s.content_filled}}</span>
+                <div class="pi-meta">${{esc(meta)}}</div>
+                <div class="pi-actions">${{actions}}</div>
             </div>`;
         }}).join('');
+    }}
+
+    function intakeWorkIt(id) {{
+        intakeSelect(id);
+        const el = document.getElementById('intake-detail');
+        if (el) el.scrollIntoView({{behavior: 'smooth', block: 'start'}});
     }}
 
     async function intakeSelect(id) {{
