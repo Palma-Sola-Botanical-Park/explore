@@ -6942,6 +6942,94 @@ def _inat_species_counts_captive(captive_value):
     return out
 
 
+WILD_KEEP_JSON = os.path.join(REPO, "data", "sources", "cultivated_keep_wild.json")
+
+
+def _load_keep_wild():
+    """taxon_id -> record for plants the user has declared genuinely wild."""
+    data = _load(WILD_KEEP_JSON)
+    taxa = data.get("taxa", []) if isinstance(data, dict) else (
+        data if isinstance(data, list) else [])
+    out = {}
+    for t in taxa:
+        tid = t.get("taxon_id")
+        if tid is not None:
+            try:
+                out[int(tid)] = t
+            except (TypeError, ValueError):
+                pass
+    return out
+
+
+def _save_keep_wild(keep_map):
+    payload = {
+        "meta": {"updated": datetime.date.today().isoformat(),
+                 "count": len(keep_map)},
+        "taxa": sorted(keep_map.values(),
+                       key=lambda t: t.get("scientific_name", "")),
+    }
+    write_json_atomic(WILD_KEEP_JSON, payload)
+
+
+def cultivated_keep_wild_add(taxon_id, sci, common):
+    keep = _load_keep_wild()
+    keep[int(taxon_id)] = {
+        "taxon_id":        int(taxon_id),
+        "scientific_name": sci or "",
+        "common_name":     common or "",
+        "added":           datetime.date.today().isoformat(),
+    }
+    _save_keep_wild(keep)
+    return {"ok": True, "kept": len(keep)}
+
+
+def cultivated_keep_wild_remove(taxon_id):
+    keep = _load_keep_wild()
+    keep.pop(int(taxon_id), None)
+    _save_keep_wild(keep)
+    return {"ok": True, "kept": len(keep)}
+
+
+RECENT_MARK_JSON = os.path.join(REPO, "data", "sources", "cultivated_recent.json")
+# How long to trust our own "just marked" memory over iNat's lagging index.
+RECENT_MARK_WINDOW_S = 45 * 60
+
+
+def _load_recent_marked():
+    """taxon_id -> {at_epoch, count, scientific_name, ...} for just-marked taxa."""
+    data = _load(RECENT_MARK_JSON)
+    items = data.get("marked", []) if isinstance(data, dict) else (
+        data if isinstance(data, list) else [])
+    out = {}
+    for r in items:
+        tid = r.get("taxon_id")
+        if tid is not None:
+            try:
+                out[int(tid)] = r
+            except (TypeError, ValueError):
+                pass
+    return out
+
+
+def _save_recent_marked(recent_map):
+    write_json_atomic(RECENT_MARK_JSON, {
+        "meta": {"updated": datetime.datetime.now().isoformat(timespec="seconds")},
+        "marked": list(recent_map.values()),
+    })
+
+
+def _record_recent_mark(taxon_id, name, count):
+    recent = _load_recent_marked()
+    recent[int(taxon_id)] = {
+        "taxon_id":        int(taxon_id),
+        "scientific_name": name or "",
+        "count":           count,
+        "at_epoch":        time.time(),
+        "at":              datetime.datetime.now().isoformat(timespec="seconds"),
+    }
+    _save_recent_marked(recent)
+
+
 def cultivated_audit(limit=10):
     """Read-only worklist: plant taxa with the most still-WILD observations.
 
@@ -6955,13 +7043,33 @@ def cultivated_audit(limit=10):
                 "error": "No data from iNaturalist — offline, or the project "
                          "slug is wrong. Check INAT_PROJECT_ID."}
 
+    keep = _load_keep_wild()
+    recent = _load_recent_marked()
+    now = time.time()
+    # Drop stale "just marked" memories beyond the trust window.
+    recent = {tid: r for tid, r in recent.items()
+              if (now - r.get("at_epoch", 0)) < RECENT_MARK_WINDOW_S}
+
     rows = []
+    still_recent = {}
     for tid in (set(wild) | set(cult)):
         tx = (wild.get(tid) or cult.get(tid))["taxon"]
         if (tx.get("iconic_taxon_name") or "") != "Plantae":
             continue
+        if tid in keep:
+            continue
         w = wild.get(tid, {}).get("count", 0)
         c = cult.get(tid, {}).get("count", 0)
+        if tid in recent:
+            # We marked this recently. If iNat's index still shows it wild,
+            # that's reindex lag — keep hiding it. Once the index agrees it's
+            # clean (no wild left), forget it so it can resurface if it ever
+            # genuinely regresses.
+            if w > 0:
+                still_recent[tid] = recent[tid]
+                continue
+            # caught up — drop the memory, and it won't list (w == 0 anyway)
+            continue
         if w <= 0:
             continue
         rows.append({
@@ -6972,11 +7080,17 @@ def cultivated_audit(limit=10):
             "cultivated_obs": c,
             "total_obs":      w + c,
         })
+
+    _save_recent_marked(still_recent)
     rows.sort(key=lambda r: -r["wild_obs"])
     return {"ok": True,
             "offenders":        rows[:limit],
             "offender_total":   len(rows),
-            "plant_wild_total": sum(r["wild_obs"] for r in rows)}
+            "plant_wild_total": sum(r["wild_obs"] for r in rows),
+            "keep_wild":        sorted(keep.values(),
+                                       key=lambda t: t.get("scientific_name", "")),
+            "recently_marked":  sorted(still_recent.values(),
+                                       key=lambda t: t.get("scientific_name", ""))}
 
 
 def cultivated_preview(taxon_id):
@@ -7032,6 +7146,9 @@ def cultivated_mark(taxon_id, token):
         results.append({"obs_id": oid, "observer": observer, "ok": ok,
                         "status": status, "error": body if not ok else ""})
         time.sleep(API_DELAY)
+    if marked > 0:
+        name = (obs[0].get("taxon") or {}).get("name", "") if obs else ""
+        _record_recent_mark(taxon_id, name, marked)
     return {"ok": True, "taxon_id": taxon_id, "marked": marked,
             "failed": failed, "results": results}
 
@@ -7061,6 +7178,20 @@ def handle_api_cultivated_mark(params):
     except (TypeError, ValueError):
         return {"ok": False, "error": "Bad taxon_id"}
     return cultivated_mark(tid, token)
+
+
+def handle_api_cultivated_keep(params):
+    """POST /api/cultivated/keep — body {taxon_id, scientific_name, common_name}
+    adds to the 'leave wild' list; {taxon_id, remove:true} removes it."""
+    body = params.get("_body", {})
+    try:
+        tid = int(body.get("taxon_id"))
+    except (TypeError, ValueError):
+        return {"ok": False, "error": "Bad taxon_id"}
+    if body.get("remove"):
+        return cultivated_keep_wild_remove(tid)
+    return cultivated_keep_wild_add(tid, body.get("scientific_name", ""),
+                                    body.get("common_name", ""))
 
 
 def render_cultivated():
@@ -7099,6 +7230,13 @@ def render_cultivated():
     .cult-mark-btn:disabled{{opacity:.55;cursor:default;}}
     .cult-empty{{font-size:13px;color:var(--gray-600);padding:8px 0;}}
     .cult-result-ok{{font-size:14px;font-weight:600;color:var(--green-mid);margin-top:12px;}}
+    .cult-leave{{background:none;border:1px solid #ddd;border-radius:6px;color:#999;font-size:10px;padding:2px 7px;cursor:pointer;white-space:nowrap;}}
+    .cult-leave:hover{{border-color:#9a6b12;color:#9a6b12;}}
+    .cult-kept-toggle{{margin-top:12px;font-size:12px;color:var(--green-mid);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;}}
+    .cult-recent{{margin-top:10px;font-size:12px;color:#6b7a55;background:#f3f6ed;border:1px solid #e2e8d4;border-radius:7px;padding:8px 10px;}}
+    .cult-kept-list{{margin-top:8px;border-top:1px dashed #ddd;padding-top:8px;}}
+    .cult-kept-row{{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;padding:3px 0;color:var(--gray-600);}}
+    .cult-restore{{background:none;border:none;color:var(--green-mid);font-size:11px;cursor:pointer;text-decoration:underline;padding:0;white-space:nowrap;}}
     .cult-prompt{{color:var(--gray-400);font-size:13px;text-align:center;padding:24px;}}
     </style>
 
@@ -7158,25 +7296,78 @@ def render_cultivated():
     function cultRenderList() {{
         const data = cultAuditData || {{}};
         cultOffenders = data.offenders || [];
+        const kept = data.keep_wild || [];
         const list = document.getElementById('cult-list');
+        let html = '';
         if (!cultOffenders.length) {{
-            list.innerHTML = '<div class="cult-empty">No wild-marked plants left — all clean. 🎉</div>';
-            return;
+            html += '<div class="cult-empty">No wild-marked plants left to review. 🎉</div>';
+        }} else {{
+            html += `<div class="cult-summary">${{data.offender_total}} plant taxa still carry wild observations `
+                + `(${{data.plant_wild_total}} total). Worst ${{cultOffenders.length}}:</div>`;
+            html += cultOffenders.map(o => `
+                <div class="cult-card ${{cultSelected === o.taxon_id ? 'active' : ''}}" onclick="cultSelect(${{o.taxon_id}})">
+                    <div class="cult-name">
+                        <span class="cult-common">${{esc(o.common_name || o.scientific_name)}}</span>
+                        <span class="cult-sci">${{esc(o.scientific_name)}}</span>
+                    </div>
+                    <div class="cult-counts">
+                        <span class="cult-pill wild">${{o.wild_obs}} wild</span>
+                        <span class="cult-pill cult">${{o.cultivated_obs}} cult</span>
+                        <button class="cult-leave" title="Grows wild here — keep it wild and hide from this list" onclick="event.stopPropagation(); cultKeepWild(${{o.taxon_id}})">leave wild</button>
+                    </div>
+                </div>`).join('');
         }}
-        let html = `<div class="cult-summary">${{data.offender_total}} plant taxa still carry wild observations `
-            + `(${{data.plant_wild_total}} total). Worst ${{cultOffenders.length}}:</div>`;
-        html += cultOffenders.map(o => `
-            <div class="cult-card ${{cultSelected === o.taxon_id ? 'active' : ''}}" onclick="cultSelect(${{o.taxon_id}})">
-                <div class="cult-name">
-                    <span class="cult-common">${{esc(o.common_name || o.scientific_name)}}</span>
-                    <span class="cult-sci">${{esc(o.scientific_name)}}</span>
-                </div>
-                <div class="cult-counts">
-                    <span class="cult-pill wild">${{o.wild_obs}} wild</span>
-                    <span class="cult-pill cult">${{o.cultivated_obs}} cult</span>
-                </div>
-            </div>`).join('');
+        const recent = data.recently_marked || [];
+        if (recent.length) {{
+            const names = recent.map(r => esc(r.scientific_name)).join(', ');
+            html += `<div class="cult-recent">🕓 ${{recent.length}} just marked (${{names}}) — hidden while iNaturalist re-indexes; this can take a few minutes.</div>`;
+        }}
+        if (kept.length) {{
+            html += `<button class="cult-kept-toggle" onclick="cultToggleKept()">🌿 ${{kept.length}} left wild — manage</button>`;
+            html += '<div class="cult-kept-list" id="cult-kept-list" style="display:none;">';
+            html += kept.slice().sort((a, b) => (a.scientific_name || '').localeCompare(b.scientific_name || '')).map(k => `
+                <div class="cult-kept-row">
+                    <span>${{esc(k.common_name || k.scientific_name)}} <span style="color:#aaa;font-style:italic;">${{esc(k.scientific_name)}}</span></span>
+                    <button class="cult-restore" onclick="cultRestoreWild(${{k.taxon_id}})">↩ put back</button>
+                </div>`).join('');
+            html += '</div>';
+        }}
         list.innerHTML = html;
+    }}
+
+    async function cultKeepWild(tid) {{
+        const o = cultOffenders.find(x => x.taxon_id === tid);
+        try {{
+            await fetch('/api/cultivated/keep', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{taxon_id: tid,
+                    scientific_name: o ? o.scientific_name : '',
+                    common_name: o ? o.common_name : ''}})
+            }});
+            cultToast((o ? (o.common_name || o.scientific_name) : 'Taxon') + ' left wild');
+            if (cultSelected === tid) {{
+                cultSelected = null;
+                document.getElementById('cult-detail').innerHTML =
+                    '<div class="cult-prompt">Pick a species to review and mark.</div>';
+            }}
+            cultScan();
+        }} catch (e) {{ cultToast('Error: ' + e.message, true); }}
+    }}
+
+    async function cultRestoreWild(tid) {{
+        try {{
+            await fetch('/api/cultivated/keep', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{taxon_id: tid, remove: true}})
+            }});
+            cultToast('Put back on the worklist');
+            cultScan();
+        }} catch (e) {{ cultToast('Error: ' + e.message, true); }}
+    }}
+
+    function cultToggleKept() {{
+        const el = document.getElementById('cult-kept-list');
+        if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
     }}
 
     async function cultSelect(tid) {{
@@ -7304,6 +7495,7 @@ API_ROUTES = {
     "/api/cultivated/audit":   handle_api_cultivated_audit,
     "/api/cultivated/preview": handle_api_cultivated_preview,
     "/api/cultivated/mark":    handle_api_cultivated_mark,
+    "/api/cultivated/keep":    handle_api_cultivated_keep,
 }
 
 
