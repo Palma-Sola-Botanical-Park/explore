@@ -1,22 +1,22 @@
 {
   "tab": "tours",
   "human": "Tour definitions — one row per curated park walk.",
-  "generated_at": "2026-06-29T02:05:48+00:00",
-  "status": "amber",
+  "generated_at": "2026-06-29T02:29:32+00:00",
+  "status": "green",
   "published": true,
   "block_reason": null,
   "counts": {
     "staged": 6,
     "live": 6,
-    "published": 4,
+    "published": 6,
     "dropped_display": 0,
-    "quarantined": 2,
+    "quarantined": 0,
     "warned": 0
   },
   "volume_guard": {
     "min": 1,
     "live": 6,
-    "published": 4,
+    "published": 6,
     "blocked": false,
     "reason": null
   },
@@ -43,20 +43,11 @@
       "why": "Can't be blank.",
       "severity": "error",
       "scope": "row",
-      "status": "amber",
+      "status": "green",
       "evaluated": 6,
-      "passed": 4,
-      "flagged": 2,
-      "examples": [
-        {
-          "row": "row",
-          "reason": "missing required value"
-        },
-        {
-          "row": "row",
-          "reason": "missing required value"
-        }
-      ]
+      "passed": 6,
+      "flagged": 0,
+      "examples": []
     },
     {
       "id": "difficulty:in_vocab",
@@ -70,20 +61,11 @@
       "why": "Must be Easy, Moderate, or Hard.",
       "severity": "warn",
       "scope": "field",
-      "status": "amber",
+      "status": "green",
       "evaluated": 6,
-      "passed": 4,
-      "flagged": 2,
-      "examples": [
-        {
-          "row": "row",
-          "reason": "'' is not an allowed value"
-        },
-        {
-          "row": "row",
-          "reason": "'' is not an allowed value"
-        }
-      ]
+      "passed": 6,
+      "flagged": 0,
+      "examples": []
     },
     {
       "id": "status:in_vocab",
@@ -103,21 +85,18 @@
       "examples": []
     }
   ],
-  "dropped_rows": [
-    {
-      "label": "row",
-      "reason": "tour_name: missing required value"
-    },
-    {
-      "label": "row",
-      "reason": "tour_name: missing required value"
-    }
-  ],
+  "dropped_rows": [],
   "timeline": [
     {
       "at": "2026-06-29T02:05:48+00:00",
       "added": 2,
       "changed": 3,
+      "removed": 0
+    },
+    {
+      "at": "2026-06-29T02:29:32+00:00",
+      "added": 0,
+      "changed": 2,
       "removed": 0
     }
   ],
