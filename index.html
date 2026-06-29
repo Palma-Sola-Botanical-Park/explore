@@ -347,6 +347,21 @@
   </div>
 </section>
 
+<!-- RIGHT NOW IN THE PARK — the now-lens; JS hides this whole section if the feed is empty -->
+<section class="bg-white" id="rightNowSection">
+  <div class="section-inner">
+    <span class="label">Right Now in the Park</span>
+    <h2 class="section-title">What nature is offering right now</h2>
+    <p class="section-sub">What's worth a look this week — what's blooming, fruiting, or just passing through. Kept current by the people who walk this park.</p>
+    <div id="rightNowStrip" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.5rem">
+      <div style="grid-column:1/-1;text-align:center;padding:2.5rem;color:var(--text-soft)">Loading…</div>
+    </div>
+    <div style="text-align:center;margin-top:2rem">
+      <a href="nature.html#right-now" class="btn btn-gold">See everything in the park →</a>
+    </div>
+  </div>
+</section>
+
 <!-- LIVE NATURE MOSAIC — attribution shown, no outbound links -->
 <section class="bg-cream">
   <div class="section-inner">
@@ -494,6 +509,9 @@ injectShared({ inatBar: false, inatFooter: true });
 // Hero slideshow is driven by photo_credits.json (random attributed heroes).
 // See js/photo-credits.js. (The old "Ten acres" hero grid was removed.)
 PSBPPhotos.mountHeroSlideshow('heroSlides');
+
+// Right Now in the Park — home strip (top 6); hides its section if the feed is empty
+loadRightNow('rightNowStrip', { limit: 6, sectionId: 'rightNowSection' });
 
 // Announcements now use the shared loadAnnouncements() from site.js (see call below)
 

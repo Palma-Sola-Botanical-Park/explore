@@ -82,6 +82,7 @@ const TAB = {
   venues:        1744975586,
   wedding_calendar: 1260078193,
   wedding_gallery:  874456476,
+  right_now:        1545501058,
 };
 
 // display filter: which values should appear on the website
@@ -1573,4 +1574,94 @@ function clearWildFilters() {
   document.querySelectorAll('#panel-wildlife .filter-btn').forEach(b=>b.classList.remove('on'));
   const s=document.getElementById('wildSearch'); if(s) s.value='';
   filterWildlife();
+}
+
+// ── RIGHT NOW IN THE PARK — the now-lens (blooms + sightings) ─────────────────
+// Reads data/published/right_now.json (a MIGRATED flat-array feed), keeps the
+// web-visible rows, joins psbp_id -> species record (by its `id`) for the hero
+// photo + profile link, and paints cards in the plant/wildlife style. Fail-soft
+// on every join: a blank or unmatched psbp_id still renders a clean glyph card.
+const RN_PILL = {
+  blooming: 'In bloom', budding: 'Budding', fruiting: 'Fruiting',
+  fading: 'Fading', sighting: 'Spotted',
+};
+let _rnSpeciesById = null;
+
+async function _rnSpeciesIndex(base) {
+  if (_rnSpeciesById) return _rnSpeciesById;
+  const map = {};
+  await Promise.all(['plants.json', 'wildlife.json'].map(async f => {
+    try {
+      const r = await fetch(base + f);
+      if (!r.ok) return;
+      (await r.json()).forEach(rec => { if (rec && rec.id) map[rec.id] = rec; });
+    } catch (_) { /* fail-soft: the join just won't resolve */ }
+  }));
+  _rnSpeciesById = map;
+  return map;
+}
+
+function _rnEsc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function _rnCard(e, rec) {
+  const kind  = (e.kind || 'blooming').toLowerCase();
+  const pill  = RN_PILL[kind] || 'In the park';
+  const sci   = e.scientific_name || (rec && rec.sci) || '';
+  const photo = (rec && rec.photo) || '';
+  const page  = (rec && rec.page)  || '';
+  const isSighting = kind === 'sighting';
+  const glyph  = isSighting ? '🦜' : '🌿';
+  const pillBg = isSighting ? 'var(--green-deep)' : 'var(--gold)';
+  const pillFg = isSighting ? '#fff' : 'var(--green-deep)';
+  const inner = `
+    <div style="height:170px;overflow:hidden;position:relative;background:var(--sand)">
+      ${photo ? `<img src="${_rnEsc(photo)}" alt="${_rnEsc(e.common_name)}" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">` : ''}
+      <div style="display:${photo ? 'none' : 'flex'};height:100%;align-items:center;justify-content:center;font-size:2.6rem;color:var(--text-soft);opacity:.3">${glyph}</div>
+      <span style="position:absolute;top:.6rem;left:.6rem;background:${pillBg};color:${pillFg};font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.22rem .6rem;border-radius:20px;box-shadow:0 1px 5px rgba(0,0,0,.25)">${_rnEsc(pill)}</span>
+    </div>
+    <div class="card-body">
+      <h4 style="font-size:1rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${_rnEsc(e.common_name)}</h4>
+      ${sci ? `<div style="font-style:italic;font-size:.82rem;color:var(--text-soft);margin-bottom:.45rem">${_rnEsc(sci)}</div>` : ''}
+      ${e.note ? `<p style="font-size:.86rem;color:var(--text-soft);line-height:1.5;margin:0 0 .55rem">${_rnEsc(e.note)}</p>` : ''}
+      ${e.area ? `<div style="font-size:.78rem;color:var(--green-mid);font-weight:600">📍 ${_rnEsc(e.area)}</div>` : ''}
+    </div>`;
+  return page
+    ? `<a class="card plant-card" href="${_rnEsc(page)}" style="text-decoration:none;display:flex;flex-direction:column">${inner}</a>`
+    : `<div class="card plant-card" style="display:flex;flex-direction:column">${inner}</div>`;
+}
+
+// loadRightNow(targetId, { limit, sectionId })
+//   targetId  — grid container to fill
+//   limit     — max cards (home strip ~6; the full view omits it for all)
+//   sectionId — optional wrapping <section> to HIDE when the feed is empty
+//               (an empty Right Now is a valid state — the page falls through)
+async function loadRightNow(targetId, opts) {
+  opts = opts || {};
+  const el = document.getElementById(targetId);
+  if (!el) return;
+
+  const pathParts = window.location.pathname.split('/').filter(Boolean);
+  const repoIdx = pathParts.indexOf('explore');
+  const inSubfolder = repoIdx >= 0 && pathParts.length > repoIdx + 2;
+  const base = inSubfolder ? '../' : '';
+
+  let rows;
+  try { rows = await fetchTab(TAB.right_now); }   // MIGRATED -> data/published/right_now.json
+  catch (_) { rows = []; }
+
+  rows = (rows || []).filter(r => WEB_DISPLAY.has(r.display));   // web + both only
+  if (opts.limit) rows = rows.slice(0, opts.limit);
+
+  const section = opts.sectionId ? document.getElementById(opts.sectionId) : null;
+  if (!rows.length) {
+    if (section) section.style.display = 'none';   // empty is valid — hide the band
+    el.innerHTML = '';
+    return;
+  }
+  const byId = await _rnSpeciesIndex(base);
+  el.innerHTML = rows.map(e => _rnCard(e, e.psbp_id ? byId[e.psbp_id] : null)).join('');
 }
