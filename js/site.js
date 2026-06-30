@@ -252,6 +252,10 @@ const NAV_HTML = `
   #navMobile .nm-top{font-weight:700}
   #navMobile .nm-sub{padding-left:2.4rem;font-size:.95rem;color:rgba(255,255,255,.6)}
   #navMobile .nm-sub:hover{color:var(--white)}
+  /* Make the open mobile menu fit the screen and scroll inside itself —
+     otherwise the list overflows past the viewport and can't be reached,
+     and touch-scroll leaks through to the page behind it. */
+  #navMobile{max-height:calc(100vh - 64px);max-height:calc(100dvh - 64px);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 </style>
 <nav id="site-nav">
   <ul class="nav-links">
@@ -472,6 +476,14 @@ function injectShared(opts = {}) {
     if (btn) {
       const mob = document.getElementById('navMobile');
       if (mob) mob.classList.toggle('open');
+      return;
+    }
+    // Close the mobile menu when a link inside it is tapped, so same-page
+    // anchors (e.g. "Your Ten Acres", "Right Now") don't leave it frozen open
+    // over the page while it quietly scrolls behind.
+    if (e.target.closest('#navMobile a')) {
+      const mob = document.getElementById('navMobile');
+      if (mob) mob.classList.remove('open');
     }
   });
 }
