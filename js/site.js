@@ -1640,6 +1640,7 @@ function _rnCard(e, rec, cr) {
   const glyph  = isSighting ? '🦜' : '🌿';
   const pillBg = isSighting ? 'var(--green-deep)' : 'var(--gold)';
   const pillFg = isSighting ? '#fff' : 'var(--green-deep)';
+  const wash   = isSighting ? 'rn-back--fauna' : 'rn-back--flora';
 
   // Attribution through the shared PSBPPhotos layer — the SAME plate the plant
   // cards use (photographer + date + CC license). Species already sits in the
@@ -1653,22 +1654,51 @@ function _rnCard(e, rec, cr) {
     });
   }
 
-  const inner = `
-    <div style="height:170px;overflow:hidden;position:relative;background:var(--sand)">
-      ${photo ? `<img src="${_rnEsc(photo)}" alt="${_rnEsc(e.common_name)}" style="width:100%;height:100%;object-fit:cover;object-position:${_rnEsc(focus)};display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">` : ''}
-      <div style="display:${photo ? 'none' : 'flex'};height:100%;align-items:center;justify-content:center;font-size:2.6rem;color:var(--text-soft);opacity:.3">${glyph}</div>
-      <span style="position:absolute;top:.6rem;left:.6rem;background:${pillBg};color:${pillFg};font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.22rem .6rem;border-radius:20px;box-shadow:0 1px 5px rgba(0,0,0,.25)">${_rnEsc(pill)}</span>
-    </div>
-    <div class="card-body" style="flex:1">
-      <h4 style="font-size:1rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${_rnEsc(e.common_name)}</h4>
-      ${sci ? `<div class="sci-name" style="margin-bottom:.45rem">${_rnEsc(sci)}</div>` : ''}
-      ${e.note ? `<p style="font-size:.86rem;color:var(--text-soft);line-height:1.5;margin:0 0 .55rem">${_rnEsc(e.note)}</p>` : ''}
-      ${e.area ? `<div style="font-size:.78rem;color:var(--green-mid);font-weight:600">📍 ${_rnEsc(e.area)}</div>` : ''}
-    </div>
-    ${plate}`;
-  return page
-    ? `<a class="card plant-card" href="${_rnEsc(page)}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">${inner}</a>`
-    : `<div class="card plant-card" style="display:flex;flex-direction:column;height:100%">${inner}</div>`;
+  // FRONT — same content as before, but no longer a whole-card <a>; the link
+  // moves to the back. Credit plate stays pinned to the bottom via flex.
+  const front = `
+    <div class="rn-face rn-front">
+      <div style="height:170px;overflow:hidden;position:relative;background:var(--sand)">
+        ${photo ? `<img src="${_rnEsc(photo)}" alt="${_rnEsc(e.common_name)}" style="width:100%;height:100%;object-fit:cover;object-position:${_rnEsc(focus)};display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">` : ''}
+        <div style="display:${photo ? 'none' : 'flex'};height:100%;align-items:center;justify-content:center;font-size:2.6rem;color:var(--text-soft);opacity:.3">${glyph}</div>
+        <span style="position:absolute;top:.6rem;left:.6rem;background:${pillBg};color:${pillFg};font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.22rem .6rem;border-radius:20px;box-shadow:0 1px 5px rgba(0,0,0,.25)">${_rnEsc(pill)}</span>
+      </div>
+      <div class="card-body" style="flex:1">
+        <h4 style="font-size:1rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${_rnEsc(e.common_name)}</h4>
+        ${sci ? `<div class="sci-name" style="margin-bottom:.45rem">${_rnEsc(sci)}</div>` : ''}
+        ${e.note ? `<p style="font-size:.86rem;color:var(--text-soft);line-height:1.5;margin:0 0 .55rem">${_rnEsc(e.note)}</p>` : ''}
+        ${e.area ? `<div style="font-size:.78rem;color:var(--green-mid);font-weight:600">📍 ${_rnEsc(e.area)}</div>` : ''}
+      </div>
+      ${plate}
+      <span class="rn-flip-hint" aria-hidden="true">↺ more</span>
+    </div>`;
+
+  // BACK — bloom wash (gold-leaf for blooms, green-feather for sightings),
+  // the stamped quick_hits, and the SAME species-page link that used to wrap
+  // the whole card. Link gated on `page` existing (a 'spotted' species has none).
+  const hits = Array.isArray(e.quick_hits) ? e.quick_hits.filter(Boolean) : [];
+  const hitsHtml = hits.length
+    ? hits.map(h => `<p class="rn-hit">${_rnEsc(h)}</p>`).join('')
+    : `<p class="rn-hit rn-hit--soft">${_rnEsc(e.note || 'Come find it in the park.')}</p>`;
+  const link = page
+    ? `<a class="rn-back-link" href="${_rnEsc(page)}" onclick="event.stopPropagation()">See the full ${isSighting ? 'wildlife' : 'plant'} page <span aria-hidden="true">→</span></a>`
+    : '';
+  const wmFlora = '<svg class="rn-wm" viewBox="0 0 100 100" aria-hidden="true"><path d="M18 84 C18 42 50 18 88 18 C88 58 56 84 18 84 Z M30 72 C46 56 62 46 80 34" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>';
+  const wmFauna = '<svg class="rn-wm" viewBox="0 0 100 100" aria-hidden="true"><path d="M78 20 L30 84 M78 20 C60 28 48 44 42 64 M78 20 C66 26 56 36 50 50 M78 20 C70 24 62 30 58 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const back = `
+    <div class="rn-face rn-back ${wash}">
+      ${isSighting ? wmFauna : wmFlora}
+      <span class="rn-back-eyebrow">Did you know</span>
+      <h4 class="rn-back-name">${_rnEsc(e.common_name)}</h4>
+      <span class="rn-back-rule"></span>
+      <div class="rn-back-hits">${hitsHtml}</div>
+      ${link}
+      <span class="rn-back-foot" aria-hidden="true">↺ flip back</span>
+    </div>`;
+
+  return `<div class="card plant-card rn-flip" tabindex="0" role="button" aria-label="${_rnEsc(e.common_name)} — tap for more">
+      <div class="rn-flip-inner">${front}${back}</div>
+    </div>`;
 }
 
 // loadRightNow(targetId, { limit, sectionId })
@@ -1707,4 +1737,21 @@ async function loadRightNow(targetId, opts) {
     const cr  = e.psbp_id ? creditById[e.psbp_id] : null;
     return _rnCard(e, rec, cr);
   }).join('');
+
+  // Flip on click / tap / keyboard (delegated). The back-side link calls
+  // stopPropagation, so following it never also toggles the card.
+  if (!el._rnFlipWired) {
+    const toggle = ev => {
+      const card = ev.target.closest('.rn-flip');
+      if (!card) return;
+      if (ev.type === 'keydown') {
+        if (ev.key !== 'Enter' && ev.key !== ' ') return;
+        ev.preventDefault();
+      }
+      card.classList.toggle('is-flipped');
+    };
+    el.addEventListener('click', toggle);
+    el.addEventListener('keydown', toggle);
+    el._rnFlipWired = true;
+  }
 }
