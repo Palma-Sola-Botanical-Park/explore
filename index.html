@@ -157,6 +157,16 @@
   border: 1px solid rgba(26,58,31,.12);
   overflow: hidden;
 }
+/* Bloom wash — same shell as the Right Now back: gold-leaf for plants,
+   green-feather for animals (keyed off the observation's iconic_taxon). */
+.mosaic-face-back.flora { background: #f3e8cf; }
+.mosaic-face-back.fauna { background: #e4ecdd; }
+.mosaic-wm {
+  position: absolute; right: -10px; bottom: -12px; width: 92px; height: 92px;
+  color: var(--green-mid); opacity: .12; pointer-events: none; z-index: 0;
+}
+.mosaic-face-back > :not(.mosaic-wm) { position: relative; z-index: 1; }
+.mback-rule { display: block; width: 34px; height: 3px; background: var(--gold); border-radius: 2px; margin: .1rem 0 .6rem; }
 /* Hint that the card is interactive */
 .mosaic-flip-hint {
   position: absolute; top: .6rem; right: .65rem; z-index: 2;
@@ -197,7 +207,7 @@
 
 /* Back-of-card content (roomier now). */
 .obs-back-head { display:flex; align-items:center; justify-content:space-between; gap:.5rem; margin-bottom:.6rem; }
-.obs-back-name { font-weight:700; font-size:1rem; color:var(--green-deep); line-height:1.15; }
+.obs-back-name { font-family:'Source Sans 3','Segoe UI',sans-serif; font-weight:700; font-size:1.05rem; color:var(--green-deep); line-height:1.2; }
 .obs-status {
   display:inline-flex; align-items:center; gap:.3rem;
   font-size:.72rem; font-weight:600; padding:.2rem .55rem; border-radius:16px;
@@ -215,8 +225,8 @@
 .obs-ladder-path { font-size:.78rem; color:var(--text-soft); line-height:1.55; }
 .obs-ladder-path strong { color:var(--green-deep); }
 .obs-next {
-  margin-top:auto; background:var(--cream,#faf8f3); border-radius:8px;
-  padding:.6rem .7rem; font-size:.76rem; color:var(--text-soft); line-height:1.55;
+  margin-top:auto; padding:.5rem 0 0; font-size:.74rem;
+  color:var(--text-soft); line-height:1.5; opacity:.9;
 }
 .obs-back-foot { margin-top:.55rem; font-size:.66rem; color:var(--text-soft); display:flex; align-items:center; gap:.3rem; }
 .obs-back-foot a { color:var(--green-mid); font-weight:600; text-decoration:none; }
@@ -519,7 +529,9 @@ loadRightNow('rightNowStrip', { limit: 4, sectionId: 'rightNowSection' });
 // Announcements now use the shared loadAnnouncements() from site.js (see call below)
 
 // iNat mosaic — attribution shown, no outbound links
-// Wait for both iNat data AND the photo_credits name map so display names resolve.
+// Kick the observations fetch off in parallel with stats + the name map, so they
+// overlap instead of running back-to-back.
+const _seenPromise = loadSeenLately(16);
 Promise.all([loadINat(), PSBPPhotos.loadPool()]).then(async ([data]) => {
   // Populate inline stats
   if (data.total)     { const el=document.getElementById('statTotal');     if(el){el.textContent=data.total.toLocaleString();el.classList.remove('pulse');} }
@@ -528,15 +540,32 @@ Promise.all([loadINat(), PSBPPhotos.loadPool()]).then(async ([data]) => {
   if (data.week)      { const el=document.getElementById('statWeek');      if(el){el.textContent=data.week.toLocaleString();el.classList.remove('pulse');} }
 
   const grid = document.getElementById('mosaicGrid');
-  // Pull a deeper pool so we can rotate through several sets of four.
-  const pool = (await loadSeenLately(16)).filter(o => o.photos?.[0]?.url);
+  const pool = (await _seenPromise).filter(o => o.photos?.[0]?.url);
   if (!pool.length) {
     grid.innerHTML = '<p class="text-soft" style="grid-column:1/-1;text-align:center;padding:2rem">No recent observations found.</p>';
     return;
   }
-  await resolveAncestors(pool);   // resolve genus/family names before rendering cards
+  // Paint NOW. The "Where it fits" lineage lives on the flip-back (invisible
+  // until a card is flipped), so we must not make the visible fronts wait on a
+  // second iNat round-trip. Resolve ancestors in the background, then quietly
+  // swap the resolved lineage onto the (hidden) backs -- no front re-render.
   mountSeenLately(grid, pool);
+  resolveAncestors(pool).then(() => refreshLineages(grid, pool));
 });
+
+// Swap only the back face of each rendered card once ancestor names resolve.
+// Replacing the hidden back leaves the front (and its fade-in) untouched.
+function refreshLineages(grid, pool) {
+  grid.querySelectorAll('.mosaic-card[data-oid]').forEach(card => {
+    const o = pool.find(p => String(p.id) === card.dataset.oid);
+    if (!o) return;
+    const tmp = document.createElement('div');
+    tmp.innerHTML = buildFlipCard(o);
+    const fresh = tmp.querySelector('.mosaic-face-back');
+    const live  = card.querySelector('.mosaic-face-back');
+    if (fresh && live) live.replaceWith(fresh);
+  });
+}
 
 // Show 4 cards, crossfade a fresh 4 in every ~8s. Pauses while the visitor is
 // hovering or has any card flipped, so it never pulls a card mid-read.
@@ -623,20 +652,20 @@ async function resolveAncestors(pool) {
     if (id && !(id in _taxaById) && !want.includes(id)) want.push(id);
   }));
   if (!want.length) return;
-  for (let i = 0; i < want.length; i += 30) {
-    const batch = want.slice(i, i + 30);
-    try {
-      const r = await fetch(`https://api.inaturalist.org/v1/taxa/${batch.join(',')}`)
-        .then(res => res.json());
-      (r.results || []).forEach(t => {
+  const batches = [];
+  for (let i = 0; i < want.length; i += 30) batches.push(want.slice(i, i + 30));
+  await Promise.all(batches.map(batch =>
+    fetch(`https://api.inaturalist.org/v1/taxa/${batch.join(',')}`)
+      .then(res => res.json())
+      .then(r => (r.results || []).forEach(t => {
         _taxaById[t.id] = {
           name: t.name,
           rank: t.rank,
           preferred_common_name: t.preferred_common_name
         };
-      });
-    } catch (e) { /* leave these ids unresolved; ladder degrades gracefully */ }
-  }
+      }))
+      .catch(e => { /* leave these ids unresolved; ladder degrades gracefully */ })
+  ));
 }
 
 // ── lay-language helpers (no iNat jargon on the card) ──
@@ -732,6 +761,12 @@ function buildFlipCard(o) {
     : '\u2014';
   const ladder = lineage(o);
   const obsUrl = `https://www.inaturalist.org/observations/${o.id}`;
+  // Bloom-wash key, matching the Right Now back: plant -> gold + leaf, anything
+  // else -> green + feather. iconic_taxon_name rides along on the observation.
+  const isPlant = (o.taxon && o.taxon.iconic_taxon_name) === 'Plantae';
+  const obsWm = isPlant
+    ? '<svg class="mosaic-wm" viewBox="0 0 100 100" aria-hidden="true"><path d="M18 84 C18 42 50 18 88 18 C88 58 56 84 18 84 Z M30 72 C46 56 62 46 80 34" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>'
+    : '<svg class="mosaic-wm" viewBox="0 0 100 100" aria-hidden="true"><path d="M78 20 L30 84 M78 20 C60 28 48 44 42 64 M78 20 C66 26 56 36 50 50 M78 20 C70 24 62 30 58 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   const front = `<div class="mosaic-face mosaic-face-front">
       <div class="mosaic-img">
@@ -741,11 +776,13 @@ function buildFlipCard(o) {
       ${PSBPPhotos.creditPlate({ by, license, date: submitted, dateLabel: 'Shared' })}
     </div>`;
 
-  const back = `<div class="mosaic-face mosaic-face-back">
+  const back = `<div class="mosaic-face mosaic-face-back ${isPlant ? 'flora' : 'fauna'}">
+      ${obsWm}
       <div class="obs-back-head">
         <span class="obs-back-name">${esc(common)}</span>
         <span class="obs-status ${status.cls}">${status.icon} ${esc(status.label)}</span>
       </div>
+      <span class="mback-rule"></span>
       <table class="obs-rows"><tbody>
         <tr><td class="k">Identified to</td><td class="v">${identifiedTo}</td></tr>
         <tr><td class="k">Who's looking</td><td class="v">${esc(idCount(o))}</td></tr>
@@ -759,7 +796,7 @@ function buildFlipCard(o) {
       <div class="obs-back-foot"><span aria-hidden="true">\u21BA</span> tap to flip back &nbsp;\u00b7&nbsp; <a href="${obsUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">see on iNaturalist</a></div>
     </div>`;
 
-  return `<div class="mosaic-card flip" tabindex="0" role="button" aria-label="${esc(common)} — tap to see observation details">
+  return `<div class="mosaic-card flip" data-oid="${esc(o.id)}" tabindex="0" role="button" aria-label="${esc(common)} — tap to see observation details">
       <span class="mosaic-flip-hint"><span aria-hidden="true">\u21BA</span> tap</span>
       <div class="mosaic-flip-inner">${front}${back}</div>
     </div>`;
