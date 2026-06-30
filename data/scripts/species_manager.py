@@ -8496,7 +8496,11 @@ def _pheno_plant_index():
         out.append({"id": sp.get("id"), "common_name": sp.get("common_name", ""),
                     "scientific_name": sp.get("scientific_name", ""),
                     "taxon_id": tid, "status": sp.get("status", "")})
-    out.sort(key=lambda s: s.get("common_name") or s.get("id"))
+    # Order: published (html) first, then spotted, then research, then strays.
+    # Within each status band, sort alphabetically by common name.
+    _rank = {"html": 0, "spotted": 1, "research": 2}
+    out.sort(key=lambda s: (_rank.get(s.get("status"), 3),
+                            s.get("common_name") or s.get("id")))
     return out
 
 
