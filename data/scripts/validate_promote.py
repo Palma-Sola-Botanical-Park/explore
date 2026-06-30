@@ -67,10 +67,11 @@ DEFAULT_VOLUME_MIN = 1  # block a feed if fewer than this many rows would publis
 # on the featured card within one sync. NOTHING here is authored in the sheet.
 SOURCES = "data/sources"                      # where the signage masters live
 SIGNAGE_MASTERS = ["plant_signage.json", "wildlife_signage.json"]
-RIGHT_NOW_BACK_BUDGET = 340   # chars; the card back fits WHOLE quick_hits to this
+RIGHT_NOW_BACK_BUDGET = 500   # chars; the card back fits WHOLE quick_hits to this
                               # budget and never truncates — drop a hit, never
-                              # ellipsize. Roomy enough for up to three short facts
-                              # (or one long + one medium) to fill the back.
+                              # ellipsize. ~500 comfortably fits three typical
+                              # facts; the flip-card back auto-grows to fit, so
+                              # this caps reading length, not layout. (Hard cap: maxn=3.)
 
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
