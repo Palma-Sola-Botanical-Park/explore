@@ -261,6 +261,7 @@ const NAV_HTML = `
         <li><a href="index.html#rightNowSection">Right Now</a></li>
         <li><a href="index.html#seenLately">Seen Lately</a></li>
         <li><a href="index.html#tenAcres">Your 10 Acres</a></li>
+        <li><a href="news.html">News</a></li>
       </ul>
     </li>
     <li class="has-sub">
@@ -298,11 +299,9 @@ const NAV_HTML = `
     <li class="has-sub">
       <a href="contact.html">About</a>
       <ul class="subnav">
-        <li><a href="contact.html">History</a></li>
-        <li><a href="contact.html">Mission</a></li>
-        <li><a href="news.html">News</a></li>
-        <li><a href="contact.html">Organization</a></li>
-        <li><a href="contact.html">Community Links</a></li>
+        <li><a href="contact.html#mission">Mission</a></li>
+        <li><a href="contact.html#organization">Organization</a></li>
+        <li><a href="contact.html#community-links">Community Links</a></li>
         <li><a href="contact.html">YouTube videos</a></li>
         <li><a href="contact.html">Forms</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -321,6 +320,7 @@ const NAV_HTML = `
   <a href="index.html#rightNowSection" class="nm-sub">Right Now</a>
   <a href="index.html#seenLately" class="nm-sub">Seen Lately</a>
   <a href="index.html#tenAcres" class="nm-sub">Your 10 Acres</a>
+  <a href="news.html" class="nm-sub">News</a>
   <a href="visit.html" class="nm-top">Visit</a>
   <a href="visit.html#getting-here" class="nm-sub">Getting here</a>
   <a href="visit.html#the-layout" class="nm-sub">The layout</a>
@@ -338,11 +338,9 @@ const NAV_HTML = `
   <a href="get-involved.html#volunteer" class="nm-sub">Volunteering</a>
   <a href="get-involved.html#citizen-science" class="nm-sub">Citizen Science</a>
   <a href="contact.html" class="nm-top">About</a>
-  <a href="contact.html" class="nm-sub">History</a>
-  <a href="contact.html" class="nm-sub">Mission</a>
-  <a href="news.html" class="nm-sub">News</a>
-  <a href="contact.html" class="nm-sub">Organization</a>
-  <a href="contact.html" class="nm-sub">Community Links</a>
+  <a href="contact.html#mission" class="nm-sub">Mission</a>
+  <a href="contact.html#organization" class="nm-sub">Organization</a>
+  <a href="contact.html#community-links" class="nm-sub">Community Links</a>
   <a href="contact.html" class="nm-sub">YouTube videos</a>
   <a href="contact.html" class="nm-sub">Forms</a>
   <a href="contact.html" class="nm-sub">Contact</a>

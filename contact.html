@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="css/site.css">
 <style>
   html { scroll-behavior: smooth; }
+  section[id] { scroll-margin-top: 78px; }
   #visit { scroll-margin-top: 90px; }
 
   /* Card icon + heading on one line: icon left, heading to its right; everything else below. */
@@ -101,7 +102,7 @@
 </section>
 
 <!-- OUR MISSION -->
-<section class="bg-white">
+<section class="bg-white" id="mission">
   <div class="section-inner" style="text-align:center;max-width:860px;margin:0 auto">
     <span class="label">Our Mission</span>
     <h2 class="section-title" style="margin-bottom:1rem">A community resource for nature</h2>
@@ -133,7 +134,7 @@
 </section>
 
 <!-- OUR TEAM + BOARD -->
-<section class="bg-cream">
+<section class="bg-cream" id="organization">
   <div class="section-inner">
     <span class="label">Our Team</span>
     <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1.5rem">The people who run the park</h2>
@@ -160,7 +161,7 @@
 <!-- OUR PARTNERS — logo grid. Files live in images/partners/ (fetched from the WordPress media library).
      TODO (Randy): add Bishop Parker Foundation + Selby Foundation logos (and any others) to images/partners/,
      then drop matching <div class="partner-logo"> tiles below. -->
-<section class="bg-white">
+<section class="bg-white" id="community-links">
   <div class="section-inner" style="text-align:center">
     <span class="label">Our Partners</span>
     <h2 class="section-title" style="margin-bottom:1rem">Supported by our community</h2>
@@ -337,6 +338,31 @@
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false });
+
+// Cross-page anchor fix: the team + board grids render async from
+// organization.json and grow the section above #community-links, so arriving
+// at contact.html#community-links can land short. Re-aim at the hash as that
+// content settles, and back off the instant the user scrolls.
+(function reaimHash(){
+  if (!location.hash) return;
+  let target;
+  try { target = document.querySelector(location.hash); } catch (e) { return; }
+  if (!target) return;
+  let done = false;
+  const evs = ['wheel','touchmove','keydown','mousedown'];
+  const finish = () => { if (done) return; done = true; obs.disconnect(); evs.forEach(e => window.removeEventListener(e, stop)); };
+  const stop = () => finish();
+  evs.forEach(e => window.addEventListener(e, stop, { passive: true }));
+  const aim = () => { if (!done) target.scrollIntoView({ block: 'start' }); };
+  const obs = new MutationObserver(aim);
+  ['office-grid','board-grid'].forEach(id => {
+    const n = document.getElementById(id);
+    if (n) obs.observe(n, { childList: true, subtree: true });
+  });
+  aim();
+  window.addEventListener('load', () => setTimeout(aim, 80));
+  setTimeout(finish, 6000);
+})();
 
 /* ── Organisation cards from the pipeline ──────────────────────────────── */
 (async function loadOrg() {
