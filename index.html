@@ -534,6 +534,7 @@ Promise.all([loadINat(), PSBPPhotos.loadPool()]).then(async ([data]) => {
     grid.innerHTML = '<p class="text-soft" style="grid-column:1/-1;text-align:center;padding:2rem">No recent observations found.</p>';
     return;
   }
+  await resolveAncestors(pool);   // resolve genus/family names before rendering cards
   mountSeenLately(grid, pool);
 });
 
@@ -590,12 +591,13 @@ function mountSeenLately(grid, pool) {
   }, INTERVAL);
 }
 
-// ── "What's been seen lately": the iNat default response already includes the
-// full taxon.ancestors chain, quality_grade, and identifications. We deliberately
-// do NOT use a fields= selector — iNat's partial-field syntax for deeply nested
-// arrays (taxon.ancestors.*) can silently return the taxon WITHOUT its ancestors,
-// which collapses "Where it fits" down to just the species. The default (fatter)
-// response is small at this volume and far more dependable.
+// ── "What's been seen lately": the /v1/observations list endpoint returns each
+// taxon with its lineage as ID NUMBERS (taxon.ancestor_ids) but NOT as named
+// objects — there is no taxon.ancestors array here (an earlier comment wrongly
+// assumed there was, which collapsed "Where it fits" to just the species). The
+// names live behind those ids; resolveAncestors() fetches them once via /v1/taxa
+// so lineage() can render Family/Genus. quality_grade + identifications come back
+// in this default response as before.
 async function loadSeenLately(count) {
   const url = `https://api.inaturalist.org/v1/observations`
     + `?project_id=${INAT_PROJECT}&per_page=${count||8}`
@@ -606,6 +608,35 @@ async function loadSeenLately(count) {
   } catch (e) { /* fall through to the simpler loader */ }
   // last-known-good: the original loader
   return loadRecentObs({ count });
+}
+
+// ── ancestor id -> {name, rank, common} cache, filled once per page load. The
+// observations endpoint gives us only ancestor_ids (numbers); the NAMES come
+// from /v1/taxa, which takes up to 30 ids per call. We dedupe every id across
+// the whole pool and resolve in 30-id batches, so the genus/family names are in
+// hand before any card renders. Fail-soft: an unresolved id just drops out of
+// the ladder (lineage() hides a ladder that has nothing above the species).
+const _taxaById = {};
+async function resolveAncestors(pool) {
+  const want = [];
+  pool.forEach(o => (o.taxon?.ancestor_ids || []).forEach(id => {
+    if (id && !(id in _taxaById) && !want.includes(id)) want.push(id);
+  }));
+  if (!want.length) return;
+  for (let i = 0; i < want.length; i += 30) {
+    const batch = want.slice(i, i + 30);
+    try {
+      const r = await fetch(`https://api.inaturalist.org/v1/taxa/${batch.join(',')}`)
+        .then(res => res.json());
+      (r.results || []).forEach(t => {
+        _taxaById[t.id] = {
+          name: t.name,
+          rank: t.rank,
+          preferred_common_name: t.preferred_common_name
+        };
+      });
+    } catch (e) { /* leave these ids unresolved; ladder degrades gracefully */ }
+  }
 }
 
 // ── lay-language helpers (no iNat jargon on the card) ──
@@ -643,17 +674,28 @@ function idCount(o) {
   return n === 1 ? '1 person so far' : `${n} people so far`;
 }
 
-// Build the lineage line: a few meaningful rungs, common name when iNat has one.
+// Build the lineage line from the resolved ancestor names + the leaf taxon.
+// Reads ancestor_ids (not the absent ancestors array) through the _taxaById map
+// that resolveAncestors() filled. keepRanks is trimmed to the visitor-meaningful
+// span (kingdom/phylum are too abstract to bother a guest with) -- widen or
+// narrow this one list to taste. The >=2 guard hides a ladder that would only
+// contain the species, which is what produced the old "duplicated species" look.
 function lineage(o) {
-  const anc = (o.taxon?.ancestors || []).slice();
-  // Append the observation's own taxon as the final rung, unless it's already
-  // the last ancestor (some responses include it, most don't).
-  if (o.taxon && (!anc.length || anc[anc.length - 1]?.id !== o.taxon.id)) {
-    anc.push(o.taxon);
+  const anc = (o.taxon?.ancestor_ids || [])
+    .map(id => _taxaById[id])
+    .filter(Boolean);
+  // Append the observation's own taxon as the final rung (its name/rank are
+  // already on the observation -- no lookup needed).
+  if (o.taxon) {
+    anc.push({
+      name: o.taxon.name,
+      rank: o.taxon.rank,
+      preferred_common_name: o.taxon.preferred_common_name
+    });
   }
-  const keepRanks = ['kingdom','phylum','class','order','family','genus','species'];
+  const keepRanks = ['class','order','family','genus','species'];
   const rungs = anc.filter(a => keepRanks.includes(String(a.rank||'').toLowerCase()));
-  if (!rungs.length) return '';
+  if (rungs.length < 2) return '';   // nothing above the species -> no fake ladder
   return rungs.map((a, i) => {
     // Prefer a common name; fall back to the scientific name in italics so a
     // family like "Cyperaceae" still reads as a name, not a bare word.
