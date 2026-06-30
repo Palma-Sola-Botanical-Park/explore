@@ -45,6 +45,7 @@
   .series-card p { font-size: .88rem; color: var(--text-soft, #5a5a4f); line-height: 1.55; margin: .5rem 0 .4rem; }
   .series-actions { margin-top: .3rem; }
 </style>
+<style>section[id]{scroll-margin-top:78px}</style>
 </head>
 <body>
 <div id="nav-placeholder"></div>
@@ -63,7 +64,7 @@
   </div>
 </div>
 
-<section class="bg-cream">
+<section class="bg-cream" id="whatson">
   <div class="section-inner">
     <div class="events-layout">
 
@@ -144,7 +145,7 @@ loadAnnouncements('announcementsList').then(() => {
   if (list && list.children.length > 0) bar.style.display = 'block';
 });
 
-loadEventsPage({
+const _eventsOpts = {
   agenda:       'agenda',
   filters:      'eventFilters',
   calFilters:   'calFilters',
@@ -154,7 +155,29 @@ loadEventsPage({
   viewTitle:    'viewTitle',
   schedule:     'weeklySchedule',
   series:       'seriesIndex'
-});
+};
+
+// Deep-link the view toggle from the top nav: #weeks = the 2-week agenda,
+// #calendar = the full calendar. The "Full calendar" view is a button click
+// wired inside loadEventsPage(), so we trigger the matching button once the
+// page has loaded, then scroll the section under the fixed nav.
+function _scrollWhatsOn(){
+  const s = document.getElementById('whatson');
+  if (s) s.scrollIntoView({ block: 'start' });
+}
+function applyEventsHash(){
+  const h = location.hash;
+  if (h !== '#weeks' && h !== '#calendar') return;
+  const view = h === '#calendar' ? 'calendar' : 'weeks';
+  const btn = document.querySelector('.ev-vbtn[data-view="' + view + '"]');
+  if (btn) btn.click();
+  _scrollWhatsOn();
+}
+// Scroll right away if we arrived with an events hash (the section is static),
+// then switch to the requested view once loadEventsPage has wired the toggle.
+if (location.hash === '#weeks' || location.hash === '#calendar') _scrollWhatsOn();
+loadEventsPage(_eventsOpts).then(applyEventsHash);
+window.addEventListener('hashchange', applyEventsHash);
 </script>
 </body>
 </html>

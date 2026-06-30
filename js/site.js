@@ -275,8 +275,8 @@ const NAV_HTML = `
     <li class="has-sub">
       <a href="events.html">Events</a>
       <ul class="subnav">
-        <li><a href="events.html">Next 2 Weeks</a></li>
-        <li><a href="events.html">Full Schedule</a></li>
+        <li><a href="events.html#weeks">Next 2 Weeks</a></li>
+        <li><a href="events.html#calendar">Full Schedule</a></li>
       </ul>
     </li>
     <li class="has-sub">
@@ -327,8 +327,8 @@ const NAV_HTML = `
   <a href="visit.html#wander" class="nm-sub">Where to wander</a>
   <a href="visit.html#tours" class="nm-sub">Tours</a>
   <a href="events.html" class="nm-top">Events</a>
-  <a href="events.html" class="nm-sub">Next 2 Weeks</a>
-  <a href="events.html" class="nm-sub">Full Schedule</a>
+  <a href="events.html#weeks" class="nm-sub">Next 2 Weeks</a>
+  <a href="events.html#calendar" class="nm-sub">Full Schedule</a>
   <a href="venue.html" class="nm-top">Venue</a>
   <a href="venue.html" class="nm-sub">Weddings</a>
   <a href="venue.html" class="nm-sub">Other Events</a>
