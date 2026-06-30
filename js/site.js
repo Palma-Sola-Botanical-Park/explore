@@ -266,10 +266,10 @@ const NAV_HTML = `
     <li class="has-sub">
       <a href="visit.html">Visit</a>
       <ul class="subnav">
-        <li><a href="visit.html">Getting here</a></li>
-        <li><a href="visit.html">The layout</a></li>
-        <li><a href="visit.html">Where to wander</a></li>
-        <li><a href="visit.html">Tours</a></li>
+        <li><a href="visit.html#getting-here">Getting here</a></li>
+        <li><a href="visit.html#the-layout">The layout</a></li>
+        <li><a href="visit.html#wander">Where to wander</a></li>
+        <li><a href="visit.html#tours">Tours</a></li>
       </ul>
     </li>
     <li class="has-sub">
@@ -322,10 +322,10 @@ const NAV_HTML = `
   <a href="index.html#seenLately" class="nm-sub">Seen Lately</a>
   <a href="index.html#tenAcres" class="nm-sub">Your 10 Acres</a>
   <a href="visit.html" class="nm-top">Visit</a>
-  <a href="visit.html" class="nm-sub">Getting here</a>
-  <a href="visit.html" class="nm-sub">The layout</a>
-  <a href="visit.html" class="nm-sub">Where to wander</a>
-  <a href="visit.html" class="nm-sub">Tours</a>
+  <a href="visit.html#getting-here" class="nm-sub">Getting here</a>
+  <a href="visit.html#the-layout" class="nm-sub">The layout</a>
+  <a href="visit.html#wander" class="nm-sub">Where to wander</a>
+  <a href="visit.html#tours" class="nm-sub">Tours</a>
   <a href="events.html" class="nm-top">Events</a>
   <a href="events.html" class="nm-sub">Next 2 Weeks</a>
   <a href="events.html" class="nm-sub">Full Schedule</a>

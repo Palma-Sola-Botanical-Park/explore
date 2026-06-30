@@ -506,6 +506,32 @@ section[id]{scroll-margin-top:78px}
 <script>
 injectShared({ inatBar: false, inatFooter: true });
 
+// Cross-page anchor fix. Arriving at e.g. index.html#seenLately from another
+// page, the browser scrolls to the hash at load — but the Right Now strip and
+// the Seen Lately mosaic above it are still "Loading…" (short), so the target
+// sits too high and you land above it. Re-aim at the hash whenever those async
+// containers change height, and back off the instant the user scrolls.
+(function reaimHash(){
+  if (!location.hash) return;
+  let target;
+  try { target = document.querySelector(location.hash); } catch (e) { return; }
+  if (!target) return;
+  let done = false;
+  const evs = ['wheel','touchmove','keydown','mousedown'];
+  const finish = () => { if (done) return; done = true; obs.disconnect(); evs.forEach(e => window.removeEventListener(e, stop)); };
+  const stop = () => finish();
+  evs.forEach(e => window.addEventListener(e, stop, { passive: true }));
+  const aim = () => { if (!done) target.scrollIntoView({ block: 'start' }); };  // honors scroll-margin-top
+  const obs = new MutationObserver(aim);
+  ['rightNowStrip','mosaicGrid'].forEach(id => {
+    const n = document.getElementById(id);
+    if (n) obs.observe(n, { childList: true, subtree: true });
+  });
+  aim();
+  window.addEventListener('load', () => setTimeout(aim, 80));
+  setTimeout(finish, 6000);   // content has surely settled by now
+})();
+
 // Hero slideshow is driven by photo_credits.json (random attributed heroes).
 // See js/photo-credits.js. (The old "Ten acres" hero grid was removed.)
 PSBPPhotos.mountHeroSlideshow('heroSlides');

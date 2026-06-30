@@ -140,6 +140,7 @@
   .qr-steps { justify-content:center; }
 }
 </style>
+<style>section[id]{scroll-margin-top:78px}</style>
 </head>
 <body>
 <div id="nav-placeholder"></div>
@@ -194,7 +195,7 @@
 <!-- ============================================================
      GETTING HERE  (unchanged — map embed + accessibility + pets)
 ============================================================ -->
-<section class="bg-white">
+<section class="bg-white" id="getting-here">
   <div class="section-inner">
     <div class="grid-2" style="gap:3rem;align-items:stretch">
       <div>
@@ -228,7 +229,7 @@
      PARK MAP — illustrated orientation graphic + surrounding words
      (placeholder art; drop the real illustrated/aerial map into .parkmap-art)
 ============================================================ -->
-<section class="bg-pale">
+<section class="bg-pale" id="the-layout">
   <div class="section-inner">
     <div style="text-align:center;margin-bottom:2.5rem">
       <span class="label">Once You're Inside</span>
@@ -264,7 +265,7 @@
 <!-- ============================================================
      TWO DIRECTIONS — toggle between "Where to wander" and "How to tour"
 ============================================================ -->
-<section class="bg-cream">
+<section class="bg-cream" id="wander">
   <div class="section-inner">
 
     <div class="dir-toggle">
@@ -575,6 +576,23 @@ function showView(v){
 }
 const _v = new URLSearchParams(location.search).get('view');
 showView(_v === 'tours' ? 'tours' : 'areas');
+
+// Deep-link the toggle from the top nav: #wander = the areas panel, #tours =
+// the tours panel; both scroll the section under the fixed nav. (Legacy
+// ?view=tours still works via the line above.)
+function applyExploreHash(){
+  if (location.hash === '#tours'){
+    showView('tours');
+    const s = document.getElementById('wander');
+    if (s) s.scrollIntoView({ block: 'start' });
+  } else if (location.hash === '#wander'){
+    showView('areas');
+    const s = document.getElementById('wander');
+    if (s) s.scrollIntoView({ block: 'start' });
+  }
+}
+applyExploreHash();
+window.addEventListener('hashchange', applyExploreHash);
 </script>
 </body>
 </html>
