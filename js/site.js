@@ -380,13 +380,13 @@ const FOOTER_HTML = `
     <div class="footer-col">
       <h4>Explore</h4>
       <ul>
-        <li><a href="index.html#rightNowSection">Right Now in the Park</a></li>
-        <li><a href="nature.html#plants">Plants &amp; Wildlife at the Park</a></li>
+        <li><a href="index.html#rightNowSection">Right Now</a></li>
+        <li><a href="nature.html#plants">Plants &amp; Wildlife</a></li>
         <li><a href="news.html">Park News</a></li>
       </ul>
     </div>
     <div class="footer-col">
-      <h4>Visit</h4>
+      <h4>Plan Your Visit</h4>
       <ul>
         <li><a href="visit.html">Hours & Directions</a></li>
         <li><a href="events.html">Events & Classes</a></li>
@@ -394,17 +394,16 @@ const FOOTER_HTML = `
       </ul>
     </div>
     <div class="footer-col">
-      <h4>Support</h4>
+      <h4>Get Involved</h4>
       <ul>
         <li><a href="get-involved.html#donate">Donate</a></li>
         <li><a href="get-involved.html#member">Membership</a></li>
         <li><a href="get-involved.html#volunteer">Volunteer</a></li>
-        <li><a href="contact.html">About</a></li>
       </ul>
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2025 Palma Sola Botanical Park Foundation, Inc. · 9800 17th Ave NW, Bradenton FL 34209</span>
+    <span class="footer-util"><a href="contact.html">About</a> · <a href="contact.html#visit">Contact</a> · © 2025 Palma Sola Botanical Park Foundation, Inc. · 9800 17th Ave NW, Bradenton FL 34209</span>
     <span style="color:rgba(255,255,255,.3)">Free. Always.</span>
   </div>
 </footer>`;
