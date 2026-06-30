@@ -681,12 +681,14 @@ function idCount(o) {
 // narrow this one list to taste. The >=2 guard hides a ladder that would only
 // contain the species, which is what produced the old "duplicated species" look.
 function lineage(o) {
-  const anc = (o.taxon?.ancestor_ids || [])
-    .map(id => _taxaById[id])
-    .filter(Boolean);
-  // Append the observation's own taxon as the final rung (its name/rank are
-  // already on the observation -- no lookup needed).
-  if (o.taxon) {
+  const ids = o.taxon?.ancestor_ids || [];
+  const anc = ids.map(id => _taxaById[id]).filter(Boolean);
+  // Append the leaf taxon as the final rung UNLESS ancestor_ids already ends
+  // with it -- iNat includes the taxon as its own last ancestor for some
+  // records, and appending again is what doubled the species. Either path
+  // yields the leaf exactly once.
+  const lastId = ids.length ? ids[ids.length - 1] : null;
+  if (o.taxon && lastId !== o.taxon.id) {
     anc.push({
       name: o.taxon.name,
       rank: o.taxon.rank,
@@ -696,15 +698,13 @@ function lineage(o) {
   const keepRanks = ['class','order','family','genus','species'];
   const rungs = anc.filter(a => keepRanks.includes(String(a.rank||'').toLowerCase()));
   if (rungs.length < 2) return '';   // nothing above the species -> no fake ladder
-  return rungs.map((a, i) => {
-    // Prefer a common name; fall back to the scientific name in italics so a
-    // family like "Cyperaceae" still reads as a name, not a bare word.
+  // Unbolded context trail: the "Identified to" row owns the identity, so the
+  // ladder is pure context. Common name plain; a bare scientific name italic.
+  return rungs.map(a => {
     const common = a.preferred_common_name;
     const raw = common || a.name || '';
     const safe = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const shown = common ? safe : `<em>${safe}</em>`;
-    const isLast = i === rungs.length - 1;
-    return isLast ? `<strong>${shown}</strong>` : shown;
+    return common ? safe : `<em>${safe}</em>`;
   }).join(' &rsaquo; ');
 }
 
