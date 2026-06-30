@@ -134,6 +134,7 @@
 #venueMain .addr{font-size:.96rem}
 #venueMain .vclose p{font-size:1rem}
 </style>
+<style>section[id]{scroll-margin-top:78px}</style>
 </head>
 <body>
 <div id="nav-placeholder"></div>
@@ -242,6 +243,31 @@
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false });
+
+// Cross-page anchor fix: the weddings calendar/gallery/pricing load async and
+// grow #weddings, pushing #rentals down — so arriving at venue.html#rentals
+// from another page can land short. Re-aim at the hash as that content settles,
+// and back off the instant the user scrolls. (Same pattern as the homepage.)
+(function reaimHash(){
+  if (!location.hash) return;
+  let target;
+  try { target = document.querySelector(location.hash); } catch (e) { return; }
+  if (!target) return;
+  let done = false;
+  const evs = ['wheel','touchmove','keydown','mousedown'];
+  const finish = () => { if (done) return; done = true; obs.disconnect(); evs.forEach(e => window.removeEventListener(e, stop)); };
+  const stop = () => finish();
+  evs.forEach(e => window.addEventListener(e, stop, { passive: true }));
+  const aim = () => { if (!done) target.scrollIntoView({ block: 'start' }); };
+  const obs = new MutationObserver(aim);
+  ['calTrack','gallery','wprice','rentCards'].forEach(id => {
+    const n = document.getElementById(id);
+    if (n) obs.observe(n, { childList: true, subtree: true });
+  });
+  aim();
+  window.addEventListener('load', () => setTimeout(aim, 80));
+  setTimeout(finish, 6000);
+})();
 
 const $=id=>document.getElementById(id);
 const pipe=s=>(s||'').split('||').map(x=>x.trim()).filter(Boolean);

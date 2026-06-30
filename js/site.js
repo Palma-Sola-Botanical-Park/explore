@@ -282,8 +282,8 @@ const NAV_HTML = `
     <li class="has-sub">
       <a href="venue.html">Venue</a>
       <ul class="subnav">
-        <li><a href="venue.html">Weddings</a></li>
-        <li><a href="venue.html">Other Events</a></li>
+        <li><a href="venue.html#weddings">Weddings</a></li>
+        <li><a href="venue.html#rentals">Other Events</a></li>
       </ul>
     </li>
     <li class="has-sub">
@@ -292,7 +292,7 @@ const NAV_HTML = `
         <li><a href="get-involved.html#donate">Donate</a></li>
         <li><a href="get-involved.html#member">Membership</a></li>
         <li><a href="get-involved.html#volunteer">Volunteering</a></li>
-        <li><a href="get-involved.html">Citizen Science</a></li>
+        <li><a href="get-involved.html#citizen-science">Citizen Science</a></li>
       </ul>
     </li>
     <li class="has-sub">
@@ -330,13 +330,13 @@ const NAV_HTML = `
   <a href="events.html#weeks" class="nm-sub">Next 2 Weeks</a>
   <a href="events.html#calendar" class="nm-sub">Full Schedule</a>
   <a href="venue.html" class="nm-top">Venue</a>
-  <a href="venue.html" class="nm-sub">Weddings</a>
-  <a href="venue.html" class="nm-sub">Other Events</a>
+  <a href="venue.html#weddings" class="nm-sub">Weddings</a>
+  <a href="venue.html#rentals" class="nm-sub">Other Events</a>
   <a href="get-involved.html" class="nm-top">Get Involved</a>
   <a href="get-involved.html#donate" class="nm-sub">Donate</a>
   <a href="get-involved.html#member" class="nm-sub">Membership</a>
   <a href="get-involved.html#volunteer" class="nm-sub">Volunteering</a>
-  <a href="get-involved.html" class="nm-sub">Citizen Science</a>
+  <a href="get-involved.html#citizen-science" class="nm-sub">Citizen Science</a>
   <a href="contact.html" class="nm-top">About</a>
   <a href="contact.html" class="nm-sub">History</a>
   <a href="contact.html" class="nm-sub">Mission</a>
