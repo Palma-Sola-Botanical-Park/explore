@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# ============================================================================
+# PSBP pre-commit size guard
+# ----------------------------------------------------------------------------
+# Blocks oversized files from entering git history — the failure mode that
+# killed the first repo (120 full-size photos -> 5 GB wall). Once a big file
+# is committed, deleting it later does NOT reclaim the space; git keeps the
+# original forever. So the only real defense is stopping it at the door.
+#
+# This hook lives at  .githooks/pre-commit  (tracked in the repo) and is
+# turned on once per clone with:   git config core.hooksPath .githooks
+#
+# Escape hatch for a single, intentional oversized commit:
+#     git commit --no-verify
+# (use rarely — it's the manual override, not the everyday path)
+# ============================================================================
+
+# ---- limits, in bytes — tune these to taste -------------------------------
+PHOTO_LIMIT=$((500 * 1024))      # photos/  : species photos, strict web-res
+IMAGE_LIMIT=$((1024 * 1024))     # images/  : site media (heroes, venue, logos)
+DOCS_LIMIT=$((3 * 1024 * 1024))  # docs/    : PDFs (tour booklets run ~1.6 MB)
+DEFAULT_LIMIT=$((1024 * 1024))   # anything else
+# ---------------------------------------------------------------------------
+
+block=0
+report=""
+
+# Walk every staged file that is Added/Copied/Modified/Renamed (skip deletes).
+while IFS= read -r path; do
+  [ -z "$path" ] && continue
+
+  # Exact size of the STAGED version — what will actually be committed.
+  size=$(git cat-file -s ":$path" 2>/dev/null) || continue
+
+  case "$path" in
+    photos/*) limit=$PHOTO_LIMIT;   label="photo (web-res only)";;
+    images/*) limit=$IMAGE_LIMIT;   label="image";;
+    docs/*)   limit=$DOCS_LIMIT;    label="doc";;
+    *)        limit=$DEFAULT_LIMIT; label="file";;
+  esac
+
+  if [ "$size" -gt "$limit" ]; then
+    block=1
+    sz_kb=$(( size / 1024 ))
+    lim_kb=$(( limit / 1024 ))
+    report="${report}  BLOCKED  ${path}\n           ${sz_kb} KB  —  over the ${lim_kb} KB ${label} limit\n"
+  fi
+done < <(git diff --cached --name-only --diff-filter=ACMR)
+
+if [ "$block" -eq 1 ]; then
+  printf "\n========================================================\n"
+  printf "  COMMIT BLOCKED — oversized file(s)\n"
+  printf "========================================================\n\n"
+  printf "%b" "$report"
+  printf "\nFix: shrink the file(s) below the limit, re-stage, commit again.\n"
+  printf "Photos belong at web-res (~300 KB). Originals stay OUT of the repo.\n"
+  printf "\nReally want this commit anyway?   git commit --no-verify\n\n"
+  exit 1
+fi
+
+exit 0
