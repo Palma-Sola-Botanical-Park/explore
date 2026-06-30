@@ -565,33 +565,54 @@ injectShared({ inatBar: false });
 // Announcements bar
 loadAnnouncements('announcementsList');
 
-// Two-direction toggle (Areas | Tours), with ?view=tours deep-link support
-function showView(v){
+// Two-direction toggle (Areas | Tours), with ?view=tours deep-link support.
+// updateUrl=false leaves the URL alone (used by the hash deep-link so it doesn't
+// rewrite #wander/#tours into ?view=tours and trigger a reload on the next click).
+function showView(v, updateUrl){
   const tours = v === 'tours';
   document.getElementById('panel-areas').style.display = tours ? 'none' : 'block';
   document.getElementById('panel-tours').style.display = tours ? 'block' : 'none';
   document.getElementById('tgl-areas').classList.toggle('on', !tours);
   document.getElementById('tgl-tours').classList.toggle('on', tours);
-  history.replaceState(null, '', tours ? '?view=tours' : location.pathname);
+  if (updateUrl !== false) history.replaceState(null, '', tours ? '?view=tours' : location.pathname);
 }
-const _v = new URLSearchParams(location.search).get('view');
-showView(_v === 'tours' ? 'tours' : 'areas');
+// Re-aim the scroll at an element as the page settles — the park-map image above
+// #wander loads late and shifts the section down, so a single scroll can land
+// short. Back off on any user scroll; a token cancels an older re-aim when a
+// newer one starts (e.g. quickly switching Wander ⇄ Tours).
+let _reaimToken = 0;
+function reaimTo(id){
+  const target = document.getElementById(id);
+  if (!target) return;
+  const myToken = ++_reaimToken;
+  const stop = () => { _reaimToken++; };
+  ['wheel','touchmove','keydown','mousedown'].forEach(e =>
+    window.addEventListener(e, stop, { passive: true, once: true }));
+  const aim = () => { if (myToken === _reaimToken) target.scrollIntoView({ block: 'start' }); };
+  aim();
+  requestAnimationFrame(aim);
+  [80, 250, 600, 1100].forEach(ms => setTimeout(aim, ms));
+  window.addEventListener('load', () => setTimeout(aim, 60));
+}
 
-// Deep-link the toggle from the top nav: #wander = the areas panel, #tours =
-// the tours panel; both scroll the section under the fixed nav. (Legacy
-// ?view=tours still works via the line above.)
+// Deep-link the toggle from the top nav: #wander = areas panel, #tours = tours
+// panel. updateUrl=false keeps the hash in the URL, so the next menu click is a
+// clean fragment change (hashchange) rather than a full reload.
 function applyExploreHash(){
-  if (location.hash === '#tours'){
-    showView('tours');
-    const s = document.getElementById('wander');
-    if (s) s.scrollIntoView({ block: 'start' });
-  } else if (location.hash === '#wander'){
-    showView('areas');
-    const s = document.getElementById('wander');
-    if (s) s.scrollIntoView({ block: 'start' });
-  }
+  const h = location.hash;
+  if (h !== '#wander' && h !== '#tours') return;
+  showView(h === '#tours' ? 'tours' : 'areas', false);
+  reaimTo('wander');
 }
-applyExploreHash();
+
+// Initial view: a #wander/#tours hash wins and MUST be read before any showView
+// that would strip it; otherwise fall back to legacy ?view=tours / default.
+if (location.hash === '#wander' || location.hash === '#tours') {
+  applyExploreHash();
+} else {
+  const _v = new URLSearchParams(location.search).get('view');
+  showView(_v === 'tours' ? 'tours' : 'areas');
+}
 window.addEventListener('hashchange', applyExploreHash);
 </script>
 </body>
