@@ -595,25 +595,36 @@ function reaimTo(id){
   window.addEventListener('load', () => setTimeout(aim, 60));
 }
 
-// Deep-link the toggle from the top nav: #wander = areas panel, #tours = tours
-// panel. updateUrl=false keeps the hash in the URL, so the next menu click is a
-// clean fragment change (hashchange) rather than a full reload.
-function applyExploreHash(){
+// Deep-link any in-page section from the top nav. #wander/#tours flip the toggle
+// (updateUrl=false keeps the hash, so the next click is a clean fragment change
+// rather than a reload); #getting-here / #the-layout just need a settle-aware
+// scroll. Either way we re-aim as the page lays out so a cross-page landing
+// isn't short.
+function onExploreHash(){
   const h = location.hash;
-  if (h !== '#wander' && h !== '#tours') return;
-  showView(h === '#tours' ? 'tours' : 'areas', false);
-  reaimTo('wander');
+  if (h === '#wander' || h === '#tours'){
+    showView(h === '#tours' ? 'tours' : 'areas', false);
+    reaimTo('wander');
+  } else if (h && document.getElementById(h.slice(1))){
+    reaimTo(h.slice(1));
+  }
 }
 
-// Initial view: a #wander/#tours hash wins and MUST be read before any showView
-// that would strip it; otherwise fall back to legacy ?view=tours / default.
-if (location.hash === '#wander' || location.hash === '#tours') {
-  applyExploreHash();
-} else {
-  const _v = new URLSearchParams(location.search).get('view');
+// Initial view. A hash MUST be read before any showView that would replaceState
+// and strip it — that bug sent #the-layout / #getting-here to the top of the
+// page on the first try. With no hash, set the default view and let it update
+// the URL for the legacy ?view=tours deep-link; with any hash, never let
+// showView rewrite the URL.
+const _v = new URLSearchParams(location.search).get('view');
+if (!location.hash){
   showView(_v === 'tours' ? 'tours' : 'areas');
+} else {
+  if (location.hash !== '#wander' && location.hash !== '#tours'){
+    showView(_v === 'tours' ? 'tours' : 'areas', false);
+  }
+  onExploreHash();
 }
-window.addEventListener('hashchange', applyExploreHash);
+window.addEventListener('hashchange', onExploreHash);
 </script>
 </body>
 </html>

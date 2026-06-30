@@ -260,7 +260,7 @@ const NAV_HTML = `
       <ul class="subnav">
         <li><a href="index.html#rightNowSection">Right Now</a></li>
         <li><a href="index.html#seenLately">Seen Lately</a></li>
-        <li><a href="index.html#tenAcres">Your 10 Acres</a></li>
+        <li><a href="index.html#tenAcres">Your Ten Acres</a></li>
         <li><a href="news.html">News</a></li>
       </ul>
     </li>
@@ -268,7 +268,7 @@ const NAV_HTML = `
       <a href="visit.html">Visit</a>
       <ul class="subnav">
         <li><a href="visit.html#getting-here">Getting here</a></li>
-        <li><a href="visit.html#the-layout">The layout</a></li>
+        <li><a href="visit.html#the-layout">Park Map</a></li>
         <li><a href="visit.html#wander">Where to wander</a></li>
         <li><a href="visit.html#tours">Tours</a></li>
       </ul>
@@ -285,6 +285,7 @@ const NAV_HTML = `
       <ul class="subnav">
         <li><a href="venue.html#weddings">Weddings</a></li>
         <li><a href="venue.html#rentals">Other Events</a></li>
+        <li><a href="venue.html#layout">Park Map</a></li>
       </ul>
     </li>
     <li class="has-sub">
@@ -302,9 +303,9 @@ const NAV_HTML = `
         <li><a href="contact.html#mission">Mission</a></li>
         <li><a href="contact.html#organization">Organization</a></li>
         <li><a href="contact.html#community-links">Community Links</a></li>
-        <li><a href="contact.html">YouTube videos</a></li>
+        <li><a href="contact.html#youtube">YouTube videos</a></li>
         <li><a href="contact.html">Forms</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="contact.html#visit">Contact</a></li>
       </ul>
     </li>
   </ul>
@@ -319,11 +320,11 @@ const NAV_HTML = `
   <a href="index.html" class="nm-top">Home</a>
   <a href="index.html#rightNowSection" class="nm-sub">Right Now</a>
   <a href="index.html#seenLately" class="nm-sub">Seen Lately</a>
-  <a href="index.html#tenAcres" class="nm-sub">Your 10 Acres</a>
+  <a href="index.html#tenAcres" class="nm-sub">Your Ten Acres</a>
   <a href="news.html" class="nm-sub">News</a>
   <a href="visit.html" class="nm-top">Visit</a>
   <a href="visit.html#getting-here" class="nm-sub">Getting here</a>
-  <a href="visit.html#the-layout" class="nm-sub">The layout</a>
+  <a href="visit.html#the-layout" class="nm-sub">Park Map</a>
   <a href="visit.html#wander" class="nm-sub">Where to wander</a>
   <a href="visit.html#tours" class="nm-sub">Tours</a>
   <a href="events.html" class="nm-top">Events</a>
@@ -332,6 +333,7 @@ const NAV_HTML = `
   <a href="venue.html" class="nm-top">Venue</a>
   <a href="venue.html#weddings" class="nm-sub">Weddings</a>
   <a href="venue.html#rentals" class="nm-sub">Other Events</a>
+  <a href="venue.html#layout" class="nm-sub">Park Map</a>
   <a href="get-involved.html" class="nm-top">Get Involved</a>
   <a href="get-involved.html#donate" class="nm-sub">Donate</a>
   <a href="get-involved.html#member" class="nm-sub">Membership</a>
@@ -341,9 +343,9 @@ const NAV_HTML = `
   <a href="contact.html#mission" class="nm-sub">Mission</a>
   <a href="contact.html#organization" class="nm-sub">Organization</a>
   <a href="contact.html#community-links" class="nm-sub">Community Links</a>
-  <a href="contact.html" class="nm-sub">YouTube videos</a>
+  <a href="contact.html#youtube" class="nm-sub">YouTube videos</a>
   <a href="contact.html" class="nm-sub">Forms</a>
-  <a href="contact.html" class="nm-sub">Contact</a>
+  <a href="contact.html#visit" class="nm-sub">Contact</a>
 </div>`;
 
 // ── FOOTER HTML ───────────────────────────────────────────────
