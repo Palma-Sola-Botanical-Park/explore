@@ -222,18 +222,92 @@ function isWebVisible(row) {
 // ── NAV HTML ─────────────────────────────────────────────────
 const NAV_HTML = `
 <style>
-  #site-nav .nav-links{display:flex;align-items:center;gap:2.6rem}
-  #site-nav .nav-links li{margin:0}
-  @media (max-width:1100px){#site-nav .nav-links{gap:1.7rem}}
+  /* Top-nav spacing + hover dropdowns (desktop only; mobile uses the grouped list) */
+  @media (min-width:861px){
+    #site-nav .nav-links{display:flex;align-items:stretch;gap:2.6rem;height:64px}
+    #site-nav .nav-links > li{display:flex;align-items:center;margin:0;padding:0}
+    #site-nav .nav-links > li.has-sub{position:relative}
+    #site-nav .subnav{
+      position:absolute;top:100%;left:0;min-width:192px;margin:0;padding:.4rem 0;
+      list-style:none;background:var(--green-deep);
+      border-top:2px solid var(--gold);border-radius:0 0 10px 10px;
+      box-shadow:0 16px 32px rgba(0,0,0,.32);
+      opacity:0;visibility:hidden;pointer-events:none;
+      transform:translateY(-6px);transition:opacity .15s ease,transform .15s ease;z-index:950;
+    }
+    #site-nav .nav-links > li.has-sub:last-child .subnav{left:auto;right:0}
+    #site-nav .nav-links > li.has-sub:hover > .subnav,
+    #site-nav .nav-links > li.has-sub:focus-within > .subnav{
+      opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);
+    }
+    #site-nav .subnav li{display:block;margin:0}
+    #site-nav .subnav a{
+      display:block;padding:.5rem 1.15rem;white-space:nowrap;border-bottom:0;
+      font-size:.95rem;font-weight:600;letter-spacing:.02em;color:rgba(255,255,255,.82);
+    }
+    #site-nav .subnav a:hover,#site-nav .subnav a:focus{background:rgba(255,255,255,.10);color:var(--white)}
+  }
+  @media (min-width:861px) and (max-width:1100px){#site-nav .nav-links{gap:1.7rem}}
+  /* Mobile: grouped sub-items under each top link inside the hamburger panel */
+  #navMobile .nm-top{font-weight:700}
+  #navMobile .nm-sub{padding-left:2.4rem;font-size:.95rem;color:rgba(255,255,255,.6)}
+  #navMobile .nm-sub:hover{color:var(--white)}
 </style>
 <nav id="site-nav">
   <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="visit.html">Visit</a></li>
-    <li><a href="events.html">Events</a></li>
-    <li><a href="venue.html">Venue</a></li>
-    <li><a href="get-involved.html">Get Involved</a></li>
-    <li><a href="contact.html">About</a></li>
+    <li class="has-sub">
+      <a href="index.html">Home</a>
+      <ul class="subnav">
+        <li><a href="index.html#rightNowSection">Right Now</a></li>
+        <li><a href="index.html#seenLately">Seen Lately</a></li>
+        <li><a href="index.html#tenAcres">Your 10 Acres</a></li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <a href="visit.html">Visit</a>
+      <ul class="subnav">
+        <li><a href="visit.html">Getting here</a></li>
+        <li><a href="visit.html">The layout</a></li>
+        <li><a href="visit.html">Where to wander</a></li>
+        <li><a href="visit.html">Tours</a></li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <a href="events.html">Events</a>
+      <ul class="subnav">
+        <li><a href="events.html">Next 2 Weeks</a></li>
+        <li><a href="events.html">Full Schedule</a></li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <a href="venue.html">Venue</a>
+      <ul class="subnav">
+        <li><a href="venue.html">Weddings</a></li>
+        <li><a href="venue.html">Other Events</a></li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <a href="get-involved.html">Get Involved</a>
+      <ul class="subnav">
+        <li><a href="get-involved.html#donate">Donate</a></li>
+        <li><a href="get-involved.html#member">Membership</a></li>
+        <li><a href="get-involved.html#volunteer">Volunteering</a></li>
+        <li><a href="get-involved.html">Citizen Science</a></li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <a href="contact.html">About</a>
+      <ul class="subnav">
+        <li><a href="contact.html">History</a></li>
+        <li><a href="contact.html">Mission</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="contact.html">Organization</a></li>
+        <li><a href="contact.html">Community Links</a></li>
+        <li><a href="contact.html">YouTube videos</a></li>
+        <li><a href="contact.html">Forms</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </li>
   </ul>
   <a href="index.html" class="nav-logo">
     <img src="images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
@@ -243,12 +317,35 @@ const NAV_HTML = `
   </button>
 </nav>
 <div class="nav-mobile" id="navMobile">
-  <a href="index.html">Home</a>
-  <a href="visit.html">Visit</a>
-  <a href="events.html">Events</a>
-  <a href="venue.html">Venue</a>
-  <a href="get-involved.html">Get Involved</a>
-  <a href="contact.html">About</a>
+  <a href="index.html" class="nm-top">Home</a>
+  <a href="index.html#rightNowSection" class="nm-sub">Right Now</a>
+  <a href="index.html#seenLately" class="nm-sub">Seen Lately</a>
+  <a href="index.html#tenAcres" class="nm-sub">Your 10 Acres</a>
+  <a href="visit.html" class="nm-top">Visit</a>
+  <a href="visit.html" class="nm-sub">Getting here</a>
+  <a href="visit.html" class="nm-sub">The layout</a>
+  <a href="visit.html" class="nm-sub">Where to wander</a>
+  <a href="visit.html" class="nm-sub">Tours</a>
+  <a href="events.html" class="nm-top">Events</a>
+  <a href="events.html" class="nm-sub">Next 2 Weeks</a>
+  <a href="events.html" class="nm-sub">Full Schedule</a>
+  <a href="venue.html" class="nm-top">Venue</a>
+  <a href="venue.html" class="nm-sub">Weddings</a>
+  <a href="venue.html" class="nm-sub">Other Events</a>
+  <a href="get-involved.html" class="nm-top">Get Involved</a>
+  <a href="get-involved.html#donate" class="nm-sub">Donate</a>
+  <a href="get-involved.html#member" class="nm-sub">Membership</a>
+  <a href="get-involved.html#volunteer" class="nm-sub">Volunteering</a>
+  <a href="get-involved.html" class="nm-sub">Citizen Science</a>
+  <a href="contact.html" class="nm-top">About</a>
+  <a href="contact.html" class="nm-sub">History</a>
+  <a href="contact.html" class="nm-sub">Mission</a>
+  <a href="news.html" class="nm-sub">News</a>
+  <a href="contact.html" class="nm-sub">Organization</a>
+  <a href="contact.html" class="nm-sub">Community Links</a>
+  <a href="contact.html" class="nm-sub">YouTube videos</a>
+  <a href="contact.html" class="nm-sub">Forms</a>
+  <a href="contact.html" class="nm-sub">Contact</a>
 </div>`;
 
 // ── FOOTER HTML ───────────────────────────────────────────────

@@ -10,6 +10,7 @@
 <link rel="apple-touch-icon" href="images/favicon.png">
 <style>
 /* ── HOME-SPECIFIC ── */
+section[id]{scroll-margin-top:78px}
 .hero {
   min-height: calc(67vh - 64px);
   display: grid; grid-template-columns: 1fr 1fr;
@@ -372,7 +373,7 @@
 </section>
 
 <!-- LIVE NATURE MOSAIC — attribution shown, no outbound links -->
-<section class="bg-cream">
+<section class="bg-cream" id="seenLately">
   <div class="section-inner">
     <span class="label">Live from the Park</span>
     <h2 class="section-title">What's been seen lately</h2>
@@ -403,7 +404,7 @@
 </section>
 
 <!-- WHAT IS THIS PLACE — iNat stats woven in contextually -->
-<section class="bg-white">
+<section class="bg-white" id="tenAcres">
   <div class="section-inner">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2.5rem 3rem;align-items:center">
       <div>
