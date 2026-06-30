@@ -379,7 +379,6 @@ const FOOTER_HTML = `
         <li><a href="index.html#rightNowSection">Right Now in the Park</a></li>
         <li><a href="nature.html#plants">Plants &amp; Wildlife at the Park</a></li>
         <li><a href="news.html">Park News</a></li>
-        <li><a href="visit.html#nursery">Hidden Garden Nursery</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -388,8 +387,6 @@ const FOOTER_HTML = `
         <li><a href="visit.html">Hours & Directions</a></li>
         <li><a href="events.html">Events & Classes</a></li>
         <li><a href="venue.html">Venue Rentals</a></li>
-        <li><a href="venue.html#art">Art in the Park</a></li>
-        <li><a href="visit.html#rarefruit">Rare Fruit Trail</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -399,7 +396,6 @@ const FOOTER_HTML = `
         <li><a href="get-involved.html#member">Membership</a></li>
         <li><a href="get-involved.html#volunteer">Volunteer</a></li>
         <li><a href="contact.html">About</a></li>
-        <li><a href="https://palmasolabp.org/wp-content/uploads/2024/08/Photo-Policy.pdf" target="_blank" rel="noopener">Photo Policy</a></li>
       </ul>
     </div>
   </div>
