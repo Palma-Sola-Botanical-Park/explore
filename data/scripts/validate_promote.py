@@ -58,6 +58,19 @@ HISTORY_DAYS = 182     # _history.json: keep ~6 months of per-feed points
 TIMELINE_DAYS = 14     # health/<tab>.json edit timeline: keep ~2 weeks
 DEFAULT_VOLUME_MIN = 1  # block a feed if fewer than this many rows would publish
 
+# ── Right Now enrichment (publish-time stamp) ─────────────────────────────────
+# The right_now feed denormalizes a couple of DISPLAY fields onto each entry at
+# publish time, joined from the signage masters by psbp_id — same "the script
+# records facts, the pages compute cleverness" principle the rest of the pipeline
+# follows. The masters stay the single source of truth; this is a re-derived
+# cache that refreshes every run, so editing a quick_hit on the master shows up
+# on the featured card within one sync. NOTHING here is authored in the sheet.
+SOURCES = "data/sources"                      # where the signage masters live
+SIGNAGE_MASTERS = ["plant_signage.json", "wildlife_signage.json"]
+RIGHT_NOW_BACK_BUDGET = 160   # chars; the card back fits WHOLE quick_hits to this
+                              # budget and never truncates — drop the 2nd, never
+                              # ellipsize. ~150-char median => usually one hit.
+
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 # Plain-language fallback if a rule omits its own `why` (schemas should set it).
@@ -310,6 +323,92 @@ def make_detail(tab, schema, status, published, links, counts, volume_guard,
     }
 
 
+# ── Right Now enrichment helpers ──────────────────────────────────────────────
+
+_signage_master = None  # lazy, cached: merged {psbp_id -> signage record}
+
+
+def load_signage_master():
+    """One merged lookup over BOTH signage masters, keyed by psbp_id.
+
+    Plant ids (PSBP-000xx) and wildlife ids (PSBP-999xx) never collide, so a
+    flat merge is safe and lets a sighting and a bloom resolve through the same
+    map. Missing/corrupt master degrades to {} (load_json is hardened), which
+    makes the enrichment a no-op rather than crashing the run — fail-soft.
+    """
+    global _signage_master
+    if _signage_master is not None:
+        return _signage_master
+    master = {}
+    for fn in SIGNAGE_MASTERS:
+        doc = load_json(os.path.join(SOURCES, fn), {"species": []})
+        for rec in (doc.get("species", []) if isinstance(doc, dict) else []):
+            sid = rec.get("id")
+            if sid:
+                master[sid] = rec
+    _signage_master = master
+    return master
+
+
+def _plainish(s):
+    """Strip the markdown emphasis some quick_hits carry (a stray `**bold**`
+    authored upstream) so literal asterisks never land on a card. Idempotent on
+    clean text. The proper fix is scrubbing the master; this is the guardrail."""
+    s = str(s or "")
+    s = re.sub(r"\*\*(.+?)\*\*", r"\1", s)   # **bold** -> bold
+    s = re.sub(r"__(.+?)__", r"\1", s)       # __bold__ -> bold
+    return s.strip()
+
+
+def _fit_quick_hits(hits, budget=RIGHT_NOW_BACK_BUDGET, maxn=2):
+    """Pick WHOLE quick_hits that fit the card-back budget. Always take the
+    first (the headline fact); take the second only if both fit. Never truncate
+    a quote — a fact's payoff is its last few words, so we drop, never clip."""
+    out, used = [], 0
+    for h in (hits or [])[:maxn]:
+        h = _plainish(h)
+        if not h:
+            continue
+        if not out:
+            out.append(h); used = len(h)
+        elif used + len(h) <= budget:
+            out.append(h); used += len(h)
+        else:
+            break
+    return out
+
+
+def enrich_right_now(rows):
+    """Stamp display-only fields onto each right_now entry from the signage
+    masters, in place. Status is the contract (verified: status==html <=> the
+    record has quick_hits AND a published page exists):
+
+      * status == 'html'  -> stamp fitted `quick_hits` (if any) + has_page=True
+                             (so the card may show the 'Full plant page ->' link)
+      * status == 'spotted' (in review, no page yet) -> stamp nothing, no link
+      * no psbp_id (standalone sighting) / id not in a master -> stamp nothing
+
+    has_page also closes a latent gap: without it the render can't tell a
+    page-having species from a 'spotted' one, and would link to a page that
+    doesn't exist yet for the in-review case.
+    """
+    master = load_signage_master()
+    for row in rows:
+        pid = (row.get("psbp_id") or "").strip()
+        if not pid:
+            continue                       # standalone (e.g. a passing pelican)
+        rec = master.get(pid)
+        if not rec:
+            continue                       # bad/unknown id -> render fail-soft
+        if rec.get("status") != "html":
+            continue                       # spotted/in-progress: no facts, no page
+        row["has_page"] = True
+        fit = _fit_quick_hits(rec.get("quick_hits"))
+        if fit:
+            row["quick_hits"] = fit
+    return rows
+
+
 # ── the core: validate + promote one tab ──────────────────────────────────────
 
 def process_tab(tab, refs, prev_health):
@@ -481,6 +580,11 @@ def process_tab(tab, refs, prev_health):
         return feed, detail
 
     # ---- write published (clean array the browser fetches) -------------------
+    # right_now denormalizes display fields (quick_hits, has_page) from the
+    # signage masters here, at publish — see enrich_right_now(). Scoped to the
+    # one tab; every other feed writes its validated rows untouched.
+    if tab == "right_now":
+        published_rows = enrich_right_now(published_rows)
     write_json(pub_path, published_rows)
 
     # ---- status + messages ---------------------------------------------------

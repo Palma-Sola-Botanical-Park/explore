@@ -6,7 +6,21 @@ Read by validate_promote.py against the shared CHECKS engine.
 
 The curated "now-lens": what's worth noticing in the park today -- plant blooms
 and notable wildlife sightings. Species facts (photo, latin name, profile/QR link)
-are joined from the species data by psbp_id at RENDER time, never restated here.
+are joined from the species data by psbp_id at RENDER time.
+
+EXCEPTION (added 2026-06-30): two DISPLAY fields are denormalized onto each entry
+at PUBLISH time by validate_promote.enrich_right_now(), stamped from the signage
+masters by psbp_id:
+  * quick_hits -- up to two whole "did you know" lines for the card BACK, fitted
+                  to a char budget (never truncated), markdown stripped. Only for
+                  status=='html' records (the ones that have them).
+  * has_page   -- True when a published species page exists (status=='html'), so
+                  the card knows it may show the "Full plant page ->" link and
+                  won't link to a not-yet-built page for a 'spotted' species.
+This does NOT move the source of truth: the masters stay canonical; the feed is a
+re-derived cache that re-stamps every run. (The narrow "never restated here" rule
+yields to the deeper pipeline principle -- the SCRIPT records facts, the PAGES
+compute cleverness -- which copying a string onto the feed satisfies.)
 """
 
 SCHEMA = {
