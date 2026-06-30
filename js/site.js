@@ -221,6 +221,11 @@ function isWebVisible(row) {
 
 // ── NAV HTML ─────────────────────────────────────────────────
 const NAV_HTML = `
+<style>
+  #site-nav .nav-links{display:flex;align-items:center;gap:2.6rem}
+  #site-nav .nav-links li{margin:0}
+  @media (max-width:1100px){#site-nav .nav-links{gap:1.7rem}}
+</style>
 <nav id="site-nav">
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
