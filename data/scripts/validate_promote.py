@@ -67,9 +67,10 @@ DEFAULT_VOLUME_MIN = 1  # block a feed if fewer than this many rows would publis
 # on the featured card within one sync. NOTHING here is authored in the sheet.
 SOURCES = "data/sources"                      # where the signage masters live
 SIGNAGE_MASTERS = ["plant_signage.json", "wildlife_signage.json"]
-RIGHT_NOW_BACK_BUDGET = 160   # chars; the card back fits WHOLE quick_hits to this
-                              # budget and never truncates — drop the 2nd, never
-                              # ellipsize. ~150-char median => usually one hit.
+RIGHT_NOW_BACK_BUDGET = 340   # chars; the card back fits WHOLE quick_hits to this
+                              # budget and never truncates — drop a hit, never
+                              # ellipsize. Roomy enough for up to three short facts
+                              # (or one long + one medium) to fill the back.
 
 ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -360,10 +361,11 @@ def _plainish(s):
     return s.strip()
 
 
-def _fit_quick_hits(hits, budget=RIGHT_NOW_BACK_BUDGET, maxn=2):
+def _fit_quick_hits(hits, budget=RIGHT_NOW_BACK_BUDGET, maxn=3):
     """Pick WHOLE quick_hits that fit the card-back budget. Always take the
-    first (the headline fact); take the second only if both fit. Never truncate
-    a quote — a fact's payoff is its last few words, so we drop, never clip."""
+    first (the headline fact); take each next one only while the running total
+    still fits the budget, up to maxn. Never truncate a quote — a fact's payoff
+    is its last few words, so we drop, never clip."""
     out, used = [], 0
     for h in (hits or [])[:maxn]:
         h = _plainish(h)

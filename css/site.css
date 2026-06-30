@@ -205,11 +205,11 @@ section { padding: 3.375rem 1.5rem; }
 
 /* back face — bloom wash */
 .rn-back { transform: rotateY(180deg); padding: 1.15rem 1.2rem 1.05rem; justify-content: flex-start; }
-.rn-back--flora { background: #f3e8cf; }
-.rn-back--fauna { background: #e4ecdd; }
+.rn-back--flora { background: #f3e8cf; --rn-wash: #f3e8cf; }
+.rn-back--fauna { background: #e4ecdd; --rn-wash: #e4ecdd; }
 .rn-wm {
   position: absolute; right: -10px; bottom: -12px; width: 96px; height: 96px;
-  color: var(--green-mid); opacity: .12; pointer-events: none;
+  color: var(--green-mid); opacity: .10; pointer-events: none;
 }
 .rn-back-eyebrow {
   font-size: .6rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase;
@@ -231,7 +231,8 @@ section { padding: 3.375rem 1.5rem; }
 .rn-back-link:hover { color: var(--green-deep); text-decoration: underline; }
 .rn-back-foot {
   position: absolute; bottom: .6rem; right: .8rem;
-  font-size: .62rem; font-weight: 600; color: var(--green-mid); opacity: .6;
+  font-size: .62rem; font-weight: 700; color: var(--green-deep); opacity: .9;
+  text-shadow: 0 0 5px var(--rn-wash, #eee), 0 0 5px var(--rn-wash, #eee), 0 0 5px var(--rn-wash, #eee);
 }
 @media (prefers-reduced-motion: reduce) {
   .rn-flip-inner { transition: none; }
