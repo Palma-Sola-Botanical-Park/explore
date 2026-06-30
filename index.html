@@ -6,6 +6,8 @@
 <title>Palma Sola Botanical Park · Bradenton, FL</title>
 <link rel="stylesheet" href="css/site.css">
 <link rel="stylesheet" href="css/photo-credits.css">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
 <style>
 /* ── HOME-SPECIFIC ── */
 .hero {
@@ -306,7 +308,7 @@
     <p class="hero-body">Come for a walk and stay for a class. Spot a gallinule on the pond or an anhinga drying its wings in the sun. Volunteer on a Saturday, catch a live music night, or browse the art gallery. The plants have names and stories. The birds have been coming for decades.</p>
     <p class="hero-body">You don't have to be a botanist or a birder. You just have to show up.</p>
     <div style="display:flex;gap:1rem;flex-wrap:wrap">
-      <a href="nature.html#right-now" class="btn btn-gold">Right Now in the Park</a>
+      <a href="contact.html" class="btn btn-outline">About Us</a>
       <a href="visit.html" class="btn btn-outline">Plan Your Visit</a>
       <a href="news.html" class="btn btn-outline">Park News</a>
     </div>
@@ -352,7 +354,7 @@
     <div class="thing">
       <div class="thing-icon">📱</div>
       <h3>Your phone is a scientific instrument.</h3>
-      <p>Photograph anything — plant, bird, insect, lizard — and help build a permanent record of what lives here. <a href="get-started.html" style="color:var(--gold-light);font-weight:700">Here's how →</a></p>
+      <p>Use your phone to record what you find — plant, bird, insect, lizard. The best shots get featured right here on our site, always with full credit to you. <a href="get-started.html" style="color:var(--gold-light);font-weight:700">Here's how →</a></p>
     </div>
   </div>
 </section>
@@ -362,12 +364,9 @@
   <div class="section-inner">
     <span class="label">Right Now in the Park</span>
     <h2 class="section-title">What nature is offering right now</h2>
-    <p class="section-sub">What's worth a look this week — what's blooming, fruiting, or just passing through. Kept current by the people who walk this park.</p>
+    <p class="section-sub">What's worth a look this week — what's blooming, fruiting, or just passing through. Kept current by the people who walk this park and add to our wildlife collection at the same time. <a href="nature.html#plants" style="color:var(--green-mid);font-weight:600">See the collection here</a>.</p>
     <div id="rightNowStrip" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.5rem">
       <div style="grid-column:1/-1;text-align:center;padding:2.5rem;color:var(--text-soft)">Loading…</div>
-    </div>
-    <div style="text-align:center;margin-top:2rem">
-      <a href="nature.html#right-now" class="btn btn-gold">See everything in the park →</a>
     </div>
   </div>
 </section>
@@ -388,16 +387,17 @@
     <!-- iNat stats — the running total these observations add up to -->
     <div style="background:var(--white);border:1.5px solid rgba(90,122,74,0.15);border-radius:10px;padding:1.25rem 1.5rem;margin-top:2rem">
       <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green-mid);margin-bottom:.9rem">Built by our community</div>
-      <div class="inat-inline" style="background:none;border-radius:0;padding:0;margin:0">
-        <div class="inat-inline-stat"><strong id="statSpecies" class="pulse">—</strong><span>Species Documented</span></div>
-        <div class="inat-inline-stat"><strong id="statObservers" class="pulse">—</strong><span>People Who Showed Up</span></div>
-        <div class="inat-inline-stat"><strong id="statTotal" class="pulse">—</strong><span>Observations Made</span></div>
+      <div style="display:flex;gap:1.25rem 2.5rem;flex-wrap:wrap;align-items:center">
+        <div class="inat-inline" style="background:none;border-radius:0;padding:0;margin:0">
+          <div class="inat-inline-stat"><strong id="statSpecies" class="pulse">—</strong><span>Species Documented</span></div>
+          <div class="inat-inline-stat"><strong id="statObservers" class="pulse">—</strong><span>People Who Showed Up</span></div>
+          <div class="inat-inline-stat"><strong id="statTotal" class="pulse">—</strong><span>Observations Made</span></div>
+        </div>
+        <p style="flex:1;min-width:260px;font-size:.95rem;color:var(--text-soft);line-height:1.6;margin:0">
+          We need people making detailed observations of the plants on iNaturalist — and helping identify all the species you see. Come join us. <a href="get-started.html" style="color:var(--gold);font-weight:700;white-space:nowrap">Get started →</a>
+        </p>
       </div>
       <p style="font-size:.95rem;color:var(--text-soft);margin-top:.9rem;font-style:italic;line-height:1.6">Every number above is a person who came out here and did something.</p>
-    </div>
-
-    <div style="text-align:center;margin-top:2rem">
-      <a href="nature.html#plants" class="btn btn-green">Plants &amp; Wildlife →</a>
     </div>
   </div>
 </section>
@@ -491,23 +491,6 @@
     <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
       <a href="events.html" class="btn btn-gold">See What's Coming Up →</a>
       <a href="volunteer.html" class="btn btn-green">Get Involved →</a>
-    </div>
-  </div>
-</section>
-
-<!-- COMMUNITY SCIENCE CTA -->
-<section class="bg-deep" style="text-align:center">
-  <div class="section-inner" style="max-width:640px;margin:0 auto">
-    <span class="label label-light">Let's Roll</span>
-    <h2 class="section-title" style="color:var(--white);margin-bottom:1rem">Point your phone at something alive.</h2>
-    <p style="color:rgba(255,255,255,.72);font-size:1.05rem;line-height:1.75;margin-bottom:2rem">
-      That's it. You just contributed to a permanent scientific record of this park.
-      Every bloom logged, every bird photographed, every lizard spotted — it adds up.
-      We track what lives here because people like you show up and look.
-    </p>
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-      <a href="get-started.html" class="btn btn-gold">📱 Get Started — 2 Minutes →</a>
-      <a href="nature.html#inat" class="btn btn-outline">Learn More →</a>
     </div>
   </div>
 </section>
