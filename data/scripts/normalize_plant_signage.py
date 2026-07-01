@@ -1,137 +1,154 @@
 #!/usr/bin/env python3
 """
-normalize_plant_signage.py — one-time cleanup pass for data/sources/plant_signage.json
+normalize_plant_signage.py — cleanup + data-standard migration for plant_signage.json
 
-What it does (and NOTHING else):
-  1. quick_hits:  **phrase**  ->  <b>phrase</b>      (the bold you actually wanted;
-                  the plant publisher now honors <b> via _allow_bold). Any leftover
-                  unbalanced ** is stripped so no literal asterisks survive.
-  2. all OTHER string fields: strip ** to plain text and remove bullet glyphs (•).
-                  Body fields are HTML-escaped by the renderer, so <b>/markdown can't
-                  render there — plain prose is the only honest option.
-  3. PSBP-00573 (African Milk Weed): de-duplicate. edibility.detail is trimmed to its
-                  verdict (subtractive — we keep the existing lead sentences and drop the
-                  toxicity narrative that was pasted in), then points to Toxicity.
-                  toxicity.people is de-bulleted into plain prose (no facts changed).
-  4. collapse double spaces and runaway blank lines everywhere.
+Applies the "paragraphs = list items, strings never contain newlines" standard.
 
-Safety:
-  - Dry-run by default: prints every change, writes nothing.
-  - --write performs an atomic replace (temp file + os.replace) and bumps meta.updated.
-  - Invents no facts; the African Milk Weed edibility trim is purely subtractive + a pointer.
+  1. quick_hits:  **phrase** -> <b>phrase</b> (the bold the plant publisher now honors
+                  via _allow_bold). Leftover unbalanced ** is stripped.
+  2. origin / other_notes / internal_notes: converted from a single string to a LIST of
+                  paragraph strings (split on blank lines). One item per paragraph.
+  3. All prose list fields (quick_hits, more_information, wildlife_value, origin,
+                  other_notes, internal_notes): every item is made newline-free; any item
+                  that smuggled a blank line is split into separate items.
+  4. Every other string field (edibility.detail, toxicity.*, reproduction.*, etc.):
+                  ** and bullet glyphs stripped, and any newline collapsed to a space so
+                  the no-newline invariant holds dataset-wide.
+  5. PSBP-00573 (African Milk Weed): edibility.detail trimmed to its verdict (subtractive)
+                  and pointed at Toxicity.
+
+Safety: dry-run by default (writes nothing). --write does an atomic replace and bumps
+meta.updated. Invents no facts.
 
 Usage:
-  python3 normalize_plant_signage.py --path data/sources/plant_signage.json           # dry run
-  python3 normalize_plant_signage.py --path data/sources/plant_signage.json --write    # apply
+  python3 normalize_plant_signage.py --path data/sources/plant_signage.json
+  python3 normalize_plant_signage.py --path data/sources/plant_signage.json --write
 """
-import argparse, json, os, re, sys, tempfile
+import argparse, json, os, re, tempfile
 from datetime import datetime
 
 BULLET_CHARS = "•▪‣◦"
 AFRICAN_MILKWEED_ID = "PSBP-00573"
 
-# ── string transforms ────────────────────────────────────────────────────────
+LIST_PROSE   = ("quick_hits", "more_information", "wildlife_value",
+                "origin", "other_notes", "internal_notes")
+CONVERT_STR  = ("origin", "other_notes", "internal_notes")   # were strings -> now lists
 
-def collapse_ws(s):
-    s = re.sub(r"\n{3,}", "\n\n", s)
-    s = re.sub(r"[ \t]{2,}", " ", s)
-    s = re.sub(r"\n[ \t]+", "\n", s)          # drop indent left by bullet removal
-    # tidy stray space before punctuation left by bullet removal
-    s = re.sub(r"[ \t]+([,.;:])", r"\1", s)
+# ── string helpers ───────────────────────────────────────────────────────────
+
+def _tidy(s):
+    s = re.sub(r"[ \t]*[" + BULLET_CHARS + r"][ \t]*", " ", s)   # bullet glyphs -> space
+    s = re.sub(r"\s*\n\s*", " ", s)                             # newline -> space (no newline survives)
+    s = re.sub(r"[ \t]{2,}", " ", s)                           # collapse double spaces
+    s = re.sub(r"[ \t]+([,.;:])", r"\1", s)                    # stray space before punctuation
     return s.strip()
 
-def quickhit_bold(s):
-    """**x** -> <b>x</b> for quick hits; drop any leftover unbalanced **."""
-    out = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
-    out = out.replace("**", "")          # unbalanced remnants
-    return collapse_ws(out)
+def clean_item(s, allow_bold):
+    """One newline-free paragraph string. allow_bold => convert **x** to <b>x</b>."""
+    if allow_bold:
+        s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
+    s = s.replace("**", "")
+    return _tidy(s)
 
-def strip_markup(s):
-    """Body fields: no bold survives the renderer -> strip ** and bullet glyphs."""
-    out = s.replace("**", "")
-    out = re.sub(r"[ \t]*[" + BULLET_CHARS + r"][ \t]*", " ", out)
-    return collapse_ws(out)
+def split_paras(s):
+    return [p.strip() for p in re.split(r"\n\s*\n", s) if p.strip()]
+
+def to_para_list(value, allow_bold):
+    """str or list -> list of clean, newline-free paragraph strings."""
+    raw = []
+    if isinstance(value, str):
+        raw = split_paras(value) or ([value] if value.strip() else [])
+    elif isinstance(value, list):
+        for it in value:
+            if isinstance(it, str):
+                raw.extend(split_paras(it) or ([it] if it.strip() else []))
+            else:
+                raw.append(it)
+    else:
+        return value, 0
+    cleaned = [clean_item(x, allow_bold) if isinstance(x, str) else x for x in raw]
+    return cleaned, len(cleaned)
+
+def scrub_leaf(s):
+    return _tidy(s.replace("**", ""))
+
+# ── African Milk Weed targeted edibility de-dup (subtractive) ─────────────────
 
 def african_milkweed_edibility(detail):
-    """Subtractive trim: keep the verdict up to the first bullet / blank-line list,
-    drop the pasted-in toxicity narrative, append a pointer to Toxicity."""
-    # cut at the first bullet glyph or the first double-newline (start of the list)
     cut = len(detail)
-    for marker in ["\n\n•", "\n•", "•"]:
+    for marker in ["\n\n•", "\n•", "•", "\n\nSkin Contact", "\nSkin Contact"]:
         i = detail.find(marker)
         if i != -1:
             cut = min(cut, i)
-    head = strip_markup(detail[:cut])
+    head = scrub_leaf(detail[:cut])
     if not head.endswith("."):
         head += "."
     return head + " See the Toxicity section below for handling precautions."
 
-# ── walk & record ────────────────────────────────────────────────────────────
+# ── per-species processing ───────────────────────────────────────────────────
 
 class Change:
-    def __init__(self, sid, name, field, kind, before, after):
-        self.sid, self.name, self.field, self.kind = sid, name, field, kind
-        self.before, self.after = before, after
-
-def snip(s, n=90):
-    s = s.replace("\n", "⏎")
-    return s if len(s) <= n else s[:n] + "…"
+    def __init__(self, sid, name, field, kind, note):
+        self.sid, self.name, self.field, self.kind, self.note = sid, name, field, kind, note
 
 def process_species(sp, changes):
     sid, name = sp.get("id"), sp.get("common_name")
 
-    # 1) quick_hits -> <b>
-    qh = sp.get("quick_hits")
-    if isinstance(qh, list):
-        for i, item in enumerate(qh):
-            if isinstance(item, str) and ("**" in item or "  " in item):
-                new = quickhit_bold(item)
-                if new != item:
-                    kind = "**→<b>" if "<b>" in new else "cleanup"
-                    changes.append(Change(sid, name, f"quick_hits[{i}]", kind, item, new))
-                    qh[i] = new
-
-    # 3) African Milk Weed targeted de-dup (before generic body strip)
+    # African Milk Weed edibility de-dup first (stays a string; scrubbed below)
     if sid == AFRICAN_MILKWEED_ID:
         ed = sp.get("edibility") or {}
         if isinstance(ed.get("detail"), str):
             new = african_milkweed_edibility(ed["detail"])
             if new != ed["detail"]:
-                changes.append(Change(sid, name, "edibility.detail", "dedup-trim", ed["detail"], new))
+                changes.append(Change(sid, name, "edibility.detail", "dedup-trim",
+                                      f"{len(ed['detail'])}→{len(new)} chars"))
                 ed["detail"] = new
 
-    # 2) every other string leaf -> strip markup (skip quick_hits, already handled)
-    def walk(obj, path):
+    # Prose list fields: convert / flatten / clean
+    for field in LIST_PROSE:
+        if field not in sp or sp[field] is None:
+            continue
+        before = sp[field]
+        allow_bold = (field == "quick_hits")
+        new, n = to_para_list(before, allow_bold)
+        if new == before:
+            continue
+        was_str = isinstance(before, str)
+        n_before = 1 if was_str else len(before)
+        if was_str and field in CONVERT_STR:
+            kind = "to-list-split" if n > 1 else "to-list"
+            changes.append(Change(sid, name, field, kind, f"string → {n} item(s)"))
+        elif n != n_before:
+            changes.append(Change(sid, name, field, "item-split", f"{n_before} → {n} items"))
+        elif allow_bold and any("<b>" in x for x in new if isinstance(x, str)):
+            changes.append(Change(sid, name, field, "**→<b>", f"{sum(x.count('<b>') for x in new if isinstance(x,str))} span(s)"))
+        else:
+            changes.append(Change(sid, name, field, "cleanup", "whitespace/markup"))
+        sp[field] = new
+
+    # Every other string leaf: scrub + enforce no-newline
+    def walk(obj):
         if isinstance(obj, str):
-            if "**" in obj or any(b in obj for b in BULLET_CHARS) or "  " in obj:
-                new = strip_markup(obj)
-                if new != obj:
-                    return new, True
-            return obj, False
+            new = scrub_leaf(obj)
+            return new, (new != obj)
         if isinstance(obj, list):
             changed = False
             for i in range(len(obj)):
-                obj[i], c = walk(obj[i], f"{path}[{i}]")
-                changed = changed or c
+                obj[i], c = walk(obj[i]); changed = changed or c
             return obj, changed
         if isinstance(obj, dict):
             changed = False
             for k in list(obj.keys()):
-                obj[k], c = walk(obj[k], f"{path}.{k}" if path else k)
-                changed = changed or c
+                obj[k], c = walk(obj[k]); changed = changed or c
             return obj, changed
         return obj, False
 
     for field in list(sp.keys()):
-        if field == "quick_hits":
+        if field in LIST_PROSE:
             continue
-        before_json = json.dumps(sp[field], ensure_ascii=False)
-        sp[field], changed = walk(sp[field], field)
+        sp[field], changed = walk(sp[field])
         if changed:
-            after_json = json.dumps(sp[field], ensure_ascii=False)
-            if before_json != after_json:
-                changes.append(Change(sid, name, field, "strip-markup",
-                                      snip(before_json, 120), snip(after_json, 120)))
+            changes.append(Change(sid, name, field, "scrub", "markup/newline"))
 
 # ── atomic write ─────────────────────────────────────────────────────────────
 
@@ -163,28 +180,35 @@ def main():
         process_species(sp, changes)
 
     if not changes:
-        print("No changes needed — file is already clean.")
+        print("No changes needed — file already matches the standard.")
         return
 
-    # report
     by_kind = {}
     for c in changes:
-        by_kind.setdefault(c.kind, 0)
-        by_kind[c.kind] += 1
+        by_kind[c.kind] = by_kind.get(c.kind, 0) + 1
     affected = sorted({c.sid for c in changes})
 
-    print(f"{'DRY RUN — no file written' if not args.write else 'APPLYING CHANGES'}")
+    print("DRY RUN — no file written" if not args.write else "APPLYING CHANGES")
     print(f"{len(changes)} change(s) across {len(affected)} species\n")
     print("By kind:", ", ".join(f"{k}={v}" for k, v in sorted(by_kind.items())), "\n")
 
-    cur = None
-    for c in changes:
-        if c.sid != cur:
-            cur = c.sid
-            print(f"── {c.sid}  {c.name}")
-        print(f"    [{c.kind}] {c.field}")
-        print(f"        before: {snip(c.before)}")
-        print(f"        after : {snip(c.after)}")
+    # Detail only the interesting kinds; summarize the bulk (plain wraps/scrubs) as counts.
+    DETAIL = {"to-list-split", "item-split", "**→<b>", "dedup-trim"}
+    detailed = [c for c in changes if c.kind in DETAIL]
+    if detailed:
+        print("Notable changes:")
+        cur = None
+        for c in detailed:
+            if c.sid != cur:
+                cur = c.sid
+                print(f"  ── {c.sid}  {c.name}")
+            print(f"       [{c.kind}] {c.field}: {c.note}")
+        print()
+    bulk = {k: v for k, v in by_kind.items() if k not in DETAIL}
+    if bulk:
+        print("Bulk (not itemized):", ", ".join(f"{k}={v}" for k, v in sorted(bulk.items())))
+        print("  (to-list = single-paragraph field wrapped as a 1-item list; "
+              "scrub/cleanup = whitespace or stray-markup tidy)")
 
     if args.write:
         data.setdefault("meta", {})["updated"] = datetime.now().isoformat(timespec="seconds")
