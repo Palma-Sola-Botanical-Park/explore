@@ -2,23 +2,23 @@
 """
 normalize_plant_signage.py — cleanup + data-standard migration for plant_signage.json
 
-Applies the "paragraphs = list items, strings never contain newlines" standard.
+Standard enforced:
+  A. Paragraphs are list items; strings never contain newlines.
+  B. No paragraph exceeds MAX_PARA_CHARS (readability cap). Over-long content is split
+     at natural (blank-line / labelled) boundaries first, then at sentence boundaries.
 
-  1. quick_hits:  **phrase** -> <b>phrase</b> (the bold the plant publisher now honors
-                  via _allow_bold). Leftover unbalanced ** is stripped.
-  2. origin / other_notes / internal_notes: converted from a single string to a LIST of
-                  paragraph strings (split on blank lines). One item per paragraph.
-  3. All prose list fields (quick_hits, more_information, wildlife_value, origin,
-                  other_notes, internal_notes): every item is made newline-free; any item
-                  that smuggled a blank line is split into separate items.
-  4. Every other string field (edibility.detail, toxicity.*, reproduction.*, etc.):
-                  ** and bullet glyphs stripped, and any newline collapsed to a space so
-                  the no-newline invariant holds dataset-wide.
-  5. PSBP-00573 (African Milk Weed): edibility.detail trimmed to its verdict (subtractive)
-                  and pointed at Toxicity.
+Transforms:
+  1. quick_hits: **phrase** -> <b>phrase</b> (honored by the publisher). Stray ** stripped.
+  2. origin / other_notes / internal_notes: string -> LIST of paragraph strings.
+  3. edibility.detail / toxicity.people / toxicity.dogs: string -> LIST of paragraph strings
+     (these were the wall-of-text offenders).
+  4. Every prose paragraph is made newline-free and capped: any item longer than
+     MAX_PARA_CHARS is split into multiple items at sentence boundaries.
+  5. All other string leaves: ** and bullet glyphs stripped; newlines collapsed to spaces.
+  6. PSBP-00573 edibility.detail trimmed to its verdict (subtractive) + pointer to Toxicity.
 
-Safety: dry-run by default (writes nothing). --write does an atomic replace and bumps
-meta.updated. Invents no facts.
+Safety: dry-run by default; --write does an atomic replace and bumps meta.updated.
+Invents no facts.
 
 Usage:
   python3 normalize_plant_signage.py --path data/sources/plant_signage.json
@@ -29,22 +29,23 @@ from datetime import datetime
 
 BULLET_CHARS = "•▪‣◦"
 AFRICAN_MILKWEED_ID = "PSBP-00573"
+MAX_PARA_CHARS = 400          # readability cap — tune here (mobile-first park signage)
 
 LIST_PROSE   = ("quick_hits", "more_information", "wildlife_value",
                 "origin", "other_notes", "internal_notes")
-CONVERT_STR  = ("origin", "other_notes", "internal_notes")   # were strings -> now lists
+CONVERT_STR  = ("origin", "other_notes", "internal_notes")
+NESTED_PROSE = (("edibility", "detail"), ("toxicity", "people"), ("toxicity", "dogs"))
 
 # ── string helpers ───────────────────────────────────────────────────────────
 
 def _tidy(s):
-    s = re.sub(r"[ \t]*[" + BULLET_CHARS + r"][ \t]*", " ", s)   # bullet glyphs -> space
-    s = re.sub(r"\s*\n\s*", " ", s)                             # newline -> space (no newline survives)
-    s = re.sub(r"[ \t]{2,}", " ", s)                           # collapse double spaces
-    s = re.sub(r"[ \t]+([,.;:])", r"\1", s)                    # stray space before punctuation
+    s = re.sub(r"[ \t]*[" + BULLET_CHARS + r"][ \t]*", " ", s)
+    s = re.sub(r"\s*\n\s*", " ", s)
+    s = re.sub(r"[ \t]{2,}", " ", s)
+    s = re.sub(r"[ \t]+([,.;:])", r"\1", s)
     return s.strip()
 
 def clean_item(s, allow_bold):
-    """One newline-free paragraph string. allow_bold => convert **x** to <b>x</b>."""
     if allow_bold:
         s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     s = s.replace("**", "")
@@ -53,8 +54,28 @@ def clean_item(s, allow_bold):
 def split_paras(s):
     return [p.strip() for p in re.split(r"\n\s*\n", s) if p.strip()]
 
+def sentence_split(text):
+    return [s.strip() for s in re.findall(r".+?(?:[.!?](?=\s|$)|$)", text.strip()) if s.strip()]
+
+def cap_paragraph(p, cap=MAX_PARA_CHARS):
+    """Split a paragraph that exceeds the cap into readable chunks, never mid-sentence.
+    Prefers to start a new chunk at a 'Label:' lead (e.g. 'Skin Contact:')."""
+    if len(p) <= cap:
+        return [p]
+    chunks, cur = [], ""
+    for s in sentence_split(p):
+        starts_label = bool(re.match(r"[A-Z][A-Za-z ()/'-]{1,40}:", s))
+        if cur and (len(cur) + 1 + len(s) > cap or starts_label):
+            chunks.append(cur)
+            cur = s
+        else:
+            cur = (cur + " " + s).strip()
+    if cur:
+        chunks.append(cur)
+    return chunks
+
 def to_para_list(value, allow_bold):
-    """str or list -> list of clean, newline-free paragraph strings."""
+    """str or list -> list of clean, newline-free, length-capped paragraph strings."""
     raw = []
     if isinstance(value, str):
         raw = split_paras(value) or ([value] if value.strip() else [])
@@ -65,9 +86,18 @@ def to_para_list(value, allow_bold):
             else:
                 raw.append(it)
     else:
-        return value, 0
-    cleaned = [clean_item(x, allow_bold) if isinstance(x, str) else x for x in raw]
-    return cleaned, len(cleaned)
+        return value, 0, False
+    cleaned, capped = [], False
+    for x in raw:
+        if isinstance(x, str):
+            c = clean_item(x, allow_bold)
+            pieces = cap_paragraph(c)
+            if len(pieces) > 1:
+                capped = True
+            cleaned.extend(pieces)
+        else:
+            cleaned.append(x)
+    return cleaned, len(cleaned), capped
 
 def scrub_leaf(s):
     return _tidy(s.replace("**", ""))
@@ -91,43 +121,55 @@ class Change:
     def __init__(self, sid, name, field, kind, note):
         self.sid, self.name, self.field, self.kind, self.note = sid, name, field, kind, note
 
+def convert_field(sp, field_label, value, changes, sid, name, allow_bold, was_str, is_convert):
+    new, n, capped = to_para_list(value, allow_bold)
+    if new == value:
+        return value
+    n_before = 1 if was_str else (len(value) if isinstance(value, list) else 1)
+    if was_str and is_convert:
+        kind = "to-list-split" if n > 1 else "to-list"
+        changes.append(Change(sid, name, field_label, kind, f"string → {n} item(s)"))
+    elif capped:
+        changes.append(Change(sid, name, field_label, "length-split", f"{n_before} → {n} items (over {MAX_PARA_CHARS} chars)"))
+    elif n != n_before:
+        changes.append(Change(sid, name, field_label, "item-split", f"{n_before} → {n} items"))
+    elif allow_bold and any(isinstance(x, str) and "<b>" in x for x in new):
+        changes.append(Change(sid, name, field_label, "**→<b>", f"{sum(x.count('<b>') for x in new if isinstance(x,str))} span(s)"))
+    else:
+        changes.append(Change(sid, name, field_label, "cleanup", "whitespace/markup"))
+    return new
+
 def process_species(sp, changes):
     sid, name = sp.get("id"), sp.get("common_name")
 
-    # African Milk Weed edibility de-dup first (stays a string; scrubbed below)
+    # African Milk Weed edibility de-dup first (string, before list conversion)
     if sid == AFRICAN_MILKWEED_ID:
         ed = sp.get("edibility") or {}
         if isinstance(ed.get("detail"), str):
             new = african_milkweed_edibility(ed["detail"])
             if new != ed["detail"]:
-                changes.append(Change(sid, name, "edibility.detail", "dedup-trim",
-                                      f"{len(ed['detail'])}→{len(new)} chars"))
+                changes.append(Change(sid, name, "edibility.detail", "dedup-trim", f"{len(ed['detail'])}→{len(new)} chars"))
                 ed["detail"] = new
 
-    # Prose list fields: convert / flatten / clean
+    # Top-level prose list fields
     for field in LIST_PROSE:
         if field not in sp or sp[field] is None:
             continue
-        before = sp[field]
-        allow_bold = (field == "quick_hits")
-        new, n = to_para_list(before, allow_bold)
-        if new == before:
-            continue
-        was_str = isinstance(before, str)
-        n_before = 1 if was_str else len(before)
-        if was_str and field in CONVERT_STR:
-            kind = "to-list-split" if n > 1 else "to-list"
-            changes.append(Change(sid, name, field, kind, f"string → {n} item(s)"))
-        elif n != n_before:
-            changes.append(Change(sid, name, field, "item-split", f"{n_before} → {n} items"))
-        elif allow_bold and any("<b>" in x for x in new if isinstance(x, str)):
-            changes.append(Change(sid, name, field, "**→<b>", f"{sum(x.count('<b>') for x in new if isinstance(x,str))} span(s)"))
-        else:
-            changes.append(Change(sid, name, field, "cleanup", "whitespace/markup"))
-        sp[field] = new
+        sp[field] = convert_field(sp, field, sp[field], changes, sid, name,
+                                  allow_bold=(field == "quick_hits"),
+                                  was_str=isinstance(sp[field], str),
+                                  is_convert=(field in CONVERT_STR))
+
+    # Nested prose (edibility.detail, toxicity.people, toxicity.dogs)
+    for parent, child in NESTED_PROSE:
+        d = sp.get(parent)
+        if isinstance(d, dict) and d.get(child) is not None:
+            d[child] = convert_field(sp, f"{parent}.{child}", d[child], changes, sid, name,
+                                     allow_bold=False, was_str=isinstance(d[child], str), is_convert=True)
 
     # Every other string leaf: scrub + enforce no-newline
-    def walk(obj):
+    handled_parents = {p for p, _ in NESTED_PROSE}
+    def walk(obj, top=None):
         if isinstance(obj, str):
             new = scrub_leaf(obj)
             return new, (new != obj)
@@ -145,6 +187,15 @@ def process_species(sp, changes):
 
     for field in list(sp.keys()):
         if field in LIST_PROSE:
+            continue
+        # skip the nested-prose children we already converted to lists
+        if field in handled_parents and isinstance(sp[field], dict):
+            for k in list(sp[field].keys()):
+                if (field, k) in NESTED_PROSE:
+                    continue
+                sp[field][k], c = walk(sp[field][k])
+                if c:
+                    changes.append(Change(sid, name, f"{field}.{k}", "scrub", "markup/newline"))
             continue
         sp[field], changed = walk(sp[field])
         if changed:
@@ -169,7 +220,7 @@ def write_atomic(path, data):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--path", required=True)
-    ap.add_argument("--write", action="store_true", help="apply changes (default is dry run)")
+    ap.add_argument("--write", action="store_true")
     args = ap.parse_args()
 
     with open(args.path, encoding="utf-8") as f:
@@ -192,8 +243,7 @@ def main():
     print(f"{len(changes)} change(s) across {len(affected)} species\n")
     print("By kind:", ", ".join(f"{k}={v}" for k, v in sorted(by_kind.items())), "\n")
 
-    # Detail only the interesting kinds; summarize the bulk (plain wraps/scrubs) as counts.
-    DETAIL = {"to-list-split", "item-split", "**→<b>", "dedup-trim"}
+    DETAIL = {"to-list-split", "item-split", "length-split", "**→<b>", "dedup-trim"}
     detailed = [c for c in changes if c.kind in DETAIL]
     if detailed:
         print("Notable changes:")

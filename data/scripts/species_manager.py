@@ -8066,8 +8066,8 @@ _DRAFT_SPEC_PLANTS = {
     "seasonality":        ("dict", 'object {"bloom_months":str|null,"bloom_description":str|null,"leaf_behavior":str|null,"fruiting_months":str|null,"notes":str|null}'),
     "size":               ("dict", 'object {"height":str,"spread":str,"habit":str,"growth_rate":str,"texture":str}'),
     "growing_conditions": ("dict", 'object {"light":str,"soil_tolerances":str,"drought_tolerance":str,"spacing":str}'),
-    "edibility":          ("dict", 'object {"level":"Red|Yellow|Green","detail":str} — detail is ONE or TWO sentences: is any part edible and the single most important caveat. Do NOT restate the toxicity hazards here; point to toxicity instead. Plain prose only, no bullets or markdown.'),
-    "toxicity":           ("dict", 'object {"level":"Red|Yellow|Green","people":str,"dogs_level":"Red|Yellow|Green","dogs":str} — people/dogs are concise (1-3 sentences each), plain prose. No bullet characters, asterisks, or markdown.'),
+    "edibility":          ("dict", 'object {"level":"Red|Yellow|Green","detail":[str]} — detail is a list of SHORT paragraph strings (each ≤ ~3 sentences): is any part edible and the key caveat. Do NOT restate the toxicity hazards here; point to toxicity instead. Plain prose, no bullets or markdown.'),
+    "toxicity":           ("dict", 'object {"level":"Red|Yellow|Green","people":[str],"dogs_level":"Red|Yellow|Green","dogs":[str]} — people/dogs are lists of SHORT paragraph strings (each ≤ ~3 sentences), one topic per item. Plain prose, no bullet characters, asterisks, or markdown.'),
     "invasive":           ("dict", 'object {"level":"Red|Yellow|Green","notes":str} — Florida status (UF/IFAS, FLEPPC)'),
     "other_notes":        ("list", "any extra noteworthy info as a list of paragraph strings — one item per paragraph, never newlines inside a string; or omit"),
 }
@@ -8144,7 +8144,9 @@ def _ai_build_messages(species, kingdom):
         "asterisk emphasis, or bullet characters; the page renderer does not interpret them. "
         "Never let one field's content spill into another (e.g. do not repeat toxicity "
         "hazards inside edibility). Never put a newline inside any string value; for "
-        "multi-paragraph fields use one list item per paragraph."
+        "multi-paragraph fields use one list item per paragraph. Keep every paragraph "
+        "short — at most about three sentences (~400 characters); split longer content "
+        "into separate list items."
     )
 
     schema_lines = "\n".join(
@@ -8271,17 +8273,45 @@ def _ai_parse_json(text):
 
 _BULLET_CHARS = "•▪‣◦"
 
+_MAX_PARA_CHARS = 400   # readability cap — keep in sync with plant_publisher.MAX_PARA_CHARS
+
 def _split_paragraphs(s):
     return [p.strip() for p in re.split(r"\n\s*\n", s) if p.strip()]
 
+def _sentence_split(text):
+    return [s.strip() for s in re.findall(r".+?(?:[.!?](?=\s|$)|$)", text.strip()) if s.strip()]
+
+def _cap_paragraph(p, cap=_MAX_PARA_CHARS):
+    """Split an over-long paragraph into readable chunks, never mid-sentence."""
+    p = (p or "").strip()
+    if len(p) <= cap:
+        return [p] if p else []
+    chunks, cur = [], ""
+    for s in _sentence_split(p):
+        starts_label = bool(re.match(r"[A-Z][A-Za-z ()/'-]{1,40}:", s))
+        if cur and (len(cur) + 1 + len(s) > cap or starts_label):
+            chunks.append(cur); cur = s
+        else:
+            cur = (cur + " " + s).strip()
+    if cur:
+        chunks.append(cur)
+    return chunks
+
+def _cap_list(items):
+    out = []
+    for x in items:
+        out.extend(_cap_paragraph(x)) if isinstance(x, str) else out.append(x)
+    return out
+
 def _as_paragraph_list(value):
-    """Coerce a prose value into a list of paragraph strings, splitting on blank
-    lines. A plain string becomes a one-or-more item list; an existing list has
-    any multi-paragraph item flattened into separate items. Serves the data
-    standard: paragraph breaks live as list items, never as newlines in a string."""
+    """Coerce a prose value into a list of paragraph strings — split on blank lines,
+    then enforce the readability cap so no item is a wall of text. A plain string
+    becomes a one-or-more item list; an existing list has multi-paragraph or
+    over-long items broken into separate items."""
     if isinstance(value, str):
         parts = _split_paragraphs(value)
-        return parts if parts else ([value.strip()] if value.strip() else [])
+        parts = parts if parts else ([value.strip()] if value.strip() else [])
+        return _cap_list(parts)
     if isinstance(value, list):
         out = []
         for item in value:
@@ -8290,7 +8320,7 @@ def _as_paragraph_list(value):
                 out.extend(parts if parts else ([item.strip()] if item.strip() else []))
             else:
                 out.append(item)
-        return out
+        return _cap_list(out)
     return value
 
 def _deformat(value):
@@ -8331,11 +8361,17 @@ def _ai_sanitize(draft, kingdom):
             continue
         expected = spec[k][0]
         if expected == "list":
-            v = _as_paragraph_list(v)                  # str→list, split blank-line items
+            v = _as_paragraph_list(v)                  # str→list, split blank-line + over-long items
         if not _SHAPE_CHECK[expected](v):
             rejected.append(k)
             continue
         clean[k] = _deformat(v)
+
+    # Nested prose inside edibility/toxicity is also paragraph lists (readability cap).
+    for parent, child in (("edibility", "detail"), ("toxicity", "people"), ("toxicity", "dogs")):
+        d = clean.get(parent)
+        if isinstance(d, dict) and d.get(child) is not None:
+            d[child] = _deformat(_as_paragraph_list(d[child]))
     return clean, rejected
 
 
@@ -8468,7 +8504,8 @@ def _ai_build_revise_messages(species, kingdom, feedback):
         "formatting, no search is needed. Never invent facts. Inside every string value "
         "write plain prose only — no markdown, asterisk emphasis, or bullet characters. "
         "Never put a newline inside any string value; for multi-paragraph fields use one "
-        "list item per paragraph."
+        "list item per paragraph. Keep every paragraph short — at most about three "
+        "sentences (~400 characters); split longer content into separate list items."
     )
 
     schema_lines = "\n".join(

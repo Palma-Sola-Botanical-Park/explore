@@ -325,24 +325,56 @@ def render_quick_hits(species):
   </div>"""
 
 
+MAX_PARA_CHARS = 400   # readability cap — no rendered paragraph may exceed this (tunable)
+
+def _sentence_split(text):
+    return [s.strip() for s in re.findall(r".+?(?:[.!?](?=\s|$)|$)", text.strip()) if s.strip()]
+
+def _cap_paragraph(p, cap=MAX_PARA_CHARS):
+    """Split an over-long paragraph into readable chunks, never mid-sentence, so the
+    'no wall of text' rule is guaranteed at render time regardless of the data.
+    Prefers to start a new chunk at a 'Label:' lead (e.g. 'Skin Contact:')."""
+    p = (p or "").strip()
+    if len(p) <= cap:
+        return [p] if p else []
+    chunks, cur = [], ""
+    for s in _sentence_split(p):
+        starts_label = bool(re.match(r"[A-Z][A-Za-z ()/'-]{1,40}:", s))
+        if cur and (len(cur) + 1 + len(s) > cap or starts_label):
+            chunks.append(cur); cur = s
+        else:
+            cur = (cur + " " + s).strip()
+    if cur:
+        chunks.append(cur)
+    return chunks
+
+
 def _paragraphs(value):
-    """Normalize a prose field (list of paragraphs, or legacy newline string)
-    into a list of clean paragraph strings. The data standard is one list item
-    per paragraph with no newlines inside; this also splits any legacy string on
-    blank lines so pre-migration data still renders correctly."""
+    """Normalize a prose field (list of paragraphs, or legacy newline string) into a
+    list of clean paragraph strings, each guaranteed under the readability cap. Also
+    splits any legacy string on blank lines so pre-migration data still renders right."""
     if value is None:
         return []
+    items = []
     if isinstance(value, str):
-        return [p.strip() for p in re.split(r"\n\s*\n", value) if p.strip()]
+        items = [p.strip() for p in re.split(r"\n\s*\n", value) if p.strip()]
+    else:
+        for item in value:
+            if isinstance(item, str):
+                items.extend(p.strip() for p in re.split(r"\n\s*\n", item) if p.strip())
     out = []
-    for item in value:
-        if isinstance(item, str):
-            out.extend(p.strip() for p in re.split(r"\n\s*\n", item) if p.strip())
+    for p in items:
+        out.extend(_cap_paragraph(p))
     return out
 
 
 def _render_paragraphs(value):
     return "\n      ".join(f"<p>{h(p)}</p>" for p in _paragraphs(value))
+
+
+def _p_html(text):
+    """Render a single (possibly over-long) string as one or more capped <p> blocks."""
+    return "".join(f"<p>{h(p)}</p>" for p in _cap_paragraph((text or "").strip()))
 
 
 def render_origin(species):
@@ -374,7 +406,7 @@ def render_wildlife(species):
     items = species.get("wildlife_value") or []
     if not items:
         return ""
-    paras = "".join(f"<p>{h(item)}</p>" for item in items)
+    paras = _render_paragraphs(items)
     return f"""  <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
     <div class="plant-section-body">{paras}</div>
@@ -389,9 +421,9 @@ def render_reproduction(species):
     wtlf = repro.get("what_to_look_for", "")
     parts = []
     for b in blocks:
-        parts.append(f'<div class="repro-item"><div class="repro-label">{h(b["label"])}</div><p>{h(b["text"])}</p></div>')
+        parts.append(f'<div class="repro-item"><div class="repro-label">{h(b["label"])}</div>{_p_html(b["text"])}</div>')
     if wtlf:
-        parts.append(f'<div class="repro-item"><div class="repro-label">What to Look For</div><p>{h(wtlf)}</p></div>')
+        parts.append(f'<div class="repro-item"><div class="repro-label">What to Look For</div>{_p_html(wtlf)}</div>')
     return f"""  <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
     <div class="repro-list">
@@ -452,18 +484,15 @@ def render_safety(species):
         section_cls = "plant-safe-section"
         icon = "✅"
 
-    # Build paragraphs
+    # Build paragraphs — each field's paragraphs rendered separately and capped,
+    # so people + dogs never merge into one wall (that was the bug).
     paras = []
-    if ed.get("detail"):
-        paras.append(f"<p>{h(ed['detail'])}</p>")
-    tox_parts = []
-    if tox.get("people"):
-        tox_parts.append(tox["people"])
-    dogs = tox.get("dogs")
-    if dogs:
-        tox_parts.append(dogs)
-    if tox_parts:
-        paras.append(f"<p>{h(' '.join(tox_parts))}</p>")
+    for p in _paragraphs(ed.get("detail")):
+        paras.append(f"<p>{h(p)}</p>")
+    for p in _paragraphs(tox.get("people")):
+        paras.append(f"<p>{h(p)}</p>")
+    for p in _paragraphs(tox.get("dogs")):
+        paras.append(f"<p>{h(p)}</p>")
 
     if not paras:
         return ""
@@ -1030,7 +1059,7 @@ function renderDataSections(s, hero) {
 
   // Origin
   if (s.origin) {
-    html += dataSection('Origin', `<div class="text-block">${esc(s.origin)}</div>`);
+    html += dataSection('Origin', `<div class="text-block">${Array.isArray(s.origin)?s.origin.map(esc).join('<br>'):esc(s.origin)}</div>`);
   }
 
   // More Information
@@ -1076,12 +1105,12 @@ function renderDataSections(s, hero) {
   // Safety
   let safetyHtml = '';
   if (s.edibility) {
-    safetyHtml += `<div class="data-row"><div class="label">Edibility (${s.edibility.level})</div><div class="value">${esc(s.edibility.detail || '')}</div></div>`;
+    safetyHtml += `<div class="data-row"><div class="label">Edibility (${s.edibility.level})</div><div class="value">${Array.isArray(s.edibility.detail)?s.edibility.detail.map(esc).join('<br>'):esc(s.edibility.detail||'')}</div></div>`;
   }
   if (s.toxicity) {
-    safetyHtml += `<div class="data-row"><div class="label">Toxicity (${s.toxicity.level})</div><div class="value">${esc(s.toxicity.people || '')}</div></div>`;
+    safetyHtml += `<div class="data-row"><div class="label">Toxicity (${s.toxicity.level})</div><div class="value">${Array.isArray(s.toxicity.people)?s.toxicity.people.map(esc).join('<br>'):esc(s.toxicity.people||'')}</div></div>`;
     if (s.toxicity.dogs) {
-      safetyHtml += `<div class="data-row"><div class="label">Dogs (${s.toxicity.dogs_level})</div><div class="value">${esc(s.toxicity.dogs)}</div></div>`;
+      safetyHtml += `<div class="data-row"><div class="label">Dogs (${s.toxicity.dogs_level})</div><div class="value">${Array.isArray(s.toxicity.dogs)?s.toxicity.dogs.map(esc).join('<br>'):esc(s.toxicity.dogs)}</div></div>`;
     }
   }
   if (safetyHtml) html += dataSection('Edibility & Toxicity', safetyHtml);
@@ -1410,6 +1439,8 @@ def validate_data_invariants(signage):
         if isinstance(value, str):
             if "\n" in value:
                 issues.append(("NEWLINE", f"{sid}: '{path}' has a newline — split into separate list items"))
+            if len(value) > MAX_PARA_CHARS:
+                issues.append(("LONG", f"{sid}: '{path}' is {len(value)} chars (> {MAX_PARA_CHARS}) — render will split it; consider breaking it at the source"))
         elif isinstance(value, dict):
             for k, v in value.items():
                 scan(v, f"{path}.{k}" if path else k, sid)
