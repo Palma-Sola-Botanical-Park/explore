@@ -4047,6 +4047,34 @@
         "inference_geo": "global"
       },
       "searches": 0
+    },
+    {
+      "ts": "2026-07-01T17:38:49",
+      "id": "PSBP-00573",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Your edibility and toxicity section has two duplicate blocks. If it's not duplicate, something went wrong. it is wall of text that LOOK duplicate.  \n\nThe Notes section looks like wall of text too. Did you want breaks at the \"ALL CAPS:\" sections that looks like this as run-ons...\nFAMILY: Euphorbiaceae (the spurge family) — one of the largest flowering plant families, encompassing over 8,000 species worldwide, including poinsettias (Euphorbia pulcherrima), cassava (Manihot esculenta), and rubber tree (Hevea brasiliensis). CULTIVARS: The cultivar 'Rubra' (sometimes sold as 'Royal Red') develops stems and leaves with pronounced red or burgundy coloration, especially on new growth and in high-light conditions. It grows to similar dimensions as the green form and has the same cultural requirements and toxicity profile. NAME NOTE: Despite the common name 'African Milk Tree,' this plant is botanically a shrub, not a tree, and its 'milk' is a caustic latex — not remotely edible. The name reflec",
+      "changed": [
+        "edibility",
+        "toxicity",
+        "other_notes"
+      ],
+      "summary": "The edibility and toxicity fields were deduplicated: edibility.detail retains the full public-facing warning, while toxicity.people drops the pets bullet (already covered in toxicity.dogs) so the two blocks are visibly distinct. The other_notes wall-of-text was broken into three separate bold-headed paragraphs at the FAMILY / CULTIVARS / NAME NOTE boundaries.",
+      "sources": [],
+      "usage": {
+        "input_tokens": 6510,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1098,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "searches": 0
     }
   ]
 }
