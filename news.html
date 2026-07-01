@@ -146,7 +146,7 @@
     <!-- ┌─ Mailchimp form: fill the TWO values from Bev's embed code (Audience → Signup forms → Embedded forms) ─┐ -->
     <form class="nl-form"
           action="https://XXXXXXXX.us00.list-manage.com/subscribe/post?u=USERID&amp;id=LISTID"  <!-- ⬅ PASTE action URL -->
-          method="post" target="_blank" rel="noopener" novalidate>
+          method="post" target="_blank" rel="noopener" novalidate onsubmit="return false">  <!-- ⬅ demo stub: DELETE onsubmit when wiring the real action -->
       <div class="nl-fields">
         <div class="nl-field">
           <label for="nl-name-news">Name</label>
