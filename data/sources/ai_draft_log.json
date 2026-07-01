@@ -2709,6 +2709,264 @@
         "inference_geo": "global"
       },
       "searches": 0
+    },
+    {
+      "ts": "2026-06-30T23:19:56",
+      "id": "PSBP-99925",
+      "kingdom": "wildlife",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Can you do a full review of every field? This bird was mistakenly sent to production with only a few fields so they all need a fresh look",
+      "changed": [
+        "quick_hits",
+        "range_and_origin",
+        "more_information",
+        "identification",
+        "diet",
+        "behavior",
+        "sounds",
+        "ecological_role",
+        "habitat",
+        "where_to_look",
+        "when_to_see",
+        "size",
+        "seasonality",
+        "sources"
+      ],
+      "summary": "Every field was a stub placeholder or contained errors (wrong length range, wrong seasonality months, generic diet/behavior text); all have been fully replaced with species-specific, sourced content drawn from Audubon, Cornell Lab/All About Birds, eBird, Birds of the World, NatureServe, and state wildlife agencies. The seasonality months array was also corrected from a winter-presence pattern to the accurate spring and fall migration windows for Florida.",
+      "sources": [
+        {
+          "title": "Yellow-throated Vireo Vireo flavifrons",
+          "url": "https://ebird.org/species/yetvir"
+        },
+        {
+          "title": "Yellow-throated vireo - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Yellow-throated_vireo"
+        },
+        {
+          "title": "Yellow-throated Vireo | Audubon Field Guide",
+          "url": "https://www.audubon.org/field-guide/bird/yellow-throated-vireo"
+        },
+        {
+          "title": "Yellow-throated Vireo Identification, All About Birds, Cornell Lab of Ornithology",
+          "url": "https://www.allaboutbirds.org/guide/Yellow-throated_Vireo/id"
+        },
+        {
+          "title": "Yellow-throated Vireo | BTO",
+          "url": "https://www.bto.org/learn/about-birds/birdfacts/yellow-throated-vireo"
+        },
+        {
+          "title": "Yellow-throated Vireo - BirdBuddy Wiki",
+          "url": "https://app.mybirdbuddy.com/birds/yellow-throated-vireo/e887b24b-3f6f-4f19-9d74-63dfbea3b645"
+        },
+        {
+          "title": "Yellow-throated Vireo Vireo flavifrons Species Factsheet | BirdLife DataZone",
+          "url": "https://datazone.birdlife.org/species/factsheet/yellow-throated-vireo-vireo-flavifrons"
+        },
+        {
+          "title": "Yellow-throated Vireo (Vireo flavifrons) | U.S. Fish & Wildlife Service",
+          "url": "https://www.fws.gov/species/yellow-throated-vireo-vireo-flavifrons"
+        },
+        {
+          "title": "Yellow-throated Vireo | BTO - British Trust for Ornithology",
+          "url": "https://www.bto.org/understanding-birds/birdfacts/yellow-throated-vireo"
+        },
+        {
+          "title": "Yellow-throated vireo - Facts, Diet, Habitat & Pictures on Animalia.bio",
+          "url": "https://animalia.bio/yellow-throated-vireo"
+        },
+        {
+          "title": "Yellow-throated Vireo | State of Tennessee, Wildlife Resources Agency",
+          "url": "https://www.tn.gov/twra/wildlife/birds/forest-birds/yellow-throated-vireo.html"
+        },
+        {
+          "title": "YELLOW-THROATED VIREO",
+          "url": "https://www.birdsofpei.info/p/yellow-throated-vireo.html"
+        },
+        {
+          "title": "Yellow-Throated Vireo | Missouri Department of Conservation",
+          "url": "https://mdc.mo.gov/discover-nature/field-guide/yellow-throated-vireo"
+        },
+        {
+          "title": "Yellow-throated Vireo - South Dakota Birds and Birding",
+          "url": "https://www.sdakotabirds.com/species/yellow_throated_vireo_info.htm"
+        },
+        {
+          "title": "Yellow-throated Vireo - Vireo flavifrons - Birds of the World",
+          "url": "https://birdsoftheworld.org/bow/species/yetvir/cur/introduction"
+        },
+        {
+          "title": "Vireo flavifrons | NatureServe Explorer",
+          "url": "https://explorer.natureserve.org/Taxon/ELEMENT_GLOBAL.2.103231/Vireo_flavifrons"
+        },
+        {
+          "title": "Yellow-Throated Vireo Facts, Habitat, Migration & Identification Guide",
+          "url": "https://sparrowbirds.com/yellow-throated-vireo/"
+        },
+        {
+          "title": "Movements and Migration - Yellow-throated Vireo - Vireo flavifrons - Birds of the World",
+          "url": "https://birdsoftheworld.org/bow/species/yetvir/cur/movement"
+        },
+        {
+          "title": "Bedford Audubon Society » Yellow-throated Vireo",
+          "url": "https://bedfordaudubon.org/yellow-throated-vireo/"
+        },
+        {
+          "title": "Yellow-throated Vireo - eBird",
+          "url": "https://ebird.org/news/yellow-throated-vireo"
+        },
+        {
+          "title": "Yellow throated Vireo - Birding Deport",
+          "url": "https://birdingdepot.com/yellow-throated-vireo/"
+        },
+        {
+          "title": "Yellow-throated Vireo Overview, All About Birds, Cornell Lab of Ornithology",
+          "url": "https://www.allaboutbirds.org/guide/Yellow-throated_Vireo/overview"
+        },
+        {
+          "title": "Yellow-throated Vireo (Vireo flavifrons) - YTVI",
+          "url": "https://www.birds-of-north-america.net/Yellow-throated_Vireo.html"
+        }
+      ],
+      "usage": {
+        "input_tokens": 38872,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 3774,
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "server_tool_use": {
+          "web_search_requests": 3,
+          "web_fetch_requests": 0
+        }
+      },
+      "searches": 3
+    },
+    {
+      "ts": "2026-06-30T23:21:44",
+      "id": "PSBP-99925",
+      "kingdom": "wildlife",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "The draft for the Yellow-throated Vireo ($Vireo\\ flavifrons$) is structurally excellent and written in a great, accessible style for park visitors.A critical pass for absolute accuracy reveals a couple of factual errors and timeline inconsistencies that need to be cleaned up before you publish.Factual Corrections & Tweaks1. The Nest-Building Behavior (Major Error)The Issue: The draft states that when a Brown-headed Cowbird parasitizes their nest, this vireo \"sometimes responds by building a new nest floor right over the parasitized clutch.\"The Correction: This is incorrect. Building a new floor over a cowbird egg is a famous defense mechanism of the Yellow Warbler, not the Yellow-throated Vireo. Yellow-throated Vireos unfortunately do not have this defense; they will either accept the cowbird egg and raise it, or abandon the entire nest completely. You should drop this bullet point entirely to avoid publishing misinformation.2. Timeline Inconsistency (\"Late Summer\" Singing)The Issue: T",
+      "changed": [
+        "quick_hits",
+        "more_information"
+      ],
+      "summary": "Two factual errors were corrected: the cowbird 'new nest floor' defense (a Yellow Warbler trait, not a Yellow-throated Vireo trait) was removed from quick_hits and fixed in more_information paragraph 3. The 'late summer singing' quick hit was replaced with spring-migration-appropriate content, since Bradenton-area visitors only encounter this species as a transient.",
+      "sources": [
+        {
+          "title": "September - Bird of the Month - Yellow-throated Vireo - Maryland-DC Breeding Bird Atlas",
+          "url": "https://ebird.org/atlasmddc/news/september-bird-of-the-month-yellow-throated-vireo"
+        },
+        {
+          "title": "Brown-headed cowbird - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Brown-headed_cowbird"
+        },
+        {
+          "title": "What Is Brood Parasitism in Birds?",
+          "url": "https://www.scienceofbirds.com/blog/what-is-brood-parasitism-in-birds"
+        },
+        {
+          "title": "Red‐winged blackbirds nesting nearer to yellow warbler and conspecific nests experience less brood parasitism",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9911624/"
+        },
+        {
+          "title": "Ontogenetic effects of brood parasitism by the Brown‐headed Cowbird on host offspring - Jones - 2023 - Ecology - Wiley Online Library",
+          "url": "https://esajournals.onlinelibrary.wiley.com/doi/10.1002/ecy.3925"
+        },
+        {
+          "title": "Effects of parents and Brown-headed Cowbirds (Molothrus ater) on nest predation risk for a songbird",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3539002/"
+        },
+        {
+          "title": "Declining Brown-Headed Cowbird (Molothrus ater) Populations Are Associated with Landscape-Specific Reductions in Brood Parasitism and Increases in Songbird Productivity",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3471865/"
+        },
+        {
+          "title": "Clever or cruel? Brown-headed cowbirds make other birds do all the work of raising their young | Forest Preserve District of Will County",
+          "url": "https://www.reconnectwithnature.org/news-events/the-buzz/brood-parasitism-brown-headed-cowbird"
+        },
+        {
+          "title": "Heterospecific eavesdropping on an anti-parasitic referential alarm call",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7109080/"
+        },
+        {
+          "title": "Nest Sanitation Plays a Role in Egg Burial by Yellow Warblers - Guigueno - 2009 - Ethology - Wiley Online Library",
+          "url": "https://onlinelibrary.wiley.com/doi/10.1111/j.1439-0310.2008.01597.x"
+        },
+        {
+          "title": "(PDF) Clutch Abandonment by Parasitized Yellow Warblers: Egg Burial or Nest Desertion? (Abandono de Nidadas Parasitadas de Dendroica petechia: ¿Entierro de Huevos o Deserción del Nido?)",
+          "url": "https://www.researchgate.net/publication/259729416_Clutch_Abandonment_by_Parasitized_Yellow_Warblers_Egg_Burial_or_Nest_Desertion_Abandono_de_Nidadas_Parasitadas_de_Dendroica_petechia_Entierro_de_Huevos_o_Desercion_del_Nido"
+        },
+        {
+          "title": "Burial of cowbird eggs by parasitized yellow warblers: an empirical and experimental study - ScienceDirect",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/S0003347285701200"
+        },
+        {
+          "title": "Young Yellow Warblers are Brown | Bird Watcher's General Store",
+          "url": "https://www.birdwatchersgeneralstore.com/young-yellow-warblers-are-brown/"
+        },
+        {
+          "title": "Clutch Abandonment by Parasitized Yellow Warblers: Egg Burial or Nest Desertion?Abandono de Nidadas Parasitadas de Dendroica petechia: ¿Entierro de Huevos o Deserción del Nido? | Ornithological Applications | Oxford Academic",
+          "url": "https://academic.oup.com/condor/article/112/2/399/5152612"
+        },
+        {
+          "title": "Brown-headed Cowbirds - NestWatch",
+          "url": "https://nestwatch.org/learn/general-bird-nest-info/brown-headed-cowbirds/"
+        },
+        {
+          "title": "Coping with cowbirds: Yellow Warblers stack nest. | Opinicon Natural History",
+          "url": "https://opinicon.wordpress.com/2010/01/19/coping-with-cowbirds-yellow-warblers-stack-nest/"
+        }
+      ],
+      "usage": {
+        "input_tokens": 23124,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1588,
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "server_tool_use": {
+          "web_search_requests": 2,
+          "web_fetch_requests": 0
+        }
+      },
+      "searches": 2
+    },
+    {
+      "ts": "2026-06-30T23:23:11",
+      "id": "PSBP-99925",
+      "kingdom": "wildlife",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "This draft for the Yellow-throated Vireo ($Vireo\\ flavifrons$) looks incredibly sharp, clean, and beautifully tailored for park patrons. The tone is relaxed and professional, and you successfully addressed the common confusion with the Pine Warbler right away.Looking at the text with an absolute zero-mistake lens, there are no remaining factual errors or timeline contradictions. You nailed it.I have just two very minor, microscopic layout/formatting observations to ensure total perfection before you hit publish:Voice vs. Quick Hits Continuity: Under the \"QUICK HITS\" section, you beautifully adjusted the timeline to note that males sing during their spring stopover. Down in the \"VOICE\" section, the text still reads, \"Males sing persistently through the breeding season.\" While technically true for their overall biology, since they don't breed at Palma Sola, you might want to tweak that line slightly to \"Males sing persistently during spring migration\" just so a casual reader doesn't get ",
+      "changed": [
+        "sounds"
+      ],
+      "summary": "One field updated. The 'sounds' field was adjusted to replace a breeding-season singing reference with a spring-migration reference, keeping the sign consistent with the park's non-breeding context. The reviewer's em-dash spacing concern was not applied because the current quick_hits text already has uniform, correct spacing throughout.",
+      "sources": [],
+      "usage": {
+        "input_tokens": 5681,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 483,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "searches": 0
     }
   ]
 }
