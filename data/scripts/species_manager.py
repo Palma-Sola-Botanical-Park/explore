@@ -23,6 +23,7 @@ import sys
 import time
 import datetime
 import threading
+import subprocess
 from http.server import HTTPServer, ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs, quote
 from urllib.request import urlopen, Request
@@ -92,6 +93,19 @@ TRIAGE_CACHE_DIR = os.path.join(TRIAGE_WORKSPACE, "cache")
 
 API_DELAY      = 1.0   # seconds between iNat API pages
 DOWNLOAD_DELAY = 0.3   # seconds between web-res downloads
+
+# ── Hero photo web-res budget ──────────────────────────────────────────────
+# Every hero photo is shrunk to a size budget the moment it lands on disk, so
+# it clears the repo's pre-commit size guard (<=500 KB hard) with no manual
+# step. Uses macOS `sips` (always present on the Mac this dashboard runs on).
+# Quality steps down until the file fits; downscales only if huge. Best-effort:
+# if sips ever errors, the file is left as-is and the commit guard still backstops.
+HERO_TARGET_KB = int(os.environ.get("PSBP_HERO_TARGET_KB", "300"))  # web-res aim
+HERO_HARD_KB   = 500    # the guard's ceiling; we flag anything we can't beat
+HERO_MAX_DIM   = 1600   # longest side, px; only downscales, never enlarges
+HERO_Q_START   = 72     # first JPEG quality tried (highest)
+HERO_Q_MIN     = 40     # never drop below this quality
+HERO_Q_STEP    = 8      # quality decrement per attempt
 
 # Tab definitions — order matters for the nav bar
 TABS = [
@@ -692,6 +706,87 @@ def get_species_photos(species_id):
 
 # ── Hero swap pipeline helpers ────────────────────────────────────────────
 
+def _shrink_hero_file(filepath):
+    """Shrink a freshly downloaded hero JPG to the web-res budget, in place.
+
+    Steps JPEG quality down (via macOS `sips`) until the file is at/under
+    HERO_TARGET_KB, so it clears the repo's pre-commit size guard. Downscales
+    to HERO_MAX_DIM on the longest side only if larger. Atomic replace; never
+    inflates. Best-effort: if sips is missing or errors, the original file is
+    left untouched and the pre-commit guard remains the backstop.
+
+    Returns a short status string for the console log.
+    """
+    try:
+        target = HERO_TARGET_KB * 1024
+        hard = HERO_HARD_KB * 1024
+        before = os.path.getsize(filepath)
+        if before <= target:
+            return f"{before // 1024}KB (already under budget)"
+
+        # Current pixel dimensions — only to decide whether to downscale.
+        w = h = 0
+        try:
+            out = subprocess.run(
+                ["sips", "-g", "pixelWidth", "-g", "pixelHeight", filepath],
+                capture_output=True, text=True, timeout=20,
+            ).stdout
+            for line in out.splitlines():
+                s = line.strip()
+                if s.startswith("pixelWidth:"):
+                    w = int(s.split(":")[1])
+                elif s.startswith("pixelHeight:"):
+                    h = int(s.split(":")[1])
+        except Exception:
+            pass
+
+        dim_args = []
+        if w > HERO_MAX_DIM or h > HERO_MAX_DIM:
+            dim_args = ["-Z", str(HERO_MAX_DIM)]
+
+        d = os.path.dirname(filepath)
+        base = os.path.basename(filepath)
+        result_tmp = None
+        result_bytes = before
+        q = HERO_Q_START
+        # Each attempt re-encodes from the ORIGINAL file, not a prior attempt.
+        while True:
+            tmp = os.path.join(d, f".{base}.shrink.{os.getpid()}.{q}.jpg")
+            proc = subprocess.run(
+                ["sips", *dim_args, "-s", "format", "jpeg",
+                 "-s", "formatOptions", str(q), filepath, "--out", tmp],
+                capture_output=True, text=True, timeout=60,
+            )
+            if proc.returncode != 0 or not os.path.exists(tmp):
+                if os.path.exists(tmp):
+                    os.remove(tmp)
+                if result_tmp and os.path.exists(result_tmp):
+                    os.remove(result_tmp)
+                return f"shrink skipped (sips error); left at {before // 1024}KB"
+            size = os.path.getsize(tmp)
+            if result_tmp and os.path.exists(result_tmp):
+                os.remove(result_tmp)   # drop the previous (larger) attempt
+            result_tmp, result_bytes = tmp, size
+            if size <= target or q <= HERO_Q_MIN:
+                break
+            q -= HERO_Q_STEP
+            if q < HERO_Q_MIN:
+                q = HERO_Q_MIN
+
+        if result_bytes >= before:
+            if result_tmp and os.path.exists(result_tmp):
+                os.remove(result_tmp)   # no gain — keep the original untouched
+            return f"kept original ({before // 1024}KB, no gain)"
+
+        os.replace(result_tmp, filepath)   # atomic, same directory
+        flag = ""
+        if result_bytes > hard:
+            flag = f"  !! STILL OVER {HERO_HARD_KB}KB at q{HERO_Q_MIN} — downscale manually"
+        return f"{before // 1024}KB -> {result_bytes // 1024}KB (q{q}){flag}"
+    except Exception as e:
+        return f"shrink error ({e}); left as-is"
+
+
 def _download_hero_file(photo_url, species_id, photo_id):
     """Download a hero photo from iNat to photos/PSBP-xxxxx/{photo_id}.jpg.
 
@@ -712,6 +807,8 @@ def _download_hero_file(photo_url, species_id, photo_id):
         data = resp.read()
     with open(target_file, "wb") as f:
         f.write(data)
+    status = _shrink_hero_file(target_file)
+    print(f"  [hero shrink] {species_id}/{photo_id}.jpg: {status}")
     return target_file
 
 
