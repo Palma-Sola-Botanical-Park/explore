@@ -325,13 +325,33 @@ def render_quick_hits(species):
   </div>"""
 
 
+def _paragraphs(value):
+    """Normalize a prose field (list of paragraphs, or legacy newline string)
+    into a list of clean paragraph strings. The data standard is one list item
+    per paragraph with no newlines inside; this also splits any legacy string on
+    blank lines so pre-migration data still renders correctly."""
+    if value is None:
+        return []
+    if isinstance(value, str):
+        return [p.strip() for p in re.split(r"\n\s*\n", value) if p.strip()]
+    out = []
+    for item in value:
+        if isinstance(item, str):
+            out.extend(p.strip() for p in re.split(r"\n\s*\n", item) if p.strip())
+    return out
+
+
+def _render_paragraphs(value):
+    return "\n      ".join(f"<p>{h(p)}</p>" for p in _paragraphs(value))
+
+
 def render_origin(species):
-    origin = species.get("origin")
-    if not origin:
+    body = _render_paragraphs(species.get("origin"))
+    if not body:
         return ""
     return f"""  <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>{h(origin)}</p></div>
+    <div class="plant-section-body">{body}</div>
   </div>"""
 
 
@@ -455,12 +475,12 @@ def render_safety(species):
 
 
 def render_notes(species):
-    notes = species.get("other_notes")
-    if not notes:
+    body = _render_paragraphs(species.get("other_notes"))
+    if not body:
         return ""
     return f"""  <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>{h(notes)}</p></div>
+    <div class="plant-section-body">{body}</div>
   </div>"""
 
 
@@ -1376,6 +1396,37 @@ def cmd_dashboard():
         server.server_close()
 
 
+def validate_data_invariants(signage):
+    """Enforce the data standard, fail-closed:
+      1. No string value anywhere contains a newline (paragraph breaks live as
+         separate list items, never inside a string).
+      2. The list-typed prose fields really are lists.
+    Returns a list of (tag, message) issues."""
+    LIST_PROSE = ("quick_hits", "more_information", "wildlife_value",
+                  "origin", "other_notes", "internal_notes")
+    issues = []
+
+    def scan(value, path, sid):
+        if isinstance(value, str):
+            if "\n" in value:
+                issues.append(("NEWLINE", f"{sid}: '{path}' has a newline — split into separate list items"))
+        elif isinstance(value, dict):
+            for k, v in value.items():
+                scan(v, f"{path}.{k}" if path else k, sid)
+        elif isinstance(value, list):
+            for i, v in enumerate(value):
+                scan(v, f"{path}[{i}]", sid)
+
+    for sp in signage.get("species", []):
+        sid = sp.get("id")
+        scan(sp, "", sid)
+        for f in LIST_PROSE:
+            v = sp.get(f)
+            if v is not None and not isinstance(v, list):
+                issues.append(("SHAPE", f"{sid}: '{f}' should be a list of paragraphs, found {type(v).__name__}"))
+    return issues
+
+
 def cmd_validate():
     signage = load_signage()
     credits = load_credits()
@@ -1402,7 +1453,17 @@ def cmd_validate():
                 pj_issues += 1
     if pj_issues == 0:
         print("✓ plants.json hero paths all match photo_credits.")
-    print(f"\n  Summary: {len(issues)} HTML issues, {pj_issues} plants.json issues")
+
+    # Data standard: no newlines in strings; prose fields are lists (fail-closed).
+    inv_issues = validate_data_invariants(signage)
+    if inv_issues:
+        print(f"\n  Data standard: {len(inv_issues)} issue(s):")
+        for tag, msg in inv_issues:
+            print(f"    [{tag}] {msg}")
+    else:
+        print("✓ Data standard: no newlines in strings; prose fields are lists.")
+
+    print(f"\n  Summary: {len(issues)} HTML issues, {pj_issues} plants.json issues, {len(inv_issues)} data-standard issues")
 
 
 def cmd_generate_all():

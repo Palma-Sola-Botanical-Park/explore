@@ -5311,10 +5311,12 @@ def render_intake():
                 taxHtml = `<div class="intake-taxonomy">${{parts.join(' · ')}}</div>`;
         }}
 
-        // Internal notes
+        // Internal notes (now a list of paragraph strings)
         let notesHtml = '';
-        if (sp.internal_notes)
-            notesHtml = `<div class="intake-notes"><strong>Notes:</strong> ${{esc(sp.internal_notes)}}</div>`;
+        if (isFilled(sp.internal_notes)) {{
+            const _in = Array.isArray(sp.internal_notes) ? sp.internal_notes : [sp.internal_notes];
+            notesHtml = `<div class="intake-notes"><strong>Notes:</strong> ${{_in.map(esc).join('<br>')}}</div>`;
+        }}
 
         // Tags
         let tagsHtml = '';
@@ -8057,7 +8059,7 @@ _DRAFT_SPEC_PLANTS = {
     "alternate_names":    ("list", "common alternate names — list of short strings"),
     "butterfly_host":     ("bool", "true ONLY if a documented larval host plant for butterflies/moths; omit if unknown"),
     "quick_hits":         ("list", "2-4 punchy, surprising one-to-two-sentence facts (list of strings)"),
-    "origin":             ("str",  "one short paragraph: native range and how it came to Florida cultivation"),
+    "origin":             ("list", "native range and how it came to Florida cultivation, as a list of one or two paragraph strings (never newlines inside a string)"),
     "more_information":   ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
     "wildlife_value":     ("list", "1-2 short paragraphs on pollinators / wildlife it supports (list of strings)"),
     "reproduction":       ("dict", 'object {"blocks":[{"label":str,"text":str}], "what_to_look_for":str}'),
@@ -8067,7 +8069,7 @@ _DRAFT_SPEC_PLANTS = {
     "edibility":          ("dict", 'object {"level":"Red|Yellow|Green","detail":str} — detail is ONE or TWO sentences: is any part edible and the single most important caveat. Do NOT restate the toxicity hazards here; point to toxicity instead. Plain prose only, no bullets or markdown.'),
     "toxicity":           ("dict", 'object {"level":"Red|Yellow|Green","people":str,"dogs_level":"Red|Yellow|Green","dogs":str} — people/dogs are concise (1-3 sentences each), plain prose. No bullet characters, asterisks, or markdown.'),
     "invasive":           ("dict", 'object {"level":"Red|Yellow|Green","notes":str} — Florida status (UF/IFAS, FLEPPC)'),
-    "other_notes":        ("str",  "any extra noteworthy info, or omit"),
+    "other_notes":        ("list", "any extra noteworthy info as a list of paragraph strings — one item per paragraph, never newlines inside a string; or omit"),
 }
 
 _DRAFT_SPEC_WILDLIFE = {
@@ -8141,7 +8143,8 @@ def _ai_build_messages(species, kingdom):
         "information. Inside every string value write plain prose only — no markdown, "
         "asterisk emphasis, or bullet characters; the page renderer does not interpret them. "
         "Never let one field's content spill into another (e.g. do not repeat toxicity "
-        "hazards inside edibility)."
+        "hazards inside edibility). Never put a newline inside any string value; for "
+        "multi-paragraph fields use one list item per paragraph."
     )
 
     schema_lines = "\n".join(
@@ -8266,22 +8269,45 @@ def _ai_parse_json(text):
     return json.loads(chunk[i:j + 1])
 
 
-_BULLET_CHARS = "•▪‣◦·"
+_BULLET_CHARS = "•▪‣◦"
+
+def _split_paragraphs(s):
+    return [p.strip() for p in re.split(r"\n\s*\n", s) if p.strip()]
+
+def _as_paragraph_list(value):
+    """Coerce a prose value into a list of paragraph strings, splitting on blank
+    lines. A plain string becomes a one-or-more item list; an existing list has
+    any multi-paragraph item flattened into separate items. Serves the data
+    standard: paragraph breaks live as list items, never as newlines in a string."""
+    if isinstance(value, str):
+        parts = _split_paragraphs(value)
+        return parts if parts else ([value.strip()] if value.strip() else [])
+    if isinstance(value, list):
+        out = []
+        for item in value:
+            if isinstance(item, str):
+                parts = _split_paragraphs(item)
+                out.extend(parts if parts else ([item.strip()] if item.strip() else []))
+            else:
+                out.append(item)
+        return out
+    return value
 
 def _deformat(value):
-    """Recursively strip stray inline markup from string leaves of drafted content.
+    """Recursively strip stray inline markup from string leaves of drafted content
+    and enforce the no-newline invariant.
 
-    Belt-and-suspenders behind the prompt rule: even if the model emits **bold**
-    or a bulleted list inside a string field, we neutralize it before it reaches
-    disk. The plant/wildlife renderers honor <b>...</b> (via _allow_bold) and
-    nothing else, so markdown asterisks and bullet glyphs would otherwise render
-    literally. This does NOT touch <b> tags an author may legitimately want.
+    Belt-and-suspenders behind the prompt rule: even if the model emits **bold**,
+    a bulleted list, or a newline inside a string, we neutralize it before it
+    reaches disk. Paragraph structure is expressed as list membership (see
+    _as_paragraph_list), so any residual newline in a leaf collapses to a space.
+    Does NOT touch <b> tags an author may legitimately want in quick hits.
     """
     if isinstance(value, str):
         s = value.replace("**", "")                    # drop markdown bold
         s = re.sub(r"[ \t]*[" + _BULLET_CHARS + r"][ \t]*", " ", s)  # bullet glyphs → space
-        s = re.sub(r"\n{3,}", "\n\n", s)                # collapse runaway blank lines
-        s = re.sub(r"[ \t]{2,}", " ", s)                # collapse double spaces
+        s = re.sub(r"\s*\n\s*", " ", s)                # no newline survives in any string leaf
+        s = re.sub(r"[ \t]{2,}", " ", s)               # collapse double spaces
         return s.strip()
     if isinstance(value, list):
         return [_deformat(x) for x in value]
@@ -8291,8 +8317,9 @@ def _deformat(value):
 
 
 def _ai_sanitize(draft, kingdom):
-    """Keep only schema fields with the right top-level shape, and strip stray
-    inline markup from their string leaves. Returns (clean_dict, rejected_keys)."""
+    """Keep only schema fields with the right top-level shape, coerce prose fields
+    into paragraph lists, and strip stray inline markup / newlines from their
+    string leaves. Returns (clean_dict, rejected_keys)."""
     spec = _draft_spec(kingdom)
     clean, rejected = {}, []
     for k, v in draft.items():
@@ -8302,7 +8329,10 @@ def _ai_sanitize(draft, kingdom):
             if k not in spec and not k.startswith("_"):
                 rejected.append(k)
             continue
-        if not _SHAPE_CHECK[spec[k][0]](v):
+        expected = spec[k][0]
+        if expected == "list":
+            v = _as_paragraph_list(v)                  # str→list, split blank-line items
+        if not _SHAPE_CHECK[expected](v):
             rejected.append(k)
             continue
         clean[k] = _deformat(v)
@@ -8436,7 +8466,9 @@ def _ai_build_revise_messages(species, kingdom, feedback):
         "to confirm against authoritative sources (UF/IFAS and other .edu, USDA, FNPS, "
         "ADW, IUCN) before changing it. If the feedback is purely tone, length, or "
         "formatting, no search is needed. Never invent facts. Inside every string value "
-        "write plain prose only — no markdown, asterisk emphasis, or bullet characters."
+        "write plain prose only — no markdown, asterisk emphasis, or bullet characters. "
+        "Never put a newline inside any string value; for multi-paragraph fields use one "
+        "list item per paragraph."
     )
 
     schema_lines = "\n".join(
