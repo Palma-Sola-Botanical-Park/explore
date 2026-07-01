@@ -575,14 +575,45 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 </section>
 
 <!-- ══════════════════ FINAL CTA ══════════════════ -->
+<style>
+  /* Newsletter signup card — TEMP here; move to site.css when centralizing */
+  .nl-form{max-width:520px;margin:1.75rem auto 0;text-align:left}
+  .nl-form .nl-fields{display:flex;gap:.75rem;flex-wrap:wrap}
+  .nl-form .nl-field{flex:1 1 200px;display:flex;flex-direction:column;gap:.35rem}
+  .nl-form label{font-size:.78rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--gold-light)}
+  .nl-form input{width:100%;padding:.8rem .9rem;border:none;border-radius:9px;background:var(--cream);color:#1c1c1c;font-family:inherit;font-size:1rem}
+  .nl-form input:focus{outline:3px solid var(--gold);outline-offset:1px}
+  .nl-form button{margin-top:1.1rem;width:100%;background:var(--gold);color:var(--green-deep);border:none;border-radius:9px;padding:.9rem 1rem;font-family:inherit;font-size:1.05rem;font-weight:700;cursor:pointer;transition:background .15s,transform .15s}
+  .nl-form button:hover{background:var(--gold-light);transform:translateY(-1px)}
+  .nl-form .nl-fine{margin:.9rem 0 0;font-size:.82rem;color:rgba(255,255,255,.55)}
+  @media(max-width:520px){.nl-form .nl-fields{flex-direction:column}}
+</style>
 <section class="bg-deep" style="text-align:center">
   <div class="section-inner" style="max-width:600px;margin:0 auto">
-    <h2 class="section-title" style="color:var(--white);margin-bottom:.75rem">However you show up, we're glad you're here</h2>
-    <p style="color:rgba(255,255,255,.72);margin-bottom:2rem">Give, join, volunteer, or observe — every bit keeps the gates open and the gardens growing. Questions? Just ask.</p>
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-      <a href="tel:9417612866" class="btn btn-gold">📞 (941) 761-2866</a>
-      <a href="contact.html" class="btn btn-outline">Send a Message →</a>
-    </div>
+    <span class="label label-light">Stay connected</span>
+    <h2 class="section-title" style="color:var(--white);margin-bottom:.75rem">Join the mailing list</h2>
+    <p style="color:rgba(255,255,255,.72);margin-bottom:.5rem">Park news, what's blooming, and first word on events and classes — a friendly note about once a month.</p>
+    <!-- ┌─ Mailchimp form: fill the TWO values from Bev's embed code (Audience → Signup forms → Embedded forms) ─┐ -->
+    <form class="nl-form"
+          action="https://XXXXXXXX.us00.list-manage.com/subscribe/post?u=USERID&amp;id=LISTID"  <!-- ⬅ PASTE action URL -->
+          method="post" target="_blank" rel="noopener" novalidate>
+      <div class="nl-fields">
+        <div class="nl-field">
+          <label for="nl-name-gi">Name</label>
+          <input type="text" id="nl-name-gi" name="FNAME" placeholder="Your name" autocomplete="given-name">
+        </div>
+        <div class="nl-field">
+          <label for="nl-email-gi">Email *</label>
+          <input type="email" id="nl-email-gi" name="EMAIL" placeholder="you@example.com" required autocomplete="email">
+        </div>
+      </div>
+      <div aria-hidden="true" style="position:absolute;left:-5000px">
+        <input type="text" name="b_XXXXXXXX_YYYYYYYY" tabindex="-1" value="">  <!-- ⬅ PASTE honeypot name -->
+      </div>
+      <button type="submit" name="subscribe">Subscribe</button>
+      <p class="nl-fine">No spam, just the park. Unsubscribe anytime.</p>
+    </form>
+    <!-- └───────────────────────────────────────────────────────────────────────────────────────────┘ -->
   </div>
 </section>
 
