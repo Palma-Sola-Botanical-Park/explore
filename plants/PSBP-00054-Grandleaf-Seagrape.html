@@ -152,16 +152,14 @@
 <div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
-    <span class="badge badge-neutral">🌍 Non-Native</span>
-    <span class="badge badge-green">✅ Not Invasive</span>
-    <span class="badge badge-warn">⚠️ Mild Caution</span>
+    
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
     <li>Leaves can reach three feet across — round, stiff, and heavy. The fallen ones get picked up by staff regularly. Visitors sometimes ask if they can take one home.</li>
-    <li>Also known as Eve's Umbrella and Tin Roof Tree. Both names are accurate — a single leaf is large enough to use as a rain shield, and the dark glossy surface does have something of a tin quality to it.</li>
-    <li>Rare in Florida cultivation. The common Seagrape on Florida's beaches is a different species — this one is native to the Caribbean islands and not typically seen here.</li>
+    <li>Also known as Eve&#x27;s Umbrella and Tin Roof Tree. Both names are accurate — a single leaf is large enough to use as a rain shield, and the dark glossy surface does have something of a tin quality to it.</li>
+    <li>Rare in Florida cultivation. The common Seagrape on Florida&#x27;s beaches is a different species — this one is native to the Caribbean islands and not typically seen here.</li>
     <li>Juvenile plants produce even larger leaves than mature ones — the opposite of most trees.</li>
     </ul>
   </div>
@@ -199,7 +197,7 @@
   </div>
   <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
     <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672199731/large.jpg" loading="lazy" alt="Grandleaf Seagrape — photo by Maria Escobar"><div class="gal-credit">📷 Maria Escobar</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672201533/large.jpg" loading="lazy" alt="Grandleaf Seagrape — photo by Denise Sosa"><div class="gal-credit">📷 Denise Sosa</div></div></div></div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672199731/large.jpg" loading="lazy" alt="Grandleaf Seagrape — photo by Maria Escobar"><div class="gal-credit">📷 Maria Escobar</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672201533/large.jpg" loading="lazy" alt="Grandleaf Seagrape — photo by Denise Sosa"><div class="gal-credit">📷 Denise Sosa</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685277948/large.jpg" loading="lazy" alt="Grandleaf Seagrape — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685277958/large.jpg" loading="lazy" alt="Grandleaf Seagrape — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div><div class="gal-item" onclick="openLB(5)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685277961/large.jpg" loading="lazy" alt="Grandleaf Seagrape — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div></div></div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
     <div class="alias-list"><span class="alias-tag">Eve&#x27;s Umbrella - Tin Roof Tree</span></div>
@@ -216,7 +214,7 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-00054/662671954.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672199731/large.jpg", "credit": "Maria Escobar", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672201533/large.jpg", "credit": "Denise Sosa", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-00054/662671954.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672199731/large.jpg", "credit": "Maria Escobar", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672201533/large.jpg", "credit": "Denise Sosa", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685277948/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685277958/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685277961/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}];
     var lbIdx=0;
     function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}

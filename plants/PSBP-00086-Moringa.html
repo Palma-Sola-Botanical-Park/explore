@@ -152,9 +152,7 @@
 <div class="plant-credit">📷 Photo by <strong>Sherry Nigro</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
-    <span class="badge badge-neutral">🌍 Non-Native</span>
-    <span class="badge badge-green">✅ Not Invasive</span>
-    <span class="badge badge-warn">⚠️ Mild Caution</span>
+    
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
@@ -163,7 +161,7 @@
     <li>Almost every part of the tree is edible: leaves, pods, seeds, flowers, and roots. The immature pods — called drumsticks — are a staple vegetable in South Asian cooking, used in curries the way green beans are used elsewhere.</li>
     <li>Grows 15 to 20 feet in a single year under good conditions. Can be cut back hard and will resprout from the trunk rapidly.</li>
     <li>The roots smell and taste like horseradish. They are the one part of the tree that carries genuine toxicity concerns and should not be eaten in quantity.</li>
-    <li>Local edible landscape gardeners use a technique called coppicing — cutting the trunk down to chest height every winter. This forces the tree to bush out horizontally, keeping the nutritious leaves and pods at arm's reach rather than 30 feet in the air.</li>
+    <li>Local edible landscape gardeners use a technique called coppicing — cutting the trunk down to chest height every winter. This forces the tree to bush out horizontally, keeping the nutritious leaves and pods at arm&#x27;s reach rather than 30 feet in the air.</li>
     <li>Visitors interested in edible plants often seek this one out and pull a leaf to taste on the spot. The leaves are nutritious — though opinions on flavor vary. Randy tried one and found it quite bitter. The tree is also remarkably easy to propagate: a cutting stuck directly in the ground will root and grow.</li>
     </ul>
   </div>
@@ -216,12 +214,12 @@
   </div>
   <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
     <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/366864541/large.jpg" loading="lazy" alt="Moringa — photo by Sherry Nigro"><div class="gal-credit">📷 Sherry Nigro</div></div></div></div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/366864541/large.jpg" loading="lazy" alt="Moringa — photo by Sherry Nigro"><div class="gal-credit">📷 Sherry Nigro</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685290713/large.jpg" loading="lazy" alt="Moringa — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685290719/large.jpg" loading="lazy" alt="Moringa — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div></div></div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
     <div class="alias-list"><span class="alias-tag">Drumstick Tree</span></div>
   </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Sherry Nigro (CC-BY-NC), via iNaturalist</li></ul></div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Sherry Nigro (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
@@ -233,7 +231,7 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-00086/366864462.jpg", "credit": "Sherry Nigro", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/366864541/large.jpg", "credit": "Sherry Nigro", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-00086/366864462.jpg", "credit": "Sherry Nigro", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/366864541/large.jpg", "credit": "Sherry Nigro", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685290713/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685290719/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}];
     var lbIdx=0;
     function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}

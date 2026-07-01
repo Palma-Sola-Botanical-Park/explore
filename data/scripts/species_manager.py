@@ -8064,8 +8064,8 @@ _DRAFT_SPEC_PLANTS = {
     "seasonality":        ("dict", 'object {"bloom_months":str|null,"bloom_description":str|null,"leaf_behavior":str|null,"fruiting_months":str|null,"notes":str|null}'),
     "size":               ("dict", 'object {"height":str,"spread":str,"habit":str,"growth_rate":str,"texture":str}'),
     "growing_conditions": ("dict", 'object {"light":str,"soil_tolerances":str,"drought_tolerance":str,"spacing":str}'),
-    "edibility":          ("dict", 'object {"level":"Red|Yellow|Green","detail":str}'),
-    "toxicity":           ("dict", 'object {"level":"Red|Yellow|Green","people":str,"dogs_level":"Red|Yellow|Green","dogs":str}'),
+    "edibility":          ("dict", 'object {"level":"Red|Yellow|Green","detail":str} — detail is ONE or TWO sentences: is any part edible and the single most important caveat. Do NOT restate the toxicity hazards here; point to toxicity instead. Plain prose only, no bullets or markdown.'),
+    "toxicity":           ("dict", 'object {"level":"Red|Yellow|Green","people":str,"dogs_level":"Red|Yellow|Green","dogs":str} — people/dogs are concise (1-3 sentences each), plain prose. No bullet characters, asterisks, or markdown.'),
     "invasive":           ("dict", 'object {"level":"Red|Yellow|Green","notes":str} — Florida status (UF/IFAS, FLEPPC)'),
     "other_notes":        ("str",  "any extra noteworthy info, or omit"),
 }
@@ -8138,7 +8138,10 @@ def _ai_build_messages(species, kingdom):
         ".edu sites (especially UF/IFAS), USDA, the Florida Native Plant Society, ADW, "
         "IUCN, and botanical-garden references. Never invent facts, numbers, or sources. "
         "If you cannot substantiate a field, omit it. Favor Florida / Gulf-coast-relevant "
-        "information."
+        "information. Inside every string value write plain prose only — no markdown, "
+        "asterisk emphasis, or bullet characters; the page renderer does not interpret them. "
+        "Never let one field's content spill into another (e.g. do not repeat toxicity "
+        "hazards inside edibility)."
     )
 
     schema_lines = "\n".join(
@@ -8263,9 +8266,33 @@ def _ai_parse_json(text):
     return json.loads(chunk[i:j + 1])
 
 
+_BULLET_CHARS = "•▪‣◦·"
+
+def _deformat(value):
+    """Recursively strip stray inline markup from string leaves of drafted content.
+
+    Belt-and-suspenders behind the prompt rule: even if the model emits **bold**
+    or a bulleted list inside a string field, we neutralize it before it reaches
+    disk. The plant/wildlife renderers honor <b>...</b> (via _allow_bold) and
+    nothing else, so markdown asterisks and bullet glyphs would otherwise render
+    literally. This does NOT touch <b> tags an author may legitimately want.
+    """
+    if isinstance(value, str):
+        s = value.replace("**", "")                    # drop markdown bold
+        s = re.sub(r"[ \t]*[" + _BULLET_CHARS + r"][ \t]*", " ", s)  # bullet glyphs → space
+        s = re.sub(r"\n{3,}", "\n\n", s)                # collapse runaway blank lines
+        s = re.sub(r"[ \t]{2,}", " ", s)                # collapse double spaces
+        return s.strip()
+    if isinstance(value, list):
+        return [_deformat(x) for x in value]
+    if isinstance(value, dict):
+        return {k: _deformat(x) for k, x in value.items()}
+    return value
+
+
 def _ai_sanitize(draft, kingdom):
-    """Keep only schema fields with the right top-level shape. Returns
-    (clean_dict, rejected_keys)."""
+    """Keep only schema fields with the right top-level shape, and strip stray
+    inline markup from their string leaves. Returns (clean_dict, rejected_keys)."""
     spec = _draft_spec(kingdom)
     clean, rejected = {}, []
     for k, v in draft.items():
@@ -8278,7 +8305,7 @@ def _ai_sanitize(draft, kingdom):
         if not _SHAPE_CHECK[spec[k][0]](v):
             rejected.append(k)
             continue
-        clean[k] = v
+        clean[k] = _deformat(v)
     return clean, rejected
 
 
@@ -8408,7 +8435,8 @@ def _ai_build_revise_messages(species, kingdom, feedback):
         "(a correction, a disputed claim, a request to verify), use the web_search tool "
         "to confirm against authoritative sources (UF/IFAS and other .edu, USDA, FNPS, "
         "ADW, IUCN) before changing it. If the feedback is purely tone, length, or "
-        "formatting, no search is needed. Never invent facts."
+        "formatting, no search is needed. Never invent facts. Inside every string value "
+        "write plain prose only — no markdown, asterisk emphasis, or bullet characters."
     )
 
     schema_lines = "\n".join(

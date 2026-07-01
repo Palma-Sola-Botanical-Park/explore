@@ -139,7 +139,7 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00021/687975668.jpg" alt="Traveller&#x27;s Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <img style="cursor:pointer;object-position:49% 49%" src="../photos/PSBP-00021/687975668.jpg" alt="Traveller&#x27;s Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Tropical &amp; Exotic Palms</div>
     <div class="plant-hero-name">Traveller&#x27;s Palm</div>
@@ -152,16 +152,14 @@
 <div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
 <div class="plant-content">
   <div class="plant-status-row">
-    <span class="badge badge-neutral">🌍 Non-Native</span>
-    <span class="badge badge-green">✅ Not Invasive</span>
-    <span class="badge badge-warn">⚠️ Mild Caution</span>
+    
   </div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
     <li>Not actually a palm — more closely related to the White Bird of Paradise growing twenty feet away in this same collection, and to Heliconia.</li>
-    <li>The leaf bases genuinely collect up to a quart of rainwater each — the traveller's water source is real, though you'd want to filter out the insects first.</li>
-    <li>In Madagascar, it's pollinated primarily by lemurs — ruffed and black lemurs push their faces into the flowers and carry pollen on their snouts.</li>
+    <li>The leaf bases genuinely collect up to a quart of rainwater each — the traveller&#x27;s water source is real, though you&#x27;d want to filter out the insects first.</li>
+    <li>In Madagascar, it&#x27;s pollinated primarily by lemurs — ruffed and black lemurs push their faces into the flowers and carry pollen on their snouts.</li>
     <li>The bright blue seeds are one of the few naturally blue seeds in the plant kingdom — the color is thought to be a co-evolved signal to lemur vision.</li>
     </ul>
   </div>
@@ -211,6 +209,9 @@
     <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
     <div class="plant-section-body"><p>Seeds are edible, covered by bright blue arils. The water collected in leaf bases is real and drinkable though may contain insects. Not a significant food plant.</p><p>No known toxicity to humans or pets. Not listed as toxic to dogs by ASPCA.</p></div>
   </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/687975208/large.jpg" loading="lazy" alt="Traveller&#x27;s Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/687975669/large.jpg" loading="lazy" alt="Traveller&#x27;s Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div></div></div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
     <div class="alias-list"><span class="alias-tag">Traveler&#x27;s Tree</span><span class="alias-tag">Ravenala</span></div>
@@ -219,18 +220,20 @@
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
         <img class="lb-img" id="lbImg">
         <div class="lb-credit" id="lbCredit"></div>
-
+        <div class="lb-counter" id="lbCounter"></div>
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-00021/687975668.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-00021/687975668.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/687975208/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/687975669/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();});
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
     </script>
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
 </div>

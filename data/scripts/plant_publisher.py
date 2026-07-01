@@ -81,23 +81,26 @@ def build_plants_json_entry(species, hero):
     """Build one plants.json card entry from signage + hero photo."""
     pid = species["id"]
     cat = species.get("category", "").replace(" and ", " & ")
-    tox_level = (species.get("toxicity") or {}).get("level", "Green")
-    ed_level  = (species.get("edibility") or {}).get("level", "Green")
     inv_level = (species.get("invasive") or {}).get("level", "Green")
+    invasive  = inv_level in ("Red", "Yellow")   # kept as DATA only — no chip, no filter unless you add one
 
-    toxic  = tox_level in ("Red", "Yellow") or ed_level in ("Red", "Yellow")
-    edible = ed_level == "Green" and "edible" in ((species.get("edibility") or {}).get("detail", "")).lower() if ed_level == "Green" else False
-    # Simpler: edible = True only if edibility.level is Green AND detail doesn't say "not edible"
-    ed_detail = ((species.get("edibility") or {}).get("detail", "")).lower()
-    edible = ed_level == "Green" and "not edible" not in ed_detail and "no plant part is edible" not in ed_detail
-
-    invasive  = inv_level in ("Red", "Yellow")
-    wetland   = "wetland" in cat.lower()
-
-    # Butterfly: check wildlife_value text for butterfly mentions
-    wv = species.get("wildlife_value") or []
-    wv_text = " ".join(wv) if isinstance(wv, list) else str(wv)
-    butterfly = "butterfl" in wv_text.lower()
+    # Butterfly: prefer an explicit determination; fall back to a guarded text signal.
+    # "Is this a larval host?" is a clean boolean that belongs in the data
+    # (butterfly_host), answered once. Until that field is backfilled, derive a
+    # host-OR-nectar signal from wildlife_value prose — but guard against negations
+    # ("supports no butterfly larvae") that a bare substring would misread as a hit.
+    host = species.get("butterfly_host")
+    if host is True:
+        butterfly = True
+    else:
+        wv = species.get("wildlife_value") or []
+        wv_text = (" ".join(wv) if isinstance(wv, list) else str(wv)).lower()
+        mentions = "butterfl" in wv_text
+        negated = any(neg in wv_text for neg in (
+            "no butterfl", "not attract butterfl", "supports no butterfl",
+            "not a butterfl", "aren't butterfl", "isn't a butterfl",
+        ))
+        butterfly = mentions and not negated
 
     # Hero photo path and credit — resolve real name + license
     hero_credit = resolve_hero_credit(hero)
@@ -119,10 +122,7 @@ def build_plants_json_entry(species, hero):
         "origin": "Native" if species.get("native") else "Non-native",
         "native": bool(species.get("native")),
         "butterfly": butterfly,
-        "toxic": toxic,
-        "edible": edible,
-        "invasive": invasive,
-        "wetland": wetland,
+        "invasive": invasive,   # data only; Nature page builds no chip/filter from it
         "photo": photo,
         "page": f"plants/{page_filename(pid, species['common_name'])}",
         "credit": hero_credit["credit_name"],
@@ -283,32 +283,31 @@ def _should_be_full_width(value):
 
 
 def render_badges(species):
-    """Render the status badge row."""
-    badges = []
-    if species.get("native"):
-        badges.append('<span class="badge badge-native">🌿 Florida Native</span>')
-    else:
-        badges.append('<span class="badge badge-neutral">🌍 Non-Native</span>')
+    """Chips retired by design decision (2026-07).
 
-    inv = (species.get("invasive") or {}).get("level", "Green")
-    if inv == "Green":
-        badges.append('<span class="badge badge-green">✅ Not Invasive</span>')
-    elif inv == "Yellow":
-        badges.append('<span class="badge badge-warn">⚠️ Watch List</span>')
-    else:
-        badges.append('<span class="badge badge-danger">⚠️ Invasive</span>')
+    All three former pills are gone: the Edibility & Toxicity section now
+    carries safety honestly in the body (a single pill can't hold "edible
+    fruit / toxic seed"), native/non-native lives in plants.json purely for
+    index sorting, and invasive status is retained as data, not a pill.
+    Kept as a no-op so the single call site still resolves; delete the call
+    at the detail-header if you want it gone entirely.
+    """
+    return ""
 
-    tox = (species.get("toxicity") or {}).get("level", "Green")
-    ed  = (species.get("edibility") or {}).get("level", "Green")
-    worst = "Red" if "Red" in (tox, ed) else "Yellow" if "Yellow" in (tox, ed) else "Green"
-    if worst == "Green":
-        badges.append('<span class="badge badge-green">✅ Safe</span>')
-    elif worst == "Yellow":
-        badges.append('<span class="badge badge-warn">⚠️ Mild Caution</span>')
-    else:
-        badges.append('<span class="badge badge-danger">☠️ Toxic</span>')
 
-    return "\n    ".join(badges)
+def _allow_bold(text):
+    """Escape all HTML, then restore ONLY <b>/</b> tags.
+
+    Lets signage authors bold a keyword with <b>...</b> in quick hits while
+    keeping every other character safely escaped — a stray < or & can't break
+    the page or inject markup. Bold is the only tag permitted. Mirrors the
+    identical helper in wildlife_publisher.py so both publishers share one
+    bold convention (** was never honored anywhere; <b> is the standard).
+    """
+    safe = h(text or "")
+    safe = safe.replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>")
+    safe = safe.replace("&lt;B&gt;", "<b>").replace("&lt;/B&gt;", "</b>")
+    return safe
 
 
 def render_quick_hits(species):
@@ -317,7 +316,7 @@ def render_quick_hits(species):
         return ""
     lines = []
     for item in items:
-        lines.append(f"    <li>{item}</li>")
+        lines.append(f"    <li>{_allow_bold(item)}</li>")
     return f"""  <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
     <ul class="quick-hits-list">
