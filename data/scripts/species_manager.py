@@ -358,7 +358,7 @@ _RESEARCH_ONLY_FIELDS = {
 _PLANT_CONTENT_KEYS = [
     "quick_hits", "more_information", "origin", "wildlife_value",
     "reproduction", "growing_conditions", "edibility", "toxicity",
-    "alternate_names", "butterfly_host",
+    "alternate_names", "butterfly", "form",
 ]
 _WILDLIFE_CONTENT_KEYS = [
     "quick_hits", "more_information", "range_and_origin", "diet",
@@ -520,6 +520,32 @@ def _auto_import_hero(species_id, kingdom, common_name, scientific_name, taxon_i
             "cc_available": len(cc)}
 
 
+def _ensure_plant_schema_defaults(rec):
+    """Guarantee every schema-1.4 plant field exists (and drop retired ones) so a
+    promoted record is never silently missing — or carrying stale — fields.
+    Safe defaults only; never overwrites a value the draft already set. Web-
+    researched values come from the AI draft; rare_fruit is a park-location fact
+    set by hand, so it defaults False here."""
+    rec.setdefault("native_notes", None)
+    rec.setdefault("watch_invasive", False)
+    rec.setdefault("watch_invasive_notes", None)
+    rec.setdefault("rare_fruit", False)
+    rec.setdefault("form", "")
+    bf = rec.get("butterfly")
+    if not isinstance(bf, dict):
+        rec["butterfly"] = {"larval_food": False, "larval_species": [],
+                            "adult_food": False, "adult_species": [], "notes": None}
+    else:
+        for k, d in (("larval_food", False), ("larval_species", []),
+                     ("adult_food", False), ("adult_species", []), ("notes", None)):
+            bf.setdefault(k, d)
+    # Drop retired fields so they can never enter signage (single source of truth).
+    rec.pop("butterfly_host", None)
+    if isinstance(rec.get("invasive"), dict):
+        rec.pop("invasive", None)
+    return rec
+
+
 def promote_to_spotted(species_id, kingdom):
     """Move a species from research.json → signage JSON as 'spotted'.
 
@@ -553,6 +579,8 @@ def promote_to_spotted(species_id, kingdom):
         if k not in _RESEARCH_ONLY_FIELDS:
             record[k] = v
     record["status"] = "spotted"
+    if kingdom == "plants":
+        _ensure_plant_schema_defaults(record)
 
     # Write to signage
     path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
@@ -8057,8 +8085,10 @@ AI_DRAFT_LOG       = os.path.join(REPO, "data", "sources", "ai_draft_log.json")
 # stats, ID-linked similar_species/plant_links, internal_notes …) is protected.
 _DRAFT_SPEC_PLANTS = {
     "native":             ("bool", "true if native to Florida / SE United States; false if introduced or cultivated"),
+    "native_notes":       ("str",  "ONLY if native status is contested or partial (e.g. a genetic study reclassified it, or native only to part of Florida) — a one-sentence caveat; omit if clearly native or clearly non-native"),
+    "form":               ("str",  "growth form — EXACTLY one of: Tree | Shrub & Vine | Palm & Cycad | Groundcover & Wildflower | Foliage & Accent | Aquatic & Wetland"),
     "alternate_names":    ("list", "common alternate names — list of short strings"),
-    "butterfly_host":     ("bool", "true ONLY if a documented larval host plant for butterflies/moths; omit if unknown"),
+    "butterfly":          ("dict", 'object {"larval_food":bool,"larval_species":[str],"adult_food":bool,"adult_species":[str],"notes":str|null} — larval_food + larval_species: documented larval HOST for named butterflies/moths as "Common (Scientific)"; adult_food: notable nectar source (keep adult_species [] unless ONE specific specialist); notes: brief caveat or null'),
     "quick_hits":         ("list", "2-4 punchy, surprising one-to-two-sentence facts (list of strings)"),
     "origin":             ("list", "native range and how it came to Florida cultivation, as a list of one or two paragraph strings (never newlines inside a string)"),
     "more_information":   ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
@@ -8069,7 +8099,8 @@ _DRAFT_SPEC_PLANTS = {
     "growing_conditions": ("dict", 'object {"light":str,"soil_tolerances":str,"drought_tolerance":str,"spacing":str}'),
     "edibility":          ("dict", 'object {"level":"Red|Yellow|Green","detail":[str]} — detail is a list of SHORT paragraph strings (each ≤ ~3 sentences): is any part edible and the key caveat. Do NOT restate the toxicity hazards here; point to toxicity instead. Plain prose, no bullets or markdown.'),
     "toxicity":           ("dict", 'object {"level":"Red|Yellow|Green","people":[str],"dogs_level":"Red|Yellow|Green","dogs":[str]} — people/dogs are lists of SHORT paragraph strings (each ≤ ~3 sentences), one topic per item. Plain prose, no bullet characters, asterisks, or markdown.'),
-    "invasive":           ("dict", 'object {"level":"Red|Yellow|Green","notes":str} — Florida status (UF/IFAS, FLEPPC)'),
+    "watch_invasive":       ("bool", "true if FISC (formerly FLEPPC) Category I/II, or UF/IFAS-flagged invasive/caution in Florida; false otherwise"),
+    "watch_invasive_notes": ("str",  "if watch_invasive is true: which list/category (e.g. 'FISC Category I') plus any caveat; omit if not flagged"),
     "other_notes":        ("list", "any extra noteworthy info as a list of paragraph strings — one item per paragraph, never newlines inside a string; or omit"),
 }
 
