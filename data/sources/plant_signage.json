@@ -5,7 +5,7 @@
     "species_count": 135,
     "schema_version": "1.4",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update.",
-    "updated": "2026-07-02T12:53:45"
+    "updated": "2026-07-02T13:06:28"
   },
   "species": [
     {
@@ -366,7 +366,7 @@
         "PSBP specimen is nursery-grown and planted here in 2023."
       ],
       "internal_notes": null,
-      "native_notes": null,
+      "native_notes": "Native to the Florida Keys (and the Caribbean); state-listed as endangered in Florida.",
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
@@ -1034,9 +1034,9 @@
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Year-round flowers are a nectar source for many butterflies and bees (mainly bee-pollinated); not a notable larval host."
       }
     },
     {
@@ -1058,7 +1058,7 @@
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
-      "native": true,
+      "native": false,
       "butterfly_host": null,
       "alternate_names": [
         "Indian Blanket",
@@ -1151,16 +1151,16 @@
       },
       "other_notes": null,
       "internal_notes": null,
-      "native_notes": null,
+      "native_notes": "Long treated as a Florida native wildflower, but a 2020 study (Weakley; Franck, \"Studies in the Vascular Flora of the SE US VI\") concluded it is not native to the eastern U.S. — likely introduced from the Great Plains/Texas. FNPS, the Atlas of Florida Plants, and UF/IFAS now list it as non-native, though USDA PLANTS still shows it as native. Remains an excellent nectar and pollen plant.",
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Excellent nectar and pollen source for butterflies and bees; not a larval host."
       }
     },
     {
@@ -1281,16 +1281,16 @@
         "The genus Cordia was named for father and son German botanist-physicians Euricius Cordus (1486–1535) and Valerius Cordus (1515–1544)."
       ],
       "internal_notes": null,
-      "native_notes": null,
+      "native_notes": "Native status is disputed. UF/IFAS lists it as a Florida native, but several sources treat it as introduced/naturalized from the Caribbean (Bahamas, Greater Antilles); if native at all, only to the extreme southern Keys. State-listed as endangered in Florida.",
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Orange flowers nearly year-round attract butterflies and hummingbirds; not a documented larval host."
       }
     },
     {
@@ -1665,11 +1665,13 @@
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
-        "adult_food": false,
+        "larval_food": true,
+        "larval_species": [
+          "Little sulphur / little yellow (Pyrisitia lisa)"
+        ],
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Larval host for the little sulphur; powderpuff flowers draw mainly bees but also nectar some butterflies."
       }
     },
     {
@@ -2037,7 +2039,7 @@
         "Next time you pass a clean, well-shaped grove, you're looking at hours of careful hands-on care."
       ],
       "internal_notes": null,
-      "native_notes": null,
+      "native_notes": "Native to the Everglades and southwest Florida; state-listed as threatened.",
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
@@ -2169,11 +2171,13 @@
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
+        "larval_food": true,
+        "larval_species": [
+          "Dingy purplewing (Eunica monima)"
+        ],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
+        "notes": "Larval host for the dingy purplewing (mainly the Keys). Inconspicuous flowers draw bees, not butterflies."
       }
     },
     {
@@ -2930,10 +2934,13 @@
       "rare_fruit": false,
       "butterfly": {
         "larval_food": true,
-        "larval_species": [],
+        "larval_species": [
+          "Atala (Eumaeus atala)",
+          "Echo moth (Seirarctia echo)"
+        ],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
+        "notes": "Sole larval host for the endangered Atala butterfly (also hosts the echo moth). A cycad, so it offers no nectar."
       }
     },
     {
@@ -3054,11 +3061,13 @@
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
+        "larval_food": true,
+        "larval_species": [
+          "Henry's elfin (Callophrys henrici)"
+        ],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
+        "notes": "Larval host for Henry's elfin; small flowers are mainly bee-pollinated. Dioecious — only female trees bear the red fruit."
       }
     },
     {
@@ -3308,11 +3317,15 @@
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
+        "larval_food": true,
+        "larval_species": [
+          "Horace's duskywing (Erynnis horatius)",
+          "Red-banded hairstreak (Calycopis cecrops)",
+          "White-M hairstreak (Parrhasius m-album)"
+        ],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
+        "notes": "Larval host for several oak hairstreaks and duskywings (and the imperial moth). Wind-pollinated, so not a nectar source."
       }
     },
     {
@@ -3437,11 +3450,16 @@
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
-        "adult_food": false,
-        "adult_species": [],
-        "notes": null
+        "larval_food": true,
+        "larval_species": [
+          "Mangrove skipper (Phocides pigmalion)",
+          "Io moth (Automeris io)"
+        ],
+        "adult_food": true,
+        "adult_species": [
+          "Mangrove skipper (Phocides pigmalion)"
+        ],
+        "notes": "Larval host and nectar source for the mangrove skipper; also hosts io moth. Florida law protects mangroves from trimming or removal."
       }
     },
     {
