@@ -5,7 +5,7 @@
     "species_count": 139,
     "schema_version": "1.4",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update.",
-    "updated": "2026-07-02T17:28:12"
+    "updated": "2026-07-02T17:53:54"
   },
   "species": [
     {
@@ -14282,7 +14282,7 @@
       "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": false,
       "butterfly_host": null,
       "alternate_names": [
@@ -14291,9 +14291,7 @@
       ],
       "quick_hits": [
         "The avocado is a berry — botanically a single-seeded berry — despite its size and buttery, savory flesh.",
-        "Its flowers play a clever trick: each opens as female one day and male the next, timing the switch to avoid pollinating itself.",
-        "The creamy fruit is rich in healthy fats, which is unusual — most fruits store energy as sugar, not oil.",
-        "Delicious to people, but the leaves, skin, and pit contain persin, which is toxic to dogs, cats, and especially birds."
+        "Its flowers play a clever trick: each opens as female one day and male the next, timing the switch to avoid pollinating itself."
       ],
       "origin": [
         "Native to south-central Mexico and Central America, where it has been cultivated for thousands of years. Now grown worldwide in warm climates, with Florida (especially the south) a major U.S. growing region."
@@ -14367,7 +14365,9 @@
         "level": "Green",
         "notes": "Not invasive in Florida."
       },
-      "other_notes": null,
+      "other_notes": [
+        "The avocado belongs to the laurel family (Lauraceae), which puts it in close botanical company with several other park specimens including sassafras, spicebush, and redbay. That shared family membership also means it faces laurel wilt, the same fungal disease currently threatening native redbay populations across Florida and the Southeast."
+      ],
       "internal_notes": [
         "Added 2026-06-18 from iNaturalist gap analysis (June 2026 batch). Anchor obs #368070571 (denise_sosa); Unique ID written to iNat. Shell row — content fields pending review."
       ],
@@ -14380,8 +14380,12 @@
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
-      }
+        "notes": "Persea americana is in the family Lauraceae, which hosts some Papilionid larvae in Asia (e.g., Graphium sarpedon) and specialist Phyllocnistis leaf-mining micro-moths in the Neotropics, but no North American or Florida butterfly or moth species is documented using cultivated avocado as a larval host at Bradenton latitudes; avocado flowers attract generalist bees but are not noted as a significant butterfly nectar source."
+      },
+      "safety_note": [
+        "The leaves, bark, skin, and seed of the avocado contain a natural compound called persin. While entirely safe and highly nutritious for people, persin is seriously toxic to birds, rabbits, and livestock, often causing fatal heart damage. Keep pet birds far away from any part of this tree.",
+        "Dogs and cats are significantly less sensitive to persin, but the large pit poses a severe choking and intestinal obstruction hazard, and consuming leaves or bark can cause digestive upset."
+      ]
     },
     {
       "id": "PSBP-00137",
@@ -16557,19 +16561,91 @@
       "internal_notes": [
         "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP)."
       ],
-      "alternate_names": null,
-      "quick_hits": null,
-      "origin": null,
-      "more_information": null,
-      "wildlife_value": null,
-      "reproduction": null,
-      "seasonality": null,
-      "size": null,
-      "growing_conditions": null,
-      "edibility": null,
-      "toxicity": null,
+      "alternate_names": [
+        "Eggfruit",
+        "Yellow Sapote",
+        "Cupcake Fruit",
+        "Zapote Amarillo",
+        "Sapote Borracho"
+      ],
+      "quick_hits": [
+        "The flesh of a ripe canistel has the dense, dry, creamy texture of a hard-boiled egg yolk — which is exactly where both its common names come from. It is sweet rather than savory, and closer in flavor to sweet potato pie or baked pumpkin than anything else in the fruit bowl.",
+        "Unlike most fruits, canistel continues to ripen after you pick it — but timing the harvest is tricky. Fruit picked too firm may never soften properly and stays astringent no matter how long you wait.",
+        "Despite producing a showy, golden fruit, this tree gets almost no help distributing its seeds: insects and birds largely avoid the fruit, apparently put off by its astringency. Humans are the primary dispersal agents.",
+        "Florida may hold more diversity of canistel cultivars — named varieties selected for size, sweetness, and shape — than any other location in the world, thanks to decades of grower experimentation in South Florida."
+      ],
+      "origin": [
+        "Canistel is native to the lowland forests of southern Mexico, Belize, Guatemala, and El Salvador. From that Central American core it spread — mostly through cultivation — across the Caribbean, and later to Southeast Asia, East Africa, and Australia.",
+        "UF/IFAS records its introduction to Florida in the early 20th century. It took root most readily in the warm, frost-free counties of South Florida and the Keys, where it has been a quiet staple of tropical fruit collections and dooryard gardens ever since."
+      ],
+      "more_information": [
+        "The Sapotaceae family has a long history of producing economically important tropical fruits, and canistel sits comfortably in that company. Its closest relatives here in the park include mamey sapote and sapodilla — all share the family's characteristic milky latex and glossy foliage.",
+        "The bark of canistel is brown and furrowed, and the trunk oozes a sticky white sap when cut, which can gum up pruning tools.",
+        "Harvesting canistel well takes practice. The fruit is climacteric — it keeps ripening after you pick it — but fruit taken from the tree too early may remain dry, mealy, and unpleasantly astringent no matter how long it sits. The signal to harvest is when the skin turns from green to yellow-orange.",
+        "After that, let it sit at room temperature until it gives slightly to the touch, at which point the flesh becomes creamy and sweet.",
+        "Florida growers have developed a range of named cultivars over the decades — Oro, Bruce, Trompo, and Fairchild No. 1 among them — each selected for improvements in fruit size, shape, or flavor. Grafted trees are strongly preferred over seedlings: seedling trees may take three to six years or more to bear fruit, and the results are unpredictable."
+      ],
+      "wildlife_value": [
+        "Canistel flowers are pollinated by insects, and the small, fragrant, cream-colored blossoms can attract generalist bees. The tree's wildlife value beyond pollination is limited: the fruit, despite its vivid golden color, is largely avoided by birds and insects, apparently due to its astringent properties. This makes humans the tree's primary seed dispersers in cultivation.",
+        "The evergreen canopy does provide shelter and perching habitat for birds year-round, and the dense, glossy foliage contributes to garden-level structural diversity. But visitors hoping to see frugivorous birds working the canopy are unlikely to find much activity here — the canistel is an outlier among tropical fruit trees in offering relatively little to local wildlife."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Flowers",
+            "text": "Small, cream-colored, and fragrant — produced singly or in small clusters along the branches. They have a silky texture and are bisexual. Insect-pollinated."
+          },
+          {
+            "label": "Fruit",
+            "text": "Highly variable in shape — round, oval, spindle-shaped, or obovate, often with a pointed tip. Skin is thin, waxy, and smooth; green when immature, turning bright yellow to orange-yellow at maturity. Fruit range from roughly 3 to 5 inches long."
+          },
+          {
+            "label": "Seeds",
+            "text": "One to four large, smooth, glossy brown seeds per fruit. Seeds lose viability quickly and should be planted within days of removal from the fruit."
+          },
+          {
+            "label": "Propagation",
+            "text": "Grafted trees are standard in Florida cultivation — they fruit sooner and produce predictably. Seedling trees may take three to six years to bear, with variable results. Air-layering and cleft grafting are also used."
+          },
+          {
+            "label": "Leaves and Bark",
+            "text": "Leaves are evergreen, lanceolate to obovate, thin, and glossy — clustered toward the branch tips. Bark is brown and wrinkled; the trunk and branches exude a white, sticky latex when cut."
+          }
+        ],
+        "what_to_look_for": "Scan the branch tips for the clustered, glossy leaves — they tend to droop slightly and gather toward the ends of the branches. In fruit, the golden-yellow to orange skin is unmistakable and catches the light. Look closely at the stem end of the fruit: a small, persistent calyx is often visible there. The bark is brown and furrowed, and a small nick will reveal the white latex beneath. Flowers are easy to miss — small, cream-colored, and tucked among the leaves."
+      },
+      "seasonality": {
+        "bloom_months": "spring to summer",
+        "bloom_description": "Small, cream-colored, fragrant flowers borne singly or in small clusters along the branches.",
+        "leaf_behavior": "Evergreen",
+        "fruiting_months": "Primarily November through March in most of Florida; some cultivars and locations fruit August through October",
+        "notes": "A welcome winter-season producer when most other tropical fruits are out of season. Fruiting timing varies somewhat by cultivar and microclimate."
+      },
+      "size": {
+        "height": "20 to 35 feet in cultivation; can reach 60 to 100 feet in the wild under ideal conditions",
+        "spread": "15 to 25 feet",
+        "habit": "erect, with a slender to moderately spreading crown",
+        "growth_rate": "moderate",
+        "texture": "medium-fine"
+      },
+      "growing_conditions": {
+        "light": "full sun to part sun",
+        "soil_tolerances": "sandy · limestone · clay · tolerant of poor soils; prefers well-drained conditions",
+        "drought_tolerance": "moderate to good once established",
+        "spacing": "20 to 25 feet from other trees; can be kept smaller with annual pruning"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
       "invasive": null,
-      "other_notes": null,
+      "other_notes": [
+        "Canistel appears on Miami-Dade County's local invasive and prohibited plant list, though it is not currently listed as a FISC (formerly FLEPPC) Category I or II invasive at the statewide level. Its escape from cultivation into natural areas has been documented in extreme South Florida. It is not a concern in Manatee County's climate.",
+        "The botanical name on the park's tag — Lucuma campechiana — is the currently accepted name per Kew's Plants of the World Online, following the reinstatement of the genus Lucuma. Pouteria campechiana remains widely used in horticultural literature and by UF/IFAS; both names refer to the same plant."
+      ],
       "butterfly_host": null,
       "native_notes": null,
       "watch_invasive": false,
@@ -16581,7 +16657,10 @@
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "safety_note": [
+        "The ripe fruit is perfectly safe to eat and quite nutritious — rich in beta-carotene, niacin, and potassium. Unripe fruit is astringent and unpleasant but not dangerous. The tree's milky latex sap can be a mild skin irritant for sensitive individuals, so wear gloves when pruning. Otherwise the tree is harmless to people and pets."
+      ]
     },
     {
       "id": "PSBP-00659",
