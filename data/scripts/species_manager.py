@@ -8054,21 +8054,27 @@ def render_phenology():
 # ===== VERIFY TAB (spliced) =====
 VERIFY_BODY = r"""
 <style>
-  .vf-wrap { max-width: 920px; }
-  .vf-pickrow { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:16px; }
-  .vf-pickrow select { padding:8px 10px; border:1px solid var(--border,#ccc); border-radius:8px; font-size:14px; min-width:220px; }
+  .vf-wrap { max-width: 960px; }
+  .vf-pickrow { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; margin-bottom:16px; }
+  .vf-pickrow select { padding:8px 10px; border:1px solid var(--border,#ccc); border-radius:8px; font-size:14px; }
+  .vf-searchbox { padding:8px 10px; border:1px solid var(--border,#ccc); border-radius:8px; font-size:14px; width:100%; box-sizing:border-box; }
+  .vf-suglist { position:absolute; z-index:20; left:0; right:0; background:#fff; border:1px solid var(--border,#ccc); border-radius:8px; margin-top:2px; max-height:280px; overflow:auto; box-shadow:0 6px 18px rgba(0,0,0,.12); display:none; }
+  .vf-suglist.show { display:block; }
+  .vf-sug { padding:7px 10px; cursor:pointer; font-size:14px; border-bottom:1px solid #f0f0f0; }
+  .vf-sug:hover, .vf-sug.hi { background:#eef4ee; }
+  .vf-sug small { color:#888; }
   .vf-fields { display:flex; flex-direction:column; gap:8px; margin:8px 0 16px; }
   .vf-field { border:1px solid var(--border,#ddd); border-radius:10px; padding:10px 12px; }
   .vf-field label.vf-head { display:flex; gap:8px; align-items:center; font-weight:600; cursor:pointer; }
   .vf-cur { color:#555; font-size:13px; margin:4px 0 0 26px; }
   .vf-badge { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; font-weight:600; }
   .vf-true { background:#e6f4ea; color:#1b5e20; } .vf-false { background:#f0f0f0; color:#666; }
+  .vf-lvl-green { background:#e6f4ea; color:#1b5e20; } .vf-lvl-yellow { background:#fdf3d6; color:#8a6d00; } .vf-lvl-red { background:#fbe3e0; color:#a12318; }
   .vf-card { border:1px solid var(--border,#ddd); border-left:4px solid #b5651d; border-radius:10px; padding:12px 14px; margin:10px 0; }
   .vf-card.changed { border-left-color:#c9820a; background:#fffdf6; }
   .vf-card.same { border-left-color:#4a7c1f; }
   .vf-card.err  { border-left-color:#b52a2a; background:#fdf3f3; }
-  .vf-arrow { color:#888; margin:0 6px; }
-  .vf-conf { font-size:12px; color:#777; margin-left:6px; }
+  .vf-arrow { color:#888; margin:0 6px; } .vf-conf { font-size:12px; color:#777; margin-left:6px; }
   .vf-reason { font-size:13px; color:#444; margin:6px 0; }
   .vf-actions { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
   .vf-actions button { padding:5px 12px; border-radius:8px; border:1px solid var(--border,#ccc); background:#fff; cursor:pointer; font-size:13px; }
@@ -8076,24 +8082,27 @@ VERIFY_BODY = r"""
   .vf-accept.on { background:#1b5e20; } .vf-reject.on { background:#777; } .vf-override.on { background:#b5651d; }
   .vf-ovr { margin-top:8px; padding:8px; background:#faf7f2; border-radius:8px; display:none; }
   .vf-ovr.show { display:block; }
-  .vf-ovr input[type=text], .vf-ovr textarea { width:100%; padding:6px 8px; border:1px solid var(--border,#ccc); border-radius:6px; font-size:13px; box-sizing:border-box; }
+  .vf-ovr input[type=text], .vf-ovr textarea, .vf-ovr select { width:100%; padding:6px 8px; border:1px solid var(--border,#ccc); border-radius:6px; font-size:13px; box-sizing:border-box; margin:3px 0; }
   .vf-ovr label { font-size:13px; display:flex; gap:6px; align-items:center; margin:4px 0; }
-  .vf-src { font-size:12px; color:#666; margin-top:10px; }
-  .vf-note { color:#555; font-style:italic; }
+  .vf-src { font-size:12px; color:#666; margin-top:10px; } .vf-note { color:#555; font-style:italic; }
   #vf-status { margin:10px 0; font-size:14px; }
   .vf-spin { display:inline-block; animation:vfspin 1s linear infinite; } @keyframes vfspin { to { transform:rotate(360deg); } }
 </style>
 
 <div class="vf-wrap">
   <h2>🔎 Verify a field</h2>
-  <p style="color:#555; max-width:640px;">Pick a species and the specific flags to re-check. Claude re-researches only those, shows you current → proposed with sources, and writes <b>nothing</b> until you Accept or Override. Use it for corrections — an expert's note, a disputed call, a default that slipped through.</p>
+  <p style="color:#555; max-width:660px;">Search a species and pick the specific fields to re-check. Claude re-researches only those, shows current → proposed with sources, and writes <b>nothing</b> until you Accept or Override. Use it for corrections — an expert's note, a disputed call, a default that slipped through, or a color box the parser got wrong.</p>
 
   <div class="vf-pickrow">
     <select id="vf-kingdom" onchange="vfLoadSpecies()">
       <option value="plants">🌿 Plants</option>
       <option value="wildlife">🦋 Wildlife</option>
     </select>
-    <select id="vf-species" onchange="vfLoadFields()"><option value="">— choose a species —</option></select>
+    <div style="position:relative; flex:1; min-width:320px;">
+      <input type="text" id="vf-search" class="vf-searchbox" placeholder="type a common or scientific name…" autocomplete="off"
+             oninput="vfFilter()" onfocus="vfFilter()" onblur="vfBlur()" onkeydown="vfKey(event)">
+      <div id="vf-suglist" class="vf-suglist"></div>
+    </div>
   </div>
 
   <div id="vf-fields" class="vf-fields"></div>
@@ -8109,85 +8118,115 @@ VERIFY_BODY = r"""
 
 <script>
   function vfEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function vfToast(msg, bad){ const s=document.getElementById('vf-status'); s.innerHTML = (bad?'⚠️ ':'✓ ')+vfEsc(msg); s.style.color = bad?'#b52a2a':'#1b5e20'; }
-  let VF_META = {};      // field -> {label, value}
-  let VF_PROP = {};      // field -> proposal
-  let VF_DECIDE = {};    // field -> 'accept'|'reject'|'override'
+  function vfToast(msg, bad){ const s=document.getElementById('vf-status'); s.innerHTML=(bad?'⚠️ ':'✓ ')+vfEsc(msg); s.style.color=bad?'#b52a2a':'#1b5e20'; }
+  let VF_SPECIES=[], VF_SELECTED='', VF_META={}, VF_PROP={}, VF_DECIDE={}, VF_HI=-1;
 
   function vfKingdom(){ return document.getElementById('vf-kingdom').value; }
 
   async function vfLoadSpecies(){
-    const sel = document.getElementById('vf-species');
-    sel.innerHTML = '<option value="">— loading… —</option>';
-    document.getElementById('vf-fields').innerHTML = '';
-    document.getElementById('vf-results').innerHTML = '';
+    VF_SELECTED=''; document.getElementById('vf-search').value='';
+    document.getElementById('vf-fields').innerHTML='';
+    document.getElementById('vf-results').innerHTML='';
     document.getElementById('vf-go').style.display='none';
     document.getElementById('vf-applyrow').style.display='none';
+    document.getElementById('vf-status').innerHTML='';
     try {
       const r = await fetch('/api/species?kingdom='+vfKingdom());
-      const d = await r.json();
-      const opts = (d.species||[]).map(s =>
-        `<option value="${vfEsc(s.id)}">${vfEsc(s.common_name)} — ${vfEsc(s.scientific_name)} [${vfEsc(s.status)}]</option>`).join('');
-      sel.innerHTML = '<option value="">— choose a species —</option>' + opts;
-    } catch(e){ sel.innerHTML='<option value="">error loading species</option>'; }
+      const d = await r.json(); VF_SPECIES = d.species || [];
+    } catch(e){ VF_SPECIES=[]; vfToast('could not load species', true); }
   }
 
-  function vfFmtFlag(v){ return `<span class="vf-badge ${v.value?'vf-true':'vf-false'}">${v.value?'TRUE':'FALSE'}</span>` +
-      (v.note?` <span class="vf-note">${vfEsc(v.note)}</span>`:''); }
-  function vfFmtButterfly(v){
-    const ls = (v.larval_species||[]).map(vfEsc).join(', ');
-    const as = (v.adult_species||[]).map(vfEsc).join(', ');
-    return `<span class="vf-badge ${v.larval_food?'vf-true':'vf-false'}">host ${v.larval_food?'YES':'no'}</span>` +
-      (ls?` <span class="vf-note">${ls}</span>`:'') +
-      ` &nbsp;<span class="vf-badge ${v.adult_food?'vf-true':'vf-false'}">nectar ${v.adult_food?'YES':'no'}</span>` +
-      (as?` <span class="vf-note">${as}</span>`:'') +
-      (v.notes?`<div class="vf-note" style="margin-top:4px">${vfEsc(v.notes)}</div>`:'');
+  function vfMatches(){
+    const q = document.getElementById('vf-search').value.trim().toLowerCase();
+    if(!q) return VF_SPECIES.slice(0,25);
+    return VF_SPECIES.filter(s =>
+      (s.common_name||'').toLowerCase().includes(q) ||
+      (s.scientific_name||'').toLowerCase().includes(q)).slice(0,25);
   }
-  function vfFmt(kind, v){ return kind==='butterfly'? vfFmtButterfly(v) : vfFmtFlag(v); }
+  function vfFilter(){
+    const box=document.getElementById('vf-suglist'); const list=vfMatches(); VF_HI=-1;
+    if(!list.length){ box.classList.remove('show'); box.innerHTML=''; return; }
+    box.innerHTML = list.map((s,i)=>
+      `<div class="vf-sug" data-id="${vfEsc(s.id)}" onmousedown="vfPick('${vfEsc(s.id)}')">
+        ${vfEsc(s.common_name)} <small>${vfEsc(s.scientific_name)} · ${vfEsc(s.status)}</small></div>`).join('');
+    box.classList.add('show');
+  }
+  function vfBlur(){ setTimeout(()=>document.getElementById('vf-suglist').classList.remove('show'), 150); }
+  function vfKey(e){
+    const box=document.getElementById('vf-suglist'); const sugs=[...box.querySelectorAll('.vf-sug')];
+    if(!sugs.length) return;
+    if(e.key==='ArrowDown'){ VF_HI=Math.min(VF_HI+1,sugs.length-1); e.preventDefault(); }
+    else if(e.key==='ArrowUp'){ VF_HI=Math.max(VF_HI-1,0); e.preventDefault(); }
+    else if(e.key==='Enter'){ if(VF_HI>=0){ vfPick(sugs[VF_HI].dataset.id); e.preventDefault(); } return; }
+    else return;
+    sugs.forEach((el,i)=>el.classList.toggle('hi', i===VF_HI));
+  }
+  function vfPick(id){
+    const s = VF_SPECIES.find(x=>x.id===id); if(!s) return;
+    VF_SELECTED = id;
+    document.getElementById('vf-search').value = s.common_name + ' — ' + s.scientific_name;
+    document.getElementById('vf-suglist').classList.remove('show');
+    vfLoadFields();
+  }
+
+  function vfBadge(cls, txt){ return `<span class="vf-badge ${cls}">${txt}</span>`; }
+  function vfLvl(l){ const c = l==='Green'?'vf-lvl-green':l==='Yellow'?'vf-lvl-yellow':l==='Red'?'vf-lvl-red':'vf-false'; return vfBadge(c, l||'—'); }
+  function vfFmt(kind, v){
+    if(kind==='butterfly'){
+      const ls=(v.larval_species||[]).map(vfEsc).join(', '), as=(v.adult_species||[]).map(vfEsc).join(', ');
+      return vfBadge(v.larval_food?'vf-true':'vf-false','host '+(v.larval_food?'YES':'no')) + (ls?` <span class="vf-note">${ls}</span>`:'') +
+        ' &nbsp;' + vfBadge(v.adult_food?'vf-true':'vf-false','nectar '+(v.adult_food?'YES':'no')) + (as?` <span class="vf-note">${as}</span>`:'') +
+        (v.notes?`<div class="vf-note" style="margin-top:4px">${vfEsc(v.notes)}</div>`:'');
+    }
+    if(kind==='edibility'){
+      const d=(v.detail||[]).map(vfEsc).join(' '); return vfLvl(v.level) + (d?` <span class="vf-note">${d}</span>`:'');
+    }
+    if(kind==='toxicity'){
+      const p=(v.people||[]).map(vfEsc).join(' '), dg=(v.dogs||[]).map(vfEsc).join(' ');
+      return 'people ' + vfLvl(v.level) + (p?` <span class="vf-note">${p}</span>`:'') +
+        '<br>dogs ' + vfLvl(v.dogs_level) + (dg?` <span class="vf-note">${dg}</span>`:'');
+    }
+    return vfBadge(v.value?'vf-true':'vf-false', v.value?'TRUE':'FALSE') + (v.note?` <span class="vf-note">${vfEsc(v.note)}</span>`:'');
+  }
 
   async function vfLoadFields(){
-    const id = document.getElementById('vf-species').value;
     document.getElementById('vf-results').innerHTML='';
     document.getElementById('vf-applyrow').style.display='none';
     document.getElementById('vf-status').innerHTML='';
-    const box = document.getElementById('vf-fields');
-    if(!id){ box.innerHTML=''; document.getElementById('vf-go').style.display='none'; return; }
-    box.innerHTML = '<div class="vf-cur">loading current values…</div>';
-    const r = await fetch('/api/verify/fields?kingdom='+vfKingdom()+'&id='+encodeURIComponent(id));
-    const d = await r.json();
+    const box=document.getElementById('vf-fields');
+    if(!VF_SELECTED){ box.innerHTML=''; document.getElementById('vf-go').style.display='none'; return; }
+    box.innerHTML='<div class="vf-cur">loading current values…</div>';
+    const r=await fetch('/api/verify/fields?kingdom='+vfKingdom()+'&id='+encodeURIComponent(VF_SELECTED));
+    const d=await r.json();
     if(!d.ok){ box.innerHTML='<div class="vf-cur">'+vfEsc(d.error||'error')+'</div>'; return; }
-    VF_META = d.fields;
-    box.innerHTML = Object.keys(VF_META).map(f => {
-      const m = VF_META[f];
-      const kind = f==='butterfly'?'butterfly':'flag';
+    VF_META=d.fields;
+    box.innerHTML = Object.keys(VF_META).map(f=>{
+      const m=VF_META[f];
       return `<div class="vf-field">
         <label class="vf-head"><input type="checkbox" class="vf-pick" value="${vfEsc(f)}"> ${vfEsc(m.label)}</label>
-        <div class="vf-cur">now: ${vfFmt(kind, m.value)}</div></div>`;
+        <div class="vf-cur">now: ${vfFmt(m.kind, m.value)}</div></div>`;
     }).join('');
     document.getElementById('vf-go').style.display='inline-block';
   }
-
   function vfSelected(){ return [...document.querySelectorAll('.vf-pick:checked')].map(c=>c.value); }
 
   async function vfVerify(){
-    const id = document.getElementById('vf-species').value;
-    const fields = vfSelected();
+    const fields=vfSelected();
     if(!fields.length){ vfToast('Check at least one field to verify', true); return; }
-    const res = document.getElementById('vf-results');
+    const res=document.getElementById('vf-results');
     document.getElementById('vf-applyrow').style.display='none';
-    document.getElementById('vf-status').innerHTML = '<span class="vf-spin">🔎</span> Claude is re-checking '+fields.length+' field(s) against the web…';
-    document.getElementById('vf-status').style.color='#555';
-    res.innerHTML='';
+    document.getElementById('vf-status').innerHTML='<span class="vf-spin">🔎</span> Claude is re-checking '+fields.length+' field(s) against the web…';
+    document.getElementById('vf-status').style.color='#555'; res.innerHTML='';
     try {
-      const r = await fetch('/api/ai/verify', { method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({kingdom:vfKingdom(), id:id, fields:fields}) });
-      const d = await r.json();
+      const r=await fetch('/api/ai/verify',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({kingdom:vfKingdom(), id:VF_SELECTED, fields:fields})});
+      const d=await r.json();
       if(!d.ok){ vfToast(d.error||'verify failed', true); if(d.raw_tail) res.innerHTML='<pre>'+vfEsc(d.raw_tail)+'</pre>'; return; }
       VF_PROP={}; VF_DECIDE={};
-      res.innerHTML = (d.proposals||[]).map(vfCard).join('');
+      res.innerHTML=(d.proposals||[]).map(vfCard).join('');
       if(d.sources && d.sources.length){
-        const items = d.sources.slice(0,15).map(s=>`<li><a href="${vfEsc(s.url)}" target="_blank" rel="noopener">${vfEsc(s.title||s.url)}</a></li>`).join('');
-        res.innerHTML += `<details class="vf-src"><summary>📚 ${d.sources.length} source(s) · ${d.searches||0} search(es) · ${vfEsc(d.model)}</summary><ul>${items}</ul></details>`;
+        const items=d.sources.slice(0,15).map(s=>`<li><a href="${vfEsc(s.url)}" target="_blank" rel="noopener">${vfEsc(s.title||s.url)}</a></li>`).join('');
+        res.innerHTML+=`<details class="vf-src"><summary>📚 ${d.sources.length} source(s) · ${d.searches||0} search(es) · ${vfEsc(d.model)}</summary><ul>${items}</ul></details>`;
       }
       document.getElementById('vf-status').innerHTML='';
       document.getElementById('vf-applyrow').style.display='block';
@@ -8200,43 +8239,49 @@ VERIFY_BODY = r"""
         <div class="vf-cur">now: ${vfFmt(p.kind, p.current)}</div></div>`;
     }
     VF_PROP[p.field]=p;
-    const cls = p.changed ? 'changed' : 'same';
-    const badge = p.changed ? '<b style="color:#c9820a">CHANGE</b>' : '<b style="color:#4a7c1f">matches current</b>';
-    return `<div class="vf-card ${cls}" id="vfc-${vfEsc(p.field)}">
+    const badge = p.changed?'<b style="color:#c9820a">CHANGE</b>':'<b style="color:#4a7c1f">matches current</b>';
+    return `<div class="vf-card ${p.changed?'changed':'same'}" id="vfc-${vfEsc(p.field)}">
       <div><b>${vfEsc(p.label)}</b> — ${badge}<span class="vf-conf">confidence: ${vfEsc(p.confidence)}</span></div>
-      <div style="margin-top:6px">${vfFmt(p.kind, p.current)} <span class="vf-arrow">→</span> ${vfFmt(p.kind, p.proposed)}</div>
+      <div style="margin-top:6px">${vfFmt(p.kind,p.current)} <span class="vf-arrow">→</span> ${vfFmt(p.kind,p.proposed)}</div>
       ${p.reason?`<div class="vf-reason">${vfEsc(p.reason)}</div>`:''}
       <div class="vf-actions">
         <button class="vf-accept" onclick="vfDecide('${vfEsc(p.field)}','accept')">Accept</button>
         <button class="vf-reject" onclick="vfDecide('${vfEsc(p.field)}','reject')">Reject</button>
         <button class="vf-override" onclick="vfDecide('${vfEsc(p.field)}','override')">Override</button>
       </div>
-      <div class="vf-ovr" id="vfo-${vfEsc(p.field)}">${vfOverrideForm(p)}</div>
-    </div>`;
+      <div class="vf-ovr" id="vfo-${vfEsc(p.field)}">${vfOverrideForm(p)}</div></div>`;
   }
 
+  function vfLvlSelect(id, val){
+    return `<select id="${id}">`+['Green','Yellow','Red'].map(l=>`<option ${val===l?'selected':''}>${l}</option>`).join('')+`</select>`;
+  }
   function vfOverrideForm(p){
-    const id = p.field;
+    const id=p.field, v=p.proposed;
     if(p.kind==='butterfly'){
-      const v = p.proposed;
       return `<label><input type="checkbox" id="ov-lf-${id}" ${v.larval_food?'checked':''}> larval host</label>
         <input type="text" id="ov-ls-${id}" placeholder="host species, comma-separated" value="${vfEsc((v.larval_species||[]).join(', '))}">
         <label><input type="checkbox" id="ov-af-${id}" ${v.adult_food?'checked':''}> nectar source</label>
         <input type="text" id="ov-as-${id}" placeholder="notable nectar species (optional)" value="${vfEsc((v.adult_species||[]).join(', '))}">
         <textarea id="ov-nt-${id}" rows="2" placeholder="notes (e.g. expert correction + date)">${vfEsc(v.notes||'')}</textarea>`;
     }
-    const v = p.proposed;
+    if(p.kind==='edibility'){
+      return `<label>Level ${vfLvlSelect('ov-lv-'+id, v.level)}</label>
+        <textarea id="ov-dt-${id}" rows="2" placeholder="detail">${vfEsc((v.detail||[]).join(' '))}</textarea>`;
+    }
+    if(p.kind==='toxicity'){
+      return `<label>People ${vfLvlSelect('ov-lv-'+id, v.level)}</label>
+        <textarea id="ov-pp-${id}" rows="2" placeholder="people note">${vfEsc((v.people||[]).join(' '))}</textarea>
+        <label>Dogs ${vfLvlSelect('ov-dl-'+id, v.dogs_level)}</label>
+        <textarea id="ov-dg-${id}" rows="2" placeholder="dogs note">${vfEsc((v.dogs||[]).join(' '))}</textarea>`;
+    }
     return `<label><input type="radio" name="ov-${id}" value="true" id="ov-t-${id}" ${v.value?'checked':''}> TRUE</label>
       <label><input type="radio" name="ov-${id}" value="false" id="ov-f-${id}" ${!v.value?'checked':''}> FALSE</label>
       <textarea id="ov-nt-${id}" rows="2" placeholder="note (e.g. 'Dr. Smith confirmed on site, 2026-07-02')">${vfEsc(v.note||'')}</textarea>`;
   }
 
   function vfDecide(field, action){
-    VF_DECIDE[field]=action;
-    const card=document.getElementById('vfc-'+field);
-    ['accept','reject','override'].forEach(a=>{
-      const b=card.querySelector('.vf-'+a); if(b) b.classList.toggle('on', a===action);
-    });
+    VF_DECIDE[field]=action; const card=document.getElementById('vfc-'+field);
+    ['accept','reject','override'].forEach(a=>{ const b=card.querySelector('.vf-'+a); if(b) b.classList.toggle('on', a===action); });
     document.getElementById('vfo-'+field).classList.toggle('show', action==='override');
   }
 
@@ -8244,33 +8289,29 @@ VERIFY_BODY = r"""
     const p=VF_PROP[field], action=VF_DECIDE[field];
     if(action==='reject'||!action) return null;
     if(action==='accept') return {field, source_kind:'web', data:p.proposed};
-    // override
-    const id=field;
-    if(p.kind==='butterfly'){
-      const split=s=>s.split(',').map(x=>x.trim()).filter(Boolean);
-      return {field, source_kind:'override', data:{
-        larval_food: document.getElementById('ov-lf-'+id).checked,
-        larval_species: split(document.getElementById('ov-ls-'+id).value),
-        adult_food: document.getElementById('ov-af-'+id).checked,
-        adult_species: split(document.getElementById('ov-as-'+id).value),
-        notes: document.getElementById('ov-nt-'+id).value.trim() || null }};
-    }
+    const id=field, split=s=>s.split(',').map(x=>x.trim()).filter(Boolean), lines=s=>s.trim()?[s.trim()]:[];
+    if(p.kind==='butterfly') return {field, source_kind:'override', data:{
+      larval_food:document.getElementById('ov-lf-'+id).checked, larval_species:split(document.getElementById('ov-ls-'+id).value),
+      adult_food:document.getElementById('ov-af-'+id).checked, adult_species:split(document.getElementById('ov-as-'+id).value),
+      notes:document.getElementById('ov-nt-'+id).value.trim()||null }};
+    if(p.kind==='edibility') return {field, source_kind:'override', data:{
+      level:document.getElementById('ov-lv-'+id).value, detail:lines(document.getElementById('ov-dt-'+id).value) }};
+    if(p.kind==='toxicity') return {field, source_kind:'override', data:{
+      level:document.getElementById('ov-lv-'+id).value, people:lines(document.getElementById('ov-pp-'+id).value),
+      dogs_level:document.getElementById('ov-dl-'+id).value, dogs:lines(document.getElementById('ov-dg-'+id).value) }};
     return {field, source_kind:'override', data:{
-      value: document.getElementById('ov-t-'+id).checked,
-      note: document.getElementById('ov-nt-'+id).value.trim() || null }};
+      value:document.getElementById('ov-t-'+id).checked, note:document.getElementById('ov-nt-'+id).value.trim()||null }};
   }
 
   async function vfApply(){
-    const decisions = Object.keys(VF_PROP).map(vfCollect).filter(Boolean);
+    const decisions=Object.keys(VF_PROP).map(vfCollect).filter(Boolean);
     if(!decisions.length){ vfToast('Nothing accepted or overridden yet', true); return; }
-    const id=document.getElementById('vf-species').value;
-    const r = await fetch('/api/ai/verify/apply', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({kingdom:vfKingdom(), id:id, decisions:decisions}) });
-    const d = await r.json();
+    const r=await fetch('/api/ai/verify/apply',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({kingdom:vfKingdom(), id:VF_SELECTED, decisions:decisions})});
+    const d=await r.json();
     if(!d.ok){ vfToast(d.error||'apply failed', true); return; }
     vfToast('Wrote '+d.applied.length+' field(s): '+d.applied.join(', ')+'. Re-publish the page to push it live.');
-    document.getElementById('vf-applyrow').style.display='none';
-    vfLoadFields();  // refresh current values
+    document.getElementById('vf-applyrow').style.display='none'; vfLoadFields();
   }
 
   vfLoadSpecies();
@@ -8279,56 +8320,60 @@ VERIFY_BODY = r"""
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# VERIFY — targeted, human-in-the-loop re-check of specific flag fields.
-#
-# Pick a species + specific boolean/flag fields; Claude re-researches ONLY those
-# against the web and reports current → proposed with sources and a reason.
-# NOTHING is written until you Accept (take Claude's value) or Override (type
-# your own value + note, e.g. an expert correction). Reject leaves it as-is.
-# Fail-closed: a malformed model reply writes nothing.
-#
-# This is the tool for rare, unforeseen corrections — an expert visits, a default
-# slipped through (Skyflower), someone disputes a call. Every write is logged to
-# verify_audit.jsonl with provenance: web-sourced vs. human override.
+# VERIFY — targeted, human-in-the-loop re-check of specific fields.
+# Flags (native, watch_invasive) + butterfly block + Edibility/Toxicity COLOR
+# levels. The level check exists to catch the migration parser painting a
+# harmless "not eaten, not toxic" plant with a brown warning box: prompts are
+# explicit that harmless is GREEN, never a warning. Fail-closed; audited.
 # ════════════════════════════════════════════════════════════════════════════
 
 VERIFY_AUDIT_LOG = os.path.join(REPO, "data", "sources", "verify_audit.jsonl")
+_LEVELS = {"Green", "Yellow", "Red"}
 
-# The finite set of web-verifiable flag fields, per kingdom. rare_fruit is
-# intentionally excluded — it's a park-location fact, not a web fact.
 _VERIFY_REGISTRY = {
     "plants": {
         "native": {
-            "label": "Native to Florida",
-            "kind": "flag", "notes": "native_notes",
-            "ask": ("Is {sci} native to Florida / the SE United States? Check FNPS, the "
-                    "Atlas of Florida Plants, USDA PLANTS, UF/IFAS. If native status is "
-                    "contested (e.g. a genetic study reclassified it), set value to the "
-                    "current best consensus and explain in note."),
+            "label": "Native to Florida", "kind": "flag", "notes": "native_notes",
+            "ask": ("Is {sci} native to Florida / the SE United States? Check FNPS, the Atlas "
+                    "of Florida Plants, USDA PLANTS, UF/IFAS. If native status is contested, set "
+                    "value to the current best consensus and explain in note."),
         },
         "watch_invasive": {
-            "label": "Watch / Invasive",
-            "kind": "flag", "notes": "watch_invasive_notes",
-            "ask": ("Is {sci} listed invasive or a 'plant to watch' in Florida? Check the "
-                    "FISC (formerly FLEPPC) Category I/II list and the UF/IFAS Assessment. "
-                    "value = true if FISC-listed OR IFAS-flagged as invasive/caution for "
-                    "Central Florida. In note, state which list/category."),
+            "label": "Watch / Invasive", "kind": "flag", "notes": "watch_invasive_notes",
+            "ask": ("Is {sci} listed invasive or a 'plant to watch' in Florida? Check the FISC "
+                    "(FLEPPC) Category I/II list and the UF/IFAS Assessment. value = true if "
+                    "FISC-listed OR IFAS-flagged for Central Florida. In note, name the list/category."),
         },
         "butterfly": {
-            "label": "Butterfly value (larval host / nectar)",
-            "kind": "butterfly", "notes": None,
-            "ask": ("For {sci}: (a) is it a documented larval HOST for any butterflies/moths, "
-                    "and which species? (b) is it a notable adult NECTAR source? Prefer species "
-                    "at the park's latitude (Bradenton/Manatee County). Name hosts as "
-                    "\"Common (Scientific)\"."),
+            "label": "Butterfly value (larval host / nectar)", "kind": "butterfly", "notes": None,
+            "ask": ("For {sci}: (a) is it a documented larval HOST for any butterflies/moths, and "
+                    "which species? (b) is it a notable adult NECTAR source? Prefer species at the "
+                    "park's latitude (Bradenton). Name hosts as \"Common (Scientific)\"."),
+        },
+        "edibility": {
+            "label": "Edibility (color box)", "kind": "edibility", "notes": None,
+            "ask": ("Judge the EDIBILITY color for {sci}. level is one of Green/Yellow/Red: "
+                    "Green = safe — EITHER edible OR simply not a food but harmless (the common "
+                    "case; a plant nobody eats that poses no danger is GREEN, never a warning). "
+                    "Yellow = edible only with caution/special preparation. Red = genuinely toxic "
+                    "or unsafe to eat. Give a one-sentence detail. Do NOT paint a harmless non-food "
+                    "Yellow or Red just because it isn't eaten."),
+        },
+        "toxicity": {
+            "label": "Toxicity (color box)", "kind": "toxicity", "notes": None,
+            "ask": ("Judge the TOXICITY color for {sci}, separately for people and dogs. level "
+                    "(people) and dogs_level are each Green/Yellow/Red: Green = non-toxic / no "
+                    "known hazard (the common case — a harmless plant is GREEN, not a warning). "
+                    "Yellow = mild irritant or stomach upset. Red = seriously toxic/dangerous. "
+                    "One-sentence note for people and for dogs. Do NOT flag a harmless plant "
+                    "Yellow or Red."),
         },
     },
     "wildlife": {
         "native": {
-            "label": "Native to Florida",
-            "kind": "flag", "notes": "native_notes",
-            "ask": ("Is {sci} native to Florida / the SE United States? Check ADW, IUCN, "
-                    "FWC, and other authoritative sources."),
+            "label": "Native to Florida", "kind": "flag", "notes": "native_notes",
+            "ask": ("Is {sci} native to Florida / the SE United States? Check ADW, IUCN, FWC and "
+                    "other authoritative sources."),
         },
     },
 }
@@ -8342,24 +8387,25 @@ def _verify_current(species, kingdom):
     """Snapshot the current value(s) of every verifiable field for the UI."""
     out = {}
     for f, cfg in _verify_field_spec(kingdom).items():
-        if cfg["kind"] == "butterfly":
+        k = cfg["kind"]
+        if k == "butterfly":
             bf = species.get("butterfly") or {}
-            out[f] = {
-                "label": cfg["label"],
-                "value": {
-                    "larval_food": bool(bf.get("larval_food")),
-                    "larval_species": bf.get("larval_species") or [],
-                    "adult_food": bool(bf.get("adult_food")),
-                    "adult_species": bf.get("adult_species") or [],
-                    "notes": bf.get("notes"),
-                },
-            }
+            val = {"larval_food": bool(bf.get("larval_food")),
+                   "larval_species": bf.get("larval_species") or [],
+                   "adult_food": bool(bf.get("adult_food")),
+                   "adult_species": bf.get("adult_species") or [],
+                   "notes": bf.get("notes")}
+        elif k == "edibility":
+            ed = species.get("edibility") or {}
+            val = {"level": ed.get("level"), "detail": ed.get("detail") or []}
+        elif k == "toxicity":
+            tx = species.get("toxicity") or {}
+            val = {"level": tx.get("level"), "people": tx.get("people") or [],
+                   "dogs_level": tx.get("dogs_level"), "dogs": tx.get("dogs") or []}
         else:
-            out[f] = {
-                "label": cfg["label"],
-                "value": {"value": bool(species.get(f)),
-                          "note": species.get(cfg["notes"]) if cfg["notes"] else None},
-            }
+            val = {"value": bool(species.get(f)),
+                   "note": species.get(cfg["notes"]) if cfg["notes"] else None}
+        out[f] = {"label": cfg["label"], "kind": k, "value": val}
     return out
 
 
@@ -8369,61 +8415,78 @@ def _ai_build_verify_messages(species, kingdom, fields):
     sci = species.get(sci_field, "")
     common = species.get("common_name", "")
 
-    tasks, shapes = [], []
-    current = {}
+    tasks, shapes, current = [], [], {}
+    cur = _verify_current(species, kingdom)
     for f in fields:
         cfg = spec[f]
         tasks.append(f"- {f}: " + cfg["ask"].format(sci=sci))
-        if cfg["kind"] == "butterfly":
-            bf = species.get("butterfly") or {}
-            current[f] = {k: bf.get(k) for k in
-                          ("larval_food", "larval_species", "adult_food", "adult_species", "notes")}
+        current[f] = cur[f]["value"]
+        k = cfg["kind"]
+        if k == "butterfly":
             shapes.append('"butterfly": {"larval_food": <bool>, "larval_species": [<"Name (Sci)">], '
                           '"adult_food": <bool>, "adult_species": [<"Name (Sci)">], "notes": <string|null>, '
                           '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}')
+        elif k == "edibility":
+            shapes.append('"edibility": {"level": "Green|Yellow|Red", "detail": <one sentence>, '
+                          '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}')
+        elif k == "toxicity":
+            shapes.append('"toxicity": {"level": "Green|Yellow|Red", "people": <one sentence>, '
+                          '"dogs_level": "Green|Yellow|Red", "dogs": <one sentence>, '
+                          '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}')
         else:
-            current[f] = {"value": species.get(f),
-                          "note": species.get(cfg["notes"]) if cfg["notes"] else None}
             shapes.append(f'"{f}": {{"value": <true|false>, "note": <string|null>, '
                           '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}')
 
     system = (
-        "You are fact-checking specific signage flags for Palma Sola Botanical Park in "
+        "You are fact-checking specific signage fields for Palma Sola Botanical Park in "
         "Bradenton, Florida. Re-verify ONLY the requested fields against authoritative web "
-        "sources — do not trust the current stored values, which may be wrong or unresearched. "
-        "Use the web_search tool. Never invent facts or URLs. Inside any string write plain "
-        "prose only (no markdown, asterisks, or bullets), and never put a newline in a string."
+        "sources — do not trust the stored values, which may be wrong or mis-parsed. Use the "
+        "web_search tool. Never invent facts or URLs. For color levels, a harmless, unremarkable "
+        "plant is GREEN — reserve Yellow/Red for genuine caution or hazard. Inside any string "
+        "write plain prose only (no markdown/asterisks/bullets), never a newline."
     )
     user = (
         f"Species: {common} ({sci}).\n\n"
         f"CURRENT STORED VALUES (verify, do not trust):\n{json.dumps(current, indent=2, ensure_ascii=False)}\n\n"
-        f"RE-VERIFY these fields:\n" + "\n".join(tasks) + "\n\n"
-        "OUTPUT CONTRACT: return a single JSON object with ONLY these keys, each in exactly "
-        "this shape:\n{\n  " + ",\n  ".join(shapes) + "\n}\n"
-        "Set value/booleans to what your sources actually support; if evidence is thin use "
-        "confidence \"low\" and say why in reason. Wrap the JSON exactly between a line "
-        "<<<JSON>>> and a line <<<END>>>, nothing after <<<END>>>."
+        "RE-VERIFY these fields:\n" + "\n".join(tasks) + "\n\n"
+        "OUTPUT CONTRACT: return a single JSON object with ONLY these keys, each in exactly this "
+        "shape:\n{\n  " + ",\n  ".join(shapes) + "\n}\n"
+        "Set values to what your sources actually support; if evidence is thin use confidence "
+        "\"low\" and say why in reason. Wrap the JSON exactly between a line <<<JSON>>> and a line "
+        "<<<END>>>, nothing after <<<END>>>."
     )
     return system, user
 
 
+def _as_list(v):
+    if isinstance(v, list):
+        return [x for x in v if isinstance(x, str)]
+    if isinstance(v, str) and v.strip():
+        return [v.strip()]
+    return []
+
+
 def _coerce_verify_field(f, kind, obj):
-    """Validate/normalize one proposed field. Returns (proposed_dict, reason, confidence)
-    or raises ValueError (fail-closed for that field)."""
+    """Validate/normalize one proposed field, or raise ValueError (fail-closed)."""
     if not isinstance(obj, dict):
         raise ValueError(f"{f}: not an object")
-    conf = obj.get("confidence")
-    if conf not in ("high", "medium", "low"):
-        conf = "low"
+    conf = obj.get("confidence") if obj.get("confidence") in ("high", "medium", "low") else "low"
     reason = obj.get("reason") if isinstance(obj.get("reason"), str) else ""
     if kind == "butterfly":
-        prop = {
-            "larval_food": bool(obj.get("larval_food")),
-            "larval_species": [s for s in (obj.get("larval_species") or []) if isinstance(s, str)],
-            "adult_food": bool(obj.get("adult_food")),
-            "adult_species": [s for s in (obj.get("adult_species") or []) if isinstance(s, str)],
-            "notes": obj.get("notes") if isinstance(obj.get("notes"), str) else None,
-        }
+        prop = {"larval_food": bool(obj.get("larval_food")),
+                "larval_species": _as_list(obj.get("larval_species")),
+                "adult_food": bool(obj.get("adult_food")),
+                "adult_species": _as_list(obj.get("adult_species")),
+                "notes": obj.get("notes") if isinstance(obj.get("notes"), str) else None}
+    elif kind == "edibility":
+        if obj.get("level") not in _LEVELS:
+            raise ValueError("edibility.level must be Green/Yellow/Red")
+        prop = {"level": obj["level"], "detail": _as_list(obj.get("detail"))}
+    elif kind == "toxicity":
+        if obj.get("level") not in _LEVELS or obj.get("dogs_level") not in _LEVELS:
+            raise ValueError("toxicity level/dogs_level must be Green/Yellow/Red")
+        prop = {"level": obj["level"], "people": _as_list(obj.get("people")),
+                "dogs_level": obj["dogs_level"], "dogs": _as_list(obj.get("dogs"))}
     else:
         if not isinstance(obj.get("value"), bool):
             raise ValueError(f"{f}.value must be boolean")
@@ -8433,13 +8496,11 @@ def _coerce_verify_field(f, kind, obj):
 
 
 def ai_verify_species(kingdom, species_id, fields):
-    """Re-research the requested fields for one species. Returns proposals only —
-    writes NOTHING. Fail-closed on an unparseable reply."""
+    """Re-research the requested fields. Returns proposals only — writes NOTHING."""
     spec = _verify_field_spec(kingdom)
     fields = [f for f in fields if f in spec]
     if not fields:
         return {"ok": False, "error": "No verifiable fields selected."}
-
     path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
     entry = next((s for s in _get_species_list(_load(path)) if s.get("id") == species_id), None)
     if not entry:
@@ -8460,36 +8521,25 @@ def ai_verify_species(kingdom, species_id, fields):
     proposals = []
     for f in fields:
         cfg = spec[f]
+        base = {"field": f, "label": cfg["label"], "kind": cfg["kind"], "current": cur[f]["value"]}
         if f not in data:
-            proposals.append({"field": f, "label": cfg["label"], "kind": cfg["kind"],
-                              "current": cur[f]["value"], "error": "model omitted this field"})
-            continue
+            proposals.append({**base, "error": "model omitted this field"}); continue
         try:
             prop, reason, conf = _coerce_verify_field(f, cfg["kind"], data[f])
         except ValueError as e:
-            proposals.append({"field": f, "label": cfg["label"], "kind": cfg["kind"],
-                              "current": cur[f]["value"], "error": str(e)})
-            continue
-        proposals.append({
-            "field": f, "label": cfg["label"], "kind": cfg["kind"],
-            "current": cur[f]["value"], "proposed": prop,
-            "confidence": conf, "reason": reason,
-            "changed": prop != cur[f]["value"],
-        })
+            proposals.append({**base, "error": str(e)}); continue
+        proposals.append({**base, "proposed": prop, "confidence": conf, "reason": reason,
+                          "changed": prop != cur[f]["value"]})
 
-    return {
-        "ok": True, "id": species_id, "kingdom": kingdom,
-        "proposals": proposals,
-        "sources": _ai_response_sources(api_resp),
-        "searches": _ai_response_searches(api_resp),
-        "usage": api_resp.get("usage", {}) or {},
-        "model": api_resp.get("model", AI_MODEL),
-    }
+    return {"ok": True, "id": species_id, "kingdom": kingdom, "proposals": proposals,
+            "sources": _ai_response_sources(api_resp),
+            "searches": _ai_response_searches(api_resp),
+            "usage": api_resp.get("usage", {}) or {},
+            "model": api_resp.get("model", AI_MODEL)}
 
 
 def apply_verify_decisions(kingdom, species_id, decisions):
-    """Write accepted/overridden field values. decisions: list of
-    {field, source_kind: 'web'|'override', data: {...}}. Atomic + audited."""
+    """Write accepted/overridden values. decisions: [{field, source_kind, data}]. Atomic + audited."""
     spec = _verify_field_spec(kingdom)
     path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
     data = _load(path)
@@ -8499,31 +8549,32 @@ def apply_verify_decisions(kingdom, species_id, decisions):
 
     applied, audit_rows = [], []
     for d in (decisions or []):
-        f = d.get("field")
-        cfg = spec.get(f)
+        f = d.get("field"); cfg = spec.get(f)
         if not cfg:
             continue
-        payload = d.get("data") or {}
+        p = d.get("data") or {}
         before = _verify_current(target, kingdom).get(f, {}).get("value")
-        if cfg["kind"] == "butterfly":
-            target["butterfly"] = {
-                "larval_food": bool(payload.get("larval_food")),
-                "larval_species": payload.get("larval_species") or [],
-                "adult_food": bool(payload.get("adult_food")),
-                "adult_species": payload.get("adult_species") or [],
-                "notes": payload.get("notes"),
-            }
+        k = cfg["kind"]
+        if k == "butterfly":
+            target["butterfly"] = {"larval_food": bool(p.get("larval_food")),
+                                   "larval_species": p.get("larval_species") or [],
+                                   "adult_food": bool(p.get("adult_food")),
+                                   "adult_species": p.get("adult_species") or [],
+                                   "notes": p.get("notes")}
+        elif k == "edibility":
+            target["edibility"] = {"level": p.get("level"), "detail": p.get("detail") or []}
+        elif k == "toxicity":
+            target["toxicity"] = {"level": p.get("level"), "people": p.get("people") or [],
+                                  "dogs_level": p.get("dogs_level"), "dogs": p.get("dogs") or []}
         else:
-            target[f] = bool(payload.get("value"))
+            target[f] = bool(p.get("value"))
             if cfg["notes"]:
-                target[cfg["notes"]] = payload.get("note")
+                target[cfg["notes"]] = p.get("note")
         applied.append(f)
-        audit_rows.append({
-            "ts": datetime.datetime.now().isoformat(timespec="seconds"),
-            "id": species_id, "kingdom": kingdom, "field": f,
-            "source": d.get("source_kind", "web"),
-            "before": before, "after": _verify_current(target, kingdom).get(f, {}).get("value"),
-        })
+        audit_rows.append({"ts": datetime.datetime.now().isoformat(timespec="seconds"),
+                           "id": species_id, "kingdom": kingdom, "field": f,
+                           "source": d.get("source_kind", "web"), "before": before,
+                           "after": _verify_current(target, kingdom).get(f, {}).get("value")})
 
     if applied:
         data.setdefault("meta", {})["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
@@ -8537,10 +8588,8 @@ def apply_verify_decisions(kingdom, species_id, decisions):
     return {"ok": True, "id": species_id, "applied": applied}
 
 
-# ── Verify route handlers ────────────────────────────────────────────────
-
 def handle_api_verify_fields(params):
-    """GET /api/verify/fields?kingdom=&id= — current values of verifiable fields."""
+    """GET /api/verify/fields?kingdom=&id="""
     kingdom = params.get("kingdom", ["plants"])[0]
     species_id = params.get("id", [""])[0]
     if kingdom not in ("plants", "wildlife"):
@@ -8549,15 +8598,13 @@ def handle_api_verify_fields(params):
     entry = next((s for s in _get_species_list(_load(path)) if s.get("id") == species_id), None)
     if not entry:
         return {"ok": False, "error": f"{species_id} not found."}
-    return {"ok": True, "id": species_id, "kingdom": kingdom,
-            "fields": _verify_current(entry, kingdom)}
+    return {"ok": True, "id": species_id, "kingdom": kingdom, "fields": _verify_current(entry, kingdom)}
 
 
 def handle_api_ai_verify(params):
     """POST /api/ai/verify  body: {kingdom, id, fields:[...]}"""
     body = params.get("_body", {}) or {}
-    kingdom = body.get("kingdom", "plants")
-    species_id = body.get("id", "")
+    kingdom = body.get("kingdom", "plants"); species_id = body.get("id", "")
     fields = body.get("fields", []) or []
     if kingdom not in ("plants", "wildlife"):
         return {"ok": False, "error": f"bad kingdom: {kingdom}"}
@@ -8571,8 +8618,7 @@ def handle_api_ai_verify(params):
 def handle_api_ai_verify_apply(params):
     """POST /api/ai/verify/apply  body: {kingdom, id, decisions:[...]}"""
     body = params.get("_body", {}) or {}
-    kingdom = body.get("kingdom", "plants")
-    species_id = body.get("id", "")
+    kingdom = body.get("kingdom", "plants"); species_id = body.get("id", "")
     decisions = body.get("decisions", []) or []
     if kingdom not in ("plants", "wildlife"):
         return {"ok": False, "error": f"bad kingdom: {kingdom}"}
@@ -8584,8 +8630,8 @@ def handle_api_ai_verify_apply(params):
 
 
 def render_verify():
-    """Verify tab — pick a species + fields, re-check with Claude, accept/reject/override."""
-    return page_shell("verify", VERIFY_BODY)
+    """Verify tab body — dispatcher wraps this in page_shell(tab_id, body)."""
+    return VERIFY_BODY
 
 
 PAGE_ROUTES = {
