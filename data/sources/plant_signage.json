@@ -5,7 +5,7 @@
     "species_count": 135,
     "schema_version": "1.4",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update.",
-    "updated": "2026-07-02T13:20:24"
+    "updated": "2026-07-02T13:31:25"
   },
   "species": [
     {
@@ -237,14 +237,14 @@
       "internal_notes": null,
       "native_notes": null,
       "watch_invasive": true,
-      "watch_invasive_notes": "UF/IFAS has formally predicted Melaleuca viminalis to be invasive and no longer recommends it as a landscape plant. In North and Central Florida (including Manatee County) it is not currently considered a problem species, but caution is advised and it should be managed to prevent escape into natural areas. In South Florida it is not recommended at all. The genus Melaleuca includes some of Florida's most damaging invasive species. This specimen is established at the park — visitors should be aware of the nuance before planting elsewhere.",
+      "watch_invasive_notes": "FISC Category II invasive in Central and South Florida; UF/IFAS rates the real invasion risk as significant only in South Florida (low in Central/North). Red bottlebrush (Melaleuca citrina) is the recommended alternative.",
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Brushy red flowers are a nectar source for butterflies and hummingbirds."
       }
     },
     {
@@ -772,9 +772,9 @@
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Year-round red flowers are a good nectar source for butterflies and hummingbirds."
       }
     },
     {
@@ -900,8 +900,8 @@
       "other_notes": null,
       "internal_notes": null,
       "native_notes": null,
-      "watch_invasive": true,
-      "watch_invasive_notes": "Not invasive in Florida and not listed as a concern by UF/IFAS. However, Jacaranda mimosifolia is considered invasive in South Africa and parts of Australia, where it displaces native vegetation. Florida gardeners can plant with confidence, but the tree's global invasive reputation is worth awareness.",
+      "watch_invasive": false,
+      "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
@@ -1539,9 +1539,9 @@
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Showy orange-red flowers are a nectar magnet for swallowtails, other large butterflies, and hummingbirds."
       }
     },
     {
@@ -4606,7 +4606,7 @@
       ],
       "native_notes": null,
       "watch_invasive": true,
-      "watch_invasive_notes": "FISC Category I invasive — the highest designation. IFAS Assessment: Invasive in Central and South Florida. Maintained here as an educational specimen only and have NOT seen invasive behavior. Monitor surrounding area for volunteer seedlings and remove promptly. Do not propagate or plant elsewhere on the property.",
+      "watch_invasive_notes": "FISC (formerly FLEPPC) Category I invasive in Central and South Florida — introduced 1927, now widespread in preserves and reaches the Gulf coast to Pinellas. Birds spread the seeds.",
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
@@ -4740,14 +4740,14 @@
       ],
       "native_notes": null,
       "watch_invasive": true,
-      "watch_invasive_notes": "FISC (formerly FLEPPC) Category I invasive since 2001 — the highest designation. UF/IFAS does not recommend planting the wild type or fertile cultivars anywhere in Florida. Sterile cultivars (Mayan series, 'Purple Showers') are the recommended substitutes. Wild plants must be removed entirely, roots included, as they resprout from fragments.",
+      "watch_invasive_notes": "FISC (formerly FLEPPC) Category I invasive throughout Florida — spreads by explosive seed capsules and rhizomes. Sterile cultivars (e.g. 'Mayan') are less problematic.",
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Purple trumpet flowers offer nectar, but this is a Category I invasive — use sterile cultivars or avoid."
       }
     },
     {
@@ -4872,15 +4872,18 @@
       ],
       "internal_notes": null,
       "native_notes": null,
-      "watch_invasive": true,
-      "watch_invasive_notes": "Not currently on Florida's FISC invasive list, but naturalized in some warm coastal areas — worth monitoring. Spreads modestly by silk-borne seed. Not aggressive in the way the park's listed invasives are.",
+      "watch_invasive": false,
+      "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
         "larval_food": true,
-        "larval_species": [],
-        "adult_food": false,
+        "larval_species": [
+          "Monarch (Danaus plexippus)",
+          "Queen (Danaus gilippus)"
+        ],
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Non-native milkweed; larval host for monarch and queen. Flowers draw bees and some butterflies. Like other non-native evergreen milkweeds, cut back in winter to avoid disrupting monarch migration."
       }
     },
     {
@@ -5146,11 +5149,13 @@
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
+        "larval_food": true,
+        "larval_species": [
+          "Brazilian / canna skipper (Calpodes ethlius)"
+        ],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
+        "notes": "Non-native canna; larval host for the Brazilian (canna) skipper, like the native golden canna."
       }
     },
     {
@@ -5655,11 +5660,13 @@
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
-        "adult_food": false,
+        "larval_food": true,
+        "larval_species": [
+          "Cassius blue (Leptotes cassius)"
+        ],
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Larval host for the cassius blue; blue flowers are a year-round nectar source. (The white-flowered Plumbago zeylanica is the Florida native.)"
       }
     },
     {
@@ -5783,7 +5790,7 @@
       "internal_notes": null,
       "native_notes": null,
       "watch_invasive": true,
-      "watch_invasive_notes": "Not on Florida's FISC invasive lists, but a vigorous rhizome-spreader that can form colonies and naturalize in warm climates (considered a potential weed in parts of Australia). Worth containing outdoors — monitor.",
+      "watch_invasive_notes": "UF/IFAS Assessment: high invasion risk statewide, not recommended for landscapes; spreads by rhizomes. (Its relative Sansevieria hyacinthoides is a FISC Category II invasive.) Keep in pots.",
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
@@ -5897,8 +5904,8 @@
       "other_notes": null,
       "internal_notes": null,
       "native_notes": null,
-      "watch_invasive": true,
-      "watch_invasive_notes": "Not on the FISC invasive plant list. UF/IFAS flags the genus with a caution recommendation — spores wind-dispersed; species has naturalized on urban trees in South Florida. Monitor nearby palms for volunteer plants.",
+      "watch_invasive": false,
+      "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
@@ -6298,15 +6305,15 @@
       "other_notes": null,
       "internal_notes": null,
       "native_notes": null,
-      "watch_invasive": true,
-      "watch_invasive_notes": "Not on Florida's FISC invasive plant list. Has been reported persisting after cultivation on disturbed sites in Florida and is considered invasive in Hawaii. Seeds are wind-dispersed and stem fragments root easily. Monitor volunteer seedlings around the nursery area and remove promptly.",
+      "watch_invasive": false,
+      "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Orange flowers are a nectar magnet for many butterflies."
       }
     },
     {
@@ -6414,9 +6421,9 @@
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "A top nectar plant — draws many butterflies and hummingbirds."
       }
     },
     {
@@ -6738,8 +6745,8 @@
       "other_notes": null,
       "internal_notes": null,
       "native_notes": null,
-      "watch_invasive": true,
-      "watch_invasive_notes": "Not on the FISC invasive plant list. UF/IFAS notes it is not officially invasive but can spread aggressively by rhizome out of a planting into surrounding areas. Root barriers and regular rhizome division are recommended — both standard practice at the park.",
+      "watch_invasive": false,
+      "watch_invasive_notes": null,
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
@@ -7417,14 +7424,18 @@
       ],
       "native_notes": null,
       "watch_invasive": true,
-      "watch_invasive_notes": "FISC Category I invasive in Florida — the state's highest invasive designation. Self-seeds freely and establishes in disturbed areas. Do not plant near natural areas. Remove volunteers promptly.",
+      "watch_invasive_notes": "UF/IFAS Assessment: use with caution in N/C/S Florida — manage to prevent escape.",
       "rare_fruit": false,
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
+        "larval_food": true,
+        "larval_species": [
+          "Cloudless sulphur (Phoebis sennae)",
+          "Sleepy orange (Abaeis nicippe)",
+          "Orange-barred sulphur (Phoebis philea)"
+        ],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
+        "notes": "Larval host for cloudless sulphur and other sulphurs."
       }
     },
     {
@@ -7530,9 +7541,9 @@
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Flower clusters offer nectar to butterflies."
       }
     },
     {
@@ -7653,14 +7664,14 @@
       ],
       "native_notes": null,
       "watch_invasive": true,
-      "watch_invasive_notes": "FISC Category I invasive — the highest designation. Spreads into woodlands and floodplains via bird-dispersed seeds. Not recommended for planting in Florida. Kept here as an educational specimen only. Two sterile cultivars (Harbour Dwarf, Firepower) are considered acceptable alternatives by UF/IFAS.",
+      "watch_invasive_notes": "UF/IFAS Assessment: high invasion risk, 'do not plant' (berries toxic to birds). Note: the PSBP specimen has stayed compact for ~10 years, likely crowded by an adjacent Tree Crinum — low spread observed on-site.",
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
+        "notes": "Berries are toxic to birds in quantity."
       }
     },
     {
@@ -7902,14 +7913,14 @@
       ],
       "native_notes": null,
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "Self-seeds and naturalizes in Florida but is not a FISC-listed invasive.",
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Flowers offer nectar to long-tongued butterflies."
       }
     },
     {
@@ -8270,14 +8281,14 @@
       ],
       "native_notes": null,
       "watch_invasive": true,
-      "watch_invasive_notes": "Not on Florida's FISC invasive plant list, but reclassified to the park's Watch List based on field observation: it spreads aggressively by root suckers, throwing up offsets well beyond the original planting. Manage actively to prevent escape into adjoining beds and natural areas.",
+      "watch_invasive_notes": "Not on FISC/IFAS lists, but the most aggressive spreader on the PSBP grounds — actively managed. (Local observation overrides the official rating.)",
       "rare_fruit": false,
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
+        "adult_food": true,
         "adult_species": [],
-        "notes": null
+        "notes": "Tubular white flowers offer some nectar."
       }
     },
     {
