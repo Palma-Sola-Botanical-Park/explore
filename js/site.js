@@ -1453,10 +1453,12 @@ function filterPlants() {
   // Apply category + tag filters first
   let pool = PLANTS.filter(p =>
     (!_activeCategory || p.cat === _activeCategory)
-    && (!_activeFilters.has('native')    || p.native)
-    && (!_activeFilters.has('butterfly') || p.butterfly)
-    && (!_activeFilters.has('edible')    || p.edible)
-    && (!_activeFilters.has('wetland')   || p.wetland)
+    && (!_activeFilters.has('native')         || p.native)
+    && (!_activeFilters.has('butterfly')      || p.butterfly)
+    && (!_activeFilters.has('larval_host')    || p.larval_host)
+    && (!_activeFilters.has('nectar')         || p.nectar)
+    && (!_activeFilters.has('watch_invasive') || p.watch_invasive)
+    && (!_activeFilters.has('rare_fruit')     || p.rare_fruit)
   );
 
   if (!q) { renderPlants(orderByFeatured(pool, FEATURED_PLANTS)); return; }
