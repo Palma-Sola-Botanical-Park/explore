@@ -2418,6 +2418,62 @@ def _gaps_overlay_html(findings):
     )
 
 
+def _flags_strip_html(species):
+    """A preview-only strip showing the index booleans + color levels that DON'T
+    appear on the public page — so they can be reviewed before publishing. Never
+    published (injected into the in-memory preview only)."""
+    def boolrow(label, val):
+        mark = '<span style="color:#5fd47a;">✓ yes</span>' if val else '<span style="opacity:.55;">— no</span>'
+        return (f'<div style="display:flex;gap:6px;margin:3px 0;"><span>{label}</span>'
+                f'<span style="margin-left:auto;">{mark}</span></div>')
+    def lvlrow(label, level):
+        c = {"Green": "#5fd47a", "Yellow": "#ffd24a", "Red": "#ff6b6b"}.get(level, "#888")
+        return (f'<div style="display:flex;gap:6px;margin:3px 0;"><span>{label}</span>'
+                f'<span style="margin-left:auto;"><span style="color:{c};">●</span> {level or "—"}</span></div>')
+
+    rows = ""
+    if "native" in species:
+        rows += boolrow("Native", bool(species.get("native")))
+        nn = species.get("native_notes")
+        if nn:
+            rows += f'<div style="font-size:11px;opacity:.7;margin:-1px 0 4px;">↳ {_esc_html(nn)}</div>'
+    if "watch_invasive" in species:
+        rows += boolrow("Watch / invasive", bool(species.get("watch_invasive")))
+    bf = species.get("butterfly")
+    if isinstance(bf, dict):
+        rows += boolrow("Larval host", bool(bf.get("larval_food")))
+        rows += boolrow("Nectar", bool(bf.get("adult_food")))
+    if "rare_fruit" in species:
+        rows += boolrow("Rare-fruit area", bool(species.get("rare_fruit")))
+    if species.get("form"):
+        rows += (f'<div style="display:flex;gap:6px;margin:3px 0;"><span>Form</span>'
+                 f'<span style="margin-left:auto;opacity:.85;">{_esc_html(species["form"])}</span></div>')
+    ed = species.get("edibility")
+    if isinstance(ed, dict):
+        rows += lvlrow("Edibility box", ed.get("level"))
+    tx = species.get("toxicity")
+    if isinstance(tx, dict):
+        rows += lvlrow("Toxicity (people)", tx.get("level"))
+        if tx.get("dogs_level"):
+            rows += lvlrow("Toxicity (dogs)", tx.get("dogs_level"))
+    if not rows:
+        return ""
+    return (
+        '<div id="index-flags" style="position:fixed;left:16px;bottom:16px;width:236px;'
+        'z-index:99998;background:#22303a;color:#fff;border-radius:10px;padding:12px 14px;'
+        'font:13px system-ui;box-shadow:0 4px 20px rgba(0,0,0,.3);max-height:72vh;overflow:auto;">'
+        '<strong style="display:block;margin-bottom:8px;">🔖 Index flags <span style="opacity:.6;font-weight:400;">(preview only)</span></strong>'
+        f'{rows}'
+        '<div style="margin-top:9px;font-size:11px;opacity:.65;line-height:1.4;">'
+        'These power the browse filters and the color box — not shown on the public page. '
+        'Give them a glance before publishing.</div></div>'
+    )
+
+
+def _esc_html(s):
+    return (str(s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+
+
 def render_preview_html(kingdom, species_id, gaps_mode=False):
     """Render a species page in memory using the publisher's generator.
 
@@ -2479,8 +2535,10 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
             html = html.replace(f'{q}../photos/', f'{q}/photos-file/')
             html = html.replace(f'{q}photos/',    f'{q}/photos-file/')
 
-        # Gaps overlay panel (only in gaps mode)
-        overlay = _gaps_overlay_html(audit_gaps(kingdom, species)) if gaps_mode else ""
+        # Gaps overlay panel (only in gaps mode) + the index-flags strip (always).
+        # Both are preview-only and never touch the published page.
+        overlay = (_gaps_overlay_html(audit_gaps(kingdom, species)) if gaps_mode else "")
+        overlay += _flags_strip_html(species)
 
         # Inject banner + overlay right after <body>
         if "<body" in html:
@@ -8671,14 +8729,14 @@ AI_DRAFT_LOG       = os.path.join(REPO, "data", "sources", "ai_draft_log.json")
 # stats, ID-linked similar_species/plant_links, internal_notes …) is protected.
 _DRAFT_SPEC_PLANTS = {
     "native":             ("bool", "true if native to Florida / SE United States; false if introduced or cultivated"),
-    "native_notes":       ("str",  "ONLY if native status is contested or partial (e.g. a genetic study reclassified it, or native only to part of Florida) — a one-sentence caveat; omit if clearly native or clearly non-native"),
+    "native_notes":       ("str",  "ONLY if native status is genuinely contested or partial — a ONE-sentence 'our take' (e.g. 'Debated, but we treat it as a Florida native'). Do not rehash the debate. Omit if clearly native or clearly non-native."),
     "form":               ("str",  "growth form — EXACTLY one of: Tree | Shrub & Vine | Palm & Cycad | Groundcover & Wildflower | Foliage & Accent | Aquatic & Wetland"),
     "alternate_names":    ("list", "common alternate names — list of short strings"),
     "butterfly":          ("dict", 'object {"larval_food":bool,"larval_species":[str],"adult_food":bool,"adult_species":[str],"notes":str|null} — larval_food + larval_species: documented larval HOST for named butterflies/moths as "Common (Scientific)"; adult_food: notable nectar source (keep adult_species [] unless ONE specific specialist); notes: brief caveat or null'),
-    "quick_hits":         ("list", "2-4 punchy, surprising one-to-two-sentence facts (list of strings)"),
+    "quick_hits":         ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings)."),
     "origin":             ("list", "native range and how it came to Florida cultivation, as a list of one or two paragraph strings (never newlines inside a string)"),
     "more_information":   ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
-    "wildlife_value":     ("list", "1-2 short paragraphs on pollinators / wildlife it supports (list of strings)"),
+    "wildlife_value":     ("list", "1-2 short paragraphs on the pollinators and wildlife it supports — this is where any real butterfly host / nectar value belongs, in prose (list of strings)."),
     "reproduction":       ("dict", 'object {"blocks":[{"label":str,"text":str}], "what_to_look_for":str}'),
     "seasonality":        ("dict", 'object {"bloom_months":str|null,"bloom_description":str|null,"leaf_behavior":str|null,"fruiting_months":str|null,"notes":str|null}'),
     "size":               ("dict", 'object {"height":str,"spread":str,"habit":str,"growth_rate":str,"texture":str}'),
@@ -8749,22 +8807,32 @@ def _ai_build_messages(species, kingdom):
     tax = species.get("taxonomy") or {}
 
     system = (
-        "You are an interpretation writer for Palma Sola Botanical Park, a public "
-        "botanical garden in Bradenton, Manatee County, Florida. You write accurate, "
-        "engaging signage content in the park's established voice: warm, specific, "
-        "factual, lightly surprising, never flowery or padded. This is public-facing "
-        "educational signage, so accuracy is paramount. Use the web_search tool to "
-        "verify facts against authoritative sources — university extension services and "
-        ".edu sites (especially UF/IFAS), USDA, the Florida Native Plant Society, ADW, "
-        "IUCN, and botanical-garden references. Never invent facts, numbers, or sources. "
-        "If you cannot substantiate a field, omit it. Favor Florida / Gulf-coast-relevant "
-        "information. Inside every string value write plain prose only — no markdown, "
-        "asterisk emphasis, or bullet characters; the page renderer does not interpret them. "
-        "Never let one field's content spill into another (e.g. do not repeat toxicity "
-        "hazards inside edibility). Never put a newline inside any string value; for "
-        "multi-paragraph fields use one list item per paragraph. Keep every paragraph "
-        "short — at most about three sentences (~400 characters); split longer content "
-        "into separate list items."
+        "You write interpretive signage for Palma Sola Botanical Park, a public garden in "
+        "Bradenton, Manatee County, Florida.\n\n"
+        "VOICE: an upbeat naturalist who genuinely loves this stuff but never overdoes it. "
+        "Warm and inviting — you want visitors to share the delight — yet never cloying, "
+        "breathless, or showing off. Deliver solid, specific information plainly: no "
+        "theatrics, no purple prose, no exclamation-point energy. Light touch by default; "
+        "go deeper only where something genuinely needs explaining. Your reader is a "
+        "curious adult who is not a botanist — quietly relate to them, don't lecture, and "
+        "don't come across as a know-it-all.\n\n"
+        "CONTESTED FACTS: when something is debated — native status, a name change, a "
+        "taxonomic squabble — do NOT rehash the back-and-forth; naming disputes and "
+        "'once thought native, then a 2020 study said otherwise' blow-by-blows drain the "
+        "interest out of a sign. Give the park's clear take in a sentence (e.g. 'Its "
+        "native status is debated, but we treat it as a Florida native') and move on.\n\n"
+        "ACCURACY: this is public educational signage, so accuracy is paramount. Use the "
+        "web_search tool to verify against authoritative sources — UF/IFAS and other .edu "
+        "extension services, USDA, the Florida Native Plant Society, ADW, IUCN, and "
+        "botanical-garden references. Never invent facts, numbers, or sources. If you "
+        "cannot substantiate a field, omit it. Favor Florida / Gulf-coast-relevant "
+        "information.\n\n"
+        "FORMAT: inside every string write plain prose only — no markdown, asterisks, or "
+        "bullet characters (the renderer shows them literally). Never let one field's "
+        "content spill into another (e.g. don't repeat toxicity hazards inside edibility). "
+        "Never put a newline inside a string; for multi-paragraph fields use one list item "
+        "per paragraph. Keep paragraphs short — about three sentences (~400 characters) "
+        "max; split longer content into separate list items."
     )
 
     schema_lines = "\n".join(
@@ -8786,8 +8854,15 @@ def _ai_build_messages(species, kingdom):
         "FIELD SCHEMA — produce ONLY these fields, each in exactly the shape shown. "
         "Omit any field you cannot responsibly fill from solid sources:\n"
         f"{schema_lines}\n\n"
-        "Use \"Red\" / \"Yellow\" / \"Green\" for any *_level field "
-        "(Green = safe/fine, Yellow = caution, Red = toxic/dangerous/invasive).\n\n"
+        "COLOR LEVELS (edibility, toxicity): Green is the DEFAULT for anything harmless — "
+        "a plant nobody eats but that won't hurt you is Green, never a warning. Use Yellow "
+        "only for genuine caution (edible only if prepared right; a mild irritant) and Red "
+        "only for a real hazard (toxic, dangerous). A harmless, unremarkable plant should "
+        "never wear a warning color.\n\n"
+        "BUTTERFLY / WILDLIFE: the butterfly booleans (larval_food, adult_food) are "
+        "structured flags for indexing — set them accurately, but don't narrate them as "
+        "data. When a plant has real butterfly, pollinator, or nectar value, weave it into "
+        "wildlife_value prose naturally instead.\n\n"
         f"Here are {len(exemplars)} existing published entries from this park, for TONE, "
         "depth, and structure only — match this quality; do NOT reuse their facts:\n"
         f"{exemplar_json}\n\n"
