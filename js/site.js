@@ -1323,7 +1323,7 @@ async function loadPlants() {
     // Update the collection count in the intro text
     const collectionCount = document.getElementById('plantCollectionCount');
     if (collectionCount) collectionCount.textContent = PLANTS.length + '+';
-    populatePlantCategories();
+    populatePlantForms();
     await _ensurePhotoCredits();   // warm the shared credit map before first paint
     renderPlants(orderByFeatured(PLANTS, FEATURED_PLANTS));
     // Apply any URL search/family filter after load
@@ -1337,7 +1337,7 @@ async function loadPlants() {
 
 // ── PLANT FILTER ENGINE ───────────────────────────────────────
 let _activeFilters = new Set();
-let _activeCategory = '';
+let _activeForm = '';
 
 // ── SHARED PHOTO-CREDIT JOIN ──────────────────────────────────
 // One psbp_id -> hero photo record map (photographer, license, observed_on),
@@ -1452,7 +1452,7 @@ function filterPlants() {
 
   // Apply category + tag filters first
   let pool = PLANTS.filter(p =>
-    (!_activeCategory || p.cat === _activeCategory)
+    (!_activeForm || p.form === _activeForm)
     && (!_activeFilters.has('native')         || p.native)
     && (!_activeFilters.has('butterfly')      || p.butterfly)
     && (!_activeFilters.has('larval_host')    || p.larval_host)
@@ -1495,35 +1495,31 @@ function toggleFilter(type) {
 
 function clearFilters() {
   _activeFilters.clear();
-  _activeCategory = '';
+  _activeForm = '';
   document.querySelectorAll('#panel-plants .filter-btn').forEach(b=>b.classList.remove('on'));
   const s=document.getElementById('plantSearch'); if(s) s.value='';
-  const sel=document.getElementById('plantCategory'); if(sel) sel.value='';
+  const sel=document.getElementById('plantForm'); if(sel) sel.value='';
   filterPlants();
 }
 
-// Category dropdown
-function setCategory(value) {
-  _activeCategory = value || '';
+// Form dropdown
+function setPlantForm(value) {
+  _activeForm = value || '';
   filterPlants();
 }
 
-// Populate the category <select> from whatever categories actually exist in
-// the loaded plant data (the JSON field is `cat`). "Plants to Watch & Invasive
-// Awareness" is hidden from the dropdown by design — those pages still exist
-// and are still searchable, we just don't surface invasives as a browse option.
-const _CATEGORY_HIDE = new Set(['Plants to Watch & Invasive Awareness']);
-function populatePlantCategories() {
-  const sel = document.getElementById('plantCategory');
+// Populate the form <select> from whatever plant forms actually exist in the
+// loaded data (the JSON field is `form`: Tree, Shrub & Vine, Palm & Cycad,
+// Foliage & Accent, Groundcover & Wildflower, Aquatic & Wetland).
+function populatePlantForms() {
+  const sel = document.getElementById('plantForm');
   if (!sel) return;
-  const cats = [...new Set(PLANTS.map(p => p.cat).filter(Boolean))]
-    .filter(c => !_CATEGORY_HIDE.has(c))
-    .sort();
-  // Preserve the existing "All categories" option (index 0) and append the rest.
+  const forms = [...new Set(PLANTS.map(p => p.form).filter(Boolean))].sort();
+  // Preserve the existing "All forms" option (index 0) and append the rest.
   while (sel.options.length > 1) sel.remove(1);
-  cats.forEach(c => {
+  forms.forEach(f => {
     const opt = document.createElement('option');
-    opt.value = c; opt.textContent = c;
+    opt.value = f; opt.textContent = f;
     sel.appendChild(opt);
   });
 }
