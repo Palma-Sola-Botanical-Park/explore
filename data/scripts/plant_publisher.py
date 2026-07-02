@@ -81,26 +81,29 @@ def build_plants_json_entry(species, hero):
     """Build one plants.json card entry from signage + hero photo."""
     pid = species["id"]
     cat = species.get("category", "").replace(" and ", " & ")
-    inv_level = (species.get("invasive") or {}).get("level", "Green")
-    invasive  = inv_level in ("Red", "Yellow")   # kept as DATA only — no chip, no filter unless you add one
+    # Butterfly relevance — read straight from the structured butterfly object
+    # (plant_signage schema 1.4+). No more prose-scraping: larval_food / adult_food
+    # are researched booleans and larval_species carries the named hosts.
+    bf = species.get("butterfly") or {}
+    larval_host    = bool(bf.get("larval_food"))
+    nectar         = bool(bf.get("adult_food"))
+    butterfly      = larval_host or nectar          # rolled-up "butterfly-relevant"
+    larval_species = bf.get("larval_species") or []
 
-    # Butterfly: prefer an explicit determination; fall back to a guarded text signal.
-    # "Is this a larval host?" is a clean boolean that belongs in the data
-    # (butterfly_host), answered once. Until that field is backfilled, derive a
-    # host-OR-nectar signal from wildlife_value prose — but guard against negations
-    # ("supports no butterfly larvae") that a bare substring would misread as a hit.
-    host = species.get("butterfly_host")
-    if host is True:
-        butterfly = True
-    else:
-        wv = species.get("wildlife_value") or []
-        wv_text = (" ".join(wv) if isinstance(wv, list) else str(wv)).lower()
-        mentions = "butterfl" in wv_text
-        negated = any(neg in wv_text for neg in (
-            "no butterfl", "not attract butterfl", "supports no butterfl",
-            "not a butterfl", "aren't butterfl", "isn't a butterfl",
-        ))
-        butterfly = mentions and not negated
+    # Invasive — the researcher-owned watch_invasive flag (FISC/IFAS listing OR
+    # observed local behavior; the old traffic-light invasive{} dict is retired).
+    watch_invasive = bool(species.get("watch_invasive"))
+    native         = bool(species.get("native"))
+    rare_fruit     = bool(species.get("rare_fruit"))
+
+    # Faceted classification for the browse filters.
+    form = species.get("form") or ""
+    # Editorial tags ONLY. The native / invasive / butterfly / rare-fruit facets
+    # now come from the booleans above (single source of truth), so we strip the
+    # tag duplicates and keep only tags with no boolean equivalent (e.g.
+    # cultural-historical). Prevents stale tag counts from fighting the booleans.
+    _DERIVED_TAGS = {"native", "watch-invasive", "butterfly-host", "rare-fruit"}
+    tags = [t for t in (species.get("tags") or []) if t not in _DERIVED_TAGS]
 
     # Hero photo path and credit — resolve real name + license
     hero_credit = resolve_hero_credit(hero)
@@ -119,10 +122,16 @@ def build_plants_json_entry(species, hero):
         "family": (species.get("taxonomy") or {}).get("family", ""),
         "aliases": species.get("alternate_names") or [],
         "cat": cat,
-        "origin": "Native" if species.get("native") else "Non-native",
-        "native": bool(species.get("native")),
-        "butterfly": butterfly,
-        "invasive": invasive,   # data only; Nature page builds no chip/filter from it
+        "form": form,                       # facet: Form dropdown
+        "origin": "Native" if native else "Non-native",
+        "native": native,
+        "butterfly": butterfly,             # larval OR nectar (rollup + back-compat)
+        "larval_host": larval_host,         # filter: larval host plant
+        "nectar": nectar,                   # filter: adult nectar source
+        "larval_species": larval_species,   # named hosts, for the butterfly page
+        "watch_invasive": watch_invasive,   # filter: plants to watch / invasive (CANONICAL)
+        "rare_fruit": rare_fruit,           # filter: rare-fruit collection
+        "tags": tags,                       # facet: editorial tag chips (non-boolean)
         "photo": photo,
         "page": f"plants/{page_filename(pid, species['common_name'])}",
         "credit": hero_credit["credit_name"],
