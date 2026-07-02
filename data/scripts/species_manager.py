@@ -19,6 +19,7 @@ Shared module:     psbp_common.py
 
 import json
 import os
+import re
 import sys
 import time
 import datetime
