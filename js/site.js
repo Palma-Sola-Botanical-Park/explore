@@ -1455,9 +1455,6 @@ function filterPlants() {
     (!_activeForm || p.form === _activeForm)
     && (!_activeFilters.has('native')         || p.native)
     && (!_activeFilters.has('butterfly')      || p.butterfly)
-    && (!_activeFilters.has('larval_host')    || p.larval_host)
-    && (!_activeFilters.has('nectar')         || p.nectar)
-    && (!_activeFilters.has('watch_invasive') || p.watch_invasive)
     && (!_activeFilters.has('rare_fruit')     || p.rare_fruit)
   );
 
