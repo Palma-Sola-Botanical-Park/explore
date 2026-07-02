@@ -4467,6 +4467,104 @@
         "inference_geo": "global"
       },
       "searches": 0
+    },
+    {
+      "ts": "2026-07-01T21:12:02",
+      "id": "PSBP-00124",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "This draft for the Starfruit (Averrhoa carambola) card is visually stunning and beautifully written. Slicing it to reveal the five-pointed star is such an iconic image, and your \"Quick Hits\" section captures that perfectly.\n\nBecause starfruit carries unique dietary guidelines, making sure this profile is completely air-tight is highly important. Here is a review of the text along with a couple of critical adjustments to protect park visitors:\n\n🌟 Why it works\nPhenomenal Botanical Notes: Describing the leaves as \"pinnately compound... that fold down at night\" (nyctinasty) is an amazing educational detail that curious visitors will love trying to spot if they visit near dusk.\n\nClear Origin & Habit Data: Capturing its native Southeast Asian roots and its heavy-fruiting nature is spot-on for a tropical specimen profile.\n\n🚨 Critical Adjustments to Consider\nThe Kidney Warning (Crucial Nuance): You did an excellent job highlighting the danger of caramboxin and oxalates for people with kidney d",
+      "changed": [
+        "quick_hits",
+        "more_information",
+        "edibility",
+        "toxicity"
+      ],
+      "summary": "The kidney-safety warning has been broadened across quick_hits, more_information, and toxicity to reflect peer-reviewed evidence that people with any degree of renal impairment (including undiagnosed) face serious risk, and that even healthy individuals are not completely exempt at very high consumption levels. The edibility and toxicity fields have also been migrated to their correct schema shapes (lists of strings).",
+      "sources": [
+        {
+          "title": "The Neurotoxin in Star Fruit | NutritionFacts.org",
+          "url": "https://nutritionfacts.org/blog/the-neurotoxin-in-star-fruit/"
+        },
+        {
+          "title": "Mechanisms of star fruit (Averrhoa carambola) toxicity: A mini-review - ScienceDirect",
+          "url": "https://www.sciencedirect.com/science/article/abs/pii/S0041010120303925"
+        },
+        {
+          "title": "Nephrotoxicity and neurotoxicity following star fruit (Averrhoa carambola) ingestion: a narrative review | Transactions of The Royal Society of Tropical Medicine and Hygiene | Oxford Academic",
+          "url": "https://academic.oup.com/trstmh/article-abstract/115/9/947/6163205"
+        },
+        {
+          "title": "Can star fruit consumption cause nephrotoxicity in individuals with pre-existing kidney (renal) issues?",
+          "url": "https://www.droracle.ai/articles/220275/can-star-fruit-consumption-cause-nephrotoxicity-in-individuals-with"
+        },
+        {
+          "title": "Effects of carambola consumption (Averrhoa carambola) in Acute Kidney Injury | Research, Society and Development",
+          "url": "https://rsdjournal.org/index.php/rsd/article/view/42807"
+        },
+        {
+          "title": "Neurotoxicity Effects of Star Fruit | NutritionFacts.org",
+          "url": "https://nutritionfacts.org/video/neurotoxicity-effects-of-star-fruit/"
+        },
+        {
+          "title": "Why eating star fruit is prohibited for patients with chronic kidney disease? - Brazilian Journal of Nephrology (BJN)",
+          "url": "https://www.bjnephrology.org/en/article/why-eating-star-fruit-is-prohibited-for-patients-with-chronic-kidney-disease/"
+        },
+        {
+          "title": "Star fruit toxicity: a cause of both acute kidney injury and chronic kidney disease: a report of two cases",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4683968/"
+        },
+        {
+          "title": "Acute Kidney Injury with Neurological Features: Beware of the Star Fruit and its Caramboxin - Indian Journal of Nephrology",
+          "url": "https://indianjnephrol.org/acute-kidney-injury-with-neurological-features-beware-of-the-star-fruit-and-its-caramboxin/"
+        },
+        {
+          "title": "Effects of carambola consumption (Averrhoa carambola) in Acute Kidney Injury | Research, Society and Development",
+          "url": "https://rsdjournal.org/rsd/article/view/42807"
+        },
+        {
+          "title": "averrhoa carambola infested: Topics by Science.gov",
+          "url": "https://www.science.gov/topicpages/a/averrhoa+carambola+infested.html"
+        },
+        {
+          "title": "Nephrotoxicity and neurotoxicity following star fruit (Averrhoa carambola) ingestion: a narrative review - PubMed",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/33693950/"
+        },
+        {
+          "title": "Acute Kidney Injury with Neurological Features: Beware of the Star Fruit and its Caramboxin - PubMed",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/32015601/"
+        },
+        {
+          "title": "Death associated with ingestion of starfruit (Averrhoa carambola) in a patient with chronic kidney disease - PubMed",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/37394384/"
+        },
+        {
+          "title": "Association of renal function and symptoms with mortality in star fruit (Averrhoa carambola) intoxication - PubMed",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/28443386/"
+        },
+        {
+          "title": "Acute Kidney Injury Following Star Fruit (Averrhoa carambola) ...",
+          "url": "https://pdfs.semanticscholar.org/7112/711ac5b2e478235df3d46722063ff75aa2d4.pdf"
+        }
+      ],
+      "usage": {
+        "input_tokens": 24876,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1760,
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "server_tool_use": {
+          "web_search_requests": 2,
+          "web_fetch_requests": 0
+        }
+      },
+      "searches": 2
     }
   ]
 }
