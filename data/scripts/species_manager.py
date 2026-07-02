@@ -358,7 +358,7 @@ _RESEARCH_ONLY_FIELDS = {
 # Key content fields per kingdom — used for completeness indicators.
 _PLANT_CONTENT_KEYS = [
     "quick_hits", "more_information", "origin", "wildlife_value",
-    "reproduction", "growing_conditions", "edibility", "toxicity",
+    "reproduction", "growing_conditions", "safety_note",
     "alternate_names", "butterfly", "form",
 ]
 _WILDLIFE_CONTENT_KEYS = [
@@ -532,6 +532,7 @@ def _ensure_plant_schema_defaults(rec):
     rec.setdefault("watch_invasive_notes", None)
     rec.setdefault("rare_fruit", False)
     rec.setdefault("form", "")
+    rec.setdefault("safety_note", [])
     bf = rec.get("butterfly")
     if not isinstance(bf, dict):
         rec["butterfly"] = {"larval_food": False, "larval_species": [],
@@ -8286,12 +8287,10 @@ VERIFY_BODY = r"""
         (v.notes?`<div class="vf-note" style="margin-top:4px">${vfEsc(v.notes)}</div>`:'');
     }
     if(kind==='edibility'){
-      const d=(v.detail||[]).map(vfEsc).join(' '); return vfLvl(v.level) + (d?` <span class="vf-note">${d}</span>`:'');
+      return vfLvl(v.level);
     }
     if(kind==='toxicity'){
-      const p=(v.people||[]).map(vfEsc).join(' '), dg=(v.dogs||[]).map(vfEsc).join(' ');
-      return 'people ' + vfLvl(v.level) + (p?` <span class="vf-note">${p}</span>`:'') +
-        '<br>dogs ' + vfLvl(v.dogs_level) + (dg?` <span class="vf-note">${dg}</span>`:'');
+      return 'people ' + vfLvl(v.level) + ' &nbsp; dogs ' + vfLvl(v.dogs_level);
     }
     return vfBadge(v.value?'vf-true':'vf-false', v.value?'TRUE':'FALSE') + (v.note?` <span class="vf-note">${vfEsc(v.note)}</span>`:'');
   }
@@ -8372,14 +8371,11 @@ VERIFY_BODY = r"""
         <textarea id="ov-nt-${id}" rows="2" placeholder="notes (e.g. expert correction + date)">${vfEsc(v.notes||'')}</textarea>`;
     }
     if(p.kind==='edibility'){
-      return `<label>Level ${vfLvlSelect('ov-lv-'+id, v.level)}</label>
-        <textarea id="ov-dt-${id}" rows="2" placeholder="detail">${vfEsc((v.detail||[]).join(' '))}</textarea>`;
+      return `<label>Edibility color ${vfLvlSelect('ov-lv-'+id, v.level)}</label>`;
     }
     if(p.kind==='toxicity'){
       return `<label>People ${vfLvlSelect('ov-lv-'+id, v.level)}</label>
-        <textarea id="ov-pp-${id}" rows="2" placeholder="people note">${vfEsc((v.people||[]).join(' '))}</textarea>
-        <label>Dogs ${vfLvlSelect('ov-dl-'+id, v.dogs_level)}</label>
-        <textarea id="ov-dg-${id}" rows="2" placeholder="dogs note">${vfEsc((v.dogs||[]).join(' '))}</textarea>`;
+        <label>Dogs ${vfLvlSelect('ov-dl-'+id, v.dogs_level)}</label>`;
     }
     return `<label><input type="radio" name="ov-${id}" value="true" id="ov-t-${id}" ${v.value?'checked':''}> TRUE</label>
       <label><input type="radio" name="ov-${id}" value="false" id="ov-f-${id}" ${!v.value?'checked':''}> FALSE</label>
@@ -8402,10 +8398,10 @@ VERIFY_BODY = r"""
       adult_food:document.getElementById('ov-af-'+id).checked, adult_species:split(document.getElementById('ov-as-'+id).value),
       notes:document.getElementById('ov-nt-'+id).value.trim()||null }};
     if(p.kind==='edibility') return {field, source_kind:'override', data:{
-      level:document.getElementById('ov-lv-'+id).value, detail:lines(document.getElementById('ov-dt-'+id).value) }};
+      level:document.getElementById('ov-lv-'+id).value }};
     if(p.kind==='toxicity') return {field, source_kind:'override', data:{
-      level:document.getElementById('ov-lv-'+id).value, people:lines(document.getElementById('ov-pp-'+id).value),
-      dogs_level:document.getElementById('ov-dl-'+id).value, dogs:lines(document.getElementById('ov-dg-'+id).value) }};
+      level:document.getElementById('ov-lv-'+id).value,
+      dogs_level:document.getElementById('ov-dl-'+id).value }};
     return {field, source_kind:'override', data:{
       value:document.getElementById('ov-t-'+id).checked, note:document.getElementById('ov-nt-'+id).value.trim()||null }};
   }
@@ -8504,11 +8500,10 @@ def _verify_current(species, kingdom):
                    "notes": bf.get("notes")}
         elif k == "edibility":
             ed = species.get("edibility") or {}
-            val = {"level": ed.get("level"), "detail": ed.get("detail") or []}
+            val = {"level": ed.get("level")}
         elif k == "toxicity":
             tx = species.get("toxicity") or {}
-            val = {"level": tx.get("level"), "people": tx.get("people") or [],
-                   "dogs_level": tx.get("dogs_level"), "dogs": tx.get("dogs") or []}
+            val = {"level": tx.get("level"), "dogs_level": tx.get("dogs_level")}
         else:
             val = {"value": bool(species.get(f)),
                    "note": species.get(cfg["notes"]) if cfg["notes"] else None}
@@ -8534,11 +8529,11 @@ def _ai_build_verify_messages(species, kingdom, fields):
                           '"adult_food": <bool>, "adult_species": [<"Name (Sci)">], "notes": <string|null>, '
                           '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}')
         elif k == "edibility":
-            shapes.append('"edibility": {"level": "Green|Yellow|Red", "detail": <one sentence>, '
+            shapes.append('"edibility": {"level": "Green|Yellow|Red", '
                           '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}')
         elif k == "toxicity":
-            shapes.append('"toxicity": {"level": "Green|Yellow|Red", "people": <one sentence>, '
-                          '"dogs_level": "Green|Yellow|Red", "dogs": <one sentence>, '
+            shapes.append('"toxicity": {"level": "Green|Yellow|Red", '
+                          '"dogs_level": "Green|Yellow|Red", '
                           '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}')
         else:
             shapes.append(f'"{f}": {{"value": <true|false>, "note": <string|null>, '
@@ -8588,12 +8583,11 @@ def _coerce_verify_field(f, kind, obj):
     elif kind == "edibility":
         if obj.get("level") not in _LEVELS:
             raise ValueError("edibility.level must be Green/Yellow/Red")
-        prop = {"level": obj["level"], "detail": _as_list(obj.get("detail"))}
+        prop = {"level": obj["level"]}
     elif kind == "toxicity":
         if obj.get("level") not in _LEVELS or obj.get("dogs_level") not in _LEVELS:
             raise ValueError("toxicity level/dogs_level must be Green/Yellow/Red")
-        prop = {"level": obj["level"], "people": _as_list(obj.get("people")),
-                "dogs_level": obj["dogs_level"], "dogs": _as_list(obj.get("dogs"))}
+        prop = {"level": obj["level"], "dogs_level": obj["dogs_level"]}
     else:
         if not isinstance(obj.get("value"), bool):
             raise ValueError(f"{f}.value must be boolean")
@@ -8669,10 +8663,14 @@ def apply_verify_decisions(kingdom, species_id, decisions):
                                    "adult_species": p.get("adult_species") or [],
                                    "notes": p.get("notes")}
         elif k == "edibility":
-            target["edibility"] = {"level": p.get("level"), "detail": p.get("detail") or []}
+            ed = target.get("edibility") or {}
+            ed["level"] = p.get("level")
+            target["edibility"] = ed
         elif k == "toxicity":
-            target["toxicity"] = {"level": p.get("level"), "people": p.get("people") or [],
-                                  "dogs_level": p.get("dogs_level"), "dogs": p.get("dogs") or []}
+            tx = target.get("toxicity") or {}
+            tx["level"] = p.get("level")
+            tx["dogs_level"] = p.get("dogs_level")
+            target["toxicity"] = tx
         else:
             target[f] = bool(p.get("value"))
             if cfg["notes"]:
@@ -8790,8 +8788,9 @@ _DRAFT_SPEC_PLANTS = {
     "seasonality":        ("dict", 'object {"bloom_months":str|null,"bloom_description":str|null,"leaf_behavior":str|null,"fruiting_months":str|null,"notes":str|null}'),
     "size":               ("dict", 'object {"height":str,"spread":str,"habit":str,"growth_rate":str,"texture":str}'),
     "growing_conditions": ("dict", 'object {"light":str,"soil_tolerances":str,"drought_tolerance":str,"spacing":str}'),
-    "edibility":          ("dict", 'object {"level":"Red|Yellow|Green","detail":[str]} — detail is a list of SHORT paragraph strings (each ≤ ~3 sentences): is any part edible and the key caveat. Do NOT restate the toxicity hazards here; point to toxicity instead. Plain prose, no bullets or markdown.'),
-    "toxicity":           ("dict", 'object {"level":"Red|Yellow|Green","people":[str],"dogs_level":"Red|Yellow|Green","dogs":[str]} — people/dogs are lists of SHORT paragraph strings (each ≤ ~3 sentences), one topic per item. Plain prose, no bullet characters, asterisks, or markdown.'),
+    "edibility":          ("dict", 'object {"level":"Red|Yellow|Green"} — the edibility COLOR only (Green = safe/harmless, Yellow = caution, Red = unsafe/toxic to eat). No prose here; the written message goes in safety_note.'),
+    "toxicity":           ("dict", 'object {"level":"Red|Yellow|Green","dogs_level":"Red|Yellow|Green"} — toxicity COLORS only, for people and for dogs (Green = non-toxic, Yellow = mild, Red = seriously toxic). No prose here; the written message goes in safety_note.'),
+    "safety_note":        ("list", "ONE coherent paragraph (occasionally two ONLY if genuinely separate points) covering eating, handling, and any real danger as a single unified message. LEAD with whatever matters MOST: if there's a genuine hazard (toxic, skin irritant, spines, sap, anything), open with THAT, plainly, before anything else — don't bury it. Do NOT march through edibility-then-toxicity-then-dogs in order, and never repeat the same point twice. If the plant is harmless, note any minor caveat once and close with something like 'otherwise harmless — people just don't eat it.' A list of one (rarely two) short paragraph strings."),
     "watch_invasive":       ("bool", "true if FISC (formerly FLEPPC) Category I/II, or UF/IFAS-flagged invasive/caution in Florida; false otherwise"),
     "watch_invasive_notes": ("str",  "if watch_invasive is true: which list/category (e.g. 'FISC Category I') plus any caveat; omit if not flagged"),
     "other_notes":        ("list", "any extra noteworthy info as a list of paragraph strings — one item per paragraph, never newlines inside a string; or omit"),

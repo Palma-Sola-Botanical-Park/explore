@@ -480,7 +480,9 @@ def render_safety(species):
     ed_level = ed.get("level", "Green")
     tox_level = tox.get("level", "Green")
 
-    worst = "Red" if "Red" in (tox_level, ed_level) else "Yellow" if "Yellow" in (tox_level, ed_level) else "Green"
+    dog_level = tox.get("dogs_level", "Green")
+    levels = (ed_level, tox_level, dog_level)
+    worst = "Red" if "Red" in levels else "Yellow" if "Yellow" in levels else "Green"
 
     # Choose section class and icon
     if worst == "Red":
@@ -493,15 +495,19 @@ def render_safety(species):
         section_cls = "plant-safe-section"
         icon = "✅"
 
-    # Build paragraphs — each field's paragraphs rendered separately and capped,
-    # so people + dogs never merge into one wall (that was the bug).
+    # Prefer the unified safety_note — ONE coherent, priority-led message that
+    # leads with whatever matters most. Fall back to the legacy three fields
+    # (edibility.detail + toxicity.people + toxicity.dogs) for pages drafted
+    # before the merge, so nothing already published breaks.
     paras = []
-    for p in _paragraphs(ed.get("detail")):
-        paras.append(f"<p>{h(p)}</p>")
-    for p in _paragraphs(tox.get("people")):
-        paras.append(f"<p>{h(p)}</p>")
-    for p in _paragraphs(tox.get("dogs")):
-        paras.append(f"<p>{h(p)}</p>")
+    note_paras = _paragraphs(species.get("safety_note"))
+    if note_paras:
+        for p in note_paras:
+            paras.append(f"<p>{h(p)}</p>")
+    else:
+        for src in (ed.get("detail"), tox.get("people"), tox.get("dogs")):
+            for p in _paragraphs(src):
+                paras.append(f"<p>{h(p)}</p>")
 
     if not paras:
         return ""
