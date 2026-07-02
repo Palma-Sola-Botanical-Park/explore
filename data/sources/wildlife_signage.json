@@ -3,9 +3,9 @@
     "generated": "2026-06-23",
     "source": "wildlife_signage.json (authoritative master — no longer generated from a spreadsheet)",
     "species_count": 74,
-    "schema_version": "1.4",
-    "note": "Research species (7) extracted to research.json on 2026-06-23",
-    "updated": "2026-06-30T23:43:58"
+    "schema_version": "1.5",
+    "note": "Consolidated duplicate category labels; filled 3 empty categories; removed orphan native_status; uniform skeleton schema. See CHANGELOG_massage.md",
+    "updated": "2026-07-02T03:11:27"
   },
   "species": [
     {
@@ -18,12 +18,37 @@
       "taxonomy": {
         "family": ""
       },
-      "category": "",
+      "category": "Other Invertebrates",
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
-      "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP)."
+      "native": false,
+      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "also_known_as": null,
+      "behavior": null,
+      "conservation": null,
+      "danger": null,
+      "diet": null,
+      "ecological_role": null,
+      "habitat": null,
+      "identification": null,
+      "interaction": null,
+      "invasive": null,
+      "more_information": null,
+      "observation_stats": null,
+      "plant_connections": null,
+      "plant_links": null,
+      "quick_hits": null,
+      "range_and_origin": null,
+      "seasonality": null,
+      "similar_species": null,
+      "size": null,
+      "sounds": null,
+      "sources": null,
+      "tags": null,
+      "when_to_see": null,
+      "where_to_look": null,
+      "last_reviewed": null
     },
     {
       "id": "PSBP-99912",
@@ -35,12 +60,37 @@
       "taxonomy": {
         "family": ""
       },
-      "category": "",
+      "category": "Butterflies & Moths",
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
-      "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP)."
+      "native": false,
+      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "also_known_as": null,
+      "behavior": null,
+      "conservation": null,
+      "danger": null,
+      "diet": null,
+      "ecological_role": null,
+      "habitat": null,
+      "identification": null,
+      "interaction": null,
+      "invasive": null,
+      "more_information": null,
+      "observation_stats": null,
+      "plant_connections": null,
+      "plant_links": null,
+      "quick_hits": null,
+      "range_and_origin": null,
+      "seasonality": null,
+      "similar_species": null,
+      "size": null,
+      "sounds": null,
+      "sources": null,
+      "tags": null,
+      "when_to_see": null,
+      "where_to_look": null,
+      "last_reviewed": null
     },
     {
       "id": "PSBP-99919",
@@ -52,12 +102,37 @@
       "taxonomy": {
         "family": ""
       },
-      "category": "",
+      "category": "Waterbirds & Waterfowl",
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
       "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (4 obs at PSBP)."
+      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (4 obs at PSBP).",
+      "also_known_as": null,
+      "behavior": null,
+      "conservation": null,
+      "danger": null,
+      "diet": null,
+      "ecological_role": null,
+      "habitat": null,
+      "identification": null,
+      "interaction": null,
+      "invasive": null,
+      "more_information": null,
+      "observation_stats": null,
+      "plant_connections": null,
+      "plant_links": null,
+      "quick_hits": null,
+      "range_and_origin": null,
+      "seasonality": null,
+      "similar_species": null,
+      "size": null,
+      "sounds": null,
+      "sources": null,
+      "tags": null,
+      "when_to_see": null,
+      "where_to_look": null,
+      "last_reviewed": null
     },
     {
       "id": "PSBP-99921",
@@ -140,7 +215,7 @@
       },
       "has_sign": false,
       "status": "html",
-      "native": false,
+      "native": true,
       "also_known_as": [],
       "danger": {
         "people_level": "Green",
@@ -181,7 +256,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-22"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "native_status": "migrant"
     },
     {
       "id": "PSBP-99922",
@@ -4152,7 +4228,7 @@
         "species": "macroura"
       },
       "animal_group": "Bird",
-      "category": "Songbirds & Backyard Birds",
+      "category": "Songbirds & Perching Birds",
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -4284,7 +4360,7 @@
         "species": "cristata"
       },
       "animal_group": "Bird",
-      "category": "Songbirds & Backyard Birds",
+      "category": "Songbirds & Perching Birds",
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -4667,7 +4743,7 @@
         "species": "polyglottos"
       },
       "animal_group": "Bird",
-      "category": "Songbirds & Backyard Birds",
+      "category": "Songbirds & Perching Birds",
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -4800,7 +4876,7 @@
         "species": "pileatus"
       },
       "animal_group": "Bird",
-      "category": "Songbirds & Backyard Birds",
+      "category": "Songbirds & Perching Birds",
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -5927,7 +6003,7 @@
         "species": "cardinalis"
       },
       "animal_group": "Bird",
-      "category": "Songbirds & Backyard Birds",
+      "category": "Songbirds & Perching Birds",
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -6050,7 +6126,7 @@
         "species": "asio"
       },
       "animal_group": "Bird",
-      "category": "Birds of Prey",
+      "category": "Raptors & Birds of Prey",
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -6417,7 +6493,7 @@
         "species": "haliaetus"
       },
       "animal_group": "Bird",
-      "category": "Birds of Prey",
+      "category": "Raptors & Birds of Prey",
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -6551,7 +6627,7 @@
         "species": "leucocephalus"
       },
       "animal_group": "Bird",
-      "category": "Birds of Prey",
+      "category": "Raptors & Birds of Prey",
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",

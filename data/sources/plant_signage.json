@@ -3,9 +3,9 @@
     "generated": "2026-06-23",
     "source": "PSBP_Master_Plant_Signage.xlsx",
     "species_count": 134,
-    "schema_version": "1.2",
-    "note": "Research species (34) extracted to research.json on 2026-06-23",
-    "updated": "2026-07-01T21:19:18"
+    "schema_version": "1.3",
+    "note": "Added faceted classification (form + tags) alongside legacy category; normalized size/growing_conditions vocab; type + native fixes. See CHANGELOG_massage.md",
+    "updated": "2026-07-02T03:11:27"
   },
   "species": [
     {
@@ -20,6 +20,8 @@
         "species": "asiaticum"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -126,6 +128,10 @@
         "species": "viminalis"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -194,7 +200,7 @@
         "light": "full sun",
         "soil_tolerances": "clay · sand · loam · slightly alkaline · acidic · well-drained",
         "drought_tolerance": "high",
-        "aerosol_salt_tolerance": "moderate"
+        "salt_tolerance": "moderate"
       },
       "edibility": {
         "level": "Yellow",
@@ -231,6 +237,10 @@
         "species": "sargentii"
       },
       "category": "Native Palms and Cycads",
+      "form": "Palm & Cycad",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -347,6 +357,8 @@
         "species": "speciosa"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -467,6 +479,10 @@
         "species": "speciosa"
       },
       "category": "Culturally and Historically Significant",
+      "form": "Tree",
+      "tags": [
+        "cultural-historical"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -589,6 +605,8 @@
         "species": "integerrima"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -705,6 +723,10 @@
         "species": "mimosifolia"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -824,6 +846,10 @@
         "species": "debilis"
       },
       "category": "Native Groundcovers and Wildflowers",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -937,6 +963,10 @@
         "species": "pulchella"
       },
       "category": "Native Groundcovers and Wildflowers",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -1046,6 +1076,10 @@
         "species": "sebestena"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -1161,6 +1195,8 @@
         "species": "digitata"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -1234,9 +1270,9 @@
       "growing_conditions": {
         "light": "full sun",
         "drought_tolerance": "excellent — allow soil to dry completely between waterings",
-        "watering": "infrequent · do not overwater",
         "cold_tolerance": "frost sensitive · USDA zones 10–12",
-        "note": "not considered invasive in Florida"
+        "note": "not considered invasive in Florida",
+        "water_use": "infrequent · do not overwater"
       },
       "edibility": {
         "level": "Green",
@@ -1275,6 +1311,8 @@
         "species": "pulcherrima"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -1386,6 +1424,10 @@
         "species": "strigillosa"
       },
       "category": "Native Groundcovers and Wildflowers",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -1460,9 +1502,9 @@
         "drought_tolerance": "high once established",
         "salt_tolerance": "moderate",
         "cold_tolerance": "excellent — perennial, root-hardy throughout its range",
-        "seasonal_note": "foliage goes semi-dormant in late fall and winter; expect sparse cover November through February",
         "usda_zones": "8–11",
-        "uf_ifas": "Florida native, highly recommended"
+        "uf_ifas": "Florida native, highly recommended",
+        "note": "foliage goes semi-dormant in late fall and winter; expect sparse cover November through February"
       },
       "edibility": {
         "level": "Green",
@@ -1499,6 +1541,8 @@
         "species": "volubilis"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -1615,6 +1659,8 @@
         "cultivar": "Java White"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -1722,6 +1768,10 @@
         "species": "wrightii"
       },
       "category": "Native Palms and Cycads",
+      "form": "Palm & Cycad",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -1835,6 +1885,10 @@
         "species": "simaruba"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Tree",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -1947,6 +2001,8 @@
         "species": "lagenicaulis"
       },
       "category": "Tropical and Exotic Palms",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -2059,6 +2115,8 @@
         "species": "canariensis"
       },
       "category": "Tropical and Exotic Palms",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -2169,6 +2227,8 @@
         "species": "madagascariensis"
       },
       "category": "Tropical and Exotic Palms",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -2278,6 +2338,8 @@
         "species": "nicolai"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -2389,6 +2451,10 @@
         "species": "distichum"
       },
       "category": "Native Wetland and Pond Edge",
+      "form": "Aquatic & Wetland",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -2457,11 +2523,11 @@
       },
       "size": {
         "height": "50 to 70 feet",
-        "width": "20 to 30 feet",
         "trunk_diameter": "3 to 6 feet on old trees; dramatically flared base",
         "habit": "pyramidal when young, irregular flat top with age",
         "growth_rate": "moderate",
-        "texture": "fine and feathery in leaf; bold architectural silhouette in winter"
+        "texture": "fine and feathery in leaf; bold architectural silhouette in winter",
+        "spread": "20 to 30 feet"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -2506,11 +2572,16 @@
         "species": "integrifolia"
       },
       "category": "Native Palms and Cycads",
+      "form": "Palm & Cycad",
+      "tags": [
+        "native",
+        "butterfly-host"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
       "native": true,
-      "butterfly_host": null,
+      "butterfly_host": true,
       "alternate_names": [
         "Florida Arrowroot",
         "Comptie",
@@ -2624,6 +2695,10 @@
         "species": "cassine"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -2686,10 +2761,10 @@
       },
       "size": {
         "height": "20 to 30 feet",
-        "width": "8 to 15 feet",
         "habit": "irregular to rounded crown, fairly open canopy; young trees narrow, broadening with age",
         "growth_rate": "moderate",
-        "texture": "medium-fine, with glossy narrow leaves"
+        "texture": "medium-fine, with glossy narrow leaves",
+        "spread": "8 to 15 feet"
       },
       "growing_conditions": {
         "light": "full sun to full shade",
@@ -2734,6 +2809,10 @@
         "species": "capillaris"
       },
       "category": "Native Wetland and Pond Edge",
+      "form": "Aquatic & Wetland",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -2842,6 +2921,10 @@
         "species": "virginiana"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Tree",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -2919,9 +3002,9 @@
         "soil_tolerances": "wide range — sandy, loamy, well-drained coastal soils",
         "drought_tolerance": "high once established",
         "salt_tolerance": "high",
-        "wind_resistance": "excellent",
         "cold_tolerance": "excellent; USDA zones 7B–11",
-        "note": "requires significant space — allow for full spread; surface roots can affect nearby paving but not typically a problem in landscape settings"
+        "note": "requires significant space — allow for full spread; surface roots can affect nearby paving but not typically a problem in landscape settings",
+        "wind_tolerance": "excellent"
       },
       "edibility": {
         "level": "Yellow",
@@ -2958,6 +3041,10 @@
         "species": "mangle"
       },
       "category": "Native Wetland and Pond Edge",
+      "form": "Aquatic & Wetland",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -3072,6 +3159,10 @@
         "species": "geniculata"
       },
       "category": "Native Wetland and Pond Edge",
+      "form": "Aquatic & Wetland",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -3178,6 +3269,11 @@
         "species": "dactyloides"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "native",
+        "watch-invasive"
+      ],
       "feature_tier": "Background",
       "has_sign": true,
       "status": "html",
@@ -3293,6 +3389,10 @@
         "species": "americana"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Tree",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -3405,6 +3505,10 @@
         "species": "mahagoni"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Tree",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -3483,9 +3587,9 @@
         "soil_tolerances": "wide range, well-drained preferred",
         "drought_tolerance": "high",
         "salt_tolerance": "tolerates salty wind but not direct salt spray; handles occasional brief inundation",
-        "wind_resistance": "excellent (hurricane-resistant)",
         "cold_tolerance": "USDA zones 10-11",
-        "note": "resistant to drought and neglect once established"
+        "note": "resistant to drought and neglect once established",
+        "wind_tolerance": "excellent (hurricane-resistant)"
       },
       "edibility": {
         "level": "Green",
@@ -3522,11 +3626,16 @@
         "species": "fagara"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native",
+        "butterfly-host"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
       "native": true,
-      "butterfly_host": null,
+      "butterfly_host": true,
       "alternate_names": [],
       "quick_hits": [
         "The Wild Lime is the essential host plant for the Giant Swallowtail butterfly — Florida's largest butterfly, with a wingspan reaching six inches.",
@@ -3630,6 +3739,10 @@
         "species": "flaccida"
       },
       "category": "Native Wetland and Pond Edge",
+      "form": "Aquatic & Wetland",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "sign_group": "Canna",
       "has_sign": true,
@@ -3744,6 +3857,10 @@
         "species": "regia"
       },
       "category": "Native Palms and Cycads",
+      "form": "Palm & Cycad",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -3863,6 +3980,8 @@
         "species": "regia"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -3967,6 +4086,10 @@
         "species": "actinophylla"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Tree",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -4036,8 +4159,7 @@
         "light": "part shade to part sun",
         "soil_tolerances": "wide range of soils",
         "cold_tolerance": "USDA zones 9B-11",
-        "growth_habit": "grows terrestrially or as an epiphyte",
-        "note": "bird-dispersed fruits; invasive in hammocks, particularly wet rocky sites — see Invasive Notes"
+        "note": "bird-dispersed fruits; invasive in hammocks, particularly wet rocky sites — see Invasive Notes [growth_habit: grows terrestrially or as an epiphyte]"
       },
       "edibility": {
         "level": "Red",
@@ -4078,6 +4200,10 @@
         "species": "simplex"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -4197,11 +4323,16 @@
         "species": "gigantea"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [
+        "watch-invasive",
+        "butterfly-host"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
       "native": false,
-      "butterfly_host": null,
+      "butterfly_host": true,
       "alternate_names": [
         "Crown Flower",
         "Bowstring Hemp",
@@ -4314,6 +4445,10 @@
         "species": "americana"
       },
       "category": "Culturally and Historically Significant",
+      "form": "Foliage & Accent",
+      "tags": [
+        "cultural-historical"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -4432,6 +4567,10 @@
         "species": "indica"
       },
       "category": "Culturally and Historically Significant",
+      "form": "Foliage & Accent",
+      "tags": [
+        "cultural-historical"
+      ],
       "feature_tier": "Standard",
       "sign_group": "Canna",
       "has_sign": false,
@@ -4554,6 +4693,10 @@
         "species": "angiospermum"
       },
       "category": "Native Groundcovers and Wildflowers",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -4666,6 +4809,8 @@
         "species": "bicolor"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -4779,6 +4924,8 @@
         "species": "utilis"
       },
       "category": "Tropical and Exotic Palms",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -4894,6 +5041,8 @@
         "species": "auriculata"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -5009,6 +5158,10 @@
         "species": "trifasciata"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -5125,6 +5278,10 @@
         "species": "spp."
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -5225,6 +5382,8 @@
         "species": "xanadu"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -5306,6 +5465,8 @@
         "species": "spp."
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -5385,6 +5546,8 @@
         "cultivar": "Album"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -5478,6 +5641,10 @@
         "species": "chenopodioides"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -5572,6 +5739,8 @@
         "species": "lanceolata"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -5669,6 +5838,8 @@
         "species": "pubescens"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -5763,6 +5934,10 @@
         "species": "hulseanum"
       },
       "category": "Native Wetland and Pond Edge",
+      "form": "Aquatic & Wetland",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -5857,6 +6032,10 @@
         "species": "psittacorum"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -5956,6 +6135,10 @@
         "species": "cerifera"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -6054,6 +6237,10 @@
         "species": "danaeifolium"
       },
       "category": "Native Wetland and Pond Edge",
+      "form": "Aquatic & Wetland",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -6114,7 +6301,7 @@
       },
       "size": null,
       "growing_conditions": {
-        "light_requirement": "full sun to part shade. Soil: moist to wet, tolerates standing water and occasional flooding. Water use: high. Cold tolerant: moderately. USDA zones: 9-11. Salt tolerant: moderate. Thrives at pond and wetland edges."
+        "light": "full sun to part shade. Soil: moist to wet, tolerates standing water and occasional flooding. Water use: high. Cold tolerant: moderately. USDA zones: 9-11. Salt tolerant: moderate. Thrives at pond and wetland edges."
       },
       "edibility": {
         "level": "Green",
@@ -6151,6 +6338,10 @@
         "species": "americana"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -6208,7 +6399,7 @@
       },
       "size": null,
       "growing_conditions": {
-        "light_requirement": "full sun to part shade. Soil: tolerant of many soil types including sandy soils and clay. Water use: low to medium. Cold tolerant: yes. USDA zones: 6-11. Drought tolerant once established. UF/IFAS highly recommended for Florida wildlife gardens."
+        "light": "full sun to part shade. Soil: tolerant of many soil types including sandy soils and clay. Water use: low to medium. Cold tolerant: yes. USDA zones: 6-11. Drought tolerant once established. UF/IFAS highly recommended for Florida wildlife gardens."
       },
       "edibility": {
         "level": "Yellow",
@@ -6247,6 +6438,8 @@
         "species": "pentandra"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -6303,7 +6496,7 @@
       },
       "size": null,
       "growing_conditions": {
-        "light_requirement": "full sun. Soil: well-drained, tolerant of sandy soils. Water use: medium, drought tolerant once established. Cold tolerant: no — frost sensitive. USDA zones: 10-12. Benefits from Palma Sola's protected frost-free microclimate."
+        "light": "full sun. Soil: well-drained, tolerant of sandy soils. Water use: medium, drought tolerant once established. Cold tolerant: no — frost sensitive. USDA zones: 10-12. Benefits from Palma Sola's protected frost-free microclimate."
       },
       "edibility": {
         "level": "Yellow",
@@ -6342,6 +6535,8 @@
         "species": "steyermarkii"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -6398,7 +6593,7 @@
       },
       "size": null,
       "growing_conditions": {
-        "light_requirement": "part shade to full sun (appreciates afternoon shade in summer heat). Soil: highly adaptable — remarkably tolerant of both drought and wet or flooded ground. Water use: low to high; very forgiving. Cold tolerance: foliage may freeze back below about 28°F but recovers. USDA zones: 9-11, root-hardy to zone 8 in places. An easy, low-maintenance choice for Palma Sola's conditions."
+        "light": "part shade to full sun (appreciates afternoon shade in summer heat). Soil: highly adaptable — remarkably tolerant of both drought and wet or flooded ground. Water use: low to high; very forgiving. Cold tolerance: foliage may freeze back below about 28°F but recovers. USDA zones: 9-11, root-hardy to zone 8 in places. An easy, low-maintenance choice for Palma Sola's conditions."
       },
       "edibility": {
         "level": "Yellow",
@@ -6435,6 +6630,10 @@
         "species": "alata"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -6492,11 +6691,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "6 to 12 feet",
         "spread": "4 to 8 feet",
         "habit": "fast-growing, short-lived, open shrub with bold compound leaves",
         "growth_rate": "fast",
-        "texture": "bold - large ladder-like leaves and candle-like flower spikes"
+        "texture": "bold - large ladder-like leaves and candle-like flower spikes",
+        "height": "6 to 12 feet"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -6546,6 +6745,8 @@
         "cultivar": "Maui Yellow"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -6601,7 +6802,7 @@
       },
       "size": null,
       "growing_conditions": {
-        "light_requirement": "full sun for best flowering (tolerates a little afternoon shade). Soil: moist, well-drained, acidic, organically rich soil — prone to yellowing leaves (chlorosis) in alkaline Florida soils unless given iron. Water use: medium; regular water. Cold tolerance: tender, damaged below about 45 to 50°F. USDA zones: 9-11. Thrives in Palma Sola's warm coastal setting."
+        "light": "full sun for best flowering (tolerates a little afternoon shade). Soil: moist, well-drained, acidic, organically rich soil — prone to yellowing leaves (chlorosis) in alkaline Florida soils unless given iron. Water use: medium; regular water. Cold tolerance: tender, damaged below about 45 to 50°F. USDA zones: 9-11. Thrives in Palma Sola's warm coastal setting."
       },
       "edibility": {
         "level": "Green",
@@ -6640,6 +6841,10 @@
         "species": "domestica"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -6701,17 +6906,17 @@
         "notes": null
       },
       "size": {
-        "height_length": "4 to 8 feet",
         "habit": "upright evergreen shrub; slender, cane-like, lightly branched stems (bamboo-like silhouette)",
-        "texture": "fine, lacy compound foliage"
+        "texture": "fine, lacy compound foliage",
+        "height": "4 to 8 feet"
       },
       "growing_conditions": {
         "light": "full sun to deep shade (very adaptable)",
-        "soil": "wide range; highly adaptable",
         "drought_tolerance": "high",
         "salt_tolerance": "tolerant",
         "cold_tolerance": "USDA zones 6 to 9",
-        "note": "largely free of pests and deer browsing; that toughness is what lets it escape into natural areas"
+        "note": "largely free of pests and deer browsing; that toughness is what lets it escape into natural areas",
+        "soil_tolerances": "wide range; highly adaptable"
       },
       "edibility": {
         "level": "Red",
@@ -6753,6 +6958,10 @@
         "species": "lancifolia"
       },
       "category": "Native Wetland and Pond Edge",
+      "form": "Aquatic & Wetland",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -6814,16 +7023,16 @@
         "notes": null
       },
       "size": {
-        "height_length": "2 to 5 feet (occasionally taller)",
         "spread": "clumps 1 to 3 feet wide",
-        "habit": "emergent aquatic perennial, clump-forming"
+        "habit": "emergent aquatic perennial, clump-forming",
+        "height": "2 to 5 feet (occasionally taller)"
       },
       "growing_conditions": {
         "light": "full sun",
-        "water": "shallow standing water or consistently saturated soil; do not let it dry out",
-        "soil": "pond and lake edges, freshwater and brackish marshes, muddy stream margins",
         "salt_tolerance": "low; little tolerance for direct salt spray",
-        "uses": "water gardens, rain gardens, wetland restoration"
+        "uses": "water gardens, rain gardens, wetland restoration",
+        "soil_tolerances": "pond and lake edges, freshwater and brackish marshes, muddy stream margins",
+        "water_use": "shallow standing water or consistently saturated soil; do not let it dry out"
       },
       "edibility": {
         "level": "Green",
@@ -6865,6 +7074,8 @@
         "species": "roseus"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -6922,11 +7133,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "1 to 2 feet",
         "spread": "1 to 2 feet",
         "habit": "low, bushy evergreen perennial (often grown as an annual)",
         "growth_rate": "fast",
-        "texture": "medium"
+        "texture": "medium",
+        "height": "1 to 2 feet"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -6974,6 +7185,10 @@
         "species": "aurea"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Tree",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -7072,6 +7287,10 @@
         "species": "myrtifolia"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Tree",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": true,
       "status": "html",
@@ -7131,17 +7350,17 @@
         "notes": null
       },
       "size": {
-        "height_length": "5 to 20 feet (occasionally 35 to 40 feet)",
-        "habit": "evergreen shrub to small tree, densely branched and shrubby"
+        "habit": "evergreen shrub to small tree, densely branched and shrubby",
+        "height": "5 to 20 feet (occasionally 35 to 40 feet)"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
-        "soil": "well-drained, acidic, sandy",
         "drought_tolerance": "high; no supplemental water once established",
         "salt_tolerance": "moderate",
-        "wind": "good hurricane-wind resistance",
         "cold_tolerance": "USDA zones 8 to 10",
-        "note": "fire-adapted; well suited to coastal plantings"
+        "note": "fire-adapted; well suited to coastal plantings",
+        "soil_tolerances": "well-drained, acidic, sandy",
+        "wind_tolerance": "good hurricane-wind resistance"
       },
       "edibility": {
         "level": "Green",
@@ -7178,6 +7397,10 @@
         "species": "indicum"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -7240,16 +7463,16 @@
         "notes": null
       },
       "size": {
-        "height_length": "4 to 6 feet (to 10 or 12 feet in ideal conditions)",
-        "habit": "erect perennial shrub or subshrub; hollow, lightly branched stems"
+        "habit": "erect perennial shrub or subshrub; hollow, lightly branched stems",
+        "height": "4 to 6 feet (to 10 or 12 feet in ideal conditions)"
       },
       "growing_conditions": {
         "light": "full sun to partial shade",
-        "soil": "wide range; prefers moist but well-drained",
         "drought_tolerance": "fairly drought-tolerant once established",
         "salt_tolerance": "low",
         "cold_tolerance": "USDA zones 9 to 11 (under glass or container in cooler areas)",
-        "note": "suckering habit spreads farther than intended; needs active management"
+        "note": "suckering habit spreads farther than intended; needs active management",
+        "soil_tolerances": "wide range; prefers moist but well-drained"
       },
       "edibility": {
         "level": "Green",
@@ -7290,6 +7513,10 @@
         "species": "fruticosa"
       },
       "category": "Culturally and Historically Significant",
+      "form": "Foliage & Accent",
+      "tags": [
+        "cultural-historical"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -7356,14 +7583,14 @@
         "notes": null
       },
       "size": {
-        "height_length": "3 to 10 feet",
-        "habit": "evergreen shrub or small tree; slender, upright, cane-like stems"
+        "habit": "evergreen shrub or small tree; slender, upright, cane-like stems",
+        "height": "3 to 10 feet"
       },
       "growing_conditions": {
         "light": "green forms tolerate shade; colorful cultivars need bright light for best color",
-        "soil": "rich, moist, well-drained",
         "humidity": "likes warmth and humidity",
-        "cold_tolerance": "USDA zones 10 to 11 (sheltered 9b); frost-sensitive; houseplant elsewhere"
+        "cold_tolerance": "USDA zones 10 to 11 (sheltered 9b); frost-sensitive; houseplant elsewhere",
+        "soil_tolerances": "rich, moist, well-drained"
       },
       "edibility": {
         "level": "Yellow",
@@ -7402,6 +7629,10 @@
         "species": "stans"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -7464,16 +7695,16 @@
         "notes": null
       },
       "size": {
-        "height_length": "3 to 6 feet as a shrub; 10 to 20 feet as a multi-stemmed small tree",
-        "habit": "fast-growing semi-evergreen shrub to small tree"
+        "habit": "fast-growing semi-evergreen shrub to small tree",
+        "height": "3 to 6 feet as a shrub; 10 to 20 feet as a multi-stemmed small tree"
       },
       "growing_conditions": {
         "light": "full sun",
-        "soil": "well-drained; copes with poor, rocky, or sandy ground",
         "drought_tolerance": "notably drought-tolerant once established",
         "salt_tolerance": "somewhat salt-tolerant",
         "cold_tolerance": "USDA zones 9 to 11; may die back in a freeze and resprout",
-        "note": "trim spent flower clusters to keep it tidy and encourage more bloom"
+        "note": "trim spent flower clusters to keep it tidy and encourage more bloom",
+        "soil_tolerances": "well-drained; copes with poor, rocky, or sandy ground"
       },
       "edibility": {
         "level": "Green",
@@ -7510,6 +7741,8 @@
         "species": "erecta"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -7567,17 +7800,16 @@
         "notes": null
       },
       "size": {
-        "height_length": "4 to 6 feet",
         "spread": "5 to 8 feet wide",
-        "habit": "evergreen shrub; upright, rounded, somewhat sprawling. Unlike its vining relatives it does not twine, though loose stems can be trained on a support"
+        "habit": "evergreen shrub; upright, rounded, somewhat sprawling. Unlike its vining relatives it does not twine, though loose stems can be trained on a support",
+        "height": "4 to 6 feet"
       },
       "growing_conditions": {
         "light": "full sun to partial shade; blooms most freely in good light",
-        "soil": "moist, well-drained",
         "drought_tolerance": "moderate once established",
-        "growth_rate": "fast",
         "cold_tolerance": "USDA zones 9 to 11; frost-tender but takes brief dips near freezing",
-        "note": "responds well to pruning; a fine informal hedge, but heavy shearing reduces flowering"
+        "note": "responds well to pruning; a fine informal hedge, but heavy shearing reduces flowering [growth_rate: fast]",
+        "soil_tolerances": "moist, well-drained"
       },
       "edibility": {
         "level": "Green",
@@ -7616,6 +7848,10 @@
         "species": "patens"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -7675,16 +7911,16 @@
         "notes": null
       },
       "size": {
-        "height_length": "12 to 15 feet (easily kept to 5 to 8 feet)",
-        "habit": "fast-growing evergreen shrub to small tree; a root-hardy perennial in central and north Florida (dies back in a freeze, resprouts)"
+        "habit": "fast-growing evergreen shrub to small tree; a root-hardy perennial in central and north Florida (dies back in a freeze, resprouts)",
+        "height": "12 to 15 feet (easily kept to 5 to 8 feet)"
       },
       "growing_conditions": {
         "light": "full sun for best flowering; tolerates partial shade (lusher foliage)",
-        "soil": "wide range, well-drained",
         "drought_tolerance": "heat- and drought-tolerant once established",
         "salt_tolerance": "moderate",
         "cold_tolerance": "USDA zones 8 to 11; top cold-sensitive in cooler zones",
-        "note": "well suited to Florida-Friendly and pollinator gardens"
+        "note": "well suited to Florida-Friendly and pollinator gardens",
+        "soil_tolerances": "wide range, well-drained"
       },
       "edibility": {
         "level": "Green",
@@ -7721,6 +7957,8 @@
         "species": "gigantea"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -7782,11 +8020,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "15 to 20+ feet typical; the park's vine climbs ~30 feet up the nursery shade tree",
         "spread": "3 to 6 feet",
         "habit": "fast-growing evergreen woody twining vine; needs a tree, trellis, or fence to climb",
         "growth_rate": "fast",
-        "texture": "bold — large heart-shaped leaves and spectacular oversized flowers"
+        "texture": "bold — large heart-shaped leaves and spectacular oversized flowers",
+        "height": "15 to 20+ feet typical; the park's vine climbs ~30 feet up the nursery shade tree"
       },
       "growing_conditions": {
         "light": "full sun to partial shade (appreciates some shade in the hottest climates)",
@@ -7835,6 +8073,8 @@
         "species": "spectabilis"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -7896,11 +8136,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "15 to 40 feet as a woody climber; can be held much smaller as a pruned shrub",
         "spread": "wide and sprawling if left unpruned",
         "habit": "woody, thorny climber that scrambles up supports by hooking its recurved thorns; can be trained as a shrub, hedge, or small tree",
         "growth_rate": "fast",
-        "texture": "bold — papery bract clusters and hooked thorns; the root system is brittle and does not form a firm root ball"
+        "texture": "bold — papery bract clusters and hooked thorns; the root system is brittle and does not form a firm root ball",
+        "height": "15 to 40 feet as a woody climber; can be held much smaller as a pruned shrub"
       },
       "growing_conditions": {
         "light": "full sun — at least 6 hours, 8 or more for heaviest bloom",
@@ -7949,11 +8189,16 @@
         "species": "incarnata"
       },
       "category": "Native Wetland and Pond Edge",
+      "form": "Aquatic & Wetland",
+      "tags": [
+        "native",
+        "butterfly-host"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
       "native": true,
-      "butterfly_host": null,
+      "butterfly_host": true,
       "alternate_names": [],
       "quick_hits": [
         "A Florida native milkweed and a documented Monarch butterfly host plant. The caterpillars eat the leaves exclusively and sequester the toxic cardiac glycosides into their own bodies — making the adult butterflies poisonous to birds, which learn to avoid them.",
@@ -8004,11 +8249,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "3 to 5 feet",
         "spread": "2 to 3 feet, clumping",
         "habit": "upright herbaceous perennial; dies back in winter, returns from the roots",
         "growth_rate": "moderate to fast",
-        "texture": "medium"
+        "texture": "medium",
+        "height": "3 to 5 feet"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -8053,6 +8298,8 @@
         "species": "papaya"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -8108,11 +8355,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "10 to 30 feet, usually 10 to 15 in cultivation",
         "spread": "3 to 6 feet; a single unbranched trunk topped with a crown of leaves",
         "habit": "fast-growing, short-lived, soft-stemmed tree-like herb",
         "growth_rate": "very fast - can fruit within a year from seed",
-        "texture": "bold - large, deeply lobed, long-stalked leaves"
+        "texture": "bold - large, deeply lobed, long-stalked leaves",
+        "height": "10 to 30 feet, usually 10 to 15 in cultivation"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -8157,6 +8404,8 @@
         "species": "undatus"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -8212,11 +8461,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "a climbing cactus, scrambling 10 to 20 feet up trees, walls, and posts",
         "spread": "sprawling; clings by aerial roots",
         "habit": "sprawling, three-sided, jointed climbing cactus; needs support",
         "growth_rate": "fast",
-        "texture": "bold - thick, ribbed, leafless green stems"
+        "texture": "bold - thick, ribbed, leafless green stems",
+        "height": "a climbing cactus, scrambling 10 to 20 feet up trees, walls, and posts"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -8261,6 +8510,10 @@
         "species": "recurvata"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -8310,11 +8563,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "small - individual rosettes a few inches across, forming clusters",
         "spread": "clustering on branches and wires",
         "habit": "epiphytic bromeliad; perches on branches, fences, and wires",
         "growth_rate": "slow",
-        "texture": "fine - wiry, curling gray-green leaves"
+        "texture": "fine - wiry, curling gray-green leaves",
+        "height": "small - individual rosettes a few inches across, forming clusters"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -8359,6 +8612,10 @@
         "species": "mitis"
       },
       "category": "Tropical and Exotic Palms",
+      "form": "Palm & Cycad",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -8415,11 +8672,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "clustering clumps to about 20 to 25 feet",
         "spread": "dense multi-trunked clump, 8 to 12 feet wide",
         "habit": "clumping palm with multiple slender gray trunks; each trunk dies after flowering",
         "growth_rate": "moderate to fast",
-        "texture": "bold - twice-divided fishtail fronds"
+        "texture": "bold - twice-divided fishtail fronds",
+        "height": "clustering clumps to about 20 to 25 feet"
       },
       "growing_conditions": {
         "light": "full sun to deep shade - very adaptable",
@@ -8464,6 +8721,8 @@
         "species": "lamerei"
       },
       "category": "Tropical and Exotic Palms",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -8579,6 +8838,8 @@
         "species": "reclinata"
       },
       "category": "Tropical and Exotic Palms",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -8634,11 +8895,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "25 to 50 feet",
         "spread": "a wide, multi-trunked clump, 15 to 25 feet across",
         "habit": "clustering palm with several leaning, curving trunks",
         "growth_rate": "moderate",
-        "texture": "medium to bold - arching feather fronds"
+        "texture": "medium to bold - arching feather fronds",
+        "height": "25 to 50 feet"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -8683,6 +8944,8 @@
         "species": "excelsa"
       },
       "category": "Tropical and Exotic Palms",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -8740,11 +9003,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "6 to 15 feet",
         "spread": "slowly spreading clump, 4 to 8 feet wide",
         "habit": "clumping fan palm with slender, fiber-wrapped canes",
         "growth_rate": "slow",
-        "texture": "medium - glossy, fan-shaped leaves"
+        "texture": "medium - glossy, fan-shaped leaves",
+        "height": "6 to 15 feet"
       },
       "growing_conditions": {
         "light": "part shade to deep shade preferred; tolerates morning sun",
@@ -8789,6 +9052,8 @@
         "species": "oleifera"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -8848,11 +9113,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "20 to 40 feet if left to grow; usually cut back to 6 to 12 feet for easy leaf and pod harvest",
         "spread": "8 to 15 feet, open crown",
         "habit": "fast-growing, slender, soft-wooded deciduous tree",
         "growth_rate": "very fast - can reach 10 to 15 feet in its first year",
-        "texture": "fine - lacy, fern-like compound leaves"
+        "texture": "fine - lacy, fern-like compound leaves",
+        "height": "20 to 40 feet if left to grow; usually cut back to 6 to 12 feet for easy leaf and pod harvest"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -8897,6 +9162,8 @@
         "species": "rubra"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -8957,11 +9224,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "15 to 25 feet",
         "spread": "10 to 20 feet, broad and open",
         "habit": "small deciduous tree with thick, blunt, candelabra-like branches",
         "growth_rate": "moderate",
-        "texture": "bold - thick branches, large leaves, big fragrant flower clusters"
+        "texture": "bold - thick branches, large leaves, big fragrant flower clusters",
+        "height": "15 to 25 feet"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -9006,6 +9273,8 @@
         "species": "cayennensis"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -9058,11 +9327,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "2 to 4 feet",
         "spread": "2 to 4 feet, bushy",
         "habit": "bushy, somewhat woody-based perennial with arching flower spikes",
         "growth_rate": "fast",
-        "texture": "medium"
+        "texture": "medium",
+        "height": "2 to 4 feet"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -9107,6 +9376,10 @@
         "species": "bonduc"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -9166,11 +9439,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "a sprawling, clambering shrub, 6 to 15 feet, scrambling higher over supports",
         "spread": "wide and thicket-forming",
         "habit": "thorny, sprawling, scrambling coastal shrub",
         "growth_rate": "fast",
-        "texture": "bold - spiny stems and large compound leaves"
+        "texture": "bold - spiny stems and large compound leaves",
+        "height": "a sprawling, clambering shrub, 6 to 15 feet, scrambling higher over supports"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -9215,6 +9488,8 @@
         "species": "indica"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -9272,11 +9547,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "30 to 50 feet in the open; commonly kept to 10 to 15 feet by pruning for easy harvest",
         "spread": "30 to 40 feet, dense rounded canopy",
         "habit": "large, long-lived evergreen tree with a dense crown",
         "growth_rate": "moderate to fast",
-        "texture": "medium to bold - long leaves, coppery red when new"
+        "texture": "medium to bold - long leaves, coppery red when new",
+        "height": "30 to 50 feet in the open; commonly kept to 10 to 15 feet by pruning for easy harvest"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -9321,6 +9596,8 @@
         "species": "tergemina"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -9376,11 +9653,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "6 to 10 feet (can be kept lower with pruning)",
         "spread": "6 to 10 feet, broad and rounded",
         "habit": "rounded, twiggy evergreen shrub with feathery compound leaves",
         "growth_rate": "moderate to fast",
-        "texture": "fine - lacy foliage and powderpuff flowers"
+        "texture": "fine - lacy foliage and powderpuff flowers",
+        "height": "6 to 10 feet (can be kept lower with pruning)"
       },
       "growing_conditions": {
         "light": "full sun to light shade; flowers best in sun",
@@ -9429,6 +9706,8 @@
         "species": "pallida"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -9482,11 +9761,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "about 8 to 12 inches tall, trailing longer",
         "spread": "spreading indefinitely by rooting stems",
         "habit": "low, trailing, fleshy-stemmed groundcover",
         "growth_rate": "fast",
-        "texture": "medium - fleshy purple foliage"
+        "texture": "medium - fleshy purple foliage",
+        "height": "about 8 to 12 inches tall, trailing longer"
       },
       "growing_conditions": {
         "light": "full sun for deepest color; tolerates part shade (color fades toward green)",
@@ -9531,6 +9810,8 @@
         "species": "glabra"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -9585,11 +9866,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "10 to 20 feet as a climber; readily kept smaller as a shrub or in a container",
         "spread": "variable; mounding to sprawling",
         "habit": "thorny, woody climber or shrub; somewhat less rampant than Great Bougainvillea",
         "growth_rate": "fast",
-        "texture": "medium - papery bracts and recurved thorns"
+        "texture": "medium - papery bracts and recurved thorns",
+        "height": "10 to 20 feet as a climber; readily kept smaller as a shrub or in a container"
       },
       "growing_conditions": {
         "light": "full sun - at least 6 hours, 8 or more for heaviest bloom",
@@ -9635,6 +9916,10 @@
         "species": "ternatea"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -9692,11 +9977,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "a twining vine to 6 to 10 feet",
         "spread": "clambers over supports",
         "habit": "slender, twining herbaceous to semi-woody vine",
         "growth_rate": "fast",
-        "texture": "fine"
+        "texture": "fine",
+        "height": "a twining vine to 6 to 10 feet"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -9741,6 +10026,8 @@
         "species": "spathacea"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -9791,11 +10078,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "about 6 to 12 inches (dwarf forms lower)",
         "spread": "clumping and spreading into mats",
         "habit": "low, clumping rosette groundcover",
         "growth_rate": "moderate to fast",
-        "texture": "bold - stiff two-toned leaves"
+        "texture": "bold - stiff two-toned leaves",
+        "height": "about 6 to 12 inches (dwarf forms lower)"
       },
       "growing_conditions": {
         "light": "full sun to shade - very adaptable",
@@ -9840,6 +10127,10 @@
         "species": "emarginata"
       },
       "category": "Rare Fruit Collection",
+      "form": "Shrub & Vine",
+      "tags": [
+        "rare-fruit"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -9896,11 +10187,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "6 to 15 feet",
         "spread": "6 to 12 feet",
         "habit": "dense, bushy evergreen shrub or small tree",
         "growth_rate": "moderate",
-        "texture": "fine to medium"
+        "texture": "fine to medium",
+        "height": "6 to 15 feet"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -9945,6 +10236,10 @@
         "species": "quadriloculare"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -9998,11 +10293,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "10 to 15 feet",
         "spread": "6 to 10 feet, suckering wider",
         "habit": "large shrub to small tree; spreads by underground suckers into thickets",
         "growth_rate": "fast",
-        "texture": "bold - large purple-backed leaves and showy flower bursts"
+        "texture": "bold - large purple-backed leaves and showy flower bursts",
+        "height": "10 to 15 feet"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -10047,6 +10342,10 @@
         "species": "tomentosa"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -10102,11 +10401,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "6 to 10 feet, occasionally taller",
         "spread": "6 to 10 feet",
         "habit": "open, rounded coastal shrub with silvery, soft-haired foliage",
         "growth_rate": "moderate",
-        "texture": "medium - soft compound leaves"
+        "texture": "medium - soft compound leaves",
+        "height": "6 to 10 feet, occasionally taller"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -10151,6 +10450,8 @@
         "species": "robusta"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -10202,11 +10503,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "about 6 to 12 inches in flower",
         "spread": "clumping, slowly spreading by bulb offsets",
         "habit": "low clumping perennial bulb",
         "growth_rate": "moderate",
-        "texture": "fine - grassy foliage"
+        "texture": "fine - grassy foliage",
+        "height": "about 6 to 12 inches in flower"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -10251,6 +10552,10 @@
         "species": "spectabilis"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -10305,11 +10610,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "1.5 to 6 feet",
         "spread": "1 to 2 feet",
         "habit": "erect, branching summer annual herb",
         "growth_rate": "fast",
-        "texture": "medium to bold"
+        "texture": "medium to bold",
+        "height": "1.5 to 6 feet"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -10354,6 +10659,10 @@
         "species": "strigocamara"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -10408,11 +10717,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "2 to 6 feet",
         "spread": "3 to 8 feet, mounding and spreading",
         "habit": "bushy, somewhat sprawling shrub with rough, aromatic foliage and prickly stems",
         "growth_rate": "fast",
-        "texture": "medium"
+        "texture": "medium",
+        "height": "2 to 6 feet"
       },
       "growing_conditions": {
         "light": "full sun - best flowering and least disease in sun",
@@ -10457,6 +10766,8 @@
         "species": "ceiba"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -10516,11 +10827,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "a large deciduous tree, commonly 40 to 80 feet in cultivation and taller in its native range",
         "spread": "broad, spreading crown",
         "habit": "tall, straight-trunked tree, the young trunk armed with stout conical spines; tiered branches",
         "growth_rate": "fast",
-        "texture": "bold - large leaves, big red flowers, stout spines"
+        "texture": "bold - large leaves, big red flowers, stout spines",
+        "height": "a large deciduous tree, commonly 40 to 80 feet in cultivation and taller in its native range"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -10565,6 +10876,10 @@
         "species": "nervosa"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -10617,11 +10932,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "4 to 6 feet typically; can reach 8 to 10 feet in shade",
         "spread": "4 to 8 feet",
         "habit": "rounded evergreen shrub with glossy, deeply veined leaves",
         "growth_rate": "moderate",
-        "texture": "medium - distinctive corrugated, shiny leaves"
+        "texture": "medium - distinctive corrugated, shiny leaves",
+        "height": "4 to 6 feet typically; can reach 8 to 10 feet in shade"
       },
       "growing_conditions": {
         "light": "part shade to full shade preferred; tolerates more sun with paler leaves",
@@ -10666,6 +10981,10 @@
         "species": "trilobata"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -10719,11 +11038,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "about 8 to 12 inches tall as a mat",
         "spread": "indefinite - spreads by rooting stems",
         "habit": "mat-forming perennial groundcover",
         "growth_rate": "fast and aggressive",
-        "texture": "medium"
+        "texture": "medium",
+        "height": "about 8 to 12 inches tall as a mat"
       },
       "growing_conditions": {
         "light": "full sun to shade - adaptable",
@@ -10768,6 +11087,10 @@
         "species": "grandiflora"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -10814,11 +11137,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "low, a few inches tall",
         "spread": "mat-forming, spreading by rooting stems",
         "habit": "creeping perennial groundcover",
         "growth_rate": "fast",
-        "texture": "fine to medium"
+        "texture": "fine to medium",
+        "height": "low, a few inches tall"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -10863,6 +11186,10 @@
         "species": "strateumatica"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -10916,11 +11243,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "about 2 to 8 inches tall in flower",
         "spread": "a small rosette a few inches across",
         "habit": "low seasonal terrestrial orchid",
         "growth_rate": "fast and brief",
-        "texture": "fine"
+        "texture": "fine",
+        "height": "about 2 to 8 inches tall in flower"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -10965,6 +11292,10 @@
         "species": "pallida"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -11016,11 +11347,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "3 to 6 feet",
         "spread": "2 to 3 feet",
         "habit": "erect, branching annual to short-lived perennial herb, woody at the base",
         "growth_rate": "fast",
-        "texture": "medium"
+        "texture": "medium",
+        "height": "3 to 6 feet"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -11065,6 +11396,8 @@
         "species": "variegata"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -11123,11 +11456,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "20 to 35 feet, occasionally to 40",
         "spread": "15 to 25 feet, broad spreading crown",
         "habit": "small to medium flowering tree, often multi-trunked",
         "growth_rate": "fast",
-        "texture": "medium - distinctive two-lobed (camel's-foot) leaves"
+        "texture": "medium - distinctive two-lobed (camel's-foot) leaves",
+        "height": "20 to 35 feet, occasionally to 40"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -11172,6 +11505,10 @@
         "species": "nodiflora"
       },
       "category": "Native Groundcovers and Wildflowers",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Background",
       "has_sign": false,
       "status": "html",
@@ -11227,11 +11564,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "about 0.5 to 1 foot tall",
         "spread": "8 to 10 feet or more as it creeps and roots",
         "habit": "low, mat-forming, evergreen creeping groundcover",
         "growth_rate": "fast",
-        "texture": "fine"
+        "texture": "fine",
+        "height": "about 0.5 to 1 foot tall"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -11276,6 +11613,10 @@
         "species": "halimifolia"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -11331,11 +11672,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "6 to 12 feet",
         "spread": "6 to 10 feet",
         "habit": "multi-stemmed, somewhat open deciduous to semi-evergreen shrub",
         "growth_rate": "fast",
-        "texture": "medium"
+        "texture": "medium",
+        "height": "6 to 12 feet"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -11380,6 +11721,10 @@
         "species": "mexicana"
       },
       "category": "Native Groundcovers and Wildflowers",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -11428,11 +11773,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "2 to 6 feet in bloom",
         "spread": "spreads by rhizomes into clumps",
         "habit": "upright perennial wildflower with arching flower plumes",
         "growth_rate": "moderate to fast",
-        "texture": "medium"
+        "texture": "medium",
+        "height": "2 to 6 feet in bloom"
       },
       "growing_conditions": {
         "light": "full sun",
@@ -11477,6 +11822,8 @@
         "species": "multifida"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -11535,11 +11882,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "6 to 15 feet",
         "spread": "6 to 10 feet",
         "habit": "open, sparsely branched evergreen shrub or small tree with a smooth trunk",
         "growth_rate": "moderate",
-        "texture": "fine - deeply dissected, fan-like leaves"
+        "texture": "fine - deeply dissected, fan-like leaves",
+        "height": "6 to 15 feet"
       },
       "growing_conditions": {
         "light": "full sun to partial shade",
@@ -11584,6 +11931,10 @@
         "species": "odoratissimum"
       },
       "category": "Plants to Watch and Invasive Awareness",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -11636,11 +11987,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "10 to 20 feet; can reach about 30 feet",
         "spread": "8 to 15 feet",
         "habit": "large, dense evergreen shrub or small tree; commonly sheared as a tall hedge or screen",
         "growth_rate": "fast",
-        "texture": "medium to coarse - glossy leaves to 6 inches"
+        "texture": "medium to coarse - glossy leaves to 6 inches",
+        "height": "10 to 20 feet; can reach about 30 feet"
       },
       "growing_conditions": {
         "light": "full sun to part shade",
@@ -11685,6 +12036,8 @@
         "species": "variegatum"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -11741,11 +12094,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "typically 3 to 8 feet in the landscape; can reach about 10 feet",
         "spread": "3 to 6 feet",
         "habit": "erect, bushy evergreen shrub",
         "growth_rate": "moderate",
-        "texture": "bold - large, leathery, multicolored leaves"
+        "texture": "bold - large, leathery, multicolored leaves",
+        "height": "typically 3 to 8 feet in the landscape; can reach about 10 feet"
       },
       "growing_conditions": {
         "light": "bright light to full sun brings out the strongest leaf color; tolerates part shade with more muted color",
@@ -11790,6 +12143,10 @@
         "species": "amazonica"
       },
       "category": "Culturally and Historically Significant",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "cultural-historical"
+      ],
       "feature_tier": "Feature",
       "has_sign": true,
       "status": "html",
@@ -11905,6 +12262,10 @@
         "species": "obovatum"
       },
       "category": "Native Trees and Large Shrubs",
+      "form": "Shrub & Vine",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
@@ -11969,11 +12330,11 @@
         "notes": null
       },
       "size": {
-        "height_length": "commonly 8 to 20 feet; can reach about 25 to 30 feet as a small tree, or be kept low as a clipped hedge",
         "spread": "6 to 10 feet, wider where it suckers",
         "habit": "dense, fine-textured evergreen to semi-evergreen shrub or small tree; suckers can form a colony",
         "growth_rate": "moderate",
-        "texture": "fine"
+        "texture": "fine",
+        "height": "commonly 8 to 20 feet; can reach about 25 to 30 feet as a small tree, or be kept low as a clipped hedge"
       },
       "growing_conditions": {
         "light": "full sun to full shade - one of the most light-adaptable natives",
@@ -12021,6 +12382,8 @@
         "species": "granatum"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -12125,6 +12488,8 @@
         "species": "carambola"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -12141,7 +12506,9 @@
         "Starfruit carries caramboxin, a neurotoxin that healthy kidneys filter out, but large quantities consumed on an empty stomach have caused acute kidney injury even in people with normal renal function.",
         "The tree fruits heavily, sometimes producing hundreds of pounds of star-shaped fruit in a single year."
       ],
-      "origin": "Native to tropical Southeast Asia, likely originating in the Malay Peninsula or Indonesia. It has been cultivated across the tropics for centuries and grows well in warm, frost-free parts of Florida.",
+      "origin": [
+        "Native to tropical Southeast Asia, likely originating in the Malay Peninsula or Indonesia. It has been cultivated across the tropics for centuries and grows well in warm, frost-free parts of Florida."
+      ],
       "more_information": [
         "Carambola, better known as starfruit, is grown as much for its looks as its flavor — sliced crosswise, it yields flawless edible stars that turn an ordinary fruit salad into a centerpiece. The fruit is crisp, juicy, and ranges from tart to sweet depending on variety and ripeness.",
         "Behind the cheerful shape sits a genuine medical caution. Starfruit contains caramboxin, a neurotoxin, and oxalic acid. The risk is greatest for anyone with kidney disease or reduced renal function — including people who may not yet know their kidneys are impaired — for whom even a small amount can cause hiccups, confusion, seizures, and in serious cases death.",
@@ -12214,7 +12581,9 @@
         "notes": "Not invasive in Florida."
       },
       "other_notes": null,
-      "internal_notes": "Added 2026-06-18 from iNaturalist gap analysis (June 2026 batch). Anchor obs #372614267 (harrisonmello); Unique ID written to iNat. Shell row — content fields pending review."
+      "internal_notes": [
+        "Added 2026-06-18 from iNaturalist gap analysis (June 2026 batch). Anchor obs #372614267 (harrisonmello); Unique ID written to iNat. Shell row — content fields pending review."
+      ]
     },
     {
       "id": "PSBP-00125",
@@ -12228,6 +12597,8 @@
         "species": "fistula"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "html",
@@ -12333,6 +12704,8 @@
         "species": "nigra"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -12438,6 +12811,8 @@
         "species": "americana"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
@@ -12542,6 +12917,10 @@
         "species": "palmetto"
       },
       "category": "Native Palms and Cycads",
+      "form": "Palm & Cycad",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "spotted",
@@ -12654,6 +13033,8 @@
         "species": "laurifolium"
       },
       "category": "Flowering Shrubs and Vines",
+      "form": "Shrub & Vine",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -12757,6 +13138,8 @@
         "species": "furfuracea"
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
       "status": "spotted",
@@ -12865,6 +13248,8 @@
         "species": "boissieri"
       },
       "category": "Tropical Specimen Trees",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -12974,6 +13359,10 @@
         "species": "frutescens"
       },
       "category": "Native Groundcovers and Wildflowers",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
@@ -13081,6 +13470,10 @@
         "species": "carolinianum"
       },
       "category": "Native Groundcovers and Wildflowers",
+      "form": "Groundcover & Wildflower",
+      "tags": [
+        "native"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
@@ -13188,6 +13581,10 @@
         "species": null
       },
       "category": "Tropical Foliage and Accent Plants",
+      "form": "Foliage & Accent",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -13297,13 +13694,29 @@
         "family": "Araceae"
       },
       "category": "",
+      "form": "Foliage & Accent",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
       "native": false,
       "internal_notes": [
         "Imported 2026-06-23 from park inventory (Sheet1+iNat)."
-      ]
+      ],
+      "alternate_names": null,
+      "quick_hits": null,
+      "origin": null,
+      "more_information": null,
+      "wildlife_value": null,
+      "reproduction": null,
+      "seasonality": null,
+      "size": null,
+      "growing_conditions": null,
+      "edibility": null,
+      "toxicity": null,
+      "invasive": null,
+      "other_notes": null,
+      "butterfly_host": null
     },
     {
       "id": "PSBP-00350",
@@ -13315,6 +13728,10 @@
         "family": "Acanthaceae"
       },
       "category": "",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -13409,7 +13826,8 @@
       "other_notes": [
         "NOMENCLATURE: Formerly placed in the genus Beloperone (as Beloperone guttata) and in the family Acanthaceae subfamilies under older classifications. The current accepted name is Justicia brandegeeana Wassh. & L.B.Sm. The misspelling 'brandegeana' (one 'e') is common in trade and on plant labels — the correct spelling has two e's before the 'a'.",
         "The Royal Horticultural Society has awarded this plant its Award of Garden Merit."
-      ]
+      ],
+      "butterfly_host": null
     },
     {
       "id": "PSBP-00404",
@@ -13421,6 +13839,8 @@
         "family": "Arecaceae"
       },
       "category": "",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -13529,11 +13949,12 @@
         "FLORIDA CULTURE NOTE: Potassium deficiency is the leading nutrient problem for this species in Florida's alkaline and sandy soils. Symptoms appear as orange discoloration and necrotic tips on the oldest fronds. UF/IFAS specifically cautions against removing potassium-deficient fronds, as doing so accelerates the rate of decline.",
         "COLD AND SALT HARDINESS — WEST COAST FLORIDA CONTEXT: UF/IFAS rates this palm as cold hardy to USDA zone 10A (30°F), though it is widely grown in zone 9B with some risk of frond damage during hard freezes.",
         "Bradenton sits at the northern edge of its reliable cold-hardiness range, making it noticeably more frost-tender than native Sabal palmettos, which shrug off temperatures well into the low teens. UF/IFAS also notes it is not tolerant of salt spray or saline soils — a meaningful limitation for plantings close to the Gulf or bay shoreline."
-      ]
+      ],
+      "butterfly_host": null
     },
     {
       "id": "PSBP-00419",
-      "common_name": "Unnamed Palm- no really unnamed yet",
+      "common_name": "Ptychosperma Palm",
       "botanical_name": "Ptychosperma microcarpum",
       "inat_taxon_id": 141375,
       "sign_level": "Species",
@@ -13541,13 +13962,29 @@
         "family": "Arecaceae"
       },
       "category": "",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
       "native": false,
       "internal_notes": [
         "Imported 2026-06-23 from park inventory (Sheet1+NonEstPalms)."
-      ]
+      ],
+      "alternate_names": null,
+      "quick_hits": null,
+      "origin": null,
+      "more_information": null,
+      "wildlife_value": null,
+      "reproduction": null,
+      "seasonality": null,
+      "size": null,
+      "growing_conditions": null,
+      "edibility": null,
+      "toxicity": null,
+      "invasive": null,
+      "other_notes": null,
+      "butterfly_host": null
     },
     {
       "id": "PSBP-00445",
@@ -13559,6 +13996,11 @@
         "family": "Arecaceae"
       },
       "category": "",
+      "form": "Palm & Cycad",
+      "tags": [
+        "native",
+        "butterfly-host"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -13679,6 +14121,10 @@
         "family": "Arecaceae"
       },
       "category": "",
+      "form": "Palm & Cycad",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -13787,7 +14233,8 @@
         "FUSARIUM WILT: A lethal vascular disease caused by Fusarium oxysporum f. sp. palmarum affects queen palms throughout southern Florida. There is no cure. The disease is readily spread by contaminated pruning equipment; any crew pruning multiple palms should sterilize tools between trees. Early symptoms include one-sided chlorosis of older fronds with a reddish-brown stripe on the petiole.",
         "Death typically follows within months to a year of symptom onset.",
         "NUTRITION: Queen palms in Florida landscapes are chronically deficient in magnesium and manganese. A palm-specific slow-release fertilizer (8-2-12 + 4Mg formulation) is recommended by UF/IFAS for maintenance of healthy canopy color and vigor."
-      ]
+      ],
+      "butterfly_host": null
     },
     {
       "id": "PSBP-00485",
@@ -13799,13 +14246,29 @@
         "family": "Arecaceae"
       },
       "category": "",
+      "form": "Palm & Cycad",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
       "native": false,
       "internal_notes": [
         "Imported 2026-06-23 from park inventory (EstPalms+iNat)."
-      ]
+      ],
+      "alternate_names": null,
+      "quick_hits": null,
+      "origin": null,
+      "more_information": null,
+      "wildlife_value": null,
+      "reproduction": null,
+      "seasonality": null,
+      "size": null,
+      "growing_conditions": null,
+      "edibility": null,
+      "toxicity": null,
+      "invasive": null,
+      "other_notes": null,
+      "butterfly_host": null
     },
     {
       "id": "PSBP-00573",
@@ -13817,6 +14280,10 @@
         "family": ""
       },
       "category": "",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -13930,7 +14397,8 @@
         "FAMILY: Euphorbiaceae (the spurge family) — one of the largest flowering plant families, encompassing over 8,000 species worldwide, including poinsettias (*Euphorbia pulcherrima*), cassava (*Manihot esculenta*), and rubber tree (*Hevea brasiliensis*).",
         "CULTIVARS: The cultivar 'Rubra' (sometimes sold as 'Royal Red') develops stems and leaves with pronounced red or burgundy coloration, especially on new growth and in high-light conditions. It grows to similar dimensions as the green form and has the same cultural requirements and toxicity profile.",
         "NAME NOTE: Despite the common name 'African Milk Tree,' this plant is botanically a shrub, not a tree, and its 'milk' is a caustic latex — not remotely edible. The name reflects vernacular tradition rather than botanical precision."
-      ]
+      ],
+      "butterfly_host": null
     },
     {
       "id": "PSBP-00607",
@@ -13942,13 +14410,29 @@
         "family": ""
       },
       "category": "",
+      "form": "Tree",
+      "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
-      "native": null,
+      "native": false,
       "internal_notes": [
         "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP)."
-      ]
+      ],
+      "alternate_names": null,
+      "quick_hits": null,
+      "origin": null,
+      "more_information": null,
+      "wildlife_value": null,
+      "reproduction": null,
+      "seasonality": null,
+      "size": null,
+      "growing_conditions": null,
+      "edibility": null,
+      "toxicity": null,
+      "invasive": null,
+      "other_notes": null,
+      "butterfly_host": null
     },
     {
       "id": "PSBP-00659",
@@ -13960,6 +14444,10 @@
         "family": ""
       },
       "category": "",
+      "form": "Shrub & Vine",
+      "tags": [
+        "watch-invasive"
+      ],
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -13980,7 +14468,9 @@
         "It blooms nearly year-round in frost-free climates — not just in a seasonal flush, but continuously, making it one of the most persistently colorful shrubs you can grow in Central Florida.",
         "The genus name honors Alexander Russell, an 18th-century Scottish physician and naturalist. The species name — equisetiformis — means 'shaped like Equisetum,' the horsetail genus, which the plant resembles superficially but is not related to at all."
       ],
-      "origin": "Firecracker plant is native to Mexico and Guatemala, where it grows in seasonally dry tropical habitats. It was introduced to ornamental horticulture long enough ago that the UK Royal Horticultural Society gave it its Award of Garden Merit in 1993 — by which point it had already been a greenhouse subject for well over a century. It arrived in Florida cultivation as part of the broader wave of tropical ornamentals suited to zones 9–11, and it has since naturalized in some disturbed sites across the state. Today UF/IFAS lists it as a Florida-Friendly plant for pollinator and hummingbird gardens.",
+      "origin": [
+        "Firecracker plant is native to Mexico and Guatemala, where it grows in seasonally dry tropical habitats. It was introduced to ornamental horticulture long enough ago that the UK Royal Horticultural Society gave it its Award of Garden Merit in 1993 — by which point it had already been a greenhouse subject for well over a century. It arrived in Florida cultivation as part of the broader wave of tropical ornamentals suited to zones 9–11, and it has since naturalized in some disturbed sites across the state. Today UF/IFAS lists it as a Florida-Friendly plant for pollinator and hummingbird gardens."
+      ],
       "more_information": [
         "The firecracker plant belongs to family Plantaginaceae — the same family as plantain and snapdragons — though older references place it in Scrophulariaceae. The genus Russelia encompasses roughly 50 species ranging from Mexico and Cuba south into Colombia; only a handful are in common cultivation, and R. equisetiformis is by far the most widely grown.",
         "The plant's rush-like appearance is no accident and no coincidence: its slender, arching green stems carry out most of the photosynthesis, while the leaves are reduced to inconspicuous scales or bracts — a water-conserving strategy well suited to the seasonally dry Mexican habitats where it evolved. When stems cascade over a wall or the edge of a container, the effect is often compared to a waterfall of green punctuated by red — a look that earned it the alternate name 'coral fountain.'",
@@ -14045,7 +14535,10 @@
         "level": "Yellow",
         "notes": "Non-native; introduced from Mexico and Guatemala. UF/IFAS Gardening Solutions states explicitly that firecracker plant 'is not invasive,' and it appears on UF/IFAS Florida-Friendly plant recommendations. However, the plant can naturalize on disturbed sites in Florida, and an older FLEPPC citation (1993, referenced in CABI Compendium) classified it as a Category III species — defined as a widespread non-native with potential to form dense stands on disturbed ground. It does not appear on the current FISC (Florida Invasive Species Council) Category I or II lists. Plant with awareness: give it defined edges, and avoid planting adjacent to natural areas."
       },
-      "other_notes": "FAMILY NOTE: Russelia equisetiformis is now placed in Plantaginaceae (the plantain/snapdragon family) following molecular reclassification; older references list it under Scrophulariaceae. The genus Russelia contains approximately 50 species, all native to tropical America, but R. equisetiformis is by far the most widely cultivated. The RHS Award of Garden Merit was conferred in 1993."
+      "other_notes": [
+        "FAMILY NOTE: Russelia equisetiformis is now placed in Plantaginaceae (the plantain/snapdragon family) following molecular reclassification; older references list it under Scrophulariaceae. The genus Russelia contains approximately 50 species, all native to tropical America, but R. equisetiformis is by far the most widely cultivated. The RHS Award of Garden Merit was conferred in 1993."
+      ],
+      "butterfly_host": null
     }
   ]
 }
