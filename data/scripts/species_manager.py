@@ -2673,6 +2673,7 @@ def get_publish_list(kingdom):
             "has_hero": sid in hero_ids,
             "ready": ready,
             "checks": checks,
+            "rare_fruit": bool(sp.get("rare_fruit")),
             "tags": sp.get("tags") or [],
             "aliases": sp.get("also_known_as") or sp.get("alternate_names") or [],
         })
@@ -2686,6 +2687,29 @@ def handle_api_publish_list(params):
         return {"kingdom": kingdom, "species": [],
                 "error": f"Publisher modules failed to import: {PUBLISHER_IMPORT_ERROR}"}
     return {"kingdom": kingdom, "species": get_publish_list(kingdom)}
+
+
+def handle_api_rare_fruit_set(params):
+    """POST /api/rare-fruit/set  body: {kingdom, id, value} — hand-set the rare_fruit
+    flag. This is a curatorial/location fact (is the plant physically in the MRFC
+    rare-fruit area?), owned by a human — never by Draft or Verify."""
+    body = params.get("_body", {}) or {}
+    kingdom = body.get("kingdom", "plants")
+    species_id = body.get("id", "")
+    value = bool(body.get("value"))
+    if kingdom not in ("plants", "wildlife"):
+        return {"ok": False, "error": f"bad kingdom: {kingdom}"}
+    if not species_id:
+        return {"ok": False, "error": "missing species id"}
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    data = _load(path)
+    target = next((s for s in _get_species_list(data) if s.get("id") == species_id), None)
+    if not target:
+        return {"ok": False, "error": f"{species_id} not found."}
+    target["rare_fruit"] = value
+    data.setdefault("meta", {})["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
+    write_json_atomic(path, data)
+    return {"ok": True, "id": species_id, "rare_fruit": value}
 
 
 def handle_api_publish_ready(params):
@@ -3984,6 +4008,10 @@ main {
     width: 100%;
 }
 .pub-search:focus { border-color: var(--green-mid); }
+.pub-btn.rarefruit { border-color: #d8b3c9; color: #8e3b6b; }
+.pub-btn.rarefruit.on { background: #8e3b6b; color: #fff; border-color: #8e3b6b; }
+.pub-btn.rarefruit:hover { background: #f7edf3; }
+.pub-btn.rarefruit.on:hover { background: #7a3159; }
 .pub-btn.preview {
     background: white;
     color: var(--gray-600);
@@ -7083,6 +7111,8 @@ def render_publish():
             ${{tagsHtml}}
             <div class="pub-actions">${{actions}}</div>
             <div class="pub-secondary">
+                <button class="pub-btn rarefruit ${{sp.rare_fruit ? 'on' : ''}}" onclick="pubToggleRareFruit('${{sp.id}}')"
+                        title="Is this species physically in the rare-fruit (MRFC) area? You have final say — this is a location fact, not researched.">🍈 ${{sp.rare_fruit ? 'In rare-fruit area' : 'Mark rare-fruit'}}</button>
                 <button class="pub-link-btn" onclick="pubDemoteResearch('${{sp.id}}', 'research')"
                         title="Move back to research.json — not ready yet">↩ Return to Research</button>
                 <button class="pub-link-btn dead-link" onclick="pubDemoteResearch('${{sp.id}}', 'died')"
@@ -7090,6 +7120,25 @@ def render_publish():
             </div>
             <div class="ai-result" id="ai-result-${{sp.id}}"></div>
         </div>`;
+    }}
+
+    async function pubToggleRareFruit(id) {{
+        const row = document.getElementById('pubrow-' + id);
+        const btn = row.querySelector('.rarefruit');
+        const newVal = !btn.classList.contains('on');
+        btn.disabled = true;
+        try {{
+            const resp = await fetch('/api/rare-fruit/set', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: pubKingdom, id: id, value: newVal}})
+            }});
+            const d = await resp.json();
+            if (!d.ok) {{ pubToast(d.error || 'Could not set rare-fruit', true); btn.disabled = false; return; }}
+            btn.classList.toggle('on', d.rare_fruit);
+            btn.innerHTML = '🍈 ' + (d.rare_fruit ? 'In rare-fruit area' : 'Mark rare-fruit');
+            btn.disabled = false;
+            pubToast((d.rare_fruit ? 'Added to' : 'Removed from') + ' rare-fruit area — re-publish to update the page/filter.');
+        }} catch (e) {{ pubToast(e.message, true); btn.disabled = false; }}
     }}
 
     function pubReviseOpen(id) {{
@@ -9689,6 +9738,7 @@ API_ROUTES = {
     "/api/publish/list":     handle_api_publish_list,
     "/api/publish/ready":    handle_api_publish_ready,
     "/api/publish/promote":  handle_api_publish_promote,
+    "/api/rare-fruit/set":    handle_api_rare_fruit_set,
     "/api/publish/demote":   handle_api_publish_demote,
     "/api/publish/demote-research": handle_api_publish_demote_research,
     "/api/cultivated/audit":   handle_api_cultivated_audit,
