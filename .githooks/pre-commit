@@ -20,6 +20,7 @@ PHOTO_LIMIT=$((500 * 1024))      # photos/  : species photos, strict web-res
 IMAGE_LIMIT=$((1024 * 1024))     # images/  : site media (heroes, venue, logos)
 DOCS_LIMIT=$((3 * 1024 * 1024))  # docs/    : PDFs (tour booklets run ~1.6 MB)
 DEFAULT_LIMIT=$((1024 * 1024))   # anything else
+DATA_LIMIT=$((5 * 1024 * 1024))  # data/sources/ : JSON masters, grow with each species
 # ---------------------------------------------------------------------------
 
 block=0
@@ -35,6 +36,7 @@ while IFS= read -r path; do
   case "$path" in
     photos/*) limit=$PHOTO_LIMIT;   label="photo (web-res only)";;
     images/*) limit=$IMAGE_LIMIT;   label="image";;
+    data/sources/*.json) limit=$DATA_LIMIT; label="data master";;
     docs/*)   limit=$DOCS_LIMIT;    label="doc";;
     *)        limit=$DEFAULT_LIMIT; label="file";;
   esac
