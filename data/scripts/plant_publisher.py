@@ -635,10 +635,10 @@ def generate_html(species, hero, gallery_photos=None):
     common = species["common_name"]
     sci = species["botanical_name"]
     family = (species.get("taxonomy") or {}).get("family", "")
-    cat_display = h(species.get("category", "").replace(" and ", " &amp; "))
-    # Undo double-escape: h() escapes &amp; to &amp;amp;
-    cat_display = species.get("category", "").replace(" and ", " & ")
-    cat_html = h(cat_display)  # This properly escapes & to &amp;
+    # Hero label now shows the Form bucket (was: category). Fall back to the old
+    # category string only for any record that predates the form field.
+    hero_label = species.get("form", "") or species.get("category", "").replace(" and ", " & ")
+    cat_html = h(hero_label)
 
     focus = (hero.get("focus") if hero else None) or "50% 50%"
     css = PLANT_CSS

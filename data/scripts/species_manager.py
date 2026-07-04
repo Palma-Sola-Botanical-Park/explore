@@ -521,6 +521,39 @@ def _auto_import_hero(species_id, kingdom, common_name, scientific_name, taxon_i
             "cc_available": len(cc)}
 
 
+PLANT_FORMS = ["Tree", "Shrub & Vine", "Palm & Cycad",
+               "Groundcover & Wildflower", "Foliage & Accent", "Aquatic & Wetland"]
+
+
+def _guess_form(rec):
+    """Best-guess growth-form bucket for a promoted record. Conservative: returns
+    a form only when the category or family gives a clear signal, otherwise "" so
+    the curator sets it on the Validate page. A wrong guess left unnoticed is worse
+    than a blank the readiness check will catch."""
+    cat = (rec.get("category") or "").lower()
+    fam = ((rec.get("taxonomy") or {}).get("family") or "").lower()
+    # Category is the curator's own bucket name — trust it first.
+    if "palm" in cat or "cycad" in cat:
+        return "Palm & Cycad"
+    if any(w in cat for w in ("wetland", "pond", "aquatic")):
+        return "Aquatic & Wetland"
+    if any(w in cat for w in ("groundcover", "wildflower")):
+        return "Groundcover & Wildflower"
+    if "foliage" in cat or "accent" in cat:
+        return "Foliage & Accent"
+    if "shrub" in cat or "vine" in cat:   # before 'tree': "Trees and Large Shrubs" -> Shrub & Vine
+        return "Shrub & Vine"
+    if "tree" in cat:
+        return "Tree"
+    # No usable category (the common case at promote time) — fall back to family
+    # only for the unmistakable groups.
+    if fam in ("arecaceae", "zamiaceae", "cycadaceae"):
+        return "Palm & Cycad"
+    if fam == "poaceae":
+        return "Groundcover & Wildflower"
+    return ""
+
+
 def _ensure_plant_schema_defaults(rec):
     """Guarantee every schema-1.4 plant field exists (and drop retired ones) so a
     promoted record is never silently missing — or carrying stale — fields.
@@ -531,7 +564,8 @@ def _ensure_plant_schema_defaults(rec):
     rec.setdefault("watch_invasive", False)
     rec.setdefault("watch_invasive_notes", None)
     rec.setdefault("rare_fruit", False)
-    rec.setdefault("form", "")
+    if not (rec.get("form") or "").strip():
+        rec["form"] = _guess_form(rec)   # best-guess bucket; curator confirms on Validate
     rec.setdefault("safety_note", [])
     bf = rec.get("butterfly")
     if not isinstance(bf, dict):
@@ -2644,6 +2678,12 @@ def _publish_readiness(kingdom, species, hero):
         cred = resolve_hero_credit(hero)
         credit_ok = bool(cred.get("credit_name"))
     checks.append({"label": "Photo credit resolved", "ok": credit_ok})
+
+    if kingdom == "plants":
+        fam_ok = bool((species.get("taxonomy") or {}).get("family"))
+        checks.append({"label": "Family (taxonomy.family)", "ok": fam_ok})
+        form_ok = bool((species.get("form") or "").strip())
+        checks.append({"label": "Growth form", "ok": form_ok})
 
     ready = all(c["ok"] for c in checks)
     return checks, ready
@@ -8292,6 +8332,9 @@ VERIFY_BODY = r"""
     if(kind==='toxicity'){
       return 'people ' + vfLvl(v.level) + ' &nbsp; dogs ' + vfLvl(v.dogs_level);
     }
+    if(kind==='select'){
+      return v && v.value ? `<span class="vf-note">${vfEsc(v.value)}</span>` : '<i>—</i>';
+    }
     return vfBadge(v.value?'vf-true':'vf-false', v.value?'TRUE':'FALSE') + (v.note?` <span class="vf-note">${vfEsc(v.note)}</span>`:'');
   }
 
@@ -8377,6 +8420,13 @@ VERIFY_BODY = r"""
       return `<label>People ${vfLvlSelect('ov-lv-'+id, v.level)}</label>
         <label>Dogs ${vfLvlSelect('ov-dl-'+id, v.dogs_level)}</label>`;
     }
+    if(p.kind==='select'){
+      const opts=p.options||[];
+      const cur=(v&&v.value) || (p.current&&p.current.value) || '';
+      return `<label>Form <select id="ov-sel-${id}">`+
+        opts.map(o=>`<option ${cur===o?'selected':''}>${vfEsc(o)}</option>`).join('')+
+        `</select></label>`;
+    }
     return `<label><input type="radio" name="ov-${id}" value="true" id="ov-t-${id}" ${v.value?'checked':''}> TRUE</label>
       <label><input type="radio" name="ov-${id}" value="false" id="ov-f-${id}" ${!v.value?'checked':''}> FALSE</label>
       <textarea id="ov-nt-${id}" rows="2" placeholder="note (e.g. 'Dr. Smith confirmed on site, 2026-07-02')">${vfEsc(v.note||'')}</textarea>`;
@@ -8402,6 +8452,8 @@ VERIFY_BODY = r"""
     if(p.kind==='toxicity') return {field, source_kind:'override', data:{
       level:document.getElementById('ov-lv-'+id).value,
       dogs_level:document.getElementById('ov-dl-'+id).value }};
+    if(p.kind==='select') return {field, source_kind:'override', data:{
+      value:document.getElementById('ov-sel-'+id).value }};
     return {field, source_kind:'override', data:{
       value:document.getElementById('ov-t-'+id).checked, note:document.getElementById('ov-nt-'+id).value.trim()||null }};
   }
@@ -8435,6 +8487,14 @@ _LEVELS = {"Green", "Yellow", "Red"}
 
 _VERIFY_REGISTRY = {
     "plants": {
+        "form": {
+            "label": "Growth form", "kind": "select", "options": PLANT_FORMS, "notes": None,
+            "ask": ("Which single growth-form bucket best fits {sci} as grown in a Florida "
+                    "landscape? Choose EXACTLY one of: " + " | ".join(PLANT_FORMS) + ". Pick by "
+                    "dominant habit — a woody climber is Shrub & Vine; a clumping grass or low "
+                    "spreader is Groundcover & Wildflower; an architectural foliage specimen is "
+                    "Foliage & Accent."),
+        },
         "native": {
             "label": "Native to Florida", "kind": "flag", "notes": "native_notes",
             "ask": ("Is {sci} native to Florida / the SE United States? Check FNPS, the Atlas "
@@ -8504,6 +8564,8 @@ def _verify_current(species, kingdom):
         elif k == "toxicity":
             tx = species.get("toxicity") or {}
             val = {"level": tx.get("level"), "dogs_level": tx.get("dogs_level")}
+        elif k == "select":
+            val = {"value": species.get(f, "")}
         else:
             val = {"value": bool(species.get(f)),
                    "note": species.get(cfg["notes"]) if cfg["notes"] else None}
@@ -8535,6 +8597,10 @@ def _ai_build_verify_messages(species, kingdom, fields):
             shapes.append('"toxicity": {"level": "Green|Yellow|Red", '
                           '"dogs_level": "Green|Yellow|Red", '
                           '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}')
+        elif k == "select":
+            opts = " | ".join(cfg.get("options", []))
+            shapes.append(f'"{f}": {{"value": "<EXACTLY one of: {opts}>", '
+                          '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}}')
         else:
             shapes.append(f'"{f}": {{"value": <true|false>, "note": <string|null>, '
                           '"confidence": <"high"|"medium"|"low">, "reason": <one sentence>}')
@@ -8588,6 +8654,11 @@ def _coerce_verify_field(f, kind, obj):
         if obj.get("level") not in _LEVELS or obj.get("dogs_level") not in _LEVELS:
             raise ValueError("toxicity level/dogs_level must be Green/Yellow/Red")
         prop = {"level": obj["level"], "dogs_level": obj["dogs_level"]}
+    elif kind == "select":
+        val = obj.get("value")
+        if val not in PLANT_FORMS:
+            raise ValueError(f"{f}.value must be exactly one of the allowed forms")
+        prop = {"value": val}
     else:
         if not isinstance(obj.get("value"), bool):
             raise ValueError(f"{f}.value must be boolean")
@@ -8623,6 +8694,8 @@ def ai_verify_species(kingdom, species_id, fields):
     for f in fields:
         cfg = spec[f]
         base = {"field": f, "label": cfg["label"], "kind": cfg["kind"], "current": cur[f]["value"]}
+        if cfg["kind"] == "select":
+            base["options"] = cfg.get("options", [])
         if f not in data:
             proposals.append({**base, "error": "model omitted this field"}); continue
         try:
@@ -8671,6 +8744,8 @@ def apply_verify_decisions(kingdom, species_id, decisions):
             tx["level"] = p.get("level")
             tx["dogs_level"] = p.get("dogs_level")
             target["toxicity"] = tx
+        elif k == "select":
+            target[f] = p.get("value")
         else:
             target[f] = bool(p.get("value"))
             if cfg["notes"]:
