@@ -1117,15 +1117,21 @@ function renderDataSections(s, hero) {
     html += dataSection('Growing Conditions', ghtml);
   }
 
-  // Safety
+  // Safety — prefer the unified safety_note (what actually publishes); fall back
+  // to the legacy edibility/toxicity prose for records drafted before the merge,
+  // mirroring render_safety() so this audit view matches the published page.
   let safetyHtml = '';
-  if (s.edibility) {
-    safetyHtml += `<div class="data-row"><div class="label">Edibility (${s.edibility.level})</div><div class="value">${Array.isArray(s.edibility.detail)?s.edibility.detail.map(esc).join('<br>'):esc(s.edibility.detail||'')}</div></div>`;
-  }
-  if (s.toxicity) {
-    safetyHtml += `<div class="data-row"><div class="label">Toxicity (${s.toxicity.level})</div><div class="value">${Array.isArray(s.toxicity.people)?s.toxicity.people.map(esc).join('<br>'):esc(s.toxicity.people||'')}</div></div>`;
-    if (s.toxicity.dogs) {
-      safetyHtml += `<div class="data-row"><div class="label">Dogs (${s.toxicity.dogs_level})</div><div class="value">${Array.isArray(s.toxicity.dogs)?s.toxicity.dogs.map(esc).join('<br>'):esc(s.toxicity.dogs)}</div></div>`;
+  if (Array.isArray(s.safety_note) && s.safety_note.length) {
+    safetyHtml += `<div class="data-row"><div class="label">Safety note</div><div class="value">${s.safety_note.map(esc).join('<br>')}</div></div>`;
+  } else {
+    if (s.edibility) {
+      safetyHtml += `<div class="data-row"><div class="label">Edibility (${s.edibility.level})</div><div class="value">${Array.isArray(s.edibility.detail)?s.edibility.detail.map(esc).join('<br>'):esc(s.edibility.detail||'')}</div></div>`;
+    }
+    if (s.toxicity) {
+      safetyHtml += `<div class="data-row"><div class="label">Toxicity (${s.toxicity.level})</div><div class="value">${Array.isArray(s.toxicity.people)?s.toxicity.people.map(esc).join('<br>'):esc(s.toxicity.people||'')}</div></div>`;
+      if (s.toxicity.dogs) {
+        safetyHtml += `<div class="data-row"><div class="label">Dogs (${s.toxicity.dogs_level})</div><div class="value">${Array.isArray(s.toxicity.dogs)?s.toxicity.dogs.map(esc).join('<br>'):esc(s.toxicity.dogs)}</div></div>`;
+      }
     }
   }
   if (safetyHtml) html += dataSection('Edibility & Toxicity', safetyHtml);
