@@ -5,7 +5,7 @@
     "species_count": 153,
     "schema_version": "1.4",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained.",
-    "updated": "2026-07-14T22:19:41"
+    "updated": "2026-07-14T22:43:21"
   },
   "species": [
     {
@@ -14999,7 +14999,7 @@
       "category": "Tropical Specimen Trees",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": false,
       "alternate_names": [
         "Jack Tree",
@@ -15008,14 +15008,17 @@
       ],
       "quick_hits": [
         "Jackfruit produces the largest fruit of any tree on Earth — a single one can weigh over 100 pounds.",
-        "Those giant fruits grow straight from the trunk and main branches, not out on the twigs.",
-        "Ripe, it smells and tastes sweetly tropical; unripe and cooked, it shreds into a famous meat substitute.",
-        "The whole tree runs with sticky white latex — handling the fruit without oiled hands is a gluey mistake."
+        "Those giant fruits grow straight from the trunk and main branches, not out on the twigs — a trick called cauliflory that lets the wood bear the weight.",
+        "Ripe jackfruit floods the air with isoamyl acetate, the same fruity compound that gives Juicy Fruit gum its signature smell — a coincidence so uncanny that fans have debated the connection for decades.",
+        "That enormous jackfruit is not really one fruit at all. It is a fused cluster of hundreds of individual flowers, each pollinated flower swelling its perianth into one of those sweet golden bulbs you eat."
       ],
       "origin": "Native to the rainforests of the Western Ghats of India and surrounding South and Southeast Asia. Cultivated across the tropics for thousands of years and grown in frost-free South and Central Florida.",
       "more_information": [
         "The jackfruit is a record-holder: the largest tree-borne fruit in the world, with individual fruits regularly topping fifty pounds and sometimes exceeding a hundred. To carry that weight, the tree does something unusual — it produces fruit directly on the trunk and major limbs (a habit called cauliflory) rather than on slender outer branches.",
         "Inside the knobby green rind are dozens of sweet, golden, edible bulbs surrounding large seeds, all embedded in stringy fibers. Ripe jackfruit is fragrant and sweet; young, unripe jackfruit is starchy and neutral, and when cooked it pulls apart into tender shreds that have made it a popular plant-based stand-in for pulled meat.",
+        "What looks like a single fruit is botanically a syncarp — a multiple fruit formed from an entire inflorescence of tightly packed flowers. Each sweet, golden bulb is the swollen perianth of one successfully pollinated female flower; the stringy rag surrounding them represents flowers that did not develop. A single jackfruit can contain the fused remains of thousands of individual blooms.",
+        "Pollination here is a three-way mutualism. A tiny gall midge, Clinodiplosis ultracrepidata, is attracted to both male and female flower spikes by similar scent compounds. On the male spikes, a parasitic fungus (Rhizopus artocarpi) takes hold, and the midges feed on it and lay their eggs there.",
+        "Female spikes offer no fungus and no reward — they simply mimic the male scent closely enough to lure the pollen-dusted midges in anyway. The whole elaborate system was only formally described in 2018.",
         "Every part of the tree exudes a sticky white latex, so harvesting and cutting jackfruit is traditionally done with oiled hands and knives to keep the glue at bay."
       ],
       "wildlife_value": [
@@ -15029,18 +15032,18 @@
           },
           {
             "label": "Flowers",
-            "text": "Tiny, in fleshy spikes borne on the trunk and branches; male and female on the same tree."
+            "text": "Tiny, in dense fleshy spikes borne on the trunk and branches; male and female spikes on the same tree. A gall midge (Clinodiplosis ultracrepidata) pollinates both, lured by matching scents — though only male spikes offer a fungal food reward."
           },
           {
             "label": "Fruit",
-            "text": "Enormous, oblong, green to yellow-brown, knobby-skinned, growing from the trunk and limbs; sweet golden bulbs and large seeds inside."
+            "text": "Enormous, oblong, green to yellow-brown, knobby-skinned syncarp growing from the trunk and limbs. It is not a single fruit but hundreds of individual flowers fused together — each sweet golden bulb is the swollen perianth of one pollinated flower."
           },
           {
             "label": "Leaves",
             "text": "Large, glossy, leathery, dark green, oval."
           }
         ],
-        "what_to_look_for": "Huge knobby fruit attached directly to the trunk and big branches — a sight no other park tree offers. Glossy dark leaves and milky sap confirm it."
+        "what_to_look_for": "Huge knobby fruit attached directly to the trunk and big branches — a sight no other park tree offers. Look closer for the smaller, club-like male and female flower spikes growing side by side on the same limbs. Glossy dark leaves and milky sap confirm it."
       },
       "seasonality": {
         "bloom_months": null,
@@ -15077,15 +15080,18 @@
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
-      "rare_fruit": false,
+      "rare_fruit": true,
       "form": "Tree",
       "safety_note": [],
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
+        "larval_food": true,
+        "larval_species": [
+          "Jackfruit Borer Moth (Glyphodes caesalis)",
+          "Io Moth relative / Saturniid Moth (Automeris metzli)"
+        ],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
+        "notes": "Documented larval hosts are moths (Lepidoptera), not true butterflies: Glyphodes caesalis (Crambidae) is the well-known Jackfruit Borer recorded across tropical Asia on Artocarpus heterophyllus, and Automeris metzli (Saturniidae) was reported in 2025 as a new stinging-caterpillar pest on jackfruit in Panama. Neither species is established or expected at Bradenton latitudes. No true butterfly (Papilionoidea) has been documented using jackfruit as a larval host in any reviewed source. Adult nectar use by butterflies is unsupported: jackfruit flowers are inconspicuous and pollinated primarily by gall midges (Clinodiplosis ultracrepidata), not by Lepidoptera."
       }
     },
     {
