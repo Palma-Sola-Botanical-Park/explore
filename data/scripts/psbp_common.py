@@ -79,41 +79,56 @@ CC_LICENSES = frozenset({
 # like "Bird" or "Butterfly" set during research. That value drives two
 # things downstream:
 #
-#   1. The CSS palette on the species HTML page (theme-bird, theme-butterfly, …)
-#   2. The filter bucket on nature.html (🐦 Birds, 🦋 Butterflies, …)
+#   1. The CSS palette on the species HTML page (theme-bird, theme-butterfly,
+#      theme-other)
+#   2. The filter bucket on nature.html (🐦 Birds, 🦋 Butterflies, 🐾 Other)
+#
+# THREE THEMES ONLY:
+#   bird       — every bird (blue palette)
+#   butterfly  — butterflies and moths (pink palette)
+#   other      — everything else: reptiles, amphibians, mammals, insects,
+#                arachnids, crustaceans (brown palette)
 #
 # The mapping below is the SINGLE SOURCE OF TRUTH. To add a new animal
-# group with an existing theme (e.g. "Wasp" → "amphibian"), add one line
-# here — no other file needs to change.
+# group (e.g. a species where "Fly" or "Bee" doesn't quite fit), add one
+# line here mapping the new key to 'other' — no other file needs to change,
+# no new palette needed. The value shows on the species page as informational
+# ("Group: Ant"); the filter bucket is always Other.
 #
-# To add a NEW theme (e.g. "insect" as its own palette), you also need:
-#   - a CSS palette block in wildlife_publisher.py (see .theme-* rules)
-#   - a filter button in site.js (WILD_THEMES) and nature.html
+# Adding a NEW theme (e.g. splitting insects into their own bucket) is a
+# bigger change: also update the CSS palette in wildlife_publisher.py and
+# the WILD_THEMES list in site.js. Don't do this casually.
 #
 # Use theme_for() when you know the value is valid; use check_animal_group()
 # at publish time to gate before you attempt to theme a species.
 #
 ANIMAL_GROUP_TO_THEME = {
-    # Birds
+    # ── Birds ───────────────────────────────────────────────
     "Bird":        "bird",
-    # Butterflies & moths — share the pink butterfly palette
+    # ── Butterflies & moths ─────────────────────────────────
     "Butterfly":   "butterfly",
     "Moth":        "butterfly",
-    # Reptiles — share the brown reptile palette
-    "Lizard":      "reptile",
-    "Turtle":      "reptile",
+    # ── Everything else — 'other' bucket ────────────────────
+    # Reptiles
+    "Lizard":      "other",
+    "Turtle":      "other",
     # Mammals
-    "Mammal":      "mammal",
-    # Invertebrates + amphibians share the green 'amphibian' palette until
-    # the theme scheme is split (see 3-bucket redesign).
-    "Beetle":      "amphibian",
-    "Crustacean":  "amphibian",
-    "Dragonfly":   "amphibian",
-    "Grasshopper": "amphibian",
-    "True Bug":    "amphibian",
-    "Spider":      "amphibian",
-    "Frog":        "amphibian",
-    "Toad":        "amphibian",
+    "Mammal":      "other",
+    # Amphibians
+    "Frog":        "other",
+    "Toad":        "other",
+    # Insects (non-lepidoptera)
+    "Beetle":      "other",
+    "Bee":         "other",
+    "Wasp":        "other",
+    "Fly":         "other",
+    "Dragonfly":   "other",
+    "Grasshopper": "other",
+    "True Bug":    "other",
+    # Arachnids
+    "Spider":      "other",
+    # Crustaceans
+    "Crustacean":  "other",
 }
 
 # Derived — never edit; always in sync with the dict above.

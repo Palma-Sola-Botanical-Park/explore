@@ -1531,12 +1531,13 @@ let WILDLIFE = [];
 // Category buttons — built dynamically from whatever themes exist
 // in wildlife.json, in this order. Add a line here if a new
 // theme-* class is ever introduced on the wildlife pages.
+// Kept intentionally short: every species falls under exactly one
+// of these three buckets. See ANIMAL_GROUP_TO_THEME in psbp_common.py
+// for the animal_group → theme mapping.
 const WILD_THEMES = [
   { key: 'bird',      label: '🐦 Birds' },
   { key: 'butterfly', label: '🦋 Butterflies' },
-  { key: 'reptile',   label: '🐢 Reptiles' },
-  { key: 'amphibian', label: '🐸 Amphibians' },
-  { key: 'mammal',    label: '🦝 Mammals' },
+  { key: 'other',     label: '🐾 Other' },
 ];
 
 async function loadWildlife() {
