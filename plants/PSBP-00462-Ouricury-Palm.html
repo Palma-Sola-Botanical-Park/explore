@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ouricury Palm · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the gallery lightbox */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line */
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img style="cursor:pointer;object-position:47% 47%" src="../photos/PSBP-00462/687995598.jpg" alt="Ouricury Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Palm &amp; Cycad</div>
+    <div class="plant-hero-name">Ouricury Palm</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Syagrus coronata</span>
+  <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>The licuri (or ouricury) palm nut — this tree&#x27;s fruit — makes up approximately 95 percent of the entire diet of Lear&#x27;s Macaw, one of the world&#x27;s most endangered parrots. By 1990 fewer than 60 birds remained; active conservation of both the macaw and this palm has since brought that count to over 2,500 individuals.</li>
+    <li>The leaf bases of this palm attach to the trunk in five distinct spiral rows — a geometric pattern visible even from a distance and unusual enough that it serves as a reliable field mark in its native range.</li>
+    <li>Ouricury wax, scraped directly from the leaves, is chemically close enough to the famous carnauba wax to substitute for it in industrial polishes and inks — yet it is far harder to harvest, because it does not flake off the leaf the way carnauba does.</li>
+    <li>Local farmers in Brazil treat this palm as a living soil indicator: where it grows naturally, the land is considered fertile.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>The Ouricury Palm is native to eastern Brazil, growing through the states of Pernambuco and Bahia and south to the Jequitinhonha River in Minas Gerais. Its home is the Caatinga — a seasonally dry thorn-scrub biome found nowhere else on Earth — and the neighboring Cerrado savanna.</p>
+      <p>It is among the most abundant palms in all of Brazil; a single population in Bahia has been estimated at half a million individuals.</p>
+      <p>Despite that abundance at home, it remains uncommon in cultivation outside Brazil. Florida specimens like this one are botanical-garden introductions, valued for their striking trunk architecture and exceptional drought tolerance in subtropical conditions.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>The Ouricury Palm is an extraordinary case study in ecological interdependence. In its native Caatinga, the critically endangered Lear&#x27;s Macaw (Anodorhynchus leari) depends on this palm&#x27;s hard, oil-rich kernels for approximately 95 percent of its diet — cracking the tough woody shells with a beak evolved for exactly that task.</li>
+    <li>The specimen at Palma Sola Botanical Park carries that conservation story with it.</li>
+    <li>Visually, the palm is a study in natural geometry. As each leaf ages and falls, its persistent woody base stays attached to the trunk, locking into one of five distinct spiral rows that wind upward like a loosely twisted rope. This five-ranked spiral (botanists call it quinquefarious phyllotaxy) is rare in palms and serves as an instant field mark.</li>
+    <li>The leaves have also long been economically important: their surfaces yield ouricury wax, a hard, high-melting-point substance used in industrial polishes, paper coatings, and cosmetics. The name &#x27;ouricury&#x27; itself — also spelled licuri, ouricuri, or aricuri — comes from the Tupi language of Brazil&#x27;s Indigenous peoples, reflecting centuries of human relationship with this tree.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>In its native Caatinga, this palm is a cornerstone food source for a remarkable range of animals. Its nuts are the near-exclusive food of the critically endangered Lear&#x27;s Macaw, accounting for approximately 95 percent of the bird&#x27;s diet. Agoutis, peccaries, and several other mammals also depend on the fruit through the dry season, when little else is available.</p>
+      <p>In Florida cultivation, the wildlife value is more modest but still real. The bright yellow inflorescences attract bees and other pollinating insects, and the fruit — produced over a long portion of the year — can be taken by birds and mammals that encounter it.</p>
+      <p>It does not serve as a larval host for Florida butterflies or moths, but it contributes shade, structure, and supplemental food to the garden ecosystem.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Bright yellow inflorescences emerge from between the leaf bases (interfoliar), as is typical of Syagrus palms. Both male and female flowers appear on the same tree (monoecious), so a single individual can set fruit without a separate pollen source nearby.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Egg-shaped drupes roughly an inch (2.5 cm) in diameter, produced over a long portion of the year — one of the few palms that can bear fruit in nearly every season. The flesh is fibrous with a mildly sweet flavor and is edible; each fruit contains a single hard seed. The seed kernel is the primary food of Lear&#x27;s Macaw in Brazil.</p></div>
+<div class="repro-item"><div class="repro-label">Fronds</div><p>Pinnately compound (feather palm), arching and semi-plumose — meaning the leaflets are arranged not strictly in one flat plane but at slightly varying angles, giving the frond a full, brushy appearance rather than a flat paddle. Leaflets are stiff and erect, pale green to slightly bluish-green above and conspicuously whitish beneath.</p><p>Petioles carry long, flat, spine-like projections along their margins.</p></div>
+<div class="repro-item"><div class="repro-label">Trunk</div><p>Solitary, reaching roughly one foot in diameter at maturity. The most distinctive feature is the spiral pattern of old leaf-base scars running up the trunk in five distinct rows — a natural geometric texture that sets this species apart from most other feather palms. Unlike crownshaft palms, the fronds emerge directly from the trunk top with no smooth collar between them.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>Three features identify this palm from a few feet away. First, look at the trunk: the old leaf bases leave behind a bold diagonal spiral winding upward in five distinct rows — like a loosely twisted rope carved in wood.</p><p>Second, look up into the crown: the leaflets stand at slightly different angles rather than lying flat, giving each frond a brushy, three-dimensional fullness (semi-plumose), and their undersides are a pale, almost silvery white most visible when the wind lifts them.</p><p>Third, note the open crown top — there is no smooth crownshaft collar between the trunk and the frond bases, which is characteristic of the Syagrus genus. If fruit is present, look for clusters of small egg-shaped drupes hanging just below the frond bases.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">10 to 40 feet (3 to 12 m); Missouri Botanical Garden notes up to 30 feet in cultivation</div></div>
+    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">up to 15 feet</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">solitary trunk, open arching crown of semi-plumose pinnate fronds</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">slow</div></div>
+    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium-coarse</div></div>
+    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun; thrives in high heat and strong light</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">well-drained sandy, gravelly, or calcareous soils preferred; tolerates dry, nutrient-poor conditions; sensitive to waterlogged or consistently moist soils</div></div>
+    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established — among the most drought-tolerant species in the Syagrus genus; prone to root rot if overwatered</div></div>
+    </div>
+  </div>
+  <div class="plant-safe-section">
+    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>The petioles carry long, flat, spine-like projections along their margins — a real physical hazard when working close to the fronds or handling fallen fronds; heavy gloves are strongly recommended when pruning.</p><p>The fruit pulp is edible and eaten by people in Brazil, where it is described as fibrous and mildly sweet, and the seed kernel (the licuri nut) is also nutritious and consumed there — but neither is harvested or prepared for consumption here. No toxicity to people, dogs, or cats is documented.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>This species is uncommon in Florida cultivation and rare enough in ornamental horticulture generally that visitors are unlikely to encounter it outside a botanical garden setting. Its exceptional drought tolerance makes it well suited to Central Florida&#x27;s sandy soils and dry summers, provided it is planted in a well-drained spot and not over-irrigated.</p>
+      <p>Syagrus coronata can hybridize with other Syagrus species; the genus also includes the Queen Palm (Syagrus romanzoffiana), a familiar Florida street tree, making the family connection between this specimen and some of the park&#x27;s most recognizable palms a useful conversation point for visitors.</p></div>
+  </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/687995575/large.jpg" loading="lazy" alt="Ouricury Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/687995594/large.jpg" loading="lazy" alt="Ouricury Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/687995596/large.jpg" loading="lazy" alt="Ouricury Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div></div></div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Licuri Palm</span><span class="alias-tag">Aricuri Palm</span><span class="alias-tag">Ouricuri Palm</span></div>
+  </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
+        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-00462/687995598.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/687995575/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/687995594/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/687995596/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    </script>
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
