@@ -36,12 +36,25 @@ from psbp_common import (
     display_name, build_credit_line,
     resolve_hero_credit, resolve_gallery_credits,
     delete_species_page,
-    # Theme mapping lives in psbp_common — single source of truth for
-    # animal_group → theme decisions. See ANIMAL GROUPS & THEMES there.
-    theme_for, check_animal_group,
 )
 
 PORT = 8702
+
+# ── Theme mapping ───────────────────────────────────────────────────────────
+THEME_MAP = {
+    "Bird": "bird",
+    "Butterfly": "butterfly", "Moth": "butterfly",
+    "Lizard": "reptile", "Turtle": "reptile",
+    "Mammal": "mammal",
+    # Invertebrates get the amphibian/green palette
+    "Beetle": "amphibian", "Crustacean": "amphibian",
+    "Dragonfly": "amphibian", "Grasshopper": "amphibian",
+    "True Bug": "amphibian", "Spider": "amphibian",
+    "Frog": "amphibian", "Toad": "amphibian",
+}
+
+def theme_for(animal_group):
+    return THEME_MAP.get(animal_group, "amphibian")
 
 # ── Data loading (thin wrappers over psbp_common paths) ─────────────────────
 
@@ -812,14 +825,6 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
             if not sp:
                 self._html(f"<h1>{pid} not found</h1>", 404)
                 return
-            ok, reason = check_animal_group(sp)
-            if not ok:
-                self._html(
-                    f"<h1>Cannot preview {pid}</h1>"
-                    f"<p><strong>Reason:</strong> {reason}</p>"
-                    f"<p>Set a valid <code>animal_group</code> value on this "
-                    f"species in Edit &amp; Preview, then reload.</p>", 400)
-                return
             hero = heroes.get(pid)
             preview = generate_html(sp, hero, galleries.get(pid, []))
             # Replace local hero path with iNat URL for preview
@@ -851,10 +856,6 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 sp = build_species_lookup(signage).get(pid)
                 if not sp:
                     self._json({"ok": False, "error": f"{pid} not found"}, 404)
-                    return
-                ok, reason = check_animal_group(sp)
-                if not ok:
-                    self._json({"ok": False, "error": f"{pid}: {reason}"}, 400)
                     return
                 hero = heroes.get(pid)
                 if not hero:
@@ -930,11 +931,6 @@ def cmd_generate_all():
     for sp in signage["species"]:
         if sp["status"] != "html":
             continue
-        ok, reason = check_animal_group(sp)
-        if not ok:
-            print(f"  ✗ {sp['id']} {sp['common_name']}: {reason} — refusing to publish")
-            skipped += 1
-            continue
         hero = heroes.get(sp["id"])
         if not hero:
             print(f"  ⚠ {sp['id']} {sp['common_name']}: no hero, skipping")
@@ -957,9 +953,6 @@ def cmd_generate_one(pid):
     sp = build_species_lookup(signage).get(pid)
     if not sp:
         print(f"  ✗ {pid} not found"); sys.exit(1)
-    ok, reason = check_animal_group(sp)
-    if not ok:
-        print(f"  ✗ {pid}: {reason} — refusing to publish"); sys.exit(1)
     hero = heroes.get(pid)
     if not hero:
         print(f"  ⚠ No hero for {pid} — generating with placeholder path")
@@ -1015,13 +1008,6 @@ def cmd_validate():
             ef = WILDLIFE_DIR / page_filename(sid, spec["common_name"])
             if not ef.exists():
                 issues.append(("NO_HTML", f"{sid} {spec['common_name']}: status=html but no file"))
-        # Flag animal_group problems on anything that could be published
-        # (published now, or ready-to-publish spotted). Research entries are
-        # allowed to be incomplete.
-        if spec.get("status") in ("html", "spotted"):
-            ok, reason = check_animal_group(spec)
-            if not ok:
-                issues.append(("ANIMAL_GROUP", f"{sid} {spec.get('common_name','')}: {reason}"))
     if not issues:
         print("✓ All validated.")
     else:
