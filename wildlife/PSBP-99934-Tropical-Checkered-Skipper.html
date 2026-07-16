@@ -39,7 +39,7 @@
   @media (max-width:480px){ .wild-wrap{ margin:0; border-radius:0; box-shadow:none; min-height:100vh; } }
   .wild-hero{ position:relative; height:300px; overflow:hidden;
     background: radial-gradient(120% 80% at 75% 8%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 42%), linear-gradient(160deg, var(--hero-a) 0%, var(--hero-b) 52%, var(--hero-c) 100%); }
-  .wild-hero img{ position:absolute;inset:0;width:100%;height:100%; object-fit:cover;object-position:center 35%;display:block; }
+  .wild-hero img{ position:absolute;inset:0;width:100%;height:100%; object-fit:cover;display:block; }
   .wild-hero-overlay{ position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent 0%, rgba(8,20,30,0.55) 45%, rgba(8,20,30,0.85) 100%); padding:60px 18px 16px; }
   .wild-hero-category{ font-size:11px;font-weight:700;letter-spacing:3px; text-transform:uppercase;color:var(--gold-light);margin-bottom:5px; }
   .wild-hero-name{ font-family:'Playfair Display',Georgia,serif;font-size:38px; font-weight:700;color:#fff;line-height:1.05;text-shadow:0 2px 12px rgba(0,0,0,0.35); }
@@ -47,8 +47,8 @@
   .wild-sci-name{ font-family:'Playfair Display',Georgia,serif;font-style:italic; font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
   .wild-family-tag{ font-size:12px;font-weight:700;letter-spacing:1.5px; text-transform:uppercase;color:var(--theme-dark);background:var(--gold-light); padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
   .wild-family-tag:hover{ background:#c49a20; }
-  .wild-credit{ font-size:12px;color:#5b6b73;font-style:italic;padding:7px 16px;background:var(--cream); border-bottom:1px solid rgba(60,90,110,0.12);text-align:right; }
-  .wild-credit strong{ font-style:normal;color:var(--theme-dark); }
+  .wild-credit{ font-size:15px;color:var(--text-mid);padding:12px 16px 12px 18px;background:var(--cream);border-bottom:1px solid rgba(60,90,110,0.12);border-left:4px solid var(--gold);text-align:left;display:flex;align-items:center;gap:4px; }
+  .wild-credit strong{ color:var(--theme-dark);font-weight:700;font-size:16px;letter-spacing:0.01em; }
   .wild-content{ padding:12px 0 64px; }
   .wild-status-row{ display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap; background:var(--cream);border-bottom:1px solid rgba(60,90,110,0.15); }
   .badge{ font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:.3px; }
@@ -85,22 +85,25 @@
   .wild-safe-section{ margin:12px 12px 0;background:var(--safe-light);border-radius:10px;overflow:hidden; box-shadow:0 2px 8px rgba(20,30,40,0.10);border:1.5px solid rgba(26,92,26,0.2); }
   .wild-safe-section .wild-section-header{ background:var(--safe-dark); }
   .wild-safe-section .wild-section-body p{ color:#0a2a0a; }
+  .wild-danger-section{ margin:12px 12px 0;background:var(--danger-light);border-radius:10px;overflow:hidden; box-shadow:0 2px 8px rgba(20,30,40,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .wild-danger-section .wild-section-header{ background:var(--danger); }
+  .wild-danger-section .wild-section-body p{ color:#4a0a0a;font-weight:500; }
   .all-wild-link{ margin:14px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px; background:var(--parchment);border-radius:10px;padding:14px 18px;text-decoration:none; border:1.5px solid rgba(60,90,110,0.22);color:var(--theme-dark);font-weight:700;font-size:15px;transition:background .4s ease; }
   .all-wild-link:hover{ background:var(--cream); }
   .wild-float-back{ position:fixed;bottom:24px;left:50%;transform:translateX(-50%); background:var(--theme);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px; text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px; transition:background .2s,transform .2s;white-space:nowrap; }
   .wild-float-back:hover{ background:var(--theme-dark);transform:translateX(-50%) translateY(-2px);color:#fff; }
   @media (min-width:481px){ .wild-float-back{ bottom:32px; } }
-  .wild-section,.wild-caution-section,.wild-safe-section,.all-wild-link{ animation:wildFadeUp .6s ease both; }
+  .wild-section,.wild-caution-section,.wild-safe-section,.wild-danger-section,.all-wild-link{ animation:wildFadeUp .6s ease both; }
   .wild-section:nth-child(1){animation-delay:.05s}
   .wild-section:nth-child(2){animation-delay:.10s}
   .wild-section:nth-child(3){animation-delay:.15s}
   .wild-section:nth-child(4){animation-delay:.20s}
   .wild-section:nth-child(5){animation-delay:.25s}
   .wild-section:nth-child(6){animation-delay:.30s}
-  .wild-caution-section,.wild-safe-section{animation-delay:.32s}
+  .wild-caution-section,.wild-safe-section,.wild-danger-section{animation-delay:.32s}
   .all-wild-link{animation-delay:.38s}
   @keyframes wildFadeUp{ from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  @media (prefers-reduced-motion:reduce){ .wild-section,.wild-caution-section,.wild-safe-section,.all-wild-link{ animation:none; } }
+  @media (prefers-reduced-motion:reduce){ .wild-section,.wild-caution-section,.wild-safe-section,.wild-danger-section,.all-wild-link{ animation:none; } }
   .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
   .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
   .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
@@ -108,11 +111,13 @@
   .gal-item:hover img{ transform:scale(1.05); }
   .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
   .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
   .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
   .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
-  .lb-credit{ color:#ccc;font-size:13px;margin-top:10px;font-style:italic; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
   .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
   .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
   .lb-prev{ left:8px; }
@@ -133,19 +138,17 @@
   </div>
   <div class="wild-sci-band">
     <span class="wild-sci-name">Burnsius oileus</span>
-    <a class="wild-family-tag" href="../nature.html?wfamily="></a>
+    <a class="wild-family-tag" href="../nature.html?wfamily=Hesperiidae">Hesperiidae</a>
   </div>
-  <div class="wild-credit">📷 Photo by <strong>pammy63</strong> · CC-BY-NC · via iNaturalist</div>
+  <div class="wild-credit">📷 Photo by <strong>Pammy63</strong> · CC-BY-NC · via iNaturalist</div>
   <div class="wild-content">
-    <div class="wild-status-row"><span class="badge badge-native">🌿 Native to Florida</span><span class="badge badge-green">✅ Least Concern</span><span class="badge badge-safe">✅ Harmless</span></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A small, fast butterfly checkered in gray, white, and blue — darting low over open ground and landing with wings spread flat.</li><li>Males develop a dusting of blue-gray hairs on the body that gives them a frosty look.</li><li>It is a skipper — the &#x27;fighter jet&#x27; family of butterflies — small-bodied, thick-muscled, and quick.</li><li>Common in disturbed, weedy, open areas — exactly the kind of habitat a botanical park provides.</li></ul></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Pattern</div><p>Bold checkered gray, white, and dark pattern on the wings.</p></div><div class="spot-item"><div class="spot-label">Male</div><p>Frosty blue-gray hair on the body and wing bases.</p></div><div class="spot-item"><div class="spot-label">Flight</div><p>Fast, low, darting — typical skipper.</p></div><div class="spot-item"><div class="spot-label">Posture</div><p>Rests with wings spread flat.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A small, fast, checkered gray-and-white butterfly resting flat on the ground or low vegetation in an open, weedy area.</p></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Adults sip nectar from small flowers. Caterpillars feed on plants in the mallow family.</p></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A small, fast butterfly checkered in gray, white, and dark charcoal — darting low over open ground and landing flat to bask in the sun.</li><li>Males develop a dusting of blue-gray hairs on the body and wing bases that gives them a frosty, cool-toned look.</li><li>It is a spread-winged skipper (subfamily Pyrginae) — the &#x27;fighter jet&#x27; family of butterflies. While grass skippers hold their wings angled up like a tent at rest, spread-winged skippers bask with wings laid completely flat.</li><li>Common in sunny, weedy, open areas — exactly the kind of wild edges a botanical park preserves.</li></ul></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Pattern</div><p>Bold checkered gray, white, and dark pattern on the wings.</p></div><div class="spot-item"><div class="spot-label">Male</div><p>Frosty blue-gray hair on the body and wing bases.</p></div><div class="spot-item"><div class="spot-label">Flight</div><p>Fast, low, darting — typical skipper.</p></div><div class="spot-item"><div class="spot-label">Posture</div><p>Basks with wings spread completely flat — the signature of a spread-winged skipper (Pyrginae), not a grass skipper.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Silent.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A small, fast, checkered gray-and-white butterfly basking flat on the ground or low vegetation in an open, sunny, weedy area.</p></div></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Caterpillars feed on plants in the mallow family (Malvaceae) — especially fanpetals and wireweed (Sida rhombifolia and Sida acuta), which grow as common &#x27;weeds&#x27; in open ground. Adults sip nectar from small flowers, particularly Sida species, Frogfruit (Phyla nodiflora), and Spanish Needles (Bidens alba).</p></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Open, sunny, weedy areas and garden edges. Watch for the fast, low flight.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Year-round in southern Florida, most numerous in warm months.</p></div></div></div>
-    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Enjoy from a distance and please do not feed or approach any park wildlife.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="../photos/PSBP-99934/113141760.jpg" loading="lazy" alt="Tropical Checkered-Skipper — photo by pammy63"><div class="gal-credit">📷 pammy63</div></div></div></div>
+    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Observe and enjoy.</p></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Tropical Chequered Skipper</span><span class="alias-tag">Pyrgus oileus (former scientific name)</span></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Pammy63 (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
@@ -157,19 +160,18 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-99934/113141750.jpg", "credit": "pammy63", "license": "CC-BY-NC"}, {"src": "../photos/PSBP-99934/113141760.jpg", "credit": "pammy63", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-99934/113141750.jpg", "credit": "Pammy63", "license": "CC-BY-NC", "observed": "Feb 16, 2021"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
     function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
     document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
     </script>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list" style="padding-top:0"><span class="wild-tag">Butterfly</span><span class="wild-tag">Native</span><span class="wild-tag">Pollinator</span><span class="wild-tag">Daytime</span><span class="wild-tag">Garden</span></div></div>
-    <a class="all-wild-link" href="../nature.html#wildlife">🦋 Explore More Wildlife</a>
+    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
   </div>
 </div>
 
-<a class="wild-float-back" href="../nature.html#wildlife">🦋 All Wildlife</a>
+<a class="wild-float-back theme-butterfly" href="../nature.html#wildlife">🦜 All Wildlife</a>
 
 <div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>
