@@ -4,8 +4,8 @@
     "source": "wildlife_signage.json (authoritative master — no longer generated from a spreadsheet)",
     "species_count": 80,
     "schema_version": "1.5",
-    "note": "Consolidated duplicate category labels; filled 3 empty categories; removed orphan native_status; uniform skeleton schema. See CHANGELOG_massage.md",
-    "updated": "2026-07-14T23:02:46"
+    "note": "Theme classification fix: set animal_group on 3 species (Whistling-Duck→Bird, Giant Swallowtail→Butterfly, Monk Skipper→Butterfly). Previously themed as amphibian due to missing/unmapped animal_group.",
+    "updated": "2026-07-16T01:30:36"
   },
   "species": [
     {
@@ -126,7 +126,8 @@
         "https://manateeaudubon.org/birds/black-bellied-whistling-duck/",
         "https://digitalcommons.usf.edu/cgi/viewcontent.cgi?article=1647&context=ffn",
         "https://blogs.ifas.ufl.edu/polkco/2017/09/19/common-ducks-in-central-florida/"
-      ]
+      ],
+      "animal_group": "Bird"
     },
     {
       "id": "PSBP-90006",
@@ -247,7 +248,8 @@
         "https://www.gbif.org/species/1937846",
         "https://www.science.org/doi/10.1126/science.150.3704.1733",
         "https://link.springer.com/article/10.1007/BF00987631"
-      ]
+      ],
+      "animal_group": "Butterfly"
     },
     {
       "id": "PSBP-99900",
@@ -331,7 +333,7 @@
       "scientific_name": "Choranthus capucinus",
       "inat_taxon_id": 1557768,
       "sign_level": "Species",
-      "animal_group": "Insect",
+      "animal_group": "Butterfly",
       "taxonomy": {
         "family": ""
       },
