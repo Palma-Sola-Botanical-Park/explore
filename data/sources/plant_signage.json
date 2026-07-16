@@ -2,10 +2,10 @@
   "meta": {
     "generated": "2026-06-23",
     "source": "PSBP_Master_Plant_Signage.xlsx",
-    "species_count": 166,
+    "species_count": 167,
     "schema_version": "1.4",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained.",
-    "updated": "2026-07-15T23:35:55"
+    "updated": "2026-07-16T00:01:14"
   },
   "species": [
     {
@@ -15468,7 +15468,7 @@
       "tags": [],
       "feature_tier": "Feature",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": false,
       "butterfly_host": null,
       "alternate_names": [
@@ -15488,10 +15488,12 @@
       ],
       "more_information": [
         "Cycads are living fossils — a lineage of seed plants that flourished alongside the dinosaurs and have changed little since. The cardboard cycad is one of the most popular in cultivation, prized for its low, symmetrical rosette of stiff, dark green, pinnate leaves whose thick, blunt leaflets have a distinctly papery, cardboard-like feel.",
-        "Beneath the handsome looks is a serious hazard. Every part of the plant contains cycasin and related toxins, and it is dangerously poisonous to people, dogs, cats, and livestock. The seeds are the most toxic part and are a frequent cause of severe, often fatal poisoning in dogs that chew them — a genuine concern wherever pets and cardboard cycads share a space.",
-        "Like other cycads, it forms specialized upward-growing \"coralloid\" roots that house nitrogen-fixing cyanobacteria, a partnership that lets it thrive in poor, sandy soils. It also bears its seeds in cones rather than flowers, on separate male and female plants.",
-        "It also has a Florida cousin worth knowing. The cardboard cycad's genus, Zamia, includes the only cycad native to the United States — the coontie (Zamia integrifolia), a Florida native and the sole host plant of the atala butterfly.",
-        "When coontie was nearly wiped out by over-harvesting for its starch (\"Florida arrowroot\"), the atala was thought extinct — until coontie was replanted across South Florida and the butterfly came roaring back, one of the state's great conservation comebacks."
+        "Beneath the handsome looks is a serious hazard. Every part of the plant contains cycasin and related toxins, and it is dangerously poisonous to people, dogs, cats, and livestock. The seeds are the most toxic part and are a frequent cause of severe, often fatal poisoning in dogs that chew them.",
+        "Cardboard cycad is pollinated not by wind but by a specialized snout weevil, Rhopalotria mollis, apparently introduced from Mexico alongside its host. The weevils complete their life cycle inside the aromatic male cones, feeding on pollen and cone tissue, and carry pollen to female cones as they move between plants — a tight, obligate partnership between plant and insect.",
+        "The cardboard cycad's genus, Zamia, includes the only cycad native to the United States — the coontie (Zamia integrifolia), a Florida native and the primary host plant of the atala butterfly (Eumaeus atala).",
+        "Atala larvae feed on coontie leaves and sequester the plant's cycasin toxins in their own bodies, making both caterpillar and adult butterfly unpalatable to birds — a chemical defense borrowed directly from the plant.",
+        "Where coontie is scarce, atala butterflies have been documented using other ornamental cycads, including the cardboard cycad, as supplemental larval hosts.",
+        "So while coontie is the cornerstone of the atala's recovery — it was nearly wiped out by over-harvesting for Florida arrowroot starch, almost taking the butterfly with it — a cardboard cycad growing nearby can offer additional footing for one of Florida's great conservation comeback stories."
       ],
       "wildlife_value": [
         "Wildlife value is limited by the plant's toxicity. In its native range, specialized cycad-feeding insects and beetles pollinate the cones; the toxic seeds are not a safe food source for local wildlife and pets."
@@ -15515,7 +15517,7 @@
             "text": "Borne in the female cone; large and highly toxic."
           }
         ],
-        "what_to_look_for": "A short, stiff rosette of fern- or palm-like leaves with notably thick, firm, blunt leaflets. The cardboard feel of the leaflets and the cone (not flower) is the tell."
+        "what_to_look_for": "Start with the leaflets: pinch one gently — it should feel unusually rigid, thick, and blunt, more like heavy construction paper than a typical leaf. Next, look at the center of the rosette for new growth: emerging leaf flushes coil tightly and are dusted in a dense, rust-colored fuzz (the 'mealy' texture behind the species name furfuracea). On mature plants, check the center for cones rather than flowers — male cones are narrower and cluster upright like fingers, while female cones are stout and barrel-shaped and, when ripe, yield the distinctive bright orange-red seeds. The cardboard-feel leaflet plus the cone (never a flower) is the definitive tell."
       },
       "seasonality": {
         "bloom_months": null,
@@ -15557,23 +15559,29 @@
         "level": "Green",
         "notes": "Not invasive in Florida."
       },
-      "other_notes": null,
+      "other_notes": [
+        "The species epithet furfuracea is Latin for 'mealy' or 'scurfy,' describing the fine rusty fuzz that coats new growth and leaflets. The genus name Zamia derives from the Latin word for 'pine nut,' a reference to the cone-borne seeds shared by cycads and conifers.",
+        "Zamia furfuracea is listed as Endangered on the IUCN Red List, primarily due to decades of overcollection for the horticultural trade. Wild populations in Veracruz are now fragmented and small; nursery-propagated plants supply virtually all current commercial demand. Growing a legally sourced, nursery-propagated specimen contributes in a small way to reducing pressure on wild plants.",
+        "Observe and enjoy this plant safely. Because every part of the cardboard cycad is highly toxic — and the bright orange-red seeds are particularly conspicuous — please keep pets on a short leash and on established pathways when near this planting. If you are visiting with children, ask them to look rather than touch; the seeds should never be picked up or handled."
+      ],
       "internal_notes": [
         "Added 2026-06-18 from iNaturalist gap analysis (June 2026 batch). Anchor obs #372611510 (harrisonmello); Unique ID written to iNat. Shell row — content fields pending review."
       ],
       "native_notes": null,
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "UF/IFAS flags Zamia furfuracea as a caution species — it may be used in Florida landscapes but should be managed to prevent escape into natural areas. No FISC (formerly FLEPPC) Category I or II listing was found.",
       "rare_fruit": false,
       "butterfly": {
-        "larval_food": true,
-        "larval_species": [
-          "Atala (Eumaeus atala)"
-        ],
+        "larval_food": false,
+        "larval_species": [],
         "adult_food": false,
         "adult_species": [],
-        "notes": "Non-native cycad; atala butterflies can use it as a larval host (coontie is the native primary host)."
-      }
+        "notes": "The Atala butterfly's primary and well-documented larval host is the native coontie (Zamia integrifolia); the Wikipedia account of Eumaeus atala mentions 'other exotic ornamental cycads' generically as supplemental hosts, but no source located explicitly names Z. furfuracea as a confirmed host plant, and at Bradenton's latitude the Atala is at the northern edge of its range and uncommon. Adult Atala butterflies do not use cycads as nectar sources."
+      },
+      "safety_note": [
+        "Every part of this plant is seriously toxic to people, dogs, cats, and horses — do not eat any part of it, and keep pets away from it entirely. The primary toxin is cycasin, a compound that causes liver failure; a second compound, beta-methylamino-L-alanine, causes neurological signs including seizures. The ASPCA notes that as few as one or two seeds can be fatal to a dog.",
+        "The bright orange-red seeds are the most dangerous part because they are attractive and contain the highest concentrations of toxin, but leaves, stem, and roots are also toxic. If a pet chews any part of this plant, contact a veterinarian or the ASPCA Animal Poison Control Center (888-426-4435) immediately."
+      ]
     },
     {
       "id": "PSBP-00151",
@@ -17395,22 +17403,103 @@
       "category": "",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": false,
       "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1+NonEstPalms).",
-      "native_notes": null,
-      "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "native_notes": "Ptychosperma elegans is endemic to Queensland, Australia, and is not native to Florida or anywhere in the southeastern United States; it is an introduced ornamental that has naturalized in southern Florida.",
+      "watch_invasive": true,
+      "watch_invasive_notes": "Listed as FISC (formerly FLEPPC) Category II invasive in Florida, with a southern (S) regional distribution. Category II species have increased in abundance or frequency but have not yet altered Florida plant communities to the extent of Category I species. Birds consume the abundant red fruit and disperse seeds into moist natural areas. The 'S' distribution code indicates the documented invasion is concentrated in southern Florida; Bradenton (Central Florida) is at the northern fringe of concern, but the FISC listing is statewide in standing and meets the value=true threshold per the stated rule.",
       "rare_fruit": false,
       "form": "Palm & Cycad",
-      "safety_note": [],
+      "safety_note": [
+        "The fruit is not edible — the flesh around the seed is minimal and not a food source — but it is not toxic to people or dogs. UF/IFAS notes that all members of the Ptychosperma genus are considered moderately to highly allergenic, so people with pollen sensitivities may notice a reaction during bloom. Otherwise this palm poses no meaningful safety concern."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
-      }
+        "notes": "No documented association between Ptychosperma elegans and any North American butterfly or moth as a larval host or significant adult nectar source was found. A related genus member (Ptychosperma macarthurii) is listed as a host for the Asian butterfly Elymnias hypermnestra in Indian butterfly databases, but that species does not occur in Florida and the record is for a different Ptychosperma species."
+      },
+      "alternate_names": [
+        "Elegant Palm",
+        "Alexander Palm",
+        "Solitary Palm"
+      ],
+      "quick_hits": [
+        "The name 'solitaire' is not just decorative — it literally sets this species apart from its relatives. Most other Ptychosperma palms spread into clumping colonies of multiple trunks; this one grows exactly one, always alone.",
+        "The genus name encodes an odd detail visible in every seed: Ptychosperma comes from the Greek for 'folded seed.' Crack one open and you will find it deeply grooved — five longitudinal channels pressed into the surface like folds in fabric.",
+        "Ptychosperma elegans was among the first Australian palms to reach cultivation outside its homeland, arriving in European conservatories by the 1820s — less than two decades after it was formally described by botanist Robert Brown in 1810.",
+        "Because birds feed enthusiastically on the bright red fruit and disperse the seeds into natural areas, this palm has established itself beyond gardens and is considered invasive in southern Florida's moist habitats."
+      ],
+      "origin": [
+        "The Solitaire Palm is endemic to Queensland, Australia, occurring along the coast and near-coast from the tip of Cape York Peninsula south to roughly the Mission Beach area. In its home range it is a rainforest understory tree, typically found in lowland tropical and subtropical forests — often close to rivers and streams where moisture is reliable and drainage is good.",
+        "It was formally described by botanist Robert Brown in 1810 under the name Seaforthia elegans, then reclassified into the genus Ptychosperma by Carl Ludwig Blume in 1843. It was among the very first Australian palms to enter cultivation beyond its native range, reaching European conservatories by the 1820s and spreading through tropical botanical gardens worldwide across the 19th century.",
+        "By the post-World War II era it was firmly established in Florida landscapes, valued for its fast growth and slender footprint. Today it is one of the most commonly planted palms in South Florida, though that same success — abundant red fruit eaten and dispersed by birds — has earned it a place on Florida's invasive plant watchlist."
+      ],
+      "more_information": [
+        "The species epithet elegans is the Latin term for 'graceful' or 'elegant,' and the name fits: the trunk is almost impossibly slender for its height, barely four inches in diameter at maturity, and topped by a clean olive-green crownshaft and arching canopy of deep green fronds. UF/IFAS has called it a good specimen for small residential yards precisely because it takes up so little lateral space.",
+        "That narrow trunk is ringed with dark circular leaf-base scars that lighten with age, giving the stem a bamboo-like banded quality. The crownshaft — the smooth, waxy, slightly swollen cylinder at the top of the trunk from which all the fronds emerge — is a reliable way to identify a palm in the Ptychosperma group.",
+        "When a frond dies, the whole thing detaches cleanly, keeping the tree tidy without any pruning.",
+        "The leaflets are unusual among feather palms: they are bluntly squared and jagged at the tip rather than coming to a point, giving the frond a soft, almost notched silhouette. This truncated leaflet tip is one of the clearest field marks for the species."
+      ],
+      "wildlife_value": [
+        "The inflorescences — heavily branched, green-yellow sprays two to three feet long that emerge just below the crownshaft — produce small white male and female flowers and attract pollinating insects when in bloom. The palm is monoecious, meaning both sexes of flower appear on the same tree, so every individual can set fruit without a separate pollen source nearby.",
+        "The real wildlife moment comes with the fruit. Clusters of bright red, egg-shaped drupes about an inch in diameter ripen in quantity and are readily taken by birds, which distribute the seeds widely.",
+        "In southern Florida that seed dispersal has allowed the palm to establish in moist natural areas beyond gardens — a conservation concern the park takes seriously, which is why visitors will find it here as an established specimen rather than a plant we would introduce today."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Flowers",
+            "text": "Heavily branched, green-yellow inflorescences two to three feet long emerge just below the crownshaft. Each inflorescence bears both male and female flowers — small and white — on the same tree, so a single palm can set fruit without cross-pollination."
+          },
+          {
+            "label": "Fruit",
+            "text": "Bright red, egg-shaped drupes roughly one inch in diameter and up to about half an inch wide. Each fruit holds a single seed with five deep longitudinal grooves — the 'folded seed' that gives the genus its name. Fruit is not edible."
+          },
+          {
+            "label": "Fronds",
+            "text": "Pinnately compound, reaching six to eight feet in length on a roughly one-foot petiole. Leaflets are narrowly oblong, dark green above and gray-green beneath, and distinctively blunt and jagged at the tip rather than tapered to a point. They grow in a V-shaped arrangement along the rachis."
+          },
+          {
+            "label": "Crownshaft and Trunk",
+            "text": "A prominent two-foot-tall olive-green crownshaft with a slightly bulging, smooth waxy base sits atop the trunk and is the point from which all fronds emerge. The trunk is solitary, very slender — up to about four inches in diameter — light gray to near white, and marked by dark encircling leaf-base scars that fade with age."
+          }
+        ],
+        "what_to_look_for": "Start at the top with the crownshaft — a smooth, slightly swollen olive-green cylinder about two feet tall sitting right beneath the fronds; it is the clearest structural landmark on the whole tree. Next, look closely at the leaflet tips: they are bluntly squared off and jagged, almost as if cut with pinking shears, rather than coming to a point — unusual for a feather palm and a reliable field mark. Finally, scan down the ultra-slender trunk for the neat, dark horizontal rings left behind by cleanly shed fronds; older scars near the base have faded to nearly match the pale gray trunk. When in fruit, the clusters of bright red egg-shaped drupes hanging just below the crownshaft are hard to miss."
+      },
+      "seasonality": {
+        "bloom_months": "variable; tends toward warmer months in Florida",
+        "bloom_description": "Green-yellow, heavily branched inflorescences two to three feet long emerge just below the crownshaft; small white male and female flowers appear on the same plant.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "follows bloom; fruit clusters mature to bright red",
+        "notes": "In South Florida's near-tropical climate this palm may flower and fruit across a broad portion of the year rather than in a strict seasonal window. Old fronds shed cleanly from the crownshaft, so the tree stays naturally tidy."
+      },
+      "size": {
+        "height": "20 feet in Florida landscapes (UF/IFAS); up to roughly 40 feet in optimal tropical conditions",
+        "spread": "8 to 10 feet",
+        "habit": "solitary trunk, arching canopy of pinnate fronds; notably slender and vertical",
+        "growth_rate": "fast for a palm in South Florida's climate",
+        "texture": "medium-fine"
+      },
+      "growing_conditions": {
+        "light": "full sun to partial shade",
+        "soil_tolerances": "adaptable to sandy, loamy, and clay soils; fair growth in well-drained soils, best in organic, nutrient-rich soils (UF/IFAS); not highly drought-tolerant — regular watering is needed",
+        "drought_tolerance": "low to moderate; requires consistent moisture and does not thrive if allowed to dry out",
+        "spacing": "8 to 10 feet; often planted in groups of two or three at varying heights for a fuller effect"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "Palmpedia and other sources note that this palm is sometimes sold or labeled as 'Alexander palm' in the nursery trade — a name that properly belongs to Archontophoenix alexandrae, a different Australian species. The confusion is widespread enough that UF/IFAS and Wikipedia both flag it specifically.",
+        "Because of its FISC Category II status, the park does not recommend this species for new plantings in landscapes adjacent to natural areas in southern Florida. The specimen here predates that understanding and is maintained as an educational example of both the plant's ornamental qualities and the real conservation questions it raises."
+      ]
     },
     {
       "id": "PSBP-00419",
@@ -17426,24 +17515,92 @@
       "tags": [],
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": false,
       "internal_notes": [
         "Imported 2026-06-23 from park inventory (Sheet1+NonEstPalms)."
       ],
-      "alternate_names": null,
-      "quick_hits": null,
-      "origin": null,
-      "more_information": null,
-      "wildlife_value": null,
-      "reproduction": null,
-      "seasonality": null,
-      "size": null,
-      "growing_conditions": null,
-      "edibility": null,
-      "toxicity": null,
+      "alternate_names": [
+        "Small-fruited Solitaire Palm",
+        "New Guinea Cluster Palm",
+        "Microcarpum Palm"
+      ],
+      "quick_hits": [
+        "The species name says it all: microcarpum is Latin for 'small-fruited,' and this palm holds the distinction of producing the tiniest fruits in its entire genus. Every other Ptychosperma makes bigger berries — this one is the outlier.",
+        "The crownshaft — that smooth, waxy cylinder at the top of the trunk — can range from olive-green to a pale silver, sometimes approaching white. Few palms in the park show that kind of variation in a single species.",
+        "This is one of the rarer palms in cultivation worldwide. It remained virtually unknown outside Papua New Guinea until the 1970s, and today it is still found mainly in specialist botanical collections — Fairchild Tropical Botanic Garden in Miami is among the handful of institutions growing it."
+      ],
+      "origin": [
+        "Ptychosperma microcarpum is native to the Central Province of Papua New Guinea, where it grows in montane tropical rainforest at elevations around 600 meters. Its total wild range is estimated at roughly 2,440 square kilometers — a compact footprint that makes it one of the more geographically restricted members of its genus.",
+        "The species was virtually unknown in cultivation until the 1970s, when it began to attract attention from specialist palm collectors. International distribution to botanical gardens in Hawaii and Florida followed in the 1990s.",
+        "Today it remains rare outside dedicated collections — a stark contrast to its more familiar relative Ptychosperma elegans, which has become one of the most widely planted palms in South Florida."
+      ],
+      "more_information": [
+        "The genus Ptychosperma takes its name from the Greek for 'folded seed' — crack open any fruit in the group and you will find the seed deeply grooved along its surface, as if pressed with a mold. That shared character ties together a genus of roughly 30 species scattered across Papua New Guinea, Australia, the Solomon Islands, and a few nearby island chains.",
+        "The clustering habit of Ptychosperma microcarpum is more than a growth form — it is a survival strategy. In the shifting margins of montane rainforest, a single trunk is vulnerable: one falling limb can sever it entirely. By maintaining an underground rhizome system connected to multiple stems, the plant hedges against that loss.",
+        "Damage one trunk, and the shared root crown re-allocates energy to push up new suckers, keeping the genetic individual alive.",
+        "Its montane origin — around 600 meters elevation in Papua New Guinea's Central Province — also grants it a modest edge that purely lowland tropical palms lack.",
+        "The cooler nights at altitude have given this species a slightly greater tolerance for brief temperature dips, which is one reason it performs reliably in South-Central Florida landscapes and attracts attention from growers experimenting at the margins of the tropics.",
+        "The IUCN Red List assesses this species as Least Concern, but notes that field collections have been sparse since the 1970s and further surveys are needed to confirm population stability. Proposed highway expansion near Port Moresby is flagged as a potential future pressure on its forest habitat.",
+        "Its range overlaps with Paga Hill National Park Scenic Reserve and Moitaka Wildlife Sanctuary, which provides some protection."
+      ],
+      "wildlife_value": [
+        "The small red to pinkish-red fruits are the main wildlife currency of this palm. Across the Ptychosperma genus, ripe drupes are readily taken by fruit-eating birds, which serve as the primary seed dispersers. Because the fruits of this species are notably small — the smallest in the genus — they are accessible to a wider range of bird species than the larger-fruited Ptychosperma palms.",
+        "Like others in the genus, the inflorescences attract pollinating insects when in bloom. Because this palm has no co-evolutionary history with Florida's native fauna, it does not serve as a larval host for local butterflies or moths. Its wildlife contribution here is principally through fruit and flower resources for generalist visitors."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Flowers",
+            "text": "Inflorescences emerge below the crownshaft (infrafoliar) and are relatively compact for the genus — branched sprays bearing densely packed triads of male and female flowers on the same plant. Male flowers are small and cream-colored; female flowers are minute and pale green. Both sexes appear on every individual tree, so each palm can set fruit without a separate pollen source nearby."
+          },
+          {
+            "label": "Fruit",
+            "text": "Small drupes, red to pinkish-red at maturity, each containing a single grooved seed. The fruit is the smallest produced by any species in the genus — the botanical name microcarpum records that fact directly. Fruit is not a food source for people."
+          },
+          {
+            "label": "Fronds",
+            "text": "Pinnately compound, dark green, and evergreen. The leaflets are narrowly wedge-shaped and held in a slightly plumose arrangement along the rachis, giving the frond a softer silhouette than the more rigidly two-ranked leaflets of some related palms. Old fronds shed cleanly from the crownshaft."
+          },
+          {
+            "label": "Trunk and Crownshaft",
+            "text": "Usually multi-stemmed from the base, occasionally solitary. Trunks are slender, gray-brown, and closely ringed with the circular scars left by shed fronds. The crownshaft at the top of each trunk is well-developed and notably variable in color — olive-green through silvery to near-white — smooth and waxy to the touch."
+          }
+        ],
+        "what_to_look_for": "The Trunk Clump: Start at ground level. Look for a tight cluster of multiple slender trunks rising from a single shared base, each one closely ringed with clean, horizontal leaf-scar bands — an elegant, architectural silhouette even before you look up. The Variable Crownshaft: Follow a trunk upward to the smooth, waxy cylinder sitting just below the fronds. Unlike the uniform green of most common palms, this species can shift from olive-green all the way to a chalky silver-white — scan a few trunks and you may see the full range on a single plant. The Feathery Canopy: Look through the leaves and notice that the narrow leaflets do not lie flat in one plane like a paddle. They angle outward in multiple directions — a plumose arrangement — giving the entire canopy a soft, hazy silhouette against the sky rather than a crisp, rigid outline."
+      },
+      "seasonality": {
+        "bloom_months": "late spring through early autumn",
+        "bloom_description": "Compact infrafoliar inflorescences bearing cream-colored male and pale green female flowers; both sexes appear on the same plant.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": null,
+        "notes": "Bloom tracks the return of high humidity and summer rainfall in South Florida, generally spanning late spring through early autumn. Specific fruiting timing in Florida cultivation is not well documented for this rare species. Fruit color at maturity is red to pinkish-red. Old fronds shed cleanly, keeping the plant naturally tidy."
+      },
+      "size": {
+        "height": "13 to 33 feet (4 to 10 meters); typically 13 to 26 feet in cultivation",
+        "spread": "6 to 10 feet for a mature clump",
+        "habit": "clumping (usually 2 to 3 trunks from base); occasionally solitary; upright and relatively narrow",
+        "growth_rate": "moderate in South Florida cultivation; cooler winter temperatures pace it back from the faster rates seen in equatorial conditions",
+        "texture": "medium-fine"
+      },
+      "growing_conditions": {
+        "light": "partial shade to filtered sun; tolerates full sun in humid conditions but grows best with some overhead protection",
+        "soil_tolerances": "prefers fertile, organically rich, well-drained soil with consistent moisture; does not tolerate prolonged dry-out",
+        "drought_tolerance": "low; requires regular watering and does not thrive if allowed to dry out",
+        "spacing": "6 to 8 feet as a specimen; 3 to 6 feet for screening or grouped plantings"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
       "invasive": null,
-      "other_notes": null,
+      "other_notes": [
+        "Ptychosperma microcarpum is cultivated at Fairchild Tropical Botanic Garden in Miami and the Lae Botanic Gardens in Papua New Guinea, placing the park's specimen in genuinely distinguished company. It remains one of the rarer Ptychosperma species in cultivation anywhere in the world.",
+        "The IUCN notes that very few field collections of this species have been made since the 1970s–1980s, and further surveys of its native range in Central Province, Papua New Guinea are encouraged. The park's specimen is therefore a meaningful contribution to the visibility of a little-known palm."
+      ],
       "butterfly_host": null,
       "native_notes": null,
       "watch_invasive": false,
@@ -17454,8 +17611,11 @@
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
-      }
+        "notes": "No documented larval host or notable adult nectar association found for Ptychosperma microcarpum. Florida palm-feeding skippers such as the Palmetto Skipper use native palms (Saw Palmetto, Cabbage Palm); this non-native Papua New Guinea species does not appear in any Florida or broader lepidopteran host-plant database."
+      },
+      "safety_note": [
+        "No known toxicity to people or dogs. The fruit is not a food source — it is minimal in flesh and not eaten — but it is not harmful. Like others in the Ptychosperma genus, this palm has medium-to-high allergen potential, so people with pollen sensitivities may notice a reaction during bloom. Otherwise harmless."
+      ]
     },
     {
       "id": "PSBP-00420",
@@ -19659,6 +19819,32 @@
         "Visitors interested in growing plums at home in the Bradenton area would have far better success with those low-chill selections than with standard European plum varieties.",
         "Greengage and damson plums, both familiar from European culinary traditions, are subspecies of Prunus domestica — botanically the same species as the plum on this sign, just selected for different fruit characteristics over centuries of cultivation."
       ]
+    },
+    {
+      "id": "PSBP-00713",
+      "common_name": "Pink Trumpet-tree",
+      "botanical_name": "Tabebuia heterophylla",
+      "inat_taxon_id": 53722,
+      "taxonomy": {
+        "family": "Bignoniaceae",
+        "genus": "Tabebuia",
+        "species": "heterophylla"
+      },
+      "status": "spotted",
+      "has_sign": false,
+      "native_notes": null,
+      "watch_invasive": false,
+      "watch_invasive_notes": null,
+      "rare_fruit": false,
+      "form": "",
+      "safety_note": [],
+      "butterfly": {
+        "larval_food": false,
+        "larval_species": [],
+        "adult_food": false,
+        "adult_species": [],
+        "notes": null
+      }
     }
   ]
 }
