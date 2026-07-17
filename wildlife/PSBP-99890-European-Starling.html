@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>European Starling · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#b8942a; --gold-light:#d4aa40;
+    --cream:#f5f0e8; --parchment:#e8dfc8;
+    --text-mid:#2e2e1e; --text-dark:#1a1a14;
+    --safe-dark:#1a5c1a; --safe-light:#edf7ed;
+    --danger:#8b2020; --danger-light:#fff0f0;
+  }
+  .theme-bird{
+    --theme:#235e86; --theme-dark:#143b54; --theme-sage:#3f7ba3;
+    --hero-a:#6ba3d4; --hero-b:#235e86; --hero-c:#102e43;
+  }
+  .theme-butterfly{
+    --theme:#a23a6e; --theme-dark:#6b2247; --theme-sage:#bd5d8c;
+    --hero-a:#e294bc; --hero-b:#a23a6e; --hero-c:#5a1d3c;
+  }
+  /* 'other' — everything not a bird or butterfly. Warm earthy brown.
+     The legacy class names below (theme-reptile / theme-mammal /
+     theme-amphibian) resolve to the same palette so pages generated
+     before the 3-bucket redesign keep rendering correctly until they're
+     regenerated. Safe to delete the legacy aliases once every wildlife
+     page has been re-published. */
+  .theme-other,
+  .theme-reptile,
+  .theme-mammal,
+  .theme-amphibian{
+    --theme:#9c5a33; --theme-dark:#5e3318; --theme-sage:#b97d50;
+    --hero-a:#d39b6c; --hero-b:#9c5a33; --hero-c:#4f2a13;
+  }
+  .wild-wrap{ max-width:680px; margin:2rem auto; background:#e8e3d8; min-height:80vh; border-radius:12px; overflow:hidden; box-shadow:0 4px 32px rgba(20,30,40,0.16); }
+  @media (max-width:480px){ .wild-wrap{ margin:0; border-radius:0; box-shadow:none; min-height:100vh; } }
+  .wild-hero{ position:relative; height:300px; overflow:hidden;
+    background: radial-gradient(120% 80% at 75% 8%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 42%), linear-gradient(160deg, var(--hero-a) 0%, var(--hero-b) 52%, var(--hero-c) 100%); }
+  .wild-hero img{ position:absolute;inset:0;width:100%;height:100%; object-fit:cover;display:block; }
+  .wild-hero-overlay{ position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent 0%, rgba(8,20,30,0.55) 45%, rgba(8,20,30,0.85) 100%); padding:60px 18px 16px; }
+  .wild-hero-category{ font-size:11px;font-weight:700;letter-spacing:3px; text-transform:uppercase;color:var(--gold-light);margin-bottom:5px; }
+  .wild-hero-name{ font-family:'Playfair Display',Georgia,serif;font-size:38px; font-weight:700;color:#fff;line-height:1.05;text-shadow:0 2px 12px rgba(0,0,0,0.35); }
+  .wild-sci-band{ background:var(--theme); padding:11px 18px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; border-bottom:2px solid var(--gold); }
+  .wild-sci-name{ font-family:'Playfair Display',Georgia,serif;font-style:italic; font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .wild-family-tag{ font-size:12px;font-weight:700;letter-spacing:1.5px; text-transform:uppercase;color:var(--theme-dark);background:var(--gold-light); padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .wild-family-tag:hover{ background:#c49a20; }
+  .wild-credit{ font-size:15px;color:var(--text-mid);padding:12px 16px 12px 18px;background:var(--cream);border-bottom:1px solid rgba(60,90,110,0.12);border-left:4px solid var(--gold);text-align:left;display:flex;align-items:center;gap:4px; }
+  .wild-credit strong{ color:var(--theme-dark);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+  .wild-content{ padding:12px 0 64px; }
+  .wild-status-row{ display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap; background:var(--cream);border-bottom:1px solid rgba(60,90,110,0.15); }
+  .badge{ font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:.3px; }
+  .badge-native{ background:#d0e8ff;color:#0a2a5a;border:1.5px solid rgba(10,42,90,0.3); }
+  .badge-green { background:#d8eed8;color:#1a4a1a;border:1.5px solid rgba(45,74,45,0.35); }
+  .badge-safe  { background:var(--safe-light);color:var(--safe-dark);border:1.5px solid rgba(26,92,26,0.3); }
+  .badge-warn  { background:#fff3d8;color:#6a3a00;border:1.5px solid rgba(180,120,0,0.3); }
+  .badge-danger{ background:var(--danger-light);color:var(--danger);border:1.5px solid rgba(139,32,32,0.3); }
+  .badge-neutral{ background:var(--parchment);color:var(--text-mid);border:1.5px solid rgba(60,90,110,0.3); }
+  .wild-section{ margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden; box-shadow:0 2px 8px rgba(20,30,40,0.10);border:1px solid rgba(60,90,110,0.10); }
+  .wild-section-header{ background:var(--theme);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .wild-section-icon{ font-size:18px;line-height:1; }
+  .wild-section-title{ font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .wild-section-body{ padding:16px; }
+  .wild-section-body p{ font-size:17px;line-height:1.7;color:var(--text-mid); }
+  .wild-section-body p + p{ margin-top:10px; }
+  .quick-hits-list{ list-style:none;padding:14px 16px; }
+  .quick-hits-list li{ font-size:17px;line-height:1.6;color:var(--text-mid); padding:11px 0 11px 22px;position:relative;border-bottom:1px solid rgba(60,90,110,0.10); }
+  .quick-hits-list li:last-child{ border-bottom:none; }
+  .quick-hits-list li::before{ content:'';position:absolute;left:0;top:19px;width:8px;height:8px; background:var(--gold);border-radius:50%; }
+  .spot-list{ padding:14px 16px; }
+  .spot-item{ padding:10px 0;border-bottom:1px solid rgba(60,90,110,0.10); }
+  .spot-item:last-child{ border-bottom:none;padding-bottom:0; }
+  .spot-label{ font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase; color:var(--theme-sage);margin-bottom:4px; }
+  .spot-item p{ font-size:16px;line-height:1.65;color:var(--text-mid); }
+  .spot-item.look p{ font-weight:500; }
+  .alias-list{ display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag{ background:var(--parchment);border:1.5px solid rgba(60,90,110,0.22); border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid);font-style:italic;font-weight:500; }
+  .wild-tags{ display:flex;flex-wrap:wrap;gap:8px;margin-top:14px; }
+  .wild-tag{ background:rgba(35,94,134,0.10);border:1.5px solid var(--theme-sage); border-radius:6px;padding:6px 13px;font-size:14px;color:var(--theme-dark);font-weight:600; }
+  .wild-caution-section{ margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden; box-shadow:0 2px 8px rgba(20,30,40,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .wild-caution-section .wild-section-header{ background:#7a5000; }
+  .wild-caution-section .wild-section-body p{ color:#3a2000; }
+  .wild-safe-section{ margin:12px 12px 0;background:var(--safe-light);border-radius:10px;overflow:hidden; box-shadow:0 2px 8px rgba(20,30,40,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .wild-safe-section .wild-section-header{ background:var(--safe-dark); }
+  .wild-safe-section .wild-section-body p{ color:#0a2a0a; }
+  .wild-danger-section{ margin:12px 12px 0;background:var(--danger-light);border-radius:10px;overflow:hidden; box-shadow:0 2px 8px rgba(20,30,40,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .wild-danger-section .wild-section-header{ background:var(--danger); }
+  .wild-danger-section .wild-section-body p{ color:#4a0a0a;font-weight:500; }
+  .all-wild-link{ margin:14px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px; background:var(--parchment);border-radius:10px;padding:14px 18px;text-decoration:none; border:1.5px solid rgba(60,90,110,0.22);color:var(--theme-dark);font-weight:700;font-size:15px;transition:background .4s ease; }
+  .all-wild-link:hover{ background:var(--cream); }
+  .wild-float-back{ position:fixed;bottom:24px;left:50%;transform:translateX(-50%); background:var(--theme);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px; text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px; transition:background .2s,transform .2s;white-space:nowrap; }
+  .wild-float-back:hover{ background:var(--theme-dark);transform:translateX(-50%) translateY(-2px);color:#fff; }
+  @media (min-width:481px){ .wild-float-back{ bottom:32px; } }
+  .wild-section,.wild-caution-section,.wild-safe-section,.wild-danger-section,.all-wild-link{ animation:wildFadeUp .6s ease both; }
+  .wild-section:nth-child(1){animation-delay:.05s}
+  .wild-section:nth-child(2){animation-delay:.10s}
+  .wild-section:nth-child(3){animation-delay:.15s}
+  .wild-section:nth-child(4){animation-delay:.20s}
+  .wild-section:nth-child(5){animation-delay:.25s}
+  .wild-section:nth-child(6){animation-delay:.30s}
+  .wild-caution-section,.wild-safe-section,.wild-danger-section{animation-delay:.32s}
+  .all-wild-link{animation-delay:.38s}
+  @keyframes wildFadeUp{ from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .wild-section,.wild-caution-section,.wild-safe-section,.wild-danger-section,.all-wild-link{ animation:none; } }
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="wild-wrap theme-bird">
+  <div class="wild-hero">
+    <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-99890/681681008.jpg" alt="European Starling at Palma Sola Botanical Park" onclick="openLB(0)">
+    <div class="wild-hero-overlay">
+      <div class="wild-hero-category"></div>
+      <div class="wild-hero-name">European Starling</div>
+    </div>
+  </div>
+  <div class="wild-sci-band">
+    <span class="wild-sci-name">Sturnus vulgaris</span>
+    <a class="wild-family-tag" href="../nature.html?wfamily=Sturnidae">Sturnidae</a>
+  </div>
+  <div class="wild-credit">📷 Photo by <strong>Rob Carr</strong> · CC-BY-NC · via iNaturalist</div>
+  <div class="wild-content">
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>Every European Starling in North America descends from roughly 100 birds released into New York&#x27;s Central Park in 1890 and 1891. From that single foothold, the species spread continent-wide within a few decades — one of the most dramatic range expansions ever recorded for a bird.</li><li>The plumage shifts dramatically with the seasons. After the fall molt, fresh feathers are tipped in white, giving the bird a heavily speckled look. By spring those tips wear away to reveal the glossy black, green, and purple iridescence that makes a breeding starling look genuinely striking in good light.</li><li>Starlings use an unusual foraging trick called gaping: they push the bill into soil or leaf litter and then force it open, prying apart the substrate to expose hidden insects. The jaw muscles are large enough to power this technique, giving them access to prey most other birds simply cannot reach.</li><li>The European Starling is listed among the IUCN&#x27;s 100 Worst Invasive Species worldwide — a designation that reflects the scale of its impact on native cavity-nesting birds and agriculture rather than any particular danger to people.</li></ul></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Size and shape</div><p>A stocky, short-tailed bird about 8 to 9 inches (20 to 23 cm) long with a wingspan of roughly 12 to 16 inches (31 to 40 cm). The body is compact and round-bellied, the bill long and straight, and the tail notably short. In flight, the pointed, triangular wings give a star-like silhouette — the source of the name &#x27;starling.&#x27;</p></div><div class="spot-item"><div class="spot-label">Breeding plumage (spring–summer)</div><p>Glossy black overall, with a strong iridescent sheen of green and purple that shifts with the angle of light. Bill is bright yellow; the base of the lower mandible is blue in males, pink in females. Legs are pinkish-red.</p></div><div class="spot-item"><div class="spot-label">Non-breeding plumage (fall–winter)</div><p>After the fall molt, fresh feathers are tipped in white and buff, giving the bird a heavily speckled appearance. The bill darkens to gray-brown. As winter progresses and feather tips wear away, the speckles gradually disappear, and by spring the bird is glossy black again.</p></div><div class="spot-item"><div class="spot-label">Juveniles</div><p>Young birds in their first summer are uniformly dull gray-brown with a dark bill — strikingly different from adults and sometimes confusing. They transition into adult-patterned plumage by fall of their first year.</p></div><div class="spot-item"><div class="spot-label">In flight</div><p>The short tail, triangular wings, and rapid, buzzy wingbeats are distinctive. The birds often glide briefly between bursts of flapping. Large flocks move in tight coordination, which is not typical of native blackbirds, with which starlings are sometimes confused.</p></div><div class="spot-item"><div class="spot-label">Similar species</div><p>Often found alongside Common Grackles and other blackbirds, but starlings are stockier, shorter-tailed, and have a straight pointed bill rather than the curved bill of a grackle. The triangular wing shape in flight is a reliable separator.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>One of the more vocally complex birds you will encounter. The song is a lengthy, rambling performance of wheezes, rattles, liquid warbles, and clear whistles that can run for more than a minute without repeating. Woven throughout are mimicry sequences: starlings regularly imitate other species, including Killdeer, Eastern Wood-Pewee, Northern Bobwhite, and Red-tailed Hawk, incorporating their calls so cleanly that experienced birders are sometimes fooled. Contact calls between flock members include a drawn-out, hissing note and a descending whistle. Flocks in flight produce a continuous chatter that is one of the park&#x27;s most characteristic background sounds in fall and winter.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>Look for a compact, short-tailed black bird walking — not hopping — across a lawn or open ground, probing the soil with a pointed yellow bill. In good light, the green-and-purple gloss on the back is unmistakable. In fall and winter, the white speckles make the bird look almost polka-dotted. In flight, the triangular wing shape and buzzy, direct wingbeats set it apart from the native blackbirds it often accompanies. Juveniles in early summer are a confusing plain gray-brown; look for their stocky build and straight bill.</p></div></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>An opportunistic omnivore. Insects make up the majority of the diet when available — beetles, grasshoppers, flies, caterpillars, and earthworms are all taken, usually by probing or gaping in open soil and short grass. In fall and winter the diet shifts heavily toward fruit, berries, and seeds. The birds will also take grain, food scraps, and whatever is accessible at feeding stations.</p></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Check any mowed or open area in the park, especially the short-grass lawns around the pavilions, where starlings forage in loose, strutting groups throughout the day. The edges of the retention pond and any wetland margins are also worth scanning — insects are especially active near water, and starlings work these margins hard. Large trees with natural cavities or woodpecker holes are worth checking for nesting or roosting birds. At dusk, watch the sky above the tree line for incoming flocks heading to a communal roost. In fall and winter, flocks are larger and more conspicuous; listen for the chattering before you see the birds.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Year-round in Manatee County, and active during daylight hours. Flocks are most visible in the morning and late afternoon during active foraging bouts. Fall and winter bring the largest numbers, as northern migrants join resident birds. Breeding activity peaks March through June; juveniles in their plain gray-brown plumage are conspicuous in early summer flocks.</p></div></div></div>
+    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Observe freely. Starlings in open areas are tolerant of people and easy to watch at close range. Do not feed them — human food offers no nutritional benefit to birds and large flocks become dependent on artificial feeding and concentrate in ways that increase disease risk.</p></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Common Starling</span></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rob Carr (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <img class="lb-img" id="lbImg">
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
+        <div class="lb-credit" id="lbCredit"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-99890/681681008.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Mar 22, 2025"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    </script>
+    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
+  </div>
+</div>
+
+<a class="wild-float-back theme-bird" href="../nature.html#wildlife">🦜 All Wildlife</a>
+
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
+</body>
+</html>

@@ -1,110 +1,32 @@
 {
   "meta": {
+    "generated": "2026-06-23",
     "source": "wildlife_signage.json (authoritative master — no longer generated from a spreadsheet)",
+    "species_count": 87,
     "schema_version": "1.6",
+    "note": "Spotted-entry animal_group cleanup: PSBP-99900 Ceraunus Blue 'Insect'→'Butterfly'; PSBP-99902 Dilemma Orchid Bee 'Insect'→'' (no bee bucket; blank flags it as a gap in Edit & Preview).",
+    "updated": "2026-07-17T08:07:20",
     "animal_group_vocabulary": {
       "note": "Valid values for the `animal_group` field on each species. Source of truth is ANIMAL_GROUP_TO_THEME in psbp_common.py; this is a convenience reference.",
-      "themes": [
-        "bird",
-        "butterfly",
-        "other"
-      ],
+      "themes": ["bird", "butterfly", "other"],
       "values": {
-        "Bird": "bird",
-        "Butterfly": "butterfly",
-        "Moth": "butterfly",
-        "Lizard": "other",
-        "Turtle": "other",
-        "Mammal": "other",
-        "Frog": "other",
-        "Toad": "other",
-        "Beetle": "other",
-        "Bee": "other",
-        "Wasp": "other",
-        "Fly": "other",
-        "Dragonfly": "other",
+        "Bird":        "bird",
+        "Butterfly":   "butterfly",
+        "Moth":        "butterfly",
+        "Lizard":      "other",
+        "Turtle":      "other",
+        "Mammal":      "other",
+        "Frog":        "other",
+        "Toad":        "other",
+        "Beetle":      "other",
+        "Bee":         "other",
+        "Wasp":        "other",
+        "Fly":         "other",
+        "Dragonfly":   "other",
         "Grasshopper": "other",
-        "True Bug": "other",
-        "Spider": "other",
-        "Crustacean": "other"
-      }
-    },
-    "species_schema": {
-      "purpose": "Canonical shape of each entry in the `species` array below. Compare against a real species when troubleshooting; older entries may not match exactly and can be tidied against this template as needed.",
-      "template": {
-        "id": "string — 'PSBP-#####' format, unique across the file",
-        "common_name": "string — display name used in headings and cards",
-        "scientific_name": "string — Latin binomial (genus + species)",
-        "inat_taxon_id": "integer — iNaturalist taxon ID",
-        "taxonomy": {
-          "family": "string — e.g. 'Anatidae'",
-          "genus": "string — e.g. 'Dendrocygna'",
-          "species": "string — species epithet only, e.g. 'autumnalis'"
-        },
-        "status": "one of: 'research' | 'spotted' | 'html'",
-        "has_sign": "boolean — is a physical sign installed in the park",
-        "native": "boolean — native to Florida",
-        "animal_group": "one of the keys in meta.animal_group_vocabulary.values",
-        "category": "string — human-readable category shown on the page (e.g. 'Waterfowl', 'Butterflies & Moths')",
-        "sign_level": "string — signage priority tag",
-        "feature_tier": "string — how prominently the species is featured",
-        "last_reviewed": "string — ISO date of last content review, e.g. '2026-07-15'",
-        "internal_notes": "string — private notes; never rendered on the site",
-        "also_known_as": "array of strings — alternate common names",
-        "tags": "array of strings — freeform searchable tags",
-        "quick_hits": "array of 3–4 short paragraph strings — top highlights shown as cards",
-        "range_and_origin": "string — one paragraph on native range and Florida presence",
-        "more_information": "array of paragraph strings — expanded content shown below the fold",
-        "identification": {
-          "blocks": [
-            {
-              "label": "string — short heading, e.g. 'Size and shape', 'Plumage', 'Bill and legs'",
-              "text": "string — descriptive paragraph"
-            }
-          ],
-          "what_to_look_for": "string — a field-note summary paragraph"
-        },
-        "diet": "string — paragraph on what the species eats",
-        "behavior": "string — paragraph on how it acts",
-        "sounds": "string — paragraph on vocalizations or other sounds",
-        "ecological_role": "string — paragraph on its role in the local ecosystem",
-        "habitat": "string — paragraph on preferred habitat",
-        "where_to_look": "string — paragraph on where in PSBP to find it",
-        "when_to_see": "string — paragraph on time of day / year",
-        "size": {
-          "length": "string — e.g. '18.5 to 21 in (47 to 53 cm); wingspan 30 to 37 in'",
-          "lifespan": "string — e.g. 'Typically 6 to 8 years in the wild'"
-        },
-        "danger": {
-          "people_level": "one of: 'Green' | 'Yellow' | 'Red'",
-          "people": "string — explanation for humans",
-          "pets_level": "one of: 'Green' | 'Yellow' | 'Red'",
-          "pets": "string — explanation for pets"
-        },
-        "interaction": {
-          "level": "one of: 'Green' | 'Yellow' | 'Red'",
-          "guidance": "string — how visitors should behave around this species"
-        },
-        "invasive": {
-          "level": "one of: 'Green' | 'Yellow' | 'Red'",
-          "notes": "string — invasive status detail"
-        },
-        "conservation": {
-          "level": "one of: 'Green' | 'Yellow' | 'Red'",
-          "status": "string — IUCN/state status paragraph"
-        },
-        "seasonality": {
-          "presence": "one of: 'year-round' | 'seasonal' | 'irregular'",
-          "reliability": "one of: 'reliable' | 'occasional' | 'rare'",
-          "months": "array of integers 1–12 — months the species is present",
-          "peak": "string — when the species is most visible",
-          "note": "string — additional seasonal detail"
-        },
-        "similar_species": "array of strings — species that might be confused with this one",
-        "plant_connections": "array of strings — host plants, food plants, or other plant relationships",
-        "plant_links": "array of strings — PSBP plant IDs this species links to",
-        "sources": "array of strings — URLs consulted during research",
-        "observation_stats": "object — iNat observation counts and similar metadata; shape varies"
+        "True Bug":    "other",
+        "Spider":      "other",
+        "Crustacean":  "other"
       }
     }
   },
@@ -602,7 +524,7 @@
       "scientific_name": "Meromacrus acutus",
       "inat_taxon_id": 361290,
       "sign_level": "Species",
-      "animal_group": "Fly",
+      "animal_group": "Insect",
       "taxonomy": {
         "family": "Syrphidae"
       },
@@ -737,7 +659,7 @@
       "scientific_name": "Euglossa dilemma",
       "inat_taxon_id": 474465,
       "sign_level": "Species",
-      "animal_group": "Bee",
+      "animal_group": "",
       "taxonomy": {
         "family": ""
       },
@@ -980,7 +902,7 @@
       "scientific_name": "Dielis dorsata",
       "inat_taxon_id": 893820,
       "sign_level": "Species",
-      "animal_group": "Wasp",
+      "animal_group": "Insect",
       "taxonomy": {
         "family": "Scoliidae"
       },
@@ -1127,7 +1049,8 @@
       "tags": null,
       "when_to_see": "Present in Manatee County for most of the year, with adults recorded from at least March through December and possibly in warm winter months as well. Multiple broods mean there is rarely a long gap between flights. Adults are most active and visible during morning and afternoon hours on warm, sunny days.",
       "where_to_look": "Check the undersides of palm fronds and the broad leaves of shrubs throughout the park, especially near saw palmetto stands or any ornamental palm plantings. Garden beds with large tubular flowers — hibiscus in particular — are good spots to find adults nectaring. This is a butterfly that rewards slow walking rather than scanning; look for something sitting very still that you might otherwise take for a fallen leaf.",
-      "last_reviewed": null
+      "last_reviewed": null,
+      "native_notes": "Choranthus capucinus (syn. Asbolis capucinus) is native to Cuba and the Bahamas. It was first recorded as an established population in Florida in 1947, originating from strays from Cuba, and is considered introduced in Florida and the southeastern United States — not a Florida native."
     },
     {
       "id": "PSBP-99919",
@@ -1293,7 +1216,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-22"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "native_status": "migrant"
     },
     {
       "id": "PSBP-99922",
@@ -1511,7 +1435,8 @@
         "first_observed": "2025-11-14",
         "last_observed": "2025-11-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "native_status": "migrant"
     },
     {
       "id": "PSBP-99924",
