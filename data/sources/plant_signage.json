@@ -5,7 +5,7 @@
     "species_count": 192,
     "schema_version": "1.4",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained.",
-    "updated": "2026-07-17T12:22:56"
+    "updated": "2026-07-17T14:30:10"
   },
   "species": [
     {
@@ -20058,22 +20058,103 @@
       "category": "",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
-      "native": null,
+      "status": "html",
+      "native": false,
       "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": true,
       "form": "Groundcover & Wildflower",
-      "safety_note": [],
+      "safety_note": [
+        "The ASPCA lists lemongrass as toxic to dogs, cats, and horses, with essential oils and cyanogenic glycosides as the toxic principles; stomach upset is the most common sign in dogs and cats, and a significant quantity must be ingested to cause serious harm. Keep pets from grazing on the clump and contact a veterinarian if a dog or cat eats a meaningful amount.",
+        "For people, the plant and its culinary uses are well established and safe — lemongrass essential oil is FDA-recognized as safe in food. The one handling caution: the leaf edges are finely serrated and can deliver a paper-cut-style nick, so wear thin gloves when dividing or cutting back a large clump."
+      ],
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
+        "larval_food": true,
+        "larval_species": [
+          "Clouded Skipper (Lerema accius)"
+        ],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
-      }
+        "notes": "Clouded Skipper caterpillars are extreme grass generalists and have been documented feeding on lemongrass incidentally; this is an opportunistic record, not a preferred or primary host. Lemongrass is not documented as a notable adult nectar source for any butterfly species."
+      },
+      "alternate_names": [
+        "West Indian Lemongrass",
+        "Oil Grass",
+        "Fever Grass",
+        "Barbed Wire Grass"
+      ],
+      "quick_hits": [
+        "Beekeepers use lemongrass oil in swarm traps to lure honeybee scouts. The oil mimics the Nasonov pheromone worker bees use to signal a good new home — which means this clump of grass is, chemically speaking, speaking bee.",
+        "The scent that makes lemongrass so recognizable in the kitchen comes almost entirely from a single compound — citral — which makes up 65 to 85 percent of the plant's essential oil. Citral is also a starting material for synthesizing ionones, which are used in turn to manufacture vitamin A.",
+        "Lemongrass almost never flowers or sets viable seed in cultivation. Every plant you have ever bought at a nursery or grocery store was almost certainly propagated by division — a rooted cutting or a separated tiller from a mother clump.",
+        "The plant has two culinary identities: the lower, pale bulb-like stem base is sliced or pounded for pastes and soups, while the leaves are bruised and steeped as an aromatic in teas and broths — removed before eating, the way a bay leaf is."
+      ],
+      "origin": [
+        "Lemongrass is native to the wet tropical grasslands and open woodlands of southern India and Sri Lanka, where it thrives in warm, monsoon-influenced conditions from sea level to roughly 900 meters.",
+        "Kew's Plants of the World Online treats that core range as the species' homeland, though some authorities extend the native range into maritime Southeast Asia — Indonesia, Malaysia, and the Philippines — where the plant has been cultivated and semi-wild for so long that the line between native and naturalized blurred centuries ago.",
+        "After World War I, commercial cultivation spread rapidly to Madagascar, Central America, and South America. It reached Florida through the horticultural and culinary trades and is today a fixture in Florida herb gardens, thriving as a near-permanent perennial in the warmest parts of the state."
+      ],
+      "more_information": [
+        "The genus name Cymbopogon comes from the Greek kymbe, meaning 'boat,' and pogon, meaning 'beard' — a reference to the hairy spikelets that project from boat-shaped leaf-like bracts (spathes) in the inflorescences. The species name citratus simply notes its citrus-like scent.",
+        "For centuries, traditional medicine systems across Asia, Africa, and the Caribbean have drawn on lemongrass for fevers, digestive complaints, and respiratory ailments — the common name 'fever grass' still used in Jamaica reflects that history directly.",
+        "The U.S. FDA has declared lemongrass essential oil generally recognized as safe (GRAS) as a food flavoring, grounding the plant's long culinary reputation in modern regulatory standing.",
+        "Lemongrass is also a significant industrial crop. The essential oil is extracted commercially by steam distillation of the leaves and used in perfumes, soaps, cosmetics, and insect repellents. The citral it yields serves as a raw material for synthesizing other aroma compounds and for producing beta-ionone, a precursor to vitamin A."
+      ],
+      "wildlife_value": [
+        "Lemongrass has modest direct wildlife value in a Florida garden setting. It rarely flowers in cultivation, and when it does, the wind-pollinated spikelets provide little in the way of nectar or pollen for bees or butterflies. The dense clumps do offer shelter, and the fibrous base provides nesting material opportunities for small animals.",
+        "One documented connection to pollinators is indirect but charming: beekeepers use lemongrass essential oil in swarm-capture traps because it closely mimics the Nasonov pheromone that honeybee scouts use to recruit a swarm to a new home. The same chemistry that makes the plant appealing in the kitchen turns out to speak directly to honeybees."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Propagation",
+            "text": "Lemongrass is propagated almost exclusively by division. A mature clump builds over time into 50 to 200 individual tillers; rooted sections 10 to 15 cm long can be separated from the mother plant and planted directly. Fresh stalks purchased at an Asian grocery store — as long as a small rooting node is intact — will root in a glass of water in about two weeks and can then be planted."
+          },
+          {
+            "label": "Flowers and Seed",
+            "text": "Lemongrass rarely flowers in cultivation outside the tropics, and seed propagation is considered inefficient because viable seed is seldom produced. When flowering does occur, the inflorescences are long, nodding, branched structures bearing small wind-pollinated spikelets subtended by boat-shaped bracts. They are not ornamentally showy."
+          },
+          {
+            "label": "Leaves and Stem Base",
+            "text": "The plant grows as a dense, arching clump of linear, blue-green to pale green leaves 18 to 36 inches long and up to about one inch wide, with rough edges and a prominent midrib. The base of each shoot is a tightly wrapped, pale white-to-green sheath — slightly bulbous in appearance — that is the part used in cooking. Crush any part of the leaf and the citral-rich essential oil releases immediately as a sharp, clean lemon scent."
+          }
+        ],
+        "what_to_look_for": "When you find this clump, engage all your senses — this is one of the park's most hands-on plants. Start with the overall form: a dense, fountain-like spray of long arching leaves rising from a tight central base. Crouch down and look at where the leaves meet the ground: the lower sheaths are pale greenish-white, sometimes with a faint purple tinge at the very base, and tightly wrapped around each other like a small bulb. Watch the leaf edges — they are finely serrated and can nick unaware fingers, so pinch a blade gently in the middle, not along the edge, and bring your fingers to your nose: the citral-rich oil releases immediately as a sharp, clean burst of lemon. If the plant is mature enough to have flowered, look for a nodding, multi-branched stalk rising from the center — though in Florida gardens, you may never see one."
+      },
+      "seasonality": {
+        "bloom_months": "rarely; when it occurs, typically in warmer months under short-day conditions",
+        "bloom_description": "Long, nodding, branched inflorescences with small wind-pollinated spikelets subtended by boat-shaped spathes; not ornamentally significant.",
+        "leaf_behavior": "evergreen in frost-free conditions; may die back to roots in a cold snap but typically re-sprouts",
+        "fruiting_months": null,
+        "notes": "In frost-free central Florida conditions like those at Palma Sola, lemongrass behaves as a permanent evergreen perennial. It rarely sets viable seed in cultivation anywhere in the world; the plant persists and spreads almost entirely by vegetative growth."
+      },
+      "size": {
+        "height": "2 to 4 feet in typical cultivation; may reach up to 6 feet under optimal tropical conditions",
+        "spread": "2 to 3 feet per clump; expands slowly over time as new tillers are added",
+        "habit": "dense, upright to arching clump; fountain-like silhouette",
+        "growth_rate": "fast in warm, moist conditions; slows markedly in cool or dry weather",
+        "texture": "fine to medium"
+      },
+      "growing_conditions": {
+        "light": "full sun; requires at least 6 to 8 hours of direct sunlight daily for best growth",
+        "soil_tolerances": "adaptable to a wide range of soils from sandy to loam to clay; performs best in organically rich, well-drained soils; pH 6.5 to 7.5 preferred",
+        "drought_tolerance": "moderate once established; prefers consistent moisture and will look stressed in prolonged drought, but recovers quickly when watered",
+        "spacing": "2 to 3 feet; allow room for the clump to expand — divisions can be taken periodically to keep the plant tidy and vigorous"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Yellow"
+      },
+      "other_notes": [
+        "Two species are sold and used as 'lemongrass': West Indian lemongrass (Cymbopogon citratus, this plant) and East Indian lemongrass (Cymbopogon flexuosus). Both are used interchangeably in cooking, though C. citratus is generally considered superior for culinary use and is the form most commonly found in Florida gardens and markets.",
+        "A stalk of lemongrass purchased at an Asian grocery store — roots attached or not — can often be coaxed to root in a glass of water and grown on. It is one of the more accessible 'grocery store to garden' plants, which partly explains how widely it has spread through home gardens across the tropics.",
+        "When harvesting for the kitchen, peel away and discard the tough outer sheaths to reach the pale, tender inner stalk — this is the part you slice or pound. The upper green leaves are best bruised and simmered whole in soups or teas, then removed before serving; their edges are sharply serrated, so use a knife rather than tearing by hand."
+      ]
     },
     {
       "id": "PSBP-00557",
@@ -20247,21 +20328,103 @@
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
-      "native": null,
+      "native": false,
       "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
       "native_notes": null,
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "UF/IFAS Assessment status: caution, may be recommended but managed to prevent escape in Central and South Florida zones; not considered a problem species in North Florida. No FISC (Florida Invasive Species Council) Category I or II listing was found. Birds disperse seeds from fruit, which can lead to establishment beyond cultivated areas.",
       "rare_fruit": true,
-      "form": "",
-      "safety_note": [],
+      "form": "Tree",
+      "safety_note": [
+        "The seeds — two to five per fruit, large and smooth — contain cyanogenic glycosides, including amygdalin, the same compound found in apple seeds and peach pits. The concentration is low enough that accidental swallowing of a seed whole poses little real risk, but chewing multiple seeds could cause problems for people and dogs alike.",
+        "Spit them out, and keep an eye on curious dogs around fallen fruit. The ASPCA does not list loquat as toxic to dogs, but the seeds and leaves are the parts to watch. The ripe fruit flesh is safe and genuinely delicious — just eat around the seeds."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "alternate_names": [
+        "Japanese Plum",
+        "Japanese Medlar",
+        "Chinese Plum",
+        "Nispero"
+      ],
+      "quick_hits": [
+        "The species name japonica — 'of Japan' — is a geographical misdirection. Loquat is native to China; it was simply so long-established in Japanese cultivation by the time European botanists encountered it that they assumed Japan was home.",
+        "Loquat is one of the very few fruiting trees that flowers in fall and winter in Florida, filling a gap when almost nothing else is in bloom. The fragrant white panicles open October through February — right when most pollinators are hungry for a nectar source.",
+        "It belongs to the rose family, which makes it a closer relative of apples, pears, and peaches than of any tropical fruit. The fuzzy skin and clustered fruit are the family resemblance made visible.",
+        "Among the 20 or so species in the genus Eriobotrya, this is the only one grown commercially for its fruit anywhere in the world."
+      ],
+      "origin": [
+        "Loquat is native to the cooler hill regions of south-central China, where it has been cultivated for well over two thousand years. It was introduced to Japan more than a millennium ago and bred extensively there — which is how European botanists first encountered it, and why the species name japonica stuck even though China is the true homeland.",
+        "The western world got its first botanical account from Engelbert Kaempfer in 1690, and by 1784 living plants had reached the National Garden in Paris; specimens followed to the Royal Botanic Gardens at Kew in 1787. The tree spread quickly through Mediterranean gardens and into the Americas.",
+        "In the United States it was commercially offered by a Philadelphia nursery as early as 1824. UF/IFAS records its arrival in Florida before 1887, and it has been a familiar dooryard fruit tree here ever since."
+      ],
+      "more_information": [
+        "The genus name Eriobotrya comes from the Greek erion, meaning woolly, and botrys, a cluster of grapes — a reference to the bunches of downy, fuzz-covered fruit. The description fits: ripe loquats hang in loose clusters, each fruit covered in a soft, apricot-colored down.",
+        "Loquat is a genuine multi-season tree. The bold, deeply veined leaves — up to a foot long, dark green above and rusty-woolly beneath — give it a tropical presence year-round. Fragrant flower panicles open in fall and carry through winter, and the bright yellow-orange fruit ripens in late winter to early spring, just as most other fruiting trees are barely leafing out.",
+        "The bark is worth a look on older specimens: gray-brown and somewhat patchy, it exfoliates in irregular pieces to reveal a warmer inner layer — a quiet ornamental detail that is easy to walk past but rewarding if you stop. The drooping branch habit adds to the relaxed, informal character of a mature tree."
+      ],
+      "wildlife_value": [
+        "Because loquat flowers in fall and winter — a season when nectar is scarce in Florida landscapes — its fragrant white panicles draw a reliable crowd of pollinators. Bees, including honey bees and bumble bees, are the primary visitors; hoverflies (syrphids) are also frequent.",
+        "The blooms are self-compatible, meaning a single tree can set fruit, but cross-pollination from a neighboring tree improves yield.",
+        "Once fruit ripens in late winter and early spring, birds and squirrels move in quickly. The sweet, juicy flesh is an easy food source at a lean time of year. Because birds disperse the seeds, seedlings occasionally turn up beyond cultivated areas — which is why UF/IFAS recommends managing the tree to prevent escape in central and south Florida."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Flowers",
+            "text": "Creamy white, five-petaled, and fragrant — produced in large terminal panicles covered in a rusty-woolly fuzz. Panicles can hold many individual flowers and are showy enough to notice from a distance. Blooms appear from October through February in Florida."
+          },
+          {
+            "label": "Fruit",
+            "text": "Pear-shaped to round, yellow to apricot-orange when ripe, and covered in a soft fuzz. Fruits hang in clusters and ripen late winter to early spring. Each fruit holds two to five large, smooth brown seeds. The flesh is sweet, juicy, and edible; the seeds are not."
+          },
+          {
+            "label": "Leaves",
+            "text": "Alternate, simple, and very large — 8 to 12 inches long — with a leathery, deeply veined surface. Upper surface is dark, glossy green; the underside is coated in rusty-brown woolly hairs. Edges are toothed. New leaves emerge pale and upright, then deepen and droop as they mature."
+          },
+          {
+            "label": "Trunk and Bark",
+            "text": "Typically a single trunk with drooping branches forming a dense, rounded canopy. Bark is gray-brown, somewhat patchy, and exfoliating. The branch tips tend to droop, giving mature trees a relaxed, informal silhouette."
+          }
+        ],
+        "what_to_look_for": "From a distance, look for the dense, dark rounded canopy and the large, bold leaves — they stand out as unusually tropical-looking for a temperate fruit tree. Get closer and turn a leaf over: the rusty-woolly underside is one of the clearest field marks on the whole plant. In fall and winter, the woolly flower panicles at the branch tips are hard to miss, and the fragrance will reach you before your eyes do. In late winter, scan for clusters of fuzzy yellow-orange fruit hanging from the branch tips."
+      },
+      "seasonality": {
+        "bloom_months": "October through February",
+        "bloom_description": "Large, woolly terminal panicles of small, creamy white, fragrant five-petaled flowers. Among the few trees blooming in Florida through the winter months.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "late winter to early spring (typically February through April in Florida)",
+        "notes": "Flowers and developing fruit are vulnerable to hard freezes. Fruit set is reliable in USDA zones 8b through 11; it rarely sets fruit further north. The rusty-woolly new growth is visible year-round as the tree continually pushes fresh foliage."
+      },
+      "size": {
+        "height": "15 feet typical in full sun; can reach 25 to 30 feet in shade (UF/IFAS)",
+        "spread": "15 to 25 feet",
+        "habit": "single trunk, dense rounded to vase-shaped canopy with drooping branches",
+        "growth_rate": "rapid for a fruiting tree",
+        "texture": "coarse"
+      },
+      "growing_conditions": {
+        "light": "full sun preferred; tolerates partial shade, though fruit production decreases",
+        "soil_tolerances": "adaptable — sand, loam, and clay are all acceptable; tolerates high pH; well-drained soil is essential, as root rot occurs in wet or waterlogged conditions",
+        "drought_tolerance": "moderate to good once established; needs regular water until established, then tolerates periodic drought; fruit production benefits from consistent moisture",
+        "spacing": "allow 15 to 25 feet; canopy spread can match or exceed height at maturity"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Yellow"
+      },
+      "other_notes": [
+        "Loquat is a fine example of a plant that arrived in Florida as a practical fruit tree and stayed for its ornamental value too. UF/IFAS lists it as suitable for use as a street tree, espalier, patio specimen, and screen — unusual versatility for a tree that also feeds you.",
+        "Several ornamental cultivars are available in Florida, including 'Coppertone' (grown primarily for its bronze new growth, rarely fruits) and 'Variegata' (variegated foliage). These are ornamental selections rather than fruiting cultivars; for reliable fruit, the straight species or named fruiting varieties are the better choice."
+      ]
     },
     {
       "id": "PSBP-00573",
@@ -20937,21 +21100,109 @@
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
-      "native": null,
+      "native": false,
       "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": true,
-      "form": "",
-      "safety_note": [],
+      "form": "Tree",
+      "safety_note": [
+        "Keep dogs away from fallen nuts. Macadamia nuts are toxic to dogs — even a small amount can cause weakness in the rear legs, vomiting, tremors, and fever, typically within 12 hours of ingestion. The toxic principle is not yet identified, but the effect is well-documented by the ASPCA Animal Poison Control Center.",
+        "Most dogs recover within 48 hours with veterinary care, but any suspected ingestion warrants a call to your vet. The nuts are not known to cause toxicity in people or cats; for people, they are safe and delicious, raw or roasted."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "alternate_names": [
+        "Smooth-Shell Macadamia",
+        "Queensland Nut",
+        "Bush Nut",
+        "Bauple Nut",
+        "Australian Nut"
+      ],
+      "quick_hits": [
+        "The macadamia shell is famously one of the hardest of any nut — it takes roughly 300 pounds of force per square inch to crack one open. Standard nutcrackers don't stand a chance; commercial processors use dedicated husking machinery.",
+        "The genus was named by botanist Ferdinand von Mueller in honor of John Macadam (1827–1865), a Scottish-born chemist and physician working in Melbourne, Australia — someone Mueller admired personally, not a famous politician or explorer. Macadam never grew a macadamia in his life.",
+        "Despite being Australia's most celebrated nut crop, the commercial macadamia industry was born in Hawaii, not Australia. Trees arrived there around 1881 as ornamental windbreaks, and serious commercial production only got underway in the 1920s.",
+        "In the wild, all four Macadamia species are considered rare or threatened — the subtropical rainforest patches they call home in Queensland and New South Wales are critically endangered ecosystems, leaving the wild populations of the world's most beloved gourmet nut surprisingly fragile."
+      ],
+      "origin": [
+        "The Macadamia Tree is native to the subtropical rainforests of southeast Queensland and the extreme adjacent corner of northern New South Wales, Australia — a relatively small and now threatened slice of the continent's coastal lowlands. It is one of four Macadamia species, all of them Australian endemics, and the only one commercially dominant worldwide.",
+        "Aboriginal Australians harvested macadamia nuts for thousands of years before European contact. Western botany caught up in the late 1850s, when botanists Walter Hill and Ferdinand von Mueller formally described the genus. Mueller named it after his Melbourne colleague John Macadam in 1857.",
+        "The tree reached Hawaii around 1881, brought by plant collector W. H. Purvis, initially planted as ornamental windbreaks among sugarcane fields with no particular nut-production ambitions. Commercial cultivation took hold from the 1920s onward, and Hawaii went on to define macadamia for the world.",
+        "In Florida, the tree has been grown as both an ornamental and a small-scale crop, and UF/IFAS has been actively exploring its potential as an alternative commercial crop for the state."
+      ],
+      "more_information": [
+        "Macadamia integrifolia belongs to the Proteaceae, an ancient plant family that traces its origins to the supercontinent Gondwana. Its closest relatives include banksias, grevilleas, and proteas — the ornamental showstoppers of the Southern Hemisphere — making the macadamia something of a quiet achiever in a very flamboyant family.",
+        "The species epithet integrifolia comes from the Latin integer (entire) and folium (leaf), a reference to the leaf margins, which lack teeth on mature foliage. The genus Macadamia was named by Ferdinand von Mueller after John Macadam (1827–1865), a Scottish-born chemist and physician who worked in Melbourne, Australia, and whose work Mueller admired.",
+        "Macadam died young, at 38, before the nut bearing his name became famous.",
+        "In the wild, Macadamia integrifolia is listed as Vulnerable under Australia's Environment Protection and Biodiversity Conservation Act — a striking situation for a tree that is one of the most widely cultivated nut crops on Earth.",
+        "Habitat loss and fragmentation of the lowland subtropical rainforests it calls home have left wild populations surprisingly small and scattered, even as commercial orchards thrive across five continents.",
+        "Florida's production season runs roughly July through November, which differs from the winter-to-spring harvest typical in Hawaii. The state's UF/IFAS extension services have positioned macadamia as a promising alternative crop for growers diversifying away from citrus, and several small commercial groves are already operating here."
+      ],
+      "wildlife_value": [
+        "When macadamia flowers in winter and spring, its long, pendulous white racemes produce abundant nectar and attract a busy crowd of pollinators — honeybees in particular. Bees are considered the primary pollinators; the fragrant blooms have been described as smelling of honey and oranges, which may explain the enthusiasm.",
+        "Cross-pollination between nearby trees improves nut set, so a flowering macadamia in a garden or park setting can be a reliable local resource for bees throughout the blooming period.",
+        "As a non-native species with no co-evolutionary history with Florida's native fauna, the macadamia does not serve as a larval host for any local butterflies or moths. Its wildlife contribution here is essentially pollinator support during bloom, and the nuts that fall to the ground may attract opportunistic foragers, though the shell's extreme hardness limits which animals can access the kernel."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Flowers",
+            "text": "Slender, drooping racemes 6 to 12 inches long carry dozens of small, fragrant, creamy-white flowers in late winter to spring. The tree is hermaphroditic — each flower has both male and female parts — but cross-pollination between individuals generally improves nut set and quality. Bees are the primary pollinators."
+          },
+          {
+            "label": "Fruit and Nut",
+            "text": "What looks like the nut is botanically a seed enclosed in an extraordinarily hard shell, which is in turn wrapped in a green fibrous husk. The husk splits open as the seed matures and the nut drops. The smooth, shiny inner shell of M. integrifolia requires roughly 300 pounds per square inch to crack — more force than any standard nutcracker can deliver. Inside is a nearly spherical, creamy-white kernel prized for its rich, buttery flavor and high monounsaturated fat content. In Florida, nuts ripen from approximately July through November."
+          },
+          {
+            "label": "Leaves",
+            "text": "Glossy, oblong-lanceolate leaves, roughly 8 to 10 inches long, are arranged in whorls of three around the stem. Mature foliage on M. integrifolia has smooth or very slightly wavy margins — the integrifolia ('entire-leafed') name refers to this — though young leaves and seedlings can have more noticeably spiny edges. The dense, dark green canopy gives the tree a lush, almost tropical appearance year-round."
+          },
+          {
+            "label": "Propagation",
+            "text": "Seed-grown trees are slow to bear — sometimes 10 or more years. Grafted trees on selected rootstocks typically begin producing nuts within 5 to 7 years, which is why most commercial and nursery-trade plants are grafted stock."
+          }
+        ],
+        "what_to_look_for": "In winter or spring, look for the long, pendulous white flower racemes hanging from the branch tips — they are the most eye-catching feature and carry a sweet honey-like fragrance. In fall, scan the ground beneath the tree for the fallen nuts: green husks that have split open to reveal the smooth, dark brown inner shell. Pick one up and feel the weight — that density hints at how hard it is to crack. The leaves are also distinctive: glossy, oblong, and arranged in neat whorls of three, giving the canopy an orderly, layered texture."
+      },
+      "seasonality": {
+        "bloom_months": "late winter to spring (typically January through April in Florida)",
+        "bloom_description": "Long, pendulous racemes of small, fragrant, creamy-white flowers hang from branch tips; honeybees are active visitors.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "July through November in Florida",
+        "notes": "Nuts are not harvested from the tree — they are gathered from the ground after the husk splits and the nut falls naturally. A tree grown from seed can take a decade or more to first bear; grafted trees typically begin in 5 to 7 years and may take another few years to reach meaningful yields."
+      },
+      "size": {
+        "height": "30 to 40 feet in Florida landscapes (UF/IFAS); up to about 50 feet in the wild",
+        "spread": "20 to 40 feet at maturity",
+        "habit": "broad, dense, rounded to spreading evergreen canopy",
+        "growth_rate": "slow to moderate; slow to begin bearing nuts",
+        "texture": "medium-coarse"
+      },
+      "growing_conditions": {
+        "light": "full sun; does not tolerate shade",
+        "soil_tolerances": "adaptable to sandy, loamy, and clay soils; well-drained is preferred; slightly acidic conditions preferred but tolerates a broader pH range",
+        "drought_tolerance": "moderate to good once established; supplemental irrigation recommended during flowering and fruiting to prevent nut drop",
+        "spacing": "allow 20 to 25 feet from other trees and structures; commercial groves in Florida are planted at roughly 13 by 23 feet"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Red"
+      },
+      "other_notes": [
+        "Macadamia integrifolia is not the only species you may encounter under the macadamia name. Its close relative Macadamia tetraphylla (rough-shell macadamia) and various hybrids such as 'Beaumont' are also grown in Florida and can look nearly identical in the landscape. The clearest difference is in the nut shell — M. integrifolia has a noticeably smooth, shiny shell, while M.",
+        "tetraphylla has a rougher, pebbled surface.",
+        "This tree is a member of the Proteaceae, one of the great plant families of the ancient Southern Hemisphere supercontinent Gondwana. Its distant relatives in that family include banksias, grevilleas, and proteas — plants that flourish across Australia, South Africa, and South America, and that share the family's characteristic showy flower structures."
+      ]
     },
     {
       "id": "PSBP-00616",
@@ -20965,22 +21216,113 @@
       "category": "",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
-      "native": null,
+      "status": "html",
+      "native": false,
       "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
       "native_notes": null,
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "Morinda citrifolia does not appear on the FISC (formerly FLEPPC) Category I or Category II invasive plant list (updated March 2026) nor is it flagged by the UF/IFAS Assessment as invasive or high-risk for Florida or Central Florida; it is a naturalized non-native but carries no current Florida invasive listing.",
       "rare_fruit": true,
-      "form": "",
-      "safety_note": [],
+      "form": "Tree",
+      "safety_note": [
+        "The fruit is edible and has been consumed across the Pacific for centuries, but approach a taste test with honest expectations: ripe noni has a powerfully pungent odor and a bitter, intensely medicinal flavor, and the texture becomes very soft and mushy at peak ripeness. It is typically fermented or blended with sweeter fruits to make it palatable.",
+        "The plant and its fruit are non-toxic to dogs and cats, and commercial noni juice is generally regarded as safe at normal consumption levels — though case reports have linked large or chronic doses to liver stress in humans, so moderation applies."
+      ],
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
+        "larval_food": true,
+        "larval_species": [
+          "Yellow Peach Moth (Conogethes punctiferalis)"
+        ],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
-      }
+        "notes": "The only documented larval host relationship found is with Conogethes punctiferalis (Yellow Peach Moth), an Old World species not present in Florida; no Florida-relevant butterfly or moth larval host association was found, and no notable adult nectar role was documented in any source."
+      },
+      "alternate_names": [
+        "Indian Mulberry",
+        "Great Morinda",
+        "Cheese Fruit",
+        "Beach Mulberry"
+      ],
+      "quick_hits": [
+        "Fully ripe noni earns its nicknames — cheese fruit, vomit fruit — honestly. The pungent, fermented odor is an evolutionary broadcast aimed squarely at fruit bats, which are the primary seed dispersers across noni's native range. The smell is not a flaw; it is the whole strategy.",
+        "Polynesian seafarers treated noni as a canoe plant — one of a handful of species so essential to survival that it was carried on every long ocean voyage. It served as a portable medicine chest, a textile dye source, and a famine food all packed into one small tree.",
+        "Noni is a two-dye tree: the bark yields a red pigment and the roots a yellow one. Across the Pacific and Southeast Asia, both colors were extracted from a single organism and used to dye fabric for centuries.",
+        "Noni ignores the calendar entirely. A mature tree flowers and fruits continuously year-round, and a single branch can carry fresh white blooms, hard green unripe fruit, and translucent ripe fruit all at the same time."
+      ],
+      "origin": [
+        "Noni is native to a vast tropical zone spanning the Indian subcontinent, Southeast Asia, the Pacific Islands, and northern Australia. Remarkably resilient, it thrives in coastal zones, coral atolls, and brackish shores — and is recognized as one of the first woody pioneer species to colonize completely bare lava fields after an eruption.",
+        "Long before European exploration, the plant's range expanded dramatically through human migration. Polynesian voyagers carefully packed noni among their canoe plants, intentionally introducing the tree to distant archipelagos as they settled the Pacific over hundreds of years.",
+        "In more recent history, noni was introduced to the Americas and the Caribbean through botanical collection and cultivation. It has naturalized across global tropical environments, finding a comfortable modern home in South and Central Florida as an ornamental and collection fruit tree."
+      ],
+      "more_information": [
+        "The genus name Morinda is a compressed form of the Latin morus (mulberry) and indicus (Indian), a nod to the fruit's visual resemblance to a true mulberry. The species name citrifolia means 'with leaves like Citrus' — you can see why when you look at the large, glossy, prominently veined leaves.",
+        "Noni has one of the broader ethnobotanical records of any tropical plant. Roots, bark, leaves, and fruit have all been used medicinally in traditional Pacific and Asian cultures for well over two thousand years, with the first written mention appearing in Chinese literature during the Han dynasty.",
+        "Polynesian peoples held noni in particular reverence — it was considered a gift from the gods and, because of its ability to grow on lava fields, was associated with the volcano goddess Pele. That sacred status is part of why voyagers made certain it traveled with them on every long ocean journey.",
+        "Commercial interest in noni juice exploded in the 1990s and has generated considerable research, along with considerable marketing hype. Most of the dramatic health claims remain unconfirmed by rigorous clinical trials, though the fruit's nutritional profile — antioxidants, vitamins, and various bioactive compounds — is well documented."
+      ],
+      "wildlife_value": [
+        "The flowers are a reliable nectar source for honey bees and other pollinating insects; noni's flower nectaries are notably attractive to bees throughout its range. The plant also produces extrafloral nectaries that draw ants, which in turn provide some protection against herbivorous insects — a quiet mutualism that requires no help from us.",
+        "The real wildlife action centers on the ripe fruit. Its strong, fermented odor — off-putting to most humans — is precisely what attracts fruit bats, which are the primary seed dispersers across much of noni's native range. Birds also take the fruit and spread seeds.",
+        "Because noni has no co-evolutionary history with Florida's native fauna, it does not serve as a larval host for local butterflies or moths, but its flowers do bring in bees and general pollinators."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Flowers",
+            "text": "Small, white, tubular, and fragrant, with five petals fused into a tube. Flowers emerge in dense globe-shaped heads directly from the developing fruit — so the blooms appear to be growing out of the fruit itself rather than on separate stalks. The plant is monoecious (both sexes on the same individual) and flowering continues year-round in Florida's warm climate."
+          },
+          {
+            "label": "Fruit",
+            "text": "A lumpy, oval compound fruit formed from many fused drupes, typically 2 to 4 inches long, with a warty surface marked by hexagonal facets — each one the imprint of an individual drupelet. Fruit progresses from hard and green to translucent yellow-white when ripe, at which point it softens dramatically and develops its characteristic pungent odor. Seeds are buoyant and hydrophobic, capable of surviving long ocean voyages — a key reason noni spread so widely across the Pacific."
+          },
+          {
+            "label": "Leaves",
+            "text": "Large, simple, opposite, and glossy dark green, with deeply impressed veins that give the surface a quilted look. Blades are broadly elliptic, typically 8 to 20 inches long. The plant is evergreen and holds its foliage year-round."
+          },
+          {
+            "label": "Stems and Bark",
+            "text": "Young stems are distinctively four-sided — square in cross-section with rounded angles — a reliable field mark that sets noni apart from most other small trees. The trunk is straight; bark is pale gray-brown."
+          },
+          {
+            "label": "Propagation",
+            "text": "Propagated from seed and by stem or root cuttings; seeds germinate readily. A mature tree begins flowering and fruiting within about 18 months of transplanting and then produces continuously."
+          }
+        ],
+        "what_to_look_for": "Step up close and start at the stem tips: young growth is distinctly four-sided — square in cross-section — which is unusual for any tree this size and a dependable ID mark. Next, trace down to where the white tubular flowers emerge; they bloom directly from the surface of the lumpy, potato-shaped young fruit rather than on separate stalks, an arrangement that looks wrong until you realize it is exactly how noni works. Finally, lean in on the mature fruit and look for the honeycomb of hexagonal facets covering its skin — each one a permanent scar left by an individual flower drupelet."
+      },
+      "seasonality": {
+        "bloom_months": "year-round",
+        "bloom_description": "Small white tubular flowers emerge in globe-shaped heads from the surface of developing fruits; a single plant commonly carries flowers, unripe fruit, and ripe fruit simultaneously.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "year-round",
+        "notes": "Unlike most fruiting trees, noni does not have a single seasonal flush; flowering and fruiting are continuous throughout the year, with some fluctuation tied to rainfall and temperature."
+      },
+      "size": {
+        "height": "10 to 20 feet in Florida cultivation; up to about 30 feet in optimal tropical conditions",
+        "spread": "roughly equal to height at maturity; conical crown",
+        "habit": "small tree or large shrub with a straight trunk and broadly conical canopy",
+        "growth_rate": "moderate — approximately 2.5 to 5 feet per year under good conditions",
+        "texture": "coarse, due to very large leaves"
+      },
+      "growing_conditions": {
+        "light": "full sun preferred; tolerates partial shade",
+        "soil_tolerances": "adaptable to sandy, loamy, and clay soils; tolerates poor, saline, and rocky soils; prefers well-drained conditions",
+        "drought_tolerance": "good once established; deep taproot aids drought resistance",
+        "spacing": "allow 10 to 15 feet; crown spread roughly matches height at maturity"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "Noni belongs to the coffee family (Rubiaceae), and the kinship is visible once you know it: the glossy leaves, tubular white flowers, and overall growth habit echo its more famous relative. The family also includes gardenias, pentas, and buttonbush.",
+        "The seeds are naturally buoyant and water-resistant — each one carries a small air chamber and a hydrophobic seed coat that lets it float for months without losing viability. This is how noni colonized Pacific atolls long before humans arrived with canoes, and it is part of what makes the species such a capable long-distance traveler.",
+        "For those curious enough to try processing noni at home, the traditional method involves placing ripe, yellow-white fruits in a sealed glass jar at ambient temperature and allowing them to ferment naturally for roughly two months. The fruit breaks down and releases juice that seeps out on its own — no pressing needed.",
+        "The result is tart and funky; most people blend it with sweeter fruit juice before drinking."
+      ]
     },
     {
       "id": "PSBP-00621",
@@ -21833,7 +22175,7 @@
     },
     {
       "id": "PSBP-00704",
-      "common_name": "Giant fishtail palm",
+      "common_name": "Giant Fishtail Palm",
       "botanical_name": "Caryota obtusa",
       "inat_taxon_id": 364569,
       "taxonomy": {
@@ -21972,7 +22314,7 @@
     },
     {
       "id": "PSBP-00713",
-      "common_name": "Pink Trumpet-tree",
+      "common_name": "Pink Trumpet Tree",
       "botanical_name": "Tabebuia heterophylla",
       "inat_taxon_id": 53722,
       "taxonomy": {
@@ -21998,7 +22340,7 @@
     },
     {
       "id": "PSBP-00714",
-      "common_name": "marsh fleabane",
+      "common_name": "Marsh Fleabane",
       "botanical_name": "Pluchea odorata",
       "inat_taxon_id": 60146,
       "taxonomy": {
@@ -22024,7 +22366,7 @@
     },
     {
       "id": "PSBP-00717",
-      "common_name": "American oil palm",
+      "common_name": "American Oil Palm",
       "botanical_name": "Attalea butyracea",
       "inat_taxon_id": 209871,
       "taxonomy": {
