@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neem · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the gallery lightbox */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line */
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img style="cursor:pointer;object-position:43% 51%" src="../photos/PSBP-00520/680933507.jpg" alt="Neem at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Tree</div>
+    <div class="plant-hero-name">Neem</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Azadirachta indica</span>
+  <a class="plant-family-tag" href="../nature.html?family=Meliaceae">Meliaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Maria Escobar</strong> · CC-BY-NC · via iNaturalist</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>The same compound that makes neem oil a garden pesticide — azadirachtin — comes from this tree&#x27;s seeds. It doesn&#x27;t kill insects outright; it scrambles their hormones so they stop feeding, stop developing, and never reach adulthood. Humans figured out how to bottle that trick, but the tree has been running it for millions of years.</li>
+    <li>In East Africa, neem is called mwarubaini — Swahili for &#x27;the tree that cures forty diseases.&#x27; Bark, leaves, seeds, flowers, and roots have all been used in traditional medicine across Asia and Africa, making it one of the most thoroughly used trees on the planet.</li>
+    <li>Neem seeds lose their ability to germinate in roughly thirty days. That narrow window has shaped how the tree spreads — and why it hasn&#x27;t naturalized aggressively in Florida the way some other exotics have.</li>
+    <li>The genus Azadirachta contains just two species. Neem is the famous one; its close relative, Azadirachta excelsa, grows in Malaysia and the Philippines and is far less known outside its home range.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Neem is native to the dry deciduous and tropical forests of the Indian subcontinent — primarily India, Bangladesh, and Myanmar — and extends into parts of mainland Southeast Asia. It is one of only two species in the genus Azadirachta, both of which are native to the Indomalaysian region.</p>
+      <p>The tree has been cultivated across South Asia for at least four thousand years, valued from the start for timber, medicine, and practical everyday use. Trade routes carried it into Africa, the Middle East, Australia, the Caribbean, and eventually the Americas.</p>
+      <p>In Florida it is grown as an ornamental and shade tree in the southern and central parts of the state, where the subtropical climate suits it reasonably well.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>Neem belongs to the mahogany family, Meliaceae, which puts it in company with some notable neighbors: mahogany itself, chinaberry (Melia azedarach), and the West Indian mahogany planted throughout Florida streetscapes. The family connection is visible in the pinnate leaves — the long stems lined with paired leaflets are a shared family trait.</li>
+    <li>The genus name Azadirachta traces to the Persian phrase azad dirakht, meaning &#x27;free&#x27; or &#x27;noble tree,&#x27; a name that reflects the tree&#x27;s reputation for self-sufficiency and broad utility. The species epithet indica simply marks its Indian origin. The genus was formally established by the French botanist Adrien-Henri de Jussieu in 1830.</li>
+    <li>In India and across its native range, neem has been woven into daily life for millennia. Twigs served as toothbrushes long before commercial dental products existed, and the bark, leaves, flowers, seeds, and fruit have each found medical or agricultural application.</li>
+    <li>After oil is pressed from the seeds, the remaining seed cake is used as both livestock fodder and soil fertilizer — almost nothing is wasted.</li>
+    <li>In Florida, neem stays considerably smaller than it does in its native tropical homeland. A Richard Lyons Nursery profile specific to South Florida notes the tree rarely exceeds 30 feet here, compared to the 50 to 65-foot range it can reach in richer tropical soils.</li>
+    <li>Cold sensitivity is the main limiting factor — neem handles drought well but is not frost-hardy, and Bradenton sits near the northern edge of where it can be grown outdoors without protection.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>When neem blooms, the drooping clusters of small white flowers draw bees and other generalist pollinators in noticeable numbers — the blossoms are fragrant and produced in large quantities, sometimes exceeding two hundred flowers per inflorescence. Birds will take the small, olive-like drupes once they ripen to yellow.</p>
+      <p>Neem has no co-evolutionary history with Florida&#x27;s native insects, so it does not serve as a larval host for local butterflies or moths.</p>
+      <p>There is an irony worth knowing: the azadirachtin concentrated in neem&#x27;s seeds is one of the most widely used botanical insect growth disruptors in organic gardening, specifically targeting caterpillars. Visitors looking for the park&#x27;s best butterfly habitat will find it among the native plantings.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Propagated primarily by seed, though cuttings, grafting, and tissue culture are also used in nursery production. Seeds are unusual in having a very short viability window — roughly thirty days after the fruit ripens — which limits how far and how readily the tree can naturalize beyond planted sites.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, white, and five-petaled, produced in large drooping compound clusters up to about ten inches long. A single inflorescence can carry more than two hundred flowers and the blooms are noticeably fragrant. Flowering in Florida typically occurs in late winter to spring.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>A smooth drupe — a stonefruit like a small olive — roughly half an inch to one inch long, green ripening to yellow. The pulp is fibrous and distinctly bitter-sweet. Each fruit contains one or two seeds; the seeds are the source of neem oil.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Pinnately compound, eight to sixteen inches long, with twenty to thirty toothed leaflets each one to three and a half inches long. Leaves are dark green at maturity; new growth emerges with a reddish flush. The tree is largely evergreen but may shed leaves briefly in response to drought or cold stress.</p></div>
+<div class="repro-item"><div class="repro-label">Trunk and Bark</div><p>Trunk is straight with moderately furrowed, gray-brown bark. Branches are wide-spreading, building toward a dense, rounded crown that can eventually approach the width of the tree&#x27;s height.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>The leaves are the easiest starting point — long, arching stems lined with pairs of toothed, dark green leaflets, with any fresh growth showing a reddish tint. The crown is dense and rounded, giving the tree a full, shady presence even at modest heights.</p><p>In late winter or spring, look for the drooping flower clusters hanging from the branch tips — fragrant enough that you may smell them before you see them. When fruit is present, small olive-shaped drupes hang in clusters, green to yellow depending on ripeness.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">25 to 30 feet in South and Central Florida (Richard Lyons Nursery); 50 to 65 feet in optimal tropical conditions</div></div>
+    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">20 to 30 feet; crown can approach the tree&#x27;s height at maturity</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">single trunk; dense, rounded to spreading crown; wide branching</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium-fine; feathery pinnate foliage gives a light, airy canopy</div></div>
+    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun; tolerates part shade but most vigorous in full sun</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">sand, loam; well-drained soils strongly preferred; tolerates dry and slightly alkaline conditions; adapts to poor soils</div></div>
+    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established — one of the tree&#x27;s defining traits</div></div>
+    </div>
+  </div>
+  <div class="plant-caution-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>The fruit pulp is edible in its native range — bitter-sweet and fibrous, eaten fresh or cooked in parts of South Asia — but concentrated neem seed oil and seed extracts can be harmful if ingested in quantity and are not food products. Casual contact with the tree is harmless.</p><p>The ASPCA does not list Azadirachta indica as toxic to dogs or cats; no significant toxicity from touching or incidentally mouthing the leaves or fruit is documented for pets at typical exposure levels. If an animal has eaten a large amount of seeds or seed material, consult your veterinarian.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>Neem is cold-sensitive and should be considered marginally hardy at Bradenton&#x27;s latitude (USDA Zone 9B-10A). Established trees can tolerate brief cool spells, but a hard frost will cause significant dieback. The specimen here is a useful indicator of how the tree performs at the northern limit of its Florida range.</p>
+      <p>Despite its reputation as a multipurpose tree, neem is not widely planted by Florida native-plant gardeners — its value here is more as a living demonstration of a globally significant economic species than as a wildlife plant. Its real horticultural story is the chemistry locked in its seeds.</p></div>
+  </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/663458931/large.jpg" loading="lazy" alt="Neem — photo by Joanne Walker"><div class="gal-credit">📷 Joanne Walker</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672228150/large.jpg" loading="lazy" alt="Neem — photo by Denise Sosa"><div class="gal-credit">📷 Denise Sosa</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697840964/large.jpg" loading="lazy" alt="Neem — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div></div></div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Indian Lilac</span><span class="alias-tag">Nimtree</span><span class="alias-tag">Margosa</span><span class="alias-tag">Nim</span></div>
+  </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Maria Escobar (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Joanne Walker (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Denise Sosa (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
+        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-00520/680933507.jpg", "credit": "Maria Escobar", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/663458931/large.jpg", "credit": "Joanne Walker", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672228150/large.jpg", "credit": "Denise Sosa", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697840964/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    </script>
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
