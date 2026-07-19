@@ -5,7 +5,7 @@
     "species_count": 198,
     "schema_version": "1.4",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained.",
-    "updated": "2026-07-19T01:07:36"
+    "updated": "2026-07-19T01:19:11"
   },
   "species": [
     {
@@ -14141,7 +14141,11 @@
         "adult_food": true,
         "adult_species": [],
         "notes": "Documented larval host for the Spring Azure butterfly; spring flower clusters provide nectar and attract butterflies and bees, though overall nectar production across viburnums is modest. Several unspecified moth species also use Viburnum obovatum as a larval host but none are named to species level in authoritative sources for this plant specifically."
-      }
+      },
+      "safety_note": [
+        "The berries aren't a food source for people, but they're an important food for songbirds and other wildlife.",
+        "No significant toxicity to people or dogs is documented."
+      ]
     },
     {
       "id": "PSBP-00123",
@@ -15088,7 +15092,10 @@
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "form": "Foliage & Accent",
-      "safety_note": [],
+      "safety_note": [
+        "The fruit is edible and widely eaten fresh, cooked, or juiced. Fresh pineapple contains bromelain, which can irritate the mouth or lips if you eat a lot at once — not dangerous, just tingly.",
+        "Not toxic to dogs (ASPCA lists it as non-toxic), but the tough fibrous core and the spiny leaves can cause stomach upset or injury if a dog chews on them."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
@@ -15196,7 +15203,11 @@
       "watch_invasive_notes": null,
       "rare_fruit": true,
       "form": "Tree",
-      "safety_note": [],
+      "safety_note": [
+        "Ripe bulbs are eaten fresh; unripe fruit is cooked as a vegetable and meat substitute; the seeds are eaten boiled or roasted.",
+        "No known toxicity to people. The sticky white latex from cut fruit or stems is messy and can irritate skin, but it isn't poisonous.",
+        "Not listed as toxic to dogs by ASPCA. The flesh is harmless in small amounts, but the large seeds are a choking hazard and the latex can upset a dog's stomach."
+      ],
       "butterfly": {
         "larval_food": true,
         "larval_species": [
@@ -23076,13 +23087,17 @@
       "common_name": "Swiss Cheese Plant",
       "botanical_name": "Monstera deliciosa",
       "inat_taxon_id": 122521,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Araceae",
         "genus": "Monstera",
         "species": "deliciosa"
       },
-      "status": "html",
+      "feature_tier": "Standard",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": true,
       "watch_invasive_notes": "Rated 'High Invasion Risk' by the UF/IFAS Assessment of Non-Native Plants in Florida's Natural Areas (Central Florida region); outdoor planting is not recommended by UF/IFAS. No current FISC (formerly FLEPPC) Category I or II listing was confirmed in searches, but it appears on the FISC Watch List as a species of concern. The UF/IFAS High Invasion Risk designation meets the flagging threshold per sign policy.",
@@ -23100,7 +23115,6 @@
         "adult_species": [],
         "notes": "No documented association as a larval host plant or notable adult nectar source for any butterfly or moth species was found in available literature; Monstera deliciosa is a wind-pollinated aroid not known to support Lepidoptera in Florida or elsewhere."
       },
-      "native": false,
       "alternate_names": [
         "Split-Leaf Philodendron",
         "Ceriman",
@@ -23197,13 +23211,17 @@
       "common_name": "Talipot Palm",
       "botanical_name": "Corypha umbraculifera",
       "inat_taxon_id": 365068,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Arecaceae",
         "genus": "Corypha",
         "species": "umbraculifera"
       },
-      "status": "html",
+      "feature_tier": "Feature",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -23220,7 +23238,6 @@
         "adult_species": [],
         "notes": null
       },
-      "native": false,
       "alternate_names": [
         "Umbrella Palm",
         "Century Palm",
@@ -23314,13 +23331,17 @@
       "common_name": "Giant Fishtail Palm",
       "botanical_name": "Caryota obtusa",
       "inat_taxon_id": 364569,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Arecaceae",
         "genus": "Caryota",
         "species": "obtusa"
       },
-      "status": "html",
+      "feature_tier": "Feature",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -23337,7 +23358,6 @@
         "adult_species": [],
         "notes": "No documented association between Caryota obtusa and any butterfly or moth species as a larval host or adult nectar source was found in available literature; palms are generally not noted lepidopteran hosts."
       },
-      "native": false,
       "alternate_names": [
         "Thai Giant Fishtail Palm",
         "Mountain Fishtail Palm",
@@ -23431,13 +23451,17 @@
       "common_name": "Plum",
       "botanical_name": "Prunus domestica",
       "inat_taxon_id": 63735,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Rosaceae",
         "genus": "Prunus",
         "species": "domestica"
       },
-      "status": "html",
+      "feature_tier": "Standard",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": "Prunus domestica is native to Turkey and Europe and is not native to Florida or the SE United States; FNPS lists no record of it as a Florida native, and the Invasive Plant Atlas of the United States treats it as a non-native species.",
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -23456,7 +23480,6 @@
         "adult_species": [],
         "notes": "NC Extension and Marshall Grain host-plant lists both document Prunus domestica as a larval host for Eastern Tiger Swallowtail; it is not specifically documented as a notable adult nectar source distinct from native Prunus species, so adult_food is left false pending stronger species-specific evidence."
       },
-      "native": false,
       "alternate_names": [
         "European Plum",
         "Common Plum",
@@ -23544,13 +23567,17 @@
       "common_name": "White sapote",
       "botanical_name": "Casimiroa edulis",
       "inat_taxon_id": 209889,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Rutaceae",
         "genus": "Casimiroa",
         "species": "edulis"
       },
-      "status": "html",
+      "feature_tier": "Standard",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -23569,7 +23596,6 @@
         "adult_species": [],
         "notes": "Casimiroa edulis is documented by University of Florida IFAS Extension (EENY-008) and multiple corroborating Florida sources as a larval host for the Giant Swallowtail (Papilio cresphontes), because it belongs to the Rutaceae family. This swallowtail is very common throughout Florida including the Bradenton latitude. No sources document the flowers of C. edulis as a notable adult butterfly nectar source."
       },
-      "native": false,
       "alternate_names": [
         "Casimiroa",
         "Mexican Apple",
@@ -23663,13 +23689,17 @@
       "common_name": "Pink Trumpet Tree",
       "botanical_name": "Tabebuia heterophylla",
       "inat_taxon_id": 53722,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Bignoniaceae",
         "genus": "Tabebuia",
         "species": "heterophylla"
       },
-      "status": "html",
+      "feature_tier": "Standard",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": "UF/IFAS rates Tabebuia heterophylla as 'not considered a problem species at this time, may be recommended' and it does not appear on the statewide FISC (formerly FLEPPC) Category I or II list. The Florida Keys Invasive Exotics Task Force (FKIETF) tracks it in the Keys as increasingly abundant with wind-dispersed seed spread, but this is a Keys-regional watch note with no FLEPPC category assigned — it is not relevant to Central Florida at Bradenton's latitude.",
@@ -23685,7 +23715,6 @@
         "adult_species": [],
         "notes": "No documented larval host relationship with any butterfly or moth species has been found for Tabebuia heterophylla in Florida or its native Caribbean range. As a member of the Bignoniaceae family, its tubular flowers provide nectar primarily to bees and hummingbirds; incidental adult butterfly visits are plausible but no Florida butterfly species is documented as a regular nectar feeder on this tree."
       },
-      "native": false,
       "alternate_names": [
         "White Cedar",
         "Pink Manjack",
@@ -23779,13 +23808,17 @@
       "common_name": "Marsh Fleabane",
       "botanical_name": "Pluchea odorata",
       "inat_taxon_id": 60146,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Asteraceae",
         "genus": "Pluchea",
         "species": "odorata"
       },
-      "status": "html",
+      "feature_tier": "Standard",
       "has_sign": false,
+      "status": "html",
+      "native": true,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -23802,7 +23835,6 @@
         "adult_species": [],
         "notes": "Multiple nursery and regional sources (Blue Stem Natives, Native Plant Society of Texas) repeat the claim that Pluchea odorata hosts Common Checkered-Skipper and Silvery Checkerspot larvae, but authoritative species-level sources (Animal Diversity Web, wildflphoto.com) confirm that Burnsius communis larvae feed exclusively on Malvaceae, not Asteraceae; those same sources note adults visit Asteraceae composites including fleabane for nectar. The larval host claim appears to be a persistent secondary-source error conflating adult nectar use with larval hosting. The Florida Wildflower Foundation confirms the plant is a genuine adult butterfly and bee nectar attractor. Silvery Checkerspot (Chlosyne nycteis) has Asteraceae larval hosts in its core range but is not an established breeder in Southwest Florida. Larval_food is set to false pending a primary rearing or oviposition study; adult_food is confirmed true."
       },
-      "native": true,
       "alternate_names": [
         "Sweetscent",
         "Saltmarsh Fleabane",
@@ -23895,13 +23927,17 @@
       "common_name": "Olive",
       "botanical_name": "Olea europaea",
       "inat_taxon_id": 57140,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Oleaceae",
         "genus": "Olea",
         "species": "europaea"
       },
-      "status": "html",
+      "feature_tier": "Feature",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -23922,7 +23958,6 @@
         "adult_species": [],
         "notes": "Documented larval hosts are Old World moths native to the Mediterranean region and not present in Florida; no North American or Florida butterfly species is known to use Olea europaea as a larval host, and olive flowers are wind-pollinated and not a notable adult nectar source for butterflies at Bradenton's latitude."
       },
-      "native": false,
       "alternate_names": [
         "Common Olive",
         "European Olive"
@@ -24007,13 +24042,17 @@
       "common_name": "American Oil Palm",
       "botanical_name": "Attalea butyracea",
       "inat_taxon_id": 209871,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Arecaceae",
         "genus": "Attalea",
         "species": "butyracea"
       },
-      "status": "html",
+      "feature_tier": "Feature",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -24030,7 +24069,6 @@
         "adult_species": [],
         "notes": null
       },
-      "native": false,
       "alternate_names": [
         "Wine Palm",
         "Yagua Palm",
@@ -24118,13 +24156,17 @@
       "common_name": "Carnaúba Palm",
       "botanical_name": "Copernicia prunifera",
       "inat_taxon_id": 155170,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Arecaceae",
         "genus": "Copernicia",
         "species": "prunifera"
       },
-      "status": "html",
+      "feature_tier": "Feature",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -24142,7 +24184,6 @@
         "adult_species": [],
         "notes": null
       },
-      "native": false,
       "alternate_names": [
         "Carnauba Wax Palm",
         "Brazilian Wax Palm",
@@ -24225,13 +24266,17 @@
       "common_name": "Bailey Palm",
       "botanical_name": "Copernicia baileyana",
       "inat_taxon_id": 365049,
+      "sign_level": "Species",
       "taxonomy": {
         "family": "Arecaceae",
         "genus": "Copernicia",
         "species": "baileyana"
       },
-      "status": "html",
+      "feature_tier": "Feature",
       "has_sign": false,
+      "status": "html",
+      "native": false,
+      "internal_notes": "Added post-batch (palms and rare-fruit cluster); metadata backfilled 2026-07-18.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -24247,7 +24292,6 @@
         "adult_species": [],
         "notes": null
       },
-      "native": false,
       "alternate_names": [
         "Bailey Palm",
         "Yarey Palm",
