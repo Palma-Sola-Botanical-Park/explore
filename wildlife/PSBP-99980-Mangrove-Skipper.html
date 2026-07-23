@@ -23,17 +23,18 @@
     --theme:#a23a6e; --theme-dark:#6b2247; --theme-sage:#bd5d8c;
     --hero-a:#e294bc; --hero-b:#a23a6e; --hero-c:#5a1d3c;
   }
-  .theme-reptile{
+  /* 'other' — everything not a bird or butterfly. Warm earthy brown.
+     The legacy class names below (theme-reptile / theme-mammal /
+     theme-amphibian) resolve to the same palette so pages generated
+     before the 3-bucket redesign keep rendering correctly until they're
+     regenerated. Safe to delete the legacy aliases once every wildlife
+     page has been re-published. */
+  .theme-other,
+  .theme-reptile,
+  .theme-mammal,
+  .theme-amphibian{
     --theme:#9c5a33; --theme-dark:#5e3318; --theme-sage:#b97d50;
     --hero-a:#d39b6c; --hero-b:#9c5a33; --hero-c:#4f2a13;
-  }
-  .theme-mammal{
-    --theme:#6b4a2b; --theme-dark:#3f2c19; --theme-sage:#8a6b48;
-    --hero-a:#a98a63; --hero-b:#6b4a2b; --hero-c:#33230f;
-  }
-  .theme-amphibian{
-    --theme:#3d7a52; --theme-dark:#234a30; --theme-sage:#5d9670;
-    --hero-a:#7bb38d; --hero-b:#3d7a52; --hero-c:#1d3a26;
   }
   .wild-wrap{ max-width:680px; margin:2rem auto; background:#e8e3d8; min-height:80vh; border-radius:12px; overflow:hidden; box-shadow:0 4px 32px rgba(20,30,40,0.16); }
   @media (max-width:480px){ .wild-wrap{ margin:0; border-radius:0; box-shadow:none; min-height:100vh; } }
@@ -111,6 +112,8 @@
   .gal-item:hover img{ transform:scale(1.05); }
   .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
   .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
   .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
@@ -128,7 +131,7 @@
 
 <div class="wild-wrap theme-butterfly">
   <div class="wild-hero">
-    <img style="cursor:pointer;object-position:46% 59%" src="../photos/PSBP-99980/693986256.jpg" alt="Mangrove Skipper at Palma Sola Botanical Park" onclick="openLB(0)">
+    <img style="cursor:pointer;object-position:52% 50%" src="../photos/PSBP-99980/693986256.jpg" alt="Mangrove Skipper at Palma Sola Botanical Park" onclick="openLB(0)">
     <div class="wild-hero-overlay">
       <div class="wild-hero-category">Butterflies &amp; Moths</div>
       <div class="wild-hero-name">Mangrove Skipper</div>
@@ -138,16 +141,18 @@
     <span class="wild-sci-name">Phocides batabano</span>
     <a class="wild-family-tag" href="../nature.html?wfamily=Hesperiidae">Hesperiidae</a>
   </div>
-  <div class="wild-credit">📷 Photo by <strong>catalaniclaire</strong> · CC-BY-NC · via iNaturalist</div>
+  <div class="wild-credit">📷 Photo by <strong>theblackd0g13</strong> · CC-BY-NC · via iNaturalist</div>
   <div class="wild-content">
-    <div class="wild-status-row"><span class="badge badge-native">🌿 Native to Florida</span><span class="badge badge-green">✅ Not formally listed, but localized and entirely dependent on red mangrove</span><span class="badge badge-safe">✅ Completely harmless to people</span></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>The mangrove skipper is a large, fast-flying butterfly — mostly dark blackish-brown, but lit up with streaks of electric, almost neon, blue.</li><li>Its life is tied to a single plant: the caterpillars feed only on red mangrove, so the butterfly lives only where mangroves grow along warm, salty coasts.</li><li>Florida has its own form of this butterfly, and the Bradenton area sits near the northern edge of its Gulf Coast range.</li><li>The caterpillar is a tidy little engineer, folding and silking a red mangrove leaf into a shelter to live and feed inside.</li></ul></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Wings</div><p>Large for a skipper, dull blackish-brown, with bold electric-blue streaks.</p></div><div class="spot-item"><div class="spot-label">Head and body</div><p>Dark with a white face and blue markings.</p></div><div class="spot-item"><div class="spot-label">Flight</div><p>Fast and powerful; often perches under leaves.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Silent, like all butterflies.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A big, dark, fast butterfly near mangroves or flowers, flashing surprising streaks of bright blue. Those neon-blue marks on an otherwise dark butterfly are the giveaway — no other Florida skipper looks like it.</p></div></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Caterpillars eat only red mangrove leaves. Adults sip nectar from a range of flowers, including mangrove blossoms, Spanish needles, citrus, and bougainvillea.</p></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Near any mangrove or coastal plantings and at nectar-rich flowers on warm days. A localized find, since the butterfly stays close to its mangrove host.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Present in southern Florida year-round; here, near its northern Gulf limit, it is a more localized and seasonal find tied to warm weather and mangroves.</p></div></div></div>
     <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Just watch and enjoy. Avoid handling butterflies, whose wings are delicate, and remember that mangroves themselves are legally protected in Florida.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Florida Mangrove Skipper</span><div class="wild-tags"><span class="wild-tag">Butterfly</span><span class="wild-tag">Pollinator</span><span class="wild-tag">Native</span><span class="wild-tag">Coastal</span><span class="wild-tag">Host-plant Specialist</span><span class="wild-tag">Garden</span></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© theblackd0g13 (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/532397668/large.jpg" loading="lazy" alt="Mangrove Skipper — photo by catalaniclaire"><div class="gal-credit">📷 catalaniclaire</div><div class="gal-date">📅 Jul 6, 2025</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/693986260/large.jpg" loading="lazy" alt="Mangrove Skipper — photo by theblackd0g13"><div class="gal-credit">📷 theblackd0g13</div><div class="gal-date">📅 Jul 8, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702999544/large.jpg" loading="lazy" alt="Mangrove Skipper — photo by Rhonda Olscefskie"><div class="gal-credit">📷 Rhonda Olscefskie</div><div class="gal-date">📅 Apr 7, 2026</div></div></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Florida Mangrove Skipper</span></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© theblackd0g13 (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© catalaniclaire (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rhonda Olscefskie (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
@@ -159,9 +164,9 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-99980/693986256.jpg", "credit": "catalaniclaire", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-99980/693986256.jpg", "credit": "theblackd0g13", "license": "CC-BY-NC", "observed": "Jul 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/532397668/large.jpg", "credit": "catalaniclaire", "license": "CC-BY-NC", "observed": "Jul 6, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/693986260/large.jpg", "credit": "theblackd0g13", "license": "CC-BY-NC", "observed": "Jul 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702999544/large.jpg", "credit": "Rhonda Olscefskie", "license": "CC-BY-NC", "observed": "Apr 7, 2026"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
     function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
     document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
