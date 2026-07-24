@@ -405,12 +405,21 @@ def main():
 
     # ── FK ────────────────────────────────────────────────────────────────
     if run("FK"):
+        res_by_id = {s["id"]: s for s in research}
         pl = (load(PLACEMENTS, {}) or {}).get("placements", [])
         for x in pl:
-            if x.get("species_id") and x["species_id"] not in sign_ids:
+            sid = x.get("species_id")
+            if not sid or sid in sign_ids:
+                continue
+            if sid in res_by_id:
+                add("FK", "INFO",
+                    f"placements {x.get('placement_id')} {x.get('common_name')}: "
+                    f"species is in research (status="
+                    f"{res_by_id[sid].get('status')!r}), not yet in signage")
+            else:
                 add("FK", "ERROR",
-                    f"placements {x.get('placement_id')}: species_id "
-                    f"{x['species_id']} is not in either signage master")
+                    f"placements {x.get('placement_id')}: species_id {sid} is in "
+                    f"no signage master and no research file")
         placed = {x.get("species_id") for x in pl}
         gap = len({s for s in plant_ids
                    if sign_by_id[s].get("status") == "html"} - placed)
