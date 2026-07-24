@@ -139,7 +139,7 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00117/672185888.jpg" alt="Southern Seaside Goldenrod at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <img style="cursor:pointer;object-position:48% 44%" src="../photos/PSBP-00117/672185888.jpg" alt="Southern Seaside Goldenrod at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Groundcover &amp; Wildflower</div>
     <div class="plant-hero-name">Southern Seaside Goldenrod</div>
@@ -208,22 +208,27 @@
     <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
     <div class="plant-section-body"><p>This isn&#x27;t an edible plant, but it&#x27;s harmless — not toxic to people, and not listed as toxic to dogs.</p></div>
   </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Franky McArthur (CC-BY-NC), via iNaturalist</li></ul></div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698388188/large.jpg" loading="lazy" alt="Southern Seaside Goldenrod — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698388193/large.jpg" loading="lazy" alt="Southern Seaside Goldenrod — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div></div></div></div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Franky McArthur (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
         <img class="lb-img" id="lbImg">
         <div class="lb-credit" id="lbCredit"></div>
-
+        <div class="lb-counter" id="lbCounter"></div>
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-00117/672185888.jpg", "credit": "Franky McArthur", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-00117/672185888.jpg", "credit": "Franky McArthur", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698388188/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698388193/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();});
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
     </script>
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
 </div>
