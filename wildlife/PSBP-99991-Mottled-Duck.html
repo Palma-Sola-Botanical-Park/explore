@@ -23,17 +23,18 @@
     --theme:#a23a6e; --theme-dark:#6b2247; --theme-sage:#bd5d8c;
     --hero-a:#e294bc; --hero-b:#a23a6e; --hero-c:#5a1d3c;
   }
-  .theme-reptile{
+  /* 'other' — everything not a bird or butterfly. Warm earthy brown.
+     The legacy class names below (theme-reptile / theme-mammal /
+     theme-amphibian) resolve to the same palette so pages generated
+     before the 3-bucket redesign keep rendering correctly until they're
+     regenerated. Safe to delete the legacy aliases once every wildlife
+     page has been re-published. */
+  .theme-other,
+  .theme-reptile,
+  .theme-mammal,
+  .theme-amphibian{
     --theme:#9c5a33; --theme-dark:#5e3318; --theme-sage:#b97d50;
     --hero-a:#d39b6c; --hero-b:#9c5a33; --hero-c:#4f2a13;
-  }
-  .theme-mammal{
-    --theme:#6b4a2b; --theme-dark:#3f2c19; --theme-sage:#8a6b48;
-    --hero-a:#a98a63; --hero-b:#6b4a2b; --hero-c:#33230f;
-  }
-  .theme-amphibian{
-    --theme:#3d7a52; --theme-dark:#234a30; --theme-sage:#5d9670;
-    --hero-a:#7bb38d; --hero-b:#3d7a52; --hero-c:#1d3a26;
   }
   .wild-wrap{ max-width:680px; margin:2rem auto; background:#e8e3d8; min-height:80vh; border-radius:12px; overflow:hidden; box-shadow:0 4px 32px rgba(20,30,40,0.16); }
   @media (max-width:480px){ .wild-wrap{ margin:0; border-radius:0; box-shadow:none; min-height:100vh; } }
@@ -111,6 +112,8 @@
   .gal-item:hover img{ transform:scale(1.05); }
   .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
   .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
   .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
@@ -128,7 +131,7 @@
 
 <div class="wild-wrap theme-bird">
   <div class="wild-hero">
-    <img style="cursor:pointer;object-position:46% 49%" src="../photos/PSBP-99991/681681506.jpg" alt="Mottled Duck at Palma Sola Botanical Park" onclick="openLB(0)">
+    <img style="cursor:pointer;object-position:48% 50%" src="../photos/PSBP-99991/681681506.jpg" alt="Mottled Duck at Palma Sola Botanical Park" onclick="openLB(0)">
     <div class="wild-hero-overlay">
       <div class="wild-hero-category">Waterbirds &amp; Waterfowl</div>
       <div class="wild-hero-name">Mottled Duck</div>
@@ -140,7 +143,6 @@
   </div>
   <div class="wild-credit">📷 Photo by <strong>Rob Carr</strong> · CC-BY-NC · via iNaturalist</div>
   <div class="wild-content">
-    <div class="wild-status-row"><span class="badge badge-native">🌿 Native to Florida</span><span class="badge badge-warn">⚠️ Not federally listed, but a species of real conservation concern in Florida</span><span class="badge badge-safe">✅ Harmless to people</span></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>The mottled duck is Florida&#x27;s own duck — a subspecies found almost nowhere else, living in the state&#x27;s marshes and ponds all year long.</li><li>Unlike most ducks, it does not migrate; it is a true Florida resident, hatched, raised, and living out its life within the state.</li><li>Males and females look alike — warm mottled brown — so the easiest way to tell them apart is the bill: yellow-green on the male, orange-and-dark on the female.</li><li>Its biggest threat is an unexpected one: interbreeding with released domestic mallards, which is slowly diluting the wild Florida population.</li></ul></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Plumage</div><p>Both sexes are warm, mottled brown overall, with a slightly paler, plainer head and neck and a darker body.</p></div><div class="spot-item"><div class="spot-label">Bill</div><p>Male&#x27;s is olive-green to yellow; female&#x27;s is orange with dark blotches.</p></div><div class="spot-item"><div class="spot-label">In flight</div><p>Shows a blue-purple wing patch (speculum), usually without the bold white borders a female mallard shows.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>The female gives a mallard-like quack; the male a quieter, raspier call.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A brown duck that looks a bit like a female mallard but with a plainer, lighter head. Check the bill color to tell the sexes apart. Birds showing odd patches of white, a curled tail feather, or a hint of green on the head are likely mallard hybrids, not pure mottled ducks.</p></div></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>About 40 percent animal matter — insects, snails, small fish, and crayfish — and 60 percent plant matter, including the seeds, stems, and roots of marsh plants. Feeds by dabbling and tipping up in shallow water.</p></div></div>
@@ -148,8 +150,8 @@
     <div class="wild-caution-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>We love all ducks — but local ponds stay healthiest when domestic mallards don&#x27;t mix with our wild, non-migratory mottled ducks. Please don&#x27;t feed the ducks (bread and snacks harm their health and encourage the very mallard releases that threaten this species), and never release pet or feed-store mallards, which is both harmful and illegal in Florida.</p></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Gallery</span></div>
     <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/635347951/large.jpg" loading="lazy" alt="Mottled Duck — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/681681472/large.jpg" loading="lazy" alt="Mottled Duck — photo by Rob Carr"><div class="gal-credit">📷 Rob Carr</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/681681484/large.jpg" loading="lazy" alt="Mottled Duck — photo by Rob Carr"><div class="gal-credit">📷 Rob Carr</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/681682194/large.jpg" loading="lazy" alt="Mottled Duck — photo by Rob Carr"><div class="gal-credit">📷 Rob Carr</div></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Florida Duck</span><span class="alias-tag">Florida Mallard</span><span class="alias-tag">Florida Mottled Duck</span><div class="wild-tags"><span class="wild-tag">Bird</span><span class="wild-tag">Waterfowl</span><span class="wild-tag">Duck</span><span class="wild-tag">Native</span><span class="wild-tag">Endemic</span><span class="wild-tag">Conservation Concern</span><span class="wild-tag">Pond</span></div></div></div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/635347951/large.jpg" loading="lazy" alt="Mottled Duck — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div><div class="gal-date">📅 Apr 8, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/681681472/large.jpg" loading="lazy" alt="Mottled Duck — photo by Rob Carr"><div class="gal-credit">📷 Rob Carr</div><div class="gal-date">📅 Apr 27, 2025</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/681681484/large.jpg" loading="lazy" alt="Mottled Duck — photo by Rob Carr"><div class="gal-credit">📷 Rob Carr</div><div class="gal-date">📅 Apr 27, 2025</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/681682194/large.jpg" loading="lazy" alt="Mottled Duck — photo by Rob Carr"><div class="gal-credit">📷 Rob Carr</div><div class="gal-date">📅 May 17, 2025</div></div></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Florida Duck</span><span class="alias-tag">Florida Mallard</span><span class="alias-tag">Florida Mottled Duck</span></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rob Carr (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Cole Guyton (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
@@ -162,9 +164,9 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-99991/681681506.jpg", "credit": "Rob Carr", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/635347951/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/681681472/large.jpg", "credit": "Rob Carr", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/681681484/large.jpg", "credit": "Rob Carr", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/681682194/large.jpg", "credit": "Rob Carr", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-99991/681681506.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Apr 27, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/635347951/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC", "observed": "Apr 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/681681472/large.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Apr 27, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/681681484/large.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Apr 27, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/681682194/large.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "May 17, 2025"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
     function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
     document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});

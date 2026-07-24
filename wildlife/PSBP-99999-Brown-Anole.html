@@ -23,17 +23,18 @@
     --theme:#a23a6e; --theme-dark:#6b2247; --theme-sage:#bd5d8c;
     --hero-a:#e294bc; --hero-b:#a23a6e; --hero-c:#5a1d3c;
   }
-  .theme-reptile{
+  /* 'other' — everything not a bird or butterfly. Warm earthy brown.
+     The legacy class names below (theme-reptile / theme-mammal /
+     theme-amphibian) resolve to the same palette so pages generated
+     before the 3-bucket redesign keep rendering correctly until they're
+     regenerated. Safe to delete the legacy aliases once every wildlife
+     page has been re-published. */
+  .theme-other,
+  .theme-reptile,
+  .theme-mammal,
+  .theme-amphibian{
     --theme:#9c5a33; --theme-dark:#5e3318; --theme-sage:#b97d50;
     --hero-a:#d39b6c; --hero-b:#9c5a33; --hero-c:#4f2a13;
-  }
-  .theme-mammal{
-    --theme:#6b4a2b; --theme-dark:#3f2c19; --theme-sage:#8a6b48;
-    --hero-a:#a98a63; --hero-b:#6b4a2b; --hero-c:#33230f;
-  }
-  .theme-amphibian{
-    --theme:#3d7a52; --theme-dark:#234a30; --theme-sage:#5d9670;
-    --hero-a:#7bb38d; --hero-b:#3d7a52; --hero-c:#1d3a26;
   }
   .wild-wrap{ max-width:680px; margin:2rem auto; background:#e8e3d8; min-height:80vh; border-radius:12px; overflow:hidden; box-shadow:0 4px 32px rgba(20,30,40,0.16); }
   @media (max-width:480px){ .wild-wrap{ margin:0; border-radius:0; box-shadow:none; min-height:100vh; } }
@@ -111,6 +112,8 @@
   .gal-item:hover img{ transform:scale(1.05); }
   .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
   .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
   .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
@@ -126,7 +129,7 @@
 <body>
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-reptile">
+<div class="wild-wrap theme-other">
   <div class="wild-hero">
     <img style="cursor:pointer;object-position:65% 66%" src="../photos/PSBP-99999/635346033.jpg" alt="Brown Anole at Palma Sola Botanical Park" onclick="openLB(0)">
     <div class="wild-hero-overlay">
@@ -140,7 +143,6 @@
   </div>
   <div class="wild-credit">📷 Photo by <strong>Cole Guyton</strong> · CC-BY-NC · via iNaturalist</div>
   <div class="wild-content">
-    <div class="wild-status-row"><span class="badge badge-neutral">🌍 Non-Native</span><span class="badge badge-green">✅ Not a conservation concern — brown anoles are extremely abundant</span><span class="badge badge-safe">✅ Harmless. Brown anoles have no venom and will not hurt you. A cornered one might nip if picked up, but it cannot break skin in any meaningful way</span></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>If you see a small brown lizard doing push-ups on a fence post or flashing a reddish-orange throat fan, that is a brown anole — almost certainly the most common lizard you will meet anywhere in Florida.</li><li>It is not from here. Brown anoles arrived from Cuba and the Bahamas in the late 1800s and have since spread into nearly every county in the state.</li><li>Their success came at a cost to Florida&#x27;s native green anole, which now spends more time high in the trees to stay out of the newcomer&#x27;s way.</li><li>Males stake out territory with a stretchy throat flap called a dewlap and a bobbing push-up display — body language that says this spot is taken.</li></ul></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Color</div><p>Shades of brown, tan, or gray, often with a pattern of triangles, diamonds, or a light stripe down the back. Unlike the green anole, it cannot turn green.</p></div><div class="spot-item"><div class="spot-label">Throat fan (dewlap)</div><p>Males flash a reddish-orange dewlap edged in yellow during displays.</p></div><div class="spot-item"><div class="spot-label">Body</div><p>Stocky, with a fairly short pointed snout and ridged (keeled) scales that give the back a slightly rough look.</p></div><div class="spot-item"><div class="spot-label">Behavior cue</div><p>Usually seen low down — on the ground, fences, walls, and the base of trees — doing push-up displays.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Essentially silent. Anoles communicate with body language — push-ups and the colorful dewlap — rather than sound.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A small brown lizard perched head-down on a post or trunk, bobbing up and down. If it flashes an orange throat fan, it is a displaying male. The one thing it will never do is turn bright green — that is the native green anole, which tends to stay higher up.</p></div></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Insects and other small invertebrates — beetles, ants, flies, spiders, and just about anything it can catch and fit in its mouth. It will also eat the eggs and young of other lizards, including the native green anole.</p></div></div>
@@ -148,8 +150,8 @@
     <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Just watch and enjoy. No need to feed or handle them — they are doing fine on their own.</p></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Gallery</span></div>
     <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245373536/large.jpeg" loading="lazy" alt="Brown Anole — photo by teschaim"><div class="gal-credit">📷 teschaim</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/635345903/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/635347465/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/638116898/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div></div><div class="gal-item" onclick="openLB(5)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/638116963/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div></div><div class="gal-item" onclick="openLB(6)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/638116967/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div></div><div class="gal-item" onclick="openLB(7)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680941874/large.jpg" loading="lazy" alt="Brown Anole — photo by Harrison Mello"><div class="gal-credit">📷 Harrison Mello</div></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Cuban Anole</span><span class="alias-tag">Cuban Brown Anole</span><div class="wild-tags"><span class="wild-tag">Lizard</span><span class="wild-tag">Introduced</span><span class="wild-tag">Common</span><span class="wild-tag">Daytime</span></div></div></div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245373536/large.jpeg" loading="lazy" alt="Brown Anole — photo by teschaim"><div class="gal-credit">📷 teschaim</div><div class="gal-date">📅 Nov 27, 2022</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/635345903/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div><div class="gal-date">📅 Apr 8, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/635347465/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div><div class="gal-date">📅 Apr 8, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/638116898/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div><div class="gal-date">📅 Apr 8, 2026</div></div><div class="gal-item" onclick="openLB(5)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/638116963/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div><div class="gal-date">📅 Apr 8, 2026</div></div><div class="gal-item" onclick="openLB(6)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/638116967/large.jpg" loading="lazy" alt="Brown Anole — photo by Cole Guyton"><div class="gal-credit">📷 Cole Guyton</div><div class="gal-date">📅 Apr 8, 2026</div></div><div class="gal-item" onclick="openLB(7)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680941874/large.jpg" loading="lazy" alt="Brown Anole — photo by Harrison Mello"><div class="gal-credit">📷 Harrison Mello</div><div class="gal-date">📅 Jun 17, 2026</div></div></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Cuban Anole</span><span class="alias-tag">Cuban Brown Anole</span></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Cole Guyton (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© teschaim (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Harrison Mello (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
@@ -162,9 +164,9 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-99999/635346033.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/245373536/large.jpeg", "credit": "teschaim", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/635345903/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/635347465/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/638116898/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/638116963/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/638116967/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680941874/large.jpg", "credit": "Harrison Mello", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-99999/635346033.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC", "observed": "Apr 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/245373536/large.jpeg", "credit": "teschaim", "license": "CC-BY-NC", "observed": "Nov 27, 2022"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/635345903/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC", "observed": "Apr 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/635347465/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC", "observed": "Apr 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/638116898/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC", "observed": "Apr 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/638116963/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC", "observed": "Apr 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/638116967/large.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC", "observed": "Apr 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680941874/large.jpg", "credit": "Harrison Mello", "license": "CC-BY-NC", "observed": "Jun 17, 2026"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
     function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
     document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
@@ -173,7 +175,7 @@
   </div>
 </div>
 
-<a class="wild-float-back theme-reptile" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<a class="wild-float-back theme-other" href="../nature.html#wildlife">🦜 All Wildlife</a>
 
 <div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>

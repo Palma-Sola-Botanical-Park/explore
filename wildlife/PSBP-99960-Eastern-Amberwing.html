@@ -23,17 +23,18 @@
     --theme:#a23a6e; --theme-dark:#6b2247; --theme-sage:#bd5d8c;
     --hero-a:#e294bc; --hero-b:#a23a6e; --hero-c:#5a1d3c;
   }
-  .theme-reptile{
+  /* 'other' — everything not a bird or butterfly. Warm earthy brown.
+     The legacy class names below (theme-reptile / theme-mammal /
+     theme-amphibian) resolve to the same palette so pages generated
+     before the 3-bucket redesign keep rendering correctly until they're
+     regenerated. Safe to delete the legacy aliases once every wildlife
+     page has been re-published. */
+  .theme-other,
+  .theme-reptile,
+  .theme-mammal,
+  .theme-amphibian{
     --theme:#9c5a33; --theme-dark:#5e3318; --theme-sage:#b97d50;
     --hero-a:#d39b6c; --hero-b:#9c5a33; --hero-c:#4f2a13;
-  }
-  .theme-mammal{
-    --theme:#6b4a2b; --theme-dark:#3f2c19; --theme-sage:#8a6b48;
-    --hero-a:#a98a63; --hero-b:#6b4a2b; --hero-c:#33230f;
-  }
-  .theme-amphibian{
-    --theme:#3d7a52; --theme-dark:#234a30; --theme-sage:#5d9670;
-    --hero-a:#7bb38d; --hero-b:#3d7a52; --hero-c:#1d3a26;
   }
   .wild-wrap{ max-width:680px; margin:2rem auto; background:#e8e3d8; min-height:80vh; border-radius:12px; overflow:hidden; box-shadow:0 4px 32px rgba(20,30,40,0.16); }
   @media (max-width:480px){ .wild-wrap{ margin:0; border-radius:0; box-shadow:none; min-height:100vh; } }
@@ -111,6 +112,8 @@
   .gal-item:hover img{ transform:scale(1.05); }
   .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
   .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
   .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
@@ -126,7 +129,7 @@
 <body>
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-amphibian">
+<div class="wild-wrap theme-other">
   <div class="wild-hero">
     <img style="cursor:pointer;object-position:64% 42%" src="../photos/PSBP-99960/532393529.jpg" alt="Eastern Amberwing at Palma Sola Botanical Park" onclick="openLB(0)">
     <div class="wild-hero-overlay">
@@ -140,13 +143,12 @@
   </div>
   <div class="wild-credit">📷 Photo by <strong>catalaniclaire</strong> · CC-BY-NC · via iNaturalist</div>
   <div class="wild-content">
-    <div class="wild-status-row"><span class="badge badge-native">🌿 Native to Florida</span><span class="badge badge-green">✅ Least Concern</span><span class="badge badge-safe">✅ Harmless. Despite the wasp act, it has no sting and cannot hurt you</span></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A tiny dragonfly with glowing amber-orange wings, hovering low over the pond, is an eastern amberwing — one of the smallest dragonflies in North America.</li><li>At barely an inch long, it is easy to mistake for a wasp, and that is the point: it bluffs.</li><li>When perched, it wags its abdomen up and down and twitches its wings in a fair imitation of a stinging wasp, discouraging predators that would not bother a harmless dragonfly.</li><li>Like all dragonflies, it is a precise aerial hunter, snatching small insects out of the air on the wing.</li></ul></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Size</div><p>Very small for a dragonfly, about 1 in (2.5 cm) long.</p></div><div class="spot-item"><div class="spot-label">Wings</div><p>Males have entirely amber-orange wings; females have patchy brown-and-clear wings.</p></div><div class="spot-item"><div class="spot-label">Body</div><p>Reddish-amber in males.</p></div><div class="spot-item"><div class="spot-label">Behavior cue</div><p>Wags its abdomen and twitches its wings while perched, wasp-style.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Silent.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A very small dragonfly with glowing orange wings, perched on pondside vegetation or hovering low over the water. The wasp-like abdomen-wagging while perched is a giveaway.</p></div></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Small flying insects — midges, mosquitoes, gnats, and the like — caught in flight. Aquatic young eat mosquito larvae and other small water creatures.</p></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Low over the ponds and along their planted edges on warm, sunny days. Look for a tiny dragonfly with orange wings perched on a reed or stem.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>A warm-season flier, most numerous from late spring through early fall.</p></div></div></div>
     <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Just watch and enjoy. Dragonflies are best appreciated on the wing — no need to catch or handle them.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Amberwing</span><div class="wild-tags"><span class="wild-tag">Dragonfly</span><span class="wild-tag">Native</span><span class="wild-tag">Predator</span><span class="wild-tag">Daytime</span><span class="wild-tag">Pond</span></div></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Amberwing</span></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© catalaniclaire (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
@@ -159,9 +161,9 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-99960/532393529.jpg", "credit": "catalaniclaire", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-99960/532393529.jpg", "credit": "catalaniclaire", "license": "CC-BY-NC", "observed": "Jul 6, 2025"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
     function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
     document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
@@ -170,7 +172,7 @@
   </div>
 </div>
 
-<a class="wild-float-back theme-amphibian" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<a class="wild-float-back theme-other" href="../nature.html#wildlife">🦜 All Wildlife</a>
 
 <div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>

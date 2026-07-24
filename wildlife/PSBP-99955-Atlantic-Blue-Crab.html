@@ -23,17 +23,18 @@
     --theme:#a23a6e; --theme-dark:#6b2247; --theme-sage:#bd5d8c;
     --hero-a:#e294bc; --hero-b:#a23a6e; --hero-c:#5a1d3c;
   }
-  .theme-reptile{
+  /* 'other' — everything not a bird or butterfly. Warm earthy brown.
+     The legacy class names below (theme-reptile / theme-mammal /
+     theme-amphibian) resolve to the same palette so pages generated
+     before the 3-bucket redesign keep rendering correctly until they're
+     regenerated. Safe to delete the legacy aliases once every wildlife
+     page has been re-published. */
+  .theme-other,
+  .theme-reptile,
+  .theme-mammal,
+  .theme-amphibian{
     --theme:#9c5a33; --theme-dark:#5e3318; --theme-sage:#b97d50;
     --hero-a:#d39b6c; --hero-b:#9c5a33; --hero-c:#4f2a13;
-  }
-  .theme-mammal{
-    --theme:#6b4a2b; --theme-dark:#3f2c19; --theme-sage:#8a6b48;
-    --hero-a:#a98a63; --hero-b:#6b4a2b; --hero-c:#33230f;
-  }
-  .theme-amphibian{
-    --theme:#3d7a52; --theme-dark:#234a30; --theme-sage:#5d9670;
-    --hero-a:#7bb38d; --hero-b:#3d7a52; --hero-c:#1d3a26;
   }
   .wild-wrap{ max-width:680px; margin:2rem auto; background:#e8e3d8; min-height:80vh; border-radius:12px; overflow:hidden; box-shadow:0 4px 32px rgba(20,30,40,0.16); }
   @media (max-width:480px){ .wild-wrap{ margin:0; border-radius:0; box-shadow:none; min-height:100vh; } }
@@ -111,6 +112,8 @@
   .gal-item:hover img{ transform:scale(1.05); }
   .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
   .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
   .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
@@ -126,7 +129,7 @@
 <body>
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-amphibian">
+<div class="wild-wrap theme-other">
   <div class="wild-hero">
     <img style="cursor:pointer;object-position:47% 49%" src="../photos/PSBP-99955/518341400.jpg" alt="Atlantic Blue Crab at Palma Sola Botanical Park" onclick="openLB(0)">
     <div class="wild-hero-overlay">
@@ -140,13 +143,12 @@
   </div>
   <div class="wild-credit">📷 Photo by <strong>Brice C.</strong> · CC-BY-NC · via iNaturalist</div>
   <div class="wild-content">
-    <div class="wild-status-row"><span class="badge badge-native">🌿 Native to Florida</span><span class="badge badge-green">✅ Not a conservation concern in its native range, though it is a heavily fished species whose stocks are managed</span><span class="badge badge-warn">⚠️ Harmless at a distance, but the pincers are strong and a cornered or handled crab can deliver a hard pinch. Do not try to pick one up</span></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A swimming crab with sapphire-blue claws turning up in a park pond is the Atlantic blue crab — and its presence is a clue that the water is brackish, not pure fresh.</li><li>Its scientific name, Callinectes sapidus, means &quot;savory beautiful swimmer,&quot; and it lives up to all three words.</li><li>The back pair of legs are flattened into paddles, letting it swim sideways through the water rather than only crawl.</li><li>Tip for telling males from females: females have red-tipped claws, often described as wearing &quot;painted fingernails.&quot;</li></ul></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Color</div><p>Olive to grayish body with bright blue legs and claws; mature females have red-tipped claws.</p></div><div class="spot-item"><div class="spot-label">Claws</div><p>Strong pincers, blue in males, red-tipped in females.</p></div><div class="spot-item"><div class="spot-label">Back legs</div><p>Flattened into swimming paddles.</p></div><div class="spot-item"><div class="spot-label">Shell</div><p>Broad, with a sharp spine on each side.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Silent.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A broad crab with blue-tinged claws and paddle-shaped back legs in or near the water. Red-tipped &quot;painted&quot; claws mark a female; all-blue claws mark a male.</p></div></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>An omnivore — clams, snails, small fish, plants, detritus, and dead animals — scavenged and hunted along the bottom.</p></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>In and around the ponds if the water carries any brackish influence. Scan the shallows and edges for a crab with blue claws.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Possible whenever conditions suit; most active in warm water.</p></div></div></div>
     <div class="wild-caution-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Look, do not touch. Give it room at the water&#x27;s edge and do not handle it; those claws mean business.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Blue Crab</span><span class="alias-tag">Chesapeake Blue Crab</span><div class="wild-tags"><span class="wild-tag">Crustacean</span><span class="wild-tag">Native</span><span class="wild-tag">Pond</span><span class="wild-tag">Brackish</span></div></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Blue Crab</span><span class="alias-tag">Chesapeake Blue Crab</span></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Brice C. (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
@@ -159,9 +161,9 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-99955/518341400.jpg", "credit": "Brice C.", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-99955/518341400.jpg", "credit": "Brice C.", "license": "CC-BY-NC", "observed": "May 22, 2025"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
     function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
     document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
@@ -170,7 +172,7 @@
   </div>
 </div>
 
-<a class="wild-float-back theme-amphibian" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<a class="wild-float-back theme-other" href="../nature.html#wildlife">🦜 All Wildlife</a>
 
 <div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>

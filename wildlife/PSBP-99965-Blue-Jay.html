@@ -23,17 +23,18 @@
     --theme:#a23a6e; --theme-dark:#6b2247; --theme-sage:#bd5d8c;
     --hero-a:#e294bc; --hero-b:#a23a6e; --hero-c:#5a1d3c;
   }
-  .theme-reptile{
+  /* 'other' — everything not a bird or butterfly. Warm earthy brown.
+     The legacy class names below (theme-reptile / theme-mammal /
+     theme-amphibian) resolve to the same palette so pages generated
+     before the 3-bucket redesign keep rendering correctly until they're
+     regenerated. Safe to delete the legacy aliases once every wildlife
+     page has been re-published. */
+  .theme-other,
+  .theme-reptile,
+  .theme-mammal,
+  .theme-amphibian{
     --theme:#9c5a33; --theme-dark:#5e3318; --theme-sage:#b97d50;
     --hero-a:#d39b6c; --hero-b:#9c5a33; --hero-c:#4f2a13;
-  }
-  .theme-mammal{
-    --theme:#6b4a2b; --theme-dark:#3f2c19; --theme-sage:#8a6b48;
-    --hero-a:#a98a63; --hero-b:#6b4a2b; --hero-c:#33230f;
-  }
-  .theme-amphibian{
-    --theme:#3d7a52; --theme-dark:#234a30; --theme-sage:#5d9670;
-    --hero-a:#7bb38d; --hero-b:#3d7a52; --hero-c:#1d3a26;
   }
   .wild-wrap{ max-width:680px; margin:2rem auto; background:#e8e3d8; min-height:80vh; border-radius:12px; overflow:hidden; box-shadow:0 4px 32px rgba(20,30,40,0.16); }
   @media (max-width:480px){ .wild-wrap{ margin:0; border-radius:0; box-shadow:none; min-height:100vh; } }
@@ -111,6 +112,8 @@
   .gal-item:hover img{ transform:scale(1.05); }
   .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
   .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
   .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
@@ -130,7 +133,7 @@
   <div class="wild-hero">
     <img style="cursor:pointer;object-position:48% 52%" src="../photos/PSBP-99965/681680194.jpg" alt="Blue Jay at Palma Sola Botanical Park" onclick="openLB(0)">
     <div class="wild-hero-overlay">
-      <div class="wild-hero-category">Songbirds &amp; Backyard Birds</div>
+      <div class="wild-hero-category">Songbirds &amp; Perching Birds</div>
       <div class="wild-hero-name">Blue Jay</div>
     </div>
   </div>
@@ -140,7 +143,6 @@
   </div>
   <div class="wild-credit">📷 Photo by <strong>Rob Carr</strong> · CC-BY-NC · via iNaturalist</div>
   <div class="wild-content">
-    <div class="wild-status-row"><span class="badge badge-native">🌿 Native to Florida</span><span class="badge badge-green">✅ Least Concern</span><span class="badge badge-safe">✅ Harmless to people, though a bold jay near a nest may scold loudly. It poses no real threat</span></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A crested blue, white, and black bird with a loud, ringing call is a blue jay — one of the boldest and brainiest birds in the park.</li><li>The blue is a trick of the light. Its feathers contain no blue pigment; tiny structures scatter light to make the color, so a crushed feather looks plain brown.</li><li>It is a champion oak-planter. A single jay can cache thousands of acorns each fall, and the ones it never retrieves grow into new oak trees.</li><li>It is also a skilled mimic, copying the scream of a red-shouldered hawk — handy for scaring other birds off a feeder.</li></ul></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Color</div><p>Blue above, white to pale gray below, with a black necklace across the chest.</p></div><div class="spot-item"><div class="spot-label">Wings and tail</div><p>Barred with black and white and tipped with white.</p></div><div class="spot-item"><div class="spot-label">Crest</div><p>A pointed blue crest that rises and lowers with the bird&#x27;s mood.</p></div><div class="spot-item"><div class="spot-label">Behavior cue</div><p>Loud, bold, and often in small noisy groups.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Loud and varied: a ringing &quot;jay-jay&quot; scream, a musical &quot;queedle&quot; like a squeaky gate, and dead-on imitations of hawk calls.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A crested blue-and-white bird, larger than a cardinal, calling loudly from the trees or visiting feeders. The black necklace and white-tipped wings and tail confirm it.</p></div></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Mainly acorns, nuts, and seeds, plus insects, fruits, and the occasional egg or nestling. Caches large numbers of acorns for winter.</p></div></div>
@@ -148,8 +150,7 @@
     <div class="wild-caution-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Watch and enjoy, and please do not feed park wildlife. Jays are confident enough to approach on their own — no encouragement needed.</p></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Gallery</span></div>
     <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/681679077/large.jpg" loading="lazy" alt="Blue Jay — photo by Rob Carr"><div class="gal-credit">📷 Rob Carr</div></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list" style="padding-top:0"><span class="wild-tag">Bird</span><span class="wild-tag">Songbird</span><span class="wild-tag">Native</span><span class="wild-tag">Common</span><span class="wild-tag">Kid-friendly</span><span class="wild-tag">Daytime</span><span class="wild-tag">Trees</span></div></div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/681679077/large.jpg" loading="lazy" alt="Blue Jay — photo by Rob Carr"><div class="gal-credit">📷 Rob Carr</div><div class="gal-date">📅 Nov 14, 2025</div></div></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rob Carr (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
@@ -162,9 +163,9 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-99965/681680194.jpg", "credit": "Rob Carr", "license": "CC-BY-NC"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/681679077/large.jpg", "credit": "Rob Carr", "license": "CC-BY-NC"}];
+    var lbData=[{"src": "../photos/PSBP-99965/681680194.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Mar 3, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/681679077/large.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Nov 14, 2025"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;document.getElementById('lbCredit').innerHTML='📷 '+d.credit+' · '+d.license+' · via iNaturalist';document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
     function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
     document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
