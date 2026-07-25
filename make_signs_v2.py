@@ -89,7 +89,7 @@ COL_R0, COL_R1 = 336.0, SIGN_W - B        # right column (QR/scan/logo)
 PHOTO_H  = 196.0
 PHOTO_ASPECT = (COL_L1-COL_L0)/PHOTO_H    # 324/196 = 1.653
 SCI_BAND_H = 26.0
-QR_SIZE  = 190.0                          # 2.64"
+QR_SIZE  = 199.2                          # actual: COL_R1-COL_R0-6, ~2.77"
 LOGO_ASPECT = 1.778
 
 # ─────────────── Playfair Display: auto-install + register ───────────────
@@ -152,7 +152,7 @@ def F(name):
     return name if name in pdfmetrics.getRegisteredFontNames() else _FT.get(name,'Helvetica')
 TITLE_FONT = 'PlayfairB' if _pf_b else 'SerifB'
 SCI_FONT   = 'PlayfairI' if _pf_i else 'SerifI'
-TEASER_FONT= 'PlayfairI' if _pf_i else 'SerifI'
+TEASER_FONT= 'SansR'                      # clean sans for readability through lamination
 
 # ─────────────────────────── logo ───────────────────────────
 def find_color_logo():
@@ -260,7 +260,7 @@ def _qr(c, url, x, y, size):
     try:    return qr.qr.getModuleCount()
     except Exception: return None
 
-def _sign_body(c, common, sci, url, photo_path, focus, pname, lic, origin, teaser, logo_green):
+def _sign_body(c, common, sci, family, url, photo_path, focus, pname, lic, origin, teaser, logo_green):
     fx,fy=[float(v.strip().rstrip('%'))/100 for v in (focus or "50% 50%").split()]
     im=crop_focus(photo_path, fx, fy)
     tmp=tempfile.NamedTemporaryFile(suffix='.jpg', delete=False); im.save(tmp.name, quality=92); tmp.close()
@@ -285,39 +285,53 @@ def _sign_body(c, common, sci, url, photo_path, focus, pname, lic, origin, tease
     SB_Y = PY - SCI_BAND_H
     c.setFillColor(GREEN_DEEP); c.rect(COL_L0,SB_Y,PW,SCI_BAND_H,fill=1,stroke=0)
 
-    chip_w=0
-    if origin:
-        native = origin.strip().lower().startswith('native')
-        cs=8.0
-        while cs>6.0 and pdfmetrics.stringWidth(origin.upper(),F('SansB'),cs)>140: cs-=0.25
-        tw=pdfmetrics.stringWidth(origin.upper(),F('SansB'),cs)
-        chip_w=tw+16; chip_h=15.0
-        cx=COL_L1-10-chip_w; cy=SB_Y+(SCI_BAND_H-chip_h)/2
-        c.setFillColor(NATIVE_BG if native else LGOLD)
-        c.roundRect(cx,cy,chip_w,chip_h,3.5,fill=1,stroke=0)
-        c.setFillColor(NATIVE_FG if native else GREEN_DEEP); c.setFont(F('SansB'),cs)
-        c.drawString(cx+8, cy+4.6, origin.upper())
-        chip_w+=14
-
     # common name over the fade — auto-shrink
     name_maxw = PW-24
     s=30.0
     while s>15 and pdfmetrics.stringWidth(common,F(TITLE_FONT),s)>name_maxw: s-=0.5
     c.setFillColor(white); c.setFont(F(TITLE_FONT),s); c.drawString(COL_L0+12, PY+4, common)
-    # scientific name
-    sci_maxw = PW-24-chip_w
+    # scientific name (full width now, no chip stealing space)
+    sci_maxw = PW-24
     ss=15.0
     while ss>9.0 and pdfmetrics.stringWidth(sci,F(SCI_FONT),ss)>sci_maxw: ss-=0.25
     c.setFillColor(LGOLD); c.setFont(F(SCI_FONT),ss); c.drawString(COL_L0+12, SB_Y+8.0, sci)
+    # family label — right-justified in the sci band
+    if family:
+        fs=9.0
+        fw = pdfmetrics.stringWidth(family, F('SansR'), fs)
+        fam_right = COL_L1 - 12
+        fam_left = COL_L0+12 + pdfmetrics.stringWidth(sci, F(SCI_FONT), ss) + 12
+        while fs>7.0 and fw > (fam_right - fam_left): fs-=0.25; fw=pdfmetrics.stringWidth(family,F('SansR'),fs)
+        if (fam_right - fam_left) > 30:
+            c.setFillColor(CREDIT2); c.setFont(F('SansR'), fs)
+            c.drawRightString(fam_right, SB_Y+9.0, family)
 
     # ── teaser: the hook, under the photo ──
     T_TOP = SB_Y-8; T_BOT = B+FOOTER_H+6
+    # origin chip — bottom-right of teaser area
+    chip_bottom = T_BOT
+    if origin:
+        native = origin.strip().lower().startswith('native')
+        cs=8.0
+        while cs>6.0 and pdfmetrics.stringWidth(origin.upper(),F('SansB'),cs)>140: cs-=0.25
+        tw=pdfmetrics.stringWidth(origin.upper(),F('SansB'),cs)
+        chip_w=tw+16; chip_h=17.0
+        cx=COL_L1-12-chip_w; cy=T_BOT
+        c.setFillColor(NATIVE_BG if native else LGOLD)
+        c.roundRect(cx,cy,chip_w,chip_h,3.5,fill=1,stroke=0)
+        c.setFillColor(NATIVE_FG if native else GREEN_DEEP); c.setFont(F('SansB'),cs)
+        c.drawString(cx+8, cy+5.0, origin.upper())
+        chip_bottom = cy + chip_h + 4
+
     if teaser:
         tw_max = COL_L1-COL_L0-34
         tsize, tlines = fit_paragraph(teaser, F(TEASER_FONT), tw_max, 4, 12.5, 9.0)
         lead=tsize*1.22
         blockh=lead*len(tlines)
-        ty=T_TOP-(T_TOP-T_BOT-blockh)/2.0-tsize*0.85
+        # vertically center between top and chip/bottom
+        avail_top = T_TOP
+        avail_bot = chip_bottom if origin else T_BOT
+        ty=avail_top-(avail_top-avail_bot-blockh)/2.0-tsize*0.85
         c.setFillColor(GOLD)
         c.rect(COL_L0+12, ty-lead*(len(tlines)-1)-2, 2.0, blockh, fill=1, stroke=0)
         c.setFillColor(DARK); c.setFont(F(TEASER_FONT),tsize)
@@ -325,12 +339,16 @@ def _sign_body(c, common, sci, url, photo_path, focus, pname, lic, origin, tease
             c.drawString(COL_L0+22, ty-i*lead, ln)
 
     # ── right column: QR, scan band, logo ──
-    qx = COL_R0 + ((COL_R1-COL_R0)-QR_SIZE)/2.0
-    qy = SIGN_H - B - 2 - QR_SIZE
-    modules = _qr(c, url, qx, qy, QR_SIZE)
+    # QR fills the column width with minimal padding
+    qr_size = COL_R1 - COL_R0 - 6        # ~202pt = 2.81"
+    qx = COL_R0 + 3
+    qy = SIGN_H - B - 2 - qr_size
+    modules = _qr(c, url, qx, qy, qr_size)
 
-    band_y = qy-6-26
-    c.setFillColor(GOLD); c.roundRect(COL_R0, band_y, COL_R1-COL_R0, 26, 4, fill=1, stroke=0)
+    # SCAN band snug against QR bottom — no gap
+    band_h = 26
+    band_y = qy - band_h
+    c.setFillColor(GOLD); c.roundRect(COL_R0, band_y, COL_R1-COL_R0, band_h, 4, fill=1, stroke=0)
     cta="SCAN FOR THE FULL STORY"
     cs=10.0
     while cs>7 and pdfmetrics.stringWidth(cta,F('SansB'),cs)>(COL_R1-COL_R0-16): cs-=0.25
@@ -490,7 +508,9 @@ def main():
 
         origin,teaser,csrc,clamped=resolve_copy(pid,s,overrides)
         drafts[pid]=dict({'origin':origin or '','teaser':teaser or ''}, **RAW.get(pid,{}))
-        kw=dict(common=title(s['common_name']), sci=s.get('botanical_name',''), url=url,
+        tax=s.get('taxonomy') or {}
+        kw=dict(common=title(s['common_name']), sci=s.get('botanical_name',''),
+                family=tax.get('family',''), url=url,
                 photo_path=photo, focus=h.get('focus','50% 50%'),
                 pname=h.get('photographer_name') or h.get('photographer',''),
                 lic=h.get('license',''), origin=origin, teaser=teaser, logo_green=logo_green)
