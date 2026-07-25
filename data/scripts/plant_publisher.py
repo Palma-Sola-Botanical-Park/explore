@@ -681,6 +681,11 @@ def generate_html(species, hero, gallery_photos=None):
         if hc["credit_license"]:
             credit_parts.append(f' · {h(hc["credit_license"])}')
         credit_parts.append(' · via iNaturalist')
+        # Observation date — same formatting as the gallery badges, so the
+        # hero's date is visible without opening the lightbox.
+        _hero_observed = _fmt_observed(hero.get("observed_on", ""))
+        if _hero_observed:
+            credit_parts.append(f' · 📅 {h(_hero_observed)}')
         credit_html = ''.join(credit_parts)
     else:
         credit_html = "📷 Photo credit pending"
