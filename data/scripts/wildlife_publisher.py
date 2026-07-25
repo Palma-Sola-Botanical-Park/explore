@@ -217,6 +217,9 @@ WILD_CSS = """\
   .gal-item:hover .gal-credit{ opacity:1; }
   .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
   .gal-item:hover .gal-date{ opacity:1; }
+  .page-stamp{ text-align:center;font-size:12px;color:#8a8a7a;padding:16px 16px 28px;font-style:italic;letter-spacing:0.01em; }
+  .page-stamp strong{ font-style:normal;font-weight:600;color:#6b6b5c; }
+
   .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
   .lightbox.active{ display:flex; }
   .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
@@ -470,7 +473,14 @@ def render_tags(species):
     return f'<div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div>{inner}</div>'
 
 
-def generate_html(species, hero, gallery_photos):
+def generate_html(species, hero, gallery_photos, published_on=""):
+    """Render the page.
+
+    published_on is the STORED publish date (see PUBLISH STATE in
+    psbp_common) — never the current time. Embedding "now" would make every
+    page differ from itself on every render, and the render-and-compare
+    census in psbp_page_drift.py would report all 289 pages permanently
+    stale."""
     pid = species["id"]
     common = species["common_name"]
     sci = species["scientific_name"]
@@ -496,6 +506,12 @@ def generate_html(species, hero, gallery_photos):
     else:
         hero_path = f"../photos/{pid}-{slugify(common)}.jpg"
         credit_html = "📷 Photo credit pending"
+
+    # Publish stamp — the visitor-facing freshness signal.
+    from psbp_common import fmt_published as _fmt_pub
+    _pub_disp = _fmt_pub(published_on)
+    stamp_html = (f'<div class="page-stamp">Page updated <strong>{h(_pub_disp)}</strong></div>'
+                  if _pub_disp else "")
 
     # Sections
     gallery_section, lightbox_section = render_gallery(species, gallery_photos, hero)
@@ -569,6 +585,7 @@ def generate_html(species, hero, gallery_photos):
 
 <a class="wild-float-back theme-{theme}" href="../nature.html#wildlife">🦜 All Wildlife</a>
 
+{stamp_html}
 <div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') {{ injectShared({{ inatBar: false }}); }}</script>
@@ -578,18 +595,65 @@ def generate_html(species, hero, gallery_photos):
 
 # ── File writers ────────────────────────────────────────────────────────────
 
-def write_html(species, hero, gallery_photos, dry_run=False):
-    html_content = generate_html(species, hero, gallery_photos)
+# ── Publish stamp plumbing ──────────────────────────────────────────────────
+
+def _publish_fingerprints(species, hero, gallery_photos):
+    """(input_hash, generator, stored_date) for one species."""
+    import sys as _sys
+    from psbp_common import (compute_input_hash, generator_fingerprint,
+                             get_publish_record)
+    rec = get_publish_record(species["id"])
+    return (compute_input_hash(species, hero, gallery_photos),
+            generator_fingerprint(_sys.modules[__name__]),
+            (rec or {}).get("last_published", ""))
+
+
+def _record_publish(corpus, species_id, input_hash, generator, filename, stamp):
+    """Persist the publish record. Never fatal — a page that wrote fine must
+    not be reported as failed because a bookkeeping file was unwritable."""
+    try:
+        from psbp_common import record_publish
+        record_publish(corpus, species_id, input_hash, generator, filename, stamp)
+    except Exception as e:                                     # noqa: BLE001
+        print(f"  ⚠ publish_state not updated for {species_id}: {e}")
+
+
+def write_html(species, hero, gallery_photos=None, dry_run=False):
+    """Write the page. Sole write path for wildlife pages — every caller
+    (dashboard, CLI publish, --generate-all) routes through here, which is why
+    the publish stamp is recorded here rather than at the call sites.
+
+    last_published moves only when the RENDERED page changes. See
+    psbp_common.page_content_changed for why the input hash isn't used for that.
+    """
+    from psbp_common import today_iso, page_content_changed
+    input_hash, generator, prev = _publish_fingerprints(species, hero, gallery_photos)
     filename = page_filename(species["id"], species["common_name"])
     path = WILDLIFE_DIR / filename
+
+    # Render first with the date already on file, so the comparison below is
+    # about content and nothing else.
+    html_content = generate_html(species, hero, gallery_photos, published_on=prev)
     if dry_run:
         return path, html_content
+
+    if page_content_changed(path, html_content):
+        stamp = today_iso()
+        if stamp != prev:
+            html_content = generate_html(species, hero, gallery_photos,
+                                         published_on=stamp)
+    else:
+        stamp = prev or today_iso()
+        if stamp != prev:
+            html_content = generate_html(species, hero, gallery_photos,
+                                         published_on=stamp)
+
     WILDLIFE_DIR.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
     tmp.write_text(html_content, encoding="utf-8")
     tmp.rename(path)
+    _record_publish("wildlife", species["id"], input_hash, generator, filename, stamp)
     return path, html_content
-
 
 def update_wildlife_json(species, hero):
     entries = load_wildlife_json()

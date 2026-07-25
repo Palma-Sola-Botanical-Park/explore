@@ -34,6 +34,7 @@ PLANT_SIGNAGE_JSON    = SOURCES / "plant_signage.json"
 WILDLIFE_SIGNAGE_JSON = SOURCES / "wildlife_signage.json"
 PHOTO_CREDITS_JSON    = SOURCES / "photo_credits.json"
 PHOTO_WORKBENCH_JSON  = SOURCES / "photo_workbench.json"
+PUBLISH_STATE_JSON    = SOURCES / "publish_state.json"
 PLANTS_JSON           = REPO / "plants.json"
 WILDLIFE_JSON         = REPO / "wildlife.json"
 PLANTS_DIR            = REPO / "plants"
@@ -481,4 +482,201 @@ def delete_species_page(corpus, species_id, common_name=""):
     for f in target_dir.glob(f"{species_id}-*.html"):
         f.unlink()
         deleted.append(f.name)
+    # Drop the publish record too — a species with no page must not keep
+    # claiming a publish date. Same choke-point logic as write_html.
+    try:
+        forget_publish(species_id)
+    except Exception:                                          # noqa: BLE001
+        pass
     return deleted
+
+
+# ===========================================================================
+# PUBLISH STATE  —  when was each page last published, and from what inputs
+# ===========================================================================
+#
+# publish_state.json is machine-owned. Nothing here is hand-edited, and
+# deleting the file is safe: it rebuilds as pages are republished, and
+# psbp_page_drift.py can still answer staleness on its own by rendering.
+#
+#   {"meta": {"hash_version": 1, "updated": "..."},
+#    "species": {"PSBP-00003": {"last_published": "2026-07-24",
+#                               "input_hash": "a1b2...",   # data fingerprint
+#                               "generator":  "c3d4...",   # template fingerprint
+#                               "filename":   "PSBP-00003-Buccaneer-Palm.html",
+#                               "corpus":     "plants"}}}
+#
+# WHY IT EXISTS: staleness used to be answered by parsing rendered HTML and
+# pulling photo IDs out of image URLs — scraping our own output to ask a
+# question the data should have answered. With these two fingerprints stored,
+# "is this page older than its data?" is a string comparison.
+#
+# input_hash covers the species signage record + its hero + its gallery rows.
+# generator covers the publisher module source, because a template edit makes
+# every page stale while every input hash stays identical. Both must match for
+# a page to be considered current.
+#
+# HASH_VERSION must be bumped if the canonical form below ever changes.
+# Consumers (audit_psbp.py) check it and decline to compare rather than
+# silently reporting wrong answers against a format they don't understand.
+
+HASH_VERSION = 1
+
+
+def _canonical(obj):
+    """Stable JSON for hashing: sorted keys, no incidental whitespace."""
+    import json as _json
+    return _json.dumps(obj, sort_keys=True, separators=(",", ":"),
+                       ensure_ascii=False, default=str)
+
+
+def compute_input_hash(species, hero, gallery_photos):
+    """Fingerprint of everything that feeds a generated page.
+
+    Gallery rows are sorted by photo_id so that reordering in the registry
+    doesn't read as a content change.
+    """
+    import hashlib
+    gallery = sorted(
+        (p for p in (gallery_photos or [])),
+        key=lambda p: str(p.get("photo_id", "")),
+    )
+    payload = _canonical({
+        "species": species,
+        "hero": hero,
+        "gallery": gallery,
+    })
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+
+def generator_fingerprint(module):
+    """Fingerprint of a publisher module's source.
+
+    Deliberately covers the whole file rather than just the template string:
+    over-triggering (an unrelated edit marks pages stale) costs one idempotent
+    regeneration, while under-triggering leaves pages silently wrong. Erring
+    toward the cheap failure is the point.
+    """
+    import hashlib
+    try:
+        src = Path(module.__file__).read_bytes()
+    except Exception:
+        return ""
+    return hashlib.sha256(src).hexdigest()[:16]
+
+
+def load_publish_state():
+    """Read publish_state.json, returning the empty shape if absent."""
+    state = load_json(PUBLISH_STATE_JSON, None)
+    if not isinstance(state, dict):
+        state = {}
+    state.setdefault("meta", {})
+    state.setdefault("species", {})
+    return state
+
+
+def get_publish_record(species_id, state=None):
+    """The stored record for one species, or None."""
+    st = state if state is not None else load_publish_state()
+    rec = st.get("species", {}).get(species_id)
+    return rec if isinstance(rec, dict) else None
+
+
+def record_publish(corpus, species_id, input_hash, generator, filename,
+                   last_published):
+    """Write one species' publish record — but ONLY if it actually changed.
+
+    This no-op-on-identical behaviour matters more than it looks. --generate-all
+    calls write_html for all 289 species; if every call rewrote this file (and
+    bumped a meta timestamp), publish_state.json would appear in every commit
+    even when nothing else did. The whole value of "generate-all, then read the
+    git diff" is that untouched pages produce no diff. Bookkeeping must not be
+    the thing that breaks that.
+    """
+    import datetime
+    state = load_publish_state()
+    entry = {
+        "last_published": last_published,
+        "input_hash": input_hash,
+        "generator": generator,
+        "filename": filename,
+        "corpus": corpus,
+    }
+    if state.get("species", {}).get(species_id) == entry:
+        return entry                      # nothing to write
+    state["species"][species_id] = entry
+    state["meta"]["hash_version"] = HASH_VERSION
+    state["meta"]["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
+    state["meta"]["species_count"] = len(state["species"])
+    write_json_atomic(PUBLISH_STATE_JSON, state)
+    return entry
+
+
+def forget_publish(species_id):
+    """Drop a species' record — called when its page is deleted."""
+    state = load_publish_state()
+    if species_id in state.get("species", {}):
+        del state["species"][species_id]
+        state["meta"]["species_count"] = len(state["species"])
+        write_json_atomic(PUBLISH_STATE_JSON, state)
+        return True
+    return False
+
+
+def today_iso():
+    import datetime
+    return datetime.date.today().isoformat()
+
+
+_STAMP_RE = None
+
+
+def strip_page_stamp(html):
+    """Remove the visible 'Page updated' footer from a page's HTML.
+
+    Used to compare two renders while ignoring the stamp itself — otherwise
+    the comparison is circular: the date differs, so the page differs, so the
+    date must change.
+    """
+    global _STAMP_RE
+    if _STAMP_RE is None:
+        import re as _re
+        _STAMP_RE = _re.compile(r'<div class="page-stamp">.*?</div>\s*', _re.S)
+    return _STAMP_RE.sub("", html or "")
+
+
+def page_content_changed(path, new_html):
+    """Did anything a visitor can see actually change?
+
+    This — not the input hash — decides whether last_published moves. The hash
+    covers every field of every input record, including plenty that never
+    reach the page (used_by, publish_ok, virtual, last_reviewed, taxon ids),
+    and the generator fingerprint covers the whole publisher file, comments and
+    CLI code included. Dating a page from those would inflate freshness: the
+    footer would advance when nothing a reader can see had moved.
+
+    So the stamp answers the honest question — is the rendered output
+    different? — by comparing renders with the stamp stripped out.
+
+    The hashes are still stored: they let audit_psbp.py answer "were the
+    inputs different" without rendering anything. That check is deliberately
+    conservative and will occasionally flag a page whose visible output is
+    fine. Regeneration is idempotent, so the cost of that is nil, and
+    psbp_page_drift.py remains the exact byte-level answer.
+    """
+    try:
+        old = Path(path).read_text(encoding="utf-8")
+    except Exception:                                          # noqa: BLE001
+        return True                       # no page yet — treat as changed
+    return strip_page_stamp(old) != strip_page_stamp(new_html)
+
+
+def fmt_published(date_str):
+    """'2026-07-24' -> 'July 24, 2026' for the page footer."""
+    if not date_str:
+        return ""
+    try:
+        from datetime import datetime as _dt
+        return _dt.strptime(date_str[:10], "%Y-%m-%d").strftime("%B %-d, %Y")
+    except (ValueError, TypeError):
+        return ""
