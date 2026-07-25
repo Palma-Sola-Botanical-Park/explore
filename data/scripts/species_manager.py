@@ -897,83 +897,22 @@ def _cleanup_old_hero_files(species_id, keep_photo_id=None):
     return deleted
 
 
-def _update_search_index_hero(species_id, old_photo_id, new_hero_record):
-    """Update the search index card (plants.json or wildlife.json) with new hero.
-
-    Finds the card by species ID, updates credit fields + focus point,
-    and replaces old photo_id references with the new one in any string field.
-    Returns the index filename updated, or None.
-    """
-    credit = resolve_hero_credit(new_hero_record)
-    new_pid = str(new_hero_record.get("photo_id", ""))
-    old_pid = str(old_photo_id) if old_photo_id else ""
-    new_focus = new_hero_record.get("focus") or "50% 50%"
-    # Normalize Python None stored as string
-    if new_focus == "None":
-        new_focus = "50% 50%"
-
-    for idx_path in (PLANTS_INDEX, WILDLIFE_INDEX):
-        idx = _load(idx_path)
-        if not isinstance(idx, list):
-            continue
-        changed = False
-        for card in idx:
-            if card.get("id") != species_id:
-                continue
-            # Update credit fields (card has both "credit" and "credit_name")
-            if "credit" in card:
-                card["credit"] = credit.get("credit_name", "")
-            if "credit_name" in card:
-                card["credit_name"] = credit.get("credit_name", "")
-            if "credit_license" in card:
-                card["credit_license"] = credit.get("credit_license", "")
-            if "credit_line" in card:
-                card["credit_line"] = credit.get("credit_line", "")
-            # Update focus point from new hero
-            if "focus" in card:
-                card["focus"] = new_focus
-            # Replace old hero photo_id in any string field (image paths, etc.)
-            if old_pid and new_pid:
-                for key in card:
-                    if isinstance(card[key], str) and old_pid in card[key]:
-                        card[key] = card[key].replace(old_pid, new_pid)
-            changed = True
-            break
-        if changed:
-            write_json_atomic(idx_path, idx)
-            return os.path.basename(idx_path)
-    return None
-
-
-def _patch_html_hero(species_id, old_photo_id, new_photo_id, old_credit_line, new_credit_line):
-    """Patch the generated HTML page to reference the new hero image and credit.
-
-    Does a text replacement of old photo_id → new photo_id throughout the file,
-    and old credit line → new credit line. Returns the filename patched, or None.
-    """
-    old_pid = str(old_photo_id) if old_photo_id else ""
-    new_pid = str(new_photo_id)
-
-    for d in (os.path.join(REPO, "plants"), os.path.join(REPO, "wildlife")):
-        if not os.path.isdir(d):
-            continue
-        for f in os.listdir(d):
-            if f.startswith(species_id) and f.endswith(".html"):
-                filepath = os.path.join(d, f)
-                with open(filepath, "r", encoding="utf-8") as fh:
-                    html = fh.read()
-                original = html
-                # Replace photo_id references (image paths, lightbox links, etc.)
-                if old_pid:
-                    html = html.replace(old_pid, new_pid)
-                # Replace credit line
-                if old_credit_line and new_credit_line and old_credit_line != new_credit_line:
-                    html = html.replace(old_credit_line, new_credit_line)
-                if html != original:
-                    with open(filepath, "w", encoding="utf-8") as fh:
-                        fh.write(html)
-                    return f
-    return None
+# ── REMOVED: _update_search_index_hero() and _patch_html_hero() ────────────
+#
+# These patched the search index card and the generated HTML page by string
+# replacement after a hero swap. Both are gone; handle_api_photos_set_hero now
+# calls _regen_published_page() instead.
+#
+# Why they could not be fixed in place: the hero <img> points at a local file
+# (../photos/PSBP-xxxxx/<photo_id>.jpg) while gallery photos point at iNat CDN
+# URLs, and render_gallery() deliberately skips the row flagged hero. A blind
+# old_id -> new_id string swap therefore left the incoming hero rendered TWICE
+# (as hero and as a gallery tile) and dropped the outgoing hero off the page
+# entirely, instead of demoting it into the gallery. No amount of cleverer
+# regex fixes that; only re-running the generator does.
+#
+# If you are about to hand-edit generated HTML from Python: don't. Change the
+# JSON and regenerate. See the POST-PROMOTION PAGE REGENERATION block below.
 
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
@@ -2110,6 +2049,128 @@ def handle_api_triage_decide(params):
     return _apply_triage_decision(body)
 
 
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  POST-PROMOTION PAGE REGENERATION                                      ║
+# ║                                                                        ║
+# ║  RULE: any handler that mutates photo_credits.json MUST call           ║
+# ║  _regen_published_page() afterward. No exceptions.                     ║
+# ║                                                                        ║
+# ║  Promotion is well-gated. Editing AFTER promotion was not: trash,      ║
+# ║  roles and focus each mutated the registry and left the live page      ║
+# ║  untouched. That is how PSBP-99996 (Common Gallinule) spent two weeks  ║
+# ║  displaying four iNat photos with no credit record behind them.        ║
+# ║  Attribution is solidarity; silently un-crediting a photographer is    ║
+# ║  the worst thing this system can do.                                   ║
+# ║                                                                        ║
+# ║  Regeneration goes through the publisher modules — the same            ║
+# ║  write_html() + update_*_json() path /api/publish/promote uses — so a  ║
+# ║  regenerated page is identical to a freshly published one.             ║
+# ║                                                                        ║
+# ║  DO NOT patch generated HTML by string replacement. The hero is a      ║
+# ║  local file path (../photos/ID/PHOTO.jpg) while gallery photos are     ║
+# ║  iNat CDN URLs, and render_gallery() skips the hero row — so a blind   ║
+# ║  photo_id swap produces markup the generator would never emit. The     ║
+# ║  old _patch_html_hero()/_update_search_index_hero() pair did exactly   ║
+# ║  that and has been removed.                                            ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+def _kingdom_of_photo(psbp_id, credits=None):
+    """Derive 'plants'/'wildlife' from a species' registry rows.
+
+    Every row in photo_credits.json carries type = "Plant" | "Wildlife".
+    Falls back to a signage lookup if the species has no rows left (e.g. the
+    caller already removed the last one).
+    """
+    photos = _get_photos_list(credits if credits is not None else _load(PHOTO_CREDITS))
+    for p in photos:
+        if p.get("psbp_id") == psbp_id and p.get("type"):
+            return "plants" if p["type"] == "Plant" else "wildlife"
+    for sp in _get_species_list(_load(PLANT_SIGNAGE)):
+        if sp.get("id") == psbp_id:
+            return "plants"
+    return "wildlife"
+
+
+def _is_published(psbp_id, kingdom):
+    """True if the species is currently status=html (i.e. has a live page)."""
+    pub = _publisher_for(kingdom)
+    if pub is None:
+        return False
+    try:
+        sp = pub.build_species_lookup(pub.load_signage()).get(psbp_id)
+    except Exception:
+        return False
+    return bool(sp and sp.get("status") == "html")
+
+
+def _regen_published_page(psbp_id, kingdom=None):
+    """Rebuild the live HTML page + search index card for a published species.
+
+    Call this after ANY mutation of photo_credits.json. Reads the registry
+    fresh off disk, so callers must write_json_atomic() BEFORE calling.
+
+    Not publishing anything new: a species that isn't status=html is a no-op,
+    not an error.
+
+    Returns:
+        {"regenerated": True,  "filename": "...", "pruned": [...]}
+        {"regenerated": False, "reason": "not published"}
+        {"regenerated": False, "error": "..."}
+    """
+    if kingdom is None:
+        kingdom = _kingdom_of_photo(psbp_id)
+
+    pub = _publisher_for(kingdom)
+    if pub is None:
+        return {"regenerated": False,
+                "error": f"Publisher unavailable: {PUBLISHER_IMPORT_ERROR}"}
+
+    try:
+        species = pub.build_species_lookup(pub.load_signage()).get(psbp_id)
+        if not species:
+            return {"regenerated": False,
+                    "error": f"{psbp_id} not found in {kingdom} signage"}
+        if species.get("status") != "html":
+            return {"regenerated": False, "reason": "not published"}
+
+        # Fresh read — the caller just wrote this file.
+        credits = pub.load_credits()
+        hero = pub.build_hero_lookup(credits).get(psbp_id)
+        if not hero:
+            # Refuse to write a heroless page. Leaving the old page in place is
+            # bad, but emitting a broken one is worse; the caller should have
+            # blocked this (see the hero guard in handle_api_photos_trash).
+            return {"regenerated": False,
+                    "error": f"{psbp_id} is published but has no hero photo — "
+                             f"page left unchanged. Crown a hero or demote."}
+
+        gallery = pub.build_gallery_lookup(credits).get(psbp_id, [])
+        path, _ = pub.write_html(species, hero, gallery)
+
+        if kingdom == "plants":
+            pub.update_plants_json(species, hero)
+        else:
+            pub.update_wildlife_json(species, hero)
+
+        # Prune stale filename variants left by a common_name rename. Written
+        # file first, delete second — never a moment with no page on disk.
+        pruned = []
+        try:
+            for stale in path.parent.glob(f"{psbp_id}-*.html"):
+                if stale.name != path.name:
+                    stale.unlink()
+                    pruned.append(stale.name)
+        except Exception:
+            pass
+
+        return {"regenerated": True, "filename": path.name, "pruned": pruned}
+
+    except Exception as e:
+        import traceback
+        return {"regenerated": False, "error": str(e),
+                "trace": traceback.format_exc()[-500:]}
+
+
 def handle_api_photos_set_hero(params):
     """POST /api/photos/hero — full hero swap pipeline.
 
@@ -2119,8 +2180,12 @@ def handle_api_photos_set_hero(params):
       1. Update photo_credits.json (flip hero flags, update filename)
       2. Delete old hero file(s) from disk
       3. Download new hero from iNat CDN (large size)
-      4. Update search index card (credits + image path)
-      5. Patch HTML page (swap photo_id and credit references)
+      4. Regenerate the page + search index card via the publisher
+
+    Step 4 used to be two steps of string surgery on the generated HTML. It
+    could not express the swap correctly — the demoted hero has to move INTO
+    the gallery as a CDN URL and the new hero has to leave it — so it is now
+    a full regeneration. See the POST-PROMOTION PAGE REGENERATION block above.
 
     Returns a status report of each step.
     """
@@ -2135,10 +2200,8 @@ def handle_api_photos_set_hero(params):
     # ── Load data and find records ──────────────────────────────
     credits = _load(PHOTO_CREDITS)
     photos = credits.get("photos", [])
-    old_hero_rec = None
     new_hero_rec = None
     old_photo_id = None
-    old_credit_line = ""
 
     for p in photos:
         if p.get("psbp_id") != psbp_id:
@@ -2146,9 +2209,7 @@ def handle_api_photos_set_hero(params):
         if str(p.get("photo_id", "")) == photo_id:
             new_hero_rec = p
         elif p.get("hero"):
-            old_hero_rec = p
             old_photo_id = str(p.get("photo_id", ""))
-            old_credit_line = p.get("credit_line", "")
 
     if not new_hero_rec:
         return {"error": f"Photo {photo_id} not found for {psbp_id}"}
@@ -2201,24 +2262,14 @@ def handle_api_photos_set_hero(params):
     else:
         report["steps"]["downloaded"] = "No photo_url in record — skipped"
 
-    # ── Step 4: Update search index ─────────────────────────────
-    try:
-        idx_file = _update_search_index_hero(psbp_id, old_photo_id, new_hero_rec)
-        report["steps"]["search_index"] = idx_file or "Card not found in index"
-    except Exception as e:
-        report["steps"]["search_index"] = f"Error: {e}"
+    # ── Step 4: Regenerate page + search index card ─────────────
+    kingdom = "plants" if new_hero_rec.get("type") == "Plant" else "wildlife"
+    regen = _regen_published_page(psbp_id, kingdom)
+    report["steps"]["page"] = regen
+    if regen.get("error"):
+        report["warning"] = f"Registry updated but page NOT regenerated: {regen['error']}"
 
-    # ── Step 5: Patch HTML page ─────────────────────────────────
-    new_credit_line = new_hero_rec.get("credit_line", "")
-    try:
-        html_file = _patch_html_hero(
-            psbp_id, old_photo_id, photo_id,
-            old_credit_line, new_credit_line
-        )
-        report["steps"]["html_patched"] = html_file or "No HTML file found"
-    except Exception as e:
-        report["steps"]["html_patched"] = f"Error: {e}"
-
+    report["old_hero"] = old_photo_id
     report["ok"] = True
     return report
 
@@ -2227,7 +2278,13 @@ def handle_api_photos_update_roles(params):
     """POST /api/photos/roles — update content tags on a photo.
 
     Body: {"psbp_id": "PSBP-00042", "photo_id": "12345678", "roles": ["gallery","leaf","flower"]}
-    The "gallery" role is always preserved — it cannot be removed here.
+
+    "gallery" is an ordinary role here and CAN be removed — the Photos tab has
+    a deliberate "✗ Not in gallery" toggle that does exactly that. (An earlier
+    version of this docstring claimed gallery was always preserved. It never
+    was, and forcing it would break that toggle.) Because dropping gallery
+    changes what the page shows, the page is regenerated below; without that,
+    the photo stays on the live page as an orphan with no registry role.
     """
     body = params.get("_body", {})
     psbp_id = body.get("psbp_id", "")
@@ -2238,19 +2295,23 @@ def handle_api_photos_update_roles(params):
 
     credits = _load(PHOTO_CREDITS)
     photos = credits.get("photos", [])
-    found = False
+    found = None
 
     for p in photos:
         if p.get("psbp_id") == psbp_id and str(p.get("photo_id", "")) == photo_id:
             p["role"] = roles
-            found = True
+            found = p
             break
 
-    if not found:
+    if found is None:
         return {"error": f"Photo {photo_id} not found for {psbp_id}"}
 
+    kingdom = "plants" if found.get("type") == "Plant" else "wildlife"
     write_json_atomic(PHOTO_CREDITS, credits)
-    return {"ok": True, "psbp_id": psbp_id, "photo_id": photo_id, "roles": roles}
+
+    regen = _regen_published_page(psbp_id, kingdom)
+    return {"ok": True, "psbp_id": psbp_id, "photo_id": photo_id, "roles": roles,
+            "page": regen}
 
 
 def handle_api_photos_trash(params):
@@ -2261,6 +2322,12 @@ def handle_api_photos_trash(params):
     Removes the row from photo_credits.json AND writes a 'skip' verdict to
     the workbench ledger (with display fields) so the photo can be brought
     back later via Triage → "revisit skipped". Does NOT delete files on disk.
+
+    Refuses to trash the hero of a PUBLISHED species: the hero JPG stays on
+    disk and the page keeps rendering it, so removing the registry row would
+    leave the photographer's work displayed with no credit record. That is
+    precisely the PSBP-99996 failure. Crown a replacement hero first, or
+    demote the page.
     """
     body = params.get("_body", {})
     psbp_id = body.get("psbp_id", "")
@@ -2280,6 +2347,14 @@ def handle_api_photos_trash(params):
 
     if removed_row is None:
         return {"error": f"Photo {photo_id} not found for {psbp_id}"}
+
+    # Kingdom must be read BEFORE the row is dropped.
+    kingdom = "plants" if removed_row.get("type") == "Plant" else "wildlife"
+
+    if removed_row.get("hero") and _is_published(psbp_id, kingdom):
+        return {"error": f"{psbp_id} is published and this is its hero photo. "
+                         f"Crown a different photo as hero first, or demote the "
+                         f"page under Preview & Publish."}
 
     credits["photos"] = [
         p for p in photos
@@ -2309,8 +2384,11 @@ def handle_api_photos_trash(params):
     }
     write_json_atomic(PHOTO_WORKBENCH, wb)
 
+    regen = _regen_published_page(psbp_id, kingdom)
+
     return {"ok": True, "psbp_id": psbp_id, "removed": photo_id,
-            "remaining": len(credits["photos"]), "demoted_to": "skipped"}
+            "remaining": len(credits["photos"]), "demoted_to": "skipped",
+            "page": regen}
 
 # ── Gap audit (preview-only; never touches data or the publisher) ──────────
 #
@@ -2597,8 +2675,11 @@ def handle_api_photos_focus(params):
 
     Body: {"psbp_id": "PSBP-00042", "photo_id": "12345678", "focus": "35% 60%"}
 
-    Writes to photo_credits.json. If this photo is the hero, also propagates
-    the focus point to the search index card so the published page crops right.
+    Writes to photo_credits.json, then regenerates the page.
+
+    The generated page embeds the crop directly (object-position:{focus} on the
+    hero <img>), so updating only the search index card — which is all this
+    handler used to do — left the page cropped the old way indefinitely.
     """
     body = params.get("_body", {})
     psbp_id = body.get("psbp_id", "")
@@ -2621,26 +2702,15 @@ def handle_api_photos_focus(params):
     if not target:
         return {"error": f"Photo {photo_id} not found for {psbp_id}"}
 
+    kingdom = "plants" if target.get("type") == "Plant" else "wildlife"
     write_json_atomic(PHOTO_CREDITS, credits)
 
     result = {"ok": True, "psbp_id": psbp_id, "photo_id": photo_id, "focus": focus}
 
-    # If this is the hero, propagate focus to the search index card
-    if target.get("hero"):
-        for idx_path in (PLANTS_INDEX, WILDLIFE_INDEX):
-            idx = _load(idx_path)
-            if not isinstance(idx, list):
-                continue
-            changed = False
-            for card in idx:
-                if card.get("id") == psbp_id and "focus" in card:
-                    card["focus"] = focus
-                    changed = True
-                    break
-            if changed:
-                write_json_atomic(idx_path, idx)
-                result["search_index_updated"] = os.path.basename(idx_path)
-                break
+    # Regenerating rebuilds the index card too (update_*_json is the canonical
+    # builder and reads focus off the hero), so no hand-patching is needed.
+    # Harmless no-op work for a non-hero photo — the output is identical.
+    result["page"] = _regen_published_page(psbp_id, kingdom)
 
     return result
 
@@ -6336,12 +6406,10 @@ def render_photos():
             let msg = 'Hero swapped';
             if (s.downloaded && !String(s.downloaded).startsWith('Error'))
                 msg += ' ✓ downloaded';
-            if (s.search_index && !String(s.search_index).startsWith('Error'))
-                msg += ' ✓ index';
-            if (s.html_patched && !String(s.html_patched).startsWith('Error'))
-                msg += ' ✓ HTML';
+            if (s.page && s.page.regenerated) msg += ' ✓ page rebuilt';
+            else if (s.page && s.page.reason) msg += ' (not published)';
             if (data.warning) msg += ' ⚠ ' + data.warning;
-            toast(msg);
+            toast(msg, !!data.warning);
 
             // Log full report to console for debugging
             console.log('Hero swap report:', data);
@@ -6425,7 +6493,12 @@ def render_photos():
             el.className = 'gallery-toggle ' + (nowIn ? 'in' : 'out');
             el.textContent = nowIn ? '✓ In gallery' : '✗ Not in gallery';
             el.title = nowIn ? 'Photo appears in page gallery' : 'Photo is NOT in the page gallery';
-            toast(nowIn ? 'Added to gallery' : 'Removed from gallery');
+            if (data.page && data.page.error) {{
+                toast('Saved, but page NOT rebuilt: ' + data.page.error, true);
+            }} else {{
+                toast((nowIn ? 'Added to gallery' : 'Removed from gallery')
+                      + ((data.page && data.page.regenerated) ? ' ✓ page rebuilt' : ''));
+            }}
         }} catch (err) {{ toast('Error: ' + err.message, true); }}
     }}
 
@@ -6439,7 +6512,11 @@ def render_photos():
             }});
             const data = await resp.json();
             if (data.error) {{ toast(data.error, true); return; }}
-            toast('Set aside — find it under Find Photos → revisit');
+            if (data.page && data.page.error) {{
+                toast('Set aside, but page NOT rebuilt: ' + data.page.error, true);
+            }} else {{
+                toast('Set aside — find it under Find Photos → revisit');
+            }}
             await loadPhotos(speciesId);
             loadPickerList();
         }} catch (err) {{ toast('Error: ' + err.message, true); }}
@@ -6502,8 +6579,12 @@ def render_photos():
             const data = await resp.json();
             if (data.error) {{ toast(data.error, true); return; }}
             let msg = 'Focus saved';
-            if (data.search_index_updated) msg += ' ✓ index updated';
-            toast(msg);
+            if (data.page && data.page.regenerated) msg += ' ✓ page rebuilt';
+            if (data.page && data.page.error) {{
+                toast('Focus saved but page NOT rebuilt: ' + data.page.error, true);
+            }} else {{
+                toast(msg);
+            }}
             closeFocusEditor();
             await loadPhotos(focusState.speciesId);
         }} catch (err) {{
