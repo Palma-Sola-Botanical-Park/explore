@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canistel · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the gallery lightbox */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line */
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
+
+  .page-stamp{ text-align:center;font-size:12px;color:#8a8a7a;padding:16px 16px 28px;font-style:italic;letter-spacing:0.01em; }
+  .page-stamp strong{ font-style:normal;font-weight:600;color:#6b6b5c; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img style="cursor:pointer;object-position:52% 56%" src="../photos/PSBP-00607/713090002.jpg" alt="Canistel at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Tree</div>
+    <div class="plant-hero-name">Canistel</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Lucuma campechiana</span>
+  <a class="plant-family-tag" href="../nature.html?family=Sapotaceae">Sapotaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>theblackd0g13</strong> · CC-BY-NC · via iNaturalist · 📅 Aug 5, 2026</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>The flesh of a ripe canistel has the dense, dry, creamy texture of a hard-boiled egg yolk — which is exactly where both its common names come from. It is sweet rather than savory, and closer in flavor to sweet potato pie or baked pumpkin than anything else in the fruit bowl.</li>
+    <li>Canistel is not a fruit that evolved for birds — it evolved for mammals. Its large size, heavy seeds, dense aromatic pulp, and golden-orange color fit the classic Neotropical mammal-dispersal syndrome, attracting primates, opossums, and other terrestrial and arboreal mammals in its native lowland forests.</li>
+    <li>Unlike most fruits, canistel continues to ripen after you pick it — but timing the harvest is tricky. Fruit picked too firm may never soften properly and stays astringent no matter how long you wait.</li>
+    <li>Florida growers have spent decades selecting named canistel cultivars, and the results are on shelves at tropical fruit nurseries across the state. UF/IFAS recommends four by name — Oro, Fairchild #1, Trompo, and Bruce — each chosen for improvements in fruit size, texture, or flavor over unpredictable seedling trees.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Canistel is native to the lowland forests of southern Mexico, Belize, Guatemala, and El Salvador. From that Central American core it spread — mostly through cultivation — across the Caribbean, and later to Southeast Asia, East Africa, and Australia.</p>
+      <p>UF/IFAS records its introduction to Florida in the early 20th century. It took root most readily in the warm, frost-free counties of South Florida and the Keys, where it has been a quiet staple of tropical fruit collections and dooryard gardens ever since.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>The Sapotaceae family has a long history of producing economically important tropical fruits, and canistel sits comfortably in that company. Its closest relatives here in the park include mamey sapote and sapodilla — all share the family&#x27;s characteristic milky latex and glossy foliage.</li>
+    <li>The species name campechiana means &#x27;of Campeche,&#x27; referring to the Campeche region on Mexico&#x27;s Yucatán Peninsula, where Humboldt and Bonpland first formally described the tree for science in the early 19th century. The bark of canistel is brown and furrowed, and the trunk oozes a sticky white sap when cut, which can gum up pruning tools.</li>
+    <li>Harvesting canistel well takes practice. The fruit is climacteric — it keeps ripening after you pick it — but fruit taken from the tree too early may remain dry, mealy, and unpleasantly astringent no matter how long it sits. The signal to harvest is when the skin turns from green to yellow-orange; after that, let it sit at room temperature until it gives slightly to the touch.</li>
+    <li>Across Latin America and the Caribbean, ripe canistel pulp is blended into milk-based drinks called batidos, folded into custards and ice creams, and used as a filling for pies and pastries — the same rich, starchy sweetness that makes it unusual eaten raw makes it a natural in cooked desserts.</li>
+    <li>Florida growers have developed a range of named cultivars over the decades — Oro, Bruce, Trompo, and Fairchild No. 1 among them — each selected for improvements in fruit size, shape, or flavor. Grafted trees are strongly preferred over seedlings: seedling trees may take three to six years or more to bear fruit, and the results are unpredictable.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>Canistel flowers are pollinated by insects, and the small, fragrant, cream-colored blossoms can attract generalist bees. Beyond pollination, the fruit&#x27;s vivid golden color and dense, aromatic pulp are not a signal aimed at birds — they are classic mammal-dispersal traits.</p>
+      <p>In canistel&#x27;s native lowland Neotropical forests, seed dispersal is driven by arboreal and terrestrial mammals such as primates and opossums, whose size and foraging behavior suit the large, heavy fruit.</p>
+      <p>In a Florida garden setting, those native mammal dispersers are absent, so the tree depends almost entirely on humans for seed movement. The evergreen canopy still provides shelter and perching habitat for birds year-round, and the dense, glossy foliage contributes to garden-level structural diversity — but frugivorous bird activity in the canopy will be minimal by design.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, cream-colored, and fragrant — produced singly or in small clusters along the branches. They have a silky texture and are bisexual. Insect-pollinated.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Highly variable in shape — round, oval, spindle-shaped, or obovate, often with a pointed tip. Skin is thin, waxy, and smooth; green when immature, turning bright yellow to orange-yellow at maturity. Fruit range from roughly 3 to 5 inches long.</p></div>
+<div class="repro-item"><div class="repro-label">Seeds</div><p>One to four large, smooth, glossy brown seeds per fruit. Seeds lose viability quickly and should be planted within days of removal from the fruit.</p></div>
+<div class="repro-item"><div class="repro-label">Propagation</div><p>Grafted trees are standard in Florida cultivation — they fruit sooner and produce predictably. Seedling trees may take three to six years to bear, with variable results. Air-layering and cleft grafting are also used.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves and Bark</div><p>Leaves are evergreen, lanceolate to obovate, thin, and glossy — spirally arranged and clustered toward the branch tips, a characteristic field mark of the Sapotaceae family. Bark is brown and wrinkled; the trunk and branches exude a white, sticky latex when cut.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>Scan the branch tips for the spirally arranged, glossy leaves — they cluster densely toward the ends of the branches and droop slightly, a signature growth pattern in Sapotaceae. In fruit, the golden-yellow to orange skin is unmistakable and catches the light.</p><p>Look closely at the stem end of the fruit: a small, persistent calyx is often visible there. The bark is brown and furrowed, and a small nick will reveal the white latex beneath. Flowers are easy to miss — small, cream-colored, and tucked among the leaves.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">20 to 35 feet in cultivation; can reach 60 to 100 feet in the wild under ideal conditions</div></div>
+    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">15 to 25 feet</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">erect, with a slender to moderately spreading crown</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
+    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium-fine</div></div>
+    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to part sun</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">sandy · limestone · clay · tolerant of poor soils; prefers well-drained conditions</div></div>
+    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">moderate to good once established</div></div>
+    </div>
+  </div>
+  <div class="plant-safe-section">
+    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>The ripe fruit is perfectly safe to eat and quite nutritious — rich in beta-carotene, niacin, and potassium. Unripe fruit is astringent and unpleasant but not dangerous. The tree&#x27;s milky latex sap can be a mild skin irritant for sensitive individuals, so wear gloves when pruning. Otherwise the tree is harmless to people and pets.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>Canistel appears on Miami-Dade County&#x27;s local invasive and prohibited plant list, and escape from cultivation into natural areas has been documented in extreme South Florida.</p>
+      <p>The watch_invasive flag is set to false for this sign because the species is not currently listed as a FISC (formerly FLEPPC) Category I or II invasive at the statewide level, and its cold sensitivity limits naturalization potential in Manatee County&#x27;s climate. Visitors in South Florida should check local ordinances before planting.</p>
+      <p>On taxonomy: the accepted botanical name used by USDA Plants, UF/IFAS, Flora of North America, and most North American horticultural institutions is Pouteria campechiana (Kunth) Baehni.</p>
+      <p>The name on this tree&#x27;s tag — Lucuma campechiana Kunth — is the original basionym and is treated as the accepted name by Kew&#x27;s Plants of the World Online following recent molecular work reinstating the genus Lucuma; both names refer to the same plant.</p>
+      <p>The specific epithet campechiana means &#x27;of Campeche,&#x27; honoring the region on Mexico&#x27;s Yucatán Peninsula where the species was first formally described.</p></div>
+  </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/713089995/large.jpg" loading="lazy" alt="Canistel — photo by theblackd0g13"><div class="gal-credit">📷 theblackd0g13</div><div class="gal-date">📅 Aug 5, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/713090000/large.jpg" loading="lazy" alt="Canistel — photo by theblackd0g13"><div class="gal-credit">📷 theblackd0g13</div><div class="gal-date">📅 Aug 5, 2026</div></div></div></div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Eggfruit</span><span class="alias-tag">Yellow Sapote</span><span class="alias-tag">Cupcake Fruit</span><span class="alias-tag">Zapote Amarillo</span><span class="alias-tag">Sapote Borracho</span></div>
+  </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© theblackd0g13 (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
+        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-00607/713090002.jpg", "credit": "theblackd0g13", "license": "CC-BY-NC", "observed": "Aug 5, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/713089995/large.jpg", "credit": "theblackd0g13", "license": "CC-BY-NC", "observed": "Aug 5, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/713090000/large.jpg", "credit": "theblackd0g13", "license": "CC-BY-NC", "observed": "Aug 5, 2026"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    </script>
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div class="page-stamp">Page updated <strong>August 10, 2026</strong></div>
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
