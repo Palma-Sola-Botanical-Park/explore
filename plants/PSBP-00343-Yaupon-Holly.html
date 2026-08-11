@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yaupon Holly · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the gallery lightbox */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line */
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
+
+  .page-stamp{ text-align:center;font-size:12px;color:#8a8a7a;padding:16px 16px 28px;font-style:italic;letter-spacing:0.01em; }
+  .page-stamp strong{ font-style:normal;font-weight:600;color:#6b6b5c; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img style="cursor:pointer;object-position:51% 39%" src="../photos/PSBP-00343/672115769.jpg" alt="Yaupon Holly at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Tree</div>
+    <div class="plant-hero-name">Yaupon Holly</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Ilex vomitoria</span>
+  <a class="plant-family-tag" href="../nature.html?family=Aquifoliaceae">Aquifoliaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 Jun 3, 2026</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>Yaupon is the only plant native to North America — north of the tropics — that contains caffeine. Every cup of coffee or tea Americans drink comes from plants brought from overseas; this one was here all along, brewing itself in the understory.</li>
+    <li>The scientific name Ilex vomitoria is almost certainly a libel. Europeans watched Indigenous ceremonies in which participants drank enormous quantities of the concentrated &#x27;Black Drink&#x27; and then purged — but modern researchers believe the plant itself is not an emetic. The vomiting was likely a deliberate act of ritual purification, possibly aided by other additives, not a property of the holly.</li>
+    <li>The berries are eaten safely by birds but can cause nausea and vomiting in people and other mammals. Birds and people metabolize them very differently — what is a fine winter meal for a cedar waxwing is not one for you.</li>
+    <li>Yaupon spreads by suckering from its roots, forming natural thickets that can become dense enough to exclude competitors — a trait that makes it both an excellent wildlife refuge and a plant that needs managing in a tidy garden.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Yaupon is native to the southeastern coastal plain of the United States, ranging from southeastern Virginia south through the Carolinas and Georgia into Florida, and west along the Gulf Coast through Alabama, Mississippi, Louisiana, and eastern Texas, with populations also in Arkansas, eastern Oklahoma, and northeastern Mexico.</p>
+      <p>In Florida, UF/IFAS documents it occurring throughout most of the peninsula south to Lake Okeechobee.</p>
+      <p>Within its range the species occupies a wide variety of habitats: coastal dunes, maritime forests, upland pine flatwoods, scrub, floodplains, and hammocks. It is equally at home in saturated lowlands and dry sandy ridges — a range of tolerance that few native shrubs match. The common name yaupon derives from the Catawban word yop or yapa, meaning &#x27;small tree&#x27; or &#x27;leaf of the tree.&#x27;</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>The story behind the name Ilex vomitoria is one of the more entertaining episodes in botanical nomenclature. Southeastern tribes — including the Apalachee, Creek, Timucua, and Seminole peoples whose homelands included Florida — brewed a caffeinated drink from roasted yaupon leaves known variously as the &#x27;Black Drink&#x27; or, among some groups, the &#x27;white drink,&#x27; associated with purity and peace.</li>
+    <li>During ceremonies, participants drank large quantities until they purged, as an act of ritual purification. European observers assumed the plant was the cause and named it accordingly.</li>
+    <li>It almost certainly was not. Yaupon is not considered a true emetic. The purging was likely intentional or aided by other substances, and in ordinary quantities the tea is simply a pleasantly stimulating drink — much like the yerba mate to which it is closely related.</li>
+    <li>The Florida Department of State notes that the Apalachee, Creek, Seminole, and Muskogee peoples called the beverage the &#x27;white drink&#x27; for its associations with peace and purity, while Spanish colonists in the 16th century called it cacina or cassina, borrowing from the Timucua language.</li>
+    <li>The leaves contain caffeine, theobromine, and theacrine — a suite of stimulant alkaloids shared with yerba mate — alongside chlorogenic acid isomers, the same antioxidant polyphenols that give coffee much of its health reputation. Taken together, the chemical profile of a properly brewed cup of yaupon rivals that of green tea in antioxidant content.</li>
+    <li>The tea is also notably smooth. Unlike Camellia sinensis — the source of conventional black and green tea — yaupon leaves are free of the catechin-based polyphenolics that create bitterness and astringency. The practical result is a tea that cannot be over-steeped or boiled into harshness, a quality that made it eminently practical for long ceremonies and field use.</li>
+    <li>Small artisan producers now sell it commercially, and interest has grown considerably in recent years.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>Few native shrubs of this size match yaupon&#x27;s contribution to the local food web across all seasons. The small white spring flowers draw bees, including the specialized native mining bee Colletes banksi, which has a documented relationship with the genus Ilex.</p>
+      <p>Yaupon blooms early in spring, providing nectar and pollen when few other understory woody plants are in flower — making it a critical early resource for solitary bees in Florida pinelands.</p>
+      <p>Butterflies also nectar at the blooms, and the plant serves as a documented larval host for two species: Henry&#x27;s Elfin (Callophrys henrici) and the Holly Azure (Celastrina idella), whose caterpillars feed on the flowering parts.</p>
+      <p>In fall and winter the berries — bright red, translucent, and produced in dense clusters along the full length of the stems — become a critical food source for birds. Robins, cedar waxwings, mockingbirds, and more than 40 bird species overall are documented consumers.</p>
+      <p>Birds process the drupes safely because they pass the hard seeds rapidly through their digestive systems without breaking them down, whereas mammals that chew and retain the berries longer are exposed to the saponins concentrated in the fruit. The dense evergreen canopy provides year-round nesting and shelter cover, and small mammals also feed on fallen fruit.</p>
+      <p>Few plants deliver this much to wildlife across this many months.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Yaupon is dioecious: male and female flowers are borne on separate plants. Both sexes must be present within pollinator range for berries to form on the females. The species also spreads naturally by root suckering, forming clonal thickets around established plants. Seeds are rarely used to propagate cultivars; stem cuttings from known female plants are the nursery standard.</p><p>Holly seeds require two to three years of dormancy before germinating.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, white to greenish-white, and four-petaled, appearing in clusters along the previous year&#x27;s stems in spring. Male flowers emerge in small clusters; female flowers may be solitary or in small clusters in the leaf axils. The blooms are individually tiny but fragrant, and they are produced prolifically enough to be an important pollinator resource.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>A small, round drupe about a quarter-inch in diameter, green when young and ripening to bright, somewhat translucent red in fall. Fruit is produced in dense clusters along the full length of the stems on female plants only, persisting on the tree through winter — sometimes well into spring if not consumed by wildlife. Occasional cultivars produce orange or yellow fruit.</p><p>The berries are mildly toxic to people and mammals.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Small, oval to elliptic, leathery, and dark glossy green — typically less than an inch long, with finely toothed or scalloped (crenate) margins. Leaves are arranged alternately on slender branches. Bark is smooth and whitish-gray, contrasting well with the red berries in winter.</p></div>
+<div class="repro-item"><div class="repro-label">Suckering and spread</div><p>Established plants readily send up root suckers, forming clonal thickets beneath and around the canopy. This is natural behavior and provides excellent wildlife habitat; in managed landscapes the suckers should be pruned to the ground two or three times a year if a single-trunk form is desired. Disturbance of the soil under the canopy tends to encourage more sprouting.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>In winter, the berries tell the story instantly: dense clusters of small translucent red drupes strung along every stem of the female plants, against smooth whitish-gray bark. In spring, look for the tiny white flower clusters tucked into the leaf axils — modest individually but produced so abundantly that the whole shrub seems to hum with pollinators.</p><p>The leaves themselves are a useful field mark year-round: small, dark, leathery, and oval with a neatly scalloped edge. If you find a plant with no berries but the same leaf and bark, you may be looking at a male — or simply a plant without a male nearby.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">15 to 25 feet (UF/IFAS); FNPS lists 8 to 25 feet; often maintained smaller in cultivation</div></div>
+    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">15 to 20 feet; clonal spread can be wider over time</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">In the wild, yaupon typically presents as a multi-stemmed, thicket-forming large shrub, often 8 to 15 feet tall. With age and selective pruning it trains readily into a graceful single- or multi-trunked small specimen tree reaching 15 to 25 feet — a distinction that matters for Bradenton landscape design, where both the shrub form and the arching small-tree form are useful.</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">fine — small leaves give the canopy a relatively delicate appearance for a shrub of this size</div></div>
+    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to full shade; grows most vigorously in full sun, but one of the more shade-tolerant native hollies available</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">highly adaptable — sand, loam, clay; tolerates pH into the 7s; tolerates both dry and periodically flooded conditions; outstanding aerosol salt-spray and soil salinity tolerance makes it one of the premier native buffer plants for maritime hammocks, coastal dunes, and exposed Sarasota Bay shorelines in Manatee County</div></div>
+    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established</div></div>
+    </div>
+  </div>
+  <div class="plant-caution-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>Do not eat the berries. They are mildly toxic to people and most mammals — containing saponins and other compounds that can cause nausea, vomiting, and digestive upset if eaten in any quantity, and they should be considered a hazard for small children.</p><p>The same caution applies to dogs; holly berries and leaves carry low but real toxicity for pets, with symptoms including vomiting, diarrhea, and lethargy.</p><p>The leaves are a different matter: properly dried and roasted, they have been brewed as a caffeinated tea for centuries and are not toxic when used this way — but preparation matters, and this is not a plant to improvise with. If a child or pet has eaten berries, contact Poison Control (800-222-1222) or your veterinarian.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>Yaupon tolerates one of the widest ranges of site conditions of any native Florida shrub — UF/IFAS describes it as growing &#x27;from full sun or shade to seaside or swamps, in sand or clay.&#x27; At Palma Sola Botanical Park it is a strong candidate for spots where other plants struggle.</p>
+      <p>A wide range of cultivars is available: weeping forms (&#x27;Pendula&#x27;), compact dwarfs (&#x27;Schilling&#x27;s Dwarf,&#x27; &#x27;Nana&#x27;), narrow upright forms (&#x27;Will Fleming&#x27;), and berry-color variants. The species itself is clonal and can be propagated by transplanting root suckers from a known female if berries are the goal.</p></div>
+  </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672130496/large.jpg" loading="lazy" alt="Yaupon Holly — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div><div class="gal-date">📅 Jun 3, 2026</div></div></div></div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Yaupon</span><span class="alias-tag">Cassena</span><span class="alias-tag">Cassine</span><span class="alias-tag">Carolina Tea</span></div>
+  </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
+        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-00343/672115769.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jun 3, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672130496/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jun 3, 2026"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    </script>
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div class="page-stamp">Page updated <strong>August 11, 2026</strong></div>
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
