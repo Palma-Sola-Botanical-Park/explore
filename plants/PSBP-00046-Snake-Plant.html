@@ -144,7 +144,7 @@
 
 <div class="plant-wrap">
 <div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00046/667850847.jpg" alt="Snake Plant at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00046/661615343.jpg" alt="Snake Plant at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
   <div class="plant-hero-overlay">
     <div class="plant-hero-category">Foliage &amp; Accent</div>
     <div class="plant-hero-name">Snake Plant</div>
@@ -154,7 +154,7 @@
   <span class="plant-sci-name">Dracaena trifasciata</span>
   <a class="plant-family-tag" href="../nature.html?family=Asparagaceae">Asparagaceae</a>
 </div>
-<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 May 27, 2026</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 May 17, 2026</div>
 <div class="plant-content">
   <div class="plant-status-row">
     
@@ -226,9 +226,6 @@
       <p>PARK CONTEXT: Snake plants sprinkled throughout the park in varied forms/sizes (good spot-them exercise). Dedicated patch planted by Bright Futures high school volunteers: just past the front gate, down the footpath to the LEFT, beyond the big Staghorn Fern on the right. Regularly maintained; for several students it was the first plant they learned to ID.</p>
       <p>Tie-in: Baader-Meinhof / frequency illusion (once learned, seen everywhere).</p></div>
   </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/661615343/large.jpg" loading="lazy" alt="Snake Plant — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div><div class="gal-date">📅 May 17, 2026</div></div></div></div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
     <div class="alias-list"><span class="alias-tag">Mother-in-Law&#x27;s Tongue</span><span class="alias-tag">Viper&#x27;s Bowstring Hemp</span><span class="alias-tag">Saint George&#x27;s Sword</span><span class="alias-tag">(formerly Sansevieria trifasciata)</span></div>
@@ -237,27 +234,25 @@
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
         <img class="lb-img" id="lbImg">
         <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
+
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-00046/667850847.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "May 27, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/661615343/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "May 17, 2026"}];
+    var lbData=[{"src": "../photos/PSBP-00046/661615343.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "May 17, 2026"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();});
     </script>
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
 </div>
 </div><!-- /.plant-wrap -->
 <a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>July 24, 2026</strong></div>
+<div class="page-stamp">Page updated <strong>August 11, 2026</strong></div>
 <div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>
 <script>
