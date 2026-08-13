@@ -32,6 +32,14 @@
    name added to the roster and pushed appears everywhere on next page load,
    with NO photo re-import or propagate step required. Roster fetch failures
    are non-fatal — the site falls back to baked names, exactly as before.
+
+   NOTE ON SPECIES LABELS: some photos in photo_credits.json have a
+   scientific_name but no common_name (typically genus-level IDs, or species
+   whose common name hasn't been curated yet). Both attribution() and
+   speciesTag() render whatever's present -- "Common · *Scientific*" when both
+   exist, "Common" alone, or *Scientific* alone -- and skip the row entirely
+   only when both are absent. A missing common name should never blank the
+   whole label.
    ========================================================================== */
 (function () {
   'use strict';
@@ -71,6 +79,19 @@
   function resolveName(login, bakedName) {
     if (login && _nameMap && _nameMap[login]) return _nameMap[login];
     return bakedName || login || '';
+  }
+
+  // Build the inner species-label HTML from whatever's available:
+  //   common + scientific -> "Common · <em>Scientific</em>"
+  //   common only         -> "Common"
+  //   scientific only     -> "<em>Scientific</em>"
+  //   neither             -> "" (caller should skip the row)
+  // See NOTE ON SPECIES LABELS in the file header.
+  function speciesLabelHtml(common, scientific) {
+    if (common && scientific) return esc(common) + ' \u00b7 <em>' + esc(scientific) + '</em>';
+    if (common)               return esc(common);
+    if (scientific)           return '<em>' + esc(scientific) + '</em>';
+    return '';
   }
 
   // ---- license handling ---------------------------------------------------
@@ -137,10 +158,11 @@
     opts = opts || {};
     var rows = [];
 
-    if (opts.species) {
-      rows.push('<span class="attr-species">' + esc(opts.species)
-        + (opts.scientific ? ' \u00b7 <em>' + esc(opts.scientific) + '</em>' : '')
-        + '</span>');
+    // Render whichever species info is available (never blank the row just
+    // because common_name is missing -- see NOTE ON SPECIES LABELS).
+    var speciesInner = speciesLabelHtml(opts.species, opts.scientific);
+    if (speciesInner) {
+      rows.push('<span class="attr-species">' + speciesInner + '</span>');
     }
 
     // photographer + date join with dots; the CC badge and source sit apart
@@ -162,11 +184,9 @@
   // species name rides INSIDE the photo, the photographer gets a byline OUTSIDE.
   function speciesTag(o) {
     o = o || {};
-    if (!o.species && !o.scientific) return '';
-    return '<div class="species-tag"><span class="attr-species">'
-         + esc(o.species || '')
-         + (o.scientific ? ' \u00b7 <em>' + esc(o.scientific) + '</em>' : '')
-         + '</span></div>';
+    var inner = speciesLabelHtml(o.species, o.scientific);
+    if (!inner) return '';
+    return '<div class="species-tag"><span class="attr-species">' + inner + '</span></div>';
   }
 
   function creditPlate(o) {
