@@ -24,12 +24,14 @@
    gets its dates straight from the iNaturalist API.
 
    NOTE ON NAMES: photographer_names.json (data/sources/) is the canonical
-   login -> display-name roster and OVERRIDES any name baked into
-   photo_credits.json. It is fetched in parallel with the photo pool and merged
-   in, so a new contributor whose photos have never been imported (e.g. someone
-   who just posted their first iNat observation, showing up live in "What's
-   been seen lately") still resolves to their real name as soon as they're
-   added to the roster and pushed. Roster fetch failures are non-fatal.
+   login -> display-name roster and is the source of truth for names EVERYWHERE
+   on the site. It is fetched in parallel with the photo pool and merged into
+   _nameMap. All three renderers (hero slideshow, "Ten acres" mosaic, and
+   "What's been seen lately") consult _nameMap first and fall back to the name
+   baked into photo_credits.json only when the roster is silent. Result: a
+   name added to the roster and pushed appears everywhere on next page load,
+   with NO photo re-import or propagate step required. Roster fetch failures
+   are non-fatal — the site falls back to baked names, exactly as before.
    ========================================================================== */
 (function () {
   'use strict';
@@ -59,6 +61,16 @@
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  // Resolve a photographer login to their canonical display name, with the
+  // roster as source of truth and the baked-in name as fallback. Used by
+  // attrFor() so every renderer resolves names the same way. Safe to call
+  // before _nameMap is populated (returns the baked name or the login).
+  // See NOTE ON NAMES in the file header.
+  function resolveName(login, bakedName) {
+    if (login && _nameMap && _nameMap[login]) return _nameMap[login];
+    return bakedName || login || '';
   }
 
   // ---- license handling ---------------------------------------------------
@@ -294,7 +306,8 @@
     return attribution({
       species:    withSpecies ? p.common_name : null,
       scientific: withSpecies ? p.scientific_name : null,
-      by:         p.photographer_name || p.photographer,
+      // roster wins; baked photographer_name is the fallback; login last resort
+      by:         resolveName(p.photographer, p.photographer_name),
       license:    p.license,
       // reads whichever date field the import pipeline lands on; absent today,
       // appears automatically once observed_on/date is captured at import time.
