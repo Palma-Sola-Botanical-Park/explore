@@ -5,7 +5,7 @@
     "species_count": 225,
     "schema_version": "1.4",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained.",
-    "updated": "2026-08-12T17:33:49"
+    "updated": "2026-08-13T17:01:14"
   },
   "species": [
     {
@@ -16063,7 +16063,7 @@
       "category": "Native Groundcovers and Wildflowers",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": true,
       "alternate_names": [
         "Scarlet Sage",
@@ -16072,14 +16072,15 @@
         "Salvia coccinea"
       ],
       "quick_hits": [
-        "A Florida-native wildflower whose slender scarlet (sometimes pink or white) blooms are built for hummingbirds.",
-        "The tubular flowers fit a hummingbird's bill and tongue almost exactly — a partnership in plain sight.",
-        "It is a tireless self-seeder, popping up year after year and filling in gaps in a sunny bed.",
+        "When a hummingbird probes the flower for nectar, the exserted stamens dust pollen directly onto its head — the plant is essentially using the bird as a flying paintbrush.",
+        "A Florida-native wildflower whose slender scarlet (sometimes pink or white) blooms are built almost exclusively for hummingbirds.",
+        "It is a tireless self-seeder, popping up year after year and filling in gaps in a sunny bed. At Palma Sola Botanical Park, tropical sage is grown primarily in the butterfly garden near the pavilion — a fitting home for a plant that draws so many winged visitors.",
         "A true sage (Salvia), it carries the family's faintly aromatic foliage."
       ],
       "origin": "Native to the southeastern United States, including Florida, and south into Mexico and tropical America. A common wildflower of open woods, clearings, and disturbed ground, and a favorite in native and pollinator gardens.",
       "more_information": [
         "Tropical sage is one of Florida's most rewarding native wildflowers for wildlife. Its loose spikes of slender, tubular flowers — usually vivid scarlet, sometimes pink, coral, or white — are shaped and colored for hummingbirds, which probe them for nectar, and they draw butterflies and bees as well.",
+        "The pollination trick is elegant: the stamens in S. coccinea are exserted and immovable, positioned so that as a hummingbird inserts its bill to reach the nectar, they deposit pollen directly onto its head. The bird carries that pollen to the next flower without knowing it, completing the plant's work. Research on S. coccinea has directly observed successful pollen transfer to hummingbirds' heads in exactly this way.",
         "It is also delightfully easy. The plant blooms over a long season, sets seed freely, and reseeds itself year after year, drifting through a sunny bed and filling in bare ground without becoming a nuisance. That self-sowing habit makes it a low-effort anchor for a pollinator planting.",
         "As a true Salvia — the sage genus — it carries the family's lightly aromatic foliage, a soft herbal scent when the leaves are brushed."
       ],
@@ -16094,7 +16095,7 @@
           },
           {
             "label": "Flowers",
-            "text": "Loose spikes of slender, tubular, two-lipped flowers, usually scarlet (also pink, coral, or white), much of the year."
+            "text": "Loose spikes of slender, tubular, two-lipped flowers — with an arching upper hood and a lower landing pad — usually scarlet (also pink, coral, or white), much of the year."
           },
           {
             "label": "Leaves",
@@ -16128,7 +16129,7 @@
         "note": "reseeds readily — let it self-sow or deadhead to control spread"
       },
       "edibility": {
-        "level": "Red",
+        "level": "Yellow",
         "detail": "Not a food plant. Grown as a native ornamental and pollinator wildflower."
       },
       "toxicity": {
@@ -16137,20 +16138,35 @@
         "dogs_level": "Green",
         "dogs": "Not listed as toxic to dogs by ASPCA. Tropical sage is not known to be harmful."
       },
-      "other_notes": null,
+      "other_notes": [
+        "Tropical Sage reseeds freely and the FNPS flags it as 'fairly aggressive' in favorable spots. That is not a reason to avoid it — it is one of its best traits in a wildlife garden — but it is worth knowing before you plant it next to a tidy bed where you do not want volunteers.",
+        "The park's plant is the straight wild type, which is the most wildlife-productive form. Named cultivars such as 'Coral Nymph' (pink and white bicolor) and 'Snow Nymph' (pure white) are widely available and still attract pollinators, but the red-flowered wild type is what hummingbirds and the widest range of butterflies key in on.",
+        "In Central Florida's mild winters, a freeze may knock back top growth, but the root crown often survives and rebounds. Even if the plant is killed entirely, seeds already banked in the soil will send up new volunteers as soon as warm weather returns — making this one of the more freeze-resilient wildflowers in a Manatee County garden."
+      ],
       "internal_notes": "Added 2026-06-18 from iNaturalist gap analysis (June 2026 batch). Anchor obs #368046877 (frankymca); Unique ID written to iNat. Shell row — content fields pending review. Typo duplicate merged from PSBP-00435.",
-      "native_notes": null,
+      "native_notes": "Its pre-Columbian nativity in Florida has been debated since the nineteenth century — Chapman (1897) considered it escaped from cultivation, while Bartram (1792) and Small (1929) regarded it as native. The Atlas of Florida Plants (USF), UF/IFAS, and FNPS all list it as native, and that consensus is followed here.",
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "form": "Groundcover & Wildflower",
-      "safety_note": [],
+      "safety_note": [
+        "Edibility reports are genuinely mixed: the Florida Native Plant Society notes that some people have reported a severe stomach ache after consuming a concentrated extract from the flowers, while others use the leaves and flowers in small amounts as a salad garnish. Not a food plant — and not one to experiment with carelessly.",
+        "The plant is not considered toxic to people, dogs, or cats in a normal garden encounter, but eating it in quantity is inadvisable."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
-        "adult_food": false,
-        "adult_species": [],
-        "notes": null
+        "adult_food": true,
+        "adult_species": [
+          "Giant Swallowtail (Papilio cresphontes)",
+          "Gulf Fritillary (Agraulis vanillae)",
+          "Zebra Longwing (Heliconius charithonia)",
+          "Monarch (Danaus plexippus)",
+          "Cloudless Sulphur (Phoebis sennae)",
+          "Orange-barred Sulphur (Phoebis philea)",
+          "Spicebush Swallowtail (Papilio troilus)"
+        ],
+        "notes": "Tropical sage is one of the most productive adult nectar plants for Florida butterflies across many families, but it is not a documented larval host for Florida butterflies — the Florida Museum of Natural History lists no larval hosts for this species. All adult nectar species listed have confirmed ranges at Bradenton's latitude."
       }
     },
     {
