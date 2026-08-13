@@ -22,6 +22,14 @@
    import can add optional `time_observed_at`), so hero/grid/plate attribution
    shows photographer + date + license. The live "What's been seen lately" mosaic
    gets its dates straight from the iNaturalist API.
+
+   NOTE ON NAMES: photographer_names.json (data/sources/) is the canonical
+   login -> display-name roster and OVERRIDES any name baked into
+   photo_credits.json. It is fetched in parallel with the photo pool and merged
+   in, so a new contributor whose photos have never been imported (e.g. someone
+   who just posted their first iNat observation, showing up live in "What's
+   been seen lately") still resolves to their real name as soon as they're
+   added to the roster and pushed. Roster fetch failures are non-fatal.
    ========================================================================== */
 (function () {
   'use strict';
@@ -29,6 +37,7 @@
   // ---- config -------------------------------------------------------------
   // If photo_credits.json is served from a different path, change this one line.
   var SRC        = 'data/sources/photo_credits.json';
+  var ROSTER_SRC = 'data/sources/photographer_names.json';  // canonical login -> display name
   var LOCAL_DIR  = 'photos/';   // where curated local hero JPGs live
   var HERO_COUNT = 10;          // slides in the top-right slideshow
   var GRID_COUNT = 4;           // tiles in the "Ten acres" mosaic
@@ -171,12 +180,34 @@
 
   function loadPool() {
     if (_pool) return _pool;
-    _pool = fetch(SRC)
+
+    // Fetch the roster in parallel with the photo credits. The roster is the
+    // canonical login -> display-name source of truth for the whole site,
+    // and applies to LIVE iNat observations (surfaced by "What's been seen
+    // lately") whose photographers may not yet exist in photo_credits.json at
+    // all. Its fetch has its own catch so a missing / malformed / 404 roster
+    // never blocks the photo pool from loading — we fall back to whatever
+    // names were baked into photo_credits.json, exactly as before.
+    var rosterPromise = fetch(ROSTER_SRC)
       .then(function (r) {
-        if (!r.ok) throw new Error('photo_credits.json ' + r.status);
+        if (!r.ok) throw new Error('photographer_names.json ' + r.status);
         return r.json();
       })
-      .then(function (data) {
+      .catch(function (err) {
+        console.warn('[photo-credits] could not load roster (falling back to baked names):', err);
+        return {};
+      });
+
+    _pool = Promise.all([
+      fetch(SRC).then(function (r) {
+        if (!r.ok) throw new Error('photo_credits.json ' + r.status);
+        return r.json();
+      }),
+      rosterPromise
+    ])
+      .then(function (results) {
+        var data   = results[0];
+        var roster = results[1] || {};
         var photos = (data && data.photos) || [];
 
         // build login -> display name map from ALL photos (not just heroes)
@@ -187,6 +218,22 @@
             nm[p.photographer] = p.photographer_name;
           }
         });
+
+        // Merge the roster on top. It's the source of truth, so it OVERRIDES
+        // any name baked into photo_credits.json (which is effectively a stale
+        // cache of whatever `propagate` last wrote). This also seeds names for
+        // photographers who have live iNat observations but no import yet, so
+        // "What's been seen lately" always resolves logins as soon as the
+        // roster is updated — no photo re-import required.
+        // Keys starting with "_" are metadata (e.g. "_note") and skipped.
+        Object.keys(roster).forEach(function (login) {
+          if (login.charAt(0) === '_') return;
+          var entry = roster[login];
+          if (entry && entry.display_name) {
+            nm[login] = entry.display_name;
+          }
+        });
+
         _nameMap = nm;
 
         var heroes = photos.filter(usableHero);
