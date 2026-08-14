@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mottled Spurge · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the gallery lightbox */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line */
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
+
+  .page-stamp{ text-align:center;font-size:12px;color:#8a8a7a;padding:16px 16px 28px;font-style:italic;letter-spacing:0.01em; }
+  .page-stamp strong{ font-style:normal;font-weight:600;color:#6b6b5c; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img style="cursor:pointer;object-position:52% 45%" src="../photos/PSBP-00303/672236139.jpg" alt="Mottled Spurge at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Foliage &amp; Accent</div>
+    <div class="plant-hero-name">Mottled Spurge</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Euphorbia lactea</span>
+  <a class="plant-family-tag" href="../nature.html?family=Euphorbiaceae">Euphorbiaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Denise Sosa</strong> · CC-BY-NC · via iNaturalist · 📅 Jun 3, 2026</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>What you are looking at is actually two plants fused into one. The wavy, ruffled fan on top is a crested mutation of Euphorbia lactea — known as the Cristata form — grafted onto the trunk of a different euphorbia species, Euphorbia neriifolia, which supplies the roots. The join between them, a calloused seam near the base of the fan, is visible if you look closely.</li>
+    <li>Despite looking exactly like a cactus — angular ribbed arms, paired black spines, no visible leaves — this plant is not a cactus at all. True cacti are native to the Americas; Euphorbia lactea hails from the Indian Subcontinent. The two families arrived at the same thorny, succulent body plan entirely independently, on opposite sides of the planet.</li>
+    <li>Every part of this plant is filled with thick white latex sap. When a stem is broken, the sap hits air and begins to coagulate almost immediately — a natural quick-seal that protects the wound and can physically gum up the mouthparts of insects that try to feed on it.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Euphorbia lactea is native to the arid and subtropical regions of South Asia, primarily the Indian Subcontinent — including India and Sri Lanka — where it grows in dry scrub and open rocky terrain. It has long been widely cultivated across tropical Asia, the West Indies, and elsewhere, and has at times escaped cultivation to form dense thickets in areas with suitable climate.</p>
+      <p>In Florida it is established as an ornamental, particularly in South Florida landscapes, and UF/IFAS recognizes it as a salt-tolerant shrub suited to southern parts of the state. It arrived in cultivation here as part of the broader mid-twentieth-century enthusiasm for dramatic, low-water accent plants that could handle Florida&#x27;s heat and coastal conditions.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>Euphorbia lactea is one of the clearest examples of convergent evolution — meaning two completely unrelated plant families, on opposite sides of the world, independently evolved the exact same set of survival features. Cacti evolved in the Americas; euphorbias in Asia and Africa. Neither borrowed from the other.</li>
+    <li>Both independently solved the same problem — how to thrive in hot, dry places with unpredictable rain — and arrived at the same answer: water-storing stems, reduced or eliminated leaves, and spines for protection. The result looks identical even though the two groups share no close ancestry.</li>
+    <li>The genus Euphorbia is enormous — over 2,000 species — and one of the most ecologically diverse plant genera on Earth, ranging from tiny annual weeds to towering succulent trees.</li>
+    <li>Euphorbia lactea sits at the dramatic end of that spectrum: a slow-growing shrub or small tree that can reach 15 feet outdoors, with a multi-branched, candelabra silhouette (imagine a giant, multi-armed chandelier rendered in green-and-white sculptural stems).</li>
+    <li>The stems have three to four angled ridges, each lined with paired black spines, and a mottled green-and-white surface pattern that gives the common name &#x27;mottled spurge&#x27; its logic. In India the plant has a long history of traditional use — the latex has been applied medicinally, though its toxicity makes such use a careful business.</li>
+    <li>That latex is also the plant&#x27;s primary defense against herbivores. Euphorbia sap coagulates rapidly on contact with air, forming a sticky, often toxic barrier that can seal a wound and physically gum up the mouthparts of insects before they can take a second bite — a faster, messier deterrent than thorns alone.</li>
+    <li>The species epithet lactea, Latin for &#x27;milk,&#x27; refers directly to that abundant white sap, the first thing you notice when any stem is broken.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>Euphorbia lactea&#x27;s wildlife value in Florida is limited. The plant rarely flowers in cultivation, and when cyathia do appear near the stem tips, they may receive visits from small bees and other insects attracted to the modest nectar. No specialist pollinator relationships are documented for this species in Florida or North America.</p>
+      <p>Because it is a non-native plant without co-evolutionary ties to Florida&#x27;s fauna, it does not function as a larval host for local butterflies or moths. Visitors looking for the park&#x27;s best pollinator habitat will find it among the native plantings elsewhere on the grounds.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>In cultivation, Euphorbia lactea is propagated almost entirely by stem cuttings. Cuttings are taken in spring or summer, allowed to dry and callous for several days (this also lets the latex sap seal), and then planted in well-draining soil. Seed propagation is possible but rarely practical because the plant flowers infrequently in cultivation.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Mottled spurge rarely flowers, especially when grown as a container or accent plant. When it does bloom, the flowers are small, yellow-tinged, and inconspicuous — technically paired cyathia (the characteristic Euphorbia flower structure, where what looks like a single bloom is actually a cluster of reduced male and female flowers enclosed by a cup-shaped structure).</p><p>They appear near the growing tips.</p></div>
+<div class="repro-item"><div class="repro-label">Stems</div><p>The stems do the work that leaves do in most plants — they are green, succulent, and photosynthetically active. Each stem is distinctly three- to four-angled in cross section, with ridges bearing paired black spines up to about 5 millimeters long. The mottled white-and-green patterning along the stem surface is characteristic of the species and is what prompted the name &#x27;mottled spurge.&#x27;</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Small leaves do appear at the growing tips, particularly during active growth in warmer months, but they are short-lived and drop quickly. For most of the year the plant appears entirely leafless — the stems are the primary photosynthetic surface.</p></div>
+<div class="repro-item"><div class="repro-label">The Crested Form</div><p>The &#x27;Cristata&#x27; cultivar — widely sold as &#x27;Coral Cactus&#x27; and the form present at this park — results from a rare mutation in which the growing tip proliferates laterally instead of upward, producing a fan- or ribbon-shaped crest rather than branching stems.</p><p>Because this crested top cannot support itself on its own roots, it is grafted onto the trunk of Euphorbia neriifolia, which provides structure and a functioning root system. The result is literally two different plants fused into one.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>This specimen is the grafted Cristata form, so start at the top: the wavy, ruffled fan-shaped crest is the mutant Euphorbia lactea, and the plain cylindrical green stem below it is a different plant entirely — Euphorbia neriifolia.</p><p>Look closely near where the two halves meet and you should be able to see the graft union: a calloused seam or V-shaped scar where the crested top was fused onto the rootstock. On the lower stem, notice the angled ridges lined with small paired black spines. In the rare event the plant is in bloom, look for tiny yellow-tinged flower clusters near the tips of the crest.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">up to 15 feet outdoors in South Florida (UF/IFAS); typically much smaller in containers</div></div>
+    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">3 to 6 feet in mature landscape specimens</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">erect, candelabra-branching succulent shrub or small tree; strongly vertical</div></div>
+    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">slow</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">coarse — bold angular stems with a sculptural, architectural quality</div></div>
+    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun preferred; tolerates part shade but may become leggy</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">well-drained sandy or loamy soils; will not tolerate wet or waterlogged conditions; tolerates poor, dry soils well</div></div>
+    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established — stores water in its succulent stems and is adapted to long dry periods</div></div>
+    </div>
+  </div>
+  <div class="plant-toxic-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>The white latex sap is a genuine hazard — treat any broken stem as you would a caustic chemical. Skin contact causes contact dermatitis ranging from mild irritation to blistering, and sap reaching the eyes causes immediate severe pain, burning, and photophobia; if left untreated it can cause lasting corneal damage.</p><p>The most common route to eye exposure is indirect: sap on hands or tools transferred to the eye when someone wipes their face or rubs their eyes, so wash hands thoroughly and wear gloves and eye protection whenever cutting or handling a broken stem. Ingesting any part of the plant causes blistering of the lips and oral mucosa.</p><p>The sap is equally toxic to dogs and cats; if a person or pet has had sap contact with the eyes, or if any part of the plant has been swallowed, seek medical or veterinary attention promptly — for pets, the ASPCA Animal Poison Control Center is reachable at (888) 426-4435.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>The specimen at Palma Sola Botanical Park is the grafted crested cultivar — Euphorbia lactea &#x27;Cristata&#x27; fused onto a trunk of Euphorbia neriifolia. That grafted nature is one of the most reliably surprising facts about this plant for any visitor and is worth calling out clearly on the sign.</p>
+      <p>UF/IFAS extension documents list Euphorbia lactea as a salt-tolerant shrub for South Florida landscapes. Its hardiness range is listed as Zone 10 and above, so the specimen here is near the northern edge of reliable outdoor hardiness; in an unusually hard freeze, watch for soft water-soaked stem tips or tip-dieback, which are the first signs of cold stress in succulent euphorbias.</p>
+      <p>Across its native South Asia and in parts of the Caribbean and Zone 10–11 United States, Euphorbia lactea is frequently planted as a living fence or thorny barrier hedge around pastures — its spines and toxic sap make it an effective deterrent to livestock and intruders alike.</p></div>
+  </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602870217/large.jpg" loading="lazy" alt="Mottled Spurge — photo by elurding"><div class="gal-credit">📷 elurding</div><div class="gal-date">📅 Dec 25, 2025</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602870853/large.jpg" loading="lazy" alt="Mottled Spurge — photo by elurding"><div class="gal-credit">📷 elurding</div><div class="gal-date">📅 Dec 25, 2025</div></div></div></div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Candelabra Cactus</span><span class="alias-tag">Dragon Bones</span><span class="alias-tag">Milkstripe Euphorbia</span><span class="alias-tag">False Cactus</span><span class="alias-tag">Hatrack Cactus</span><span class="alias-tag">Mottled Candlestick</span><span class="alias-tag">Candelabrum Tree</span></div>
+  </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Denise Sosa (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© elurding (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
+        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-00303/672236139.jpg", "credit": "Denise Sosa", "license": "CC-BY-NC", "observed": "Jun 3, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/602870217/large.jpg", "credit": "elurding", "license": "CC-BY-NC", "observed": "Dec 25, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/602870853/large.jpg", "credit": "elurding", "license": "CC-BY-NC", "observed": "Dec 25, 2025"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    </script>
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div class="page-stamp">Page updated <strong>August 13, 2026</strong></div>
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
