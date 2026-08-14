@@ -5,7 +5,7 @@
     "species_count": 220,
     "schema_version": "1.4",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained.",
-    "updated": "2026-08-13T21:29:20"
+    "updated": "2026-08-13T22:23:58"
   },
   "species": [
     {
@@ -23626,7 +23626,7 @@
       "category": "",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "html",
+      "status": "spotted",
       "native": false,
       "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
       "native_notes": "Native to tropical Asia and Oceania. The Atlas of Florida Plants (USF) flags it as SE (State exotic or non-native), and FNAI lists its origin as Asia. It is not native to Florida or anywhere in the southeastern United States.",
@@ -26104,21 +26104,118 @@
         "genus": "Conocarpus",
         "species": "erectus"
       },
-      "status": "spotted",
+      "status": "html",
       "has_sign": false,
-      "native_notes": null,
+      "native_notes": "Confirmed native to Florida and the broader Caribbean and South American coast by FNPS, UF/IFAS (which assigns it the status 'native' in its invasive assessment), the Atlas of Florida Plants (USF), and USDA records. No contested status found.",
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Tree",
+      "safety_note": [
+        "Conocarpus erectus does not appear on any standard toxicity list for people or pets. No specific toxicity to people, dogs, or cats was identified in the sources reviewed. The plant is not considered an edible landscape plant; its dense wood has historical uses including charcoal and smoking meat and fish — otherwise harmless."
+      ],
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
-        "adult_food": false,
-        "adult_species": [],
-        "notes": null
-      }
+        "larval_food": true,
+        "larval_species": [
+          "Martial Scrub-Hairstreak (Strymon martialis)",
+          "Tantalus Sphinx (Aellopos tantalus)"
+        ],
+        "adult_food": true,
+        "adult_species": [
+          "Martial Scrub-Hairstreak (Strymon martialis)",
+          "Amethyst Hairstreak (Chlorostrymon maesites)"
+        ],
+        "notes": "FNPS lists Conocarpus erectus as both a larval host and nectar source for the Martial Scrub-Hairstreak and Tantalus Sphinx, and as an adult nectar plant for the Amethyst Hairstreak and other unspecified butterflies. The Tantalus Sphinx is technically a moth. The Martial Scrub-Hairstreak appears in both larval and adult nectar roles. All species are documented in South Florida at or near Bradenton's latitude."
+      },
+      "native": true,
+      "alternate_names": [
+        "Buttonwood",
+        "Button Mangrove",
+        "White Buttonwood"
+      ],
+      "quick_hits": [
+        "Sometimes called Florida's fourth mangrove, Green Buttonwood isn't a true mangrove — but it commonly grows along the landward edge of mangrove forests, where salt, flooding and drier upland conditions meet.",
+        "This tree has a salt-excretion system. Paired glands on the petiole near the base of the leaf blade can excrete excess salt, helping buttonwood tolerate salty coastal conditions. Look closely at the base of a leaf — can you find the two tiny glands?",
+        "Green and silver buttonwood are forms of the same species, Conocarpus erectus. The silver form gets its shimmering appearance from dense silky hairs on its leaves, and plants can show intermediate degrees of hairiness.",
+        "Buttonwood has been a coastal workhorse for centuries. Its dense, heavy wood was used for firewood, lumber, cabinet work and charcoal — and was especially valued for smoking meat and fish along Florida and Caribbean coasts."
+      ],
+      "origin": [
+        "Green Buttonwood is native to southern Florida and ranges widely through tropical and subtropical America — from Bermuda and the Bahamas through the Caribbean, Mexico, and Central America, and southward into South America, including the Pacific coast of Peru and the Atlantic coast of Brazil.",
+        "Its native range is unusually broad, extending across tropical America and across the Atlantic to western tropical Africa.",
+        "In Florida, it is a characteristic tree of the upper edges of mangrove swamps, tidal flats, coastal hammocks, and marl prairies — anywhere saline or brackish soils keep competition low. UF/IFAS records buttonwood along Florida's Gulf Coast as far north as the Bradenton area — so this isn't simply a Florida native. It is a native tree of our own coastal region.",
+        "It has been in cultivation in Florida landscapes for generations and is widely available from native nurseries."
+      ],
+      "more_information": [
+        "Despite growing alongside mangroves, Buttonwood is not a true mangrove. It belongs to the family Combretaceae, the same family as Florida's White Mangrove. Unlike the true mangroves around it, Buttonwood does not produce specialized mangrove propagules. Instead, its fruits develop into small, dry, cone-like clusters, and its seeds are dispersed primarily by water.",
+        "Buttonwood and White Mangrove belong to the same plant family, Combretaceae; Red and Black Mangroves belong to different families. Ecologists sometimes call Buttonwood a mangrove associate rather than a mangrove proper.",
+        "The glands at the base of each leaf petiole are extrafloral nectaries — structures that secrete sugary compounds outside the flower. Ecological research on Buttonwood has shown that ants visiting these glands are associated with reduced leaf damage, an example of a plant-insect relationship in which ants may help defend the tree against herbivores.",
+        "Look for ants on the leaves: you may be watching that relationship in action.",
+        "The tree's tolerance for difficult conditions is genuinely impressive: full salt spray, periodic flooding, long dry spells, compacted soils, and hurricane-force winds. That combination of salt tolerance, drought tolerance, wind resistance and tough wood helps explain why buttonwood is such a characteristic tree of Florida's difficult coastal environments.",
+        "It is also one of the few Florida natives celebrated as a bonsai subject, where its naturally gnarled bark and small leaves translate beautifully at small scale."
+      ],
+      "wildlife_value": [
+        "The flower clusters — small and greenish, but produced nearly year-round — draw bees, butterflies, and other pollinators steadily through the warm months. The Florida Native Plant Society documents Buttonwood as a larval host for the Martial Scrub-Hairstreak butterfly and the Tantalus Sphinx moth, and as a nectar source for the Amethyst Hairstreak and other butterflies.",
+        "A larval host plant is where a butterfly or moth lays its eggs and where its caterpillars feed — supporting that life stage can be just as important to a wildlife garden as providing nectar for adults.",
+        "Beyond butterflies, the tree functions as a small-ecosystem anchor along the coast. Its rough bark and dense branching create surfaces and shelter used by insects, spiders and other small organisms, which can contribute to the food web supporting insect-eating birds.",
+        "Older specimens can become hosts for epiphytic bromeliads, orchids, and other plants that use the bark as an attachment surface — a mature tree can become a miniature vertical habitat in its own right."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Mature fruit heads release their small seeds, which are dispersed primarily by water. Both the green and silver forms can be propagated from both seed or cuttings."
+          },
+          {
+            "label": "Flowers",
+            "text": "Small, inconspicuous, and greenish to yellowish, the flowers are packed into tight, rounded heads arranged in branched panicles at or near the branch tips. They are not showy, but the clusters are numerous and flowers may occur throughout the year in Florida, with the most conspicuous production often during the warmer months. The genus name Conocarpus comes from the Greek for cone fruit — an unusually literal botanical name for the compact heads it produces."
+          },
+          {
+            "label": "Fruit",
+            "text": "Tiny flowers are packed into rounded heads; after flowering, those heads develop into the larger, button-like fruit clusters. The cone-like heads persist after flowering and mature into small, purplish-brown to red-brown, button-shaped clusters roughly half an inch across. Their tightly packed scales give the fruits their characteristic appearance — and the common name buttonwood. The small seeds are dispersed primarily by water."
+          },
+          {
+            "label": "Leaves",
+            "text": "Alternate, simple, lance-shaped to narrowly elliptic, two to four inches long with smooth margins. In the green form the surface is smooth and medium green. Look for two small glands on the upper side of the petiole near the base of the leaf blade — these are the extrafloral nectaries, and they are one of the features that distinguish this species. Leaves on the silver form are covered in fine silky hairs."
+          },
+          {
+            "label": "Trunk and Bark",
+            "text": "Typically multi-trunked and low-branching, with drooping branches. Young bark is gray and smooth; with age it becomes dark, deeply furrowed, thick, and rough — sometimes dramatically twisted and gnarled on trees exposed to constant coastal wind. Near the coast, that wind-sculpted form can become one of the tree's most recognizable and striking features, and makes it a favorite subject for bonsai practice."
+          }
+        ],
+        "what_to_look_for": "Start at the base: look for a multi-trunked, low-branching silhouette with dark, furrowed, sometimes twisted bark. Move up to the branch tips where the rounded flower clusters hang in branched panicles — these can be present much of the year. Check the upper side of a leaf petiole near the blade for the two small glands that sit right at the junction. If the tree is in fruit, the button-like brown cone clusters give the plant its name and are hard to miss. On older specimens, scan the bark surface for bromeliads or native orchids that have taken up residence in the crevices."
+      },
+      "seasonality": {
+        "bloom_months": "nearly year-round; peak spring through fall",
+        "bloom_description": "Small, greenish-yellow flowers in tight, rounded heads arranged in branched terminal panicles. Not showy individually, but clusters are numerous and may occur throughout the year, with the most conspicuous production often during the warmer months.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "nearly year-round, following bloom",
+        "notes": "FNPS lists this species as flowering and fruiting all year, making it a reliable year-round resource for pollinators."
+      },
+      "size": {
+        "height": "20 to 40 feet typical; exceptional specimens can reach about 50 feet or more",
+        "spread": "typically 20 to 30 feet wide; older specimens can be broader",
+        "habit": "typically multi-trunked; low-branching; starts with upright narrow crown, broadens and opens with age; branches droop",
+        "growth_rate": "moderate",
+        "texture": "fine to medium — small lance-shaped leaves give a relatively fine texture for a Florida coastal tree"
+      },
+      "growing_conditions": {
+        "light": "full sun; performs best in full sun and tolerates urban conditions well",
+        "soil_tolerances": "sand, loam, or clay; tolerates wet and seasonally dry soils, alkaline conditions, brackish areas, and saline soils; highly tolerant of salt spray, but not tolerant of prolonged inundation by salty or brackish water",
+        "drought_tolerance": "high once established",
+        "spacing": "allow 15 to 20 feet — the canopy can spread as wide as it is tall, and multi-trunked specimens benefit from room to show their form"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "The silver form — sometimes listed as Conocarpus erectus var. sericeus — is more commonly sold in the nursery trade than the green form, and is generally smaller and shrubby rather than tree-like.",
+        "The two grow together naturally, and plants with intermediate leaf color exist; the Atlas of Florida Plants notes that a full continuum of forms between glabrous green and silvery pubescent can appear even on a single branch. If you are sourcing Green Buttonwood specifically, confirm the form with your nursery.",
+        "Buttonwood has a long history as a bonsai subject in Florida, where its naturally small leaves, interesting bark, and tolerance for root restriction make it one of the most rewarding native species to work with at small scale."
+      ]
     },
     {
       "id": "PSBP-00726",
@@ -26156,21 +26253,111 @@
         "genus": "Magnolia",
         "species": "grandiflora"
       },
-      "status": "spotted",
+      "status": "html",
       "has_sign": false,
-      "native_notes": null,
+      "native_notes": "Native to the southeastern U.S. coastal plain from Virginia to central Florida and west to east Texas; listed as a Florida native by FNPS, the Atlas of Florida Plants (USF), and UNF Botanical Garden. Native range in Florida is primarily north and north-central Florida; it is widely cultivated throughout the rest of the state.",
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Tree",
+      "safety_note": [
+        "Southern Magnolia poses no known toxicity to people, dogs, cats, or horses. The petals are genuinely edible — eaten fresh or pickled, they carry a strong, spicy, ginger-meets-cardamom flavor — but the seeds and woody cone parts are unpalatable and should not be eaten. Otherwise harmless."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
-        "notes": null
-      }
+        "notes": "No swallowtail butterfly has been confirmed as a larval host on Magnolia grandiflora. The Palamedes Swallowtail (Papilio palamedes) uses Persea species (Lauraceae) exclusively — research indicates M. grandiflora's close relative M. virginiana contains compounds toxic to P. palamedes neonate larvae. The Eastern Tiger Swallowtail (P. glaucus) uses M. virginiana and tulip tree, not M. grandiflora. The Magnolia Serpentine Leafminer Moth (Phyllocnistis magnoliella) is documented on M. grandiflora, but it is a moth, not a butterfly, and is excluded here. No reliable adult butterfly nectar use has been documented at this latitude."
+      },
+      "native": true,
+      "alternate_names": [
+        "Bull Bay",
+        "Evergreen Magnolia",
+        "Large-Flower Magnolia"
+      ],
+      "quick_hits": [
+        "Each Southern Magnolia flower runs a two-day beetle trap. It opens in the female phase on day one, luring beetles in with fragrance and pollen. At nightfall the tepals fold shut, enclosing the beetles overnight; by morning the anthers have dusted them in fresh pollen and the flower reopens to release them — ready to cross-pollinate the next bloom they find.",
+        "Magnolias belong to an ancient lineage of flowering plants stretching back more than 100 million years, to the Cretaceous. Their large, open, pollen-rich flowers retain characteristics associated with beetle pollination — a glimpse of a floral strategy that predates modern bee-dominated ecosystems.",
+        "Flip over a mature leaf. The glossy dark-green top gives way to a striking rusty-brown, velvety underside. This dense covering of tiny hairs helps reduce water loss and may discourage leaf-chewing insects — and it is one of the easiest ways to recognize Southern Magnolia.",
+        "Before you plant one, know what you are signing up for. The large, waxy leaves decompose very slowly and pile up in a heavy spring flush each year. Surface roots spread wide and dense, making turfgrass underneath nearly impossible to sustain. Southern Magnolia rewards the gardener who gives it space and lets it be a tree — not a lawn ornament."
+      ],
+      "origin": [
+        "Southern Magnolia is native along the southeastern coastal plain from Virginia and North Carolina south into central Florida, and westward through the Gulf Coast states to eastern Texas.",
+        "In Florida it occurs naturally in hardwood hammocks, along ravines and stream margins, on mesic upland slopes, and at the edges of wooded floodplains — typically in spots that stay moist and are sheltered enough to escape regular fire.",
+        "Southern Magnolia is a Florida native, but its natural Florida range is concentrated mainly in the northern and north-central part of the state. Around Bradenton, it is best understood as a native southeastern tree that has been widely planted beyond the core of its natural Florida range — and one that performs well here."
+      ],
+      "more_information": [
+        "The genus name Magnolia honors Pierre Magnol, a seventeenth-century French botanist who pioneered the idea of plant families — grouping plants by shared traits rather than listing them alphabetically. The species name grandiflora is straightforward Latin: grandis ('big') plus flora ('flower'). For once, a botanical name that needs no translation.",
+        "Magnoliaceae belongs to an ancient lineage of flowering plants. Fossil evidence shows magnolia-like plants reaching deep into the Cretaceous, more than 100 million years ago. That ancient origin shaped the flower's entire design — open, bowl-shaped, richly scented, and built around pollen rewards that attract beetles rather than the nectar tubes favored by many bee-pollinated flowers.",
+        "Mark Catesby brought the first Magnolia grandiflora to Britain in 1726, and it soon became a prized ornamental in European estates and gardens.",
+        "Southern Magnolia is most abundant in moist, relatively fire-sheltered forests. Young trees are vulnerable to fire, while established trees can be considerably more fire-resistant and may resprout vigorously after damage. This is a useful contrast to many other Florida natives that tolerate or even require periodic fire — 'native' does not mean 'adapted to every Florida ecosystem.'",
+        "In the landscape it is long-lived, drought-tolerant once established, and moderately salt-tolerant — traits that suit it well to Florida's Gulf Coast gardens. Few American trees are as closely associated with the culture and landscapes of the Southeast: it is the state tree of Mississippi and has been planted far beyond its natural range for generations."
+      ],
+      "wildlife_value": [
+        "The flowers draw in beetles — several species — that arrive for pollen and other floral tissues and end up cross-pollinating the tree in the process. The blooms are powerfully fragrant, with a citrus-sweet character driven by compounds including geraniol and ocimene that signal to pollinators from a distance. Bees also visit, and recent research suggests they contribute to pollination as well.",
+        "When the woody cones split open in fall, they reveal bright red seeds dangling on silky threads. Squirrels, opossums, quail, wild turkeys, and an assortment of birds take the seeds, making this an important fall food source.",
+        "The dense, year-round evergreen canopy provides nesting shelter and cover for birds and small mammals, while the pollen-rich flowers and fall seeds provide seasonal food resources. For butterfly gardeners, Southern Magnolia is better understood as a source of structure, pollen, seeds, and shelter than as a caterpillar host plant."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Southern Magnolia reproduces by seed and, in cultivation, by semi-hardwood cuttings taken in summer. Good seed crops are produced most years once the tree reaches maturity; peak production typically does not arrive until around age 25. Seeds are dispersed primarily by birds and mammals."
+          },
+          {
+            "label": "Flowers",
+            "text": "Enormous, creamy white, cup-shaped flowers — up to about 12 inches across — appear singly at branch tips from late spring through summer, with scattered blooms possible into fall. Each flower is protogynous: the female reproductive structures become receptive before the pollen-producing anthers release pollen. This separation in timing encourages pollen to move between flowers rather than being deposited on the same flower. Beetles visiting for pollen can move between flowers during these different phases. The fragrance is heavy and citrus-sweet, driven chiefly by geraniol and ocimene, and is strongest in the midday heat."
+          },
+          {
+            "label": "Fruit",
+            "text": "A cone-like, woody, fuzzy brown aggregate fruit follows each flower, maturing in fall. When ripe it splits open to reveal bright rose-red seeds that dangle from the cone on silky threads. Each seed is wrapped in a fleshy, oily red covering called an aril that makes it attractive to birds and small mammals."
+          },
+          {
+            "label": "Leaves",
+            "text": "Large, leathery, and elliptic — typically 5 to 10 inches long. The upper surface is glossy dark green; the underside is covered in a dense, distinctive rust-colored to tawny fuzz (indumentum) that reduces water loss and deters leaf-chewing insects. Do not confuse Southern Magnolia with Sweetbay Magnolia (Magnolia virginiana): Southern Magnolia has much thicker, tougher, glossy leaves with a distinctly rusty-brown fuzzy underside, while Sweetbay has thinner, more delicate leaves. Leaves are arranged alternately and shed gradually as new foliage emerges, keeping the tree evergreen year-round; the older leaves that fall in spring can create a substantial carpet of large, slow-to-decompose litter."
+          },
+          {
+            "label": "Trunk and Bark",
+            "text": "Typically single-trunked and straight through the center of the crown. Bark is gray and smooth on young trees, developing scaly plates with age. On large specimens the trunk can exceed three feet in diameter. Lower branches may droop to the ground on open-grown trees."
+          }
+        ],
+        "what_to_look_for": "Try the leaf test: find a mature leaf and look at both sides. The top should be thick, glossy, and dark green; turn it over and look for the distinctive rusty-brown fuzz beneath — that indumentum is one of the tree's best field marks, and it serves a real purpose, reducing water loss and deterring leaf-chewing insects. In late spring and summer, look for the massive white flowers at the branch tips; they are among the largest blooms of any North American native tree. In fall, scan the canopy for the fuzzy brown cones splitting open to show dangling red seeds. The overall crown shape is a broad, dense pyramid — open-grown trees here often have branches sweeping close to the ground."
+      },
+      "seasonality": {
+        "bloom_months": "late spring through summer; occasional blooms into fall",
+        "bloom_description": "Massive creamy white, cup-shaped flowers up to 12 inches across, powerfully fragrant with a heavy citrus-sweet scent (driven chiefly by geraniol and ocimene), opening at branch tips over a long season.",
+        "leaf_behavior": "evergreen; individual leaves persist two to three years and drop gradually overall, though older leaves tend to shed in a concentrated flush in spring as new growth emerges — the tree is never fully bare, but expect a significant leaf drop each spring",
+        "fruiting_months": "fall (cones ripen and split to reveal red seeds)",
+        "notes": "The long bloom period means flowers, developing cones, and ripe fruit can sometimes be found on the same tree simultaneously in late summer."
+      },
+      "size": {
+        "height": "typically 60 to 80 feet; can exceed 80 feet in optimal conditions (UF/IFAS); exceptional old specimens can become much larger",
+        "spread": "30 to 40 feet (UF/IFAS)",
+        "habit": "single trunk; broad, dense pyramidal crown; lower branches may sweep to the ground on open-grown trees",
+        "growth_rate": "moderate",
+        "texture": "coarse"
+      },
+      "growing_conditions": {
+        "light": "full sun to partial shade; most vigorous and densely foliated in full sun",
+        "soil_tolerances": "prefers rich, moist, slightly acidic, well-drained loam; tolerates clay, sand, and occasional wet periods; moderately tolerant of salt spray",
+        "drought_tolerance": "moderate to good once established; performs best with consistent moisture",
+        "spacing": "Give this tree substantial room. A full-size Southern Magnolia can develop a broad canopy 30 to 40 feet across, with low, spreading branches on open-grown trees; large trees are best suited to parks, estates, and other spacious landscapes. The dense canopy and large, persistent leaves can make it difficult to maintain turf immediately beneath a mature tree.",
+        "wind_and_storms": "Mature trees can tolerate substantial wind, but large evergreen branches and heavy limbs can become hazards during hurricanes and severe storms. Give large specimens ample room and avoid planting beneath structures or important infrastructure.",
+        "maintenance": "Southern Magnolia is magnificent but not a small-space tree. The large, waxy leaves decompose very slowly and drop in a substantial spring flush every year. Surface roots spread wide and dense beneath mature specimens, making turfgrass almost impossible to sustain underneath — a mulched root zone is a far better fit. Give it room to become the tree it wants to be."
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "Many cultivars of Magnolia grandiflora are available in the nursery trade, offering variation in mature size, crown density, and cold hardiness.",
+        "Popular selections include 'Little Gem' (a compact, more slowly growing form) and 'Bracken's Brown Beauty.' The Florida Native Plant Society notes that 'Little Gem' originates from North Carolina stock, and suitability for Florida landscapes will vary by cultivar — for native provenance, source from a Florida native-plant nursery.",
+        "Southern Magnolia is listed as USDA Hardiness Zones 7A through 10A by UF/IFAS, which comfortably covers Bradenton (Zone 10A). It is the state tree of Mississippi."
+      ]
     },
     {
       "id": "PSBP-00731",
