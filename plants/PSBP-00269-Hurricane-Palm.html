@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hurricane Palm · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the gallery lightbox */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line */
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
+
+  .page-stamp{ text-align:center;font-size:12px;color:#8a8a7a;padding:16px 16px 28px;font-style:italic;letter-spacing:0.01em; }
+  .page-stamp strong{ font-style:normal;font-weight:600;color:#6b6b5c; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img style="cursor:pointer;object-position:50% 43%" src="../photos/PSBP-00269/687994686.jpg" alt="Hurricane Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Palm &amp; Cycad</div>
+    <div class="plant-hero-name">Hurricane Palm</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Dictyosperma album</span>
+  <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 Jun 28, 2026</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>One of its three wild varieties is already gone. In late 2024, the last known wild individual of the Round Island variety — Dictyosperma album var. conjugatum — was blown down in a windstorm on tiny Round Island off Mauritius. The variety is now extinct in the wild, surviving only in cultivation thanks to seeds collected by conservationists decades earlier.</li>
+    <li>Heavy harvesting of the edible heart drove wild populations of the Mauritius and Réunion variety to near-collapse — and removing the heart kills the tree. So a palm famous for surviving tropical storms proved far more vulnerable to a knife than to a hurricane.</li>
+    <li>Dictyosperma is a monotypic genus — Dictyosperma album is its only species — and its name tells you exactly what it looks like. The species epithet album is Latin for &#x27;white,&#x27; a direct reference to the pale wax coating the crownshaft. The genus name comes from the Greek for &#x27;net&#x27; and &#x27;seed,&#x27; describing the netted pattern on the seed surface.</li>
+    <li>Two features give this palm away from across the garden. New fronds emerge as rigid upright spears — green lances standing straight before they unfurl — and below the crown sits that distinctive waxy, pale crownshaft, like a collar marking where trunk ends and canopy begins.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>The Hurricane Palm is native exclusively to the Mascarene Islands — Mauritius, Réunion, and Rodrigues — a small volcanic archipelago in the Indian Ocean east of Madagascar. There it grows in coastal and upland forests, in warm, humid conditions with regular rainfall. It is the sole member of the genus Dictyosperma, found nowhere else in the wild.</p>
+      <p>Three botanical varieties are formally recognized, each tied to its own island: var. album from Mauritius and Réunion, var. aureum from Rodrigues, and var. conjugatum from Round Island, a tiny islet off Mauritius.</p>
+      <p>All three are threatened or critically endangered in the wild, driven to the brink by a combination of pressures including harvesting of the edible palm heart, habitat loss, and — especially on Round Island — the introduction of invasive animals that destroyed seedlings and regeneration.</p>
+      <p>In Florida, the species arrived as an ornamental introduction and is now grown throughout the southern part of the state, where it is valued for its elegant form and genuine wind resistance.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>The Hurricane Palm is monoecious, meaning male and female flowers are borne on the same inflorescence — unlike dioecious palms where each individual tree is strictly one sex. Several horse-tail-like inflorescences, each up to about a meter long, emerge in a ring below the crownshaft.</li>
+    <li>The small white to yellowish-brown flowers are followed by ovoid fruits that ripen to purple or black, each containing a single seed.</li>
+    <li>In its native Mascarenes the palm is a valued food plant: the apical bud — the heart — is edible cooked, and it has been harvested for this purpose for generations. That harvest is precisely what drove wild populations of the Mauritius and Réunion variety toward extinction, since removing the heart kills the palm.</li>
+    <li>One variety — Dictyosperma album var. conjugatum, endemic to Round Island — was lost from the wild in late 2024. Its collapse was driven primarily by invasive rabbits and goats introduced in the 19th century, which consumed seedlings and stripped topsoil until natural regeneration became impossible.</li>
+    <li>Conservation teams had collected seeds from the last individuals in the early 1990s, so the genetic lineage survives in cultivation.</li>
+    <li>It is a reminder that &#x27;common in gardens&#x27; and &#x27;safe in nature&#x27; are very different things — and that cultivated material, while valuable, is not a substitute for a wild population with its full ecological context and genetic provenance.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>In the Hurricane Palm&#x27;s native Mascarene Islands, the long-blooming inflorescences serve as a nectar resource for insects, and seeds are dispersed by birds and bats, linking the palm into the broader food web of its island ecosystem.</p>
+      <p>In Florida cultivation, the wildlife picture is more modest. The inflorescences attract generalist pollinators — bees and other nectar-seeking insects — and the small purple-black fruits may be taken by birds. Because the species has no evolutionary history with Florida&#x27;s native fauna, it does not function as a butterfly or moth larval host.</p>
+      <p>Its value here is primarily as a general nectar and fruit resource rather than as a specialist host plant.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Propagation is primarily by seed. The palm is monoecious — male and female flowers are borne on the same inflorescence on every individual — so any mature, flowering tree can potentially set fruit. Seeds require consistent warmth to germinate and can take several months; the fleshy fruit pulp is reported to contain germination-inhibiting compounds and should be fully removed before sowing.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Several inflorescences per tree emerge in a ring below the crownshaft, each branching into a rooster-tail or horse-tail shape up to about a meter long. Individual flowers are small and white to yellowish-brown. Male flowers open before female flowers on the same inflorescence — a timing gap that reduces self-pollination.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Small, ovoid drupes, roughly 1.5 to 2 cm long, ripening from green to purple or black. Each contains a single brown, ellipsoidal seed. The fruit is not considered edible.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Pinnate (feather-shaped), 2.5 to 3 meters long, with 50 to 70 lance-shaped leaflets on each side of the rachis, closely spaced and arching. The crown typically holds 20 to 30 leaves. New leaves emerge as stiff vertical spears — one of the most recognizable features of this species.</p></div>
+<div class="repro-item"><div class="repro-label">Crownshaft and Trunk</div><p>The crownshaft is prominent and swollen at the base, covered in pale wax and fine brown hairs — giving the palm its species name album, Latin for &#x27;white.&#x27; Color varies from green to white, grey, or brown depending on the variety. The trunk is solitary, gray, and ringed with leaf-scar bands, with a slight swelling at the base.</p><p>It is self-cleaning: old fronds shed without leaving persistent stubs or boots, and this same frond-shedding is precisely what earns the palm its common name — in high winds, fronds detach cleanly, dramatically reducing the surface area the storm can grab.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>Start at the top: look for the distinctive pale, waxy crownshaft sitting like a collar between the trunk and the spreading crown of arching fronds. The trunk below is clean, solitary, and neatly ringed — no persistent dead fronds, no boots — and the overall silhouette is upright and refined. Notice the new fronds emerging as upright green spears before they unfurl.</p><p>If the palm is in bloom, look for the multiple horse-tail-shaped flower stalks ringing the trunk just beneath the crownshaft. Ripe fruit, if present, will be small purple-black ovals clustered along those stalks.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">typically 30 to 40 feet in Florida cultivation; taller specimens occur in highly favorable conditions</div></div>
+    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">10 to 15 feet at maturity, though crown spread increases with age and growing conditions</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">solitary trunk, upright, with a graceful arching crown of pinnate fronds</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate to fast in warm, humid conditions; slow to moderate in its early years</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium-fine — the closely spaced, arching leaflets give a feathery, refined look</div></div>
+    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun; tolerates light shade but best form and growth in full sun</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">sandy, loamy, or clay soils; tolerates saline conditions; prefers well-drained soil with consistent moisture</div></div>
+    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">low compared with drought-tolerant palms — this species is native to humid coastal forests and performs best with regular water; not well-suited to prolonged drought</div></div>
+    </div>
+  </div>
+  <div class="plant-caution-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>The small purple-black fruit is not considered edible and has no culinary value, but it is not known to be toxic to people, dogs, or cats — non-toxic does not mean edible, and the fruit should not be eaten.</p><p>The apical bud (the growing heart at the center of the crown) is edible when cooked and has been harvested as a food source in the palm&#x27;s native Mascarene Islands, though doing so kills the tree; that harvesting pressure is a major reason wild populations of the Mauritius and Réunion variety are nearly gone.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>Worth knowing before you shop: the nursery trade color names for the three varieties are counterintuitive. Var. album (from Mauritius and Réunion) is often sold as the &#x27;Red Palm,&#x27; var. aureum (from Rodrigues) as the &#x27;White&#x27; or &#x27;Yellow,&#x27; and var. conjugatum (from Round Island) by similar color descriptors.</p>
+      <p>These labels refer to subtle differences in crownshaft and new-leaf coloration — they are nursery trade shorthand, not universally accepted botanical terms, though all three are formally recognized as botanical varieties by Kew&#x27;s Plants of the World Online.</p>
+      <p>Bradenton is near the cooler edge of where this tropical palm can be grown reliably outdoors. It tolerates brief cool spells better than prolonged cold; extended periods of cool temperatures — particularly sustained nights below 40°F — can cause foliage to yellow and spot, and a hard frost will cause significant damage. Planting in a sheltered microclimate gives the best results at this latitude.</p>
+      <p>The root system of established specimens is sensitive and does not transplant well; choose the planting site carefully and establish the palm in place from the start.</p></div>
+  </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/687994688/large.jpg" loading="lazy" alt="Hurricane Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div><div class="gal-date">📅 Jun 28, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/687994693/large.jpg" loading="lazy" alt="Hurricane Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div><div class="gal-date">📅 Jun 28, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697822338/large.jpg" loading="lazy" alt="Hurricane Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div><div class="gal-date">📅 Jul 14, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697822343/large.jpg" loading="lazy" alt="Hurricane Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div><div class="gal-date">📅 Jul 14, 2026</div></div></div></div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Princess Palm</span><span class="alias-tag">Red Palm</span><span class="alias-tag">Palmiste Blanc</span></div>
+  </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
+        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-00269/687994686.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jun 28, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/687994688/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jun 28, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/687994693/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jun 28, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697822338/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697822343/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    </script>
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div class="page-stamp">Page updated <strong>August 14, 2026</strong></div>
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
