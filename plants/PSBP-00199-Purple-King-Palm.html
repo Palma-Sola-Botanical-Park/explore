@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purple King Palm · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the gallery lightbox */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line */
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
+
+  .page-stamp{ text-align:center;font-size:12px;color:#8a8a7a;padding:16px 16px 28px;font-style:italic;letter-spacing:0.01em; }
+  .page-stamp strong{ font-style:normal;font-weight:600;color:#6b6b5c; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img style="cursor:pointer;object-position:48% 54%" src="../photos/PSBP-00199/701497576.jpg" alt="Purple King Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Palm &amp; Cycad</div>
+    <div class="plant-hero-name">Purple King Palm</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Archontophoenix purpurea</span>
+  <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>David Vanderbilt</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 20, 2026</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>The purple crownshaft — the smooth, tubular collar below the crown — is not equally vivid on every tree. Color develops with age, and individual specimens can range from mostly grey-green to intensely lavender-purple. Two trees growing side by side can look like different species.</li>
+    <li>Its fruit is the largest in the entire genus Archontophoenix — a glossy crimson drupe 20 to 26 mm long, noticeably bigger than the berry-sized fruit of its close relatives the Bangalow and Alexandra palms.</li>
+    <li>In its Queensland mountain home, this palm grows at elevations up to about 3,900 feet in cool, mist-shrouded rainforest — and that heritage shows in Florida, where it performs best with consistent moisture and some shelter from intense afternoon sun.</li>
+    <li>The species was formally named only in 1994, relatively recent for a palm this showy. Botanists John Dowe and Donald Hodel described it from a specimen collected the year before at 1,200 meters on Mt. Lewis — among granite boulders beside a mountain stream.</li>
+    <li>Its natural range is tiny — limited to a handful of mountain peaks in Far North Queensland — but despite that restriction, current assessments do not consider the species threatened.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>The Purple King Palm is endemic to a remarkably small slice of Far North Queensland, Australia — the rainforested slopes of three adjacent mountains: Mt. Lewis, Mt. Spurgeon, and Mt. Finnigan. Within that range it grows in upland rainforest and vine forest among granite boulders, in granitic soils along creek lines, at elevations between roughly 1,300 and 3,900 feet above sea level.</p>
+      <p>In the wild it is closely associated with moist rainforest along creeks and flowing water, which goes a long way toward explaining its strong preference for consistent moisture in cultivation.</p>
+      <p>The species was formally described in 1994 by botanists John Dowe and Donald Hodel, making it one of the more recently named members of its genus. Its full genus, Archontophoenix — the King Palms — contains six species, all endemic to eastern Australia. A. purpurea has one of the most geographically restricted ranges in the genus.</p>
+      <p>Despite its tiny natural range, current extinction-risk assessments do not flag the species as threatened — an interesting contrast with some of its Queensland relatives that face greater pressure. It entered cultivation as a collector&#x27;s specimen because of its distinctive crownshaft color and relative rarity in the wild.</p>
+      <p>In Florida it is now grown in warmer areas of the state, valued for its ornamental presence, though it remains far less common than its cousin the Alexandra Palm.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>What sets this palm apart from its close relatives is a combination of features found together in no other Archontophoenix: the frond undersides carry both silver-grey scales and tiny hair-like scales along the midrib — a combination that helps distinguish it from its close relatives.</li>
+    <li>Turn a leaflet over and look closely at the midrib and you can see this combination for yourself; it is one of the details botanists use to distinguish it from the other King Palms.</li>
+    <li>Add the distinctively colored crownshaft and the largest fruit in the genus, and identification becomes straightforward. It belongs to the same genus as the much more familiar Alexandra and King Palms, but its purple crownshaft and unusually large crimson fruit set it apart at a glance.</li>
+    <li>The crownshaft itself ranges from blue-grey to green with a glaucous, dusty bloom and reddish flecking, often becoming more pronounced with maturity. Its intensity is variable; growing conditions, light exposure, and individual genetics all seem to play a role. A palm that looks almost green-grey in one garden may show a richer lavender-purple next door.</li>
+    <li>At home in Queensland, this palm inhabits genuinely cool mountain rainforest — misty, humid, and a good deal cooler than Florida&#x27;s coastal summer heat. That heritage makes it a better performer in sheltered spots with some shade than in the full-blast sun of an open lawn, and it appreciates consistent moisture in a way that more drought-tolerant palms do not.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>The bright red fruit is the palm&#x27;s main contribution to local wildlife. Fleshy and produced in pendant clusters beneath the crownshaft, the drupes are taken by fruit-eating birds, which help disperse the seeds.</p>
+      <p>The flowers are visited by insects and provide a resource for generalist pollinators when in bloom. Because this is a non-native palm with no shared evolutionary history with Florida&#x27;s fauna, it has no known role as a specialist butterfly or moth host. Visitors looking for the park&#x27;s best pollinator and butterfly habitat will find it among the native plantings.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Propagation is primarily by seed. The palm is monoecious — male and female flowers are produced on the same tree. Seeds are relatively large for the genus and germination typically takes six weeks to three months; seeds are best sown fresh.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Cream to yellow, small, and borne in branched, pendant clusters up to about 4.5 feet long that emerge from just below the crownshaft, at the junction where the leaf bases meet the trunk. Both male and female flowers appear on the same inflorescence. Flowering occurs in spring and summer in cultivation.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Ellipsoid to nearly round, glossy, and crimson-red at maturity — 20 to 26 mm long, with a single seed inside. The fruit is the largest produced by any member of the genus. Clusters can be quite showy against the trunk when ripe.</p></div>
+<div class="repro-item"><div class="repro-label">Fronds</div><p>Pinnate (feather-shaped), arching, and up to about 13 to 20 feet long on mature trees. Individual leaflets are dark green on top and distinctly silver-grey on the underside — a feature visible when a breeze lifts the fronds. New growth sometimes emerges with a bronze tinge. The fronds are unarmed; there are no spines on the petioles.</p></div>
+<div class="repro-item"><div class="repro-label">Trunk and Crownshaft</div><p>The trunk is solitary, smooth, and gray-ringed with the scars of shed fronds, slightly swollen at the base, and can reach roughly 18 inches in diameter in large specimens. The crownshaft — the smooth, sheath-formed column below the crown — is the visual signature of this species: blue-grey to green with a glaucous bloom and reddish to purple tones that often become more pronounced with maturity.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>The crownshaft is the thing to notice first — that smooth, tubular collar of tightly overlapping leaf bases just below the crown of fronds, showing its blue-grey to dusty-purple color. Flip a frond leaflet over and you&#x27;ll see the silver-grey underside that distinguishes this species even among other King Palms.</p><p>If the tree is fruiting, look for the pendant clusters of glossy crimson drupes hanging just below the crownshaft — conspicuously large for a King Palm. And check the base of the trunk for the ring scars left by decades of shed fronds.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">up to approximately 80 feet in habitat; usually smaller in cultivation</div></div>
+    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">roughly 10 to 15 feet</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">solitary trunk, arching feather-palm crown</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">slow to moderate; slower than the more common Alexandra Palm</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium-fine — the arching pinnate fronds are graceful rather than coarse</div></div>
+    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">Partial shade preferred; tolerates filtered sun and, where moisture is reliable, full sun — though shaded or sheltered positions generally produce the best results for young trees. Some light helps bring out the crownshaft&#x27;s color, but the palm generally performs best with protection from intense afternoon sun.</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">Rich, loamy, well-drained soil with consistent moisture preferred; in cultivation it can tolerate fairly wet conditions; naturally grows in granitic soils along creeks in montane rainforest.</div></div>
+    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">Low — naturally associated with wet rainforest and creekside habitats; performs best with consistent moisture and does not tolerate prolonged dry conditions well. Its montane origins give it somewhat better cold tolerance than many tropical palms, although hard freezes can still cause serious damage.</div></div>
+    </div>
+  </div>
+  <div class="plant-safe-section">
+    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>No known toxicity has been reported for this species or the Archontophoenix genus. It is unrelated to Sago Palm, a cycad that is highly toxic to people and pets — a useful distinction in any garden where both grow. The fronds are unarmed, with no spines or teeth on the petioles. The red fruit is not considered a food plant, and is not known to be toxic — otherwise harmless.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Mount Lewis King Palm</span><span class="alias-tag">Purple Piccabean Palm</span><span class="alias-tag">Purple Palm</span><span class="alias-tag">Purple Alexandra Palm</span><span class="alias-tag">Mount Lewis Archontophoenix</span></div>
+  </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© David Vanderbilt (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-00199/701497576.jpg", "credit": "David Vanderbilt", "license": "CC-BY-NC", "observed": "Jul 20, 2026"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();});
+    </script>
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div class="page-stamp">Page updated <strong>August 15, 2026</strong></div>
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
