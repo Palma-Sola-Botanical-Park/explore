@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vanuatu Palm · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the gallery lightbox */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line */
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
+
+  .page-stamp{ text-align:center;font-size:12px;color:#8a8a7a;padding:16px 16px 28px;font-style:italic;letter-spacing:0.01em; }
+  .page-stamp strong{ font-style:normal;font-weight:600;color:#6b6b5c; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img style="cursor:pointer;object-position:51% 36%" src="../photos/PSBP-00226/697843686.jpg" alt="Vanuatu Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Palm &amp; Cycad</div>
+    <div class="plant-hero-name">Vanuatu Palm</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Carpoxylon macrospermum</span>
+  <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 14, 2026</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>For more than a century, this palm was known to science only from descriptions and illustrations of its fruit. The original 1875 specimens had been misfiled at London&#x27;s Natural History Museum under the wrong genus. Then, in 1987, living trees were found on Espiritu Santo in Vanuatu, bringing a species long thought possibly extinct back into cultivation.</li>
+    <li>A population survey counted just 32 mature trees growing naturally across three southern Vanuatu islands. The Vanuatu Palm is Critically Endangered, and the specimen in front of you is part of the conservation story: living collections outside Vanuatu provide an important backup population for the species.</li>
+    <li>The green, unripe fruit holds soft, jellylike flesh traditionally eaten in Vanuatu — its texture and flavor have been compared to green coconut. As the fruit ripens to vivid orange-red, that flesh gives way to a thick woody shell. When fruit is present, the slightly off-center dimple near the fruit&#x27;s tip marks where the flower&#x27;s stigma once sat — a detail that identifies this genus at a glance.</li>
+    <li>This entire genus contains just one species. Carpoxylon macrospermum is the sole member of its own genus and its own subtribe, Carpoxylinae — an entire branch of the palm family represented by a single Critically Endangered species.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Carpoxylon macrospermum is endemic to lowland rainforests in the three southernmost islands of the Vanuatu archipelago — Tanna, Futuna, and Aneityum — in the South Pacific roughly 1,000 miles east of Australia. It grows in riverine and coastal forests on moist, well-drained slopes, typically below 300 meters elevation.</p>
+      <p>Natural wild stands are extremely rare; the palm is more often encountered planted near villages, and cultivated trees have been introduced to many other islands of Vanuatu.</p>
+      <p>The species was formally described in 1875 by botanists Wendland and Drude from fruit specimens collected on the island of Aneityum, but the locality was recorded only vaguely as &#x27;New Hebrides&#x27; (the colonial name for Vanuatu), and the original herbarium material was subsequently misfiled at the Natural History Museum in London under the genus Veitchia.</p>
+      <p>For over a century the palm was known to science only through those fruit illustrations, and it was widely thought to be possibly extinct.</p>
+      <p>In 1987, Australian palm biologist John L. Dowe encountered living cultivated trees on Espiritu Santo — where the palm had long been grown near villages — allowing the misfiled original specimens to be located and correctly identified for the first time.</p>
+      <p>Seeds were distributed to botanical institutions in the years that followed, and the palm entered cultivation in tropical and subtropical collections worldwide, including Florida.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>Carpoxylon macrospermum is the sole species in its genus — a monotypic genus found nowhere else on Earth. It belongs to its own subtribe, Carpoxylinae, and its evolutionary relationships within the palm family were difficult to resolve until living material became available after the 1987 rediscovery. An entire branch of the palm family is represented by this one species.</li>
+    <li>The IUCN lists the species as Critically Endangered. A peer-reviewed population survey counted just 32 mature individuals in the wild, distributed across three southern Vanuatu islands — Aneityum, Futuna, and Tanna.</li>
+    <li>Deforestation for agriculture is the primary driver of habitat loss, and the possible decline of whatever animals once dispersed its large seeds adds another layer of uncertainty to the species&#x27; recovery.</li>
+    <li>The species name macrospermum means &#x27;large-seeded&#x27; — from the Greek macros (large) and sperma (seed) — a direct reference to the unusually large seed enclosed inside the fruit&#x27;s thick woody shell. It is one of the most botanically apt names in the palm family.</li>
+    <li>Like all native palms in Vanuatu, the species is protected by national law, and the Vanuatu Environment Unit has classified it as a high conservation priority.</li>
+    <li>Because it grows relatively fast once established and adapts well to cultivation, Carpoxylon has been identified as a strong candidate for ex situ conservation — meaning living collections outside Vanuatu, including botanical garden specimens like this one, provide an important backup population for a species whose remaining wild stands are very small and geographically restricted.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>In Vanuatu, the large, vivid fruits are eaten by animals including flying foxes (Pteropus anetianus) and coconut crabs (Birgus latro). These animals consume the fleshy outer portion of the fruit, but exactly how the large seeds are dispersed remains unresolved — a particularly interesting problem for a palm whose remaining wild populations are so small.</p>
+      <p>In Florida cultivation, the palm has no co-evolutionary history with local fauna and does not function as a documented larval host for native butterflies or moths. Inflorescences emerging below the crownshaft can attract generalist pollinating insects, but no Florida-specific dispersal or wildlife interaction has been documented.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Propagation is by seed only. The palm is monoecious — male and female flowers occur on the same tree, arranged in triads (one female flower flanked by two male flowers) on branched inflorescences that emerge below the crownshaft.</p><p>Seeds are large and germination can take two to eight months under warm, humid conditions; seeds have a relatively short viability window, which has historically limited availability in the nursery trade.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Inflorescences are twice-branched and emerge below the glossy green crownshaft. Flowers are unisexual, with female flowers positioned at the base of each floral triad and male flowers flanking them; toward the tips of the flower branches, only male flowers are present.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Obovoid fruits roughly 7 cm long by 4 cm in diameter ripen from green to a vivid orange-red. The outer flesh is fibrous; inside is a thick, woody endocarp enclosing a single large seed. The slightly off-center scar near the fruit&#x27;s tip is a diagnostic feature of Carpoxylon, distinguishing it from the closely related Veitchia, whose scar is centrally positioned.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Pinnate (feather) fronds up to 4 meters long, strongly and elegantly recurved toward the tip. The leaflets (pinnae) are stiffly erect, dark green above and gray-green beneath, arranged in closely spaced opposing pairs along the rachis and held at an upward angle that gives the whole frond a pronounced V-shape in cross section.</p><p>Young seedlings produce simple, undivided bifid leaves before transitioning to the adult pinnate form.</p></div>
+<div class="repro-item"><div class="repro-label">Trunk and Crownshaft</div><p>The trunk is solitary, smooth, and light gray to whitish, with prominent ring-like leaf scars spaced along its length. The base flares distinctly in a bottle-like expansion — up to 50 cm wide — before tapering to a uniform diameter of roughly 25 to 30 cm for most of the trunk&#x27;s height.</p><p>Crowning the trunk is a prominent, elongated, glossy green crownshaft roughly 1.5 meters long, formed by the tightly sheathing leaf bases.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>Start at the base: the trunk swells into a broad, bottle-shaped foot before narrowing into a smooth, ring-scarred column — a silhouette unlike most of the palms in this garden. Follow the trunk up to the glossy green crownshaft, which stands out as a distinct smooth cylinder between the trunk and the eruption of arching fronds above.</p><p>The fronds themselves are worth examining closely: the leaflets angle sharply upward, giving each frond a pronounced V-shape in cross section. Look for inflorescences or old fruit stalks emerging below the crownshaft.</p><p>If fruit is present, note how large and smooth each one is — roughly 7 cm long — and the slightly off-center dimple near the tip that marks where the flower&#x27;s stigma once sat, a detail that identifies this genus at a glance.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">30 to 40 feet in Florida cultivation (up to 80 feet in the wild in Vanuatu)</div></div>
+    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">12 to 15 feet</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">solitary trunk, bottle-shaped at the base; elegant recurved crown</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate to fast once established in a warm, humid site; slow in its early juvenile years</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium-coarse — graceful rather than massive</div></div>
+    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">filtered light to full sun; juveniles benefit from some shade; established trees adapt to full sun in humid climates</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">moist, well-drained soils rich in organic matter; performs best in sandy loam; does not tolerate prolonged drought or waterlogging</div></div>
+    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">low — requires consistent moisture; do not allow to dry out between waterings</div></div>
+    </div>
+  </div>
+  <div class="plant-caution-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>Only the unripe, green fruit is edible — local inhabitants in Vanuatu eat the soft, jellylike flesh inside the split green fruit, which has been compared in texture and flavor to green coconut.</p><p>The ripe fruit is a different matter: the endocarp hardens to a dense, woody shell around the seed, making it unsuitable to eat. No toxicity has been documented for people or dogs, but the ripe fruit offers nothing worth tasting and the hard shell is a choking concern. Otherwise, the plant is unarmed and harmless to handle.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>Specimens of this palm growing in botanical collections outside Vanuatu — including this one — represent genuine conservation value. Wild populations are so small and geographically restricted that ex situ collections in botanical gardens have been specifically identified as important to the species&#x27; long-term survival.</p></div>
+  </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697843710/large.jpg" loading="lazy" alt="Vanuatu Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div><div class="gal-date">📅 Jul 14, 2026</div></div></div></div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Aneityum Palm</span><span class="alias-tag">Carpoxylon Palm</span></div>
+  </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
+        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-00226/697843686.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697843710/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    </script>
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div class="page-stamp">Page updated <strong>August 14, 2026</strong></div>
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
