@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>High Plateau Coconut Palm · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  /* Plant page layout */
+  .plant-wrap { max-width:680px;margin:2rem auto;background:#e8e3d8;min-height:80vh;border-radius:12px;overflow:hidden;box-shadow:0 4px 32px rgba(26,46,26,0.13); }
+  @media (max-width:480px){ .plant-wrap{margin:0;border-radius:0;box-shadow:none;min-height:100vh;} }
+
+  /* Hero -- tap the photo to open the gallery lightbox */
+  .plant-hero { position:relative;height:310px;overflow:hidden; }
+  .plant-hero img { width:100%;height:100%;object-fit:cover;display:block; }
+  .plant-hero-overlay { position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent 0%, rgba(10,25,10,0.70) 40%, rgba(10,25,10,0.92) 100%);padding:60px 18px 0;pointer-events:none; }
+  .plant-hero-category { font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold-light,#d4aa40);margin-bottom:5px; }
+  .plant-hero-name { font-family:'Playfair Display',Georgia,serif;font-size:38px;font-weight:700;color:#fff;line-height:1.05;margin-bottom:12px; }
+
+  /* Scientific band */
+  .plant-sci-band { background:var(--moss,#2d4a2d);padding:11px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-sci-name { font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;color:#fff;flex:1;text-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .plant-family-tag { font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--forest,#1a2e1a);background:var(--gold-light,#d4aa40);padding:5px 12px;border-radius:4px;text-decoration:none;transition:background .2s; }
+  .plant-family-tag:hover { background:#c49a20; }
+
+  /* Photo credit line */
+  .plant-credit { font-size:15px;color:var(--text-mid,#3a3a28);padding:12px 16px 12px 18px;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.12);border-left:4px solid var(--gold,#c5922a);text-align:left;display:flex;align-items:center;gap:4px; }
+  .plant-credit strong { color:var(--moss,#1a3a1f);font-weight:700;font-size:16px;letter-spacing:0.01em; }
+
+  .plant-content { padding:12px 0 56px; }
+
+  /* Status badges */
+  .plant-status-row { display:flex;gap:7px;padding:12px 14px;flex-wrap:wrap;background:var(--cream,#f5f0e8);border-bottom:1px solid rgba(90,122,74,0.15); }
+  .badge { font-size:12px;font-weight:700;padding:5px 13px;border-radius:20px;letter-spacing:0.3px; }
+  .badge-neutral { background:#ece3d2;color:#4a3c22;border:1.5px solid rgba(120,100,60,0.32); }
+  .badge-green { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-native { background:#dde9d6;color:#1f4d28;border:1.5px solid rgba(45,106,53,0.38); }
+  .badge-safe { background:#e7f1dc;color:#356017;border:1.5px solid rgba(74,124,30,0.35); }
+  .badge-warn { background:#f4e7c6;color:#6f5210;border:1.5px solid rgba(197,146,42,0.45); }
+  .badge-danger { background:#ecdacf;color:#8a3a22;border:1.5px solid rgba(138,58,34,0.35); }
+
+  /* Cards / sections */
+  .plant-section { margin:12px 12px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1px solid rgba(90,122,74,0.1); }
+  .plant-section-header { background:var(--moss,#2d4a2d);padding:12px 16px;display:flex;align-items:center;gap:10px; }
+  .plant-section-icon { font-size:18px;line-height:1; }
+  .plant-section-title { font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#fff; }
+  .plant-section-body { padding:16px; }
+  .plant-section-body p { font-size:17px;line-height:1.7;color:var(--text-mid,#2e2e1e); }
+  .plant-section-body p + p { margin-top:10px; }
+
+  /* Quick hits */
+  .quick-hits-list { list-style:none;padding:6px 16px 10px; }
+  .quick-hits-list li { font-size:17px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:13px 0 13px 22px;position:relative;border-bottom:1px solid rgba(90,122,74,0.12); }
+  .quick-hits-list li:last-child { border-bottom:none; }
+  .quick-hits-list li::before { content:'';position:absolute;left:0;top:21px;width:8px;height:8px;background:var(--gold,#b8942a);border-radius:50%; }
+
+  /* More info (dark card) */
+  .plant-more-info { margin:12px 12px 0;background:var(--forest,#1a2e1a);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(26,46,26,0.25); }
+  .plant-more-info .plant-section-header { background:rgba(255,255,255,0.07);border-bottom:2px solid var(--gold,#b8942a); }
+  .plant-more-info .plant-section-title { color:var(--gold-light,#d4aa40); }
+  .plant-more-info .plant-section-body p { color:rgba(245,240,232,0.92);font-size:17px;line-height:1.7; }
+  .plant-more-info .plant-section-body em { color:#e9e3d6; }
+  .more-info-list { list-style:none;padding:0; }
+  .more-info-list li { font-size:17px;line-height:1.7;color:rgba(245,240,232,0.92);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.08); }
+  .more-info-list li:last-child { border-bottom:none; }
+
+  /* Toxicity / safety cards */
+  .plant-toxic-section { margin:12px 12px 0;background:var(--danger-light,#fff0f0);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(139,32,32,0.25); }
+  .plant-toxic-section .plant-section-header { background:var(--danger,#8b2020); }
+  .plant-toxic-section .plant-section-body p { font-size:17px;line-height:1.7;color:#4a0a0a;font-weight:500; }
+  .plant-safe-section { margin:12px 12px 0;background:var(--safe-light,#edf7ed);border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(26,92,26,0.2); }
+  .plant-safe-section .plant-section-header { background:var(--safe-dark,#1a5c1a); }
+  .plant-safe-section .plant-section-body p { font-size:17px;line-height:1.7;color:#0a2a0a; }
+  .plant-caution-section { margin:12px 12px 0;background:#fffbf0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(26,46,26,0.10);border:1.5px solid rgba(180,120,0,0.25); }
+  .plant-caution-section .plant-section-header { background:#7a5000; }
+  .plant-caution-section .plant-section-body p { font-size:17px;line-height:1.7;color:#3a2000; }
+
+  /* Data grid */
+  .data-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px; }
+  .data-item { background:var(--parchment,#e8dfc8);border-radius:8px;padding:11px 13px;border:1px solid rgba(90,122,74,0.15); }
+  .data-label { font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .data-value { font-size:16px;color:var(--text-dark,#1a1a14);font-weight:600;line-height:1.4; }
+  .data-item.full-width { grid-column:1/-1; }
+
+  /* Reproduction list */
+  .repro-list { padding:14px 16px; }
+  .repro-item { padding:10px 0;border-bottom:1px solid rgba(90,122,74,0.1); }
+  .repro-item:last-child { border-bottom:none;padding-bottom:0; }
+  .repro-label { font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sage,#4a6a3a);margin-bottom:4px; }
+  .repro-item p { font-size:16px;line-height:1.65;color:var(--text-mid,#2e2e1e); }
+
+  /* Also known as */
+  .alias-list { display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px; }
+  .alias-tag { background:var(--parchment,#e8dfc8);border:1.5px solid rgba(90,122,74,0.25);border-radius:6px;padding:6px 14px;font-size:15px;color:var(--text-mid,#2e2e1e);font-style:italic;font-weight:500; }
+
+  /* Back to plants link */
+  .all-plants-link { margin:10px 12px 0;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--parchment,#e8dfc8);border-radius:10px;padding:14px 18px;text-decoration:none;border:1.5px solid rgba(90,122,74,0.25);color:var(--moss,#2d4a2d);font-weight:700;font-size:15px;transition:background 0.4s ease; }
+  .all-plants-link:hover { background:var(--cream,#f5f0e8); }
+
+  /* Photo gallery */
+  .gal-note{ font-size:13px;color:#888;padding:10px 16px 4px;font-style:italic; }
+  .gal-grid{ display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;padding:8px 16px 16px; }
+  .gal-item{ position:relative;border-radius:8px;overflow:hidden;cursor:pointer;aspect-ratio:1;background:#111; }
+  .gal-item img{ width:100%;height:100%;object-fit:cover;transition:transform .3s; }
+  .gal-item:hover img{ transform:scale(1.05); }
+  .gal-credit{ position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:#ccc;font-size:11px;padding:4px 8px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-credit{ opacity:1; }
+  .gal-date{ position:absolute;top:6px;right:6px;background:rgba(26,58,31,0.85);color:#fff;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;opacity:0;transition:opacity .2s; }
+  .gal-item:hover .gal-date{ opacity:1; }
+
+  .page-stamp{ text-align:center;font-size:12px;color:#8a8a7a;padding:16px 16px 28px;font-style:italic;letter-spacing:0.01em; }
+  .page-stamp strong{ font-style:normal;font-weight:600;color:#6b6b5c; }
+
+  /* Lightbox */
+  .lightbox{ display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;justify-content:center;align-items:center; }
+  .lightbox.active{ display:flex; }
+  .lb-inner{ position:relative;max-width:90vw;max-height:90vh;display:flex;flex-direction:column;align-items:center; }
+  .lb-img{ max-width:90vw;max-height:80vh;object-fit:contain;border-radius:4px; }
+  .lb-credit{ color:#f0ede4;font-size:15px;margin-top:10px;font-weight:500; }
+  .lb-close{ position:fixed;top:16px;right:20px;background:none;border:none;color:#fff;font-size:36px;cursor:pointer;z-index:1001; }
+  .lb-prev,.lb-next{ position:fixed;top:50%;background:none;border:none;color:#fff;font-size:48px;cursor:pointer;padding:20px;transform:translateY(-50%); }
+  .lb-prev{ left:8px; }
+  .lb-next{ right:8px; }
+  .lb-counter{ color:#888;font-size:12px;margin-top:4px; }
+
+  /* Fade-in animation */
+  .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link { animation:plantFadeUp 0.6s ease both; }
+  .plant-section:nth-child(1){animation-delay:.05s} .plant-section:nth-child(2){animation-delay:.10s}
+  .plant-section:nth-child(3){animation-delay:.15s} .plant-section:nth-child(4){animation-delay:.20s}
+  .plant-section:nth-child(5){animation-delay:.25s} .plant-section:nth-child(6){animation-delay:.30s}
+  .plant-section:nth-child(7){animation-delay:.35s} .plant-more-info{animation-delay:.22s}
+  .plant-safe-section,.plant-toxic-section,.plant-caution-section{animation-delay:.38s} .all-plants-link{animation-delay:.42s}
+  @keyframes plantFadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @media (prefers-reduced-motion:reduce){ .plant-section,.plant-more-info,.plant-toxic-section,.plant-safe-section,.plant-caution-section,.all-plants-link{animation:none} }
+
+  /* Floating back button */
+  .plant-float-back { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--moss,#2d4a2d);color:#fff;font-size:15px;font-weight:700;padding:10px 22px;border-radius:30px;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:800;display:flex;align-items:center;gap:8px;transition:background .2s,transform .2s;white-space:nowrap; }
+  .plant-float-back:hover { background:var(--forest,#1a2e1a);transform:translateX(-50%) translateY(-2px);text-decoration:none;color:#fff; }
+  @media (min-width:481px){ .plant-float-back{bottom:32px} }
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="plant-wrap">
+<div class="plant-hero">
+  <img style="cursor:pointer;object-position:51% 49%" src="../photos/PSBP-00754/697840387.jpg" alt="High Plateau Coconut Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
+  <div class="plant-hero-overlay">
+    <div class="plant-hero-category">Palm &amp; Cycad</div>
+    <div class="plant-hero-name">High Plateau Coconut Palm</div>
+  </div>
+</div>
+<div class="plant-sci-band">
+  <span class="plant-sci-name">Beccariophoenix alfredii</span>
+  <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
+</div>
+<div class="plant-credit">📷 Photo by <strong>Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 14, 2026</div>
+<div class="plant-content">
+  <div class="plant-status-row">
+    
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
+    <ul class="quick-hits-list">
+    <li>Scientists first noticed this palm in 2002 — not during a botanical expedition, but in photographs taken during an unrelated survey. The unfamiliar palms caught Alfred Razafindratsira&#x27;s attention, leading to a later expedition that confirmed the population and ultimately the species.</li>
+    <li>Its nickname is the Frozen Coconut Palm — and it earns it. Native to Madagascar&#x27;s high plateau at more than 3,000 feet elevation, it experiences cool nights and occasional frost that would be hard on a true tropical coconut palm, yet it still has a remarkably coconut-like appearance.</li>
+    <li>Known wild populations are confined to a single valley near Manalazina in Madagascar. The IUCN has estimated roughly 500 mature trees there, making this one of the rarest wild palms you are likely to encounter in a botanical collection.</li>
+    <li>Some seeds produce two seedlings instead of one — a phenomenon called twin germination. It happens often enough in cultivation to be a recognized quirk of the species, although it is not clear whether the tendency is inherited.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
+    <div class="plant-section-body"><p>Beccariophoenix alfredii is found only in Madagascar, where its known wild population is confined to a humid valley near Manalazina on the island&#x27;s high plateau, at roughly 3,440 feet above sea level. The palms grow along sandy riverbeds in a landscape of open grassland that is periodically affected by fire.</p>
+      <p>It is a surprisingly cool setting for a palm. Nights can be chilly and light frost occurs, which helps explain why this species handles conditions that would be difficult for a true coconut palm.</p>
+      <p>The palm first came to scientific attention in 2002, when Alfred Razafindratsira noticed unfamiliar palms in photographs taken during an unrelated survey. A field expedition followed, and the species was formally described in 2007. The name alfredii honors Razafindratsira.</p>
+      <p>Since the formal description, it has made its way into specialty palm collections in Florida, Hawaii, Australia, and elsewhere, valued for its coconut silhouette and surprising cold tolerance.</p></div>
+  </div>
+  <div class="plant-more-info">
+    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
+    <ul class="more-info-list">
+    <li>The genus Beccariophoenix honors Odoardo Beccari, the Italian explorer and botanist who described many tropical palms. The genus contains only a few species, all native to Madagascar, and its members are close relatives of the coconut palm.</li>
+    <li>One useful way botanists distinguish this palm from its close relatives is by looking at the flowers and fruit. Its flower stalks emerge below the crown of leaves, and its fruits are flattened rather than round. Those details helped confirm that this was a distinct species rather than simply a highland form of another Beccariophoenix.</li>
+    <li>Beccariophoenix alfredii has shown promising resistance to lethal yellowing, a serious palm disease spread by a tiny planthopper. That is especially interesting in a palm that looks so much like a coconut, which is highly susceptible to the disease.</li>
+    <li>The IUCN assessed this species as Vulnerable in 2012, with an estimated 500 or fewer mature individuals in its known wild population. Because so few remain in nature, cultivated specimens in botanical gardens and other collections can serve as an important backup population for the species.</li>
+    <li>The occasional production of twin seedlings is an unusual feature of this palm. A single seed can produce two seedlings, although the reason this happens — and whether it has a genetic basis — is still not well understood.</li>
+    </ul>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
+    <div class="plant-section-body"><p>In its native Madagascar, the fruits are eaten by lemurs, including black lemurs. The seeds pass through the animals and germination trials have found that they can sprout faster and in greater numbers afterward, suggesting that lemurs may play an important role in dispersing this palm.</p>
+      <p>In Florida, its wildlife value is more modest. The cream-colored flowers can attract generalist insects, and birds may take the small fruits. Because this is a Malagasy palm, it is not a host plant for Florida&#x27;s native butterfly and moth caterpillars.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
+    <div class="repro-list">
+<div class="repro-item"><div class="repro-label">Reproduction</div><p>Propagation is mainly by seed. The palm is monoecious — male and female flowers occur on the same plant — so a single mature palm can potentially produce fruit. Seeds occasionally produce two seedlings from one seed.</p></div>
+<div class="repro-item"><div class="repro-label">Flowers</div><p>Cream-colored flowers emerge on branched stalks below the leaf crown. Each stalk is protected by a long, leathery covering that curls and dries after the flowers open. Exact flowering timing in Florida cultivation is not well documented.</p></div>
+<div class="repro-item"><div class="repro-label">Fruit</div><p>Small, flattened fruits that ripen to dark purplish-black. At roughly an inch across, they look nothing like coconuts. The fruits contain the seeds used for propagation.</p></div>
+<div class="repro-item"><div class="repro-label">Leaves</div><p>Feather-like fronds can reach about 15 feet long, with many slender dark-green leaflets. Young plants may have small translucent windows in the leaflets, a feature that usually disappears as the palm matures. The leaf stalks have no spines or teeth.</p></div>
+<div class="repro-item"><div class="repro-label">Trunk</div><p>Solitary, straight, and unarmed, reaching up to about 12 inches in diameter — notably slimmer than the other Beccariophoenix species and closer to the proportions of a true coconut palm. The trunk is gray to tan with closely spaced horizontal ring-scars left by fallen fronds. Young plants may hold onto old fronds, while mature trees tend to shed them more cleanly.</p></div>
+<div class="repro-item"><div class="repro-label">What to Look For</div><p>Start with the overall shape: a tall, solitary gray trunk topped by a full crown of arching feather-like fronds that really can look like a coconut palm from a distance. Walk closer and notice the clean, ring-scarred trunk with no crownshaft and no spines anywhere.</p><p>Look at where the flower stalks emerge: unlike most palms that bloom between the fronds, this species sends its flower stalks out below the bottom layer of leaves. On younger trees, look for long, dried, curled leather-brown sheaths hanging below the crown — the protective casings that enclosed each flower stalk before it opened.</p><p>If the palm is fruiting, look for small, dark, disc-shaped fruits — not coconuts — clustered on branched stalks below the leaf bases. On juvenile plants, hold a leaflet up to the light and look for tiny translucent window patches; they disappear as the palm matures.</p></div>
+    </div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
+    <div class="data-grid">
+    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">30 to 50 feet in cultivation; up to 65 feet recorded in habitat</div></div>
+    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">15 to 20 feet (crown spread)</div></div>
+    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">solitary, straight trunk; full, rounded crown of arching feather-like fronds; no crownshaft</div></div>
+    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">slow to moderate; generally faster in warm, humid climates than in cooler growing conditions</div></div>
+    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium-coarse; fine leaflets on large fronds give a slightly airier look than most large feather palms</div></div>
+    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun preferred; tolerates partial shade when young, but mature specimens perform best with 6 or more hours of direct sun</div></div>
+    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">sandy loam preferred; adaptable to other well-draining soil types including sand and clay; tolerant of both acidic and moderately alkaline conditions</div></div>
+    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">moderate to high once established; it can handle seasonal dryness but performs best with regular moisture during prolonged hot, dry weather</div></div>
+    </div>
+  </div>
+  <div class="plant-safe-section">
+    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
+    <div class="plant-section-body"><p>No species-specific toxicity has been documented for this palm in the sources reviewed, and it has no spines or other obvious physical hazards. The fruit is not considered a food, but it is also not known to be toxic to people, dogs, or cats — otherwise harmless.</p></div>
+  </div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
+    <div class="plant-section-body"><p>All species in the genus Beccariophoenix appear resistant to lethal yellowing — a serious palm disease spread by a tiny planthopper that has devastated coconut palms and many other species across Florida and the Caribbean. For a palm that looks so much like a coconut, that potential resistance is no small thing.</p>
+      <p>The IUCN assessed this species as Vulnerable as of 2012, with an estimated 500 or fewer mature individuals in its only confirmed wild locality. Specimens in botanical collections around the world — including this one — carry real conservation weight as living representatives of a palm that is genuinely rare in nature.</p></div>
+  </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697840474/large.jpg" loading="lazy" alt="High Plateau Coconut Palm — photo by Randall Carter"><div class="gal-credit">📷 Randall Carter</div><div class="gal-date">📅 Jul 14, 2026</div></div></div></div>
+  <div class="plant-section">
+    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
+    <div class="alias-list"><span class="alias-tag">Madagascar Coconut Mimic</span><span class="alias-tag">Madagascar High Plateau Palm</span><span class="alias-tag">Frozen Coconut Palm</span></div>
+  </div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="lightbox" id="lb" onclick="closeLB(event)">
+      <div class="lb-inner">
+        <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
+        <img class="lb-img" id="lbImg">
+        <div class="lb-credit" id="lbCredit"></div>
+        <div class="lb-counter" id="lbCounter"></div>
+      </div>
+    </div>
+    <script>
+    var lbData=[{"src": "../photos/PSBP-00754/697840387.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697840474/large.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}];
+    var lbIdx=0;
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
+    </script>
+  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
+</div>
+</div><!-- /.plant-wrap -->
+<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
+
+<div class="page-stamp">Page updated <strong>August 15, 2026</strong></div>
+<div id="footer-placeholder"></div>
+<script src="../js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+</script>
+</body>
+</html>
