@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiji Sago Palm · Palma Sola Botanical Park</title>
+<meta name="description" content="Metroxylon vitiense — an endangered Fijian swamp palm that flowers once, then dies. Growing at Palma Sola Botanical Park.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLANT PAGE v2 — proposed redesign
+   ───────────────────────────────────────────────────────────────────────────
+   Everything between the two rules below is intended to become ONE shared
+   css/plant-page.css. Today's ~130 lines of CSS are pasted into all 230 plant
+   pages, so any design change means regenerating every file. Pull it out once
+   and a tweak is a one-file edit.
+
+   The rules this design follows:
+     1. ONE surface. Content sits on the page. Panels are reserved for exactly
+        two things — the Quick Hits lead, and a safety warning. When everything
+        is a card, nothing reads as important.
+     2. Hierarchy comes from type and space, not from chrome. No dark header
+        bars, no emoji icons, no 2.5px letterspaced all-caps.
+     3. Data and prose are different things. Short values go in a facts list;
+        full sentences go in paragraphs. Today they share one box style, which
+        is why "Height" holds a 14-word sentence set in bold.
+     4. Measure caps at ~68 characters. Long-form plant text is the whole point
+        of these pages, so the reading column is the thing being designed.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --green-deep:  #1a3a1f;
+  --green-mid:   #2d6a35;
+  --green-light: #4a9e56;
+  --green-pale:  #e8f5ea;
+  --gold:        #c5922a;
+  --gold-light:  #eabc5a;
+  --cream:       #faf8f3;
+  --sand:        #ede8df;
+  --ink:         #23241f;   /* body text — softened from pure black */
+  --ink-soft:    #5c5f56;
+  --white:       #fff;
+  --rule:        #e3ded2;
+
+  --measure: 68ch;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Source Sans 3', 'Segoe UI', sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.7;
+  padding-top: 52px;
+}
+img { max-width: 100%; display: block; }
+a { color: var(--green-mid); }
+
+/* ── slim context bar (stands in for the site nav) ─────────────────────── */
+.pp-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 52px; z-index: 50;
+  background: var(--green-deep); display: flex; align-items: center;
+  padding: 0 1.25rem; gap: 1rem;
+}
+/* Touch targets are 44px minimum throughout — the old page had several
+   under 30px, which is a real problem for one-handed use in the park. */
+.pp-bar a {
+  color: rgba(255,255,255,.85); text-decoration: none; font-weight: 600; font-size: .95rem;
+  display: inline-flex; align-items: center; min-height: 44px; padding-right: .5rem;
+}
+.pp-bar a:hover { color: #fff; }
+
+/* ── page frame ────────────────────────────────────────────────────────── */
+.pp { max-width: 1120px; margin: 0 auto; padding: 0 1.5rem 5rem; }
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+/* The name sits BELOW the photo, not over it. A 38px serif name reversed out
+   of a photograph looks great on "Baobab" and falls apart on "High Plateau
+   Coconut Palm", which wraps to three lines over a busy image. */
+.pp-hero {
+  margin: 1.75rem 0 0; border-radius: 12px; overflow: hidden;
+  background: var(--sand); aspect-ratio: 21 / 9; position: relative;
+  cursor: zoom-in;
+}
+/* A phone held up next to the plant wants a taller crop than a desktop banner. */
+@media (max-width: 700px) { .pp-hero { aspect-ratio: 4 / 3; margin-top: 1rem; } }
+.pp-hero img { width: 100%; height: 100%; object-fit: cover; }
+.pp-hero-zoom {
+  position: absolute; right: .75rem; bottom: .75rem;
+  background: rgba(10,25,10,.62); color: #fff; border: none;
+  font: inherit; font-size: .82rem; font-weight: 600;
+  padding: 0 1rem; min-height: 44px; display: inline-flex; align-items: center;
+  border-radius: 999px; cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+.pp-hero-zoom:hover { background: rgba(10,25,10,.85); }
+
+/* ── title block ───────────────────────────────────────────────────────── */
+.pp-head { padding: 1.6rem 0 0; max-width: var(--measure); }
+.pp-eyebrow {
+  font-size: .74rem; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--green-mid); margin-bottom: .5rem;
+}
+.pp-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.1rem, 5vw, 3rem); font-weight: 700; line-height: 1.08;
+  color: var(--green-deep); letter-spacing: -.01em;
+}
+.pp-sci {
+  font-size: 1.15rem; color: var(--ink-soft); margin-top: .35rem;
+  display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap;
+}
+.pp-sci em { font-style: italic; }
+.pp-sci a {
+  font-size: .78rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--green-mid); text-decoration: none;
+  border: 1px solid var(--rule); border-radius: 999px; padding: 0 .85rem;
+  background: var(--white);
+  display: inline-flex; align-items: center; min-height: 34px;
+}
+@media (hover: none) { .pp-sci a { min-height: 44px; } }
+.pp-sci a:hover { border-color: var(--green-mid); }
+
+/* ── photographer credit ───────────────────────────────────────────────── */
+/* One credit, high on the page, given real weight. The old page printed the
+   same credit twice — a line under the photo AND a "Photo Credits" card at the
+   bottom. Saying it twice quietly is weaker than saying it once properly. */
+.pp-credit {
+  margin: 1.5rem 0 0; padding: .85rem 0 .85rem 1rem;
+  border-left: 3px solid var(--gold);
+  font-size: .95rem; color: var(--ink-soft); line-height: 1.55;
+  max-width: var(--measure);
+}
+.pp-credit b { color: var(--green-deep); font-size: 1.08rem; font-weight: 700; display: block; }
+.pp-credit .pp-credit-meta { display: block; margin-top: .1rem; }
+
+/* ── two-column body ───────────────────────────────────────────────────── */
+.pp-cols { display: block; margin-top: 2.5rem; }
+@media (min-width: 1000px) {
+  .pp-cols {
+    display: grid; grid-template-columns: 232px minmax(0, 1fr);
+    gap: 3.5rem; align-items: start;
+  }
+}
+
+/* left rail */
+.pp-rail { display: none; }
+@media (min-width: 1000px) {
+  .pp-rail { display: block; position: sticky; top: 76px; }
+}
+.pp-rail-title {
+  font-size: .7rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--ink-soft); margin-bottom: .6rem;
+}
+.pp-toc { list-style: none; border-left: 2px solid var(--rule); margin-bottom: 2.25rem; }
+.pp-toc a {
+  display: block; padding: .3rem 0 .3rem .85rem; margin-left: -2px;
+  border-left: 2px solid transparent;
+  font-size: .93rem; color: var(--ink-soft); text-decoration: none; line-height: 1.4;
+}
+.pp-toc a:hover { color: var(--green-deep); }
+.pp-toc a.on { color: var(--green-deep); font-weight: 700; border-left-color: var(--gold); }
+
+/* ── at-a-glance facts ─────────────────────────────────────────────────── */
+/* Short values only. Anything that runs to a sentence belongs in prose. */
+.pp-glance { border-top: 1px solid var(--rule); }
+.pp-glance div {
+  padding: .6rem 0; border-bottom: 1px solid var(--rule);
+}
+.pp-glance dt {
+  font-size: .68rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase;
+  color: var(--green-mid); margin-bottom: .1rem;
+}
+.pp-glance dd { font-size: .95rem; color: var(--ink); line-height: 1.45; }
+.pp-glance dd a { font-weight: 600; }
+@media (hover: none) {
+  .pp-glance dd a { display: inline-flex; align-items: center; min-height: 44px; }
+}
+
+/* On phones the rail collapses into a strip under the credit. */
+.pp-glance--mobile { display: block; margin: 1.75rem 0 0; max-width: var(--measure); }
+@media (min-width: 1000px) { .pp-glance--mobile { display: none; } }
+
+/* ── phone jump bar ────────────────────────────────────────────────────── */
+/* The desktop rail carries a table of contents; on a phone that rail is gone
+   and this page runs to nearly 13 screens. Rather than reorder the content
+   for phones — which would make a shared #link land in a different place
+   depending on the device — the same section list becomes a sticky strip.
+   One document, one order, two ways to navigate it. */
+.pp-jump { display: none; }
+@media (max-width: 999px) {
+  .pp-jump {
+    display: block; position: sticky; top: 52px; z-index: 40;
+    margin: 2rem -1.5rem 0; padding: 0 .75rem;
+    background: rgba(250,248,243,.94);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+    overflow-x: auto; white-space: nowrap;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .pp-jump::-webkit-scrollbar { display: none; }
+  .pp-jump a {
+    display: inline-flex; align-items: center; min-height: 44px;
+    padding: 0 .75rem; font-size: .92rem; font-weight: 600;
+    color: var(--ink-soft); text-decoration: none;
+    border-bottom: 3px solid transparent;
+  }
+  .pp-jump a.on { color: var(--green-deep); border-bottom-color: var(--gold); }
+}
+
+/* ── prose ─────────────────────────────────────────────────────────────── */
+.pp-prose { max-width: var(--measure); }
+.pp-section { padding-top: 2.75rem; }
+.pp-section:first-child { padding-top: 0; }
+.pp-h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.45rem; font-weight: 700; color: var(--green-deep);
+  line-height: 1.25; margin-bottom: .9rem; scroll-margin-top: 76px;
+}
+.pp-h2::before {
+  content: ''; display: block; width: 34px; height: 3px;
+  background: var(--gold); border-radius: 2px; margin-bottom: .8rem;
+}
+/* Must come AFTER the base .pp-h2 rule above, not up with the jump-bar block —
+   same specificity, so source order decides. On phones a jumped-to heading has
+   to clear the 52px site bar plus the 46px sticky section strip. */
+@media (max-width: 999px) { .pp-h2 { scroll-margin-top: 112px; } }
+.pp-prose p { font-size: 1.0625rem; line-height: 1.75; }
+.pp-prose p + p { margin-top: 1rem; }
+
+.pp-h3 {
+  font-size: .76rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase;
+  color: var(--green-mid); margin: 1.75rem 0 .35rem;
+}
+.pp-h3:first-child { margin-top: 0; }
+
+/* ── Quick Hits — the lead, and the only decorative panel on the page ──── */
+.pp-quick {
+  background: var(--white); border: 1px solid var(--rule);
+  border-radius: 12px; padding: 1.5rem 1.6rem;
+  box-shadow: 0 1px 3px rgba(26,46,26,.05);
+}
+.pp-quick .pp-h2 { margin-bottom: 1rem; }
+.pp-quick ul { list-style: none; }
+.pp-quick li {
+  font-size: 1.09rem; line-height: 1.68; position: relative; padding-left: 1.4rem;
+}
+.pp-quick li + li { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+.pp-quick li::before {
+  content: ''; position: absolute; left: 0; top: .62em;
+  width: 7px; height: 7px; border-radius: 50%; background: var(--gold);
+}
+.pp-quick li + li::before { top: calc(1rem + .62em + 1px); }
+
+/* ── growing conditions: a definition list, not a grid of boxes ────────── */
+.pp-facts { border-top: 1px solid var(--rule); }
+.pp-facts > div {
+  display: grid; grid-template-columns: 8.5rem minmax(0,1fr); gap: 1rem;
+  padding: .85rem 0; border-bottom: 1px solid var(--rule);
+}
+.pp-facts dt {
+  font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--green-mid); padding-top: .28rem;
+}
+.pp-facts dd { font-size: 1.0625rem; line-height: 1.65; }
+@media (max-width: 560px) {
+  .pp-facts > div { grid-template-columns: 1fr; gap: .15rem; }
+  .pp-facts dt { padding-top: 0; }
+}
+
+/* ── safety callout — the one place colour carries meaning ─────────────── */
+.pp-safety {
+  border-radius: 12px; padding: 1.35rem 1.5rem;
+  border: 1px solid; border-left-width: 5px;
+}
+.pp-safety .pp-flag {
+  font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  margin-bottom: .5rem;
+}
+.pp-safety p { font-size: 1.0625rem; line-height: 1.7; }
+.pp-safety--ok      { background: #eef5e9; border-color: #b9d3ab; }
+.pp-safety--ok      .pp-flag { color: #33621f; }
+.pp-safety--caution { background: #fdf4e3; border-color: #e3c98a; }
+.pp-safety--caution .pp-flag { color: #7a5410; }
+.pp-safety--toxic   { background: #fbeee9; border-color: #ddb0a0; }
+.pp-safety--toxic   .pp-flag { color: #8a3a22; }
+
+/* ── gallery ───────────────────────────────────────────────────────────── */
+.pp-gal { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .6rem; }
+.pp-gal figure { margin: 0; }
+.pp-gal button {
+  display: block; width: 100%; padding: 0; border: none; background: var(--sand);
+  border-radius: 10px; overflow: hidden; aspect-ratio: 1; cursor: pointer;
+}
+.pp-gal img { width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
+.pp-gal button:hover img { transform: scale(1.04); }
+.pp-gal figcaption { font-size: .78rem; color: var(--ink-soft); margin-top: .35rem; line-height: 1.4; }
+
+/* ── also known as ─────────────────────────────────────────────────────── */
+.pp-aka { font-size: 1.0625rem; line-height: 1.8; }
+.pp-aka i { font-style: italic; color: var(--green-deep); font-weight: 600; }
+
+/* ── footer ────────────────────────────────────────────────────────────── */
+.pp-foot {
+  margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem; flex-wrap: wrap; max-width: var(--measure);
+  font-size: .88rem; color: var(--ink-soft);
+}
+.pp-foot a {
+  font-weight: 700; text-decoration: none;
+  border: 1px solid var(--rule); background: var(--white);
+  border-radius: 999px; padding: 0 1.2rem;
+  display: inline-flex; align-items: center; min-height: 44px;
+}
+.pp-foot a:hover { border-color: var(--green-mid); }
+
+/* ── lightbox ──────────────────────────────────────────────────────────── */
+.lb { position: fixed; inset: 0; z-index: 100; background: rgba(12,18,12,.94);
+      display: none; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; }
+.lb.on { display: flex; }
+.lb img { max-width: 92vw; max-height: 78vh; object-fit: contain; border-radius: 6px; }
+.lb-cap { color: #e7e3d8; font-size: .95rem; margin-top: .9rem; text-align: center; }
+.lb-x { position: fixed; top: 1rem; right: 1.25rem; background: none; border: none;
+        color: #fff; font-size: 2.2rem; line-height: 1; cursor: pointer; }
+.lb-nav { position: fixed; top: 50%; transform: translateY(-50%); background: none; border: none;
+          color: #fff; font-size: 2.6rem; cursor: pointer; padding: 1rem; opacity: .8; }
+.lb-nav:hover { opacity: 1; }
+.lb-prev { left: .25rem; } .lb-next { right: .25rem; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="pp-bar"><a href="../nature.html#plants">&larr; All Plants</a></div>
+
+<article class="pp">
+
+  <!-- HERO -->
+  <div class="pp-hero" onclick="openLB(0)">
+    <img src="../photos/PSBP-00377/697821482.jpg"
+         onerror="this.src='https://inaturalist-open-data.s3.amazonaws.com/photos/697821482/large.jpg'"
+         style="object-position:48% 56%"
+         alt="Fiji Sago Palm at Palma Sola Botanical Park">
+    <button class="pp-hero-zoom" onclick="openLB(0)">View photos (3)</button>
+  </div>
+
+  <!-- TITLE -->
+  <header class="pp-head">
+    <div class="pp-eyebrow">Palm &amp; Cycad</div>
+    <h1 class="pp-name">Fiji Sago Palm</h1>
+    <div class="pp-sci">
+      <em>Metroxylon vitiense</em>
+      <a href="../nature.html?family=Arecaceae">Arecaceae</a>
+    </div>
+  </header>
+
+  <div class="pp-credit">
+    Photographed by <b>Randall Carter</b>
+    <span class="pp-credit-meta">July 14, 2026 · CC BY-NC · via iNaturalist</span>
+  </div>
+
+  <!-- phone-only glance strip -->
+  <dl class="pp-glance pp-glance--mobile">
+    <div><dt>Safety</dt><dd><a href="#safety">Sharp spines &mdash; not toxic</a></dd></div>
+    <div><dt>Native to</dt><dd>Fiji</dd></div>
+    <div><dt>Height</dt><dd>16&ndash;50 ft</dd></div>
+    <div><dt>Light</dt><dd>Full sun to part shade</dd></div>
+    <div><dt>Water</dt><dd>Wet soil, constantly</dd></div>
+    <div><dt>Status</dt><dd>Endangered (IUCN)</dd></div>
+  </dl>
+
+  <nav class="pp-jump" aria-label="Jump to section">
+    <a href="#quick">Quick hits</a><a href="#origin">Origin</a><a href="#depth">In depth</a><a href="#wildlife">Wildlife</a><a href="#ident">Identify</a><a href="#growing">Growing</a><a href="#safety">Safety</a><a href="#notes">Notes</a><a href="#photos">Photos</a>
+  </nav>
+
+  <div class="pp-cols">
+
+    <!-- LEFT RAIL -->
+    <aside class="pp-rail">
+      <div class="pp-rail-title">On this page</div>
+      <ul class="pp-toc">
+        <li><a href="#quick">Quick hits</a></li>
+        <li><a href="#origin">Where it comes from</a></li>
+        <li><a href="#depth">In depth</a></li>
+        <li><a href="#wildlife">Wildlife value</a></li>
+        <li><a href="#ident">How to identify it</a></li>
+        <li><a href="#growing">Size &amp; growing</a></li>
+        <li><a href="#safety">Safety</a></li>
+        <li><a href="#notes">Conservation notes</a></li>
+        <li><a href="#photos">Photos</a></li>
+      </ul>
+
+      <div class="pp-rail-title">At a glance</div>
+      <dl class="pp-glance">
+        <div><dt>Safety</dt><dd><a href="#safety">Sharp spines &mdash; not toxic</a></dd></div>
+        <div><dt>Native to</dt><dd>Fiji</dd></div>
+        <div><dt>Height</dt><dd>16&ndash;50 ft</dd></div>
+        <div><dt>Light</dt><dd>Full sun to part shade</dd></div>
+        <div><dt>Water</dt><dd>Wet soil, constantly</dd></div>
+        <div><dt>Status</dt><dd>Endangered (IUCN)</dd></div>
+      </dl>
+    </aside>
+
+    <!-- PROSE -->
+    <div class="pp-prose">
+
+      <!-- QUICK HITS -->
+      <section class="pp-section">
+        <div class="pp-quick">
+          <h2 class="pp-h2" id="quick">Quick hits</h2>
+          <ul>
+            <li>This palm gets exactly one shot at reproduction — then it dies. It may spend 20 to 25 years or more simply growing before it produces a single towering flower spike, sets its seeds, and the whole plant dies.</li>
+            <li>Those rows of brown spines along the leaf bases aren't just a hazard on the living palm. Fallen fronds keep their spines — so even a dead leaf lying on the ground can give you a painful jab.</li>
+            <li>Three very different plants share the name "sago palm" in Florida. The familiar one in local nurseries is actually a cycad. The true starch-producing sago is a different species from Southeast Asia. The word "sago" describes a product, not a family — and this is the rarest of the three, the only one actually from Fiji.</li>
+            <li>Because this palm is solitary and can never produce suckers or offsets, living specimens outside its shrinking natural range can be important insurance against the loss of wild populations — but only if managed with that purpose in mind.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ORIGIN -->
+      <section class="pp-section">
+        <h2 class="pp-h2" id="origin">Where it comes from</h2>
+        <p>The Fiji Sago Palm is native to Fiji and the nearby Wallis and Futuna Islands, where it grows in lowland swamp forests and river valleys on consistently wet clay and alluvial soils. Its native range is centered on Viti Levu and Ovalau, with a single occurrence recorded on Vanua Levu near Savusavu.</p>
+        <p>This palm was once far more widespread. Pollen preserved in sediment cores from swamp sites across Viti Levu and Vanua Levu confirms the species formerly covered much more of the archipelago's lowland wetlands. Conservation surveys document that it was once abundant throughout the Navua and Rewa River Deltas — territory where, today, only scattered remnant stands survive.</p>
+        <p>That contrast — extensive former range, highly fragmented present distribution — is the core of its conservation story, and it explains why the specimen growing here matters. It is not native to, and does not naturalize in, Florida; Fairchild Tropical Botanic Garden in Miami is among the institutions that have cultivated it.</p>
+      </section>
+
+      <!-- IN DEPTH  (was the dark "More Information" card) -->
+      <section class="pp-section">
+        <h2 class="pp-h2" id="depth">In depth</h2>
+        <p>This palm is monocarpic: it flowers and fruits only once in its entire life. The only confirmed growing period from germination to mature fruit on record is 24 years, and some individuals likely take longer. After that single enormous reproductive event — a towering flower spike rising above the crown, followed by 12 to 15 months of fruit development — the plant dies. There is no second chance and no replacement trunk.</p>
+        <p>That biology makes the loss of an adult palm especially serious. When an adult is cut for its edible heart — a practice documented in Fijian communities and a growing commercial pressure — the entire palm dies instantly. Because the species is strictly solitary and never produces suckers, there is nothing left behind, and the gap in the population may take decades to close even if conditions are right for germination.</p>
+        <p>The name "sago palm" creates a reasonable expectation that this palm was historically important as a starch source in Fiji. It wasn't. The conservation literature notes that of all Pacific Island peoples, Fijians appear to have made the least use of sago: there is no record of Fijians eating sago starch even as a famine food. The main traditional uses documented for this species are thatching with its long leaves and, more recently, harvest of the palm heart.</p>
+        <p>The thatching use has become a conservation problem of its own. Growth in Fiji's tourism industry created strong demand for sago palm leaves to thatch resort structures, and unsustainable harvesting — with no replanting in harvested areas — has contributed to an almost 50% reduction in the size and distribution of surviving populations.</p>
+        <p>The species name <em>vitiense</em> means "of Viti," the traditional Fijian name for Fiji, and the palm's Fijian name <em>soga</em> (also <em>sogo</em>) is the name used throughout the conservation literature.</p>
+      </section>
+
+      <!-- WILDLIFE -->
+      <section class="pp-section">
+        <h2 class="pp-h2" id="wildlife">Wildlife value</h2>
+        <p>In Fiji, the large scaly fruits are eaten by bats and the Masked Shining Parrot, and both can help disperse the seeds away from the parent palm. The buoyant fruits can also travel by water — an especially useful adaptation for a palm that grows along rivers and in swampy ground. Together, these give the palm several ways to move its seeds: by bird, by bat, and by water.</p>
+        <p>In Florida cultivation, the palm's wildlife interactions are minimal. The once-in-a-lifetime flowering produces a substantial inflorescence that may attract pollinating insects, but the species has no co-evolutionary history with Florida's native fauna, and no record of serving as a larval host or meaningful nectar source for local butterflies or moths.</p>
+      </section>
+
+      <!-- IDENTIFICATION -->
+      <section class="pp-section">
+        <h2 class="pp-h2" id="ident">How to identify it</h2>
+
+        <h3 class="pp-h3">What to look for</h3>
+        <p>Look at the base of the lowest fronds first: rows of dark brown spines run along the leaf bases and petioles, and fallen fronds keep their spines, so give this palm a wide berth. The long feather-like fronds attach directly to the trunk without a smooth crownshaft, and older fronds often remain attached, giving the upper trunk a somewhat ragged appearance.</p>
+        <p>If the palm is approaching the end of its life, watch for the extraordinary flower spike rising above the crown — its one and only flowering event. If fruit is present, look for the large, reptile-scaled fruits hanging below the flower structure.</p>
+
+        <h3 class="pp-h3">Trunk</h3>
+        <p>Solitary and unbranched, reaching 5 to 15 meters in height and up to 50 cm in diameter. The trunk takes on a tattered appearance as old frond bases cling to the upper stem. Toward the end of the palm's life, as fruiting concludes, the fronds progressively die back and the trunk follows.</p>
+
+        <h3 class="pp-h3">Fronds</h3>
+        <p>Feather-like fronds that can reach 5 to 7 meters in length attach directly to the trunk — there is no smooth green sleeve (crownshaft) as on many other palms. Dead fronds persist on the trunk for some time before falling. The leaf bases and petioles bear rows of stiff brown spines — handle with care.</p>
+
+        <h3 class="pp-h3">Flowers</h3>
+        <p>At maturity the palm produces a massive, twice-branched flower spike that rises high above the leafy crown and can reach about 13 feet (4 meters) in height. Flowers are numerous and small. This arrangement — emerging above rather than between the fronds — is unusual among palms of this size.</p>
+
+        <h3 class="pp-h3">Fruit</h3>
+        <p>Fruits are roughly 2 to 2.5 inches long and about 2 inches wide, covered in 25 to 27 rows of yellow-brown scales that give them a reptilian texture. Color varies across individuals within the same stand, ranging from green to golden-yellow to dark brown or grey as they mature. Seeds are large and buoyant, helping them travel through wetland habitat.</p>
+
+        <h3 class="pp-h3">Reproduction</h3>
+        <p>Propagation is by seed. Unlike clustering palms, it does not normally produce suckers or offsets. Each individual flowers only once, produces its seeds over 12 to 15 months, and then dies. The only confirmed growing period to flowering on record is 24 years, and some individuals likely take longer — treat "roughly 20 to 25 years or more" as the best current estimate.</p>
+      </section>
+
+      <!-- GROWING -->
+      <section class="pp-section">
+        <h2 class="pp-h2" id="growing">Size &amp; growing conditions</h2>
+        <dl class="pp-facts">
+          <div><dt>Height</dt><dd>16 to 50 feet (5 to 15 m); cultivated plants are often toward the lower end of this range</dd></div>
+          <div><dt>Spread</dt><dd>Roughly 15 to 20 feet, given fronds up to 5 to 7 m long</dd></div>
+          <div><dt>Habit</dt><dd>Solitary trunk, open arching feather-palm crown, no crownshaft</dd></div>
+          <div><dt>Growth rate</dt><dd>Moderate to fast while young, reaching maturity in roughly 15 to 20 years</dd></div>
+          <div><dt>Texture</dt><dd>Coarse — very long pinnate fronds with a bold, tropical silhouette</dd></div>
+          <div><dt>Light</dt><dd>Full sun to part shade; performs best with strong light and consistent moisture</dd></div>
+          <div><dt>Drought</dt><dd>Low tolerance — this is a wetland palm and does not handle prolonged dry conditions well</dd></div>
+        </dl>
+        <h3 class="pp-h3">Soil and water</h3>
+        <p>Moist to wet soils are essential. In Fiji this palm grows along rivers and in swamp forests receiving 2,000 to 5,000 mm of rain per year and cannot tolerate even a short dry period. In Bradenton's sandy, free-draining soils, standard lawn irrigation schedules are not sufficient — this palm needs heavy, continuous moisture, and benefits from low-lying planting sites where water naturally collects.</p>
+        <p>Florida's sandy soils also leach potassium and magnesium rapidly. Use a palm-specific slow-release fertilizer with potassium, magnesium, and manganese to prevent yellowing and frond decline.</p>
+      </section>
+
+      <!-- SAFETY -->
+      <section class="pp-section">
+        <h2 class="pp-h2" id="safety">Safety</h2>
+        <div class="pp-safety pp-safety--caution">
+          <div class="pp-flag">Sharp spines — not toxic</div>
+          <p>The frond bases and petioles carry rows of stiff brown spines that can deliver a painful jab. Give the fronds a wide berth, and be aware that fallen fronds can retain their spines for some time. No specific toxicity to people, dogs, or cats is documented.</p>
+          <p style="margin-top:.75rem">The palm heart is edible in some Fijian communities, but harvesting it requires cutting down the entire palm. Because this species is solitary with a single growing tip, harvesting kills the plant permanently. <strong>Please do not harvest or disturb this specimen.</strong></p>
+        </div>
+      </section>
+
+      <!-- NOTES -->
+      <section class="pp-section">
+        <h2 class="pp-h2" id="notes">Conservation notes</h2>
+        <p><em>Metroxylon vitiense</em> is listed as Endangered on the IUCN Red List (2022.2 assessment, IUCN taxon ID 177604). The species was formally assessed as Vulnerable in 1998; conservation literature and the Kew Plants of the World Online record now reflect the Endangered category. Some older sources still display the 1998 Vulnerable rating.</p>
+        <p>The scale of decline is striking. This palm was once abundant throughout the Navua and Rewa River Deltas of southeastern Viti Levu. Today only about 15 isolated populations survive on Viti Levu and Ovalau, most of them significantly threatened. Habitat drainage, agricultural conversion, and unsustainable harvesting have all contributed.</p>
+        <p>This is a cold-sensitive tropical palm that prefers a minimum temperature around 17 °C (63 °F) and is not frost-tolerant; horticultural sources place it in USDA Zone 10b at best. Because it is a solitary palm with a single growing tip, any cold event that damages or kills the apical meristem is fatal to the entire plant — there are no offsets or suckers to carry on. Unusual freezes in Bradenton are worth monitoring and mitigating.</p>
+      </section>
+
+      <!-- PHOTOS -->
+      <section class="pp-section">
+        <h2 class="pp-h2" id="photos">Photos</h2>
+        <p style="color:var(--ink-soft);font-size:.95rem;margin-bottom:1rem">Contributed by park visitors and volunteers through iNaturalist.</p>
+        <div class="pp-gal">
+          <figure>
+            <button onclick="openLB(1)"><img loading="lazy" src="https://inaturalist-open-data.s3.amazonaws.com/photos/697821478/large.jpg" alt="Fiji Sago Palm, photographed by Randall Carter"></button>
+            <figcaption>Randall Carter · Jul 14, 2026</figcaption>
+          </figure>
+          <figure>
+            <button onclick="openLB(2)"><img loading="lazy" src="https://inaturalist-open-data.s3.amazonaws.com/photos/697821481/large.jpg" alt="Fiji Sago Palm, photographed by Randall Carter"></button>
+            <figcaption>Randall Carter · Jul 14, 2026</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- AKA -->
+      <section class="pp-section">
+        <h2 class="pp-h2" id="aka">Also known as</h2>
+        <p class="pp-aka"><i>Soga</i> · <i>Sogo</i> · <i>Seko</i> · <i>Niu soria</i></p>
+      </section>
+
+      <footer class="pp-foot">
+        <span>Page updated August 16, 2026</span>
+        <a href="../nature.html#plants">Explore more plants &rarr;</a>
+      </footer>
+
+    </div><!-- /.pp-prose -->
+  </div><!-- /.pp-cols -->
+</article>
+
+<!-- LIGHTBOX -->
+<div class="lb" id="lb">
+  <button class="lb-x" onclick="closeLB()" aria-label="Close">&times;</button>
+  <button class="lb-nav lb-prev" onclick="stepLB(-1)" aria-label="Previous photo">&#8249;</button>
+  <button class="lb-nav lb-next" onclick="stepLB(1)" aria-label="Next photo">&#8250;</button>
+  <img id="lbImg" alt="">
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<script>
+var lbData = [
+  {src:"../photos/PSBP-00377/697821482.jpg", alt:"https://inaturalist-open-data.s3.amazonaws.com/photos/697821482/large.jpg", credit:"Randall Carter", license:"CC BY-NC", observed:"Jul 14, 2026"},
+  {src:"https://inaturalist-open-data.s3.amazonaws.com/photos/697821478/large.jpg", credit:"Randall Carter", license:"CC BY-NC", observed:"Jul 14, 2026"},
+  {src:"https://inaturalist-open-data.s3.amazonaws.com/photos/697821481/large.jpg", credit:"Randall Carter", license:"CC BY-NC", observed:"Jul 14, 2026"}
+];
+var lbIdx = 0;
+function openLB(i) {
+  lbIdx = i;
+  var d = lbData[i], img = document.getElementById('lbImg');
+  img.onerror = function () { if (d.alt) { img.onerror = null; img.src = d.alt; } };
+  img.src = d.src;
+  document.getElementById('lbCap').textContent =
+    d.credit + ' · ' + d.observed + ' · ' + d.license + ' · via iNaturalist   (' + (i+1) + ' of ' + lbData.length + ')';
+  document.getElementById('lb').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB() {
+  document.getElementById('lb').classList.remove('on');
+  document.body.style.overflow = '';
+}
+function stepLB(d) { openLB((lbIdx + d + lbData.length) % lbData.length); }
+document.getElementById('lb').addEventListener('click', function (e) { if (e.target === this) closeLB(); });
+document.addEventListener('keydown', function (e) {
+  if (!document.getElementById('lb').classList.contains('on')) return;
+  if (e.key === 'Escape') closeLB();
+  if (e.key === 'ArrowRight') stepLB(1);
+  if (e.key === 'ArrowLeft') stepLB(-1);
+});
+
+// Highlight the table-of-contents entry for whatever section you're reading.
+(function () {
+  var links = [].slice.call(document.querySelectorAll('.pp-toc a, .pp-jump a'));
+  if (!links.length || !window.IntersectionObserver) return;
+
+  // Two nav lists share one set of ids, so map id -> [links].
+  var byId = {}, ids = [];
+  links.forEach(function (a) {
+    var id = a.getAttribute('href').slice(1);
+    if (!byId[id]) { byId[id] = []; ids.push(id); }
+    byId[id].push(a);
+  });
+  var visible = {};
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting; });
+    var active = null;
+    for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { active = ids[i]; break; } }
+    links.forEach(function (a) { a.classList.remove('on'); });
+    if (!active) return;
+    byId[active].forEach(function (a) {
+      a.classList.add('on');
+      // keep the active chip in view in the horizontally scrolling strip
+      var strip = a.parentNode;
+      if (strip && strip.classList.contains('pp-jump')) {
+        var r = a.getBoundingClientRect(), sr = strip.getBoundingClientRect();
+        if (r.left < sr.left || r.right > sr.right) {
+          strip.scrollTo({ left: a.offsetLeft - 16, behavior: 'smooth' });
+        }
+      }
+    });
+  }, { rootMargin: '-70px 0px -70% 0px' });
+
+  ids.forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) io.observe(el);
+  });
+})();
+</script>
+</body>
+</html>
