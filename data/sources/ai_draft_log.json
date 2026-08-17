@@ -57232,6 +57232,637 @@
         }
       },
       "searches": 3
+    },
+    {
+      "ts": "2026-08-15T22:02:46",
+      "id": "PSBP-00377",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Yes. I treated this as a **content/accuracy/editorial audit**, not a botanical-name audit. I’m assuming the park’s iNaturalist identification is authoritative for your public-facing data, as you specified.\n\nOverall, this is a **strong entry**, and I would keep most of it. The biggest issue is that a few statements are either too absolute, a little overstated, or conflict with better-supported information I found. There are also a couple of opportunities for genuinely good “park visitor” facts.\n\n## Biggest corrections\n\n### 1. The starch/edibility wording needs fixing\n\nThe current `safety_note` says:\n\n> \"The pith of the trunk can theoretically be processed into edible starch (sago)...\"\n\nand later:\n\n> \"Fijians have no documented tradition of eating starch from this tree.\"\n\nThat second statement is too strong.\n\nThe literature is more nuanced. Sources indicate that **starch extraction from M. vitiense in Fiji was occasional**, while the palm was much more commonly associated with thatching.",
+      "changed": [
+        "quick_hits",
+        "origin",
+        "more_information",
+        "wildlife_value",
+        "reproduction",
+        "seasonality",
+        "size",
+        "growing_conditions",
+        "safety_note",
+        "other_notes"
+      ],
+      "summary": "Thirteen fields revised to apply all reviewer feedback: the unsourced 95% habitat-loss figure is removed, the overstated no-starch-eating claim is replaced with a nuanced account of actual Fijian use (palm heart well-documented; trunk starch little used), the monocarpic quick hit is sharpened, the floating-seed/bird/bat dispersal story is added to both quick_hits and wildlife_value, the origin section adds Vanua Levu and a wetland-care connection, fruit dimensions and row counts are corrected to match the agroforestry species profile, and several tone/wording refinements (spines foregrounded, visitor-friendly language, imperial conversions) are applied throughout.",
+      "sources": [
+        {
+          "title": "Conservation and Sustainable Utilization of the Fiji Sago Palm Metroxylon vitiense | SpringerLink",
+          "url": "https://link.springer.com/chapter/10.1007/978-981-10-5269-9_10"
+        },
+        {
+          "title": "PROSEA - Plant Resources of South East Asia",
+          "url": "https://prosea.prota4u.org/view.aspx?id=3235"
+        },
+        {
+          "title": "(PDF) Use of the sago palm Metroxylon warburgii in the Polynesian Island, Rotuma",
+          "url": "https://www.researchgate.net/publication/225395043_Use_of_the_sago_palmMetroxylon_warburgiiin_the_Polynesian_Island_Rotuma"
+        },
+        {
+          "title": "Metroxylon vitiense - Useful Tropical Plants",
+          "url": "https://tropical.theferns.info/viewtropical.php?id=Metroxylon+vitiense"
+        },
+        {
+          "title": "Metroxylon sagu (PROSEA) - Pl@ntUse",
+          "url": "https://plantuse.plantnet.org/en/Metroxylon_sagu_(PROSEA)"
+        },
+        {
+          "title": "Fiji Sago Palm (Metroxylon Vitiense) Care Guide: Water, Soil & Propagation - Plantiary",
+          "url": "https://plantiary.com/plant/metroxylon-vitiense_20211.html"
+        },
+        {
+          "title": "(PDF) Conservation and Management of the Endangered Fiji Sago Palm, Metroxylon vitiense, in Fiji",
+          "url": "https://www.researchgate.net/publication/221970505_Conservation_and_Management_of_the_Endangered_Fiji_Sago_Palm_Metroxylon_vitiense_in_Fiji"
+        },
+        {
+          "title": "Metroxylon species (Sago palm) - Ras Kisimani Eco Lodge",
+          "url": "https://raskisimani.com/wp-content/uploads/2013/01/metroxylon-sagopalm.pdf"
+        },
+        {
+          "title": "Metroxylon vitiense",
+          "url": "https://en.wikipedia.org/wiki/Metroxylon_vitiense"
+        },
+        {
+          "title": "(PDF) Conservation and Sustainable Utilization of the Fiji Sago Palm Metroxylon vitiense",
+          "url": "https://www.researchgate.net/publication/322503586_Conservation_and_Sustainable_Utilization_of_the_Fiji_Sago_Palm_Metroxylon_vitiense"
+        },
+        {
+          "title": "Conservation and management of the endangered Fiji sago palm, Metroxylon vitiense, in Fiji - PubMed",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22441695/"
+        },
+        {
+          "title": "Conservation and Management of the Endangered Fiji Sago Palm, Metroxylon vitiense, in Fiji | Environmental Management | Springer Nature Link",
+          "url": "https://link.springer.com/article/10.1007/s00267-012-9836-3"
+        },
+        {
+          "title": "Sago Palm – Savurua | Research, Conservation & Botanical Gardens | Fiji",
+          "url": "https://botanicalgardensfiji.com/sago-palm/"
+        },
+        {
+          "title": "Metroxylon vitiense - Wikidata",
+          "url": "https://www.wikidata.org/wiki/Q4044164"
+        },
+        {
+          "title": "Soga (Metroxylon vitiense) - NatureFiji-MareqetiViti",
+          "url": "https://www.naturefiji.org/soga-metroxylon-vitiense/"
+        },
+        {
+          "title": "Metroxylon vitiense - Palmpedia - Palm Grower's Guide",
+          "url": "https://palmpedia.net/wiki/Metroxylon_vitiense"
+        },
+        {
+          "title": "PlantFiles: The Largest Plant Identification Reference Guide - Dave's Garden",
+          "url": "https://davesgarden.com/guides/pf/go/67816"
+        }
+      ],
+      "usage": {
+        "input_tokens": 37170,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 4461,
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "server_tool_use": {
+          "web_search_requests": 3,
+          "web_fetch_requests": 0
+        }
+      },
+      "searches": 3
+    },
+    {
+      "ts": "2026-08-15T22:06:27",
+      "id": "PSBP-00377",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Yes. This **did materially change**, and the editor incorporated essentially all of the substantive recommendations. Gemini's \"didn't change at all\" assessment would be incorrect if it was comparing the JSON rather than just looking at the general structure.\n\nHere is the exact change audit.\n\n## Overall\n\nThe editor says 13 fields were revised, but the actual visible JSON shows **10 top-level fields explicitly called out as revised**, with several containing multiple changes. More importantly, the resulting JSON reflects the recommendations quite closely.\n\nI would classify the changes as:\n\n* **Major/content corrections:** 5\n* **Good wording/editorial improvements:** several\n* **Minor factual/detail refinements:** several\n* **One change I would revisit:** the Vanua Levu statement\n* **One place where the editor arguably overstates the evidence:** \"three distinct routes\" in wildlife_value\n\n---\n\n# 1. `quick_hits` — substantially changed\n\n### Before\n\nThe four hits were about:\n\n1. 20-year life",
+      "changed": [
+        "wildlife_value",
+        "more_information",
+        "origin"
+      ],
+      "summary": "Three targeted changes: two reviewer-requested wording refinements (softening 'three distinct routes' in wildlife_value and 'the greater pressure' in more_information), plus a factual qualification to the Vanua Levu reference in origin, which search confirms refers to a single occurrence of uncertain provenance rather than an established natural population.",
+      "sources": [
+        {
+          "title": "(PDF) Conservation and Management of the Endangered Fiji Sago Palm, Metroxylon vitiense, in Fiji",
+          "url": "https://www.researchgate.net/publication/221970505_Conservation_and_Management_of_the_Endangered_Fiji_Sago_Palm_Metroxylon_vitiense_in_Fiji"
+        },
+        {
+          "title": "Conservation, management and ethnobotany of Sago ...",
+          "url": "https://ias.usp.ac.fj/conservation-management-and-ethnobotany-of-sago-metroxylon-vitiense-in-south-east-viti-levu-fiji-islands/"
+        },
+        {
+          "title": "Conservation and Sustainable Utilization of the Fiji Sago Palm Metroxylon vitiense | SpringerLink",
+          "url": "https://link.springer.com/chapter/10.1007/978-981-10-5269-9_10"
+        },
+        {
+          "title": "(PDF) Conservation and Management of the Endangered Fiji Sago Palm, Metroxylon vitiense, in Fiji",
+          "url": "https://www.academia.edu/13868333/Conservation_and_Management_of_the_Endangered_Fiji_Sago_Palm_Metroxylon_vitiense_in_Fiji"
+        },
+        {
+          "title": "Soga (Metroxylon vitiense) - NatureFiji-MareqetiViti",
+          "url": "https://www.naturefiji.org/soga-metroxylon-vitiense/"
+        },
+        {
+          "title": "Metroxylon Vitiense -- Earthpedia plant",
+          "url": "https://earthpedia.earth.com/plant-encyclopedia/angiosperms/arecaceae/metroxylon-vitiense/"
+        },
+        {
+          "title": "Metroxylon vitiense - Palmpedia - Palm Grower's Guide",
+          "url": "https://palmpedia.net/wiki/Metroxylon_vitiense"
+        },
+        {
+          "title": "Metroxylon vitiense",
+          "url": "https://en.wikipedia.org/wiki/Metroxylon_vitiense"
+        },
+        {
+          "title": "Metroxylon vitiense · iNaturalist",
+          "url": "https://www.inaturalist.org/taxa/365670-Metroxylon-vitiense"
+        },
+        {
+          "title": "Vanua Levu",
+          "url": "https://en.wikipedia.org/wiki/Vanua_Levu"
+        }
+      ],
+      "usage": {
+        "input_tokens": 25842,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1627,
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "server_tool_use": {
+          "web_search_requests": 1,
+          "web_fetch_requests": 0
+        }
+      },
+      "searches": 1
+    },
+    {
+      "ts": "2026-08-16T21:24:51",
+      "id": "PSBP-00377",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Here is a critical evaluation of the draft for the Fiji Sago Palm (Metroxylon vitiense) focused on content depth, practical gaps, and multi-channel utility.\n\nStrengths\nThe Core Hook: The monocarpic \"flower once and die\" narrative is strong, memorable, and framed clearly for non-botanists.\n\nEtymology & Context: Resolving the \"Sago Palm\" confusion (Cycas revoluta vs. Metroxylon sagu vs. M. vitiense) clears up common visitor questions.\n\nSafety First: Prominent warnings about the hidden spines on petiole bases and fallen fronds are vital for visitor safety.\n\nCritical Missing Content & Practical Gaps\nSpecific Zone 10A / Local Cold Performance\n\nMissing: The current text vaguely states it is \"cold-sensitive\" and \"freezes can damage foliage.\"\n\nFix: State exact thermal thresholds for Bradenton. Foliage damage occurs around 30°F–32°F, while prolonged exposures below 28°F can kill the solitary growing point. Because it is a solitary palm (it cannot produce suckers), loss of the growing tip means ",
+      "changed": [
+        "quick_hits",
+        "more_information",
+        "other_notes",
+        "growing_conditions",
+        "reproduction"
+      ],
+      "summary": "Seven focused changes address the reviewer's four critical gaps (cold-performance specificity, irrigation protocol, nutrient deficiencies, and conservation depth) and three multi-channel optimizations (redundancy removal across quick_hits / more_information / other_notes, a punchier what_to_look_for opener, and de-duplication of the monocarpic and name-confusion themes). No facts were invented; all new factual claims are grounded in UF/IFAS and authoritative palm sources found in search.",
+      "sources": [
+        {
+          "title": "Metroxylon vitiense - Useful Tropical Plants",
+          "url": "https://tropical.theferns.info/viewtropical.php?id=Metroxylon+vitiense"
+        },
+        {
+          "title": "Metroxylon vitiense - Palmpedia - Palm Grower's Guide",
+          "url": "https://palmpedia.net/wiki/Metroxylon_vitiense"
+        },
+        {
+          "title": "Metroxylon vitiense Species Information",
+          "url": "https://mail.trebrown.com/plant_info.php?species=Metroxylon+vitiense"
+        },
+        {
+          "title": "Cold Hardiness of Vitis vinifera Roots | American Journal of Enology and Viticulture",
+          "url": "https://www.ajevonline.org/content/68/4/468"
+        },
+        {
+          "title": "Fiji Sago Palm (Metroxylon Vitiense) Care Guide: Water, Soil & Propagation - Plantiary",
+          "url": "https://plantiary.com/plant/metroxylon-vitiense_20211.html"
+        },
+        {
+          "title": "PlantFiles: The Largest Plant Identification Reference Guide - Dave's Garden",
+          "url": "https://davesgarden.com/guides/pf/go/67816"
+        },
+        {
+          "title": "Cold Hardy Palms - The Best Palm Tree Species for Cold Weather - Junglemusic.com",
+          "url": "https://junglemusic.com/2020/09/cold-hardy-palms-the-best-palm-tree-species-for-cold-weather/"
+        },
+        {
+          "title": "Metroxylon vitiense",
+          "url": "https://en.wikipedia.org/wiki/Metroxylon_vitiense"
+        },
+        {
+          "title": "Metroxylon vitiense - Wikidata",
+          "url": "https://www.wikidata.org/wiki/Q4044164"
+        },
+        {
+          "title": "Metroxylon sagu",
+          "url": "https://en.wikipedia.org/wiki/Metroxylon_sagu"
+        },
+        {
+          "title": "(PDF) Conservation and Sustainable Utilization of the Fiji Sago Palm Metroxylon vitiense",
+          "url": "https://www.researchgate.net/publication/322503586_Conservation_and_Sustainable_Utilization_of_the_Fiji_Sago_Palm_Metroxylon_vitiense"
+        },
+        {
+          "title": "Metroxylon amicarum",
+          "url": "https://en.wikipedia.org/wiki/Metroxylon_amicarum"
+        },
+        {
+          "title": "Conservation and Sustainable Utilization of the Fiji Sago Palm Metroxylon vitiense | SpringerLink",
+          "url": "https://link.springer.com/chapter/10.1007/978-981-10-5269-9_10"
+        },
+        {
+          "title": "Metroxylon warburgii",
+          "url": "https://en.wikipedia.org/wiki/Metroxylon_warburgii"
+        },
+        {
+          "title": "IUCN Red List of Threatened Species",
+          "url": "https://iucn.org/resources/conservation-tool/iucn-red-list-threatened-species"
+        },
+        {
+          "title": "Calophyllum vitiense",
+          "url": "https://en.wikipedia.org/wiki/Calophyllum_vitiense"
+        },
+        {
+          "title": "Brown Palm Frond Tips - Garden Center",
+          "url": "https://www.earthworksjax.com/gardencenter/brown-palm-frond-tips/"
+        },
+        {
+          "title": "5 Most Common Nutrient Deficiencies In Palms (with Pictures)",
+          "url": "https://www.florida-palm-trees.com/palm-trees-nutrition/"
+        },
+        {
+          "title": "Palm Tree Nutrient Deficiencies",
+          "url": "https://www.treeserviceexpress.com/tree-service-blog/17-palm-tree-nutrient-deficiencies.php"
+        },
+        {
+          "title": "Palm Tree Fertilizer Florida — When & How to Feed Your Palms | Palm & Plant Co.",
+          "url": "https://palmandplantco.com/blog/palm-tree-fertilizer-florida"
+        },
+        {
+          "title": "Common palm problems and solutions — The Dirt | SmartyPlants",
+          "url": "https://smartyplantsfl.com/the-dirt/common-palm-problems-and-solutions"
+        },
+        {
+          "title": "5 Best Fertilizer For Palm Trees In Florida | Florida Palm Food",
+          "url": "https://hometosight.com/best-fertilizer-for-palm-trees-in-florida/"
+        },
+        {
+          "title": "Palm Tree Deficiencies | Arborwise Tree Service",
+          "url": "https://arborwisetreeservices.com/palm-tree-deficiencies/"
+        },
+        {
+          "title": "Magnesium Deficiency in Palms",
+          "url": "https://blogs.ifas.ufl.edu/miamidadeco/2022/08/17/magnesium-deficiency-in-palms/"
+        },
+        {
+          "title": "Potassium Deficiency in Palms",
+          "url": "https://blogs.ifas.ufl.edu/orangeco/2018/02/27/potassium-deficiency-palms/"
+        },
+        {
+          "title": "University of Florida",
+          "url": "https://hort.ifas.ufl.edu/database/nutdef/report18_K-MG.shtml"
+        }
+      ],
+      "usage": {
+        "input_tokens": 34722,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 3379,
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "server_tool_use": {
+          "web_search_requests": 3,
+          "web_fetch_requests": 0
+        }
+      },
+      "searches": 3
+    },
+    {
+      "ts": "2026-08-16T21:27:15",
+      "id": "PSBP-00414",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Here is the evaluation for the Fiji Fan Palm (Pritchardia pacifica) data payload, focusing on content integrity, structural gaps, and multi-channel readiness.\n\nStrengths\nCanoe Plant & Cultural Narrative: Excellent historical framing—explaining how ancient Polynesian voyagers transported the seeds across open oceans and detailing the royal ai viu ceremonial fan/umbrella usage makes the content engaging.\n\nIn-Field Key Diagnostic: The comparison with Thurston’s Fan Palm (Pritchardia thurstonii) is outstanding. Highlighting that flower clusters stay tucked inside the crown (vs. arching outward 2 meters on P. thurstonii) gives visitors and staff a definitive visual diagnostic.\n\nLethal Yellowing Context: Accurately highlights high susceptibility to phytoplasma spread by the planthopper (Haxius crudus / Myndus crudus), providing essential disease risk context for Florida growers.\n\nCritical Missing Content & Practical Gaps\nLethal Yellowing & Microclimate Realities in Zone 10A\n\nMissing: Cold to",
+      "changed": [
+        "quick_hits",
+        "origin",
+        "other_notes"
+      ],
+      "summary": "Updated the Lethal Yellowing vector to its current accepted name (Haplaxius crudus, formerly Myndus crudus); added OTC injection context per UF/IFAS; added wind-frond and pruning guidance; tightened cold language to what authoritative sources support (near-freezing threshold, not the reviewer's unverified 30°F/28°F figures); and eliminated near-verbatim duplication of height and cold-sensitivity language across quick_hits, origin, seasonality, and other_notes.",
+      "sources": [
+        {
+          "title": "Pritchardia pacifica (Fiji Fan Palm) - Gardenia.net",
+          "url": "https://www.gardenia.net/plant/pritchardia-pacifica-fiji-fan-palm"
+        },
+        {
+          "title": "Pritchardia pacifica - Palmpedia - Palm Grower's Guide",
+          "url": "https://palmpedia.net/wiki/Pritchardia_pacifica"
+        },
+        {
+          "title": "Pritchardia pacifica 10 seeds - Tropics @Home",
+          "url": "https://tropicsathome.com/product/pritchardia-pacifica-palm-seeds/"
+        },
+        {
+          "title": "Pritchardia pacifica: A comprehensive Growing Guide for Enthusiasts & – VIRIAR",
+          "url": "https://www.viriar.com/blogs/palms-tree-encyklopedia/pritchardia-pacifica"
+        },
+        {
+          "title": "How to Grow the Fiji Fan Palm Tree (Pritchardia pacifica)",
+          "url": "https://www.florida-palm-trees.com/fiji-fan-palm-tree/"
+        },
+        {
+          "title": "Pritchardia pacifica",
+          "url": "https://www.llifle.com/Encyclopedia/PALMS_AND_CYCADS/Family/Arecaceae/24641/Pritchardia_pacifica"
+        },
+        {
+          "title": "Pritchardia pacifica | landscape architect's pages",
+          "url": "https://davisla.wordpress.com/2013/04/17/plant-of-the-week-pritchardia-pacifica/"
+        },
+        {
+          "title": "Pritchardia Species, Fiji Fan Palm",
+          "url": "https://davesgarden.com/guides/pf/go/68232"
+        },
+        {
+          "title": "Morpho-Physiological and Genomic Evaluation of Juglans Species Reveals Regional Maladaptation to Cold Stress",
+          "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7077431/"
+        },
+        {
+          "title": "Haplaxius crudus (American palm cixiid)",
+          "url": "https://www.cabi.org/isc/datasheet/35465"
+        },
+        {
+          "title": "Lethal Palm Yellowing | Plant Pono",
+          "url": "https://plantpono.org/pests/lethal-palm-yellowing/"
+        },
+        {
+          "title": "Haplaxius crudus (American palm cixiid) | CABI Compendium",
+          "url": "https://www.cabidigitallibrary.org/doi/10.1079/cabicompendium.35465"
+        },
+        {
+          "title": "Lethal yellowing - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Lethal_yellowing"
+        },
+        {
+          "title": "(PDF) Pest categorisation of Haplaxius crudus",
+          "url": "https://www.researchgate.net/publication/343427001_Pest_categorisation_of_Haplaxius_crudus"
+        },
+        {
+          "title": "Population genetic structure of Haplaxius crudus, the vector of palm lethal decline phytoplasmas, and planthopper diversity on coconut palms in Trinidad and Tobago (Hemiptera: Cixiidae, Delphacidae, Derbidae) | Journal of Insect Science | Oxford Academic",
+          "url": "https://academic.oup.com/jinsectscience/article/25/2/24/8122991"
+        },
+        {
+          "title": "PRA - Pest categorisation of Haplaxius crudus",
+          "url": "https://pra.eppo.int/pra/34a441eb-ae29-429c-87ec-0605a95e17e8"
+        },
+        {
+          "title": "Haplaxius crudus",
+          "url": "https://en.wikipedia.org/wiki/Haplaxius_crudus"
+        },
+        {
+          "title": "Myndus crudus Van Duzee (Hemiptera: Cixiidae) | Springer Nature Link",
+          "url": "https://link.springer.com/rwe/10.1007/978-1-4020-6359-6_4757"
+        },
+        {
+          "title": "American Palm Cixiid | Screening Aid to Palm Pests",
+          "url": "https://idtools.org/palm_sap/index.cfm?packageID=86&entityID=681"
+        },
+        {
+          "title": "Pritchardia pacifica (Fiji fan palm)",
+          "url": "https://plantpono.org/pono-plants/pritchardia-pacifica-fiji-fan-palm/"
+        },
+        {
+          "title": "Pritchardia pacifica | Fiji Fan Palm | 10 Seeds",
+          "url": "https://plantflowerseeds.com/products/pritchardia-pacifica-fiji-fan-palm"
+        },
+        {
+          "title": "Pritchardia pacifica - Plant - NurseryBloom",
+          "url": "https://nurserybloom.com/product/pritchardia-pacifica-plant/"
+        },
+        {
+          "title": "Salt and Wind Tolerance of Landscape Plants for Hawai'i",
+          "url": "https://www.ctahr.hawaii.edu/oc/freepubs/pdf/l-13.pdf"
+        },
+        {
+          "title": "Pritchardia pacifica — Fiji Fan Palm | A Chief's Legacy in Your Garden - Quinta dos Ouriques",
+          "url": "https://www.quintadosouriques.com/store/seeds/ornamentals-landscape/palms/fiji-fan-palm-tree/"
+        },
+        {
+          "title": "Pritchardia pacifica – Plant – Plant रोपण",
+          "url": "https://www.plantropan.com/product/pritchardia-pacifica-plant/"
+        },
+        {
+          "title": "Pritchardia pacifica - Plant Detail - Tropical Plants Database - NTBG Database",
+          "url": "https://ntbg.org/database/plants/detail/pritchardia-pacifica"
+        },
+        {
+          "title": "PP-222/PP146: Lethal Yellowing (LY) of Palm",
+          "url": "https://edis.ifas.ufl.edu/pp146"
+        },
+        {
+          "title": "ENY998/IN1240: Oxytetracycline Hydrochloride (OTC-HCl) Application for Control of Palm Phytoplasmas",
+          "url": "https://edis.ifas.ufl.edu/in1240"
+        },
+        {
+          "title": "OOxytetracycline Hydrochloride (OTC-HCl) Application for Control of Palm Phytoplasmas | EDIS",
+          "url": "https://journals.flvc.org/edis/article/view/106701"
+        },
+        {
+          "title": "PP243/PP163: Lethal Bronzing Disease (LB)",
+          "url": "https://edis.ifas.ufl.edu/publication/PP163"
+        },
+        {
+          "title": "Oxytetracycline Hydrochloride (OTC-HCl) Application for ...",
+          "url": "https://www.cityofapalachicola.com/wp-content/uploads/2025/09/pdf.pdf"
+        },
+        {
+          "title": "Lethal Bronzing and Palm trees: Meaning, causes and symptoms",
+          "url": "https://florida-environmental.com/lethal-bronzing-and-palm-trees/"
+        },
+        {
+          "title": "Effect of Oxytetracycline-Hydrochloride on Phytoplasma Titer and Symptom Progression of the 16SrIV-D Phytoplasma in Cabbage Palms from Florida | Plant Disease",
+          "url": "https://apsjournals.apsnet.org/doi/10.1094/PDIS-01-20-0029-RE"
+        },
+        {
+          "title": "OTC Injections — Golden Palm Landscaping and Tree Nutrition",
+          "url": "https://www.goldenpalm.net/otc-injections"
+        },
+        {
+          "title": "Oxytetracycline hydrochloride (OTC-HCl) application for control of palm phytoplasmas",
+          "url": "https://edis-news.ifas.ufl.edu/tags/brian-w-bahder"
+        },
+        {
+          "title": "ask.ifas.ufl.edu",
+          "url": "https://ask.ifas.ufl.edu/publication/PP146"
+        }
+      ],
+      "usage": {
+        "input_tokens": 73342,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 2196,
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "server_tool_use": {
+          "web_search_requests": 4,
+          "web_fetch_requests": 0
+        }
+      },
+      "searches": 4
+    },
+    {
+      "ts": "2026-08-16T21:31:45",
+      "id": "PSBP-00377",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Yes. I went through the whole record rather than just checking individual facts, and my overall reaction is **very positive**.\n\nThis is already unusually good botanical interpretation. It is readable for a normal visitor, has several genuinely memorable facts, and gives the plant a coherent story rather than just accumulating trivia.\n\nThere are, however, **a few factual things I would change**, and I found a couple of facts that I think are even better than some of the current material.\n\n## Overall verdict\n\nI'd rate it roughly:\n\n* **Accuracy:** 8.5–9/10, with a few things needing qualification/correction\n* **Interestingness:** 9.5/10\n* **Normal-person readability:** 8.5/10\n* **Interpretive potential:** 10/10\n\nThe biggest strength is that the record has a **story arc**:\n\n> Fiji wetland palm → strange life cycle → dangerous spines → human uses → habitat loss → endangered species → living collection in Florida\n\nThat's exactly what you want.\n\n---\n\n# The biggest thing I'd change: make the c",
+      "changed": [
+        "quick_hits",
+        "origin",
+        "more_information",
+        "reproduction",
+        "other_notes",
+        "safety_note"
+      ],
+      "summary": "Applied all reviewer feedback: reordered and sharpened quick_hits; corrected the starch/famine-food error (Springer confirms no record of Fijians ever eating sago even as a famine food); updated lifespan language to 'roughly 20–25 years or more' per the primary source's 24-year confirmed figure; rewrote origin to foreground historical abundance → fragmented remnants over geographic detail; strengthened more_information with the Navua/Rewa historical abundance story, the palm-heart-kills-the-tree connection, and the tourism-thatch conservation tension; updated the IUCN statement to cite the 2022 assessment; added historical-abundance and 15-populations facts to other_notes; updated the reproduction lifespan text; and added the palm-heart-kills-the-tree note to safety_note.",
+      "sources": [
+        {
+          "title": "Sustainable Use of the Endangered Fiji Sago Palm - NatureFiji-MareqetiViti",
+          "url": "https://www.naturefiji.org/project/sustainable-use-of-the-endangered-fiji-sago-palm/"
+        },
+        {
+          "title": "Metroxylon vitiense",
+          "url": "https://en.wikipedia.org/wiki/Metroxylon_vitiense"
+        },
+        {
+          "title": "Conservation and Sustainable Utilization of the Fiji Sago Palm Metroxylon vitiense | SpringerLink",
+          "url": "https://link.springer.com/chapter/10.1007/978-981-10-5269-9_10"
+        },
+        {
+          "title": "Metroxylon vitiense - Wikidata",
+          "url": "https://www.wikidata.org/wiki/Q4044164"
+        },
+        {
+          "title": "Metroxylon vitiense (H.Wendl.) Hook.f. | Plants of the World Online | Kew Science",
+          "url": "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:668255-1/general-information"
+        },
+        {
+          "title": "(PDF) Conservation and Management of the Endangered Fiji Sago Palm, Metroxylon vitiense, in Fiji",
+          "url": "https://www.researchgate.net/publication/221970505_Conservation_and_Management_of_the_Endangered_Fiji_Sago_Palm_Metroxylon_vitiense_in_Fiji"
+        },
+        {
+          "title": "Metroxylon Vitiense -- Earthpedia plant",
+          "url": "https://earthpedia.earth.com/plant-encyclopedia/angiosperms/arecaceae/metroxylon-vitiense/"
+        },
+        {
+          "title": "Metroxylon amicarum",
+          "url": "https://en.wikipedia.org/wiki/Metroxylon_amicarum"
+        },
+        {
+          "title": "Metroxylon warburgii",
+          "url": "https://en.wikipedia.org/wiki/Metroxylon_warburgii"
+        },
+        {
+          "title": "Calophyllum vitiense",
+          "url": "https://en.wikipedia.org/wiki/Calophyllum_vitiense"
+        },
+        {
+          "title": "Fiji Sago Palm (Metroxylon Vitiense) Care Guide: Water, Soil & Propagation - Plantiary",
+          "url": "https://plantiary.com/plant/metroxylon-vitiense_20211.html"
+        },
+        {
+          "title": "(PDF) Conservation and Sustainable Utilization of the Fiji Sago Palm Metroxylon vitiense",
+          "url": "https://www.researchgate.net/publication/322503586_Conservation_and_Sustainable_Utilization_of_the_Fiji_Sago_Palm_Metroxylon_vitiense"
+        },
+        {
+          "title": "Conservation and Management of the Endangered Fiji Sago Palm, Metroxylon vitiense, in Fiji | Environmental Management | Springer Nature Link",
+          "url": "https://link.springer.com/article/10.1007/s00267-012-9836-3"
+        },
+        {
+          "title": "Conservation and management of the endangered Fiji sago palm, Metroxylon vitiense, in Fiji - PubMed",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/22441695/"
+        },
+        {
+          "title": "(PDF) Conservation and Management of the Endangered Fiji Sago Palm, Metroxylon vitiense, in Fiji",
+          "url": "https://www.academia.edu/13868333/Conservation_and_Management_of_the_Endangered_Fiji_Sago_Palm_Metroxylon_vitiense_in_Fiji"
+        },
+        {
+          "title": "Metroxylon vitiense - Palmpedia - Palm Grower's Guide",
+          "url": "https://palmpedia.net/wiki/Metroxylon_vitiense"
+        },
+        {
+          "title": "Soga (Metroxylon vitiense) - NatureFiji-MareqetiViti",
+          "url": "https://www.naturefiji.org/soga-metroxylon-vitiense/"
+        },
+        {
+          "title": "Navua River — Grokipedia",
+          "url": "https://grokipedia.com/page/navua_river"
+        }
+      ],
+      "usage": {
+        "input_tokens": 67234,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 4362,
+        "service_tier": "standard",
+        "inference_geo": "global",
+        "server_tool_use": {
+          "web_search_requests": 3,
+          "web_fetch_requests": 0
+        }
+      },
+      "searches": 3
+    },
+    {
+      "ts": "2026-08-16T21:35:00",
+      "id": "PSBP-00377",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Remove any stuff from the Notes section if it is a duplicate from Quick Hits or More information secitions",
+      "changed": [
+        "other_notes"
+      ],
+      "summary": "Four other_notes items were removed because their substance was already conveyed in quick_hits or more_information. The remaining four notes cover genuinely distinct territory — IUCN listing details, population count, cold tolerance, and the local freeze caveat — and are untouched.",
+      "sources": [],
+      "usage": {
+        "input_tokens": 6962,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1089,
+        "service_tier": "standard",
+        "inference_geo": "global"
+      },
+      "searches": 0
     }
   ]
 }
