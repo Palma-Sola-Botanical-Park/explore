@@ -125,6 +125,7 @@ h1,h2,h3 { font-family:var(--serif); font-weight:700; color:var(--green-ink); li
   border-bottom:1px solid var(--rule);
 }
 @media (max-width:860px) { .ph-head { grid-template-columns:1fr; gap:var(--s5); } }
+.ph-head.is-lean { grid-template-columns:1fr; gap:var(--s5); }
 
 .ph-specialty {
   font-size:var(--t-cap); font-weight:700; letter-spacing:.12em;
@@ -201,15 +202,26 @@ h1,h2,h3 { font-family:var(--serif); font-weight:700; color:var(--green-ink); li
   position:absolute; left:0; right:0; bottom:0; z-index:2; color:#fff;
   padding:0 var(--s4) var(--s3);
 }
-.ph-tile-cred .sp { display:block; font-size:var(--t-sm); font-weight:700; line-height:1.3; }
-.ph-tile-cred .sp em { display:block; font-weight:400; font-style:italic; opacity:.85; font-size:var(--t-xs); }
-.ph-tile-cred .meta { display:block; font-size:var(--t-cap); color:rgba(255,255,255,.78); margin-top:.2rem; }
-/* Species without a published page. The photo still shows and is still
-   credited — it just points at the iNaturalist observation instead. Driven
-   by presence in publish_state.json, not by a new field. */
-.ph-tile-off {
+/* Three reserved lines, always. A missing field leaves a gap rather than
+   pulling the block up — otherwise tiles in one row sit at three heights. */
+.ph-tile-cred .sp   { display:block; font-size:var(--t-sm); font-weight:700; line-height:1.3; min-height:1.3em; }
+.ph-tile-cred .sci  { display:block; font-style:italic; opacity:.88; font-size:var(--t-xs); line-height:1.35; min-height:1.35em; }
+.ph-tile-cred .meta { display:block; font-size:var(--t-cap); color:rgba(255,255,255,.74); line-height:1.5; min-height:1.5em; letter-spacing:.02em; }
+
+/* More than one photograph of this species by this person. The species page
+   holds the full set, so the tile points there rather than opening a second
+   gallery here. */
+.ph-tile-n {
   position:absolute; top:var(--s3); right:var(--s3); z-index:3;
-  font-size:var(--t-cap); font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  font-size:var(--t-cap); font-weight:700; letter-spacing:.06em;
+  background:rgba(8,18,9,.62); color:#fff; backdrop-filter:blur(3px);
+  padding:.25rem .55rem; border-radius:var(--r-pill);
+}
+/* Species with no published page yet — 10 of the 240 in plant_signage. The
+   photo still shows and is still credited; it points at iNaturalist instead. */
+.ph-tile-off {
+  position:absolute; top:var(--s3); left:var(--s3); z-index:3;
+  font-size:var(--t-cap); font-weight:700; letter-spacing:.06em; text-transform:uppercase;
   background:rgba(253,252,248,.93); color:var(--green-ink);
   padding:.25rem .55rem; border-radius:var(--r-pill);
 }
@@ -254,9 +266,10 @@ h1,h2,h3 { font-family:var(--serif); font-weight:700; color:var(--green-ink); li
 <!-- MOCKUP-ONLY: three states worth seeing side by side. Not part of the page. -->
 <div class="mk">
   <span>Preview</span>
-  <button type="button" data-preview="rob"   aria-pressed="true">Rob Carr — full record</button>
-  <button type="button" data-preview="lean"  aria-pressed="false">Two photos only</button>
-  <button type="button" data-preview="helen" aria-pressed="false">Bio, no photos yet</button>
+  <button type="button" data-preview="rob"    aria-pressed="true">Rob Carr — 56</button>
+  <button type="button" data-preview="rhonda" aria-pressed="false">Rhonda Olschefskie — 13, no bio</button>
+  <button type="button" data-preview="bev"    aria-pressed="false">Beverly Burdette — 2</button>
+  <button type="button" data-preview="helen"  aria-pressed="false">Helen Lewis — bio, no photos</button>
 </div>
 
 <div class="wrap">
@@ -312,75 +325,137 @@ h1,h2,h3 { font-family:var(--serif); font-weight:700; color:var(--green-ink); li
    ═══════════════════════════════════════════════════════════════════════════ */
 
 var PEOPLE = {
-  rob: {
-    login: 'robcarr52',
-    name: 'Rob Carr',
-    specialty: 'Nature photography · iNaturalist contributor',
-    blurb: 'A prolific iNaturalist observer who has documented dozens of the park\u2019s plant and animal species.',
-    inat: 'https://www.inaturalist.org/people/robcarr52',
-    site: null, site_label: null
-  },
-  helen: {
-    login: null,
-    name: 'Helen Lewis',
-    specialty: 'Wildlife & bird photography',
-    blurb: 'Bradenton-area wildlife photographer with a focus on Florida\u2019s coastal birds \u2014 herons, owls, and roseate spoonbills among them.',
-    inat: null,
-    site: 'https://fineartamerica.com/profiles/3-helen-lewis',
-    site_label: 'Prints at Fine Art America'
-  }
+  rob: { login:'robcarr52', name:'Rob Carr',
+    specialty:'Nature photography \u00b7 iNaturalist contributor',
+    blurb:'A prolific iNaturalist observer who has documented dozens of the park\u2019s plant and animal species.',
+    inat:'https://www.inaturalist.org/people/robcarr52', site:null, site_label:null,
+    lead:'PSBP-99987' },
+  rhonda: { login:'rhonda_olschefskie', name:'Rhonda Olschefskie',
+    specialty:'Nature photography \u00b7 iNaturalist contributor',
+    blurb:null,                       /* no photographers.json entry yet \u2014 see note */
+    inat:null, site:null, site_label:null, lead:null },
+  bev: { login:'bevburdette', name:'Beverly Burdette',
+    specialty:'Executive Director \u00b7 iNaturalist contributor',
+    blurb:null, inat:null, site:null, site_label:null, lead:null },
+  helen: { login:null, name:'Helen Lewis',
+    specialty:'Wildlife & bird photography',
+    blurb:'Bradenton-area wildlife photographer with a focus on Florida\u2019s coastal birds \u2014 herons, owls, and roseate spoonbills among them.',
+    inat:null, site:'https://fineartamerica.com/profiles/3-helen-lewis',
+    site_label:'Prints at Fine Art America', lead:null }
 };
 
-var IMG = function (id) { return 'https://inaturalist-open-data.s3.amazonaws.com/photos/' + id + '/large.jpg'; };
-var OBS = function (id) { return 'https://www.inaturalist.org/observations/' + id; };
+var IMG   = function (id) { return 'https://inaturalist-open-data.s3.amazonaws.com/photos/' + id + '/large.jpg'; };
+/* Tiles use medium. Gallery photos are hot-linked to iNaturalist, and a
+   60-tile page of `large` is a lot to ask of park wifi. */
+var THUMB = function (id) { return 'https://inaturalist-open-data.s3.amazonaws.com/photos/' + id + '/medium.jpg'; };
+var fmtDate = function (iso) {
+  if (!iso) return null;
+  var d = new Date(iso + 'T12:00');
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+};
 
-var PHOTOS = [
-  // ── Wildlife. Verbatim from photo_credits.json. ────────────────────────
-  { psbp_id:'PSBP-99987', type:'Wildlife', common_name:'Roseate Spoonbill',
-    scientific_name:'Platalea ajaja', photo:'681681193', obs:'373034596',
-    observed_on:'2025-03-22', hero:true, published:true },
-  { psbp_id:'PSBP-99993', type:'Wildlife', common_name:'Great Blue Heron',
-    scientific_name:'Ardea herodias', photo:'681678544', obs:'373034267',
-    observed_on:'2023-03-31', hero:true, published:true },
-  { psbp_id:'PSBP-99995', type:'Wildlife', common_name:'Great Egret',
-    scientific_name:'Ardea alba', photo:'681679001', obs:'373034370',
-    observed_on:'2025-11-14', hero:true, published:true },
-  { psbp_id:'PSBP-99998', type:'Wildlife', common_name:'Anhinga',
-    scientific_name:'Anhinga anhinga', photo:'681678647', obs:'373034298',
-    observed_on:'2025-11-14', hero:true, published:true },
-  { psbp_id:'PSBP-99997', type:'Wildlife', common_name:'White Ibis',
-    scientific_name:'Eudocimus albus', photo:'681682344', obs:'373034722',
-    observed_on:'2025-05-17', hero:true, published:true },
-  { psbp_id:'PSBP-99994', type:'Wildlife', common_name:'Monarch',
-    scientific_name:'Danaus plexippus', photo:'681681099', obs:'373034572',
-    observed_on:'2025-03-22', hero:true, published:true },
-  { psbp_id:'PSBP-99996', type:'Wildlife', common_name:'Common Gallinule',
-    scientific_name:'Gallinula galeata', photo:'681679178', obs:'373034385',
-    observed_on:'2023-05-28', hero:true, published:true },
-  { psbp_id:'PSBP-99991', type:'Wildlife', common_name:'Mottled Duck',
-    scientific_name:'Anas fulvigula', photo:'681681506', obs:'373034653',
-    observed_on:'2025-04-27', hero:true, published:true },
-  { psbp_id:'PSBP-99989', type:'Wildlife', common_name:'Double-crested Cormorant',
-    scientific_name:'Nannopterum auritum', photo:'681678611', obs:'373034292',
-    observed_on:'2025-11-14', hero:true, published:true },
-  // hero:false, virtual:true in the real record. Marked unpublished here to
-  // show the treatment — CHECK against publish_state before believing it.
-  { psbp_id:'PSBP-99988', type:'Wildlife', common_name:'Peninsular Cooter',
-    scientific_name:'Pseudemys peninsularis', photo:'681678407', obs:'373034249',
-    observed_on:'2023-03-31', hero:false, published:false },
-
-  // ── Plants. photo ids from photo_workbench.json, decision "promoted". ───
-  { psbp_id:'PSBP-00001', type:'Plant', common_name:'Tree Crinum',
-    scientific_name:'Crinum asiaticum', photo:'681679773', obs:'373034426',
-    observed_on:null, hero:false, published:true,
-    file:'PSBP-00001-Tree-Crinum.html' },
-  // scientific_name deliberately null — the generator fills it from
-  // plant_signage.json. Left empty to prove the tile survives without it.
-  { psbp_id:'PSBP-00007', type:'Plant', common_name:'Jacaranda',
-    scientific_name:null, photo:'681680574', obs:'373034525',
-    observed_on:null, hero:false, published:true,
-    file:'PSBP-00007-Jacaranda.html' }
-];
+/* SETS \u2014 every row below is real, read straight out of plants.json and
+   wildlife.json by matching credit_name. `page` is their own field, so no URL
+   is guessed anywhere on this page. These are the species HERO photos only;
+   the full gallery per species lives in photo_credits.json and would add more.
+   observed_on is not in these two files, so the date line is absent \u2014 the
+   generator would pull it from photo_credits.json. */
+var SETS = {
+  rob: [
+    { id:'PSBP-99998', type:'Wildlife', common:'Anhinga', sci:'Anhinga anhinga', family:'Anhingidae', photo:'681678647', page:'wildlife/PSBP-99998-Anhinga.html', obs:'https://www.inaturalist.org/observations/373034298', n:3, date:'2026-06-14' },
+    { id:'PSBP-99952', type:'Wildlife', common:'Red-bellied Woodpecker', sci:'Melanerpes carolinus', family:null, photo:'681682125', page:'wildlife/PSBP-99952-Red-bellied-Woodpecker.html', obs:'https://www.inaturalist.org/observations/373034701', n:5, date:'2026-06-14' },
+    { id:'PSBP-99937', type:'Wildlife', common:'Marsh Rabbit', sci:'Sylvilagus palustris', family:'Leporidae', photo:'681678812', page:'wildlife/PSBP-99937-Marsh-Rabbit.html', obs:'https://www.inaturalist.org/observations/373034336', n:1, date:'2026-06-14' },
+    { id:'PSBP-00036', type:'Plant', common:'Royal Poinciana', sci:'Delonix regia', family:'Fabaceae', photo:'681678924', page:'plants/PSBP-00036-Royal-Poinciana.html', obs:'https://www.inaturalist.org/observations/373034351', n:1, date:'2026-06-14' },
+    { id:'PSBP-99977', type:'Wildlife', common:'Yellow-crowned Night Heron', sci:'Nyctanassa violacea', family:'Ardeidae', photo:'681678684', page:'wildlife/PSBP-99977-Yellow-crowned-Night-Heron.html', obs:'https://www.inaturalist.org/observations/373034305', n:1, date:'2026-06-14' },
+    { id:'PSBP-00125', type:'Plant', common:'Golden Shower Tree', sci:'Cassia fistula', family:'Fabaceae', photo:'681678865', page:'plants/PSBP-00125-Golden-Shower-Tree.html', obs:'https://www.inaturalist.org/observations/373034348', n:2, date:'2026-06-14' },
+    { id:'PSBP-90002', type:'Wildlife', common:'Western Honey Bee', sci:'Apis mellifera', family:'Apidae', photo:'681678675', page:'wildlife/PSBP-90002-Western-Honey-Bee.html', obs:'https://www.inaturalist.org/observations/373034304', n:1, date:'2026-06-14' },
+    { id:'PSBP-99997', type:'Wildlife', common:'White Ibis', sci:'Eudocimus albus', family:'Threskiornithidae', photo:'681682344', page:'wildlife/PSBP-99997-White-Ibis.html', obs:'https://www.inaturalist.org/observations/373034722', n:4, date:'2025-11-14' },
+    { id:'PSBP-99995', type:'Wildlife', common:'Great Egret', sci:'Ardea alba', family:'Ardeidae', photo:'681679001', page:'wildlife/PSBP-99995-Great-Egret.html', obs:'https://www.inaturalist.org/observations/373034370', n:4, date:'2025-11-14' },
+    { id:'PSBP-99989', type:'Wildlife', common:'Double-crested Cormorant', sci:'Nannopterum auritum', family:'Phalacrocoracidae', photo:'681678611', page:'wildlife/PSBP-99989-Double-crested-Cormorant.html', obs:'https://www.inaturalist.org/observations/373034292', n:5, date:'2025-11-14' },
+    { id:'PSBP-99983', type:'Wildlife', common:'Bald Eagle', sci:'Haliaeetus leucocephalus', family:'Accipitridae', photo:'681678605', page:'wildlife/PSBP-99983-Bald-Eagle.html', obs:'https://www.inaturalist.org/observations/373034290', n:1, date:'2025-11-14' },
+    { id:'PSBP-99981', type:'Wildlife', common:'American White Pelican', sci:'Pelecanus erythrorhynchos', family:'Pelecanidae', photo:'681678990', page:'wildlife/PSBP-99981-American-White-Pelican.html', obs:'https://www.inaturalist.org/observations/373034369', n:2, date:'2025-11-14' },
+    { id:'PSBP-99968', type:'Wildlife', common:'Northern Mockingbird', sci:'Mimus polyglottos', family:'Mimidae', photo:'681680608', page:'wildlife/PSBP-99968-Northern-Mockingbird.html', obs:'https://www.inaturalist.org/observations/373034531', n:4, date:'2025-11-14' },
+    { id:'PSBP-99965', type:'Wildlife', common:'Blue Jay', sci:'Cyanocitta cristata', family:'Corvidae', photo:'681680194', page:'wildlife/PSBP-99965-Blue-Jay.html', obs:'https://www.inaturalist.org/observations/373034473', n:2, date:'2025-11-14' },
+    { id:'PSBP-99951', type:'Wildlife', common:'Downy Woodpecker', sci:'Dryobates pubescens', family:null, photo:'681678977', page:'wildlife/PSBP-99951-Downy-Woodpecker.html', obs:'https://www.inaturalist.org/observations/373034365', n:1, date:'2025-11-14' },
+    { id:'PSBP-99949', type:'Wildlife', common:'Turkey Vulture', sci:'Cathartes aura', family:null, photo:'681678973', page:'wildlife/PSBP-99949-Turkey-Vulture.html', obs:'https://www.inaturalist.org/observations/373034367', n:1, date:'2025-11-14' },
+    { id:'PSBP-99940', type:'Wildlife', common:'Western Cattle-Egret', sci:'Ardea ibis', family:null, photo:'681678688', page:'wildlife/PSBP-99940-Western-Cattle-Egret.html', obs:'https://www.inaturalist.org/observations/373034306', n:1, date:'2025-11-14' },
+    { id:'PSBP-99938', type:'Wildlife', common:'Ruby-throated Hummingbird', sci:'Archilochus colubris', family:'Trochilidae', photo:'681678940', page:'wildlife/PSBP-99938-Ruby-throated-Hummingbird.html', obs:'https://www.inaturalist.org/observations/373034358', n:1, date:'2025-11-14' },
+    { id:'PSBP-99932', type:'Wildlife', common:'Eastern Phoebe', sci:'Sayornis phoebe', family:null, photo:'681678555', page:'wildlife/PSBP-99932-Eastern-Phoebe.html', obs:'https://www.inaturalist.org/observations/373034270', n:1, date:'2025-11-14' },
+    { id:'PSBP-99929', type:'Wildlife', common:'Yellow-throated Warbler', sci:'Setophaga dominica', family:null, photo:'681679043', page:'wildlife/PSBP-99929-Yellow-throated-Warbler.html', obs:'https://www.inaturalist.org/observations/373034375', n:2, date:'2025-11-14' },
+    { id:'PSBP-99926', type:'Wildlife', common:'Black-and-white Warbler', sci:'Mniotilta varia', family:null, photo:'681678747', page:'wildlife/PSBP-99926-Black-and-white-Warbler.html', obs:'https://www.inaturalist.org/observations/373034314', n:2, date:'2025-11-14' },
+    { id:'PSBP-99924', type:'Wildlife', common:'Blue-gray Gnatcatcher', sci:'Polioptila caerulea', family:null, photo:'681678571', page:'wildlife/PSBP-99924-Blue-gray-Gnatcatcher.html', obs:'https://www.inaturalist.org/observations/373034280', n:2, date:'2025-11-14' },
+    { id:'PSBP-99923', type:'Wildlife', common:'White-crowned Sparrow', sci:'Zonotrichia leucophrys', family:null, photo:'681678964', page:'wildlife/PSBP-99923-White-crowned-Sparrow.html', obs:'https://www.inaturalist.org/observations/373034362', n:2, date:'2025-11-14' },
+    { id:'PSBP-99992', type:'Wildlife', common:'Wood Stork', sci:'Mycteria americana', family:'Ciconiidae', photo:'681679016', page:'wildlife/PSBP-99992-Wood-Stork.html', obs:'https://www.inaturalist.org/observations/373034371', n:1, date:'2025-11-14' },
+    { id:'PSBP-99947', type:'Wildlife', common:'Common Grackle', sci:'Quiscalus quiscula', family:null, photo:'681677774', page:'wildlife/PSBP-99947-Common-Grackle.html', obs:'https://www.inaturalist.org/observations/373034214', n:4, date:'2025-08-28' },
+    { id:'PSBP-00080', type:'Plant', common:'Dragon Fruit', sci:'Selenicereus undatus', family:'Cactaceae', photo:'681677788', page:'plants/PSBP-00080-Dragon-Fruit.html', obs:'https://www.inaturalist.org/observations/373034210', n:1, date:'2025-08-28' },
+    { id:'PSBP-99991', type:'Wildlife', common:'Mottled Duck', sci:'Anas fulvigula', family:'Anatidae', photo:'681681506', page:'wildlife/PSBP-99991-Mottled-Duck.html', obs:'https://www.inaturalist.org/observations/373034653', n:4, date:'2025-05-17' },
+    { id:'PSBP-99988', type:'Wildlife', common:'Peninsular Cooter', sci:'Pseudemys peninsularis', family:'Emydidae', photo:'681682349', page:'wildlife/PSBP-99988-Peninsular-Cooter.html', obs:'https://www.inaturalist.org/observations/373034720', n:2, date:'2025-05-17' },
+    { id:'PSBP-99984', type:'Wildlife', common:'Wood Duck', sci:'Aix sponsa', family:'Anatidae', photo:'681680505', page:'wildlife/PSBP-99984-Wood-Duck.html', obs:'https://www.inaturalist.org/observations/373034522', n:8, date:'2025-05-17' },
+    { id:'PSBP-99979', type:'Wildlife', common:'Eastern Screech-Owl', sci:'Megascops asio', family:'Strigidae', photo:'681682189', page:'wildlife/PSBP-99979-Eastern-Screech-Owl.html', obs:'https://www.inaturalist.org/observations/373034710', n:1, date:'2025-05-17' },
+    { id:'PSBP-99945', type:'Wildlife', common:'Red-shouldered Hawk', sci:'Buteo lineatus', family:null, photo:'681679926', page:'wildlife/PSBP-99945-Red-shouldered-Hawk.html', obs:'https://www.inaturalist.org/observations/373034432', n:3, date:'2025-05-17' },
+    { id:'PSBP-99922', type:'Wildlife', common:'Great Crested Flycatcher', sci:'Myiarchus crinitus', family:null, photo:'681681382', page:'wildlife/PSBP-99922-Great-Crested-Flycatcher.html', obs:'https://www.inaturalist.org/observations/373034625', n:3, date:'2025-04-30' },
+    { id:'PSBP-99942', type:'Wildlife', common:'Little Blue Heron', sci:'Egretta caerulea', family:null, photo:'681682059', page:'wildlife/PSBP-99942-Little-Blue-Heron.html', obs:'https://www.inaturalist.org/observations/373034694', n:2, date:'2025-04-28' },
+    { id:'PSBP-99905', type:'Wildlife', common:'Bobolink', sci:'Dolichonyx oryzivorus', family:'Icteridae', photo:'681682051', page:'wildlife/PSBP-99905-Bobolink.html', obs:'https://www.inaturalist.org/observations/373034693', n:4, date:'2025-04-28' },
+    { id:'PSBP-99993', type:'Wildlife', common:'Great Blue Heron', sci:'Ardea herodias', family:'Ardeidae', photo:'681678544', page:'wildlife/PSBP-99993-Great-Blue-Heron.html', obs:'https://www.inaturalist.org/observations/373034267', n:2, date:'2025-04-27' },
+    { id:'PSBP-99930', type:'Wildlife', common:'Cape May Warbler', sci:'Setophaga tigrina', family:null, photo:'682171674', page:'wildlife/PSBP-99930-Cape-May-Warbler.html', obs:'https://www.inaturalist.org/observations/373034678', n:3, date:'2025-04-27' },
+    { id:'PSBP-99919', type:'Wildlife', common:'Mallard', sci:'Anas platyrhynchos', family:null, photo:'681681849', page:null, obs:'https://www.inaturalist.org/observations/373034658', n:4, date:'2025-04-27' },
+    { id:'PSBP-99963', type:'Wildlife', common:'Mourning Dove', sci:'Zenaida macroura', family:'Columbidae', photo:'681681411', page:'wildlife/PSBP-99963-Mourning-Dove.html', obs:'https://www.inaturalist.org/observations/373034630', n:2, date:'2025-04-06' },
+    { id:'PSBP-99994', type:'Wildlife', common:'Monarch', sci:'Danaus plexippus', family:'Nymphalidae', photo:'681681099', page:'wildlife/PSBP-99994-Monarch.html', obs:'https://www.inaturalist.org/observations/373034572', n:2, date:'2025-03-22' },
+    { id:'PSBP-99987', type:'Wildlife', common:'Roseate Spoonbill', sci:'Platalea ajaja', family:'Threskiornithidae', photo:'681681193', page:'wildlife/PSBP-99987-Roseate-Spoonbill.html', obs:'https://www.inaturalist.org/observations/373034596', n:1, date:'2025-03-22' },
+    { id:'PSBP-99985', type:'Wildlife', common:'Tricolored Heron', sci:'Egretta tricolor', family:'Ardeidae', photo:'681680090', page:'wildlife/PSBP-99985-Tricolored-Heron.html', obs:'https://www.inaturalist.org/observations/373034459', n:2, date:'2025-03-22' },
+    { id:'PSBP-99982', type:'Wildlife', common:'Osprey', sci:'Pandion haliaetus', family:'Pandionidae', photo:'681680436', page:'wildlife/PSBP-99982-Osprey.html', obs:'https://www.inaturalist.org/observations/373034512', n:4, date:'2025-03-22' },
+    { id:'PSBP-99941', type:'Wildlife', common:'Snowy Egret', sci:'Egretta thula', family:null, photo:'681680583', page:'wildlife/PSBP-99941-Snowy-Egret.html', obs:'https://www.inaturalist.org/observations/373034528', n:1, date:'2025-03-22' },
+    { id:'PSBP-99939', type:'Wildlife', common:'Brown Pelican', sci:'Pelecanus occidentalis', family:null, photo:'681680358', page:'wildlife/PSBP-99939-Brown-Pelican.html', obs:'https://www.inaturalist.org/observations/373034497', n:1, date:'2025-03-22' },
+    { id:'PSBP-99933', type:'Wildlife', common:'American Robin', sci:'Turdus migratorius', family:null, photo:'681681013', page:'wildlife/PSBP-99933-American-Robin.html', obs:'https://www.inaturalist.org/observations/373034552', n:2, date:'2025-03-22' },
+    { id:'PSBP-99931', type:'Wildlife', common:'Palm Warbler', sci:'Setophaga palmarum', family:null, photo:'681681070', page:'wildlife/PSBP-99931-Palm-Warbler.html', obs:'https://www.inaturalist.org/observations/373034570', n:2, date:'2025-03-22' },
+    { id:'PSBP-99928', type:'Wildlife', common:'Yellow-rumped Warbler', sci:'Setophaga coronata', family:null, photo:'681681066', page:'wildlife/PSBP-99928-Yellow-rumped-Warbler.html', obs:'https://www.inaturalist.org/observations/373034564', n:2, date:'2025-03-22' },
+    { id:'PSBP-99927', type:'Wildlife', common:'Northern Parula', sci:'Setophaga americana', family:null, photo:'681681138', page:'wildlife/PSBP-99927-Northern-Parula.html', obs:'https://www.inaturalist.org/observations/373034588', n:2, date:'2025-03-22' },
+    { id:'PSBP-99925', type:'Wildlife', common:'Yellow-throated Vireo', sci:'Vireo flavifrons', family:null, photo:'681680357', page:'wildlife/PSBP-99925-Yellow-throated-Vireo.html', obs:'https://www.inaturalist.org/observations/373034500', n:2, date:'2025-03-22' },
+    { id:'PSBP-99921', type:'Wildlife', common:'Yellow-bellied Sapsucker', sci:'Sphyrapicus varius', family:null, photo:'681680290', page:'wildlife/PSBP-99921-Yellow-bellied-Sapsucker.html', obs:'https://www.inaturalist.org/observations/373034489', n:1, date:'2025-03-22' },
+    { id:'PSBP-99890', type:'Wildlife', common:'European Starling', sci:'Sturnus vulgaris', family:'Sturnidae', photo:'681681008', page:'wildlife/PSBP-99890-European-Starling.html', obs:'https://www.inaturalist.org/observations/373034540', n:2, date:'2025-03-22' },
+    { id:'PSBP-99944', type:'Wildlife', common:'Cooper\u2019s Hawk', sci:'Astur cooperii', family:null, photo:'681680085', page:'wildlife/PSBP-99944-Coopers-Hawk.html', obs:'https://www.inaturalist.org/observations/373034458', n:1, date:'2025-03-03' },
+    { id:'PSBP-99943', type:'Wildlife', common:'Great Horned Owl', sci:'Bubo virginianus', family:null, photo:'681680258', page:'wildlife/PSBP-99943-Great-Horned-Owl.html', obs:'https://www.inaturalist.org/observations/373034483', n:1, date:'2025-03-03' },
+    { id:'PSBP-99996', type:'Wildlife', common:'Common Gallinule', sci:'Gallinula galeata', family:'Rallidae', photo:'681679178', page:'wildlife/PSBP-99996-Common-Gallinule.html', obs:'https://www.inaturalist.org/observations/373034385', n:3, date:'2024-04-21' },
+    { id:'PSBP-99946', type:'Wildlife', common:'Brown-headed Cowbird', sci:'Molothrus ater', family:null, photo:'681680478', page:'wildlife/PSBP-99946-Brown-headed-Cowbird.html', obs:'https://www.inaturalist.org/observations/373034515', n:1, date:'2024-04-21' },
+    { id:'PSBP-00007', type:'Plant', common:'Jacaranda', sci:'Jacaranda mimosifolia', family:'Bignoniaceae', photo:'681680574', page:'plants/PSBP-00007-Jacaranda.html', obs:'https://www.inaturalist.org/observations/373034525', n:1, date:'2024-04-21' },
+    { id:'PSBP-99969', type:'Wildlife', common:'Pileated Woodpecker', sci:'Dryocopus pileatus', family:'Picidae', photo:'681681234', page:'wildlife/PSBP-99969-Pileated-Woodpecker.html', obs:'https://www.inaturalist.org/observations/373034603', n:2, date:'2023-09-30' },
+    { id:'PSBP-99972', type:'Wildlife', common:'Green Heron', sci:'Butorides virescens', family:'Ardeidae', photo:'681679197', page:'wildlife/PSBP-99972-Green-Heron.html', obs:'https://www.inaturalist.org/observations/373034389', n:1, date:'2023-05-28' },
+    { id:'PSBP-00001', type:'Plant', common:'Tree Crinum', sci:'Crinum asiaticum', family:'Amaryllidaceae', photo:'681679773', page:'plants/PSBP-00001-Tree-Crinum.html', obs:'https://www.inaturalist.org/observations/373034426', n:1, date:'2023-05-28' },
+    { id:'PSBP-99950', type:'Wildlife', common:'Gray Catbird', sci:'Dumetella carolinensis', family:null, photo:'681678467', page:'wildlife/PSBP-99950-Gray-Catbird.html', obs:'https://www.inaturalist.org/observations/373034252', n:1, date:'2023-03-31' },
+    { id:'PSBP-99935', type:'Wildlife', common:'Halloween Pennant', sci:'Celithemis eponina', family:null, photo:'681678295', page:'wildlife/PSBP-99935-Halloween-Pennant.html', obs:'https://www.inaturalist.org/observations/373034238', n:1, date:'2023-03-31' },
+    { id:'PSBP-00681', type:'Plant', common:'Yellow Trumpet Tree', sci:'Tabebuia aurea', family:'Bignoniaceae', photo:'681678011', page:'plants/PSBP-00681-Yellow-Trumpet-Tree.html', obs:'https://www.inaturalist.org/observations/373034222', n:1, date:'2023-03-31' },
+    { id:'PSBP-00621', type:'Plant', common:'Plantain', sci:'Musa × paradisiaca', family:'Musaceae', photo:'681678425', page:'plants/PSBP-00621-Plantain.html', obs:'https://www.inaturalist.org/observations/373034250', n:1, date:'2023-03-31' },
+  ],
+  rhonda: [
+    { id:'PSBP-00099', type:'Plant', common:'Pink Rain Lily', sci:'Zephyranthes robusta', family:'Amaryllidaceae', photo:'703358889', page:'plants/PSBP-00099-Pink-Rain-Lily.html', obs:'https://www.inaturalist.org/observations/384250554', n:1, date:'2026-07-22' },
+    { id:'PSBP-99972', type:'Wildlife', common:'Green Heron', sci:'Butorides virescens', family:'Ardeidae', photo:'702999502', page:'wildlife/PSBP-99972-Green-Heron.html', obs:'https://www.inaturalist.org/observations/384066229', n:1, date:'2026-07-20' },
+    { id:'PSBP-99998', type:'Wildlife', common:'Anhinga', sci:'Anhinga anhinga', family:'Anhingidae', photo:'702999542', page:'wildlife/PSBP-99998-Anhinga.html', obs:'https://www.inaturalist.org/observations/384066234', n:1, date:'2026-07-20' },
+    { id:'PSBP-99977', type:'Wildlife', common:'Yellow-crowned Night Heron', sci:'Nyctanassa violacea', family:'Ardeidae', photo:'702999501', page:'wildlife/PSBP-99977-Yellow-crowned-Night-Heron.html', obs:'https://www.inaturalist.org/observations/384066232', n:1, date:'2026-07-20' },
+    { id:'PSBP-00039', type:'Plant', common:'Giant Milkweed', sci:'Calotropis gigantea', family:'Apocynaceae', photo:'703358886', page:'plants/PSBP-00039-Giant-Milkweed.html', obs:'https://www.inaturalist.org/observations/384250553', n:1, date:'2026-07-09' },
+    { id:'PSBP-99978', type:'Wildlife', common:'Northern Cardinal', sci:'Cardinalis cardinalis', family:'Cardinalidae', photo:'704056399', page:'wildlife/PSBP-99978-Northern-Cardinal.html', obs:'https://www.inaturalist.org/observations/384611291', n:1, date:'2026-07-03' },
+    { id:'PSBP-00043', type:'Plant', common:'African Iris', sci:'Dietes bicolor', family:'Iridaceae', photo:'703358905', page:'plants/PSBP-00043-African-Iris.html', obs:'https://www.inaturalist.org/observations/384250556', n:1, date:'2026-06-10' },
+    { id:'PSBP-99993', type:'Wildlife', common:'Great Blue Heron', sci:'Ardea herodias', family:'Ardeidae', photo:'702999498', page:'wildlife/PSBP-99993-Great-Blue-Heron.html', obs:'https://www.inaturalist.org/observations/384066228', n:1, date:'2026-05-22' },
+    { id:'PSBP-00170', type:'Plant', common:'Desert Rose', sci:'Adenium obesum', family:'Apocynaceae', photo:'703872898', page:'plants/PSBP-00170-Desert-Rose.html', obs:'https://www.inaturalist.org/observations/384513873', n:2, date:'2026-05-13' },
+    { id:'PSBP-00036', type:'Plant', common:'Royal Poinciana', sci:'Delonix regia', family:'Fabaceae', photo:'703872899', page:'plants/PSBP-00036-Royal-Poinciana.html', obs:'https://www.inaturalist.org/observations/384513870', n:1, date:'2026-05-13' },
+    { id:'PSBP-00731', type:'Plant', common:'Suriname Stickpea', sci:'Calliandra surinamensis', family:null, photo:'703864270', page:null, obs:'https://www.inaturalist.org/observations/384509612', n:2, date:'2026-05-13' },
+    { id:'PSBP-00010', type:'Plant', common:'Geiger Tree', sci:'Cordia sebestena', family:'Boraginaceae', photo:'703870944', page:'plants/PSBP-00010-Geiger-Tree.html', obs:'https://www.inaturalist.org/observations/384512842', n:1, date:'2026-04-15' },
+    { id:'PSBP-00155', type:'Plant', common:'Texas Olive', sci:'Cordia boissieri', family:'Boraginaceae', photo:'703872045', page:'plants/PSBP-00155-Texas-Olive.html', obs:'https://www.inaturalist.org/observations/384513425', n:1, date:'2026-04-15' },
+    { id:'PSBP-00509', type:'Plant', common:'Shell Gingers', sci:'Alpinia', family:'Zingiberaceae', photo:'703871633', page:'plants/PSBP-00509-Shell-Gingers.html', obs:'https://www.inaturalist.org/observations/384513185', n:1, date:'2026-04-15' },
+    { id:'PSBP-00072', type:'Plant', common:'Yellow Trumpet Flower', sci:'Tecoma stans', family:'Bignoniaceae', photo:'703871348', page:'plants/PSBP-00072-Yellow-Trumpet-Flower.html', obs:'https://www.inaturalist.org/observations/384513044', n:1, date:'2026-04-15' },
+    { id:'PSBP-00152', type:'Plant', common:'Skyflower', sci:'Duranta erecta', family:'Verbenaceae', photo:'702999540', page:'plants/PSBP-00152-Skyflower.html', obs:'https://www.inaturalist.org/observations/384066236', n:1, date:'2026-04-07' },
+    { id:'PSBP-99980', type:'Wildlife', common:'Mangrove Skipper', sci:'Phocides batabano', family:'Hesperiidae', photo:'702999544', page:'wildlife/PSBP-99980-Mangrove-Skipper.html', obs:'https://www.inaturalist.org/observations/384066237', n:1, date:'2026-04-07' },
+    { id:'PSBP-00006', type:'Plant', common:'Peregrina', sci:'Jatropha integerrima', family:'Euphorbiaceae', photo:'703868931', page:'plants/PSBP-00006-Peregrina.html', obs:'https://www.inaturalist.org/observations/384511878', n:1, date:'2026-03-30' },
+    { id:'PSBP-00102', type:'Plant', common:'Red Silk Cotton Tree', sci:'Bombax ceiba', family:'Malvaceae', photo:'703863152', page:'plants/PSBP-00102-Red-Silk-Cotton-Tree.html', obs:'https://www.inaturalist.org/observations/384508942', n:2, date:'2026-03-27' },
+    { id:'PSBP-00156', type:'Plant', common:'Tropical Sage', sci:'Salvia coccinea', family:'Lamiaceae', photo:'703865987', page:'plants/PSBP-00156-Tropical-Sage.html', obs:'https://www.inaturalist.org/observations/384510233', n:1, date:'2026-03-27' },
+    { id:'PSBP-00052', type:'Plant', common:'Mexican Flame Vine', sci:'Pseudogynoxys chenopodioides', family:'Asteraceae', photo:'703864862', page:'plants/PSBP-00052-Mexican-Flame-Vine.html', obs:'https://www.inaturalist.org/observations/384509765', n:1, date:'2026-03-26' },
+    { id:'PSBP-00053', type:'Plant', common:'Pentas', sci:'Pentas lanceolata', family:'Rubiaceae', photo:'703867592', page:'plants/PSBP-00053-Pentas.html', obs:'https://www.inaturalist.org/observations/384511045', n:1, date:'2026-03-20' },
+    { id:'PSBP-00014', type:'Plant', common:'Queen\u2019s Wreath', sci:'Petrea volubilis', family:'Verbenaceae', photo:'703865180', page:'plants/PSBP-00014-Queens-Wreath.html', obs:'https://www.inaturalist.org/observations/384509881', n:1, date:'2026-03-09' },
+  ],
+  bev: [
+    { id:'PSBP-00067', type:'Plant', common:'Madagascar Periwinkle', sci:'Catharanthus roseus', family:'Apocynaceae', photo:'681035076', page:'plants/PSBP-00067-Madagascar-Periwinkle.html', obs:'https://www.inaturalist.org/observations/372684496', n:1, date:'2026-06-17' },
+    { id:'PSBP-00122', type:'Plant', common:'Walter\u2019s Viburnum', sci:'Viburnum obovatum', family:'Viburnaceae', photo:'477907917', page:'plants/PSBP-00122-Walters-Viburnum.html', obs:'https://www.inaturalist.org/observations/266013464', n:1, date:'2025-03-19' },
+  ],
+};
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 
@@ -390,26 +465,11 @@ var esc = function (s) {
     return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c];
   });
 };
-var fmtDate = function (iso) {
-  if (!iso) return null;
-  var d = new Date(iso + 'T12:00');
-  return d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
-};
-var yearOf = function (iso) { return iso ? +iso.slice(0,4) : null; };
 
 var state = { who:'rob', filter:'all' };
 
 function currentSet() {
-  if (state.who === 'helen') return { person: PEOPLE.helen, photos: [] };
-  if (state.who === 'lean')  return { person: PEOPLE.rob,   photos: PHOTOS.filter(function (p) { return p.type === 'Plant'; }) };
-  return { person: PEOPLE.rob, photos: PHOTOS.slice() };
-}
-
-function speciesHref(p) {
-  if (!p.published) return OBS(p.obs);
-  var dir  = p.type === 'Plant' ? 'plants/' : 'wildlife/';
-  var file = p.file || (p.psbp_id + '-' + p.common_name.replace(/[^A-Za-z0-9]+/g,'-') + '.html');
-  return '../' + dir + file;
+  return { person: PEOPLE[state.who], photos: (SETS[state.who] || []).slice() };
 }
 
 function render() {
@@ -419,17 +479,17 @@ function render() {
      Uses the person's own hero-flagged frame; falls back to their first.
      With no photos at all, the hero band is dropped entirely rather than
      shown empty — a grey box would be worse than no box. */
-  var lead = all.filter(function (p) { return p.hero; })[0] || all[0];
+  var lead = all.filter(function (p) { return p.id === person.lead; })[0] || all[0];
   if (lead) {
     el('hero').style.display = '';
     el('heroImg').src = IMG(lead.photo);
-    el('heroImg').alt = lead.common_name + ' photographed at Palma Sola Botanical Park by ' + person.name;
+    el('heroImg').alt = lead.common + ' photographed at Palma Sola Botanical Park by ' + person.name;
     el('heroName').textContent = person.name;
     el('heroCred').innerHTML =
         '<span class="lbl">In this photograph</span>'
-      + '<span class="who">' + esc(lead.common_name)
-      + (lead.scientific_name ? ' <em>' + esc(lead.scientific_name) + '</em>' : '') + '</span>'
-      + (lead.observed_on ? '<span class="meta">Observed ' + fmtDate(lead.observed_on) + '</span>' : '');
+      + '<span class="who">' + esc(lead.common)
+      + (lead.sci ? ' <em>' + esc(lead.sci) + '</em>' : '') + '</span>'
+      + ('');
   } else {
     el('hero').style.display = 'none';
   }
@@ -437,6 +497,10 @@ function render() {
   /* ── identity ─────────────────────────────────────────────────────────── */
   el('phSpecialty').textContent = person.specialty || '';
   el('phBlurb').textContent = person.blurb || '';
+  el('phBlurb').style.display = person.blurb ? '' : 'none';
+  /* With no bio the left column is a stub, and a two-column grid leaves a
+     large hole beside the record. Collapse instead. */
+  document.querySelector('.ph-head').classList.toggle('is-lean', !person.blurb);
 
   var links = [];
   if (person.inat) links.push('<a href="' + person.inat + '" rel="noopener">Observations on iNaturalist &rarr;</a>');
@@ -445,22 +509,19 @@ function render() {
 
   /* The record. Species count, not photo count, is the honest headline —
      it is what the person actually added to the park's catalogue. */
-  var species = {}, plants = 0, wild = 0, years = [];
+  var species = {}, plants = 0, wild = 0;
   all.forEach(function (p) {
-    species[p.psbp_id] = 1;
+    species[p.id] = 1;
     if (p.type === 'Plant') plants++; else wild++;
-    var y = yearOf(p.observed_on); if (y) years.push(y);
+    
   });
   var nSpecies = Object.keys(species).length;
   var rec = [];
   if (nSpecies) {
     rec.push(['Species', '<b>' + nSpecies + '</b> documented in the park']);
-    rec.push(['Photographs', '<b>' + all.length + '</b> published on species pages']);
+    var nPhotos = 0; all.forEach(function (p) { nPhotos += p.n; });
+    rec.push(['Photographs', '<b>' + nPhotos + '</b> published across those pages']);
     if (plants && wild) rec.push(['Split', plants + ' plants &middot; ' + wild + ' wildlife']);
-    if (years.length) {
-      var lo = Math.min.apply(null, years), hi = Math.max.apply(null, years);
-      rec.push(['Observing since', lo === hi ? String(lo) : lo + ' \u2013 ' + hi]);
-    }
   }
   el('phRecord').innerHTML = rec.map(function (r) {
     return '<div><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>';
@@ -480,8 +541,7 @@ function render() {
   var shown = state.filter === 'all' ? all : all.filter(function (p) { return p.type === state.filter; });
 
   el('phCount').textContent = shown.length
-    ? shown.length + (shown.length === 1 ? ' photograph' : ' photographs')
-        + (state.filter === 'all' ? ', newest observation first' : '')
+    ? shown.length + (shown.length === 1 ? ' species' : ' species') + ', most recent observation first'
     : '';
 
   /* ── grid ─────────────────────────────────────────────────────────────── */
@@ -493,15 +553,17 @@ function render() {
       + '</div>';
   } else {
     el('phGrid').innerHTML = shown.map(function (p) {
-      return '<a class="ph-tile" href="' + speciesHref(p) + '"'
-           + (p.published ? '' : ' rel="noopener"') + '>'
-        + '<img src="' + IMG(p.photo) + '" alt="' + esc(p.common_name) + '" loading="lazy">'
+      var href = p.page ? '../' + p.page : p.obs;
+      return '<a class="ph-tile" href="' + href + '">'
+        + '<img src="' + THUMB(p.photo) + '" alt="' + esc(p.common) + '" loading="lazy">'
         + '<div class="ph-tile-scrim"></div>'
-        + (p.published ? '' : '<span class="ph-tile-off">On iNaturalist</span>')
+        + (p.n > 1 ? '<span class="ph-tile-n">' + p.n + ' photos</span>' : '')
+        + (p.page ? '' : '<span class="ph-tile-off">On iNaturalist</span>')
         + '<span class="ph-tile-cred">'
-        +   '<span class="sp">' + esc(p.common_name)
-        +     (p.scientific_name ? '<em>' + esc(p.scientific_name) + '</em>' : '') + '</span>'
-        +   (p.observed_on ? '<span class="meta">Observed ' + fmtDate(p.observed_on) + '</span>' : '')
+        +   '<span class="sp">' + esc(p.common) + '</span>'
+        +   '<span class="sci">' + (p.sci ? esc(p.sci) : '') + '</span>'
+        +   '<span class="meta">' + (p.family ? esc(p.family) : '')
+        +     (p.date ? ' &middot; ' + fmtDate(p.date) : '') + '</span>'
         + '</span>'
       + '</a>';
     }).join('');
