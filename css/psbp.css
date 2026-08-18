@@ -470,27 +470,26 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 /* ─────────────────────────────────────────────────────────────── NAV ──── */
 #site-nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 900; height: var(--nav-h);
-  background: rgba(253,252,248,.92); backdrop-filter: saturate(1.4) blur(10px);
-  border-bottom: 1px solid var(--rule);
+  background: var(--green-ink);
   display: flex; align-items: center; justify-content: space-between; padding: 0 var(--s5);
 }
 .nav-logo { display: flex; align-items: center; gap: var(--s3); }
-.nav-logo img { height: 44px; }
-.nav-logo span { color: var(--green-ink); font-family: var(--serif); font-size: var(--t-sm); line-height: 1.15; display: none; }
+.nav-logo img { height: 46px; }
+.nav-logo span { color: #fff; font-family: var(--serif); font-size: var(--t-sm); line-height: 1.15; display: none; }
 .nav-links { display: flex; gap: var(--s1); list-style: none; }
 .nav-links a {
   display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--s3);
-  color: var(--ink-soft); font-size: var(--t-sm); font-weight: 600;
+  color: rgba(255,255,255,.80); font-size: var(--t-sm); font-weight: 600;
   border-bottom: 2px solid transparent; transition: color .15s;
 }
-.nav-links a:hover, .nav-links a.active { color: var(--green-ink); border-bottom-color: var(--gold-mark); text-decoration: none; }
+.nav-links a:hover, .nav-links a.active { color: #fff; border-bottom-color: var(--gold-mark); text-decoration: none; }
 .nav-cta {
-  background: var(--green-ink); color: #fff !important; border-radius: var(--r-pill);
+  background: var(--gold-mark); color: #3a2a00 !important; border-radius: var(--r-pill);
   padding: 0 var(--s4) !important; border-bottom: none !important;
 }
 .nav-cta:hover { background: var(--green); }
 .nav-hamburger { display: none; background: none; border: none; cursor: pointer; padding: var(--s2); flex-direction: column; gap: 5px; }
-.nav-hamburger span { display: block; width: 24px; height: 2px; background: var(--green-ink); }
+.nav-hamburger span { display: block; width: 24px; height: 2px; background: #fff; }
 .nav-mobile { display: none; position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 899;
   background: var(--surface); border-bottom: 1px solid var(--rule); padding: var(--s2) 0; box-shadow: var(--lift); }
 .nav-mobile.open { display: block; }
