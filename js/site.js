@@ -961,98 +961,22 @@ function buildEventFilters(container, cardContainers, opts){
   });
 }
 
-// ── Inject all events CSS once, so cards render correctly on ANY page
-// (events.html, homepage teaser, etc.). Colors are inline per-weekday; this
-// handles layout, typography, and responsive behavior.
-function injectEventStyles(){
-  if (document.getElementById('psbp-event-styles')) return;
-  const css = `
-  .ev-card{display:flex;gap:1rem;align-items:stretch;background:var(--white,#fff);
-    border:1px solid #e7e2d6;border-radius:14px;padding:0;overflow:hidden;
-    box-shadow:0 1px 3px rgba(40,50,30,.06);margin-bottom:1rem}
-  .ev-card .event-info{flex:1;min-width:0;padding:.85rem 1.1rem .95rem 0}
-  .ev-card .ev-date{flex:0 0 auto;width:84px;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:.05rem;color:#fff;padding:.6rem .3rem;text-align:center}
-  .ev-date .ev-dow{font-size:.7rem;font-weight:800;letter-spacing:.08em;opacity:.92}
-  .ev-date .ev-dnum{font-size:1.7rem;font-weight:800;line-height:1}
-  .ev-date .ev-dmo{font-size:.7rem;font-weight:700;letter-spacing:.08em;opacity:.92;text-transform:uppercase}
-  .ev-date .ev-dtime{margin-top:.3rem;font-size:.8rem;font-weight:700;line-height:1.25;
-    border-top:1px solid rgba(255,255,255,.4);padding-top:.3rem}
-  .ev-titlerow{display:flex;justify-content:space-between;align-items:flex-start;
-    gap:.6rem;flex-wrap:wrap}
-  .ev-title{margin:0;font-size:1.18rem;line-height:1.25;flex:1 1 auto;min-width:0}
-  .ev-title .ev-instr{font-weight:500;color:var(--text-soft,#6b6f63)}
-  .ev-titlerow .ev-badges{margin:.1rem 0 0;justify-content:flex-end}
-  .ev-card .event-info > p{margin:.45rem 0 0;color:var(--text-soft,#54584c);line-height:1.5}
-  .ev-badges{display:flex;flex-wrap:wrap;gap:.4rem;margin:.55rem 0 0}
-  .ev-badge{display:inline-block;font-size:.74rem;font-weight:700;padding:.2rem .55rem;
-    border-radius:999px;white-space:nowrap;background:#eef0ea;color:#4a5040}
-  .ev-badge-free{background:#e3f0e2;color:#2d6a35}
-  .ev-badge-cost{background:#f6ecca;color:#7a5a12}
-  .ev-badge-reg{background:#e2edf6;color:#2b5d86}
-  .ev-badge-fund{background:#fbe6d6;color:#9a5a1e}
-  .ev-badge-kid{background:#e8e3f3;color:#5d4a8a}
-  .ev-inline-link{color:var(--green-mid,#2d6a35);font-weight:600;white-space:nowrap}
-  .ev-series{margin:.55rem 0 0;font-size:.9rem;color:var(--text-soft,#6b6f63)}
-  .ev-series-link{font-weight:600;color:var(--green-mid,#2d6a35)}
-  .ev-actions{margin-top:.35rem}
-  .agenda-closure{background:#f4f3ef}
-  .agenda-closure .ev-title{color:#5a5a5a}
-
-  /* view toggle */
-  .ev-viewbar{display:flex;justify-content:space-between;align-items:center;
-    gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
-  .ev-viewtoggle{display:inline-flex;background:#eceadf;border-radius:999px;padding:.2rem}
-  .ev-vbtn{border:0;background:transparent;font:inherit;font-weight:700;font-size:.9rem;
-    color:var(--text-soft,#6b6f63);padding:.4rem 1rem;border-radius:999px;cursor:pointer}
-  .ev-vbtn.active{background:var(--green-deep,#1e3a24);color:#fff}
-
-  /* save the date */
-  .std-card{display:flex;gap:.6rem;align-items:flex-start;background:#fffdf6;
-    border:1px solid #ecd9a6;border-left:4px solid var(--gold,#c79a3a);
-    border-radius:12px;padding:.7rem .85rem;margin-bottom:.7rem}
-  .std-star{font-size:1.1rem;line-height:1.2}
-  .std-body{display:flex;flex-direction:column;min-width:0}
-  .std-body strong{font-size:1rem;color:var(--green-deep,#1e3a24)}
-  .std-date{font-size:.85rem;font-weight:700;color:var(--gold-deep,#9a7414);margin-top:.1rem}
-  .std-linkrow{margin-top:.3rem}
-  .std-link{font-weight:600;font-size:.88rem;color:var(--green-mid,#2d6a35)}
-
-  /* full calendar — grouped scrolling list, all screen sizes */
-  .ml-month{margin-bottom:.5rem;padding:0}
-  .ml-title-h{font-size:1.25rem;margin:.4rem 0 .25rem;position:sticky;top:0;z-index:1;
-    background:var(--cream,#f7f5ee);padding:.2rem 0;border-bottom:2px solid #d4cab2}
-  .ml-month:first-child .ml-title-h{margin-top:0}
-  .ml-row{display:flex;align-items:center;gap:.75rem;padding:.55rem .3rem;
-    border-bottom:1px solid #ece9df;text-decoration:none;color:inherit;transition:background .12s}
-  a.ml-row:hover{background:#faf9f4}
-  .ml-dot{flex:0 0 auto;width:11px;height:11px;border-radius:50%}
-  .ml-date{flex:0 0 auto;width:72px;font-size:.86rem;font-weight:700;color:var(--text-soft,#6b6f63)}
-  .ml-time{font-weight:700;color:var(--text-soft,#6b6f63)}
-  .ml-title{flex:1;min-width:0;font-weight:600;font-size:1.02rem;color:var(--green-deep,#23402a);
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .ml-closure-reason{font-weight:500;color:#8a8d80}
-  .ml-chev{flex:0 0 auto;color:#b3b1a4;font-size:1.2rem}
-
-  @media (max-width:760px){
-    .ev-card .ev-date{width:72px}
-    .ev-date .ev-dnum{font-size:1.45rem}
-    .ev-title{flex-basis:100%}
-    .ev-titlerow .ev-badges{justify-content:flex-start}
-    .ml-title{font-size:.96rem}
-  }`;
-  const tag = document.createElement('style');
-  tag.id = 'psbp-event-styles';
-  tag.textContent = css;
-  document.head.appendChild(tag);
-}
+// ── Event styles moved to css/psbp.css on 2026-08-18 ──────────────
+// This file used to define injectEventStyles(), which built a
+// <style id="psbp-event-styles"> tag at runtime and appended it to <head>.
+// Those rules now live in the "MODULE: events" block at the bottom of
+// css/psbp.css, where the stylesheet can actually own them.
+//
+// CONSEQUENCE: any page that renders event cards must link css/psbp.css.
+// Linking css/site.css alone will render those cards unstyled.
+// Per-weekday .ev-date colours and .ml-dot colours are still set inline by
+// the renderers below — those are data, not design, and stay here.
 
 // ── ORCHESTRATOR for events.html ──────────────────────────────
 // opts: { agenda, filters, schedule, series, monthList,
 //         saveDate, saveDateWrap, viewTitle, windowDays }
 async function loadEventsPage(opts){
   opts = opts || {};
-  injectEventStyles();
   const $ = id => id ? document.getElementById(id) : null;
   const agendaEl = $(opts.agenda), filtersEl = $(opts.filters),
         schedEl = $(opts.schedule), seriesEl = $(opts.series),
@@ -1167,7 +1091,6 @@ async function loadEventsPage(opts){
 async function loadEvents(containerId, maxItems=8){
   const el = document.getElementById(containerId);
   if (!el) return [];
-  injectEventStyles();
   try {
     const [events, series] = await Promise.all([
       fetchTab(TAB.events).catch(()=>[]), fetchTab(TAB.series).catch(()=>[])
