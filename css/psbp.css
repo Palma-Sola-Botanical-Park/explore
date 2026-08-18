@@ -658,3 +658,11 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .filter-btn.on.f-native    { background: var(--green);      border-color: var(--green); }
 .filter-btn.on.f-butterfly { background: #58497a;           border-color: #58497a; }
 .filter-btn.on.f-fruit     { background: var(--gold);       border-color: var(--gold); }
+
+/* ── Announcement bar text — added 2026-08-18 ─────────────────────────────
+   site.js used to hard-code white on these, which was invisible once the bar
+   became pale green. The colours now live here where the stylesheet can own
+   them. .ann-body already had rules; nothing ever emitted the class. ── */
+.ann-body { color: var(--green-ink); }
+.ann-body strong { color: var(--green-ink); font-weight: 700; font-size: var(--t-sm); }
+.ann-note { color: var(--ink-soft); font-size: var(--t-sm); margin-left: .5rem; }

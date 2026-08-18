@@ -77,6 +77,43 @@ def page_filename(psbp_id, common_name):
 
 # ── plants.json entry builder ───────────────────────────────────────────────
 
+def _safety_word(level):
+    """Traffic-light grade -> a word a visitor understands.
+
+    plant_signage stores Green / Yellow / Red. "Green" sitting next to the word
+    "toxic" on a card is ambiguous, so the card publishes the meaning instead of
+    the colour. Anything unrecognised returns "" and simply drops out of the
+    filter rather than being guessed at.
+    """
+    return {"green": "safe", "yellow": "caution", "red": "toxic"}.get(
+        (level or "").strip().lower(), ""
+    )
+
+
+def _drought_bucket(text):
+    """Free-text drought tolerance -> low | moderate | high | "".
+
+    growing_conditions.drought_tolerance is prose written by a researcher —
+    "high once established", "moderate; prefers consistent moisture",
+    "excellent" — 122 distinct strings across 230 plants, so it can't be
+    filtered as-is. This collapses it to three buckets and classifies 202 of the
+    209 populated values. The 7 it can't place, plus the 21 blanks, return ""
+    and drop out of the filter.
+    """
+    t = (text or "").lower()
+    if not t:
+        return ""
+    if any(k in t for k in ("excellent", "high", "very good")):
+        return "high"
+    if "low" in t and "moderate" not in t:
+        return "low"
+    if any(k in t for k in ("moderate", "good", "medium")):
+        return "moderate"
+    if "low" in t:
+        return "low"
+    return ""
+
+
 def build_plants_json_entry(species, hero):
     """Build one plants.json card entry from signage + hero photo."""
     pid = species["id"]
@@ -139,6 +176,19 @@ def build_plants_json_entry(species, hero):
         "credit_license": hero_credit["credit_license"],
         "credit_line": hero_credit["credit_line"],
         "focus": focus,
+
+        # ── Added 2026-08-18 — four fields the card index never carried. ──
+        # searchable text: site.js has always scored matches against p.quick,
+        # but nothing ever emitted it, so that branch compared against an empty
+        # string on every plant. quick_hits is populated on all 230.
+        "quick":   " ".join(species.get("quick_hits") or []),
+        # facet: safe around a dog on a leash?  safe 143 / caution 50 / toxic 37
+        "dogs":    _safety_word((species.get("toxicity") or {}).get("dogs_level")),
+        # facet: can you eat it?                safe 114 / caution 81 / toxic 35
+        "edible":  _safety_word((species.get("edibility") or {}).get("level")),
+        # facet: how thirsty?                   high 100 / moderate 83 / low 19
+        "drought": _drought_bucket(
+            (species.get("growing_conditions") or {}).get("drought_tolerance")),
     }
 
 # ── HTML page generator ────────────────────────────────────────────────────

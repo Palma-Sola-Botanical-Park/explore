@@ -1240,10 +1240,10 @@ async function loadAnnouncements(containerId) {
         display:flex;align-items:center;gap:1rem;padding:.6rem 0;
         opacity:${i===0?'1':'0'};transition:opacity 1.2s ease;pointer-events:${i===0?'auto':'none'}
       ">
-        ${a.emoji?`<span class="ann-emoji">${a.emoji}</span>`:''}
-        <div class="ann-body" style="flex:1">
-          <strong>${a.title||''}</strong>
-          ${a.body?`<span class="ann-note">${a.body}</span>`:''}
+        ${a.emoji?`<span style="font-size:1.4rem;flex-shrink:0">${a.emoji}</span>`:''}
+        <div style="flex:1">
+          <strong style="color:var(--white)">${a.title||''}</strong>
+          ${a.body?`<span style="color:rgba(255,255,255,.78);font-size:.9rem;margin-left:.5rem">${a.body}</span>`:''}
           ${annButton(a)}
         </div>
       </div>`;
