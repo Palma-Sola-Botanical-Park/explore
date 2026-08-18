@@ -248,10 +248,27 @@ const NAV_HTML = `
     #site-nav .subnav a:hover,#site-nav .subnav a:focus{background:rgba(255,255,255,.10);color:var(--white)}
   }
   @media (min-width:861px) and (max-width:1100px){#site-nav .nav-links{gap:1.7rem}}
-  /* Mobile: grouped sub-items under each top link inside the hamburger panel */
-  #navMobile .nm-top{font-weight:700}
-  #navMobile .nm-sub{padding-left:2.4rem;font-size:.95rem;color:rgba(255,255,255,.6)}
-  #navMobile .nm-sub:hover{color:var(--white)}
+  /* Mobile: grouped sub-items under each top link inside the hamburger panel.
+
+     The panel paints its own background here, exactly as the desktop .subnav
+     above does, instead of inheriting one from the stylesheet. It used not to,
+     and that is what broke it: these link colours were white — chosen to match
+     the dark-green desktop dropdowns — while the panel background came from
+     psbp.css, which is white. White on white. Every entry was still in the page
+     and still tappable; none of the sub-entries could be seen.
+
+     Keeping background and text together in one block means the menu renders
+     correctly whether a page loads psbp.css or the older site.css, and cannot
+     be broken again by a change to either. Every var() below carries a literal
+     fallback for the same reason. */
+  #navMobile{background:#fff}
+  #navMobile .nm-top{
+    font-weight:700;color:var(--green-deep,#1a3a1f);
+    border-top:1px solid var(--border,#e6e2d6);margin-top:.35rem;
+  }
+  #navMobile .nm-top:first-child{border-top:0;margin-top:0}
+  #navMobile .nm-sub{padding-left:2.4rem;font-size:.95rem;font-weight:500;color:var(--text-soft,#5c5f56)}
+  #navMobile .nm-sub:hover,#navMobile .nm-sub:focus{color:var(--green-deep,#1a3a1f)}
   /* Make the open mobile menu fit the screen and scroll inside itself —
      otherwise the list overflows past the viewport and can't be reached,
      and touch-scroll leaks through to the page behind it. */
