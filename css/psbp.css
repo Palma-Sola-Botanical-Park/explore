@@ -665,3 +665,153 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .ann-body { color: var(--green-ink); }
 .ann-body strong { color: var(--green-ink); font-weight: 700; font-size: var(--t-sm); }
 .ann-note { color: var(--ink-soft); font-size: var(--t-sm); margin-left: .5rem; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODULE: events  —  added 2026-08-18
+   ───────────────────────────────────────────────────────────────────────────
+   These rules used to live INSIDE js/site.js. A function called
+   injectEventStyles() built a <style id="psbp-event-styles"> tag at runtime and
+   appended it to <head>. Nothing in this stylesheet could reach them, so the
+   events page and the home-page teaser were styled by JavaScript while every
+   other page on the site was styled by CSS. That function is deleted in the
+   same change that adds this block — the two files must ship together.
+
+   WHAT MOVED, AND WHAT DIDN'T
+   Geometry is verbatim. Every padding, width, radius, gap, font-size and shadow
+   is the value site.js was emitting; where a number happened to equal a token
+   on the space scale (1rem -> --s4, .75rem -> --s3) the token is used, which is
+   the same pixel.
+
+   Only COLOUR changed. The block arrived with 31 distinct hex codes and leaves
+   with 7. The 24 that went away were near-misses of tokens defined at the top
+   of this file — three slightly different dark greens all reaching for
+   --green-ink, three greys all reaching for --ink-soft, and a card border one
+   hex digit away from --rule (#e7e2d6 vs #e6e2d6).
+
+   THE 7 THAT STAYED, AND WHY
+   The event badges are a five-colour semantic code: free / cost / register /
+   fundraiser / kids. Green and gold exist in this palette; blue, orange and
+   purple do not. Folding those three onto the nearest token would have made
+   three of the five badges look alike, which defeats the point of colour-coding
+   them. They keep their own values, marked below. Same for the calendar
+   chevron grey, which has no equivalent here either.
+
+   ONE BUG FIXED IN PASSING
+   .std-date asked for var(--gold-deep), which this file has never defined, so
+   it was silently falling back to a raw #9a7414. It now uses --gold, the
+   text-safe gold that clears 4.5:1 on paper.
+
+   COLOURS STILL SET BY JAVASCRIPT
+   .ev-date has no background here on purpose — site.js sets it inline, per
+   weekday, so each day of the week gets its own colour. Same for .ml-dot.
+   Those are data-driven, not design, and belong in the JS.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Event card ─────────────────────────────────────────────────────────── */
+.ev-card {
+  display: flex; gap: var(--s4); align-items: stretch;
+  background: var(--surface); border: 1px solid var(--rule);
+  border-radius: 14px; padding: 0; overflow: hidden;
+  box-shadow: 0 1px 3px rgba(40,50,30,.06);
+  margin-bottom: var(--s4);
+}
+.ev-card .event-info { flex: 1; min-width: 0; padding: .85rem 1.1rem .95rem 0; }
+
+/* The coloured date block. background-color comes from site.js, per weekday. */
+.ev-card .ev-date {
+  flex: 0 0 auto; width: 84px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .05rem; color: #fff; padding: .6rem .3rem; text-align: center;
+}
+.ev-date .ev-dow  { font-size: .7rem; font-weight: 800; letter-spacing: .08em; opacity: .92; }
+.ev-date .ev-dnum { font-size: 1.7rem; font-weight: 800; line-height: 1; }
+.ev-date .ev-dmo  { font-size: .7rem; font-weight: 700; letter-spacing: .08em; opacity: .92; text-transform: uppercase; }
+.ev-date .ev-dtime {
+  margin-top: .3rem; font-size: .8rem; font-weight: 700; line-height: 1.25;
+  border-top: 1px solid rgba(255,255,255,.4); padding-top: .3rem;
+}
+
+.ev-titlerow { display: flex; justify-content: space-between; align-items: flex-start; gap: .6rem; flex-wrap: wrap; }
+.ev-title { margin: 0; font-size: 1.18rem; line-height: 1.25; flex: 1 1 auto; min-width: 0; }
+.ev-title .ev-instr { font-weight: 500; color: var(--ink-soft); }
+.ev-titlerow .ev-badges { margin: .1rem 0 0; justify-content: flex-end; }
+.ev-card .event-info > p { margin: .45rem 0 0; color: var(--ink-soft); line-height: 1.5; }
+
+/* ── Badges. Five-colour semantic code — see header note. ───────────────── */
+.ev-badges { display: flex; flex-wrap: wrap; gap: .4rem; margin: .55rem 0 0; }
+.ev-badge {
+  display: inline-block; font-size: .74rem; font-weight: 700;
+  padding: .2rem .55rem; border-radius: var(--r-pill); white-space: nowrap;
+  background: var(--sunk); color: var(--ink-soft);
+}
+.ev-badge-free { background: var(--green-tint); color: var(--green); }
+.ev-badge-cost { background: var(--gold-tint);  color: var(--warn); }
+.ev-badge-reg  { background: #e2edf6; color: #2b5d86; }  /* blue   — no token */
+.ev-badge-fund { background: #fbe6d6; color: #9a5a1e; }  /* orange — no token */
+.ev-badge-kid  { background: #e8e3f3; color: #5d4a8a; }  /* purple — no token */
+
+.ev-inline-link { color: var(--green); font-weight: 600; white-space: nowrap; }
+.ev-series { margin: .55rem 0 0; font-size: .9rem; color: var(--ink-soft); }
+.ev-series-link { font-weight: 600; color: var(--green); }
+.ev-actions { margin-top: .35rem; }
+
+/* A closed / cancelled day, greyed back. */
+.agenda-closure { background: var(--sunk); }
+.agenda-closure .ev-title { color: var(--ink-soft); }
+
+/* ── Agenda / Calendar view toggle ──────────────────────────────────────── */
+.ev-viewbar { display: flex; justify-content: space-between; align-items: center; gap: var(--s4); flex-wrap: wrap; margin-bottom: var(--s4); }
+.ev-viewtoggle { display: inline-flex; background: var(--sunk); border-radius: var(--r-pill); padding: .2rem; }
+.ev-vbtn {
+  border: 0; background: transparent; font: inherit; font-weight: 700; font-size: .9rem;
+  color: var(--ink-soft); padding: .4rem 1rem; border-radius: var(--r-pill); cursor: pointer;
+}
+.ev-vbtn.active { background: var(--green-ink); color: #fff; }
+
+/* ── "Save the date" card ───────────────────────────────────────────────── */
+.std-card {
+  display: flex; gap: .6rem; align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--warn-line); border-left: 4px solid var(--gold-mark);
+  border-radius: var(--r); padding: .7rem .85rem; margin-bottom: .7rem;
+}
+.std-star { font-size: 1.1rem; line-height: 1.2; }
+.std-body { display: flex; flex-direction: column; min-width: 0; }
+.std-body strong { font-size: 1rem; color: var(--green-ink); }
+.std-date { font-size: .85rem; font-weight: 700; color: var(--gold); margin-top: .1rem; }
+.std-linkrow { margin-top: .3rem; }
+.std-link { font-weight: 600; font-size: .88rem; color: var(--green); }
+
+/* ── Full calendar: grouped scrolling list, all screen sizes ────────────── */
+.ml-month { margin-bottom: var(--s2); padding: 0; }
+.ml-title-h {
+  font-size: 1.25rem; margin: .4rem 0 .25rem;
+  position: sticky; top: 0; z-index: 1;
+  background: var(--paper); padding: .2rem 0;
+  border-bottom: 2px solid var(--rule-strong);
+}
+.ml-month:first-child .ml-title-h { margin-top: 0; }
+.ml-row {
+  display: flex; align-items: center; gap: var(--s3); padding: .55rem .3rem;
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none; color: inherit; transition: background .12s;
+}
+a.ml-row:hover { background: var(--sunk); }
+/* .ml-dot background-color is set inline by site.js, per event type. */
+.ml-dot { flex: 0 0 auto; width: 11px; height: 11px; border-radius: 50%; }
+.ml-date { flex: 0 0 auto; width: 72px; font-size: .86rem; font-weight: 700; color: var(--ink-soft); }
+.ml-time { font-weight: 700; color: var(--ink-soft); }
+.ml-title {
+  flex: 1; min-width: 0; font-weight: 600; font-size: 1.02rem; color: var(--green-ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ml-closure-reason { font-weight: 500; color: var(--ink-faint); }
+.ml-chev { flex: 0 0 auto; color: #b3b1a4; font-size: 1.2rem; }  /* grey — no token */
+
+@media (max-width: 760px) {
+  .ev-card .ev-date { width: 72px; }
+  .ev-date .ev-dnum { font-size: 1.45rem; }
+  .ev-title { flex-basis: 100%; }
+  .ev-titlerow .ev-badges { justify-content: flex-start; }
+  .ml-title { font-size: .96rem; }
+}
