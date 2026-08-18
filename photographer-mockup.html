@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rob Carr · Photographers · Palma Sola Botanical Park</title>
+<meta name="description" content="Photographs of the plants and wildlife of Palma Sola Botanical Park by Rob Carr.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   PHOTOGRAPHER PROFILE — MOCKUP
+   ───────────────────────────────────────────────────────────────────────────
+   Self-contained, the same way nature2.html was: tokens and the handful of
+   psbp.css primitives this page needs are inlined so the file opens anywhere.
+   Nothing here is a new colour, a new radius, or a new type size — every value
+   below is lifted from psbp.css. On the real page this <style> block collapses
+   to one <link> plus a ~90-line MODULE: photographer section.
+
+   THE ONE IDEA
+   On a species page, the photograph is the subject and the photographer is the
+   small print in the scrim band. On a photographer's page that inverts: the
+   photographer is the subject, and the species becomes the small print. Same
+   .media primitive, same gold eyebrow, contents swapped. It costs nothing and
+   it tells you whose page you are on before you read a word.
+
+   DATA
+   Every record in PHOTOS below is real, lifted from photo_credits.json and
+   photo_workbench.json. Mapping is noted per field. Nothing is invented except
+   where marked TODO.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --paper:#fdfcf8; --surface:#fff; --wash:#f2f5ee; --sunk:#f6f3ea;
+  --ink:#23241f; --ink-soft:#5c5f56; --ink-faint:#8a8d82;
+  --green-ink:#1a3a1f; --green:#2d6a35; --green-lift:#4a9e56; --green-tint:#e7f0e5;
+  --gold:#b5851f; --gold-mark:#c5922a; --gold-light:#eabc5a; --gold-tint:#fbf3df;
+  --rule:#e6e2d6; --rule-strong:#d3cebd;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
+  --t-cap:.70rem; --t-xs:.82rem; --t-sm:.93rem; --t-base:1.0625rem;
+  --t-md:1.2rem; --t-lg:1.45rem; --t-xl:1.9rem; --t-2xl:2.5rem;
+  --s1:.25rem; --s2:.5rem; --s3:.75rem; --s4:1rem; --s5:1.5rem;
+  --s6:2rem; --s7:3rem; --s8:4rem;
+  --r-sm:8px; --r:12px; --r-pill:999px;
+  --lift:0 2px 10px rgba(26,46,26,.07);
+  --measure:68ch; --wide:1160px; --nav-h:52px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { font-size:16px; -webkit-text-size-adjust:100%; }
+body {
+  font-family:var(--sans); background:var(--paper); color:var(--ink);
+  line-height:1.7; padding-top:var(--nav-h);
+}
+img { max-width:100%; display:block; }
+a { color:var(--green); text-decoration:none; }
+a:hover { text-decoration:underline; }
+h1,h2,h3 { font-family:var(--serif); font-weight:700; color:var(--green-ink); line-height:1.15; }
+:focus-visible { outline:3px solid var(--green-lift); outline-offset:2px; border-radius:4px; }
+
+/* ── slim context bar (stands in for the real site nav) ─────────────────── */
+.pp-bar {
+  position:fixed; top:0; left:0; right:0; height:var(--nav-h); z-index:50;
+  background:var(--green-ink); display:flex; align-items:center;
+  padding:0 var(--s5); gap:var(--s4);
+}
+.pp-bar a {
+  color:rgba(255,255,255,.85); font-weight:600; font-size:var(--t-sm);
+  display:inline-flex; align-items:center; min-height:44px;
+}
+.pp-bar a:hover { color:#fff; text-decoration:none; }
+
+.wrap { max-width:var(--wide); margin:0 auto; padding:0 var(--s5) var(--s8); }
+
+/* ── HERO ────────────────────────────────────────────────────────────────
+   The photographer's own best frame, chosen by the `hero` flag already in
+   photo_credits.json. Name top-left, species bottom-left — the inversion,
+   both halves visible at once. */
+.ph-hero {
+  position:relative; margin-top:var(--s5); border-radius:var(--r);
+  overflow:hidden; background:var(--sunk); aspect-ratio:21/9;
+}
+@media (max-width:760px) { .ph-hero { aspect-ratio:4/3; } }
+.ph-hero img { width:100%; height:100%; object-fit:cover; }
+.ph-hero-top {
+  position:absolute; inset:0 0 auto 0; z-index:2; padding:var(--s5) var(--s5) var(--s7);
+  background:linear-gradient(rgba(8,18,9,.72),rgba(8,18,9,.26) 62%,transparent);
+  pointer-events:none;
+}
+.ph-hero-eyebrow {
+  font-size:var(--t-cap); font-weight:700; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--gold-light); margin-bottom:.2rem;
+}
+.ph-hero-name {
+  font-family:var(--serif); color:#fff; font-size:clamp(1.9rem,4.4vw,3rem);
+  line-height:1.05;
+}
+/* the species credit — same geometry as .media__credit, opposite contents */
+.ph-hero-scrim {
+  position:absolute; left:0; right:0; bottom:0; height:46%; pointer-events:none;
+  background:linear-gradient(to top,rgba(8,18,9,.90) 0%,rgba(8,18,9,.68) 38%,
+             rgba(8,18,9,.28) 70%,rgba(8,18,9,0) 100%);
+}
+.ph-hero-cred {
+  position:absolute; left:0; bottom:0; z-index:2; color:#fff;
+  padding:0 var(--s5) var(--s5); max-width:min(70%,32rem);
+}
+.ph-hero-cred .lbl {
+  display:block; font-size:var(--t-cap); font-weight:700; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--gold-light);
+}
+.ph-hero-cred .who { display:block; font-size:var(--t-md); font-weight:700; line-height:1.2; }
+.ph-hero-cred .who em { font-weight:400; font-style:italic; opacity:.88; }
+.ph-hero-cred .meta { display:block; font-size:var(--t-xs); color:rgba(255,255,255,.85); }
+
+/* ── IDENTITY BLOCK ──────────────────────────────────────────────────────
+   Two columns on wide, stacked on phone. Left is the person, right is the
+   record. Every field here is optional — see .is-lean at the bottom. */
+.ph-head {
+  display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);
+  gap:var(--s7); align-items:start; padding:var(--s7) 0 var(--s6);
+  border-bottom:1px solid var(--rule);
+}
+@media (max-width:860px) { .ph-head { grid-template-columns:1fr; gap:var(--s5); } }
+
+.ph-specialty {
+  font-size:var(--t-cap); font-weight:700; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--green); margin-bottom:var(--s3);
+}
+.ph-blurb { font-size:var(--t-md); line-height:1.7; color:var(--ink-soft); max-width:var(--measure); }
+.ph-links { display:flex; gap:var(--s3); flex-wrap:wrap; margin-top:var(--s5); }
+.ph-links a {
+  display:inline-flex; align-items:center; min-height:44px; padding:0 var(--s4);
+  border:1px solid var(--rule-strong); border-radius:var(--r-pill);
+  font-size:var(--t-sm); font-weight:700; color:var(--green-ink);
+  transition:border-color .15s, background .15s;
+}
+.ph-links a:hover { border-color:var(--green); background:var(--surface); text-decoration:none; }
+
+/* The record. Not a stat-card grid — a definition list, per psbp.css rule 2. */
+.ph-record { border-top:1px solid var(--rule); }
+.ph-record > div {
+  display:grid; grid-template-columns:9.5rem minmax(0,1fr); gap:var(--s4);
+  padding:var(--s3) 0; border-bottom:1px solid var(--rule);
+}
+.ph-record dt {
+  font-size:var(--t-cap); font-weight:700; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--green); padding-top:.3rem;
+}
+.ph-record dd { font-size:var(--t-base); line-height:1.5; }
+.ph-record dd b { font-family:var(--serif); font-size:var(--t-lg); font-weight:700;
+                  color:var(--green-ink); line-height:1; }
+@media (max-width:560px) {
+  .ph-record > div { grid-template-columns:1fr; gap:.1rem; }
+  .ph-record dt { padding-top:0; }
+}
+
+/* ── FILTER ROW ──────────────────────────────────────────────────────────
+   Only rendered when the person has both plants and wildlife. One person,
+   one park, two kingdoms — that's the only split worth offering. */
+.ph-tools {
+  display:flex; align-items:baseline; justify-content:space-between;
+  gap:var(--s4); flex-wrap:wrap; padding:var(--s6) 0 var(--s4);
+}
+.ph-count { font-size:var(--t-sm); color:var(--ink-soft); }
+.ph-filters { display:flex; gap:var(--s2); flex-wrap:wrap; }
+.ph-filters button {
+  min-height:44px; padding:0 var(--s4); font:inherit; font-size:var(--t-sm); font-weight:600;
+  border:1px solid var(--rule); border-radius:var(--r-sm);
+  background:var(--paper); color:var(--green); cursor:pointer; transition:all .15s;
+}
+.ph-filters button:hover { border-color:var(--green); background:var(--surface); color:var(--green-ink); }
+.ph-filters button[aria-pressed="true"] { background:var(--green); border-color:var(--green); color:#fff; }
+
+/* ── GALLERY ─────────────────────────────────────────────────────────────
+   auto-fill, so 2 photos sit left-aligned at readable size and 129 fill the
+   page. No masonry: these are records, and a ragged edge reads as decoration. */
+.ph-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:var(--s4);
+}
+.ph-tile {
+  position:relative; display:block; border-radius:var(--r); overflow:hidden;
+  background:var(--sunk); aspect-ratio:4/3; color:inherit;
+  border:1px solid var(--rule);
+  transition:transform .18s, box-shadow .18s, border-color .18s;
+}
+.ph-tile:hover { text-decoration:none; transform:translateY(-3px);
+                 box-shadow:var(--lift); border-color:var(--green); }
+.ph-tile img { width:100%; height:100%; object-fit:cover; transition:transform .45s; }
+.ph-tile:hover img { transform:scale(1.04); }
+.ph-tile-scrim {
+  position:absolute; left:0; right:0; bottom:0; height:58%; pointer-events:none;
+  background:linear-gradient(to top,rgba(8,18,9,.92) 0%,rgba(8,18,9,.66) 42%,
+             rgba(8,18,9,.22) 74%,rgba(8,18,9,0) 100%);
+}
+/* the inversion again, tile-sized */
+.ph-tile-cred {
+  position:absolute; left:0; right:0; bottom:0; z-index:2; color:#fff;
+  padding:0 var(--s4) var(--s3);
+}
+.ph-tile-cred .sp { display:block; font-size:var(--t-sm); font-weight:700; line-height:1.3; }
+.ph-tile-cred .sp em { display:block; font-weight:400; font-style:italic; opacity:.85; font-size:var(--t-xs); }
+.ph-tile-cred .meta { display:block; font-size:var(--t-cap); color:rgba(255,255,255,.78); margin-top:.2rem; }
+/* Species without a published page. The photo still shows and is still
+   credited — it just points at the iNaturalist observation instead. Driven
+   by presence in publish_state.json, not by a new field. */
+.ph-tile-off {
+  position:absolute; top:var(--s3); right:var(--s3); z-index:3;
+  font-size:var(--t-cap); font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  background:rgba(253,252,248,.93); color:var(--green-ink);
+  padding:.25rem .55rem; border-radius:var(--r-pill);
+}
+
+/* ── EMPTY STATE ─────────────────────────────────────────────────────────
+   An invitation, not an apology. */
+.ph-empty {
+  border:1px dashed var(--rule-strong); border-radius:var(--r);
+  padding:var(--s7) var(--s5); text-align:center; background:var(--surface);
+}
+.ph-empty h3 { font-size:var(--t-lg); margin-bottom:var(--s2); }
+.ph-empty p { color:var(--ink-soft); max-width:44ch; margin:0 auto; font-size:var(--t-sm); }
+
+/* ── FOOTER NOTE ─────────────────────────────────────────────────────────── */
+.ph-foot {
+  margin-top:var(--s7); padding-top:var(--s5); border-top:1px solid var(--rule);
+  font-size:var(--t-xs); color:var(--ink-faint); max-width:var(--measure); line-height:1.65;
+}
+
+/* ── MOCKUP-ONLY SCAFFOLDING — delete this block when extracting ────────── */
+.mk {
+  background:var(--gold-tint); border-bottom:1px solid var(--rule-strong);
+  padding:var(--s3) var(--s5); display:flex; gap:var(--s3);
+  align-items:center; flex-wrap:wrap;
+}
+.mk span { font-size:var(--t-cap); font-weight:700; letter-spacing:.1em;
+           text-transform:uppercase; color:var(--gold); }
+.mk button {
+  min-height:38px; padding:0 var(--s3); font:inherit; font-size:var(--t-xs); font-weight:700;
+  border:1px solid var(--rule-strong); border-radius:var(--r-sm);
+  background:var(--surface); color:var(--green-ink); cursor:pointer;
+}
+.mk button[aria-pressed="true"] { background:var(--green-ink); color:#fff; border-color:var(--green-ink); }
+
+@media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="pp-bar"><a href="#">&larr; All photographers</a></div>
+
+<!-- MOCKUP-ONLY: three states worth seeing side by side. Not part of the page. -->
+<div class="mk">
+  <span>Preview</span>
+  <button type="button" data-preview="rob"   aria-pressed="true">Rob Carr — full record</button>
+  <button type="button" data-preview="lean"  aria-pressed="false">Two photos only</button>
+  <button type="button" data-preview="helen" aria-pressed="false">Bio, no photos yet</button>
+</div>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="ph-hero" id="hero">
+    <img id="heroImg" src="" alt="">
+    <div class="ph-hero-top">
+      <div class="ph-hero-eyebrow" id="heroEyebrow">Park photographer</div>
+      <h1 class="ph-hero-name" id="heroName"></h1>
+    </div>
+    <div class="ph-hero-scrim"></div>
+    <div class="ph-hero-cred" id="heroCred"></div>
+  </div>
+
+  <!-- IDENTITY -->
+  <div class="ph-head">
+    <div>
+      <div class="ph-specialty" id="phSpecialty"></div>
+      <p class="ph-blurb" id="phBlurb"></p>
+      <div class="ph-links" id="phLinks"></div>
+    </div>
+    <dl class="ph-record" id="phRecord"></dl>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="ph-tools">
+    <div class="ph-count" id="phCount"></div>
+    <div class="ph-filters" id="phFilters"></div>
+  </div>
+
+  <div class="ph-grid" id="phGrid"></div>
+
+  <p class="ph-foot" id="phFoot"></p>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   DATA — real records, with the join spelled out.
+
+   PEOPLE  ← photographers.json, merged with photographer_names.json.
+             `login` is the field photographers.json is currently MISSING; it
+             is what makes this page buildable at all. Everything else already
+             exists.
+
+   PHOTOS  ← photo_credits.json rows filtered to photographer === login.
+             psbp_id, common_name, scientific_name, photo_url, source_url,
+             observed_on, hero, type — all verbatim field names.
+             `published` is NOT a field: the generator sets it by asking
+             whether psbp_id appears in publish_state.json, and takes the
+             filename from there too.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+var PEOPLE = {
+  rob: {
+    login: 'robcarr52',
+    name: 'Rob Carr',
+    specialty: 'Nature photography · iNaturalist contributor',
+    blurb: 'A prolific iNaturalist observer who has documented dozens of the park\u2019s plant and animal species.',
+    inat: 'https://www.inaturalist.org/people/robcarr52',
+    site: null, site_label: null
+  },
+  helen: {
+    login: null,
+    name: 'Helen Lewis',
+    specialty: 'Wildlife & bird photography',
+    blurb: 'Bradenton-area wildlife photographer with a focus on Florida\u2019s coastal birds \u2014 herons, owls, and roseate spoonbills among them.',
+    inat: null,
+    site: 'https://fineartamerica.com/profiles/3-helen-lewis',
+    site_label: 'Prints at Fine Art America'
+  }
+};
+
+var IMG = function (id) { return 'https://inaturalist-open-data.s3.amazonaws.com/photos/' + id + '/large.jpg'; };
+var OBS = function (id) { return 'https://www.inaturalist.org/observations/' + id; };
+
+var PHOTOS = [
+  // ── Wildlife. Verbatim from photo_credits.json. ────────────────────────
+  { psbp_id:'PSBP-99987', type:'Wildlife', common_name:'Roseate Spoonbill',
+    scientific_name:'Platalea ajaja', photo:'681681193', obs:'373034596',
+    observed_on:'2025-03-22', hero:true, published:true },
+  { psbp_id:'PSBP-99993', type:'Wildlife', common_name:'Great Blue Heron',
+    scientific_name:'Ardea herodias', photo:'681678544', obs:'373034267',
+    observed_on:'2023-03-31', hero:true, published:true },
+  { psbp_id:'PSBP-99995', type:'Wildlife', common_name:'Great Egret',
+    scientific_name:'Ardea alba', photo:'681679001', obs:'373034370',
+    observed_on:'2025-11-14', hero:true, published:true },
+  { psbp_id:'PSBP-99998', type:'Wildlife', common_name:'Anhinga',
+    scientific_name:'Anhinga anhinga', photo:'681678647', obs:'373034298',
+    observed_on:'2025-11-14', hero:true, published:true },
+  { psbp_id:'PSBP-99997', type:'Wildlife', common_name:'White Ibis',
+    scientific_name:'Eudocimus albus', photo:'681682344', obs:'373034722',
+    observed_on:'2025-05-17', hero:true, published:true },
+  { psbp_id:'PSBP-99994', type:'Wildlife', common_name:'Monarch',
+    scientific_name:'Danaus plexippus', photo:'681681099', obs:'373034572',
+    observed_on:'2025-03-22', hero:true, published:true },
+  { psbp_id:'PSBP-99996', type:'Wildlife', common_name:'Common Gallinule',
+    scientific_name:'Gallinula galeata', photo:'681679178', obs:'373034385',
+    observed_on:'2023-05-28', hero:true, published:true },
+  { psbp_id:'PSBP-99991', type:'Wildlife', common_name:'Mottled Duck',
+    scientific_name:'Anas fulvigula', photo:'681681506', obs:'373034653',
+    observed_on:'2025-04-27', hero:true, published:true },
+  { psbp_id:'PSBP-99989', type:'Wildlife', common_name:'Double-crested Cormorant',
+    scientific_name:'Nannopterum auritum', photo:'681678611', obs:'373034292',
+    observed_on:'2025-11-14', hero:true, published:true },
+  // hero:false, virtual:true in the real record. Marked unpublished here to
+  // show the treatment — CHECK against publish_state before believing it.
+  { psbp_id:'PSBP-99988', type:'Wildlife', common_name:'Peninsular Cooter',
+    scientific_name:'Pseudemys peninsularis', photo:'681678407', obs:'373034249',
+    observed_on:'2023-03-31', hero:false, published:false },
+
+  // ── Plants. photo ids from photo_workbench.json, decision "promoted". ───
+  { psbp_id:'PSBP-00001', type:'Plant', common_name:'Tree Crinum',
+    scientific_name:'Crinum asiaticum', photo:'681679773', obs:'373034426',
+    observed_on:null, hero:false, published:true,
+    file:'PSBP-00001-Tree-Crinum.html' },
+  // scientific_name deliberately null — the generator fills it from
+  // plant_signage.json. Left empty to prove the tile survives without it.
+  { psbp_id:'PSBP-00007', type:'Plant', common_name:'Jacaranda',
+    scientific_name:null, photo:'681680574', obs:'373034525',
+    observed_on:null, hero:false, published:true,
+    file:'PSBP-00007-Jacaranda.html' }
+];
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+var el = function (id) { return document.getElementById(id); };
+var esc = function (s) {
+  return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c];
+  });
+};
+var fmtDate = function (iso) {
+  if (!iso) return null;
+  var d = new Date(iso + 'T12:00');
+  return d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+};
+var yearOf = function (iso) { return iso ? +iso.slice(0,4) : null; };
+
+var state = { who:'rob', filter:'all' };
+
+function currentSet() {
+  if (state.who === 'helen') return { person: PEOPLE.helen, photos: [] };
+  if (state.who === 'lean')  return { person: PEOPLE.rob,   photos: PHOTOS.filter(function (p) { return p.type === 'Plant'; }) };
+  return { person: PEOPLE.rob, photos: PHOTOS.slice() };
+}
+
+function speciesHref(p) {
+  if (!p.published) return OBS(p.obs);
+  var dir  = p.type === 'Plant' ? 'plants/' : 'wildlife/';
+  var file = p.file || (p.psbp_id + '-' + p.common_name.replace(/[^A-Za-z0-9]+/g,'-') + '.html');
+  return '../' + dir + file;
+}
+
+function render() {
+  var set = currentSet(), person = set.person, all = set.photos;
+
+  /* ── hero ─────────────────────────────────────────────────────────────
+     Uses the person's own hero-flagged frame; falls back to their first.
+     With no photos at all, the hero band is dropped entirely rather than
+     shown empty — a grey box would be worse than no box. */
+  var lead = all.filter(function (p) { return p.hero; })[0] || all[0];
+  if (lead) {
+    el('hero').style.display = '';
+    el('heroImg').src = IMG(lead.photo);
+    el('heroImg').alt = lead.common_name + ' photographed at Palma Sola Botanical Park by ' + person.name;
+    el('heroName').textContent = person.name;
+    el('heroCred').innerHTML =
+        '<span class="lbl">In this photograph</span>'
+      + '<span class="who">' + esc(lead.common_name)
+      + (lead.scientific_name ? ' <em>' + esc(lead.scientific_name) + '</em>' : '') + '</span>'
+      + (lead.observed_on ? '<span class="meta">Observed ' + fmtDate(lead.observed_on) + '</span>' : '');
+  } else {
+    el('hero').style.display = 'none';
+  }
+
+  /* ── identity ─────────────────────────────────────────────────────────── */
+  el('phSpecialty').textContent = person.specialty || '';
+  el('phBlurb').textContent = person.blurb || '';
+
+  var links = [];
+  if (person.inat) links.push('<a href="' + person.inat + '" rel="noopener">Observations on iNaturalist &rarr;</a>');
+  if (person.site) links.push('<a href="' + person.site + '" rel="noopener">' + esc(person.site_label || 'Personal site') + ' &rarr;</a>');
+  el('phLinks').innerHTML = links.join('');
+
+  /* The record. Species count, not photo count, is the honest headline —
+     it is what the person actually added to the park's catalogue. */
+  var species = {}, plants = 0, wild = 0, years = [];
+  all.forEach(function (p) {
+    species[p.psbp_id] = 1;
+    if (p.type === 'Plant') plants++; else wild++;
+    var y = yearOf(p.observed_on); if (y) years.push(y);
+  });
+  var nSpecies = Object.keys(species).length;
+  var rec = [];
+  if (nSpecies) {
+    rec.push(['Species', '<b>' + nSpecies + '</b> documented in the park']);
+    rec.push(['Photographs', '<b>' + all.length + '</b> published on species pages']);
+    if (plants && wild) rec.push(['Split', plants + ' plants &middot; ' + wild + ' wildlife']);
+    if (years.length) {
+      var lo = Math.min.apply(null, years), hi = Math.max.apply(null, years);
+      rec.push(['Observing since', lo === hi ? String(lo) : lo + ' \u2013 ' + hi]);
+    }
+  }
+  el('phRecord').innerHTML = rec.map(function (r) {
+    return '<div><dt>' + r[0] + '</dt><dd>' + r[1] + '</dd></div>';
+  }).join('');
+  el('phRecord').style.display = rec.length ? '' : 'none';
+
+  /* ── filters — only when both kingdoms are present ─────────────────────── */
+  var showFilters = plants > 0 && wild > 0;
+  el('phFilters').innerHTML = !showFilters ? '' :
+    [['all','All',all.length],['Plant','Plants',plants],['Wildlife','Wildlife',wild]]
+      .map(function (f) {
+        return '<button type="button" data-f="' + f[0] + '" aria-pressed="'
+             + (state.filter === f[0]) + '">' + f[1] + ' <span aria-hidden="true">('
+             + f[2] + ')</span></button>';
+      }).join('');
+
+  var shown = state.filter === 'all' ? all : all.filter(function (p) { return p.type === state.filter; });
+
+  el('phCount').textContent = shown.length
+    ? shown.length + (shown.length === 1 ? ' photograph' : ' photographs')
+        + (state.filter === 'all' ? ', newest observation first' : '')
+    : '';
+
+  /* ── grid ─────────────────────────────────────────────────────────────── */
+  if (!shown.length) {
+    el('phGrid').innerHTML =
+      '<div class="ph-empty" style="grid-column:1/-1">'
+      + '<h3>No photographs published yet</h3>'
+      + '<p>' + esc(person.name) + '\u2019s work will appear here as it is added to the park\u2019s species pages.</p>'
+      + '</div>';
+  } else {
+    el('phGrid').innerHTML = shown.map(function (p) {
+      return '<a class="ph-tile" href="' + speciesHref(p) + '"'
+           + (p.published ? '' : ' rel="noopener"') + '>'
+        + '<img src="' + IMG(p.photo) + '" alt="' + esc(p.common_name) + '" loading="lazy">'
+        + '<div class="ph-tile-scrim"></div>'
+        + (p.published ? '' : '<span class="ph-tile-off">On iNaturalist</span>')
+        + '<span class="ph-tile-cred">'
+        +   '<span class="sp">' + esc(p.common_name)
+        +     (p.scientific_name ? '<em>' + esc(p.scientific_name) + '</em>' : '') + '</span>'
+        +   (p.observed_on ? '<span class="meta">Observed ' + fmtDate(p.observed_on) + '</span>' : '')
+        + '</span>'
+      + '</a>';
+    }).join('');
+  }
+
+  /* ── licence footing ──────────────────────────────────────────────────── */
+  el('phFoot').innerHTML = all.length
+    ? 'All photographs &copy; ' + esc(person.name) + ', shared under Creative Commons via '
+      + '<a href="https://www.inaturalist.org/" rel="noopener">iNaturalist</a> and used here with '
+      + 'attribution. Individual licence terms appear on each species page.'
+    : '';
+}
+
+/* filter clicks */
+el('phFilters').addEventListener('click', function (e) {
+  var b = e.target.closest('button'); if (!b) return;
+  state.filter = b.getAttribute('data-f'); render();
+});
+
+/* MOCKUP-ONLY preview switch */
+document.querySelector('.mk').addEventListener('click', function (e) {
+  var b = e.target.closest('button[data-preview]'); if (!b) return;
+  state.who = b.getAttribute('data-preview');
+  state.filter = 'all';
+  [].forEach.call(document.querySelectorAll('.mk button'), function (x) {
+    x.setAttribute('aria-pressed', x === b);
+  });
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
