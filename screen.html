@@ -90,13 +90,27 @@ body{
   color:var(--gold);white-space:nowrap;opacity:0;transition:opacity .7s;
 }
 .walk.on{opacity:1}
+/* Attribution is solidarity — so it gets real size, a name in paper white, and
+   the licence and date underneath. Sits inside the frame rather than breaking
+   the rule, because it is now three lines rather than a caption. */
 .credit{
-  position:fixed;bottom:calc(var(--frame) - .92em);right:calc(var(--frame) + 2.4vmin);
-  z-index:41;background:var(--ground);padding:0 1.4vmin;
-  font-size:1.45vmin;font-weight:600;letter-spacing:.12em;
-  color:var(--gold-deep);white-space:nowrap;opacity:0;transition:opacity .7s;
+  position:fixed;right:calc(var(--frame) + 3.4vmin);bottom:calc(var(--frame) + 3.2vmin);
+  z-index:41;text-align:right;opacity:0;transition:opacity .8s;
+  text-shadow:0 1px 14px rgba(0,0,0,.6);
 }
 .credit.on{opacity:1}
+.credit .lbl{
+  display:block;font-size:1.25vmin;font-weight:700;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:.35vmin;
+}
+.credit .who{
+  display:block;font-family:var(--serif);font-size:2.6vmin;font-weight:700;
+  line-height:1.1;color:var(--paper);
+}
+.credit .terms{
+  display:block;font-size:1.4vmin;font-weight:600;letter-spacing:.14em;
+  color:var(--ink-quiet);margin-top:.5vmin;
+}
 
 /* ── stage ───────────────────────────────────────────────────────────────── */
 #stage{position:fixed;inset:0;z-index:1}
@@ -107,11 +121,29 @@ body{
 .slide.on{opacity:1}
 
 .bg{position:absolute;inset:0;overflow:hidden;background:var(--ground-2)}
+/* Ken Burns, six ways.
+   object-position carries the curated `focus` point from the search index, so
+   the motion never drifts off the interesting part of the plant — the
+   Madagascar Palm problem is a focus problem, not a crop problem. Translations
+   stay under 2% for the same reason. */
 .bg img{
   width:100%;height:100%;object-fit:cover;
-  transform:scale(1.06);transition:transform 21s linear;
+  will-change:transform;
 }
-.slide.on .bg img{transform:scale(1.14)}   /* slow drift; stills feel alive */
+.slide.on .bg img{ animation-duration:var(--kb,24s); animation-timing-function:linear;
+                   animation-fill-mode:both; }
+.slide.on .bg img.kb-in     { animation-name:kbIn }
+.slide.on .bg img.kb-out    { animation-name:kbOut }
+.slide.on .bg img.kb-left   { animation-name:kbLeft }
+.slide.on .bg img.kb-right  { animation-name:kbRight }
+.slide.on .bg img.kb-rise   { animation-name:kbRise }
+.slide.on .bg img.kb-settle { animation-name:kbSettle }
+@keyframes kbIn     { from{transform:scale(1.04)} to{transform:scale(1.13)} }
+@keyframes kbOut    { from{transform:scale(1.13)} to{transform:scale(1.04)} }
+@keyframes kbLeft   { from{transform:scale(1.10) translateX(1.6%)}  to{transform:scale(1.10) translateX(-1.6%)} }
+@keyframes kbRight  { from{transform:scale(1.10) translateX(-1.6%)} to{transform:scale(1.10) translateX(1.6%)} }
+@keyframes kbRise   { from{transform:scale(1.11) translateY(1.8%)}  to{transform:scale(1.11) translateY(-1.8%)} }
+@keyframes kbSettle { from{transform:scale(1.11) translateY(-1.8%)} to{transform:scale(1.11) translateY(1.8%)} }
 .scrim{
   position:absolute;inset:0;
   background:
@@ -139,10 +171,16 @@ body{
   font-size:clamp(1.1rem,2.9vmin,2.4rem);color:var(--ink-invert);
   margin-top:.7vmin;
 }
+/* The body arrives after the name has had a moment alone. On a screen nobody
+   is watching at the cut — the late reveal gives the eye a second reason to
+   come back to a slide it has already glanced at. */
 .body{
   font-size:clamp(1rem,2.65vmin,2.05rem);line-height:1.5;font-weight:300;
   color:var(--ink-invert);margin-top:2.6vmin;max-width:44ch;
+  opacity:0;transform:translateY(1.1vmin);
+  transition:opacity 1.15s ease,transform 1.15s ease;
 }
+.slide.reveal .body{opacity:1;transform:none}
 .body b,.body strong{font-weight:600;color:var(--paper)}
 .meta{
   display:flex;gap:3.4vmin;flex-wrap:wrap;margin-top:3vmin;
@@ -172,7 +210,8 @@ body{
 
 @media (prefers-reduced-motion:reduce){
   .slide{transition:opacity .25s}
-  .bg img,.slide.on .bg img{transform:none;transition:none}
+  .bg img,.slide.on .bg img{transform:none;transition:none;animation:none}
+  .body,.slide.reveal .body{opacity:1;transform:none;transition:none}
   #bar{transition:none}
 }
 </style>
@@ -194,7 +233,7 @@ body{
    ═══════════════════════════════════════════════════════════════════════════ */
 var Q       = new URLSearchParams(location.search);
 var MODE    = Q.get('mode') === 'office' ? 'office' : 'galleria';
-var SECONDS = +(Q.get('seconds') || 0) || 14;
+var SECONDS = +(Q.get('seconds') || 0) || 18;   // lingers; 14 read as rushed on the wall
 var BASE    = Q.get('base') || '';           // '' when served from repo root
 var FEEDS   = BASE + 'data/published/';
 
@@ -205,7 +244,9 @@ var ASK_EVERY = MODE === 'office' ? 5 : 7;
 /* How much of the deck each type gets. Weights, not counts. */
 var WEIGHT = {
   right_now:  MODE === 'office' ? 2 : 4,   // what to go look at, right now
-  spotlight:  4,                            // the collection, at random
+  spotlight:  8,                            // the collection, at random — the
+                                            // deep pool, so it carries the deck when
+                                            // the Sheet-driven feeds are thin
   event:      3,
   news:       MODE === 'office' ? 3 : 2,
   klass:      2,
@@ -241,15 +282,44 @@ function loadAll(){
     grab(FEEDS+'classes.json'),   grab(FEEDS+'news.json'),
     grab(FEEDS+'announcements.json'), grab(FEEDS+'volunteer.json'),
     grab(FEEDS+'series.json'),    grab(FEEDS+'newsletters.json'),
-    grab(BASE+'plants.json'),     grab(BASE+'wildlife.json')
+    grab(BASE+'plants.json'),     grab(BASE+'wildlife.json'),
+    grab(BASE+'data/sources/photo_credits.json')
   ]).then(function(r){
     D.right_now=onScreen(r[0]); D.events=onScreen(r[1]);
     D.classes=onScreen(r[2]);   D.news=onScreen(r[3]);
     D.announcements=onScreen(r[4]); D.volunteer=onScreen(r[5]);
     D.series=onScreen(r[6]);    D.newsletters=onScreen(r[7]);
     D.plants=r[8]||[];          D.wildlife=r[9]||[];
+    indexCredits(r[10]);
     if(!D.right_now.length && !D.plants.length) fallback();
   });
+}
+
+/* photo_id -> {observed_on, license, name}. The search index carries the
+   photographer and licence but not the date, so the credits master fills it in.
+   Optional: if the file can't be reached the credit falls back to name + licence. */
+var CREDITS = {};
+function indexCredits(rows){
+  var photos = (rows && rows.photos) || rows || [];
+  for(var i=0;i<photos.length;i++){
+    var p=photos[i];
+    if(p.photo_id) CREDITS[String(p.photo_id)] = p;
+  }
+}
+function photoIdOf(path){
+  var m = /\/(\d+)\.jpe?g$/i.exec(path||'');
+  return m ? m[1] : null;
+}
+function creditFor(sp){
+  if(!sp) return null;
+  var rec = CREDITS[photoIdOf(sp.photo)] || {};
+  var name = rec.photographer_name || sp.credit_name || sp.credit || '';
+  if(!name) return null;
+  var lic  = (rec.license || sp.credit_license || '').replace(/^CC-/,'CC ').replace(/_/g,' ');
+  var when = rec.observed_on
+    ? new Date(rec.observed_on+'T12:00').toLocaleDateString('en-US',{month:'long',year:'numeric'})
+    : '';
+  return { name:name, terms:[lic, when].filter(Boolean).join('  ·  ') };
 }
 
 /* Standalone sample so the file opens and animates off a laptop with no repo.
@@ -277,6 +347,23 @@ var pick = function(a){ return a[Math.floor(Math.random()*a.length)]; };
 var shuffle = function(a){
   for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1));
     var t=a[i]; a[i]=a[j]; a[j]=t; } return a; };
+
+/* `quick` in the search index is the three quick-hits joined into one string —
+   300 to 800 characters, far too much for a wall. Split on sentence boundaries
+   and show one, so a species that comes round again says something new. */
+function oneHit(text){
+  if(!text) return '';
+  var parts = String(text).split(/(?<=[.!?]) +/).filter(function(t){ return t.trim().length>25; });
+  if(!parts.length) return String(text);
+  var s = pick(parts);
+  /* a very short hit reads thin on a big screen — pair it with its neighbour */
+  if(s.length < 90){
+    var i = parts.indexOf(s);
+    if(parts[i+1]) s = s+' '+parts[i+1];
+    else if(parts[i-1]) s = parts[i-1]+' '+s;
+  }
+  return s;
+}
 
 function speciesById(id){
   for(var i=0;i<D.plants.length;i++)   if(D.plants[i].id===id)   return D.plants[i];
@@ -315,7 +402,8 @@ function slideRightNow(r){
   var line = r.note || (r.quick_hits && r.quick_hits[0]) || '';
   return {
     bg: sp && sp.photo ? BASE+sp.photo : null,
-    credit: sp && (sp.credit_name || sp.credit) ? 'Photo · '+(sp.credit_name||sp.credit) : '',
+    focus: sp && sp.focus,
+    credit: creditFor(sp),
     walk: r.area || '',
     html:
       '<div class="eyebrow">'+esc(KIND_LABEL[r.kind]||'Right now')+'</div>'
@@ -325,14 +413,19 @@ function slideRightNow(r){
   };
 }
 
+var seenSpecies = [];      /* short memory, so the same plant doesn't come round twice in an hour */
 function slideSpotlight(){
-  var pool = D.plants.concat(D.wildlife).filter(function(s){ return s.photo; });
-  if(!pool.length) return null;
+  var all = D.plants.concat(D.wildlife).filter(function(s){ return s.photo; });
+  if(!all.length) return null;
+  var pool = all.filter(function(s){ return seenSpecies.indexOf(s.id) < 0; });
+  if(!pool.length){ seenSpecies = []; pool = all; }
   var s = pick(pool);
-  var hit = (s.quick_hits && s.quick_hits.length) ? pick(s.quick_hits) : (s.blurb||'');
+  seenSpecies.push(s.id);
+  if(seenSpecies.length > Math.floor(all.length * 0.6)) seenSpecies.shift();
+  var hit = oneHit(s.quick);
   return {
-    bg: BASE+s.photo,
-    credit: (s.credit_name||s.credit) ? 'Photo · '+(s.credit_name||s.credit) : '',
+    bg: BASE+s.photo, focus: s.focus,
+    credit: creditFor(s),
     walk: '',
     html:
       '<div class="eyebrow">From the collection</div>'
@@ -434,6 +527,14 @@ function slideAsk(a){
    dropped in every ASK_EVERY positions. Rebuilt when exhausted, so the mix
    changes shape through the day rather than looping identically.
    ═══════════════════════════════════════════════════════════════════════════ */
+/* Announcements rotate in order across cycles, so a 14-slide list is actually
+   seen over the course of an hour rather than the same two recurring. */
+var askQueue=[], askAt=0;
+function nextAsk(){
+  if(askAt >= askQueue.length){ askQueue = shuffle(D.announcements.slice()); askAt = 0; }
+  return askQueue[askAt++];
+}
+
 function buildDeck(){
   var pool=[], i;
   function add(type,rows,fn,weight){
@@ -466,15 +567,18 @@ function buildDeck(){
     }
   }
 
-  /* asks, spaced */
+  /* Asks, spaced evenly through the deck.
+     Count is proportional, never zero — a fixed "every 7th slide" silently
+     produced NO asks whenever the deck was shorter than 7, which is exactly
+     what happens when most Sheet rows are marked web-only. */
   if(D.announcements.length){
-    var asks = shuffle(D.announcements.slice());
-    var out=[], a=0;
+    var want = Math.max(1, Math.round(pool.length / ASK_EVERY));
+    var gap  = Math.max(1, Math.floor(pool.length / want));
+    var out=[];
     for(i=0;i<pool.length;i++){
       out.push(pool[i]);
-      if((i+1)%ASK_EVERY===0){
-        out.push({type:'ask',make:slideAsk.bind(null,asks[a % asks.length])});
-        a++;
+      if((i+1) % gap === 0 && out.filter(function(x){return x.type==='ask';}).length < want){
+        out.push({type:'ask', make:slideAsk.bind(null, nextAsk())});
       }
     }
     pool=out;
@@ -487,21 +591,38 @@ function buildDeck(){
    ═══════════════════════════════════════════════════════════════════════════ */
 var stage=document.getElementById('stage'), bar=document.getElementById('bar');
 var walkEl=document.getElementById('walk'), credEl=document.getElementById('credit');
-var deck=[], at=0, cur=null, timer=null;
+var deck=[], at=0, cur=null, timer=null, revealTimer=null;
+
+var KB = ['kb-in','kb-out','kb-left','kb-right','kb-rise','kb-settle'];
+var lastKB = '';
 
 function render(s){
   var el=document.createElement('div');
   el.className='slide'+(s.ask?' ask':'');
+
+  /* pick a motion, never the same one twice running */
+  var moves = KB.filter(function(k){ return k!==lastKB; });
+  var kb = pick(moves); lastKB = kb;
+
+  /* the curated focus point, straight from the search index */
+  var pos = s.focus ? ' style="object-position:'+s.focus.replace(/"/g,'')+'"' : '';
+
   el.innerHTML =
-      '<div class="bg">'+(s.bg?'<img alt="" src="'+s.bg+'">':'')+'</div>'
+      '<div class="bg">'+(s.bg?'<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'">':'')+'</div>'
     + '<div class="scrim"></div>'
     + '<div class="copy">'+s.html+'</div>';
+  el.style.setProperty('--kb', (SECONDS+3)+'s');
   stage.appendChild(el);
 
   /* let the browser paint at opacity 0 before fading in */
   requestAnimationFrame(function(){ requestAnimationFrame(function(){
     el.classList.add('on');
   });});
+
+  /* the body arrives a little under halfway through */
+  clearTimeout(revealTimer);
+  revealTimer = setTimeout(function(){ el.classList.add('reveal'); },
+                           Math.round(SECONDS*1000*0.42));
 
   if(cur){
     var old=cur; old.classList.remove('on');
@@ -511,8 +632,16 @@ function render(s){
 
   walkEl.textContent = s.walk ? '→ '+s.walk : '';
   walkEl.classList.toggle('on', !!s.walk);
-  credEl.textContent = s.credit || '';
-  credEl.classList.toggle('on', !!s.credit);
+
+  if(s.credit && s.credit.name){
+    credEl.innerHTML =
+        '<span class="lbl">Photograph</span>'
+      + '<span class="who">'+esc(s.credit.name)+'</span>'
+      + (s.credit.terms?'<span class="terms">'+esc(s.credit.terms)+'</span>':'');
+    credEl.classList.add('on');
+  } else {
+    credEl.classList.remove('on');
+  }
 
   bar.style.transition='none'; bar.style.width='0';
   requestAnimationFrame(function(){
