@@ -31,9 +31,10 @@
   frame persists; only the plate inside it changes.
 
   AND THE ONE TRUE SCREEN-ONLY IDEA
-  `right_now.area` renders as "→ Serenity Garden". On the web that is a label.
-  Here it is an instruction to walk. Everything else follows from that test:
-  does this only make sense because you are standing in the park?
+  `right_now.area` rides in the eyebrow: "BLOOMING NOW → SERENITY GARDEN".
+  On the web that is a label. Here it is an instruction to walk. Everything
+  else follows from that test: does this only make sense because you are
+  standing in the park?
 
   DATA
   Reads the published feeds directly. Every row is filtered to
@@ -82,14 +83,6 @@ body{
   font-size:1.55vmin;font-weight:600;letter-spacing:.22em;
   color:var(--ink-quiet);white-space:nowrap;
 }
-/* the location tag breaks the bottom rule — a direction, not a caption */
-.walk{
-  position:fixed;bottom:calc(var(--frame) - .92em);left:calc(var(--frame) + 2.4vmin);
-  z-index:41;background:var(--ground);padding:0 1.4vmin;
-  font-size:1.75vmin;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--gold);white-space:nowrap;opacity:0;transition:opacity .7s;
-}
-.walk.on{opacity:1}
 /* Attribution is solidarity — so it gets real size, a name in paper white, and
    the licence and date underneath. Sits inside the frame rather than breaking
    the rule, because it is now three lines rather than a caption. */
@@ -155,12 +148,18 @@ body{
 .copy{
   position:relative;z-index:3;
   padding:0 0 8.5vmin calc(var(--frame) + 5.2vmin);
-  max-width:62vw;
+  max-width:72vw;
 }
+/* The eyebrow carries the location now. Splitting "Blooming now" from "Near
+   Office" put the two halves of one thought at opposite ends of the screen,
+   and both ended up too small to read across a room. One line, bigger. */
 .eyebrow{
-  font-size:1.9vmin;font-weight:700;letter-spacing:.36em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:1.5vmin;
+  font-size:clamp(1.15rem,3.1vmin,2.6rem);font-weight:700;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:1.8vmin;
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:0 1.1em;
 }
+.eyebrow .where{color:var(--gold);opacity:.92;white-space:nowrap}
+.eyebrow .where::before{content:'→';margin-right:.42em;opacity:.75}
 .headline{
   font-family:var(--serif);font-weight:700;line-height:1.02;
   font-size:clamp(2.6rem,7.4vmin,7rem);letter-spacing:-.012em;
@@ -173,14 +172,27 @@ body{
 }
 /* The body arrives after the name has had a moment alone. On a screen nobody
    is watching at the cut — the late reveal gives the eye a second reason to
-   come back to a slide it has already glanced at. */
+   come back to a slide it has already glanced at.
+
+   Sizing: the copy block bottom-aligns, so anything too tall overflows off the
+   TOP and gets clipped. Rather than truncate a quick hit — they're the best
+   writing in the whole catalog — the text steps down a size as it gets longer,
+   and the measure widens so long hits use the room instead of stacking. */
 .body{
-  font-size:clamp(1rem,2.65vmin,2.05rem);line-height:1.5;font-weight:300;
-  color:var(--ink-invert);margin-top:2.6vmin;max-width:44ch;
+  font-size:clamp(1rem,2.6vmin,2.05rem);line-height:1.5;font-weight:300;
+  color:var(--ink-invert);margin-top:2.4vmin;max-width:52ch;
+  min-height:4.5em;                 /* three lines reserved — the reveal never
+                                       shifts the block above it */
   opacity:0;transform:translateY(1.1vmin);
   transition:opacity 1.15s ease,transform 1.15s ease;
 }
+.body.len-2{font-size:clamp(.95rem,2.3vmin,1.8rem);max-width:58ch}
+.body.len-3{font-size:clamp(.9rem,2.05vmin,1.6rem);max-width:64ch;line-height:1.45}
 .slide.reveal .body{opacity:1;transform:none}
+
+/* A long hit also wants a little of the bottom padding back. */
+.copy.tall{padding-bottom:6vmin}
+.slide.ask .body{min-height:0}
 .body b,.body strong{font-weight:600;color:var(--paper)}
 .meta{
   display:flex;gap:3.4vmin;flex-wrap:wrap;margin-top:3vmin;
@@ -202,6 +214,34 @@ body{
 .slide.ask .body{max-width:34ch}
 .slide.ask .emoji{font-size:7vmin;line-height:1;margin-bottom:2vmin}
 
+/* ── QR ──────────────────────────────────────────────────────────────────
+   A screen can't be clicked, so any slide whose value is a link needs a code
+   or it shouldn't be there. The white card is not decoration — a QR needs a
+   quiet zone and hard contrast to scan from across a room. */
+.qr{
+  position:absolute;right:calc(var(--frame) + 3.4vmin);bottom:calc(var(--frame) + 3.2vmin);
+  z-index:5;display:flex;flex-direction:column;align-items:center;gap:1.1vmin;
+}
+.qr-card{
+  background:var(--paper);padding:1.5vmin;border-radius:1vmin;
+  box-shadow:0 .6vmin 3vmin rgba(0,0,0,.5);line-height:0;
+}
+.qr-card img{width:15vmin;height:15vmin;display:block}
+.qr .cap{
+  font-size:1.5vmin;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);text-align:center;max-width:22vmin;line-height:1.4;
+}
+/* the printed URL, shown only if the code fails to load */
+.qr .raw{font-size:1.3vmin;color:var(--ink-quiet);word-break:break-all;max-width:24vmin;text-align:center}
+
+/* On an ask the QR belongs under the words, centred with them — the ask is the
+   whole slide, so the code shouldn't hide in a corner. */
+.slide.ask .qr{position:static;margin-top:3.4vmin}
+.slide.ask .qr-card img{width:19vmin;height:19vmin}
+
+/* When a photo slide carries a code, the credit steps up out of its way. */
+.credit.raised{bottom:calc(var(--frame) + 22vmin)}
+
 /* ── progress hairline ───────────────────────────────────────────────────── */
 #bar{
   position:fixed;left:0;bottom:0;height:2px;width:0;z-index:45;
@@ -221,7 +261,6 @@ body{
 <div class="frame"></div>
 <div class="wordmark">Palma Sola Botanical Park</div>
 <div class="clock" id="clock"></div>
-<div class="walk"   id="walk"></div>
 <div class="credit" id="credit"></div>
 
 <div id="stage"></div>
@@ -359,8 +398,9 @@ function oneHit(text){
   /* a very short hit reads thin on a big screen — pair it with its neighbour */
   if(s.length < 90){
     var i = parts.indexOf(s);
-    if(parts[i+1]) s = s+' '+parts[i+1];
-    else if(parts[i-1]) s = parts[i-1]+' '+s;
+    var joined = parts[i+1] ? s+' '+parts[i+1]
+               : (parts[i-1] ? parts[i-1]+' '+s : s);
+    if(joined.length <= 300) s = joined;   /* pair a short hit, but not into a wall of text */
   }
   return s;
 }
@@ -392,7 +432,7 @@ function upcoming(rows,within){
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SLIDE BUILDERS
-   Each returns {bg, credit, walk, html, ask} or null.
+   Each returns {bg, focus, credit, html, ask} or null.
    ═══════════════════════════════════════════════════════════════════════════ */
 var KIND_LABEL = { blooming:'Blooming now', budding:'About to bloom',
   fruiting:'Fruiting now', fading:'Last chance', sighting:'Seen this week' };
@@ -404,12 +444,13 @@ function slideRightNow(r){
     bg: sp && sp.photo ? BASE+sp.photo : null,
     focus: sp && sp.focus,
     credit: creditFor(sp),
-    walk: r.area || '',
     html:
-      '<div class="eyebrow">'+esc(KIND_LABEL[r.kind]||'Right now')+'</div>'
+      '<div class="eyebrow"><span>'+esc(KIND_LABEL[r.kind]||'Right now')+'</span>'
+    + (r.area?'<span class="where">'+esc(r.area)+'</span>':'')+'</div>'
     + '<div class="headline">'+esc(r.common_name)+'</div>'
     + (r.scientific_name?'<div class="latin">'+esc(r.scientific_name)+'</div>':'')
     + (line?'<div class="body">'+rich(line)+'</div>':'')
+    + qrBlock(r, 'Scan for the full story')
   };
 }
 
@@ -426,7 +467,6 @@ function slideSpotlight(){
   return {
     bg: BASE+s.photo, focus: s.focus,
     credit: creditFor(s),
-    walk: '',
     html:
       '<div class="eyebrow">From the collection</div>'
     + '<div class="headline">'+esc(s.common)+'</div>'
@@ -441,18 +481,19 @@ function slideEvent(e){
   if(e.cost) bits.push(e.cost);
   if(e.kid_friendly==='Yes') bits.push('Kids welcome');
   return {
-    bg:null, credit:'', walk:'',
+    bg:null, credit:'',
     html:
       '<div class="eyebrow">'+esc(niceDate(e.date))+(e.series?' · '+esc(e.series):'')+'</div>'
     + '<div class="headline">'+esc(e.title)+'</div>'
     + (e.description?'<div class="body">'+rich(e.description)+'</div>':'')
     + (bits.length?'<div class="meta"><span>'+bits.map(esc).join('</span><span>')+'</span></div>':'')
+    + qrBlock(e, e.registration_url ? 'Scan to register' : 'Scan for details')
   };
 }
 
 function slideClass(c){
   return {
-    bg:null, credit:'', walk:'',
+    bg:null, credit:'',
     html:
       '<div class="eyebrow">Every '+esc(c.weekday||'week')+' · '+esc(c.category||'Class')+'</div>'
     + '<div class="headline">'+esc(c.title)+'</div>'
@@ -460,50 +501,80 @@ function slideClass(c){
     + '<div class="meta">'+(c.time?'<span>'+esc(c.time)+'</span>':'')
     + (c.instructor?'<span>'+esc(c.instructor)+'</span>':'')
     + (c.cost?'<span>'+esc(c.cost)+'</span>':'')+'</div>'
+    + qrBlock(c, 'Scan for details')
   };
 }
 
 function slideNews(n){
   return {
     bg: n.hero_image ? BASE+n.hero_image : null,
-    credit:'', walk:'',
+    credit:'',
     html:
       '<div class="eyebrow">Park news</div>'
     + '<div class="headline">'+esc(n.headline)+'</div>'
     + (n.subhead?'<div class="body">'+rich(n.subhead)+'</div>':'')
+    + qrBlock(n, 'Scan to read it')
   };
 }
 
 function slideSeries(s){
   return {
-    bg:null, credit:'', walk:'',
+    bg:null, credit:'',
     html:
       '<div class="eyebrow">'+esc(s.category||'Series')+'</div>'
     + '<div class="headline">'+esc(s.name)+'</div>'
     + (s.blurb?'<div class="body">'+rich(s.blurb)+'</div>':'')
+    + qrBlock(s, 'Scan for the schedule')
   };
 }
 
 function slideVolunteer(v){
   return {
     bg: v.photo_url ? (/^https?:/.test(v.photo_url)?v.photo_url:BASE+v.photo_url.replace(/^\//,'')) : null,
-    credit:'', walk:'',
+    credit:'',
     html:
       '<div class="eyebrow">'+esc(v.role||'Volunteer')+'</div>'
     + '<div class="headline">'+esc(v.title)+'</div>'
     + (v.body?'<div class="body">'+rich(v.body)+'</div>':'')
+    + qrBlock(v, 'Scan to sign up')
   };
 }
 
 function slideNewsletter(n){
   return {
-    bg:null, credit:'', walk:'',
+    bg:null, credit:'',
     html:
       '<div class="eyebrow">Newsletter · '+esc(niceDate(n.date)||n.title)+'</div>'
     + '<div class="headline">'+esc(n.title)+'</div>'
     + (n.description?'<div class="body">'+rich(n.description)+'</div>':'')
-    + '<div class="meta"><span>Pick one up at the office</span></div>'
+    + (qrUrlOf(n)?'':'<div class="meta"><span>Pick one up at the office</span></div>')
+    + qrBlock(n, 'Scan to read it')
   };
+}
+
+/* QR
+   The Sheet column holds the DESTINATION URL, not an image — Bev pastes a
+   normal link and never thinks about QR codes. The image is rendered by a
+   public generator; if it can't be reached the slide prints the URL instead,
+   so the slide is never silently useless.
+   Accepts screen_qr / screen_QRcode / qr_url so the column can be named
+   whichever way it ends up in the Sheet. */
+function qrUrlOf(row){
+  return (row.screen_qr || row.screen_QRcode || row.screen_qrcode || row.qr_url || '').trim();
+}
+function qrBlock(row, caption){
+  var url = qrUrlOf(row);
+  if(!url) return '';
+  var src = 'https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=0&ecc=M&data='
+          + encodeURIComponent(url);
+  var pretty = url.replace(/^https?:\/\//,'').replace(/\/$/,'');
+  return '<div class="qr">'
+    + '<div class="qr-card"><img alt="" src="'+src+'" '
+    + 'onerror="this.parentNode.style.display=\'none\';'
+    + 'this.closest(\'.qr\').querySelector(\'.raw\').style.display=\'block\'"></div>'
+    + (caption?'<div class="cap">'+esc(caption)+'</div>':'')
+    + '<div class="raw" style="display:none">'+esc(pretty)+'</div>'
+    + '</div>';
 }
 
 /* Asks get the centred treatment and a dimmed photograph behind. */
@@ -512,12 +583,13 @@ function slideAsk(a){
   return {
     ask:true,
     bg: pool.length ? BASE+pick(pool).photo : null,
-    credit:'', walk:'',
+    credit:'',
     html:
       (a.emoji?'<div class="emoji">'+a.emoji+'</div>':'')
     + '<div class="headline">'+esc(a.title)+'</div>'
     + (a.body?'<div class="body">'+rich(a.body)+'</div>':'')
     + (a.link_text?'<div class="meta"><span>'+esc(a.link_text)+'</span></div>':'')
+    + qrBlock(a, qrUrlOf(a) ? 'Scan to open' : '')
   };
 }
 
@@ -590,7 +662,7 @@ function buildDeck(){
    PLAYER
    ═══════════════════════════════════════════════════════════════════════════ */
 var stage=document.getElementById('stage'), bar=document.getElementById('bar');
-var walkEl=document.getElementById('walk'), credEl=document.getElementById('credit');
+var credEl=document.getElementById('credit');
 var deck=[], at=0, cur=null, timer=null, revealTimer=null;
 
 var KB = ['kb-in','kb-out','kb-left','kb-right','kb-rise','kb-settle'];
@@ -612,6 +684,15 @@ function render(s){
     + '<div class="scrim"></div>'
     + '<div class="copy">'+s.html+'</div>';
   el.style.setProperty('--kb', (SECONDS+3)+'s');
+
+  /* step the body down by length so nothing is ever clipped */
+  var b = el.querySelector('.body');
+  if(b){
+    var n = (b.textContent||'').length;
+    if(n > 300)      b.classList.add('len-3');
+    else if(n > 175) b.classList.add('len-2');
+    if(n > 175) el.querySelector('.copy').classList.add('tall');
+  }
   stage.appendChild(el);
 
   /* let the browser paint at opacity 0 before fading in */
@@ -630,15 +711,13 @@ function render(s){
   }
   cur=el;
 
-  walkEl.textContent = s.walk ? '→ '+s.walk : '';
-  walkEl.classList.toggle('on', !!s.walk);
-
   if(s.credit && s.credit.name){
     credEl.innerHTML =
         '<span class="lbl">Photograph</span>'
       + '<span class="who">'+esc(s.credit.name)+'</span>'
       + (s.credit.terms?'<span class="terms">'+esc(s.credit.terms)+'</span>':'');
     credEl.classList.add('on');
+    credEl.classList.toggle('raised', !s.ask && /class="qr"/.test(s.html));
   } else {
     credEl.classList.remove('on');
   }
