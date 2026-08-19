@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palma Sola Botanical Park</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  screen.html — the office / galleria display
+
+  Open full-screen on the TV browser. Nothing to click; nothing to configure.
+
+      screen.html                  → galleria (default)
+      screen.html?mode=office      → office mix (fewer asks, more operations)
+      screen.html?seconds=18       → override slide duration
+
+  WHY THIS LOOKS DIFFERENT FROM THE SITE
+  The site is cream paper. A cream screen on a wall at TV brightness is a
+  lightbulb. So the ground inverts to a deep botanical dark and the photographs
+  carry the light. Brand gold, Playfair and Source Sans 3 are inherited
+  unchanged — same identity, different room.
+
+  THE ONE DEVICE
+  A gold hairline frame, inset, with the wordmark set into the top rule and the
+  location tag breaking the bottom rule. The Galleria is a gallery room, so the
+  screen is a framed botanical plate on the wall rather than a television. The
+  frame persists; only the plate inside it changes.
+
+  AND THE ONE TRUE SCREEN-ONLY IDEA
+  `right_now.area` renders as "→ Serenity Garden". On the web that is a label.
+  Here it is an instruction to walk. Everything else follows from that test:
+  does this only make sense because you are standing in the park?
+
+  DATA
+  Reads the published feeds directly. Every row is filtered to
+  display ∈ {screen, both}. Falls back to a small built-in sample if the feeds
+  can't be reached, so the file also opens standalone for testing.
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+
+<style>
+:root{
+  /* Ground — a botanical dark, not a tech dark. Pulled from --green-ink and
+     deepened, so it still reads as the park's green under a lit room. */
+  --ground:#0c1a10; --ground-2:#122316; --veil:rgba(8,18,9,.55);
+  /* Inherited from psbp.css, unchanged */
+  --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
+  --ink-invert:rgba(253,252,248,.78); --ink-quiet:rgba(253,252,248,.52);
+  --rule:rgba(234,188,90,.34);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
+  --frame:2.6vmin;          /* inset of the gold frame */
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--ground)}
+body{
+  font-family:var(--sans);color:var(--paper);
+  cursor:none;                       /* kiosk: no pointer on a wall display */
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── the frame ───────────────────────────────────────────────────────────
+   One device, drawn once, persists across every slide. */
+.frame{
+  position:fixed;inset:var(--frame);border:1px solid var(--rule);
+  pointer-events:none;z-index:40;
+}
+.wordmark{
+  position:fixed;top:calc(var(--frame) - .95em);left:calc(var(--frame) + 2.4vmin);
+  z-index:41;background:var(--ground);padding:0 1.4vmin;
+  font-size:1.55vmin;font-weight:700;letter-spacing:.42em;text-transform:uppercase;
+  color:var(--gold);white-space:nowrap;
+}
+.clock{
+  position:fixed;top:calc(var(--frame) - .95em);right:calc(var(--frame) + 2.4vmin);
+  z-index:41;background:var(--ground);padding:0 1.4vmin;
+  font-size:1.55vmin;font-weight:600;letter-spacing:.22em;
+  color:var(--ink-quiet);white-space:nowrap;
+}
+/* the location tag breaks the bottom rule — a direction, not a caption */
+.walk{
+  position:fixed;bottom:calc(var(--frame) - .92em);left:calc(var(--frame) + 2.4vmin);
+  z-index:41;background:var(--ground);padding:0 1.4vmin;
+  font-size:1.75vmin;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);white-space:nowrap;opacity:0;transition:opacity .7s;
+}
+.walk.on{opacity:1}
+.credit{
+  position:fixed;bottom:calc(var(--frame) - .92em);right:calc(var(--frame) + 2.4vmin);
+  z-index:41;background:var(--ground);padding:0 1.4vmin;
+  font-size:1.45vmin;font-weight:600;letter-spacing:.12em;
+  color:var(--gold-deep);white-space:nowrap;opacity:0;transition:opacity .7s;
+}
+.credit.on{opacity:1}
+
+/* ── stage ───────────────────────────────────────────────────────────────── */
+#stage{position:fixed;inset:0;z-index:1}
+.slide{
+  position:absolute;inset:0;opacity:0;transition:opacity 1.1s ease;
+  display:flex;align-items:flex-end;
+}
+.slide.on{opacity:1}
+
+.bg{position:absolute;inset:0;overflow:hidden;background:var(--ground-2)}
+.bg img{
+  width:100%;height:100%;object-fit:cover;
+  transform:scale(1.06);transition:transform 21s linear;
+}
+.slide.on .bg img{transform:scale(1.14)}   /* slow drift; stills feel alive */
+.scrim{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to top,rgba(8,18,9,.94) 0%,rgba(8,18,9,.72) 26%,
+                    rgba(8,18,9,.30) 56%,rgba(8,18,9,.06) 80%),
+    linear-gradient(to right,rgba(8,18,9,.72) 0%,rgba(8,18,9,.10) 55%,transparent 78%);
+}
+
+.copy{
+  position:relative;z-index:3;
+  padding:0 0 8.5vmin calc(var(--frame) + 5.2vmin);
+  max-width:62vw;
+}
+.eyebrow{
+  font-size:1.9vmin;font-weight:700;letter-spacing:.36em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1.5vmin;
+}
+.headline{
+  font-family:var(--serif);font-weight:700;line-height:1.02;
+  font-size:clamp(2.6rem,7.4vmin,7rem);letter-spacing:-.012em;
+  text-shadow:0 2px 26px rgba(0,0,0,.45);
+}
+.latin{
+  font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:clamp(1.1rem,2.9vmin,2.4rem);color:var(--ink-invert);
+  margin-top:.7vmin;
+}
+.body{
+  font-size:clamp(1rem,2.65vmin,2.05rem);line-height:1.5;font-weight:300;
+  color:var(--ink-invert);margin-top:2.6vmin;max-width:44ch;
+}
+.body b,.body strong{font-weight:600;color:var(--paper)}
+.meta{
+  display:flex;gap:3.4vmin;flex-wrap:wrap;margin-top:3vmin;
+  font-size:1.95vmin;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold);
+}
+.meta span{white-space:nowrap}
+
+/* ── ask slides: centred, quiet, no photograph competing ─────────────────
+   An ask should read as a breath in the rotation, not a shout. */
+.slide.ask{align-items:center;justify-content:center}
+.slide.ask .bg img{opacity:.16;filter:saturate(.5)}
+.slide.ask .scrim{background:radial-gradient(ellipse at center,
+  rgba(8,18,9,.62) 0%,rgba(8,18,9,.9) 68%)}
+.slide.ask .copy{
+  padding:0 8vmin;max-width:none;text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+}
+.slide.ask .body{max-width:34ch}
+.slide.ask .emoji{font-size:7vmin;line-height:1;margin-bottom:2vmin}
+
+/* ── progress hairline ───────────────────────────────────────────────────── */
+#bar{
+  position:fixed;left:0;bottom:0;height:2px;width:0;z-index:45;
+  background:linear-gradient(90deg,var(--gold-deep),var(--gold));
+}
+
+@media (prefers-reduced-motion:reduce){
+  .slide{transition:opacity .25s}
+  .bg img,.slide.on .bg img{transform:none;transition:none}
+  #bar{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="frame"></div>
+<div class="wordmark">Palma Sola Botanical Park</div>
+<div class="clock" id="clock"></div>
+<div class="walk"   id="walk"></div>
+<div class="credit" id="credit"></div>
+
+<div id="stage"></div>
+<div id="bar"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONFIG
+   ═══════════════════════════════════════════════════════════════════════════ */
+var Q       = new URLSearchParams(location.search);
+var MODE    = Q.get('mode') === 'office' ? 'office' : 'galleria';
+var SECONDS = +(Q.get('seconds') || 0) || 14;
+var BASE    = Q.get('base') || '';           // '' when served from repo root
+var FEEDS   = BASE + 'data/published/';
+
+/* Ask cadence. The screen is mostly beauty; the ask is occasional.
+   Push this number up and people stop looking. */
+var ASK_EVERY = MODE === 'office' ? 5 : 7;
+
+/* How much of the deck each type gets. Weights, not counts. */
+var WEIGHT = {
+  right_now:  MODE === 'office' ? 2 : 4,   // what to go look at, right now
+  spotlight:  4,                            // the collection, at random
+  event:      3,
+  news:       MODE === 'office' ? 3 : 2,
+  klass:      2,
+  series:     1,
+  volunteer:  MODE === 'office' ? 3 : 1,
+  newsletter: 1
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DATA
+   Every feed row is filtered to display ∈ {screen, both}. A row marked "web"
+   never reaches this screen — that's the whole routing mechanism, and it
+   already exists in the Sheet.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var D = { right_now:[], events:[], classes:[], news:[], announcements:[],
+          volunteer:[], series:[], newsletters:[], plants:[], wildlife:[] };
+
+function onScreen(rows){
+  return (rows || []).filter(function(r){
+    var d = (r.display || 'web').toLowerCase();
+    return d === 'screen' || d === 'both';
+  });
+}
+
+function grab(url){
+  return fetch(url).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+                   .catch(function(){ return null; });
+}
+
+function loadAll(){
+  return Promise.all([
+    grab(FEEDS+'right_now.json'), grab(FEEDS+'events.json'),
+    grab(FEEDS+'classes.json'),   grab(FEEDS+'news.json'),
+    grab(FEEDS+'announcements.json'), grab(FEEDS+'volunteer.json'),
+    grab(FEEDS+'series.json'),    grab(FEEDS+'newsletters.json'),
+    grab(BASE+'plants.json'),     grab(BASE+'wildlife.json')
+  ]).then(function(r){
+    D.right_now=onScreen(r[0]); D.events=onScreen(r[1]);
+    D.classes=onScreen(r[2]);   D.news=onScreen(r[3]);
+    D.announcements=onScreen(r[4]); D.volunteer=onScreen(r[5]);
+    D.series=onScreen(r[6]);    D.newsletters=onScreen(r[7]);
+    D.plants=r[8]||[];          D.wildlife=r[9]||[];
+    if(!D.right_now.length && !D.plants.length) fallback();
+  });
+}
+
+/* Standalone sample so the file opens and animates off a laptop with no repo.
+   Deliberately tiny — this is a smoke test, not a demo reel. */
+function fallback(){
+  D.right_now=[{common_name:'Turks Turban',scientific_name:'Clerodendrum indicum',
+    kind:'blooming',area:'Near Office',display:'screen',
+    note:'Very cool red stars topped with a blueberry. Gotta check that out',
+    quick_hits:['The real attraction is not the flower but what follows it — a large, waxy, <b>inflated calyx</b> in deep red-purple that persists and swells as the fruit develops inside.']}];
+  D.announcements=[{emoji:'🌿',title:'This park is free, every day',
+    body:'Ten acres, open 365 days a year, kept going by members and donors.',
+    link_text:'Ask at the office about becoming a member',display:'screen'}];
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+var esc = function(s){ return String(s==null?'':s)
+  .replace(/&(?!(amp|lt|gt|quot|#\d+);)/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;'); };
+/* quick_hits and aside carry deliberate <b> from the Sheet — keep those. */
+var rich = function(s){ return String(s==null?'':s)
+  .replace(/<(?!\/?(b|strong|i|em)\b)[^>]*>/gi,''); };
+var pick = function(a){ return a[Math.floor(Math.random()*a.length)]; };
+var shuffle = function(a){
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1));
+    var t=a[i]; a[i]=a[j]; a[j]=t; } return a; };
+
+function speciesById(id){
+  for(var i=0;i<D.plants.length;i++)   if(D.plants[i].id===id)   return D.plants[i];
+  for(var j=0;j<D.wildlife.length;j++) if(D.wildlife[j].id===id) return D.wildlife[j];
+  return null;
+}
+
+function niceDate(iso){
+  if(!iso) return '';
+  var d=new Date(iso+'T12:00'), today=new Date();
+  var days=Math.round((d-today)/864e5);
+  if(days<=0) return 'Today';
+  if(days===1) return 'Tomorrow';
+  if(days<7)  return d.toLocaleDateString('en-US',{weekday:'long'});
+  return d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'});
+}
+
+function upcoming(rows,within){
+  var now=new Date(); now.setHours(0,0,0,0);
+  return rows.filter(function(e){
+    if(!e.date) return false;
+    var d=new Date(e.date+'T12:00'), days=(d-now)/864e5;
+    return days>=0 && days<=within;
+  }).sort(function(a,b){ return a.date<b.date?-1:1; });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE BUILDERS
+   Each returns {bg, credit, walk, html, ask} or null.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var KIND_LABEL = { blooming:'Blooming now', budding:'About to bloom',
+  fruiting:'Fruiting now', fading:'Last chance', sighting:'Seen this week' };
+
+function slideRightNow(r){
+  var sp = r.psbp_id ? speciesById(r.psbp_id) : null;
+  var line = r.note || (r.quick_hits && r.quick_hits[0]) || '';
+  return {
+    bg: sp && sp.photo ? BASE+sp.photo : null,
+    credit: sp && (sp.credit_name || sp.credit) ? 'Photo · '+(sp.credit_name||sp.credit) : '',
+    walk: r.area || '',
+    html:
+      '<div class="eyebrow">'+esc(KIND_LABEL[r.kind]||'Right now')+'</div>'
+    + '<div class="headline">'+esc(r.common_name)+'</div>'
+    + (r.scientific_name?'<div class="latin">'+esc(r.scientific_name)+'</div>':'')
+    + (line?'<div class="body">'+rich(line)+'</div>':'')
+  };
+}
+
+function slideSpotlight(){
+  var pool = D.plants.concat(D.wildlife).filter(function(s){ return s.photo; });
+  if(!pool.length) return null;
+  var s = pick(pool);
+  var hit = (s.quick_hits && s.quick_hits.length) ? pick(s.quick_hits) : (s.blurb||'');
+  return {
+    bg: BASE+s.photo,
+    credit: (s.credit_name||s.credit) ? 'Photo · '+(s.credit_name||s.credit) : '',
+    walk: '',
+    html:
+      '<div class="eyebrow">From the collection</div>'
+    + '<div class="headline">'+esc(s.common)+'</div>'
+    + (s.sci?'<div class="latin">'+esc(s.sci)+'</div>':'')
+    + (hit?'<div class="body">'+rich(hit)+'</div>':'')
+  };
+}
+
+function slideEvent(e){
+  var bits=[];
+  if(e.time) bits.push(e.time);
+  if(e.cost) bits.push(e.cost);
+  if(e.kid_friendly==='Yes') bits.push('Kids welcome');
+  return {
+    bg:null, credit:'', walk:'',
+    html:
+      '<div class="eyebrow">'+esc(niceDate(e.date))+(e.series?' · '+esc(e.series):'')+'</div>'
+    + '<div class="headline">'+esc(e.title)+'</div>'
+    + (e.description?'<div class="body">'+rich(e.description)+'</div>':'')
+    + (bits.length?'<div class="meta"><span>'+bits.map(esc).join('</span><span>')+'</span></div>':'')
+  };
+}
+
+function slideClass(c){
+  return {
+    bg:null, credit:'', walk:'',
+    html:
+      '<div class="eyebrow">Every '+esc(c.weekday||'week')+' · '+esc(c.category||'Class')+'</div>'
+    + '<div class="headline">'+esc(c.title)+'</div>'
+    + (c.description?'<div class="body">'+rich(c.description)+'</div>':'')
+    + '<div class="meta">'+(c.time?'<span>'+esc(c.time)+'</span>':'')
+    + (c.instructor?'<span>'+esc(c.instructor)+'</span>':'')
+    + (c.cost?'<span>'+esc(c.cost)+'</span>':'')+'</div>'
+  };
+}
+
+function slideNews(n){
+  return {
+    bg: n.hero_image ? BASE+n.hero_image : null,
+    credit:'', walk:'',
+    html:
+      '<div class="eyebrow">Park news</div>'
+    + '<div class="headline">'+esc(n.headline)+'</div>'
+    + (n.subhead?'<div class="body">'+rich(n.subhead)+'</div>':'')
+  };
+}
+
+function slideSeries(s){
+  return {
+    bg:null, credit:'', walk:'',
+    html:
+      '<div class="eyebrow">'+esc(s.category||'Series')+'</div>'
+    + '<div class="headline">'+esc(s.name)+'</div>'
+    + (s.blurb?'<div class="body">'+rich(s.blurb)+'</div>':'')
+  };
+}
+
+function slideVolunteer(v){
+  return {
+    bg: v.photo_url ? (/^https?:/.test(v.photo_url)?v.photo_url:BASE+v.photo_url.replace(/^\//,'')) : null,
+    credit:'', walk:'',
+    html:
+      '<div class="eyebrow">'+esc(v.role||'Volunteer')+'</div>'
+    + '<div class="headline">'+esc(v.title)+'</div>'
+    + (v.body?'<div class="body">'+rich(v.body)+'</div>':'')
+  };
+}
+
+function slideNewsletter(n){
+  return {
+    bg:null, credit:'', walk:'',
+    html:
+      '<div class="eyebrow">Newsletter · '+esc(niceDate(n.date)||n.title)+'</div>'
+    + '<div class="headline">'+esc(n.title)+'</div>'
+    + (n.description?'<div class="body">'+rich(n.description)+'</div>':'')
+    + '<div class="meta"><span>Pick one up at the office</span></div>'
+  };
+}
+
+/* Asks get the centred treatment and a dimmed photograph behind. */
+function slideAsk(a){
+  var pool = D.plants.filter(function(s){ return s.photo; });
+  return {
+    ask:true,
+    bg: pool.length ? BASE+pick(pool).photo : null,
+    credit:'', walk:'',
+    html:
+      (a.emoji?'<div class="emoji">'+a.emoji+'</div>':'')
+    + '<div class="headline">'+esc(a.title)+'</div>'
+    + (a.body?'<div class="body">'+rich(a.body)+'</div>':'')
+    + (a.link_text?'<div class="meta"><span>'+esc(a.link_text)+'</span></div>':'')
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE DECK
+   Weighted, shuffled, no two consecutive slides of the same type, and an ask
+   dropped in every ASK_EVERY positions. Rebuilt when exhausted, so the mix
+   changes shape through the day rather than looping identically.
+   ═══════════════════════════════════════════════════════════════════════════ */
+function buildDeck(){
+  var pool=[], i;
+  function add(type,rows,fn,weight){
+    if(!rows || !rows.length) return;
+    var n = Math.min(rows.length, Math.max(1, weight));
+    var picks = shuffle(rows.slice()).slice(0,n);
+    for(i=0;i<picks.length;i++) pool.push({type:type,make:fn.bind(null,picks[i])});
+  }
+
+  add('right_now',  D.right_now,              slideRightNow,  WEIGHT.right_now);
+  add('event',      upcoming(D.events,28),    slideEvent,     WEIGHT.event);
+  add('news',       D.news.slice().reverse(), slideNews,      WEIGHT.news);
+  add('klass',      D.classes,                slideClass,     WEIGHT.klass);
+  add('series',     D.series,                 slideSeries,    WEIGHT.series);
+  add('volunteer',  D.volunteer,              slideVolunteer, WEIGHT.volunteer);
+  add('newsletter', D.newsletters,            slideNewsletter,WEIGHT.newsletter);
+  for(i=0;i<WEIGHT.spotlight;i++) pool.push({type:'spotlight',make:slideSpotlight});
+
+  shuffle(pool);
+
+  /* de-clump: never two of a type back to back */
+  for(i=1;i<pool.length;i++){
+    if(pool[i].type===pool[i-1].type){
+      for(var j=i+1;j<pool.length;j++){
+        if(pool[j].type!==pool[i-1].type &&
+           (j+1>=pool.length || pool[j+1].type!==pool[i].type)){
+          var t=pool[i]; pool[i]=pool[j]; pool[j]=t; break;
+        }
+      }
+    }
+  }
+
+  /* asks, spaced */
+  if(D.announcements.length){
+    var asks = shuffle(D.announcements.slice());
+    var out=[], a=0;
+    for(i=0;i<pool.length;i++){
+      out.push(pool[i]);
+      if((i+1)%ASK_EVERY===0){
+        out.push({type:'ask',make:slideAsk.bind(null,asks[a % asks.length])});
+        a++;
+      }
+    }
+    pool=out;
+  }
+  return pool.length ? pool : [{type:'spotlight',make:slideSpotlight}];
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLAYER
+   ═══════════════════════════════════════════════════════════════════════════ */
+var stage=document.getElementById('stage'), bar=document.getElementById('bar');
+var walkEl=document.getElementById('walk'), credEl=document.getElementById('credit');
+var deck=[], at=0, cur=null, timer=null;
+
+function render(s){
+  var el=document.createElement('div');
+  el.className='slide'+(s.ask?' ask':'');
+  el.innerHTML =
+      '<div class="bg">'+(s.bg?'<img alt="" src="'+s.bg+'">':'')+'</div>'
+    + '<div class="scrim"></div>'
+    + '<div class="copy">'+s.html+'</div>';
+  stage.appendChild(el);
+
+  /* let the browser paint at opacity 0 before fading in */
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    el.classList.add('on');
+  });});
+
+  if(cur){
+    var old=cur; old.classList.remove('on');
+    setTimeout(function(){ old.remove(); }, 1400);
+  }
+  cur=el;
+
+  walkEl.textContent = s.walk ? '→ '+s.walk : '';
+  walkEl.classList.toggle('on', !!s.walk);
+  credEl.textContent = s.credit || '';
+  credEl.classList.toggle('on', !!s.credit);
+
+  bar.style.transition='none'; bar.style.width='0';
+  requestAnimationFrame(function(){
+    bar.style.transition='width '+SECONDS+'s linear';
+    bar.style.width='100%';
+  });
+}
+
+function next(){
+  if(at>=deck.length){ deck=buildDeck(); at=0; }
+  var item=deck[at++], s=null;
+  try{ s=item.make(); }catch(e){ s=null; }
+  if(!s){ return next(); }
+  render(s);
+  timer=setTimeout(next, SECONDS*1000);
+}
+
+function tickClock(){
+  var d=new Date();
+  document.getElementById('clock').textContent =
+    d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+}
+
+/* ── kiosk housekeeping ──────────────────────────────────────────────────
+   Refresh the data every 10 minutes so a Sheet edit reaches the wall without
+   anyone touching the TV, and do a hard reload in the small hours to clear
+   any long-running drift. */
+function start(){
+  deck=buildDeck(); at=0; next();
+  tickClock(); setInterval(tickClock, 20000);
+
+  setInterval(function(){ loadAll().catch(function(){}); }, 10*60*1000);
+
+  setInterval(function(){
+    var h=new Date().getHours();
+    if(h===4) location.reload();
+  }, 30*60*1000);
+
+  /* keep the display awake where the browser allows it */
+  if('wakeLock' in navigator){
+    navigator.wakeLock.request('screen').catch(function(){});
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState==='visible')
+        navigator.wakeLock.request('screen').catch(function(){});
+    });
+  }
+}
+
+loadAll().then(start).catch(function(){ fallback(); start(); });
+</script>
+</body>
+</html>
