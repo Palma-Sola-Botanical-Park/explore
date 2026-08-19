@@ -273,9 +273,17 @@ body{
 /* Atmosphere, not illustration. When a slide has no picture of its own, a
    photograph from the collection sits behind it — blurred and dimmed enough to
    read as texture rather than as a claim about the subject. Still credited. */
-.slide.atmos .bg img{opacity:.30;filter:blur(3px) saturate(.62)}
-.slide.atmos .scrim{background:linear-gradient(to top,
-  rgba(8,18,9,.92) 0%,rgba(8,18,9,.78) 40%,rgba(8,18,9,.62) 100%)}
+.slide.atmos .bg img{opacity:.52;filter:blur(2px) saturate(.78)}
+/* Darken hard where the words are, then let go. A flat veil across the whole
+   frame was what made these read as black rectangles — the photo needs
+   somewhere to actually be seen. */
+.slide.atmos .scrim{
+  background:
+    linear-gradient(to top,rgba(8,18,9,.90) 0%,rgba(8,18,9,.62) 32%,
+                    rgba(8,18,9,.28) 68%,rgba(8,18,9,.14) 100%),
+    linear-gradient(to right,rgba(8,18,9,.74) 0%,rgba(8,18,9,.20) 50%,
+                    rgba(8,18,9,0) 74%);
+}
 
 /* ── ask slides: centred, quiet, no photograph competing ─────────────────
    An ask should read as a breath in the rotation, not a shout. */
@@ -775,7 +783,7 @@ function dateStamp(iso){
     + '<span class="when">'
     +   '<span class="dow">'+d.toLocaleDateString('en-US',{weekday:'long'})+'</span>'
     +   '<span class="sub">'+d.toLocaleDateString('en-US',{month:'long'})
-    +     (word?'':' '+d.getDate())+'</span>'
+    +     (word?' '+d.getDate():'')+'</span>'
     + '</span></div>';
 }
 
