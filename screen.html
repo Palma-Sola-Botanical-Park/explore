@@ -285,6 +285,29 @@ body{
                     rgba(8,18,9,0) 74%);
 }
 
+/* ── POSTER ──────────────────────────────────────────────────────────────
+   A flyer is not a background. It is portrait, it is dense, and every fact is
+   already set into it — crop it to 16:9 and the pricing strip falls off the
+   bottom. So it is shown WHOLE, as an object hung beside the text, and the
+   copy column narrows to make room. The screen supplies only what a poster
+   can't: how soon it is, and something to scan. */
+.slide.poster{align-items:center}
+.slide.poster .copy{max-width:44vw;padding-bottom:0}
+.poster-art{
+  position:absolute;z-index:4;
+  right:calc(var(--frame) + 4vmin);top:calc(var(--frame) + 5vmin);
+  bottom:calc(var(--frame) + 5vmin);width:36vw;
+  display:flex;align-items:center;justify-content:center;
+}
+.poster-art img{
+  max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;
+  border-radius:.8vmin;box-shadow:0 1.4vmin 5vmin rgba(0,0,0,.6);
+}
+/* the QR lives under the words on a poster slide, not in the corner —
+   the poster owns the right-hand side */
+.slide.poster .qr{position:static;margin-top:3vmin;align-items:flex-start}
+.slide.poster .qr .cap{text-align:left}
+
 /* ── ask slides: centred, quiet, no photograph competing ─────────────────
    An ask should read as a breath in the rotation, not a shout. */
 .slide.ask{align-items:center;justify-content:center}
@@ -636,12 +659,16 @@ function slideEvent(e){
   if(e.time) bits.push(e.time);
   if(e.cost) bits.push(e.cost);
   if(e.kid_friendly==='Yes') bits.push('Kids welcome');
-  var own = screenImage(e), atm = own ? null : atmosPhoto();
+  var poster = posterImage(e);
+  var own = poster ? null : screenImage(e);
+  var atm  = (poster || own) ? null : atmosPhoto();
   return {
     bg: own || (atm ? BASE+atm.photo : null),
     focus: own ? null : (atm && atm.focus),
-    atmos: !own && !!atm,
-    credit: own ? null : creditFor(atm),
+    atmos: !own && !poster && !!atm,
+    poster: poster,
+    seconds: poster ? Math.round(SECONDS * 1.6) : null,
+    credit: (own || poster) ? null : creditFor(atm),
     html:
       dateStamp(e.date)
     + (e.series?'<div class="eyebrow"><span>'+esc(e.series)+'</span></div>':'')
@@ -794,6 +821,13 @@ function screenImage(row){
   return /^https?:/i.test(v) ? v : BASE + v.replace(/^\//,'');
 }
 
+/* A flyer or poster: shown whole rather than cropped as a backdrop. */
+function posterImage(row){
+  var v = (row.screen_poster || row.poster_url || row.flyer_image || '').trim();
+  if(!v) return null;
+  return /^https?:/i.test(v) ? v : BASE + v.replace(/^\//,'');
+}
+
 /* A photograph from the collection, for slides with nothing of their own. */
 function atmosPhoto(){
   var pool = D.plants.concat(D.wildlife).filter(function(s){ return s.photo; });
@@ -859,8 +893,9 @@ function qrBlock(row, caption, fallback){
 function slideAsk(a){
   var pool = D.plants.filter(function(s){ return s.photo; });
   return {
-    ask:true,
-    bg: screenImage(a) || (pool.length ? BASE+pick(pool).photo : null),
+    ask: !posterImage(a),
+    poster: posterImage(a),
+    bg: posterImage(a) ? null : (screenImage(a) || (pool.length ? BASE+pick(pool).photo : null)),
     credit:'',
     html:
       (a.emoji?'<div class="emoji">'+a.emoji+'</div>':'')
@@ -985,7 +1020,7 @@ var lastKB = '';
 function render(s){
   var dur = s.seconds || SECONDS;
   var el=document.createElement('div');
-  el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'');
+  el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'');
 
   /* pick a motion, never the same one twice running */
   var moves = KB.filter(function(k){ return k!==lastKB; });
@@ -997,13 +1032,14 @@ function render(s){
   el.innerHTML =
       '<div class="bg">'+(s.bg?'<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'">':'')+'</div>'
     + '<div class="scrim"></div>'
-    + '<div class="copy">'+s.html+'</div>';
+    + '<div class="copy">'+s.html+'</div>'
+    + (s.poster?'<div class="poster-art"><img alt="" src="'+s.poster+'"></div>':'');
 
   /* .copy is position:relative, so a QR left inside it anchors to the text
      column and lands mid-paragraph. Lift it out to sit against the slide.
      On an ask it belongs in the flow, centred under the words — leave it. */
   var qrNode = el.querySelector('.qr');
-  if(qrNode && !s.ask) el.appendChild(qrNode);
+  if(qrNode && !s.ask && !s.poster) el.appendChild(qrNode);
   el.style.setProperty('--kb', (dur+3)+'s');
 
   /* step each body down by length so nothing is ever clipped */
