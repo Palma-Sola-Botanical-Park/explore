@@ -73,15 +73,15 @@ body{
 }
 .wordmark{
   position:fixed;top:calc(var(--frame) - .95em);left:calc(var(--frame) + 2.4vmin);
-  z-index:41;background:var(--ground);padding:0 1.4vmin;
-  font-size:1.55vmin;font-weight:700;letter-spacing:.42em;text-transform:uppercase;
+  z-index:41;background:var(--ground);padding:0 1.6vmin;
+  font-size:2.1vmin;font-weight:700;letter-spacing:.34em;text-transform:uppercase;
   color:var(--gold);white-space:nowrap;
 }
 .clock{
   position:fixed;top:calc(var(--frame) - .95em);right:calc(var(--frame) + 2.4vmin);
-  z-index:41;background:var(--ground);padding:0 1.4vmin;
-  font-size:1.55vmin;font-weight:600;letter-spacing:.22em;
-  color:var(--ink-quiet);white-space:nowrap;
+  z-index:41;background:var(--ground);padding:0 1.6vmin;
+  font-size:2.1vmin;font-weight:600;letter-spacing:.2em;
+  color:var(--paper);opacity:.72;white-space:nowrap;
 }
 /* Attribution is solidarity — so it gets real size, a name in paper white, and
    the licence and date underneath. Sits inside the frame rather than breaking
@@ -310,7 +310,7 @@ body{
   background:var(--paper);padding:1.5vmin;border-radius:1vmin;
   box-shadow:0 .6vmin 3vmin rgba(0,0,0,.5);line-height:0;
 }
-.qr-card img{width:15vmin;height:15vmin;display:block}
+.qr-card img{width:12.5vmin;height:12.5vmin;display:block}
 .qr .cap{
   font-size:1.5vmin;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
   color:var(--gold);text-align:center;max-width:22vmin;line-height:1.4;
@@ -321,10 +321,10 @@ body{
 /* On an ask the QR belongs under the words, centred with them — the ask is the
    whole slide, so the code shouldn't hide in a corner. */
 .slide.ask .qr{position:static;margin-top:3.4vmin}
-.slide.ask .qr-card img{width:19vmin;height:19vmin}
+.slide.ask .qr-card img{width:17vmin;height:17vmin}
 
 /* When a photo slide carries a code, the credit steps up out of its way. */
-.credit.raised{bottom:calc(var(--frame) + 22vmin)}
+.credit.raised{bottom:calc(var(--frame) + 19.5vmin)}
 
 /* ── progress hairline ───────────────────────────────────────────────────── */
 #bar{
@@ -475,12 +475,42 @@ var shuffle = function(a){
   for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1));
     var t=a[i]; a[i]=a[j]; a[j]=t; } return a; };
 
-/* `quick` in the search index is the three or four quick-hits joined into one
-   string — 300 to 800 characters, far too much for a wall. Split it back apart
-   on sentence boundaries. */
-function hitsOf(text){
+var ABBR = /^(Dr|Mr|Mrs|Ms|St|Mt|Ft|vs|var|cv|subsp|ssp|spp|sp|approx|ca|cf|Fig|No|Inc|Co|etc|e\.g|i\.e|U\.S|U\.K)$/i;
+
+/* Split prose into sentences without a lookbehind — old TV browsers don't all
+   support variable-length lookbehind, and the naive /(?<=[.!?]) +/ breaks on
+   every botanical abbreviation: "(S. cayennensis)" became its own "sentence".
+   A period only ends a sentence when the word before it isn't an abbreviation
+   or a single-letter initial, AND the next sentence starts with a capital. */
+function sentences(text){
   if(!text) return [];
-  return String(text).split(/(?<=[.!?]) +/).filter(function(t){ return t.trim().length>25; });
+  var s = String(text), out = [], buf = '', i = 0;
+  while(i < s.length){
+    var ch = s[i]; buf += ch;
+    if(ch === '.' || ch === '!' || ch === '?'){
+      while(i+1 < s.length && /[)\]"'\u201d\u2019]/.test(s[i+1])) buf += s[++i];
+      var j = i+1;
+      while(j < s.length && /\s/.test(s[j])) j++;
+      if(j > i+1 || j >= s.length){
+        var m = /([A-Za-z.]+)[.!?][)\]"'\u201d\u2019]*$/.exec(buf);
+        var word = m ? m[1] : '';
+        var isAbbr = (word.length === 1 && /[A-Za-z]/.test(word)) || ABBR.test(word);
+        var startsNew = j < s.length && /[A-Z"'\u201c\u2018(]/.test(s[j]);
+        if(!isAbbr && (startsNew || j >= s.length)){
+          out.push(buf.trim()); buf = ''; i = j - 1;
+        }
+      }
+    }
+    i++;
+  }
+  if(buf.trim()) out.push(buf.trim());
+  return out;
+}
+
+/* `quick` in the search index is the three or four quick-hits joined into one
+   string — 300 to 800 characters, far too much for a wall. Split it back apart. */
+function hitsOf(text){
+  return sentences(text).filter(function(t){ return t.trim().length>25; });
 }
 
 /* Two of them, different from each other, in random order. A species now says
@@ -496,7 +526,7 @@ function twoHits(text){
 
 function oneHit(text){
   if(!text) return '';
-  var parts = String(text).split(/(?<=[.!?]) +/).filter(function(t){ return t.trim().length>25; });
+  var parts = hitsOf(text);
   if(!parts.length) return String(text);
   var s = pick(parts);
   /* a very short hit reads thin on a big screen — pair it with its neighbour */
@@ -558,8 +588,7 @@ function slideRightNow(r){
   /* quick_hits ride along in the right_now feed; fall back to the species
      record's joined `quick` string if the row hasn't got them. */
   var hits = (r.quick_hits && r.quick_hits.length) ? r.quick_hits
-           : (sp && sp.quick ? String(sp.quick).split(/(?<=[.!?]) +/)
-                                .filter(function(t){ return t.trim().length>25; }) : []);
+           : (sp ? hitsOf(sp.quick) : []);
   var fact = freshHit(r.psbp_id || r.common_name, hits);
 
   var list = [note, fact].filter(Boolean);
@@ -575,7 +604,7 @@ function slideRightNow(r){
     + '<div class="headline">'+esc(r.common_name)+'</div>'
     + (r.scientific_name?'<div class="latin">'+esc(r.scientific_name)+'</div>':'')
     + body
-    + qrBlock(r, 'Scan for the full story')
+    + qrBlock(r, 'Scan for the full story', sp && sp.page)
   };
 }
 
@@ -617,7 +646,7 @@ function slideEvent(e){
     + '<div class="headline">'+esc(e.title)+'</div>'
     + (e.description?'<div class="body">'+rich(e.description)+'</div>':'')
     + (bits.length?'<div class="meta"><span>'+bits.map(esc).join('</span><span>')+'</span></div>':'')
-    + qrBlock(e, e.registration_url ? 'Scan to register' : 'Scan for details')
+    + qrBlock(e, e.registration_url ? 'Scan to register' : 'Scan for details', e.registration_url || e.link_url)
   };
 }
 
@@ -643,7 +672,7 @@ function slideClass(c){
     + '<div class="meta">'
     + (c.instructor?'<span>'+esc(c.instructor)+'</span>':'')
     + (c.cost?'<span>'+esc(c.cost)+'</span>':'')+'</div>'
-    + qrBlock(c, 'Scan for details')
+    + qrBlock(c, 'Scan for details', c.registration_url || c.link_url)
   };
 }
 
@@ -665,7 +694,7 @@ function slideNews(n){
     + '<div class="headline">'+esc(n.headline)+'</div>'
     + (n.subhead?'<div class="subhead">'+rich(n.subhead)+'</div>':'')
     + beatsMarkup(beats)
-    + qrBlock(n, 'Scan to read it')
+    + qrBlock(n, 'Scan to read the story', n.link_url)
   };
 }
 
@@ -680,7 +709,7 @@ function slideSeries(s){
       '<div class="eyebrow">'+esc(s.category||'Series')+'</div>'
     + '<div class="headline">'+esc(s.name)+'</div>'
     + (s.blurb?'<div class="body">'+rich(s.blurb)+'</div>':'')
-    + qrBlock(s, 'Scan for the schedule')
+    + qrBlock(s, 'Scan for the schedule', s.flyer_url)
   };
 }
 
@@ -692,7 +721,7 @@ function slideVolunteer(v){
       '<div class="eyebrow">'+esc(v.role||'Volunteer')+'</div>'
     + '<div class="headline">'+esc(v.title)+'</div>'
     + (v.body?'<div class="body">'+rich(v.body)+'</div>':'')
-    + qrBlock(v, 'Scan to sign up')
+    + qrBlock(v, 'Scan to sign up', v.link_url)
   };
 }
 
@@ -707,8 +736,8 @@ function slideNewsletter(n){
       '<div class="eyebrow">Newsletter · '+esc(niceDate(n.date)||n.title)+'</div>'
     + '<div class="headline">'+esc(n.title)+'</div>'
     + (n.description?'<div class="body">'+rich(n.description)+'</div>':'')
-    + (qrUrlOf(n)?'':'<div class="meta"><span>Pick one up at the office</span></div>')
-    + qrBlock(n, 'Scan to read it')
+    + (qrUrlOf(n, n.link_url)?'':'<div class="meta"><span>Pick one up at the office</span></div>')
+    + qrBlock(n, 'Scan to read it', n.link_url)
   };
 }
 
@@ -729,7 +758,7 @@ function beatsFrom(fields, cap){
       if(t.length < 30) continue;
       /* trim an over-long paragraph back to whole sentences */
       if(t.length > 330){
-        var sent = t.split(/(?<=[.!?]) +/), acc='';
+        var sent = sentences(t), acc='';
         for(var q=0;q<sent.length;q++){
           if((acc+' '+sent[q]).length > 330) break;
           acc = acc ? acc+' '+sent[q] : sent[q];
@@ -794,11 +823,23 @@ function dateStamp(iso){
    so the slide is never silently useless.
    Accepts screen_qr / screen_QRcode / qr_url so the column can be named
    whichever way it ends up in the Sheet. */
-function qrUrlOf(row){
-  return (row.screen_qr || row.screen_QRcode || row.screen_qrcode || row.qr_url || '').trim();
+function qrUrlOf(row, fallback){
+  return (row.screen_qr || row.screen_QRcode || row.screen_qrcode || row.qr_url
+          || fallback || '').trim();
 }
-function qrBlock(row, caption){
-  var url = qrUrlOf(row);
+
+/* A QR has to carry somewhere a phone can actually go, so repo-relative paths
+   like "docs/news/Hort_Magazine.pdf" get resolved against the page's own URL
+   before they're encoded. */
+function absUrl(u){
+  if(!u) return '';
+  if(/^https?:/i.test(u)) return u;
+  try { return new URL(u.replace(/^\//,''), location.href).href; }
+  catch(e){ return u; }
+}
+
+function qrBlock(row, caption, fallback){
+  var url = absUrl(qrUrlOf(row, fallback));
   if(!url) return '';
   var src = 'https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=0&ecc=M&data='
           + encodeURIComponent(url);
@@ -824,7 +865,7 @@ function slideAsk(a){
     + '<div class="headline">'+esc(a.title)+'</div>'
     + (a.body?'<div class="body">'+rich(a.body)+'</div>':'')
     + (a.link_text?'<div class="meta"><span>'+esc(a.link_text)+'</span></div>':'')
-    + qrBlock(a, qrUrlOf(a) ? 'Scan to open' : '')
+    + qrBlock(a, 'Scan to open', a.link_url)
   };
 }
 
