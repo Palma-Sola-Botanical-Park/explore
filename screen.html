@@ -165,6 +165,11 @@ body{
   font-size:clamp(2.6rem,7.4vmin,7rem);letter-spacing:-.012em;
   text-shadow:0 2px 26px rgba(0,0,0,.45);
 }
+.subhead{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(1.05rem,2.85vmin,2.3rem);color:var(--paper);
+  margin-top:1vmin;max-width:40ch;line-height:1.25;
+}
 .latin{
   font-family:var(--serif);font-style:italic;font-weight:400;
   font-size:clamp(1.1rem,2.9vmin,2.4rem);color:var(--ink-invert);
@@ -207,7 +212,10 @@ body{
   transition:opacity .85s ease,transform .85s ease;
 }
 .beat.on{opacity:1;transform:none}
-.beat.spent{opacity:0;transform:translateY(-1.2vmin)}
+.beat.spent{
+  opacity:0;transform:translateY(-1.4vmin) scale(.985);filter:blur(5px);
+  transition:opacity .7s ease,transform .7s ease,filter .7s ease;
+}
 .beat.fact{
   padding-left:2.2vmin;border-left:2px solid var(--gold);
   margin-left:-2.4vmin;                 /* rule sits outside the text column */
@@ -459,9 +467,25 @@ var shuffle = function(a){
   for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1));
     var t=a[i]; a[i]=a[j]; a[j]=t; } return a; };
 
-/* `quick` in the search index is the three quick-hits joined into one string —
-   300 to 800 characters, far too much for a wall. Split on sentence boundaries
-   and show one, so a species that comes round again says something new. */
+/* `quick` in the search index is the three or four quick-hits joined into one
+   string — 300 to 800 characters, far too much for a wall. Split it back apart
+   on sentence boundaries. */
+function hitsOf(text){
+  if(!text) return [];
+  return String(text).split(/(?<=[.!?]) +/).filter(function(t){ return t.trim().length>25; });
+}
+
+/* Two of them, different from each other, in random order. A species now says
+   two things per appearance instead of one — and picks a different pair the
+   next time it comes round. */
+function twoHits(text){
+  var parts = hitsOf(text);
+  if(parts.length <= 1) return parts.length ? [parts[0]] : [];
+  var a = Math.floor(Math.random()*parts.length), b;
+  do { b = Math.floor(Math.random()*parts.length); } while(b === a);
+  return [parts[a], parts[b]];
+}
+
 function oneHit(text){
   if(!text) return '';
   var parts = String(text).split(/(?<=[.!?]) +/).filter(function(t){ return t.trim().length>25; });
@@ -530,16 +554,8 @@ function slideRightNow(r){
                                 .filter(function(t){ return t.trim().length>25; }) : []);
   var fact = freshHit(r.psbp_id || r.common_name, hits);
 
-  var body;
-  if(note && fact){
-    body = '<div class="beats">'
-         +   '<div class="beat body">'+rich(note)+'</div>'
-         +   '<div class="beat body fact">'+rich(fact)+'</div>'
-         + '</div>';
-  } else {
-    var one = note || fact;
-    body = one ? '<div class="body">'+rich(one)+'</div>' : '';
-  }
+  var list = [note, fact].filter(Boolean);
+  var body = beatsMarkup(list, list.length>1 ? 1 : null);
 
   return {
     bg: sp && sp.photo ? BASE+sp.photo : null,
@@ -564,7 +580,7 @@ function slideSpotlight(){
   var s = pick(pool);
   seenSpecies.push(s.id);
   if(seenSpecies.length > Math.floor(all.length * 0.6)) seenSpecies.shift();
-  var hit = oneHit(s.quick);
+  var hits = twoHits(s.quick);
   return {
     bg: BASE+s.photo, focus: s.focus,
     credit: creditFor(s),
@@ -572,7 +588,7 @@ function slideSpotlight(){
       '<div class="eyebrow">From the collection</div>'
     + '<div class="headline">'+esc(s.common)+'</div>'
     + (s.sci?'<div class="latin">'+esc(s.sci)+'</div>':'')
-    + (hit?'<div class="body">'+rich(hit)+'</div>':'')
+    + beatsMarkup(hits)
   };
 }
 
@@ -624,13 +640,23 @@ function slideClass(c){
 }
 
 function slideNews(n){
+  /* Headline and subhead hold still — they're the identity of the story.
+     Blurb, intro and body2 take turns underneath. */
+  var beats = beatsFrom([n.blurb, n.intro, n.body2], 3);
+  var own = screenImage(n) || (n.hero_image ? BASE+n.hero_image : null);
+  var atm = own ? null : atmosPhoto();
   return {
-    bg: screenImage(n) || (n.hero_image ? BASE+n.hero_image : null),
-    credit:'',
+    bg: own || (atm ? BASE+atm.photo : null),
+    focus: own ? null : (atm && atm.focus),
+    atmos: !own && !!atm,
+    credit: own ? null : creditFor(atm),
+    /* a story with three turns needs longer than a species photo */
+    seconds: beats.length > 1 ? Math.round(SECONDS * (1 + 0.45*(beats.length-1))) : SECONDS,
     html:
-      '<div class="eyebrow">Park news</div>'
+      '<div class="eyebrow"><span>Park news</span></div>'
     + '<div class="headline">'+esc(n.headline)+'</div>'
-    + (n.subhead?'<div class="body">'+rich(n.subhead)+'</div>':'')
+    + (n.subhead?'<div class="subhead">'+rich(n.subhead)+'</div>':'')
+    + beatsMarkup(beats)
     + qrBlock(n, 'Scan to read it')
   };
 }
@@ -676,6 +702,49 @@ function slideNewsletter(n){
     + (qrUrlOf(n)?'':'<div class="meta"><span>Pick one up at the office</span></div>')
     + qrBlock(n, 'Scan to read it')
   };
+}
+
+/* Turn a set of Sheet fields into readable beats.
+   The long fields carry "||" paragraph markers (and sometimes <br><br>), so
+   split on those first — a whole `intro` is far too much for one turn. Empty
+   fields simply don't produce a beat, so a half-filled row still works.
+   Duplicates are dropped: at least one live news story repeats a paragraph
+   verbatim between `intro` and itself. */
+function beatsFrom(fields, cap){
+  var out=[], seen={};
+  for(var i=0;i<fields.length;i++){
+    var raw = (fields[i]||'').trim();
+    if(!raw) continue;
+    var paras = raw.split(/\|\||<br\s*\/?>\s*<br\s*\/?>/i);
+    for(var p=0;p<paras.length;p++){
+      var t = paras[p].replace(/<br\s*\/?>/gi,' ').trim();
+      if(t.length < 30) continue;
+      /* trim an over-long paragraph back to whole sentences */
+      if(t.length > 330){
+        var sent = t.split(/(?<=[.!?]) +/), acc='';
+        for(var q=0;q<sent.length;q++){
+          if((acc+' '+sent[q]).length > 330) break;
+          acc = acc ? acc+' '+sent[q] : sent[q];
+        }
+        t = acc || t.slice(0,330);
+      }
+      var key = t.slice(0,60).toLowerCase();
+      if(seen[key]) continue;
+      seen[key]=1;
+      out.push(t);
+      if(out.length >= (cap||4)) return out;
+    }
+  }
+  return out;
+}
+
+function beatsMarkup(list, factFrom){
+  if(!list.length) return '';
+  if(list.length === 1) return '<div class="body">'+rich(list[0])+'</div>';
+  var h='<div class="beats">';
+  for(var i=0;i<list.length;i++)
+    h += '<div class="beat body'+(factFrom!=null && i>=factFrom?' fact':'')+'">'+rich(list[i])+'</div>';
+  return h+'</div>';
 }
 
 /* An optional Sheet column: a picture for this row, when a generic backdrop
@@ -857,12 +926,13 @@ function cascade(el){
    ═══════════════════════════════════════════════════════════════════════════ */
 var stage=document.getElementById('stage'), bar=document.getElementById('bar');
 var credEl=document.getElementById('credit');
-var deck=[], at=0, cur=null, timer=null, revealTimer=null, turnTimer=null;
+var deck=[], at=0, cur=null, timer=null, revealTimer=null, beatTimers=[];
 
 var KB = ['kb-in','kb-out','kb-left','kb-right','kb-rise','kb-settle'];
 var lastKB = '';
 
 function render(s){
+  var dur = s.seconds || SECONDS;
   var el=document.createElement('div');
   el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'');
 
@@ -877,7 +947,7 @@ function render(s){
       '<div class="bg">'+(s.bg?'<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'">':'')+'</div>'
     + '<div class="scrim"></div>'
     + '<div class="copy">'+s.html+'</div>';
-  el.style.setProperty('--kb', (SECONDS+3)+'s');
+  el.style.setProperty('--kb', (dur+3)+'s');
 
   /* step each body down by length so nothing is ever clipped */
   var bodies = el.querySelectorAll('.body'), longest = 0, bi;
@@ -912,18 +982,24 @@ function render(s){
   /* Timing. One body: it arrives a little under halfway.
      Two beats: the note lands early, the fact turns over it past the middle,
      leaving each with room to be read rather than glimpsed. */
-  clearTimeout(revealTimer); clearTimeout(turnTimer);
+  clearTimeout(revealTimer); beatTimers.forEach(clearTimeout); beatTimers=[];
   var beatEls = el.querySelectorAll('.beat');
-  if(beatEls.length === 2){
-    /* the note writes itself on almost immediately; the fact turns over it
-       past the middle, and cascades in its own turn */
-    revealTimer = setTimeout(function(){
-      el.classList.add('reveal'); beatEls[0].classList.add('on');
-    }, 1400);
-    turnTimer = setTimeout(function(){
-      beatEls[0].classList.remove('on'); beatEls[0].classList.add('spent');
-      beatEls[1].classList.add('on');
-    }, Math.round(SECONDS*1000*0.55));
+  if(beatEls.length > 1){
+    /* Beats share the slide evenly after a short lead. Two on a Right Now,
+       three or four on a news story — same mechanism either way. */
+    var lead = 1400;
+    var share = Math.max(2600, (dur*1000 - lead) / beatEls.length);
+    revealTimer = setTimeout(function(){ el.classList.add('reveal'); }, lead);
+    (function(){
+      for(var bn=0; bn<beatEls.length; bn++){
+        beatTimers.push(setTimeout((function(idx){ return function(){
+          for(var q=0;q<beatEls.length;q++){
+            if(q < idx){ beatEls[q].classList.remove('on'); beatEls[q].classList.add('spent'); }
+            else if(q === idx){ beatEls[q].classList.remove('spent'); beatEls[q].classList.add('on'); }
+          }
+        };})(bn), lead + bn*share));
+      }
+    })();
   } else {
     revealTimer = setTimeout(function(){ el.classList.add('reveal'); }, 1400);
   }
@@ -947,9 +1023,10 @@ function render(s){
 
   bar.style.transition='none'; bar.style.width='0';
   requestAnimationFrame(function(){
-    bar.style.transition='width '+SECONDS+'s linear';
+    bar.style.transition='width '+dur+'s linear';
     bar.style.width='100%';
   });
+  return dur;
 }
 
 function next(){
@@ -957,8 +1034,8 @@ function next(){
   var item=deck[at++], s=null;
   try{ s=item.make(); }catch(e){ s=null; }
   if(!s){ return next(); }
-  render(s);
-  timer=setTimeout(next, SECONDS*1000);
+  var dur = render(s);
+  timer=setTimeout(next, dur*1000);
 }
 
 function tickClock(){
