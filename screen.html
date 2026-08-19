@@ -188,7 +188,8 @@ body{
 }
 .body.len-2{font-size:clamp(.95rem,2.3vmin,1.8rem);max-width:58ch}
 .body.len-3{font-size:clamp(.9rem,2.05vmin,1.6rem);max-width:64ch;line-height:1.45}
-.slide.reveal .body{opacity:1;transform:none}
+.slide.reveal .body:not(.beat){opacity:1;transform:none}
+.slide.reveal .body:not(.beat) .w{opacity:1;transform:none}
 
 /* TWO BEATS
    A Right Now slide has two things to say and they are not the same kind of
@@ -212,6 +213,20 @@ body{
   margin-left:-2.4vmin;                 /* rule sits outside the text column */
 }
 .beats .beat{min-height:0}
+
+/* LINE CASCADE
+   Words are wrapped and grouped by the line they landed on, then each line
+   gets a delay. The paragraph writes itself on rather than appearing whole.
+
+   Deliberately quick — about half a second between lines. A reader finishes a
+   line in roughly a second, so a slow drip leaves them waiting on an unfinished
+   sentence, which reads as being held up rather than as movement. The cascade
+   is there to catch the eye, not to set the reading pace. */
+.w{
+  display:inline-block;opacity:0;transform:translateY(.6vmin);
+  transition:opacity .55s ease,transform .55s ease;
+}
+.on .w,.body.shown .w{opacity:1;transform:none}
 
 /* A long hit also wants a little of the bottom padding back. */
 .copy.tall{padding-bottom:6vmin}
@@ -306,6 +321,7 @@ body{
   .bg img,.slide.on .bg img{transform:none;transition:none;animation:none}
   .body,.slide.reveal .body{opacity:1;transform:none;transition:none}
   .beat{position:static;opacity:1;transform:none;transition:none}
+  .w{opacity:1 !important;transform:none !important;transition:none !important}
   .beat.spent{display:none}
   .beats{min-height:0 !important}
   #bar{transition:none}
@@ -800,6 +816,42 @@ function buildDeck(){
   return pool.length ? pool : [{type:'spotlight',make:slideSpotlight}];
 }
 
+/* Wrap every word in its own span, measure which rendered line each landed on,
+   then stagger by line. Walking text nodes rather than rewriting innerHTML
+   keeps the <b> emphasis the writers put in the quick hits. */
+var LINE_STEP = 0.42;      /* seconds between lines */
+var LINE_LEAD = 0.25;      /* before the first one */
+
+function cascade(el){
+  if(!el) return;
+  var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+  var nodes = [], n;
+  while((n = walker.nextNode())) if(n.nodeValue.trim()) nodes.push(n);
+
+  for(var i=0;i<nodes.length;i++){
+    var frag = document.createDocumentFragment();
+    var parts = nodes[i].nodeValue.split(/(\s+)/);
+    for(var j=0;j<parts.length;j++){
+      if(!parts[j]) continue;
+      if(/^\s+$/.test(parts[j])){ frag.appendChild(document.createTextNode(parts[j])); }
+      else {
+        var w = document.createElement('span');
+        w.className='w'; w.textContent=parts[j];
+        frag.appendChild(w);
+      }
+    }
+    nodes[i].parentNode.replaceChild(frag, nodes[i]);
+  }
+
+  /* group by vertical position — that's what a "line" actually is */
+  var words = el.querySelectorAll('.w'), line = -1, top = null;
+  for(var k=0;k<words.length;k++){
+    var t = words[k].offsetTop;
+    if(top === null || Math.abs(t - top) > 4){ line++; top = t; }
+    words[k].style.transitionDelay = (LINE_LEAD + line*LINE_STEP).toFixed(2)+'s';
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    PLAYER
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -848,6 +900,10 @@ function render(s){
     beats.style.minHeight = Math.max(h, 1) + 'px';
   }
 
+  /* split into lines once the type has actually laid out */
+  var texts = el.querySelectorAll('.body');
+  for(var ti=0; ti<texts.length; ti++) cascade(texts[ti]);
+
   /* let the browser paint at opacity 0 before fading in */
   requestAnimationFrame(function(){ requestAnimationFrame(function(){
     el.classList.add('on');
@@ -859,16 +915,17 @@ function render(s){
   clearTimeout(revealTimer); clearTimeout(turnTimer);
   var beatEls = el.querySelectorAll('.beat');
   if(beatEls.length === 2){
+    /* the note writes itself on almost immediately; the fact turns over it
+       past the middle, and cascades in its own turn */
     revealTimer = setTimeout(function(){
       el.classList.add('reveal'); beatEls[0].classList.add('on');
-    }, Math.round(SECONDS*1000*0.14));
+    }, 1400);
     turnTimer = setTimeout(function(){
       beatEls[0].classList.remove('on'); beatEls[0].classList.add('spent');
       beatEls[1].classList.add('on');
     }, Math.round(SECONDS*1000*0.55));
   } else {
-    revealTimer = setTimeout(function(){ el.classList.add('reveal'); },
-                             Math.round(SECONDS*1000*0.42));
+    revealTimer = setTimeout(function(){ el.classList.add('reveal'); }, 1400);
   }
 
   if(cur){
