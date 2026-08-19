@@ -604,7 +604,9 @@ function slideRightNow(r){
     + '<div class="headline">'+esc(r.common_name)+'</div>'
     + (r.scientific_name?'<div class="latin">'+esc(r.scientific_name)+'</div>':'')
     + body
-    + qrBlock(r, 'Scan for the full story', sp && sp.page)
+    /* No default QR here: a species page is a link to the thing the reader is
+       already standing next to. Bev can still force one with screen_qr. */
+    + qrBlock(r, 'Scan for the full story')
   };
 }
 
@@ -625,7 +627,7 @@ function slideSpotlight(){
       '<div class="eyebrow">From the collection</div>'
     + '<div class="headline">'+esc(s.common)+'</div>'
     + (s.sci?'<div class="latin">'+esc(s.sci)+'</div>':'')
-    + beatsMarkup(hits)
+    + beatsMarkup(hits)   /* no QR — same reasoning as Right Now */
   };
 }
 
@@ -996,6 +998,12 @@ function render(s){
       '<div class="bg">'+(s.bg?'<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'">':'')+'</div>'
     + '<div class="scrim"></div>'
     + '<div class="copy">'+s.html+'</div>';
+
+  /* .copy is position:relative, so a QR left inside it anchors to the text
+     column and lands mid-paragraph. Lift it out to sit against the slide.
+     On an ask it belongs in the flow, centred under the words — leave it. */
+  var qrNode = el.querySelector('.qr');
+  if(qrNode && !s.ask) el.appendChild(qrNode);
   el.style.setProperty('--kb', (dur+3)+'s');
 
   /* step each body down by length so nothing is ever clipped */
