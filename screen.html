@@ -392,12 +392,16 @@ var FEEDS   = BASE + 'data/published/';
    Push this number up and people stop looking. */
 var ASK_EVERY = MODE === 'office' ? 5 : 7;
 
-/* How much of the deck each type gets. Weights, not counts. */
+/* How much of the deck each type gets. Weights, not counts — a type with fewer
+   rows than its weight simply contributes fewer slides.
+
+   Note that right_now and spotlight are BOTH full-bleed species photographs.
+   Their weights add up as far as the eye is concerned, so keep the pair in
+   check rather than tuning either alone. */
 var WEIGHT = {
-  right_now:  MODE === 'office' ? 2 : 4,   // what to go look at, right now
-  spotlight:  8,                            // the collection, at random — the
-                                            // deep pool, so it carries the deck when
-                                            // the Sheet-driven feeds are thin
+  right_now:  MODE === 'office' ? 1 : 2,   // what to go look at, right now
+  spotlight:  MODE === 'office' ? 4 : 6,   // the collection, at random — the deep
+                                            // pool (320), so it carries a thin deck
   event:      3,
   news:       MODE === 'office' ? 3 : 2,
   klass:      2,
@@ -405,6 +409,17 @@ var WEIGHT = {
   volunteer:  MODE === 'office' ? 3 : 1,
   newsletter: 1
 };
+
+/* Types that LOOK alike, whatever their content. De-clumping works on these
+   rather than on type, so a Blooming Now doesn't sit next to a collection
+   photograph and read as two of the same slide. */
+var FAMILY = {
+  right_now:'species', spotlight:'species',
+  event:'schedule', klass:'schedule', series:'schedule',
+  news:'news', newsletter:'news',
+  volunteer:'people', ask:'ask'
+};
+function famOf(item){ return FAMILY[item.type] || item.type; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    DATA
@@ -972,12 +987,12 @@ function buildDeck(){
 
   shuffle(pool);
 
-  /* de-clump: never two of a type back to back */
+  /* de-clump: never two of a family back to back */
   for(i=1;i<pool.length;i++){
-    if(pool[i].type===pool[i-1].type){
+    if(famOf(pool[i])===famOf(pool[i-1])){
       for(var j=i+1;j<pool.length;j++){
-        if(pool[j].type!==pool[i-1].type &&
-           (j+1>=pool.length || pool[j+1].type!==pool[i].type)){
+        if(famOf(pool[j])!==famOf(pool[i-1]) &&
+           (j+1>=pool.length || famOf(pool[j+1])!==famOf(pool[i]))){
           var t=pool[i]; pool[i]=pool[j]; pool[j]=t; break;
         }
       }
