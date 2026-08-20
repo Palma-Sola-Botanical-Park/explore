@@ -160,6 +160,7 @@ body{
 }
 .eyebrow .where{color:var(--gold);opacity:.92;white-space:nowrap}
 .eyebrow .where::before{content:'→';margin-right:.42em;opacity:.75}
+.eyebrow .where.plain::before{content:'·';opacity:.5}
 .headline{
   font-family:var(--serif);font-weight:700;line-height:1.02;
   font-size:clamp(2.6rem,7.4vmin,7rem);letter-spacing:-.012em;
@@ -578,13 +579,38 @@ function niceDate(iso){
   return d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'});
 }
 
-function upcoming(rows,within){
+/* WHEN AN EVENT REACHES THE SCREEN
+   Ordinary events show inside a 28-day window — beyond that, "coming in three
+   months" is noise to somebody standing in the garden today.
+
+   Three ways to override, in order of precedence:
+     screen_from   an explicit YYYY-MM-DD. Absolute control.
+     save_the_date "Yes" opens the window to a full year. The flag already
+                   exists in the events tab and already means exactly this.
+     closes_park   "Yes" also gets the long window — a closure is something
+                   visitors need warning about, not news on the day.
+*/
+var NEAR_DAYS = 28, FAR_DAYS = 365;
+
+function daysUntil(iso){
   var now=new Date(); now.setHours(0,0,0,0);
-  return rows.filter(function(e){
-    if(!e.date) return false;
-    var d=new Date(e.date+'T12:00'), days=(d-now)/864e5;
-    return days>=0 && days<=within;
-  }).sort(function(a,b){ return a.date<b.date?-1:1; });
+  return (new Date(iso+'T12:00') - now)/864e5;
+}
+function yes(v){ return String(v||'').trim().toLowerCase() === 'yes'; }
+
+function eventWindow(e){
+  if(!e.date) return false;
+  var d = daysUntil(e.date);
+  if(d < 0) return false;
+  var from = (e.screen_from || '').trim();
+  if(from) return daysUntil(from) <= 0 && d <= FAR_DAYS;
+  if(yes(e.save_the_date) || yes(e.closes_park)) return d <= FAR_DAYS;
+  return d <= NEAR_DAYS;
+}
+
+function upcoming(rows){
+  return rows.filter(eventWindow)
+             .sort(function(a,b){ return a.date<b.date?-1:1; });
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -659,6 +685,7 @@ function slideEvent(e){
   if(e.time) bits.push(e.time);
   if(e.cost) bits.push(e.cost);
   if(e.kid_friendly==='Yes') bits.push('Kids welcome');
+  var far = daysUntil(e.date) > NEAR_DAYS;
   var poster = posterImage(e);
   var own = poster ? null : screenImage(e);
   var atm  = (poster || own) ? null : atmosPhoto();
@@ -671,7 +698,12 @@ function slideEvent(e){
     credit: (own || poster) ? null : creditFor(atm),
     html:
       dateStamp(e.date)
-    + (e.series?'<div class="eyebrow"><span>'+esc(e.series)+'</span></div>':'')
+    + (far || e.series
+        ? '<div class="eyebrow">'
+          + (far?'<span>'+(yes(e.closes_park)?'Park closed':'Save the date')+'</span>':'')
+          + (e.series?'<span class="where plain" style="color:var(--ink-invert)">'+esc(e.series)+'</span>':'')
+          + '</div>'
+        : '')
     + '<div class="headline">'+esc(e.title)+'</div>'
     + (e.description?'<div class="body">'+rich(e.description)+'</div>':'')
     + (bits.length?'<div class="meta"><span>'+bits.map(esc).join('</span><span>')+'</span></div>':'')
@@ -930,7 +962,7 @@ function buildDeck(){
   }
 
   add('right_now',  D.right_now,              slideRightNow,  WEIGHT.right_now);
-  add('event',      upcoming(D.events,28),    slideEvent,     WEIGHT.event);
+  add('event',      upcoming(D.events),       slideEvent,     WEIGHT.event);
   add('news',       D.news.slice().reverse(), slideNews,      WEIGHT.news);
   add('klass',      D.classes,                slideClass,     WEIGHT.klass);
   add('series',     D.series,                 slideSeries,    WEIGHT.series);
