@@ -345,6 +345,51 @@ body{
 .slide.ask .body{max-width:34ch}
 .slide.ask .emoji{font-size:7vmin;line-height:1;margin-bottom:2vmin}
 
+/* ── AMBIENT ─────────────────────────────────────────────────────────────
+   A photograph and nothing else. No eyebrow, no name, no fact — just the
+   frame, the credit, and ten seconds of quiet.
+
+   This is a rhythm device, not a content type. Every other slide asks the
+   visitor to read something; a room where the screen never stops talking is
+   exhausting to sit in. The gap is the point. */
+.slide.ambient .copy{display:none}
+.slide.ambient .scrim{
+  background:linear-gradient(to top,rgba(8,18,9,.55) 0%,rgba(8,18,9,.16) 34%,
+                             rgba(8,18,9,0) 62%);
+}
+
+/* ── COLLECTION ──────────────────────────────────────────────────────────
+   Five photographs as vertical panels, one grouping, one count. Every other
+   slide shows ONE thing; this one shows that the one thing belongs to a set —
+   sixty-five palms, fifty-six Florida natives, ten butterflies. It's the only
+   format that lets the collection read as a collection. */
+.collection{position:absolute;inset:0;z-index:1;display:grid;
+            grid-template-columns:repeat(5,1fr);gap:.35vmin}
+.collection div{overflow:hidden;background:var(--ground-2)}
+.collection img{width:100%;height:100%;object-fit:cover;transform:scale(1.05)}
+.slide.on .collection img{animation:kbIn var(--kb,24s) linear both}
+.slide.set .scrim{
+  background:linear-gradient(to top,rgba(8,18,9,.95) 0%,rgba(8,18,9,.80) 26%,
+                             rgba(8,18,9,.42) 52%,rgba(8,18,9,.14) 78%);
+}
+.count{
+  font-family:var(--serif);font-weight:700;line-height:.9;color:var(--gold);
+  font-size:clamp(2.4rem,8.5vmin,7rem);letter-spacing:-.02em;margin-bottom:.6vmin;
+}
+.count small{
+  display:block;font-family:var(--sans);font-size:2vmin;font-weight:700;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--gold);opacity:.85;
+  margin-top:.9vmin;
+}
+.roster{
+  font-size:clamp(.95rem,2.35vmin,1.8rem);line-height:1.5;font-weight:300;
+  color:var(--ink-invert);margin-top:2.4vmin;max-width:52ch;
+}
+.shot{
+  margin-top:2.6vmin;font-size:1.5vmin;font-weight:600;letter-spacing:.12em;
+  color:var(--gold-deep);
+}
+
 /* ── PARTNER LOGOS ───────────────────────────────────────────────────────
    A partner logo is a CREDIT, not a takeover. On an event or a class the
    organisation is teaching or hosting, not sponsoring the screen — so the mark
@@ -470,11 +515,18 @@ var CAP = { event:4, news:2, klass:2, series:1, volunteer:2, newsletter:1, right
    can't be periodised. A flat count, tuned against everything else. */
 var SPOTLIGHTS = MODE === 'office' ? 4 : 5;
 
+/* Two per cycle each — enough to change the rhythm, not enough to become the
+   rhythm. The point of both is that they are a break from the pattern. */
+var AMBIENTS   = MODE === 'office' ? 1 : 2;
+var COLLECTIONS = 2;
+
 /* Types that LOOK alike, whatever their content. De-clumping works on these
    rather than on type, so a Blooming Now doesn't sit next to a collection
    photograph and read as two of the same slide. */
 var FAMILY = {
   right_now:'species', spotlight:'species',
+  ambient:'quiet', collection:'quiet',   /* both are photo-led breaks — keep
+                                            them apart from each other too */
   event:'schedule', klass:'schedule', series:'schedule',
   news:'news', newsletter:'news',
   volunteer:'people', ask:'ask'
@@ -1117,6 +1169,76 @@ function qrBlock(row, caption, fallback){
     + '</div>';
 }
 
+/* ── ambient ─────────────────────────────────────────────────────────────── */
+function slideAmbient(){
+  var pool = D.plants.concat(D.wildlife).filter(function(x){ return x.photo; });
+  if(!pool.length) return null;
+  var s = pick(pool);
+  return {
+    bg: BASE+s.photo, focus: s.focus, ambient:true,
+    credit: creditFor(s),
+    seconds: Math.round(SECONDS * 0.65),   /* a breath, not a dwell */
+    html: ''
+  };
+}
+
+/* ── collection ──────────────────────────────────────────────────────────
+   Groupings are built from fields the search index already carries, so this
+   needs no new data at all. A group qualifies at six species — below that the
+   count isn't impressive and the montage looks thin. */
+var GROUPS = null;
+function buildGroups(){
+  var all = D.plants.concat(D.wildlife).filter(function(x){ return x.photo; });
+  var g = [];
+
+  function add(label, sub, rows){
+    if(rows.length >= 6) g.push({ label:label, sub:sub, rows:rows });
+  }
+  function by(field, fmt, sub){
+    var m = {};
+    all.forEach(function(x){ var k=x[field]; if(k) (m[k]=m[k]||[]).push(x); });
+    for(var k in m) add(fmt(k), sub, m[k]);
+  }
+
+  by('family', function(k){ return 'The ' + k + ' family'; }, 'in the collection');
+  by('form',   function(k){ return k.replace(' & ',' and ') + 's'; }, 'in the collection');
+  by('cat',    function(k){ return k; }, 'in the collection');
+  by('theme',  function(k){ return k.charAt(0).toUpperCase()+k.slice(1) + 's'; }, 'recorded here');
+
+  add('Florida natives', 'growing here', all.filter(function(x){ return x.native; }));
+  add('Nectar plants', 'for butterflies and bees', all.filter(function(x){ return x.nectar; }));
+  add('Butterfly host plants', 'where caterpillars feed', all.filter(function(x){ return x.larval_host; }));
+  add('Rare fruit', 'from the Rare Fruit Trail', all.filter(function(x){ return x.rare_fruit; }));
+  return g;
+}
+
+function slideCollection(){
+  if(!GROUPS) GROUPS = buildGroups();
+  if(!GROUPS.length) return null;
+  var g = takeFrom('collection', GROUPS, 1)[0];
+  if(!g) return null;
+
+  var shots = shuffle(g.rows.slice()).slice(0,5);
+  var names = shuffle(g.rows.slice()).slice(0,4)
+                .map(function(x){ return x.common; }).filter(Boolean);
+  var who = [];
+  shots.forEach(function(x){
+    var n = x.credit_name || x.credit;
+    if(n && who.indexOf(n) < 0) who.push(n);
+  });
+
+  return {
+    set:true,
+    grid: shots.map(function(x){ return { src: BASE+x.photo, focus: x.focus }; }),
+    seconds: Math.round(SECONDS * 1.15),
+    html:
+        '<div class="count">'+g.rows.length+'<small>'+esc(g.sub)+'</small></div>'
+      + '<div class="headline">'+esc(g.label)+'</div>'
+      + (names.length?'<div class="roster">'+esc(names.join('  ·  '))+'</div>':'')
+      + (who.length?'<div class="shot">Photographs by '+esc(who.join(', '))+'</div>':'')
+  };
+}
+
 /* Asks get the centred treatment and a dimmed photograph behind. */
 function slideAsk(a){
   var pool = D.plants.filter(function(s){ return s.photo; });
@@ -1220,7 +1342,9 @@ function buildDeck(){
   add('series',     D.series,                 slideSeries);
   add('volunteer',  D.volunteer,              slideVolunteer);
   add('newsletter', D.newsletters,            slideNewsletter);
-  for(i=0;i<SPOTLIGHTS;i++) pool.push({type:'spotlight',make:slideSpotlight});
+  for(i=0;i<SPOTLIGHTS;i++)  pool.push({type:'spotlight', make:slideSpotlight});
+  for(i=0;i<AMBIENTS;i++)    pool.push({type:'ambient',   make:slideAmbient});
+  for(i=0;i<COLLECTIONS;i++) pool.push({type:'collection',make:slideCollection});
 
   pool = interleave(pool);
 
@@ -1296,7 +1420,8 @@ var lastKB = '';
 function render(s){
   var dur = s.seconds || SECONDS;
   var el=document.createElement('div');
-  el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'');
+  el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'')
+             +(s.ambient?' ambient':'')+(s.set?' set':'');
 
   /* pick a motion, never the same one twice running */
   var moves = KB.filter(function(k){ return k!==lastKB; });
@@ -1305,8 +1430,19 @@ function render(s){
   /* the curated focus point, straight from the search index */
   var pos = s.focus ? ' style="object-position:'+s.focus.replace(/"/g,'')+'"' : '';
 
-  el.innerHTML =
-      '<div class="bg">'+(s.bg?'<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'">':'')+'</div>'
+  var grid = '';
+  if(s.grid){
+    grid = '<div class="collection">';
+    for(var gi=0; gi<s.grid.length; gi++){
+      grid += '<div><img alt="" src="'+s.grid[gi].src+'"'
+            + (s.grid[gi].focus?' style="object-position:'+s.grid[gi].focus.replace(/"/g,'')+'"':'')
+            + '></div>';
+    }
+    grid += '</div>';
+  }
+
+  el.innerHTML = grid
+    + '<div class="bg">'+(s.bg?'<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'">':'')+'</div>'
     + '<div class="scrim"></div>'
     + '<div class="copy">'+s.html+'</div>'
     + (s.poster?'<div class="poster-art"><img alt="" src="'+s.poster+'"></div>':'');
