@@ -55,6 +55,9 @@
   --serif:'Playfair Display',Georgia,serif;
   --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
   --frame:2.6vmin;          /* inset of the gold frame */
+  --pad:4.4vmin;            /* everything inside it shares this margin, so the
+                               wordmark, the copy, the credit and the poster
+                               all sit on the same two lines */
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -72,13 +75,13 @@ body{
   pointer-events:none;z-index:40;
 }
 .wordmark{
-  position:fixed;top:calc(var(--frame) - .95em);left:calc(var(--frame) + 2.4vmin);
+  position:fixed;top:calc(var(--frame) - .95em);left:calc(var(--frame) + var(--pad));
   z-index:41;background:var(--ground);padding:0 1.8vmin;
   font-size:2.5vmin;font-weight:700;letter-spacing:.3em;text-transform:uppercase;
   color:var(--gold);white-space:nowrap;
 }
 .clock{
-  position:fixed;top:calc(var(--frame) - .95em);right:calc(var(--frame) + 2.4vmin);
+  position:fixed;top:calc(var(--frame) - .95em);right:calc(var(--frame) + var(--pad));
   z-index:41;background:var(--ground);padding:0 1.8vmin;
   font-size:2.5vmin;font-weight:600;letter-spacing:.16em;
   color:var(--paper);white-space:nowrap;
@@ -92,7 +95,7 @@ body{
    the licence and date underneath. Sits inside the frame rather than breaking
    the rule, because it is now three lines rather than a caption. */
 .credit{
-  position:fixed;right:calc(var(--frame) + 3.4vmin);bottom:calc(var(--frame) + 3.2vmin);
+  position:fixed;right:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 3.2vmin);
   z-index:41;text-align:right;opacity:0;transition:opacity .8s;
   text-shadow:0 1px 14px rgba(0,0,0,.6);
 }
@@ -152,7 +155,7 @@ body{
 
 .copy{
   position:relative;z-index:3;
-  padding:0 0 8.5vmin calc(var(--frame) + 5.2vmin);
+  padding:0 0 8.5vmin calc(var(--frame) + var(--pad));
   max-width:72vw;
 }
 /* The eyebrow carries the location now. Splitting "Blooming now" from "Near
@@ -192,8 +195,10 @@ body{
 .body{
   font-size:clamp(1rem,2.6vmin,2.05rem);line-height:1.5;font-weight:300;
   color:var(--ink-invert);margin-top:2.4vmin;max-width:52ch;
-  min-height:4.5em;                 /* three lines reserved — the reveal never
-                                       shifts the block above it */
+  /* No reserved height. The element sits in the layout whether or not it has
+     faded in, so nothing below it moves — and reserving three lines for a
+     one-line description punched a visible hole above the meta row. The beats
+     container still reserves height, because ITS children are absolute. */
   opacity:0;transform:translateY(1.1vmin);
   transition:opacity 1.15s ease,transform 1.15s ease;
 }
@@ -301,7 +306,7 @@ body{
 .slide.poster .copy{max-width:46vw;padding-bottom:0}
 .poster-art{
   position:absolute;z-index:4;
-  right:calc(var(--frame) + 4vmin);top:calc(var(--frame) + 3vmin);
+  right:calc(var(--frame) + var(--pad));top:calc(var(--frame) + 3vmin);
   bottom:calc(var(--frame) + 3vmin);
   /* width:auto — a fixed-width panel leaves empty box either side of a
      portrait image, and the left-hand emptiness reads as a gap in the middle
@@ -334,6 +339,34 @@ body{
 }
 .slide.ask .body{max-width:34ch}
 .slide.ask .emoji{font-size:7vmin;line-height:1;margin-bottom:2vmin}
+
+/* ── PARTNER LOGOS ───────────────────────────────────────────────────────
+   A partner logo is a CREDIT, not a takeover. On an event or a class the
+   organisation is teaching or hosting, not sponsoring the screen — so the mark
+   sits at the foot of the text column at credit scale, under a small label,
+   exactly like the photographer credit. On an announcement it takes the
+   emoji's place instead, because there it IS the slide's icon.
+
+   The white plate is not decoration: most organisational logos are dark-on-
+   transparent and would vanish on this ground. Plating every one of them means
+   any logo dropped in the folder works without special-casing. */
+.logo{display:flex;flex-direction:column;gap:1vmin;margin-top:3.4vmin}
+.logo .lbl{
+  font-size:1.4vmin;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);
+}
+.logo-plate{
+  background:var(--paper);border-radius:.7vmin;padding:1.2vmin 1.8vmin;
+  align-self:flex-start;line-height:0;
+  box-shadow:0 .4vmin 2vmin rgba(0,0,0,.45);
+}
+.logo-plate img{display:block;width:auto;height:auto;max-width:26vmin;max-height:6.5vmin}
+
+/* On an ask it stands in for the emoji — bigger, centred, above the headline */
+.slide.ask .logo{align-items:center;margin:0 0 2.4vmin}
+.slide.ask .logo .lbl{margin-bottom:.4vmin}
+.slide.ask .logo-plate{align-self:center;padding:1.8vmin 2.6vmin}
+.slide.ask .logo-plate img{max-width:38vmin;max-height:11vmin}
 
 /* ── QR ──────────────────────────────────────────────────────────────────
    A screen can't be clicked, so any slide whose value is a link needs a code
@@ -799,6 +832,7 @@ function slideEvent(e){
     + '<div class="headline">'+esc(e.title)+'</div>'
     + (e.description?'<div class="body">'+rich(e.description)+'</div>':'')
     + (bits.length?'<div class="meta"><span>'+bits.map(esc).join('</span><span>')+'</span></div>':'')
+    + logoBlock(e, 'With')
     + qrBlock(e, e.registration_url ? 'Scan to register' : 'Scan for details', e.registration_url || e.link_url)
   };
 }
@@ -825,6 +859,7 @@ function slideClass(c){
     + '<div class="meta">'
     + (c.instructor?'<span>'+esc(c.instructor)+'</span>':'')
     + (c.cost?'<span>'+esc(c.cost)+'</span>':'')+'</div>'
+    + logoBlock(c, 'With')
     + qrBlock(c, 'Scan for details', c.registration_url || c.link_url)
   };
 }
@@ -847,6 +882,7 @@ function slideNews(n){
     + '<div class="headline">'+esc(n.headline)+'</div>'
     + (n.subhead?'<div class="subhead">'+rich(n.subhead)+'</div>':'')
     + beatsMarkup(beats)
+    + logoBlock(n, 'With thanks to')
     + qrBlock(n, 'Scan to read the story', n.link_url)
   };
 }
@@ -862,6 +898,7 @@ function slideSeries(s){
       '<div class="eyebrow">'+esc(s.category||'Series')+'</div>'
     + '<div class="headline">'+esc(s.name)+'</div>'
     + (s.blurb?'<div class="body">'+rich(s.blurb)+'</div>':'')
+    + logoBlock(s, 'In partnership with')
     + qrBlock(s, 'Scan for the schedule', s.flyer_url)
   };
 }
@@ -874,6 +911,7 @@ function slideVolunteer(v){
       '<div class="eyebrow">'+esc(v.role||'Volunteer')+'</div>'
     + '<div class="headline">'+esc(v.title)+'</div>'
     + (v.body?'<div class="body">'+rich(v.body)+'</div>':'')
+    + logoBlock(v, 'With')
     + qrBlock(v, 'Scan to sign up', v.link_url)
   };
 }
@@ -943,6 +981,45 @@ function screenImage(row){
   var v = (row.screen_image || row.screen_img || row.image_url || '').trim();
   if(!v) return null;
   return /^https?:/i.test(v) ? v : BASE + v.replace(/^\//,'');
+}
+
+/* SIZING LOGOS BY AREA, NOT BY HEIGHT OR WIDTH
+   Real organisational logos run from about 2:1 to 7:1. Cap them all by height
+   and the wide ones sprawl; cap by width and the squarish ones shrink to
+   nothing. Neither looks deliberate when two appear on consecutive slides.
+
+   So each is scaled to roughly the same PRINTED AREA — width = √(area × ratio),
+   height = √(area ÷ ratio) — which is how the eye judges "same size" across
+   different shapes. Measured after load, since the ratio isn't known until the
+   image arrives. Max-width and max-height still act as a backstop. */
+function sizeLogos(el){
+  var imgs = el.querySelectorAll('.logo-plate img');
+  for(var i=0;i<imgs.length;i++){
+    (function(img){
+      var isAsk = !!img.closest('.slide.ask');
+      var area  = isAsk ? 150 : 62;        /* vmin² */
+      function apply(){
+        var r = img.naturalWidth / img.naturalHeight;
+        if(!r || !isFinite(r)) return;
+        img.style.width  = Math.sqrt(area * r).toFixed(2) + 'vmin';
+        img.style.height = 'auto';
+      }
+      if(img.complete && img.naturalWidth) apply();
+      else img.addEventListener('load', apply);
+    })(imgs[i]);
+  }
+}
+
+/* A partner or sponsor mark. Repo path or full URL, same as the others. */
+function logoBlock(row, defaultLabel){
+  var v = (row.screen_logo || row.logo_url || row.partner_logo || '').trim();
+  if(!v) return '';
+  var src = /^https?:/i.test(v) ? v : BASE + v.replace(/^\//,'');
+  var label = (row.logo_label || defaultLabel || '').trim();
+  return '<div class="logo">'
+    + (label?'<span class="lbl">'+esc(label)+'</span>':'')
+    + '<span class="logo-plate"><img alt="" src="'+src+'"></span>'
+    + '</div>';
 }
 
 /* A flyer or poster: shown whole rather than cropped as a backdrop. */
@@ -1021,7 +1098,7 @@ function slideAsk(a){
     bg: posterImage(a) ? null : (screenImage(a) || (pool.length ? BASE+pick(pool).photo : null)),
     credit:'',
     html:
-      (a.emoji?'<div class="emoji">'+a.emoji+'</div>':'')
+      (logoBlock(a, a.logo_label || '') || (a.emoji?'<div class="emoji">'+a.emoji+'</div>':''))
     + '<div class="headline">'+esc(a.title)+'</div>'
     + (a.body?'<div class="body">'+rich(a.body)+'</div>':'')
     + (a.link_text?'<div class="meta"><span>'+esc(a.link_text)+'</span></div>':'')
@@ -1233,6 +1310,8 @@ function render(s){
     for(k=0;k<kids.length;k++) h = Math.max(h, kids[k].offsetHeight);
     beats.style.minHeight = Math.max(h, 1) + 'px';
   }
+
+  sizeLogos(el);
 
   /* split into lines once the type has actually laid out */
   var texts = el.querySelectorAll('.body');
