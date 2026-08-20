@@ -458,7 +458,9 @@ function loadAll(){
     grab(FEEDS+'announcements.json'), grab(FEEDS+'volunteer.json'),
     grab(FEEDS+'series.json'),    grab(FEEDS+'newsletters.json'),
     grab(BASE+'plants.json'),     grab(BASE+'wildlife.json'),
-    grab(BASE+'data/sources/photo_credits.json')
+    grab(BASE+'data/sources/photo_credits.json'),
+    grab(BASE+'data/sources/plant_signage.json'),
+    grab(BASE+'data/sources/wildlife_signage.json')
   ]).then(function(r){
     D.right_now=onScreen(r[0]); D.events=onScreen(r[1]);
     D.classes=onScreen(r[2]);   D.news=onScreen(r[3]);
@@ -466,8 +468,34 @@ function loadAll(){
     D.series=onScreen(r[6]);    D.newsletters=onScreen(r[7]);
     D.plants=r[8]||[];          D.wildlife=r[9]||[];
     indexCredits(r[10]);
+    indexHits(r[11]); indexHits(r[12]);
     if(!D.right_now.length && !D.plants.length) fallback();
   });
+}
+
+/* QUICK HITS COME FROM THE SIGNAGE MASTERS, NOT THE SEARCH INDEX.
+   The index flattens the quick_hits array into one space-joined string for
+   search scoring, which is right for search and useless here — there is no way
+   to tell where one hit ends, so the screen was splitting on sentences and
+   tearing hits in half ("Florida got this species by accident." and then the
+   rest of it, lost).
+
+   The signage files are the source of truth and carry the array intact. They
+   are large (2.8 MB together) but this is a wired-in TV on purpose-built wifi,
+   and only the quick_hits are kept — everything else is dropped the moment it
+   is parsed, so the resident cost is small. It also means an edit reaches the
+   wall as soon as the file is saved, with no republish in between.
+
+   If the publisher ever emits a real `quick_hits` array in the index, that is
+   preferred automatically and these two fetches can be deleted. */
+var HITS = {};
+function indexHits(blob){
+  var rows = (blob && blob.species) || blob || [];
+  for(var i=0;i<rows.length;i++){
+    var r = rows[i];
+    if(r && r.id && r.quick_hits && r.quick_hits.length) HITS[r.id] = r.quick_hits;
+  }
+  /* `rows` goes out of scope here; only the arrays above are retained. */
 }
 
 /* photo_id -> {observed_on, license, name}. The search index carries the
@@ -555,26 +583,45 @@ function sentences(text){
   return out;
 }
 
-/* `quick` in the search index is the three or four quick-hits joined into one
-   string — 300 to 800 characters, far too much for a wall. Split it back apart. */
-function hitsOf(text){
-  return sentences(text).filter(function(t){ return t.trim().length>25; });
+/* `quick` in the search index is the quick-hits array joined into one string.
+   A hit is a written unit — 47% of them run to two or three sentences — so
+   splitting on sentence boundaries tears them apart and produces fragments
+   that read as continuations ("The founding group is believed to have…").
+   That was the cause of most of the non-standalone lines on screen; the
+   writing was fine.
+
+   If the index supplies a delimiter, honour it. Sentence-splitting is only the
+   fallback for the old format. See plant_publisher.py line ~184: joining with
+   " || " instead of " " restores the boundaries and costs nothing. */
+function hitsOf(sp){
+  if(!sp) return [];
+  /* 1. the index already carries the array (publisher updated) */
+  if(sp.quick_hits && sp.quick_hits.length) return sp.quick_hits.slice();
+  /* 2. the signage master, loaded above — the normal path today */
+  if(sp.id && HITS[sp.id]) return HITS[sp.id].slice();
+  /* 3. a delimited string */
+  var t = String(sp.quick || '');
+  if(t.indexOf('||') > -1){
+    return t.split('||').map(function(x){ return x.trim(); })
+            .filter(function(x){ return x.length > 25; });
+  }
+  /* 4. last resort: split the flattened string and accept the seams */
+  return sentences(t).filter(function(x){ return x.trim().length>25; });
 }
 
 /* Two of them, different from each other, in random order. A species now says
    two things per appearance instead of one — and picks a different pair the
    next time it comes round. */
-function twoHits(text){
-  var parts = hitsOf(text);
+function twoHits(sp){
+  var parts = hitsOf(sp);
   if(parts.length <= 1) return parts.length ? [parts[0]] : [];
   var a = Math.floor(Math.random()*parts.length), b;
   do { b = Math.floor(Math.random()*parts.length); } while(b === a);
   return [parts[a], parts[b]];
 }
 
-function oneHit(text){
-  if(!text) return '';
-  var parts = hitsOf(text);
+function oneHit(sp){
+  var parts = hitsOf(sp);
   if(!parts.length) return String(text);
   var s = pick(parts);
   /* a very short hit reads thin on a big screen — pair it with its neighbour */
@@ -661,7 +708,7 @@ function slideRightNow(r){
   /* quick_hits ride along in the right_now feed; fall back to the species
      record's joined `quick` string if the row hasn't got them. */
   var hits = (r.quick_hits && r.quick_hits.length) ? r.quick_hits
-           : (sp ? hitsOf(sp.quick) : []);
+           : hitsOf(sp);
   var fact = freshHit(r.psbp_id || r.common_name, hits);
 
   var list = [note, fact].filter(Boolean);
@@ -692,7 +739,7 @@ function slideSpotlight(){
   var s = pick(pool);
   seenSpecies.push(s.id);
   if(seenSpecies.length > Math.floor(all.length * 0.6)) seenSpecies.shift();
-  var hits = twoHits(s.quick);
+  var hits = twoHits(s);
   return {
     bg: BASE+s.photo, focus: s.focus,
     credit: creditFor(s),
