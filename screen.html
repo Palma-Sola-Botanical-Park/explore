@@ -173,6 +173,11 @@ body{
   font-family:var(--serif);font-weight:700;line-height:1.02;
   font-size:clamp(2.6rem,7.4vmin,7rem);letter-spacing:-.012em;
   text-shadow:0 2px 26px rgba(0,0,0,.45);
+  /* Break display type into even lines rather than filling each one to the
+     edge. "Fall Plant & Garden / Festival" becomes "Fall Plant & / Garden
+     Festival". Ignored by browsers that don't know it, which just fall back
+     to the ragged break. */
+  text-wrap:balance;
 }
 .subhead{
   font-family:var(--serif);font-weight:400;
@@ -264,7 +269,7 @@ body{
    carried at display size with the weekday and month set against it. TODAY and
    TOMORROW replace the numeral outright, because on a screen in the park those
    are the only two words that change what somebody does next. */
-.stamp{display:flex;align-items:center;gap:2vmin;margin-bottom:2.4vmin}
+.stamp{display:flex;align-items:center;gap:2vmin;margin-bottom:3.4vmin}
 .stamp .num{
   font-family:var(--serif);font-weight:700;line-height:.86;
   font-size:clamp(2.6rem,9.5vmin,8rem);color:var(--gold);
@@ -811,16 +816,11 @@ function slideEvent(e){
   if(e.cost) bits.push(e.cost);
   if(e.kid_friendly==='Yes') bits.push('Kids welcome');
   var far = daysUntil(e.date) > NEAR_DAYS;
-  var poster = posterImage(e);
-  var own = poster ? null : screenImage(e);
-  var atm  = (poster || own) ? null : atmosPhoto();
+  var art = artFor(e);
   return {
-    bg: own || (atm ? BASE+atm.photo : null),
-    focus: own ? null : (atm && atm.focus),
-    atmos: !own && !poster && !!atm,
-    poster: poster,
-    seconds: poster ? Math.round(SECONDS * 1.6) : null,
-    credit: (own || poster) ? null : creditFor(atm),
+    bg: art.bg, focus: art.focus, atmos: art.atmos,
+    poster: art.poster, credit: art.credit,
+    seconds: art.poster ? Math.round(SECONDS * 1.6) : null,
     html:
       dateStamp(e.date)
     + (far || e.series
@@ -840,13 +840,12 @@ function slideEvent(e){
 var DOW = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',
            Fri:'Friday',Sat:'Saturday',Sun:'Sunday'};
 function slideClass(c){
-  var own = screenImage(c), atm = own ? null : atmosPhoto();
+  var art = artFor(c);
   var day = DOW[c.weekday] || c.weekday || 'Weekly';
   return {
-    bg: own || (atm ? BASE+atm.photo : null),
-    focus: own ? null : (atm && atm.focus),
-    atmos: !own && !!atm,
-    credit: own ? null : creditFor(atm),
+    bg: art.bg, focus: art.focus, atmos: art.atmos,
+    poster: art.poster, credit: art.credit,
+    seconds: art.poster ? Math.round(SECONDS * 1.6) : null,
     html:
       '<div class="stamp">'
     +   '<span class="num word">Every</span>'
@@ -868,15 +867,13 @@ function slideNews(n){
   /* Headline and subhead hold still — they're the identity of the story.
      Blurb, intro and body2 take turns underneath. */
   var beats = beatsFrom([n.blurb, n.intro, n.body2], 3);
-  var own = screenImage(n) || (n.hero_image ? BASE+n.hero_image : null);
-  var atm = own ? null : atmosPhoto();
+  var art = artFor(n, n.hero_image ? BASE+n.hero_image : null);
   return {
-    bg: own || (atm ? BASE+atm.photo : null),
-    focus: own ? null : (atm && atm.focus),
-    atmos: !own && !!atm,
-    credit: own ? null : creditFor(atm),
+    bg: art.bg, focus: art.focus, atmos: art.atmos,
+    poster: art.poster, credit: art.credit,
     /* a story with three turns needs longer than a species photo */
-    seconds: beats.length > 1 ? Math.round(SECONDS * (1 + 0.45*(beats.length-1))) : SECONDS,
+    seconds: art.poster ? Math.round(SECONDS * 1.6)
+           : (beats.length > 1 ? Math.round(SECONDS * (1 + 0.45*(beats.length-1))) : SECONDS),
     html:
       '<div class="eyebrow"><span>Park news</span></div>'
     + '<div class="headline">'+esc(n.headline)+'</div>'
@@ -888,12 +885,11 @@ function slideNews(n){
 }
 
 function slideSeries(s){
-  var own = screenImage(s), atm = own ? null : atmosPhoto();
+  var art = artFor(s);
   return {
-    bg: own || (atm ? BASE+atm.photo : null),
-    focus: own ? null : (atm && atm.focus),
-    atmos: !own && !!atm,
-    credit: own ? null : creditFor(atm),
+    bg: art.bg, focus: art.focus, atmos: art.atmos,
+    poster: art.poster, credit: art.credit,
+    seconds: art.poster ? Math.round(SECONDS * 1.6) : null,
     html:
       '<div class="eyebrow">'+esc(s.category||'Series')+'</div>'
     + '<div class="headline">'+esc(s.name)+'</div>'
@@ -904,9 +900,13 @@ function slideSeries(s){
 }
 
 function slideVolunteer(v){
+  var vArt = artFor(v, v.photo_url
+    ? (/^https?:/.test(v.photo_url) ? v.photo_url : BASE+v.photo_url.replace(/^\//,''))
+    : null);
   return {
-    bg: screenImage(v) || (v.photo_url ? (/^https?:/.test(v.photo_url)?v.photo_url:BASE+v.photo_url.replace(/^\//,'')) : null),
-    credit:'',
+    bg: vArt.bg, focus: vArt.focus, atmos: vArt.atmos,
+    poster: vArt.poster, credit: vArt.credit,
+    seconds: vArt.poster ? Math.round(SECONDS * 1.6) : null,
     html:
       '<div class="eyebrow">'+esc(v.role||'Volunteer')+'</div>'
     + '<div class="headline">'+esc(v.title)+'</div>'
@@ -917,12 +917,11 @@ function slideVolunteer(v){
 }
 
 function slideNewsletter(n){
-  var own = screenImage(n), atm = own ? null : atmosPhoto();
+  var art = artFor(n);
   return {
-    bg: own || (atm ? BASE+atm.photo : null),
-    focus: own ? null : (atm && atm.focus),
-    atmos: !own && !!atm,
-    credit: own ? null : creditFor(atm),
+    bg: art.bg, focus: art.focus, atmos: art.atmos,
+    poster: art.poster, credit: art.credit,
+    seconds: art.poster ? Math.round(SECONDS * 1.6) : null,
     html:
       '<div class="eyebrow">Newsletter · '+esc(niceDate(n.date)||n.title)+'</div>'
     + '<div class="headline">'+esc(n.title)+'</div>'
@@ -1027,6 +1026,21 @@ function posterImage(row){
   var v = (row.screen_poster || row.poster_url || row.flyer_image || '').trim();
   if(!v) return null;
   return /^https?:/i.test(v) ? v : BASE + v.replace(/^\//,'');
+}
+
+/* One resolver for all three image columns, so every slide type behaves the
+   same way: a poster wins, then the row's own backdrop, then a photograph from
+   the collection as atmosphere. Returns the fields a slide needs.
+   `fallback` lets a slide keep its existing default (news hero_image,
+   volunteer photo_url) ahead of the atmospheric pick. */
+function artFor(row, fallback){
+  var poster = posterImage(row);
+  if(poster) return { poster:poster, bg:null, focus:null, atmos:false, credit:null };
+  var own = screenImage(row) || fallback || null;
+  if(own) return { poster:null, bg:own, focus:null, atmos:false, credit:null };
+  var atm = atmosPhoto();
+  return { poster:null, bg: atm ? BASE+atm.photo : null,
+           focus: atm && atm.focus, atmos: !!atm, credit: creditFor(atm) };
 }
 
 /* A photograph from the collection, for slides with nothing of their own. */
