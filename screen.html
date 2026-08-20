@@ -666,26 +666,8 @@ function hitsOf(sp){
    short memory of the hits it has already used and works through the rest
    before any come back. With a median of five or six hits per species that's
    ten to fifteen distinct pairings before anything repeats. */
-var usedHits = {};
 function twoHits(sp){
-  var parts = hitsOf(sp);
-  if(parts.length <= 1) return parts.length ? [parts[0]] : [];
-
-  var key = sp.id || sp.common || '?';
-  var used = usedHits[key] || (usedHits[key] = []);
-  var fresh = parts.filter(function(h){ return used.indexOf(h) < 0; });
-  /* everything has been shown — start the rotation over */
-  if(fresh.length < 2){ used.length = 0; fresh = parts.slice(); }
-
-  var a = pick(fresh);
-  var rest = fresh.filter(function(h){ return h !== a; });
-  var b = rest.length ? pick(rest) : pick(parts.filter(function(h){ return h !== a; }));
-
-  used.push(a); if(b) used.push(b);
-  /* never hold more than the species has, so the memory can't outgrow the pool */
-  while(used.length > parts.length - 1) used.shift();
-
-  return b ? [a, b] : [a];
+  return rotate('sp:'+(sp.id || sp.common || '?'), hitsOf(sp), 2);
 }
 
 function oneHit(sp){
@@ -767,16 +749,31 @@ function upcoming(rows){
 var KIND_LABEL = { blooming:'Blooming now', budding:'About to bloom',
   fruiting:'Fruiting now', fading:'Last chance', sighting:'Seen recently' };
 
-/* Don't hand back the same fact two appearances running. */
-var lastFact = {};
-function freshHit(id, hits){
-  if(!hits || !hits.length) return '';
-  var pool = hits.filter(function(h){ return h !== lastFact[id]; });
-  if(!pool.length) pool = hits;
-  var h = pick(pool);
-  lastFact[id] = h;
-  return h;
+/* ROTATION, not random-with-one-step-memory.
+   Avoiding only the previous pick still lets one hit surface again and again
+   while another goes months unseen — with four hits that is a one-in-three
+   chance every appearance, which is exactly why Beautyberry kept opening with
+   the same line. This works through everything a species has before any of it
+   comes back. Shared by Right Now and the collection spotlights. */
+var usedHits = {};
+function rotate(key, list, n){
+  if(!list || !list.length) return [];
+  n = Math.min(n || 1, list.length);
+  var used = usedHits[key] || (usedHits[key] = []);
+  var out = [];
+  while(out.length < n){
+    var fresh = list.filter(function(h){ return used.indexOf(h) < 0 && out.indexOf(h) < 0; });
+    if(!fresh.length){ used.length = 0; fresh = list.filter(function(h){ return out.indexOf(h) < 0; }); }
+    if(!fresh.length) break;
+    var h = pick(fresh);
+    out.push(h); used.push(h);
+  }
+  /* keep the memory just short of the pool so there's always something fresh */
+  while(used.length > list.length - 1) used.shift();
+  return out;
 }
+
+function freshHit(id, hits){ return rotate('rn:'+id, hits, 1)[0] || ''; }
 
 function slideRightNow(r){
   var sp = r.psbp_id ? speciesById(r.psbp_id) : null;
