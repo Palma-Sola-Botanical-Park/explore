@@ -54,6 +54,8 @@
   --rule:rgba(234,188,90,.34);
   --serif:'Playfair Display',Georgia,serif;
   --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
+  --fade:1.1s;              /* cross-fade between slides — scaled by ?speed */
+  --turn:.85s;              /* beat turn within a slide */
   --frame:2.6vmin;          /* inset of the gold frame */
   --pad:4.4vmin;            /* everything inside it shares this margin, so the
                                wordmark, the copy, the credit and the poster
@@ -116,7 +118,7 @@ body{
 /* ── stage ───────────────────────────────────────────────────────────────── */
 #stage{position:fixed;inset:0;z-index:1}
 .slide{
-  position:absolute;inset:0;opacity:0;transition:opacity 1.1s ease;
+  position:absolute;inset:0;opacity:0;transition:opacity var(--fade) ease;
   display:flex;align-items:flex-end;
 }
 .slide.on{opacity:1}
@@ -225,12 +227,12 @@ body{
 .beat{
   position:absolute;left:0;top:0;right:0;
   opacity:0;transform:translateY(1.2vmin);
-  transition:opacity .85s ease,transform .85s ease;
+  transition:opacity var(--turn) ease,transform var(--turn) ease;
 }
 .beat.on{opacity:1;transform:none}
 .beat.spent{
   opacity:0;transform:translateY(-1.4vmin) scale(.985);filter:blur(5px);
-  transition:opacity .7s ease,transform .7s ease,filter .7s ease;
+  transition:opacity var(--turn) ease,transform var(--turn) ease,filter var(--turn) ease;
 }
 .beat.fact{
   padding-left:2.2vmin;border-left:2px solid var(--gold);
@@ -248,7 +250,7 @@ body{
    is there to catch the eye, not to set the reading pace. */
 .w{
   display:inline-block;opacity:0;transform:translateY(.6vmin);
-  transition:opacity .55s ease,transform .55s ease;
+  transition:opacity calc(.55s / var(--sp,1)) ease,transform calc(.55s / var(--sp,1)) ease;
 }
 .on .w,.body.shown .w{opacity:1;transform:none}
 
@@ -309,6 +311,7 @@ body{
    can't: how soon it is, and something to scan. */
 .slide.poster{align-items:center}
 .slide.poster .copy{max-width:46vw;padding-bottom:0}
+.slide.week-slide .copy{max-width:82vw}
 .poster-art{
   position:absolute;z-index:4;
   right:calc(var(--frame) + var(--pad));top:calc(var(--frame) + 3vmin);
@@ -345,6 +348,31 @@ body{
 .slide.ask .body{max-width:34ch}
 .slide.ask .emoji{font-size:7vmin;line-height:1;margin-bottom:2vmin}
 
+/* ── THE WEEK ────────────────────────────────────────────────────────────
+   A schedule is SCANNED, not read — nobody reads a timetable end to end, they
+   look for their own day. So the whole week goes up at once where it fits, and
+   a visitor finds Saturday without waiting for Saturday to come round.
+
+   Empty days are simply absent. A park with events on three days should not
+   show four blank rows to prove it. */
+.week{display:flex;flex-direction:column;gap:1.9vmin;margin-top:1.2vmin}
+.week-day{display:grid;grid-template-columns:15vmin 1fr;gap:2.2vmin;align-items:baseline}
+.week-day .dw{
+  font-size:clamp(.95rem,2.5vmin,2rem);font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-quiet);white-space:nowrap;
+}
+.week-day.today .dw{color:var(--gold);opacity:1}
+.week-day.today .ev{color:var(--paper)}
+.week-item{display:flex;gap:1.6vmin;align-items:baseline;margin-bottom:.5vmin}
+.week-item .tm{
+  font-size:clamp(.85rem,2.1vmin,1.7rem);font-weight:700;letter-spacing:.06em;
+  color:var(--gold);opacity:.85;white-space:nowrap;min-width:11vmin;
+}
+.week-item .ev{
+  font-family:var(--serif);font-size:clamp(1rem,2.9vmin,2.4rem);
+  font-weight:400;line-height:1.2;color:var(--ink-invert);
+}
+
 /* ── AMBIENT ─────────────────────────────────────────────────────────────
    A photograph and nothing else. No eyebrow, no name, no fact — just the
    frame, the credit, and ten seconds of quiet.
@@ -352,6 +380,23 @@ body{
    This is a rhythm device, not a content type. Every other slide asks the
    visitor to read something; a room where the screen never stops talking is
    exhausting to sit in. The gap is the point. */
+/* Ambient slides carry no words, so the motion is the only thing happening —
+   it can afford to be more than a drift. Roughly double the travel of a normal
+   slide, and slower, so it reads as deliberate rather than restless. */
+.slide.ambient.on .bg img{animation-duration:calc(var(--kb,24s) * 1.5)}
+.slide.ambient.on .bg img.kb-in     { animation-name:kbInBig }
+.slide.ambient.on .bg img.kb-out    { animation-name:kbOutBig }
+.slide.ambient.on .bg img.kb-left   { animation-name:kbLeftBig }
+.slide.ambient.on .bg img.kb-right  { animation-name:kbRightBig }
+.slide.ambient.on .bg img.kb-rise   { animation-name:kbRiseBig }
+.slide.ambient.on .bg img.kb-settle { animation-name:kbSettleBig }
+@keyframes kbInBig     { from{transform:scale(1.02)} to{transform:scale(1.24)} }
+@keyframes kbOutBig    { from{transform:scale(1.24)} to{transform:scale(1.02)} }
+@keyframes kbLeftBig   { from{transform:scale(1.16) translateX(3.4%)}  to{transform:scale(1.16) translateX(-3.4%)} }
+@keyframes kbRightBig  { from{transform:scale(1.16) translateX(-3.4%)} to{transform:scale(1.16) translateX(3.4%)} }
+@keyframes kbRiseBig   { from{transform:scale(1.18) translateY(3.8%)}  to{transform:scale(1.18) translateY(-3.8%)} }
+@keyframes kbSettleBig { from{transform:scale(1.18) translateY(-3.8%)} to{transform:scale(1.18) translateY(3.8%)} }
+
 .slide.ambient .copy{display:none}
 .slide.ambient .scrim{
   background:linear-gradient(to top,rgba(8,18,9,.55) 0%,rgba(8,18,9,.16) 34%,
@@ -369,9 +414,17 @@ body{
 .collection img{width:100%;height:100%;object-fit:cover;transform:scale(1.05)}
 .slide.on .collection img{animation:kbIn var(--kb,24s) linear both}
 .slide.set .scrim{
-  background:linear-gradient(to top,rgba(8,18,9,.95) 0%,rgba(8,18,9,.80) 26%,
-                             rgba(8,18,9,.42) 52%,rgba(8,18,9,.14) 78%);
+  /* Five bright photographs edge to edge give the type nothing to sit on, so
+     this needs both axes — dark up the left where the words are, dark along
+     the bottom, and released toward the top right where the pictures win. */
+  background:
+    linear-gradient(to top,rgba(8,18,9,.96) 0%,rgba(8,18,9,.86) 30%,
+                    rgba(8,18,9,.48) 56%,rgba(8,18,9,.12) 82%),
+    linear-gradient(to right,rgba(8,18,9,.88) 0%,rgba(8,18,9,.62) 26%,
+                    rgba(8,18,9,.18) 52%,rgba(8,18,9,0) 72%);
 }
+.slide.set .headline,.slide.set .count,
+.slide.set .roster,.slide.set .shot{text-shadow:0 2px 18px rgba(0,0,0,.85)}
 .count{
   font-family:var(--serif);font-weight:700;line-height:.9;color:var(--gold);
   font-size:clamp(2.4rem,8.5vmin,7rem);letter-spacing:-.02em;margin-bottom:.6vmin;
@@ -382,12 +435,12 @@ body{
   margin-top:.9vmin;
 }
 .roster{
-  font-size:clamp(.95rem,2.35vmin,1.8rem);line-height:1.5;font-weight:300;
-  color:var(--ink-invert);margin-top:2.4vmin;max-width:52ch;
+  font-size:clamp(.95rem,2.35vmin,1.8rem);line-height:1.5;font-weight:400;
+  color:var(--paper);opacity:.88;margin-top:2.4vmin;max-width:44ch;
 }
 .shot{
-  margin-top:2.6vmin;font-size:1.5vmin;font-weight:600;letter-spacing:.12em;
-  color:var(--gold-deep);
+  margin-top:2.6vmin;font-size:1.6vmin;font-weight:700;letter-spacing:.12em;
+  color:var(--gold);opacity:.9;
 }
 
 /* ── PARTNER LOGOS ───────────────────────────────────────────────────────
@@ -486,6 +539,13 @@ body{
 var Q       = new URLSearchParams(location.search);
 var MODE    = Q.get('mode') === 'office' ? 'office' : 'galleria';
 var SECONDS = +(Q.get('seconds') || 0) || 18;   // lingers; 14 read as rushed on the wall
+
+/* ?speed=5 runs the whole thing five times faster — slide durations, beat
+   turns, line cascades, Ken Burns and cross-fades all together, so the timing
+   stays in proportion. For reviewing a full rotation in a couple of minutes
+   rather than half an hour. Not for the wall. */
+var SPEED = Math.max(0.1, Math.min(20, +(Q.get('speed') || 1) || 1));
+SECONDS = SECONDS / SPEED;
 var BASE    = Q.get('base') || '';           // '' when served from repo root
 var FEEDS   = BASE + 'data/published/';
 
@@ -519,13 +579,14 @@ var SPOTLIGHTS = MODE === 'office' ? 4 : 5;
    rhythm. The point of both is that they are a break from the pattern. */
 var AMBIENTS   = MODE === 'office' ? 1 : 2;
 var COLLECTIONS = 2;
+var WEEKVIEWS  = 1;      /* a summary — once a cycle is plenty */
 
 /* Types that LOOK alike, whatever their content. De-clumping works on these
    rather than on type, so a Blooming Now doesn't sit next to a collection
    photograph and read as two of the same slide. */
 var FAMILY = {
   right_now:'species', spotlight:'species',
-  ambient:'quiet', collection:'quiet',   /* both are photo-led breaks — keep
+  ambient:'quiet', collection:'quiet', week:'schedule',   /* both are photo-led breaks — keep
                                             them apart from each other too */
   event:'schedule', klass:'schedule', series:'schedule',
   news:'news', newsletter:'news',
@@ -1169,6 +1230,90 @@ function qrBlock(row, caption, fallback){
     + '</div>';
 }
 
+/* ── the week ────────────────────────────────────────────────────────────
+   Merges one-off events with the recurring classes, which nothing else does:
+   a class row says "every Monday", and this is the only place that turns that
+   into "Monday the 24th, 4PM". Trimmed to time and title — instructor, cost
+   and series belong on the slide for that one thing, not on a timetable. */
+function startHour(t){
+  var m = /(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i.exec(t || '');
+  if(!m) return 99;
+  var h = +m[1] % 12;
+  if(/pm/i.test(m[3])) h += 12;
+  return h + (+(m[2]||0))/60;
+}
+
+function weekAhead(){
+  var days = [], now = new Date(); now.setHours(0,0,0,0);
+  var DOWK = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  for(var d=0; d<7; d++){
+    var when = new Date(now.getTime() + d*864e5);
+    var iso  = when.getFullYear() + '-' + ('0'+(when.getMonth()+1)).slice(-2)
+             + '-' + ('0'+when.getDate()).slice(-2);
+    var items = [];
+
+    D.events.forEach(function(e){
+      if(e.date === iso) items.push({ time:e.time, title:e.title });
+    });
+    D.classes.forEach(function(c){
+      if(DOWK[when.getDay()] === c.weekday) items.push({ time:c.time, title:c.title });
+    });
+
+    if(!items.length) continue;                       /* blank days don't appear */
+    items.sort(function(a,b){ return startHour(a.time) - startHour(b.time); });
+    days.push({ d:d, when:when, items:items });
+  }
+  return days;
+}
+
+function slideWeek(){
+  var days = weekAhead();
+  var total = days.reduce(function(n,x){ return n + x.items.length; }, 0);
+  if(total < 3) return null;                          /* the solo slides cover it */
+
+  var last = new Date(Date.now() + 6*864e5);
+  var range = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric'})
+            + ' – ' + last.toLocaleDateString('en-US',
+                {month: last.getMonth()!==new Date().getMonth() ? 'long' : undefined,
+                 day:'numeric'});
+
+  /* A dense week goes day by day; a light one goes up whole. Same beat
+     machinery either way — no second layout. */
+  var dense = total > 7;
+
+  function dayHtml(x){
+    return '<div class="week-day'+(x.d===0?' today':'')+'">'
+      + '<span class="dw">'+(x.d===0?'Today':x.when.toLocaleDateString('en-US',{weekday:'long'}))+'</span>'
+      + '<span>'+x.items.map(function(it){
+          return '<span class="week-item">'
+               + '<span class="tm">'+esc(it.time||'')+'</span>'
+               + '<span class="ev">'+esc(it.title)+'</span></span>';
+        }).join('')+'</span></div>';
+  }
+
+  var body;
+  if(dense){
+    var chunks = [], per = Math.ceil(days.length / Math.ceil(total/6));
+    for(var i=0;i<days.length;i+=per) chunks.push(days.slice(i,i+per));
+    body = '<div class="beats">' + chunks.map(function(c){
+      return '<div class="beat"><div class="week">'+c.map(dayHtml).join('')+'</div></div>';
+    }).join('') + '</div>';
+  } else {
+    body = '<div class="week">'+days.map(dayHtml).join('')+'</div>';
+  }
+
+  return {
+    week:true,
+    bg:null, credit:null,
+    seconds: Math.round(SECONDS * (dense ? 2.0 : 1.5)),
+    html:
+        '<div class="eyebrow"><span>This week at the park</span></div>'
+      + '<div class="headline">'+esc(range)+'</div>'
+      + body
+  };
+}
+
 /* ── ambient ─────────────────────────────────────────────────────────────── */
 function slideAmbient(){
   var pool = D.plants.concat(D.wildlife).filter(function(x){ return x.photo; });
@@ -1186,24 +1331,62 @@ function slideAmbient(){
    Groupings are built from fields the search index already carries, so this
    needs no new data at all. A group qualifies at six species — below that the
    count isn't impressive and the montage looks thin. */
+/* Explicit labels. Machine pluralisation put "Butterflys" and "Others" on the
+   wall — a lesson about generating display text from field values. Anything
+   without a label here simply doesn't become a slide. */
+var FORM_LABEL = {
+  'Tree':'Trees',
+  'Palm & Cycad':'Palms and cycads',
+  'Shrub & Vine':'Shrubs and vines',
+  'Groundcover & Wildflower':'Groundcovers and wildflowers',
+  'Foliage & Accent':'Foliage and accent plants',
+  'Aquatic & Wetland':'Aquatic and wetland plants'
+};
+
+/* "The palm family" reads on a wall; "The Arecaceae family" reads in a
+   herbarium. The Latin rides along underneath. */
+var FAMILY_NAME = {
+  Arecaceae:'palm', Fabaceae:'pea', Euphorbiaceae:'spurge', Asteraceae:'daisy',
+  Malvaceae:'mallow', Apocynaceae:'dogbane', Rubiaceae:'coffee', Ardeidae:'heron',
+  Myrtaceae:'myrtle', Moraceae:'fig', Bromeliaceae:'bromeliad', Araceae:'arum',
+  Acanthaceae:'acanthus', Lamiaceae:'mint', Anacardiaceae:'cashew',
+  Annonaceae:'custard apple', Sapindaceae:'soapberry', Verbenaceae:'verbena',
+  Cactaceae:'cactus', Zingiberaceae:'ginger', Musaceae:'banana', Poaceae:'grass',
+  Nymphaeaceae:'water lily', Cycadaceae:'cycad', Zamiaceae:'zamia',
+  Amaryllidaceae:'amaryllis', Bignoniaceae:'trumpet-vine', Rutaceae:'citrus',
+  Solanaceae:'nightshade', Passifloraceae:'passionflower', Nymphalidae:'brush-footed butterfly',
+  Anatidae:'duck', Accipitridae:'hawk', Picidae:'woodpecker', Emberizidae:'sparrow'
+};
+
 var GROUPS = null;
 function buildGroups(){
   var all = D.plants.concat(D.wildlife).filter(function(x){ return x.photo; });
   var g = [];
 
   function add(label, sub, rows){
-    if(rows.length >= 6) g.push({ label:label, sub:sub, rows:rows });
+    if(!label || rows.length < 6) return;
+    /* the same set can arrive from two fields — keep the first label only */
+    for(var i=0;i<g.length;i++) if(g[i].label === label) return;
+    g.push({ label:label, sub:sub, rows:rows });
   }
   function by(field, fmt, sub){
     var m = {};
     all.forEach(function(x){ var k=x[field]; if(k) (m[k]=m[k]||[]).push(x); });
-    for(var k in m) add(fmt(k), sub, m[k]);
+    for(var k in m){ var label = fmt(k); if(label) add(label, sub, m[k]); }
   }
 
-  by('family', function(k){ return 'The ' + k + ' family'; }, 'in the collection');
-  by('form',   function(k){ return k.replace(' & ',' and ') + 's'; }, 'in the collection');
-  by('cat',    function(k){ return k; }, 'in the collection');
-  by('theme',  function(k){ return k.charAt(0).toUpperCase()+k.slice(1) + 's'; }, 'recorded here');
+  /* family — common name where we have one, and the Latin as the subtitle */
+  var fams = {};
+  all.forEach(function(x){ if(x.family) (fams[x.family]=fams[x.family]||[]).push(x); });
+  for(var f in fams){
+    var common = FAMILY_NAME[f];
+    add(common ? 'The ' + common + ' family' : 'The ' + f + ' family',
+        common ? f : 'in the collection', fams[f]);
+  }
+
+  by('form',     function(k){ return FORM_LABEL[k] || null; }, 'in the collection');
+  by('cat',      function(k){ return k; }, 'in the collection');
+  by('category', function(k){ return k; }, 'recorded here');
 
   add('Florida natives', 'growing here', all.filter(function(x){ return x.native; }));
   add('Nectar plants', 'for butterflies and bees', all.filter(function(x){ return x.nectar; }));
@@ -1345,6 +1528,7 @@ function buildDeck(){
   for(i=0;i<SPOTLIGHTS;i++)  pool.push({type:'spotlight', make:slideSpotlight});
   for(i=0;i<AMBIENTS;i++)    pool.push({type:'ambient',   make:slideAmbient});
   for(i=0;i<COLLECTIONS;i++) pool.push({type:'collection',make:slideCollection});
+  for(i=0;i<WEEKVIEWS;i++)   pool.push({type:'week',      make:slideWeek});
 
   pool = interleave(pool);
 
@@ -1374,8 +1558,8 @@ function buildDeck(){
 /* Wrap every word in its own span, measure which rendered line each landed on,
    then stagger by line. Walking text nodes rather than rewriting innerHTML
    keeps the <b> emphasis the writers put in the quick hits. */
-var LINE_STEP = 0.42;      /* seconds between lines */
-var LINE_LEAD = 0.25;      /* before the first one */
+var LINE_STEP = 0.42 / SPEED;   /* seconds between lines */
+var LINE_LEAD = 0.25 / SPEED;   /* before the first one */
 
 function cascade(el){
   if(!el) return;
@@ -1421,7 +1605,7 @@ function render(s){
   var dur = s.seconds || SECONDS;
   var el=document.createElement('div');
   el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'')
-             +(s.ambient?' ambient':'')+(s.set?' set':'');
+             +(s.ambient?' ambient':'')+(s.set?' set':'')+(s.week?' week-slide':'');
 
   /* pick a motion, never the same one twice running */
   var moves = KB.filter(function(k){ return k!==lastKB; });
@@ -1494,8 +1678,8 @@ function render(s){
   if(beatEls.length > 1){
     /* Beats share the slide evenly after a short lead. Two on a Right Now,
        three or four on a news story — same mechanism either way. */
-    var lead = 1400;
-    var share = Math.max(2600, (dur*1000 - lead) / beatEls.length);
+    var lead = 1400 / SPEED;
+    var share = Math.max(2600 / SPEED, (dur*1000 - lead) / beatEls.length);
     revealTimer = setTimeout(function(){ el.classList.add('reveal'); }, lead);
     (function(){
       for(var bn=0; bn<beatEls.length; bn++){
@@ -1508,12 +1692,12 @@ function render(s){
       }
     })();
   } else {
-    revealTimer = setTimeout(function(){ el.classList.add('reveal'); }, 1400);
+    revealTimer = setTimeout(function(){ el.classList.add('reveal'); }, 1400 / SPEED);
   }
 
   if(cur){
     var old=cur; old.classList.remove('on');
-    setTimeout(function(){ old.remove(); }, 1400);
+    setTimeout(function(){ old.remove(); }, 1400 / SPEED);
   }
   cur=el;
 
@@ -1558,6 +1742,12 @@ function tickClock(){
    anyone touching the TV, and do a hard reload in the small hours to clear
    any long-running drift. */
 function start(){
+  var root = document.documentElement.style;
+  root.setProperty('--sp', SPEED);
+  root.setProperty('--fade', (1.1 / SPEED).toFixed(3) + 's');
+  root.setProperty('--turn', (0.85 / SPEED).toFixed(3) + 's');
+  if(SPEED !== 1) console.log('screen.html running at ' + SPEED + '× — ' + SECONDS.toFixed(1) + 's per slide');
+
   deck=buildDeck(); at=0; next();
   tickClock(); setInterval(tickClock, 20000);
 
