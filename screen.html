@@ -660,15 +660,32 @@ function hitsOf(sp){
   return sentences(t).filter(function(x){ return x.trim().length>25; });
 }
 
-/* Two of them, different from each other, in random order. A species now says
-   two things per appearance instead of one — and picks a different pair the
-   next time it comes round. */
+/* Two of them, different from each other, in random order — and different from
+   whatever this species said last time. A plant that comes round again should
+   be telling you something new, not repeating itself, so each species keeps a
+   short memory of the hits it has already used and works through the rest
+   before any come back. With a median of five or six hits per species that's
+   ten to fifteen distinct pairings before anything repeats. */
+var usedHits = {};
 function twoHits(sp){
   var parts = hitsOf(sp);
   if(parts.length <= 1) return parts.length ? [parts[0]] : [];
-  var a = Math.floor(Math.random()*parts.length), b;
-  do { b = Math.floor(Math.random()*parts.length); } while(b === a);
-  return [parts[a], parts[b]];
+
+  var key = sp.id || sp.common || '?';
+  var used = usedHits[key] || (usedHits[key] = []);
+  var fresh = parts.filter(function(h){ return used.indexOf(h) < 0; });
+  /* everything has been shown — start the rotation over */
+  if(fresh.length < 2){ used.length = 0; fresh = parts.slice(); }
+
+  var a = pick(fresh);
+  var rest = fresh.filter(function(h){ return h !== a; });
+  var b = rest.length ? pick(rest) : pick(parts.filter(function(h){ return h !== a; }));
+
+  used.push(a); if(b) used.push(b);
+  /* never hold more than the species has, so the memory can't outgrow the pool */
+  while(used.length > parts.length - 1) used.shift();
+
+  return b ? [a, b] : [a];
 }
 
 function oneHit(sp){
