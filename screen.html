@@ -306,7 +306,7 @@ body{
 }
 /* the QR lives under the words on a poster slide, not in the corner —
    the poster owns the right-hand side */
-.slide.poster .qr{position:static;margin-top:3vmin;align-items:flex-start}
+.slide.poster .qr{position:static;transform:none;margin-top:3vmin;align-items:flex-start}
 .slide.poster .qr .cap{text-align:left}
 
 /* ── ask slides: centred, quiet, no photograph competing ─────────────────
@@ -326,10 +326,17 @@ body{
    A screen can't be clicked, so any slide whose value is a link needs a code
    or it shouldn't be there. The white card is not decoration — a QR needs a
    quiet zone and hard contrast to scan from across a room. */
+/* Bottom CENTRE, not the corner. The photographer credit already owns the
+   bottom right, and stacking the two there made them read as one item — as
+   though the code led to the photographer. Three zones now: words left,
+   code centre, credit right. */
 .qr{
-  position:absolute;right:calc(var(--frame) + 3.4vmin);bottom:calc(var(--frame) + 3.2vmin);
+  position:absolute;left:50%;transform:translateX(-50%);
+  bottom:calc(var(--frame) + 3.2vmin);
   z-index:5;display:flex;flex-direction:column;align-items:center;gap:1.1vmin;
 }
+/* keep the words clear of the centred code */
+.slide.has-qr .copy{max-width:52vw}
 .qr-card{
   background:var(--paper);padding:1.5vmin;border-radius:1vmin;
   box-shadow:0 .6vmin 3vmin rgba(0,0,0,.5);line-height:0;
@@ -344,11 +351,9 @@ body{
 
 /* On an ask the QR belongs under the words, centred with them — the ask is the
    whole slide, so the code shouldn't hide in a corner. */
-.slide.ask .qr{position:static;margin-top:3.4vmin}
+.slide.ask .qr{position:static;transform:none;margin-top:3.4vmin}
 .slide.ask .qr-card img{width:17vmin;height:17vmin}
 
-/* When a photo slide carries a code, the credit steps up out of its way. */
-.credit.raised{bottom:calc(var(--frame) + 19.5vmin)}
 
 /* ── progress hairline ───────────────────────────────────────────────────── */
 #bar{
@@ -388,9 +393,6 @@ var SECONDS = +(Q.get('seconds') || 0) || 18;   // lingers; 14 read as rushed on
 var BASE    = Q.get('base') || '';           // '' when served from repo root
 var FEEDS   = BASE + 'data/published/';
 
-/* Ask cadence. The screen is mostly beauty; the ask is occasional.
-   Push this number up and people stop looking. */
-var ASK_EVERY = MODE === 'office' ? 5 : 7;
 
 /* How much of the deck each type gets. Weights, not counts — a type with fewer
    rows than its weight simply contributes fewer slides.
@@ -398,17 +400,24 @@ var ASK_EVERY = MODE === 'office' ? 5 : 7;
    Note that right_now and spotlight are BOTH full-bleed species photographs.
    Their weights add up as far as the eye is concerned, so keep the pair in
    check rather than tuning either alone. */
-var WEIGHT = {
-  right_now:  MODE === 'office' ? 1 : 2,   // what to go look at, right now
-  spotlight:  MODE === 'office' ? 4 : 6,   // the collection, at random — the deep
-                                            // pool (320), so it carries a thin deck
-  event:      3,
-  news:       MODE === 'office' ? 3 : 2,
-  klass:      2,
-  series:     1,
-  volunteer:  MODE === 'office' ? 3 : 1,
-  newsletter: 1
+/* PERIOD: roughly how many cycles before a given row comes round again.
+   Lower = more airtime per row. Slides per cycle = ceil(rows / period), so a
+   feed that grows contributes more without anyone retuning anything. */
+var PERIOD = {
+  event:      2,                            // timely, and the window already filters
+  news:       MODE === 'office' ? 2 : 3,
+  klass:      3,
+  series:     3,
+  volunteer:  MODE === 'office' ? 2 : 4,
+  newsletter: 4,
+  right_now:  2,                            // what to go look at, right now
+  ask:        MODE === 'office' ? 3 : 4
 };
+var CAP = { event:4, news:2, klass:2, series:1, volunteer:2, newsletter:1, right_now:2 };
+
+/* The collection is the one pool with no feed behind it — 320 species, so it
+   can't be periodised. A flat count, tuned against everything else. */
+var SPOTLIGHTS = MODE === 'office' ? 4 : 5;
 
 /* Types that LOOK alike, whatever their content. De-clumping works on these
    rather than on type, so a Blooming Now doesn't sit next to a collection
@@ -956,55 +965,103 @@ function slideAsk(a){
 /* ═══════════════════════════════════════════════════════════════════════════
    THE DECK
    Weighted, shuffled, no two consecutive slides of the same type, and an ask
-   dropped in every ASK_EVERY positions. Rebuilt when exhausted, so the mix
-   changes shape through the day rather than looping identically.
+   Feeds contribute by PERIOD, families are interleaved so none sit adjacent,
+   and asks are spaced through. Rebuilt when exhausted, so the mix changes
+   shape through the day rather than looping identically.
    ═══════════════════════════════════════════════════════════════════════════ */
-/* Announcements rotate in order across cycles, so a 14-slide list is actually
-   seen over the course of an hour rather than the same two recurring. */
-var askQueue=[], askAt=0;
-function nextAsk(){
-  if(askAt >= askQueue.length){ askQueue = shuffle(D.announcements.slice()); askAt = 0; }
-  return askQueue[askAt++];
+/* FAIRNESS WITHIN A FEED
+   Random sampling each cycle means a row can go unseen for a long stretch
+   purely by luck. Every feed instead keeps a shuffled queue that is consumed
+   in order and reshuffled only once exhausted, so every row gets its turn
+   before any row gets a second.
+
+   FAIRNESS BETWEEN FEEDS is the weights' job, and the weights are set as a
+   PERIOD instead: "each row of this feed should come round about every N
+   cycles". A feed with four rows and a period of four contributes one slide
+   per cycle; fourteen announcements on the same period contribute three or
+   four. That is what stops a lone news item outplaying every announcement. */
+var queues = {};
+function takeFrom(name, rows, n){
+  if(!rows || !rows.length) return [];
+  var q = queues[name];
+  if(!q || q.at >= q.list.length) q = queues[name] = { list: shuffle(rows.slice()), at: 0 };
+  var out = [];
+  while(out.length < n){
+    if(q.at >= q.list.length) q = queues[name] = { list: shuffle(rows.slice()), at: 0 };
+    out.push(q.list[q.at++]);
+    if(out.length >= rows.length) break;      /* never repeat inside one cycle */
+  }
+  return out;
+}
+function nextAsk(){ return takeFrom('ask', D.announcements, 1)[0]; }
+
+/* SPREADING THE FAMILIES
+   The old de-clump was a single forward pass that swapped when it could and
+   gave up when it couldn't, which is why two collection photographs still
+   turned up together — nothing fixes a tail that is already clumped.
+
+   This is the standard greedy instead: at each step take whichever family has
+   the most slides left, except the one just placed. That guarantees no two
+   adjacent whenever it is arithmetically possible (no family holds more than
+   half the deck), and degrades gracefully when it isn't. */
+function interleave(items){
+  var buckets = {}, k;
+  for(var i=0;i<items.length;i++){
+    k = famOf(items[i]);
+    (buckets[k] = buckets[k] || []).push(items[i]);
+  }
+  for(k in buckets) shuffle(buckets[k]);
+
+  var out = [], last = null, keys = Object.keys(buckets);
+  while(out.length < items.length){
+    var best = null, bestN = 0;
+    for(var x=0;x<keys.length;x++){
+      var key = keys[x], n = buckets[key].length;
+      if(!n || key === last) continue;
+      if(n > bestN){ bestN = n; best = key; }
+    }
+    /* only what's left is the family we just placed — unavoidable */
+    if(best === null){
+      for(var y=0;y<keys.length;y++) if(buckets[keys[y]].length){ best = keys[y]; break; }
+      if(best === null) break;
+    }
+    out.push(buckets[best].shift());
+    last = best;
+  }
+  return out;
 }
 
 function buildDeck(){
   var pool=[], i;
-  function add(type,rows,fn,weight){
+  function add(type,rows,fn){
     if(!rows || !rows.length) return;
-    var n = Math.min(rows.length, Math.max(1, weight));
-    var picks = shuffle(rows.slice()).slice(0,n);
-    for(i=0;i<picks.length;i++) pool.push({type:type,make:fn.bind(null,picks[i])});
+    var n = Math.ceil(rows.length / (PERIOD[type] || 3));
+    n = Math.max(1, Math.min(n, CAP[type] || 3, rows.length));
+    var picks = takeFrom(type, rows, n);
+    for(var p=0;p<picks.length;p++) pool.push({type:type,make:fn.bind(null,picks[p])});
   }
 
-  add('right_now',  D.right_now,              slideRightNow,  WEIGHT.right_now);
-  add('event',      upcoming(D.events),       slideEvent,     WEIGHT.event);
-  add('news',       D.news.slice().reverse(), slideNews,      WEIGHT.news);
-  add('klass',      D.classes,                slideClass,     WEIGHT.klass);
-  add('series',     D.series,                 slideSeries,    WEIGHT.series);
-  add('volunteer',  D.volunteer,              slideVolunteer, WEIGHT.volunteer);
-  add('newsletter', D.newsletters,            slideNewsletter,WEIGHT.newsletter);
-  for(i=0;i<WEIGHT.spotlight;i++) pool.push({type:'spotlight',make:slideSpotlight});
+  add('right_now',  D.right_now,              slideRightNow);
+  add('event',      upcoming(D.events),       slideEvent);
+  add('news',       D.news.slice().reverse(), slideNews);
+  add('klass',      D.classes,                slideClass);
+  add('series',     D.series,                 slideSeries);
+  add('volunteer',  D.volunteer,              slideVolunteer);
+  add('newsletter', D.newsletters,            slideNewsletter);
+  for(i=0;i<SPOTLIGHTS;i++) pool.push({type:'spotlight',make:slideSpotlight});
 
-  shuffle(pool);
-
-  /* de-clump: never two of a family back to back */
-  for(i=1;i<pool.length;i++){
-    if(famOf(pool[i])===famOf(pool[i-1])){
-      for(var j=i+1;j<pool.length;j++){
-        if(famOf(pool[j])!==famOf(pool[i-1]) &&
-           (j+1>=pool.length || famOf(pool[j+1])!==famOf(pool[i]))){
-          var t=pool[i]; pool[i]=pool[j]; pool[j]=t; break;
-        }
-      }
-    }
-  }
+  pool = interleave(pool);
 
   /* Asks, spaced evenly through the deck.
      Count is proportional, never zero — a fixed "every 7th slide" silently
      produced NO asks whenever the deck was shorter than 7, which is exactly
      what happens when most Sheet rows are marked web-only. */
   if(D.announcements.length){
-    var want = Math.max(1, Math.round(pool.length / ASK_EVERY));
+    var want = Math.max(1, Math.min(
+      Math.ceil(D.announcements.length / (PERIOD.ask || 4)),
+      Math.ceil(pool.length / 4)));   /* never more than a quarter of the deck —
+                                         the screen is mostly beauty, and an ask
+                                         every third slide is how you lose people */
     var gap  = Math.max(1, Math.floor(pool.length / want));
     var out=[];
     for(i=0;i<pool.length;i++){
@@ -1086,7 +1143,7 @@ function render(s){
      column and lands mid-paragraph. Lift it out to sit against the slide.
      On an ask it belongs in the flow, centred under the words — leave it. */
   var qrNode = el.querySelector('.qr');
-  if(qrNode && !s.ask && !s.poster) el.appendChild(qrNode);
+  if(qrNode && !s.ask && !s.poster){ el.appendChild(qrNode); el.classList.add('has-qr'); }
   el.style.setProperty('--kb', (dur+3)+'s');
 
   /* step each body down by length so nothing is ever clipped */
@@ -1156,7 +1213,6 @@ function render(s){
       + '<span class="who">'+esc(s.credit.name)+'</span>'
       + (s.credit.terms?'<span class="terms">'+esc(s.credit.terms)+'</span>':'');
     credEl.classList.add('on');
-    credEl.classList.toggle('raised', !s.ask && /class="qr"/.test(s.html));
   } else {
     credEl.classList.remove('on');
   }
