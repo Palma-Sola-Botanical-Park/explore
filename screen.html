@@ -73,16 +73,21 @@ body{
 }
 .wordmark{
   position:fixed;top:calc(var(--frame) - .95em);left:calc(var(--frame) + 2.4vmin);
-  z-index:41;background:var(--ground);padding:0 1.6vmin;
-  font-size:2.1vmin;font-weight:700;letter-spacing:.34em;text-transform:uppercase;
+  z-index:41;background:var(--ground);padding:0 1.8vmin;
+  font-size:2.5vmin;font-weight:700;letter-spacing:.3em;text-transform:uppercase;
   color:var(--gold);white-space:nowrap;
 }
 .clock{
   position:fixed;top:calc(var(--frame) - .95em);right:calc(var(--frame) + 2.4vmin);
-  z-index:41;background:var(--ground);padding:0 1.6vmin;
-  font-size:2.1vmin;font-weight:600;letter-spacing:.2em;
-  color:var(--paper);opacity:.72;white-space:nowrap;
+  z-index:41;background:var(--ground);padding:0 1.8vmin;
+  font-size:2.5vmin;font-weight:600;letter-spacing:.16em;
+  color:var(--paper);white-space:nowrap;
 }
+/* The date earns its place: it's what tells a visitor that TODAY and TOMORROW
+   on an event slide mean what they say. Set quieter than the time, which is
+   the thing anyone actually glances up for. */
+.clock .day{opacity:.6;text-transform:uppercase;letter-spacing:.2em;font-size:.86em}
+.clock .sep{color:var(--gold);opacity:.55;margin:0 .7em}
 /* Attribution is solidarity — so it gets real size, a name in paper white, and
    the licence and date underneath. Sits inside the frame rather than breaking
    the rule, because it is now three lines rather than a caption. */
@@ -317,9 +322,12 @@ body{
 /* ── ask slides: centred, quiet, no photograph competing ─────────────────
    An ask should read as a breath in the rotation, not a shout. */
 .slide.ask{align-items:center;justify-content:center}
-.slide.ask .bg img{opacity:.16;filter:saturate(.5)}
+/* An ask is a moment, not a notice — the photograph is doing persuasive work
+   (the room, the light, the garden), so it needs to be seen. Darkened behind
+   the words by the radial and no further. */
+.slide.ask .bg img{opacity:.42;filter:saturate(.8)}
 .slide.ask .scrim{background:radial-gradient(ellipse at center,
-  rgba(8,18,9,.62) 0%,rgba(8,18,9,.9) 68%)}
+  rgba(8,18,9,.78) 0%,rgba(8,18,9,.66) 45%,rgba(8,18,9,.42) 100%)}
 .slide.ask .copy{
   padding:0 8vmin;max-width:none;text-align:center;
   display:flex;flex-direction:column;align-items:center;
@@ -1295,8 +1303,11 @@ function next(){
 
 function tickClock(){
   var d=new Date();
-  document.getElementById('clock').textContent =
-    d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  document.getElementById('clock').innerHTML =
+      '<span class="day">'
+    + d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+    + '</span><span class="sep">&middot;</span>'
+    + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
 }
 
 /* ── kiosk housekeeping ──────────────────────────────────────────────────
