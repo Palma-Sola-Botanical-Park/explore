@@ -1,21 +1,21 @@
 {
   "tab": "events",
   "human": "Dated park events — one row per event (multi-day events use date_end).",
-  "generated_at": "2026-08-21T00:27:17+00:00",
-  "status": "green",
+  "generated_at": "2026-08-21T03:15:48+00:00",
+  "status": "amber",
   "published": true,
   "block_reason": null,
   "counts": {
-    "staged": 28,
-    "live": 8,
+    "staged": 29,
+    "live": 9,
     "published": 8,
     "dropped_display": 20,
-    "quarantined": 0,
+    "quarantined": 1,
     "warned": 0
   },
   "volume_guard": {
     "min": 1,
-    "live": 8,
+    "live": 9,
     "published": 8,
     "blocked": false,
     "reason": null
@@ -30,8 +30,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -44,8 +44,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -57,11 +57,16 @@
       "why": "Can't be blank.",
       "severity": "error",
       "scope": "row",
-      "status": "green",
-      "evaluated": 8,
+      "status": "amber",
+      "evaluated": 9,
       "passed": 8,
-      "flagged": 0,
-      "examples": []
+      "flagged": 1,
+      "examples": [
+        {
+          "row": "2026-10-04",
+          "reason": "missing required value"
+        }
+      ]
     },
     {
       "id": "date_end:iso_date_or_blank",
@@ -72,8 +77,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -86,8 +91,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -109,8 +114,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -128,8 +133,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -146,8 +151,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -164,8 +169,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -182,8 +187,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -200,8 +205,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -216,11 +221,16 @@
       "why": "Must match a name in the series tab, or be blank.",
       "severity": "warn",
       "scope": "field",
-      "status": "green",
-      "evaluated": 8,
+      "status": "amber",
+      "evaluated": 9,
       "passed": 8,
-      "flagged": 0,
-      "examples": []
+      "flagged": 1,
+      "examples": [
+        {
+          "row": "2026-10-04",
+          "reason": "no matching row in the referenced tab"
+        }
+      ]
     },
     {
       "id": "registration_url:url_or_blank",
@@ -231,8 +241,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -245,13 +255,18 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     }
   ],
-  "dropped_rows": [],
+  "dropped_rows": [
+    {
+      "label": "2026-10-04",
+      "reason": "title: missing required value"
+    }
+  ],
   "timeline": [
     {
       "at": "2026-08-19T02:01:14+00:00",
@@ -317,6 +332,18 @@
       "at": "2026-08-21T00:27:17+00:00",
       "added": 0,
       "changed": 1,
+      "removed": 0
+    },
+    {
+      "at": "2026-08-21T02:02:59+00:00",
+      "added": 0,
+      "changed": 1,
+      "removed": 0
+    },
+    {
+      "at": "2026-08-21T03:15:48+00:00",
+      "added": 1,
+      "changed": 0,
       "removed": 0
     }
   ],
