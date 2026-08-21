@@ -588,7 +588,14 @@ body{
    CONFIG
    ═══════════════════════════════════════════════════════════════════════════ */
 var Q       = new URLSearchParams(location.search);
-var MODE    = Q.get('mode') === 'office' ? 'office' : 'galleria';
+/* Any name works: ?mode=galleria (default), ?mode=office, ?mode=bathroom.
+   MODE does two jobs — it picks a mix profile, and it decides which rows a
+   screen accepts via the optional `screen_where` column. A name with no mix
+   profile of its own falls back to the galleria mix but keeps its own
+   identity for routing, so a new screen can be added by plugging in a stick
+   and pointing it at a URL. */
+var MODE    = (Q.get('mode') || 'galleria').trim().toLowerCase() || 'galleria';
+var PROFILE = (MODE === 'office') ? 'office' : 'galleria';
 var SECONDS = +(Q.get('seconds') || 0) || 18;   // lingers; 14 read as rushed on the wall
 
 /* ?speed=5 runs the whole thing five times faster — slide durations, beat
@@ -612,23 +619,23 @@ var FEEDS   = BASE + 'data/published/';
    feed that grows contributes more without anyone retuning anything. */
 var PERIOD = {
   event:      2,                            // timely, and the window already filters
-  news:       MODE === 'office' ? 2 : 3,
+  news:       PROFILE === 'office' ? 2 : 3,
   klass:      3,
   series:     3,
-  volunteer:  MODE === 'office' ? 2 : 4,
+  volunteer:  PROFILE === 'office' ? 2 : 4,
   newsletter: 4,
   right_now:  2,                            // what to go look at, right now
-  ask:        MODE === 'office' ? 3 : 4
+  ask:        PROFILE === 'office' ? 3 : 4
 };
 var CAP = { event:4, news:2, klass:2, series:1, volunteer:2, newsletter:1, right_now:2 };
 
 /* The collection is the one pool with no feed behind it — 320 species, so it
    can't be periodised. A flat count, tuned against everything else. */
-var SPOTLIGHTS = MODE === 'office' ? 4 : 5;
+var SPOTLIGHTS = PROFILE === 'office' ? 4 : 5;
 
 /* Two per cycle each — enough to change the rhythm, not enough to become the
    rhythm. The point of both is that they are a break from the pattern. */
-var AMBIENTS   = MODE === 'office' ? 1 : 2;
+var AMBIENTS   = PROFILE === 'office' ? 1 : 2;
 var COLLECTIONS = 2;
 var WEEKVIEWS  = 1;      /* a summary — once a cycle is plenty */
 var COHORTS    = 1;
