@@ -1240,8 +1240,9 @@ function artFor(row, fallback){
 
 /* A photograph from the collection, for slides with nothing of their own. */
 function atmosPhoto(){
-  var pool = D.plants.concat(D.wildlife).filter(function(s){ return s.photo; });
-  return pool.length ? pick(pool) : null;
+  var all = D.plants.concat(D.wildlife).filter(function(s){ return s.photo; });
+  var pool = preferOrient(all, 'landscape', 12);
+  return pool.length ? pick(pool) : (all.length ? pick(all) : null);
 }
 
 /* The calendar tear-off. */
@@ -1463,6 +1464,11 @@ function slideWeek(){
 /* ── ambient ─────────────────────────────────────────────────────────────── */
 function slideAmbient(){
   var pool = D.plants.concat(D.wildlife).filter(function(x){ return x.photo; });
+  /* No text to carry the slide, so the crop has to be right: wide photographs
+     with the pixels to fill a 4K width. */
+  pool = preferOrient(pool, 'landscape', 12)
+           .filter(function(x){ return bigEnough(x, 1800); });
+  if(!pool.length) pool = D.plants.concat(D.wildlife).filter(function(x){ return x.photo; });
   if(!pool.length) return null;
   var s = pick(pool);
   return {
@@ -1547,7 +1553,10 @@ function slideCollection(){
   var g = takeFrom('collection', GROUPS, 1)[0];
   if(!g) return null;
 
-  var shots = shuffle(g.rows.slice()).slice(0,5);
+  /* the panels are a fifth as wide as they are tall — exactly what a phone
+     photograph is, and there are 846 of them */
+  var shots = shuffle(preferOrient(g.rows, 'portrait', 8).slice()).slice(0,5);
+  if(shots.length < 5) shots = shuffle(g.rows.slice()).slice(0,5);
   var names = shuffle(g.rows.slice()).slice(0,4)
                 .map(function(x){ return x.common; }).filter(Boolean);
   var who = [];
