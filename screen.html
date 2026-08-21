@@ -309,8 +309,17 @@ body{
    bottom. So it is shown WHOLE, as an object hung beside the text, and the
    copy column narrows to make room. The screen supplies only what a poster
    can't: how soon it is, and something to scan. */
-.slide.poster{align-items:center}
-.slide.poster .copy{max-width:46vw;padding-bottom:0}
+/* Both halves are content, so lay them out as a pair rather than pinning one
+   to each edge. Anchored to opposite margins, a short headline and a
+   height-limited poster left a hole down the middle; centred with a fixed gap,
+   they close on each other symmetrically. */
+.slide.poster{
+  display:flex;align-items:center;justify-content:center;gap:5.5vmin;
+  padding:calc(var(--frame) + 3.4vmin) calc(var(--frame) + var(--pad));
+}
+.slide.poster .copy{
+  position:relative;flex:0 1 auto;max-width:44vw;padding:0;
+}
 .slide.week-slide .copy{max-width:82vw}
 .poster-art{
   position:absolute;z-index:4;
@@ -329,6 +338,9 @@ body{
 }
 /* the QR lives under the words on a poster slide, not in the corner —
    the poster owns the right-hand side */
+.slide.poster .poster-art{
+  position:static;flex:0 0 auto;height:100%;width:auto;max-width:44vw;
+}
 .slide.poster .qr{position:static;transform:none;margin-top:3vmin;align-items:flex-start}
 .slide.poster .qr .cap{text-align:left}
 
@@ -348,16 +360,15 @@ body{
 .slide.ask .body{max-width:34ch}
 .slide.ask .emoji{font-size:7vmin;line-height:1;margin-bottom:2vmin}
 
-/* A gradient alone can't rescue type sitting over five bright photographs —
-   the contrast changes with every picture. This blurs the pictures themselves
-   behind the text and fades the blur out across the frame, so the words always
-   have something soft to sit on and the photographs still win on the right. */
+/* Type over five bright photographs needs something under it, but BLUR was the
+   wrong answer — a softened photograph reads as a mistake, as though the
+   picture were out of focus. Darkening is honest: it looks like a shadow
+   falling across the left of the frame, which is a thing that happens. */
 .veil{
   position:absolute;inset:0;z-index:2;pointer-events:none;
-  backdrop-filter:blur(9px) saturate(.85);
-  -webkit-backdrop-filter:blur(9px) saturate(.85);
-  -webkit-mask-image:linear-gradient(to right,#000 0%,#000 34%,rgba(0,0,0,.35) 56%,transparent 72%);
-          mask-image:linear-gradient(to right,#000 0%,#000 34%,rgba(0,0,0,.35) 56%,transparent 72%);
+  background:linear-gradient(to right,
+    rgba(6,14,8,.90) 0%, rgba(6,14,8,.86) 26%, rgba(6,14,8,.62) 44%,
+    rgba(6,14,8,.24) 60%, rgba(6,14,8,0) 74%);
 }
 
 /* ── THE POLAROID STACK ──────────────────────────────────────────────────
@@ -1005,7 +1016,7 @@ function slideEvent(e){
     poster: art.poster, credit: art.credit,
     seconds: art.poster ? Math.round(SECONDS * 1.6) : null,
     html:
-      dateStamp(e.date)
+      dateStamp(e.date, e.date_end)
     + (far || e.series
         ? '<div class="eyebrow">'
           + (far?'<span>'+(yes(e.closes_park)?'Park closed':'Save the date')+'</span>':'')
@@ -1233,9 +1244,25 @@ function atmosPhoto(){
 }
 
 /* The calendar tear-off. */
-function dateStamp(iso){
+function dateStamp(iso, endIso){
   if(!iso) return '';
   var d = new Date(midnight(iso)), days = daysUntil(iso);
+
+  /* A run of days is one event, not four — say so, or "17" under-sells a
+     four-night festival and misleads anyone planning around a closure. */
+  if(endIso && endIso !== iso){
+    var e = new Date(midnight(endIso));
+    var sameMonth = e.getMonth() === d.getMonth();
+    return '<div class="stamp">'
+      + '<span class="num word">'+d.getDate()+'&ndash;'+e.getDate()+'</span>'
+      + '<span class="when">'
+      +   '<span class="dow">'+d.toLocaleDateString('en-US',{month:'long'})
+      +     (sameMonth?'':' &ndash; '+e.toLocaleDateString('en-US',{month:'long'}))+'</span>'
+      +   '<span class="sub">'+d.toLocaleDateString('en-US',{weekday:'short'})
+      +     ' to '+e.toLocaleDateString('en-US',{weekday:'short'})+'</span>'
+      + '</span></div>';
+  }
+
   var num, word = false;
   if(days === 0){ num = 'Today'; word = true; }
   else if(days === 1){ num = 'Tomorrow'; word = true; }
