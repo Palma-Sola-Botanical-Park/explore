@@ -580,13 +580,14 @@ var SPOTLIGHTS = MODE === 'office' ? 4 : 5;
 var AMBIENTS   = MODE === 'office' ? 1 : 2;
 var COLLECTIONS = 2;
 var WEEKVIEWS  = 1;      /* a summary — once a cycle is plenty */
+var COHORTS    = 1;
 
 /* Types that LOOK alike, whatever their content. De-clumping works on these
    rather than on type, so a Blooming Now doesn't sit next to a collection
    photograph and read as two of the same slide. */
 var FAMILY = {
   right_now:'species', spotlight:'species',
-  ambient:'quiet', collection:'quiet', week:'schedule',   /* both are photo-led breaks — keep
+  ambient:'quiet', collection:'quiet', cohort:'quiet', week:'schedule',   /* both are photo-led breaks — keep
                                             them apart from each other too */
   event:'schedule', klass:'schedule', series:'schedule',
   news:'news', newsletter:'news',
@@ -624,7 +625,8 @@ function loadAll(){
     grab(BASE+'plants.json'),     grab(BASE+'wildlife.json'),
     grab(BASE+'data/sources/photo_credits.json'),
     grab(BASE+'data/sources/plant_signage.json'),
-    grab(BASE+'data/sources/wildlife_signage.json')
+    grab(BASE+'data/sources/wildlife_signage.json'),
+    grab(BASE+'data/sources/photographer_names.json')
   ]).then(function(r){
     D.right_now=onScreen(r[0]); D.events=onScreen(r[1]);
     D.classes=onScreen(r[2]);   D.news=onScreen(r[3]);
@@ -633,6 +635,7 @@ function loadAll(){
     D.plants=r[8]||[];          D.wildlife=r[9]||[];
     indexCredits(r[10]);
     indexHits(r[11]); indexHits(r[12]);
+    NAMES = r[13] || {};
     if(!D.right_now.length && !D.plants.length) fallback();
   });
 }
@@ -665,13 +668,26 @@ function indexHits(blob){
 /* photo_id -> {observed_on, license, name}. The search index carries the
    photographer and licence but not the date, so the credits master fills it in.
    Optional: if the file can't be reached the credit falls back to name + licence. */
-var CREDITS = {};
+var CREDITS = {}, BY_SHOOTER = {}, NAMES = {};
 function indexCredits(rows){
   var photos = (rows && rows.photos) || rows || [];
   for(var i=0;i<photos.length;i++){
     var p=photos[i];
     if(p.photo_id) CREDITS[String(p.photo_id)] = p;
+    if(p.photographer) (BY_SHOOTER[p.photographer] = BY_SHOOTER[p.photographer] || []).push(p);
   }
+}
+
+/* Everyone whose registry note marks them as part of a named programme.
+   `photographer_names.json` already records this — the note field is doing
+   real work, not just sitting there as a comment. */
+function cohort(match){
+  var logins = [];
+  for(var login in NAMES){
+    var n = (NAMES[login] && NAMES[login].note) || '';
+    if(n.toLowerCase().indexOf(match.toLowerCase()) > -1) logins.push(login);
+  }
+  return logins;
 }
 function photoIdOf(path){
   var m = /\/(\d+)\.jpe?g$/i.exec(path||'');
@@ -1230,6 +1246,51 @@ function qrBlock(row, caption, fallback){
     + '</div>';
 }
 
+/* ── a cohort shout-out ──────────────────────────────────────────────────
+   The Bright Futures crew has put 300-odd photographs of 117 species into this
+   catalogue. Individually that is a credit line under a photo somebody has to
+   go looking for. Together it is a fact about the park worth putting on a wall.
+
+   This is also the RIGHT way to recognise students: a group, on a screen in
+   the park, transient and local — not a permanent indexed page per child.
+   Their names already appear as photo credits, so nothing new is exposed. */
+function slideCohort(){
+  var logins = cohort('Bright Futures');
+  if(!logins.length) return null;
+
+  var photos = [], species = {}, people = [];
+  logins.forEach(function(login){
+    var mine = BY_SHOOTER[login] || [];
+    if(!mine.length) return;
+    photos = photos.concat(mine);
+    mine.forEach(function(p){ species[p.psbp_id] = 1; });
+    people.push((NAMES[login] && NAMES[login].display_name) || login);
+  });
+  if(people.length < 3 || photos.length < 5) return null;
+
+  /* one photograph each from five different students where possible, so the
+     montage shows the crew rather than whoever shot the most */
+  var byPerson = {};
+  photos.forEach(function(p){ (byPerson[p.photographer] = byPerson[p.photographer] || []).push(p); });
+  var picks = shuffle(Object.keys(byPerson)).slice(0,5)
+                .map(function(k){ return pick(byPerson[k]); });
+  while(picks.length < 5 && photos.length) picks.push(pick(photos));
+
+  return {
+    set:true,
+    grid: picks.map(function(p){
+      return { src: p.photo_url || '', focus: p.focus };
+    }),
+    seconds: Math.round(SECONDS * 1.3),
+    html:
+        '<div class="count">'+photos.length+'<small>photographs, by students</small></div>'
+      + '<div class="headline">The Bright Futures crew</div>'
+      + '<div class="roster">'+esc(shuffle(people).join('  ·  '))+'</div>'
+      + '<div class="shot">'+people.length+' high-school volunteers &middot; '
+      +   Object.keys(species).length+' species documented</div>'
+  };
+}
+
 /* ── the week ────────────────────────────────────────────────────────────
    Merges one-off events with the recurring classes, which nothing else does:
    a class row says "every Monday", and this is the only place that turns that
@@ -1529,6 +1590,7 @@ function buildDeck(){
   for(i=0;i<AMBIENTS;i++)    pool.push({type:'ambient',   make:slideAmbient});
   for(i=0;i<COLLECTIONS;i++) pool.push({type:'collection',make:slideCollection});
   for(i=0;i<WEEKVIEWS;i++)   pool.push({type:'week',      make:slideWeek});
+  for(i=0;i<COHORTS;i++)     pool.push({type:'cohort',    make:slideCohort});
 
   pool = interleave(pool);
 
