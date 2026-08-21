@@ -348,6 +348,46 @@ body{
 .slide.ask .body{max-width:34ch}
 .slide.ask .emoji{font-size:7vmin;line-height:1;margin-bottom:2vmin}
 
+/* A gradient alone can't rescue type sitting over five bright photographs —
+   the contrast changes with every picture. This blurs the pictures themselves
+   behind the text and fades the blur out across the frame, so the words always
+   have something soft to sit on and the photographs still win on the right. */
+.veil{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  backdrop-filter:blur(9px) saturate(.85);
+  -webkit-backdrop-filter:blur(9px) saturate(.85);
+  -webkit-mask-image:linear-gradient(to right,#000 0%,#000 34%,rgba(0,0,0,.35) 56%,transparent 72%);
+          mask-image:linear-gradient(to right,#000 0%,#000 34%,rgba(0,0,0,.35) 56%,transparent 72%);
+}
+
+/* ── THE POLAROID STACK ──────────────────────────────────────────────────
+   For the students' slide the subject IS the volume. A tidy grid of five is
+   the one arrangement that hides how much there is. So ten of them fall onto
+   the screen one after another, slightly crooked, overlapping — a pile of
+   photographs on a table rather than a layout.
+
+   It breaks the rules elsewhere on this screen on purpose: this is the only
+   slide about people rather than plants. */
+.pile{position:absolute;inset:0;z-index:1;overflow:hidden}
+.pola{
+  position:absolute;background:var(--paper);
+  padding:1.1vmin 1.1vmin 3.6vmin;border-radius:.3vmin;
+  box-shadow:0 1.2vmin 4vmin rgba(0,0,0,.55);
+  opacity:0;animation:drop .85s cubic-bezier(.18,.86,.28,1) both;
+}
+.pola img{display:block;width:21vmin;height:21vmin;object-fit:cover;background:var(--ground-2)}
+@keyframes drop{
+  from{opacity:0;transform:translateY(-14vmin) scale(1.14) rotate(calc(var(--r) * 2.4))}
+  55% {opacity:1}
+  to  {opacity:1;transform:translateY(0) scale(1) rotate(var(--r))}
+}
+.slide.pile-slide .scrim{
+  background:
+    linear-gradient(to top,rgba(8,18,9,.92) 0%,rgba(8,18,9,.70) 34%,rgba(8,18,9,.30) 70%,rgba(8,18,9,.12) 100%),
+    linear-gradient(to right,rgba(8,18,9,.93) 0%,rgba(8,18,9,.72) 30%,rgba(8,18,9,.22) 52%,rgba(8,18,9,0) 70%);
+}
+.slide.pile-slide .copy{max-width:44vw}
+
 /* ── THE WEEK ────────────────────────────────────────────────────────────
    A schedule is SCANNED, not read — nobody reads a timetable end to end, they
    look for their own day. So the whole week goes up at once where it fits, and
@@ -1268,20 +1308,37 @@ function slideCohort(){
   });
   if(people.length < 3 || photos.length < 5) return null;
 
-  /* one photograph each from five different students where possible, so the
-     montage shows the crew rather than whoever shot the most */
+  /* Round-robin the students so the pile shows the crew, not whoever shot the
+     most — one has 116 photographs and would otherwise fill the table. */
   var byPerson = {};
   photos.forEach(function(p){ (byPerson[p.photographer] = byPerson[p.photographer] || []).push(p); });
-  var picks = shuffle(Object.keys(byPerson)).slice(0,5)
-                .map(function(k){ return pick(byPerson[k]); });
-  while(picks.length < 5 && photos.length) picks.push(pick(photos));
+  var keys = shuffle(Object.keys(byPerson)), picks = [], round = 0;
+  while(picks.length < 10 && round < 4){
+    for(var k=0; k<keys.length && picks.length<10; k++){
+      var mine = byPerson[keys[k]];
+      if(mine[round]) picks.push(mine[round]);
+    }
+    round++;
+  }
+  if(picks.length < 6) return null;
+
+  /* Scattered across the right-hand two thirds, tilted, dropped in one after
+     another. Positions are jittered per render, so the pile falls differently
+     every time it comes round. */
+  var pile = picks.map(function(p, i){
+    var col = i % 4, row = Math.floor(i / 4);
+    return {
+      src:   p.photo_url || '',
+      x:     40 + col * 14 + (Math.random()*7 - 3.5),
+      y:      8 + row * 27 + (Math.random()*9 - 4.5),
+      r:     (Math.random()*18 - 9).toFixed(1),
+      delay: ((0.7 + i * 0.34) / SPEED).toFixed(2)
+    };
+  });
 
   return {
-    set:true,
-    grid: picks.map(function(p){
-      return { src: p.photo_url || '', focus: p.focus };
-    }),
-    seconds: Math.round(SECONDS * 1.3),
+    pile: pile,
+    seconds: Math.round(SECONDS * 1.6),
     html:
         '<div class="count">'+photos.length+'<small>photographs, by students</small></div>'
       + '<div class="headline">The Bright Futures crew</div>'
@@ -1569,7 +1626,9 @@ function interleave(items){
   return out;
 }
 
+var cycle = 0;
 function buildDeck(){
+  cycle++;
   var pool=[], i;
   function add(type,rows,fn){
     if(!rows || !rows.length) return;
@@ -1590,7 +1649,9 @@ function buildDeck(){
   for(i=0;i<AMBIENTS;i++)    pool.push({type:'ambient',   make:slideAmbient});
   for(i=0;i<COLLECTIONS;i++) pool.push({type:'collection',make:slideCollection});
   for(i=0;i<WEEKVIEWS;i++)   pool.push({type:'week',      make:slideWeek});
-  for(i=0;i<COHORTS;i++)     pool.push({type:'cohort',    make:slideCohort});
+  /* Special slides lose their occasion if they turn up every seven minutes.
+     Once every third cycle is about twenty minutes apart. */
+  if(cycle % 3 === 1) for(i=0;i<COHORTS;i++) pool.push({type:'cohort', make:slideCohort});
 
   pool = interleave(pool);
 
@@ -1667,7 +1728,7 @@ function render(s){
   var dur = s.seconds || SECONDS;
   var el=document.createElement('div');
   el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'')
-             +(s.ambient?' ambient':'')+(s.set?' set':'')+(s.week?' week-slide':'');
+             +(s.ambient?' ambient':'')+(s.set?' set':'')+(s.week?' week-slide':'')+(s.pile?' pile-slide':'');
 
   /* pick a motion, never the same one twice running */
   var moves = KB.filter(function(k){ return k!==lastKB; });
@@ -1687,7 +1748,20 @@ function render(s){
     grid += '</div>';
   }
 
-  el.innerHTML = grid
+  var pile = '';
+  if(s.pile){
+    pile = '<div class="pile">';
+    for(var pi=0; pi<s.pile.length; pi++){
+      var c = s.pile[pi];
+      pile += '<div class="pola" style="left:'+c.x+'%;top:'+c.y+'%;--r:'+c.r+'deg;'
+            + 'z-index:'+(10+pi)+';animation-delay:'+c.delay+'s">'
+            + '<img alt="" src="'+c.src+'"></div>';
+    }
+    pile += '</div>';
+  }
+
+  el.innerHTML = grid + pile
+    + (s.grid ? '<div class="veil"></div>' : '')
     + '<div class="bg">'+(s.bg?'<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'">':'')+'</div>'
     + '<div class="scrim"></div>'
     + '<div class="copy">'+s.html+'</div>'
