@@ -1630,37 +1630,56 @@ function takeFrom(name, rows, n){
 function nextAsk(){ return takeFrom('ask', D.announcements, 1)[0]; }
 
 /* SPREADING THE FAMILIES
-   The old de-clump was a single forward pass that swapped when it could and
-   gave up when it couldn't, which is why two collection photographs still
-   turned up together — nothing fixes a tail that is already clumped.
+   Take whichever family has the most left, and the LARGEST family gets placed
+   first and most often — so it front-loads the deck and the smallest families
+   pile up at the end. With eight schedule slides and four quiet ones, the
+   opening ran event, something, event, something, and the ambient and
+   collection slides never arrived until the tail. Avoiding adjacency is not
+   the same as spreading out.
 
-   This is the standard greedy instead: at each step take whichever family has
-   the most slides left, except the one just placed. That guarantees no two
-   adjacent whenever it is arithmetically possible (no family holds more than
-   half the deck), and degrades gracefully when it isn't. */
+   So: give every family evenly-spaced ideal positions across the whole deck —
+   a family with n slides in a deck of N wants positions (i + ½)·N/n — and
+   settle each into the nearest free slot. Large or small, every family is now
+   distributed across the entire rotation rather than clustered in part of it. */
 function interleave(items){
-  var buckets = {}, k;
-  for(var i=0;i<items.length;i++){
+  var buckets = {}, k, i;
+  for(i=0;i<items.length;i++){
     k = famOf(items[i]);
     (buckets[k] = buckets[k] || []).push(items[i]);
   }
   for(k in buckets) shuffle(buckets[k]);
 
-  var out = [], last = null, keys = Object.keys(buckets);
-  while(out.length < items.length){
-    var best = null, bestN = 0;
-    for(var x=0;x<keys.length;x++){
-      var key = keys[x], n = buckets[key].length;
-      if(!n || key === last) continue;
-      if(n > bestN){ bestN = n; best = key; }
+  var N = items.length, slots = new Array(N);
+  /* biggest first: it has the least room to move, so let it claim its ideal
+     positions before the smaller families fill in around it */
+  var keys = Object.keys(buckets).sort(function(a,b){
+    return buckets[b].length - buckets[a].length;
+  });
+
+  keys.forEach(function(key){
+    var rows = buckets[key], n = rows.length;
+    rows.forEach(function(item, idx){
+      var ideal = Math.floor((idx + 0.5) * N / n);
+      var at = -1;
+      for(var d=0; d<N; d++){                     /* nearest free slot, either way */
+        if(ideal-d >= 0 && !slots[ideal-d]){ at = ideal-d; break; }
+        if(ideal+d <  N && !slots[ideal+d]){ at = ideal+d; break; }
+      }
+      if(at >= 0) slots[at] = item;
+    });
+  });
+
+  var out = slots.filter(Boolean);
+
+  /* an even spread can still leave the odd neighbouring pair — nudge those */
+  for(i=1;i<out.length;i++){
+    if(famOf(out[i]) !== famOf(out[i-1])) continue;
+    for(var j=i+2;j<out.length;j++){
+      if(famOf(out[j]) === famOf(out[i-1])) continue;
+      if(j+1 < out.length && famOf(out[j+1]) === famOf(out[i])) continue;
+      if(famOf(out[j-1]) === famOf(out[i])) continue;
+      var t = out[i]; out[i] = out[j]; out[j] = t; break;
     }
-    /* only what's left is the family we just placed — unavoidable */
-    if(best === null){
-      for(var y=0;y<keys.length;y++) if(buckets[keys[y]].length){ best = keys[y]; break; }
-      if(best === null) break;
-    }
-    out.push(buckets[best].shift());
-    last = best;
   }
   return out;
 }
