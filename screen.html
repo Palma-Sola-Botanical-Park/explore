@@ -655,16 +655,35 @@ function famOf(item){ return FAMILY[item.type] || item.type; }
 var D = { right_now:[], events:[], classes:[], news:[], announcements:[],
           volunteer:[], series:[], newsletters:[], plants:[], wildlife:[] };
 
+/* `display` decides web vs screen. An optional `screen_where` decides WHICH
+   screen — office, galleria, or blank for both.
+
+   The filter is here so the column can be added to the Sheet the day it's
+   needed and not before. Blank means everywhere, so an unused column costs
+   Bev nothing and costs the screen nothing. */
 function onScreen(rows){
   return (rows || []).filter(function(r){
     var d = (r.display || 'web').toLowerCase();
-    return d === 'screen' || d === 'both';
+    if(d !== 'screen' && d !== 'both') return false;
+    var where = (r.screen_where || r.screen_location || '').trim().toLowerCase();
+    return !where || where === 'both' || where === MODE;
   });
 }
 
+/* `cache: no-store` matters more than the ten-minute timer.
+   GitHub Pages sends cache headers, so a browser left running all day will
+   happily re-serve the same JSON it fetched at nine in the morning — the timer
+   fires, the fetch "succeeds", and the wall shows yesterday's content. This
+   forces every refresh to actually reach the network. */
 function grab(url){
-  return fetch(url).then(function(r){ if(!r.ok) throw 0; return r.json(); })
-                   .catch(function(){ return null; });
+  return fetch(url, { cache:'no-store' })
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .catch(function(){
+      /* some older TV browsers reject the option outright */
+      return fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + 'v=' + Date.now())
+        .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+        .catch(function(){ return null; });
+    });
 }
 
 function loadAll(){
@@ -2009,7 +2028,13 @@ function start(){
   deck=buildDeck(); at=0; next();
   tickClock(); setInterval(tickClock, 20000);
 
-  setInterval(function(){ loadAll().catch(function(){}); }, 10*60*1000);
+  setInterval(function(){
+    loadAll().then(function(){
+      /* derived from the feeds, so they go stale with them */
+      GROUPS = null;
+      queues = {};
+    }).catch(function(){});
+  }, 10*60*1000);
 
   setInterval(function(){
     var h=new Date().getHours();
