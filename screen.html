@@ -968,7 +968,7 @@ function slideRightNow(r){
   var body = beatsMarkup(list, list.length>1 ? 1 : null);
 
   return {
-    bg: sp && sp.photo ? BASE+sp.photo : null,
+    bg: bigPhoto(sp), bgFallback: fallbackPhoto(sp),
     focus: sp && sp.focus,
     credit: creditFor(sp),
     html:
@@ -994,7 +994,7 @@ function slideSpotlight(){
   if(seenSpecies.length > Math.floor(all.length * 0.6)) seenSpecies.shift();
   var hits = twoHits(s);
   return {
-    bg: BASE+s.photo, focus: s.focus,
+    bg: bigPhoto(s), bgFallback: fallbackPhoto(s), focus: s.focus,
     credit: creditFor(s),
     html:
       '<div class="eyebrow">From the collection</div>'
@@ -1233,7 +1233,8 @@ function artFor(row, fallback){
   var own = screenImage(row) || fallback || null;
   if(own) return { poster:null, bg:own, focus:null, atmos:false, credit:null };
   var atm = atmosPhoto();
-  return { poster:null, bg: atm ? BASE+atm.photo : null,
+  return { poster:null, bg: atm ? bigPhoto(atm) : null,
+           bgFallback: atm ? fallbackPhoto(atm) : null,
            focus: atm && atm.focus, atmos: !!atm, credit: creditFor(atm) };
 }
 
@@ -1465,7 +1466,7 @@ function slideAmbient(){
   if(!pool.length) return null;
   var s = pick(pool);
   return {
-    bg: BASE+s.photo, focus: s.focus, ambient:true,
+    bg: bigPhoto(s), bgFallback: fallbackPhoto(s), focus: s.focus, ambient:true,
     credit: creditFor(s),
     seconds: Math.round(SECONDS * 0.65),   /* a breath, not a dwell */
     html: ''
@@ -1557,7 +1558,9 @@ function slideCollection(){
 
   return {
     set:true,
-    grid: shots.map(function(x){ return { src: BASE+x.photo, focus: x.focus }; }),
+    /* a fifth of the frame each — `large` is already more pixels than the
+       panel can show, and five originals would be 20MB of wall */
+    grid: shots.map(function(x){ return { src: fallbackPhoto(x) || BASE+x.photo, focus: x.focus }; }),
     seconds: Math.round(SECONDS * 1.15),
     html:
         '<div class="count">'+g.rows.length+'<small>'+esc(g.sub)+'</small></div>'
@@ -1789,7 +1792,12 @@ function render(s){
 
   el.innerHTML = grid + pile
     + (s.grid ? '<div class="veil"></div>' : '')
-    + '<div class="bg">'+(s.bg?'<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'">':'')+'</div>'
+    + '<div class="bg">'+(s.bg
+        ? '<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'"'
+          + (s.bgFallback && s.bgFallback !== s.bg
+              ? ' data-fb="'+s.bgFallback+'" onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.dataset.fb=\'\'}"'
+              : '') + '>'
+        : '')+'</div>'
     + '<div class="scrim"></div>'
     + '<div class="copy">'+s.html+'</div>'
     + (s.poster?'<div class="poster-art"><img alt="" src="'+s.poster+'"></div>':'');
