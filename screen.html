@@ -744,6 +744,57 @@ function photoIdOf(path){
   var m = /\/(\d+)\.jpe?g$/i.exec(path||'');
   return m ? m[1] : null;
 }
+
+/* RESOLUTION
+   iNaturalist serves square / small / medium / large / original. The credits
+   file stores `large` — 1024px on the long edge, fine for a web page and soft
+   stretched across a 4K panel. Extensions vary (52 of the rows are .jpeg), so
+   only the size segment is swapped. `original` isn't guaranteed to exist, so
+   anything using it carries a fallback. */
+function inatSize(url, size){
+  if(!url) return url;
+  return url.replace(/\/(square|small|medium|large|original)(\.\w+)$/i, '/'+size+'$2');
+}
+
+/* Local hero files are deliberately shrunk for page weight; the screen wants
+   the opposite. Where a local photo came from iNaturalist, go back to source. */
+function bigPhoto(sp){
+  if(!sp) return null;
+  var rec = CREDITS[photoIdOf(sp.photo)];
+  if(rec && rec.photo_url) return inatSize(rec.photo_url, 'original');
+  return sp.photo ? BASE + sp.photo : null;
+}
+function fallbackPhoto(sp){
+  var rec = sp && CREDITS[photoIdOf(sp.photo)];
+  return (rec && rec.photo_url) || (sp && sp.photo ? BASE + sp.photo : '');
+}
+
+/* ORIENTATION
+   Four photographs in five are portrait — the catalogue is shot on phones and
+   the screen is 16:9 — so formats and library have to be matched up: wide
+   slides want the 192 landscapes, vertical panels want the 846 portraits.
+   With dimensions absent everything stays eligible, so this degrades to the
+   old behaviour rather than emptying out. */
+function orientOf(sp){
+  var rec = sp && CREDITS[photoIdOf(sp.photo)];
+  return (rec && rec.orient) || null;
+}
+function preferOrient(rows, want, floor){
+  if(!rows || !rows.length) return rows || [];
+  var hit = rows.filter(function(x){
+    var o = orientOf(x);
+    return o === want || (want === 'portrait' && o === 'square');
+  });
+  return hit.length >= (floor || 8) ? hit : rows;
+}
+
+/* Enough pixels for the region it must fill. A 1152x2048 phone photo is
+   perfect in a fifth-of-the-frame panel and soft across a 4K width. */
+function bigEnough(sp, minWidth){
+  var rec = sp && CREDITS[photoIdOf(sp.photo)];
+  if(!rec || !rec.w) return true;          /* unknown — don't exclude it */
+  return rec.w >= minWidth;
+}
 function creditFor(sp){
   if(!sp) return null;
   var rec = CREDITS[photoIdOf(sp.photo)] || {};
@@ -1921,7 +1972,15 @@ function render(s){
 function next(){
   if(at>=deck.length){ deck=buildDeck(); at=0; }
   var item=deck[at++], s=null;
-  try{ s=item.make(); }catch(e){ s=null; }
+  try{ s=item.make(); }
+  catch(e){
+    /* A builder that throws used to be indistinguishable from one that had
+       nothing to show, so a broken slide type vanished from the rotation in
+       silence — every species slide disappeared for a whole evening that way.
+       Skip it, but say so. */
+    console.error('screen.html: ' + item.type + ' slide failed —', e && e.message, e);
+    s = null;
+  }
   if(!s){ return next(); }
   var dur = render(s);
   timer=setTimeout(next, dur*1000);
