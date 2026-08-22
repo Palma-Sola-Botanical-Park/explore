@@ -8926,6 +8926,7 @@ AI_MODEL           = "claude-sonnet-4-6"   # bump to "claude-opus-4-8" for max q
 AI_MAX_TOKENS      = 8000
 AI_WEB_SEARCH_USES = 8
 AI_DRAFT_LOG       = os.path.join(REPO, "data", "sources", "ai_draft_log.json")
+AI_PROVENANCE_DIR  = os.path.join(REPO, "data", "sources", "provenance")
 
 # Field → (json-shape, instruction). This is the ONLY surface the AI may write.
 # Anything not listed here (id, names, taxonomy, status, photos, observation
@@ -9273,13 +9274,42 @@ def _ai_sanitize(draft, kingdom):
 
 
 def _ai_log_draft(entry):
-    """Append a provenance record to the sidecar log (best-effort)."""
+    """Append a provenance record to THAT SPECIES' own file (best-effort).
+
+    One file per species — data/sources/provenance/PSBP-00404.json — rather
+    than one log for the whole catalogue. Appending a draft now rewrites ~2 KB
+    instead of a multi-megabyte file, so git stores a small delta, the diff in
+    GitHub Desktop is readable, and "what sourced this species?" is one file
+    rather than a filtered scan. Same child-of-species pattern as photos/ and
+    the generated pages.
+
+    Two fields are dropped on the way in:
+      usage    ten fields of token telemetry, written 470 times and read never
+      sources  flattened from {title, url} objects to bare URL strings — the
+               URL is the citation, the title was ~40% of the file's bytes
+
+    Still best-effort: provenance must never be the thing that fails a draft.
+    """
     try:
-        log = _load(AI_DRAFT_LOG)
-        if not isinstance(log, dict):
-            log = {}
-        log.setdefault("drafts", []).append(entry)
-        write_json_atomic(AI_DRAFT_LOG, log)
+        sid = (entry.get("id") or "").strip()
+        if not sid:
+            return
+
+        rec = dict(entry)
+        rec.pop("usage", None)
+        rec["sources"] = [
+            s.get("url", "") for s in (rec.get("sources") or [])
+            if isinstance(s, dict) and s.get("url")
+        ]
+        rec.setdefault("kind", "draft")
+
+        path = os.path.join(AI_PROVENANCE_DIR, f"{sid}.json")
+        doc = _load(path)
+        if not isinstance(doc, dict) or not isinstance(doc.get("events"), list):
+            doc = {"psbp_id": sid, "kingdom": rec.get("kingdom", ""), "events": []}
+        doc["kingdom"] = rec.get("kingdom") or doc.get("kingdom", "")
+        doc["events"].append(rec)
+        write_json_atomic(path, doc)
     except Exception:
         pass
 
