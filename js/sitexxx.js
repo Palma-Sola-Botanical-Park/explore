@@ -1810,39 +1810,3 @@ async function loadRightNow(targetId, opts) {
     el._rnFlipWired = true;
   }
 }
-
-/* ── ANALYTICS · GoatCounter ───────────────────────────────────────────────
-   Added 2026-08-21, ahead of the QR sign beta — a baseline before the signs
-   go up is what makes the after-numbers mean anything.
-
-   Injected from here rather than pasted into each page's <head>, because
-   site.js is already loaded by index.html, nature.html and all 320 generated
-   species pages (plant_publisher.py line ~703). One edit, whole site, no
-   republish. count.js reads the data-goatcounter attribute off its own
-   <script> element, so building it this way is equivalent to the snippet
-   GoatCounter hands you.
-
-   Deliberately NOT on screen.html — the office TV doesn't load site.js, and a
-   display that reloads itself daily would register as a phantom visitor.
-
-   To exclude your own browser: visit any page once with ?skipgc=1, or use the
-   setting in GoatCounter. Worth doing on the laptop and the office machine
-   before the sign traffic starts arriving.
-
-   Cookieless, no consent banner needed, ~3.5 KB.
-   ─────────────────────────────────────────────────────────────────────── */
-(function () {
-  try {
-    if (/[?&]skipgc=1\b/.test(location.search)) {
-      try { localStorage.setItem('skipgc', '1'); } catch (e) {}
-    }
-    if (localStorage.getItem('skipgc') === '1') return;
-  } catch (e) { /* private mode — carry on and count normally */ }
-
-  var gc = document.createElement('script');
-  gc.async = true;
-  gc.setAttribute('data-goatcounter',
-                  'https://palmasolabotanicalpark.goatcounter.com/count');
-  gc.src = 'https://gc.zgo.at/count.js';
-  (document.head || document.documentElement).appendChild(gc);
-})();

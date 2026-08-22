@@ -10,39 +10,127 @@
 
 <!--
   ═══════════════════════════════════════════════════════════════════════════
-  screen.html — the office / galleria display
+  screen.html — the display on the galleria / office TV
+  ═══════════════════════════════════════════════════════════════════════════
 
-  Open full-screen on the TV browser. Nothing to click; nothing to configure.
+  READ SCREEN.md FIRST if you want the manual: Sheet columns, slide formats,
+  tuning dials, kiosk setup. This header is the orientation for someone about
+  to edit this file.
 
-      screen.html                  → galleria (default)
-      screen.html?mode=office      → office mix (fewer asks, more operations)
-      screen.html?seconds=18       → override slide duration
+  ───────────────────────────────────────────────────────────────────────────
+  WHAT IT IS
+  ───────────────────────────────────────────────────────────────────────────
+  One HTML file, no build step, no dependencies beyond two Google fonts. Open
+  it full-screen on a TV and leave it. It reads the same published JSON feeds
+  that drive the website, filtered to display ∈ {screen, both}, and rotates
+  through them. Data refreshes every 10 minutes; the page hard-reloads at 4am.
 
-  WHY THIS LOOKS DIFFERENT FROM THE SITE
-  The site is cream paper. A cream screen on a wall at TV brightness is a
-  lightbulb. So the ground inverts to a deep botanical dark and the photographs
-  carry the light. Brand gold, Playfair and Source Sans 3 are inherited
-  unchanged — same identity, different room.
+      screen.html                   galleria (default)
+      screen.html?mode=office       office mix
+      screen.html?mode=anything     a new screen; own routing, galleria mix
+      screen.html?speed=5           five times faster, for reviewing
+      screen.html?seconds=24        override the per-slide dwell
 
-  THE ONE DEVICE
-  A gold hairline frame, inset, with the wordmark set into the top rule and the
-  location tag breaking the bottom rule. The Galleria is a gallery room, so the
-  screen is a framed botanical plate on the wall rather than a television. The
-  frame persists; only the plate inside it changes.
+  ───────────────────────────────────────────────────────────────────────────
+  THE THREE IDEAS IT IS BUILT ON
+  ───────────────────────────────────────────────────────────────────────────
+  1. A SCREEN HAS NO VIEWER. Nobody is watching when the slide changes; they
+     glance up mid-rotation. Every slide is complete on its own — no build-up,
+     no callback, no punchline that depends on the slide before. Fewer words,
+     much bigger, readable across a room.
 
-  AND THE ONE TRUE SCREEN-ONLY IDEA
-  `right_now.area` rides in the eyebrow: "BLOOMING NOW → SERENITY GARDEN".
-  On the web that is a label. Here it is an instruction to walk. Everything
-  else follows from that test: does this only make sense because you are
-  standing in the park?
+  2. THE TEST FOR SCREEN CONTENT: does this only make sense because you are
+     standing in the park? `right_now.area` rides in the eyebrow as
+     "BLOOMING NOW → SERENITY GARDEN" — a label on the web, an instruction to
+     walk here. Anything that reads the same from a sofa in Ohio belongs on
+     the website.
 
-  DATA
-  Reads the published feeds directly. Every row is filtered to
-  display ∈ {screen, both}. Falls back to a small built-in sample if the feeds
-  can't be reached, so the file also opens standalone for testing.
+  3. THE ASK IS OCCASIONAL. The screen is mostly beauty and interest; a
+     donation slide every third turn is how you lose people. Asks are capped at
+     a quarter of the deck and spaced.
+
+  ───────────────────────────────────────────────────────────────────────────
+  HOW THE ROTATION IS BUILT  (buildDeck → interleave → next)
+  ───────────────────────────────────────────────────────────────────────────
+  Four constraints that actively fight each other, each handled separately:
+
+    COMPLETENESS   every announcement seen, every quick hit used
+                   → rotating queues (takeFrom, rotate)
+    PROPORTION     one news item must not outplay fourteen announcements
+                   → PERIOD: "each row of this feed comes round every N cycles",
+                     so slides-per-cycle = ceil(rows / period), capped by CAP
+    DISTRIBUTION   no clumping, no family stranded at the end of the deck
+                   → interleave(): every family gets evenly spaced ideal
+                     positions across the WHOLE deck. Note: an earlier greedy
+                     version avoided adjacency but front-loaded the largest
+                     family and pushed small ones to the tail. Avoiding
+                     adjacency and spreading out are different problems.
+    SURPRISE       the visitor should not be able to predict what is next
+                   → shuffling within all of the above
+
+  Structure decides what is in the deck and roughly where; randomness decides
+  which ones and in what order. Neither alone works — pure randomness clumps,
+  pure structure becomes a pattern.
+
+  ───────────────────────────────────────────────────────────────────────────
+  WHERE THE DATA COMES FROM
+  ───────────────────────────────────────────────────────────────────────────
+    data/published/*.json      Bev's Sheet, synced by a GitHub Action.
+                               events, classes, series, news, newsletters,
+                               announcements, volunteer, right_now
+    plants.json                the search index — light, has photo, focus,
+    wildlife.json              page, credit, family, form, native, and the
+                               boolean flags the collection slides group by
+    data/sources/
+      photo_credits.json       photographer, licence, observed_on, and (since
+                               08-21) w / h / orient
+      plant_signage.json       the QUICK HITS come from here, not from the
+      wildlife_signage.json    index — see the note at hitsOf()
+      photographer_names.json  display names + the `note` field, which is how
+                               the Bright Futures cohort slide finds its crew
+
+  ───────────────────────────────────────────────────────────────────────────
+  DECISIONS WORTH NOT RE-LITIGATING
+  ───────────────────────────────────────────────────────────────────────────
+  · NO QR ON SPECIES SLIDES. The reader is standing in front of the plant;
+    sending them to a web page about it is worse than looking up. QRs are for
+    registration, articles, flyers.
+  · QUICK HITS COME FROM THE SIGNAGE MASTERS. The search index flattens the
+    array into one space-joined string for search scoring, and 47% of hits run
+    to more than one sentence — splitting on sentences tore them in half.
+  · BLUR WAS REJECTED for text legibility. A softened photograph reads as a
+    mistake; darkening reads as a shadow. See .veil.
+  · ONE HORIZONTAL DARKENER PER SLIDE. Two stacked gradients multiply and turn
+    the first panel black. .veil owns the horizontal, .scrim owns the vertical.
+  · PORTRAITS TO TALL PANELS, LANDSCAPES TO WIDE SLIDES. 846 of the photos are
+    portrait against a 16:9 screen. See preferOrient().
+  · FULL-BLEED SLIDES PULL `original` FROM iNATURALIST. The local hero files
+    are deliberately shrunk for page weight; a wall wants the opposite.
+
+  ───────────────────────────────────────────────────────────────────────────
+  THE TRAP THAT COST AN EVENING
+  ───────────────────────────────────────────────────────────────────────────
+  next() catches exceptions per slide, so one broken format cannot take the
+  whole wall down. That is right — but it means a builder that throws is
+  indistinguishable from one that simply has nothing to show. A missing helper
+  function silently removed SIX of the thirteen formats, and the symptom was
+  "the mix feels event-heavy," not a crash.
+
+  Failures now log to the console with the slide type. IF THE ROTATION LOOKS
+  WRONG, OPEN THE CONSOLE BEFORE TOUCHING ANY WEIGHTS.
+
+  ───────────────────────────────────────────────────────────────────────────
+  ADDING A SLIDE FORMAT
+  ───────────────────────────────────────────────────────────────────────────
+  1. Write slideThing() returning {html, bg?, poster?, grid?, pile?, credit?,
+     seconds?} or null when it has nothing to show.
+  2. Add it to PERIOD/CAP (feed-driven) or push a fixed count in buildDeck().
+  3. Give it a FAMILY — formats that LOOK alike share one, so they never sit
+     adjacent. ambient and collection are both 'quiet'.
+  4. If it consumes more than one row, the period accounting does not apply;
+     handle it like slideWeek() does.
   ═══════════════════════════════════════════════════════════════════════════
 -->
-
 <style>
 :root{
   /* Ground — a botanical dark, not a tech dark. Pulled from --green-ink and
