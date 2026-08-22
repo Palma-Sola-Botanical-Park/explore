@@ -1,22 +1,22 @@
 {
   "tab": "events",
   "human": "Dated park events — one row per event (multi-day events use date_end).",
-  "generated_at": "2026-08-21T13:16:12+00:00",
-  "status": "amber",
+  "generated_at": "2026-08-22T02:40:09+00:00",
+  "status": "green",
   "published": true,
   "block_reason": null,
   "counts": {
     "staged": 29,
     "live": 9,
-    "published": 8,
+    "published": 9,
     "dropped_display": 20,
-    "quarantined": 1,
+    "quarantined": 0,
     "warned": 0
   },
   "volume_guard": {
     "min": 1,
     "live": 9,
-    "published": 8,
+    "published": 9,
     "blocked": false,
     "reason": null
   },
@@ -57,16 +57,11 @@
       "why": "Can't be blank.",
       "severity": "error",
       "scope": "row",
-      "status": "amber",
+      "status": "green",
       "evaluated": 9,
-      "passed": 8,
-      "flagged": 1,
-      "examples": [
-        {
-          "row": "2026-10-04",
-          "reason": "missing required value"
-        }
-      ]
+      "passed": 9,
+      "flagged": 0,
+      "examples": []
     },
     {
       "id": "date_end:iso_date_or_blank",
@@ -221,16 +216,11 @@
       "why": "Must match a name in the series tab, or be blank.",
       "severity": "warn",
       "scope": "field",
-      "status": "amber",
+      "status": "green",
       "evaluated": 9,
-      "passed": 8,
-      "flagged": 1,
-      "examples": [
-        {
-          "row": "2026-10-04",
-          "reason": "no matching row in the referenced tab"
-        }
-      ]
+      "passed": 9,
+      "flagged": 0,
+      "examples": []
     },
     {
       "id": "registration_url:url_or_blank",
@@ -261,12 +251,7 @@
       "examples": []
     }
   ],
-  "dropped_rows": [
-    {
-      "label": "2026-10-04",
-      "reason": "title: missing required value"
-    }
-  ],
+  "dropped_rows": [],
   "timeline": [
     {
       "at": "2026-08-19T02:01:14+00:00",
@@ -345,6 +330,12 @@
       "added": 1,
       "changed": 0,
       "removed": 0
+    },
+    {
+      "at": "2026-08-22T02:40:09+00:00",
+      "added": 1,
+      "changed": 0,
+      "removed": 1
     }
   ],
   "schema": {
