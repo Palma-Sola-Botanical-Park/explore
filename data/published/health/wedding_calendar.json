@@ -1,8 +1,8 @@
 {
   "tab": "wedding_calendar",
   "human": "Park-closure / not-open dates — one row per closed date.",
-  "generated_at": "2026-08-23T13:35:15+00:00",
-  "status": "amber",
+  "generated_at": "2026-08-23T13:38:54+00:00",
+  "status": "green",
   "published": true,
   "block_reason": null,
   "counts": {
@@ -11,7 +11,7 @@
     "published": 91,
     "dropped_display": 0,
     "quarantined": 0,
-    "warned": 1
+    "warned": 0
   },
   "volume_guard": {
     "min": 0,
@@ -60,16 +60,11 @@
       "why": "Must be possible or booked.",
       "severity": "warn",
       "scope": "field",
-      "status": "amber",
+      "status": "green",
       "evaluated": 91,
-      "passed": 90,
-      "flagged": 1,
-      "examples": [
-        {
-          "row": "2027-01-12",
-          "reason": "'' is not an allowed value"
-        }
-      ]
+      "passed": 91,
+      "flagged": 0,
+      "examples": []
     },
     {
       "id": "closes_park:in_vocab",
@@ -108,6 +103,12 @@
       "at": "2026-08-23T13:35:15+00:00",
       "added": 16,
       "changed": 17,
+      "removed": 1
+    },
+    {
+      "at": "2026-08-23T13:38:54+00:00",
+      "added": 1,
+      "changed": 1,
       "removed": 1
     }
   ],
