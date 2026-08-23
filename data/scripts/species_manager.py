@@ -2648,6 +2648,16 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
             html = html.replace(f'{q}../photos/', f'{q}/photos-file/')
             html = html.replace(f'{q}photos/',    f'{q}/photos-file/')
 
+        # Same problem, same fix, for stylesheets. A published page links
+        # "../css/site.css" because it lives in /plants/ or /wildlife/; on the
+        # flat preview server that resolves to /css/... and 404s, and the
+        # preview renders as unstyled HTML. Invisible before 2026-08-18, when
+        # the CSS moved out of the publishers into css/*.css — until then the
+        # styles were inline and travelled with the markup.
+        for q in ('"', "'", '('):
+            html = html.replace(f'{q}../css/', f'{q}/css-file/')
+            html = html.replace(f'{q}css/',    f'{q}/css-file/')
+
         # Gaps overlay panel (only in gaps mode) + the index-flags strip (always).
         # Both are preview-only and never touch the published page.
         overlay = (_gaps_overlay_html(audit_gaps(kingdom, species)) if gaps_mode else "")
@@ -9955,6 +9965,12 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_photo_file(path[len("/photos-file/"):])
             return
 
+        # Static stylesheet serving: /css-file/plant-page.css
+        # Preview-only. See _serve_css_file() for why this exists.
+        if path.startswith("/css-file/"):
+            self._serve_css_file(path[len("/css-file/"):])
+            return
+
         # Live preview: render a species page in memory (no files written)
         if path == "/preview":
             kingdom = params.get("kingdom", ["plants"])[0]
@@ -10058,6 +10074,45 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", mime)
             self.send_header("Content-Length", len(data))
             self.send_header("Cache-Control", "max-age=3600")
+            self.end_headers()
+            self.wfile.write(data)
+        except IOError:
+            self._html_response(500, "Read error")
+
+    def _serve_css_file(self, rel_path):
+        """Serve a stylesheet from the repo's css/ directory.
+
+        WHY THIS EXISTS: a published species page links "../css/site.css"
+        because it lives in /plants/ or /wildlife/. The preview server is flat,
+        so that resolves to /css/site.css, which nothing served — and the
+        preview rendered as unstyled HTML. Exactly the bug the /photos-file/
+        route already solves for images.
+
+        It only surfaced on 2026-08-18, when PLANT_CSS and WILD_CSS moved out of
+        the publishers into css/*.css. Before that the styles were inline in
+        every generated page and travelled with the markup.
+
+        Cache-Control is no-store on purpose, unlike photos: a stylesheet is
+        something you are actively editing, and the preview should show the
+        current file on every reload rather than a cached copy.
+        """
+        import mimetypes
+        clean = os.path.normpath(rel_path)
+        if clean.startswith("..") or clean.startswith("/"):
+            self._html_response(403, "Forbidden")
+            return
+        full = os.path.join(REPO, "css", clean)
+        if not os.path.isfile(full):
+            self._html_response(404, "Not found")
+            return
+        mime = mimetypes.guess_type(full)[0] or "text/css"
+        try:
+            with open(full, "rb") as f:
+                data = f.read()
+            self.send_response(200)
+            self.send_header("Content-Type", mime)
+            self.send_header("Content-Length", len(data))
+            self.send_header("Cache-Control", "no-store")
             self.end_headers()
             self.wfile.write(data)
         except IOError:
