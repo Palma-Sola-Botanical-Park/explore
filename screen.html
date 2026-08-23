@@ -2170,13 +2170,34 @@ function start(){
   deck=buildDeck(); at=0; next();
   tickClock(); setInterval(tickClock, 20000);
 
+  /* SCALED BY SPEED, so ?speed= is a time warp and not just a fast-forward.
+     Everything else already divides by SPEED — SECONDS, the beat cascade, the
+     slide turn — but this timer was hardcoded, so a fast run could exercise the
+     ROTATION and never the RELOAD.
+
+     That gap is exactly what hid the BY_SHOOTER accumulation bug: on a fast run
+     the cohort slide reported 298 photographs every time and looked right,
+     because a second fetch never happened. It only misbehaved on a wall that
+     had been up for twenty real minutes.
+
+     At speed=1 (the TV) this is unchanged at ten minutes. At speed=10 the feeds
+     reload every minute, so a five-minute test covers five refresh cycles. Do
+     not leave a high speed running against GitHub Pages for long — fourteen
+     files per cycle adds up.
+
+     To check an accumulator by hand instead, in the console:
+       loadAll().then(function(){ console.log(
+         Object.values(BY_SHOOTER).reduce(function(n,a){return n+a.length},0)); });
+     Run it twice. 1046 both times is correct; 2092 on the second is a leak.
+
+     NOT scaled: the 4am reload below, which is gated on the real wall clock. */
   setInterval(function(){
     loadAll().then(function(){
       /* derived from the feeds, so they go stale with them */
       GROUPS = null;
       queues = {};
     }).catch(function(){});
-  }, 10*60*1000);
+  }, (10*60*1000) / SPEED);
 
   setInterval(function(){
     var h=new Date().getHours();
