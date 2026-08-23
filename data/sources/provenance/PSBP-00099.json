@@ -1,0 +1,80 @@
+{
+  "psbp_id": "PSBP-00099",
+  "kingdom": "plants",
+  "events": [
+    {
+      "ts": "2026-07-23T19:22:56",
+      "id": "PSBP-00099",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Now that you are an API, do you want to do a full review of this writeup? Keep the good parts that are well written and researched. Anything else you want to add? Exclude?",
+      "changed": [
+        "form",
+        "alternate_names",
+        "quick_hits",
+        "origin",
+        "more_information",
+        "seasonality",
+        "growing_conditions",
+        "reproduction",
+        "edibility",
+        "toxicity",
+        "safety_note"
+      ],
+      "summary": "Nine fields updated: one schema-shape correction (form), one native-range factual correction (origin, quick_hits, more_information — Bolivia/Paraguay replaced with Brazil/Uruguay per Kew/Wikipedia/iNaturalist), two schema-conformance fixes (growing_conditions stripped to required keys; edibility/toxicity stripped to color-only), one flower-detail correction (size and angled-scape trait added), two fields populated from null (seasonality), and two fields enriched with documented alternate names and a stronger edibility flag.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Zephyranthes_robusta",
+        "https://www.inaturalist.org/taxa/476226-Zephyranthes-robustus",
+        "https://en.wikipedia.org/wiki/Zephyranthes_formosissima",
+        "https://www.gbif.org/species/2853500",
+        "https://en.wikipedia.org/wiki/Zephyranthella",
+        "https://en.wikipedia.org/wiki/Zephyranthes_insularum",
+        "https://en.wikipedia.org/wiki/Zephyranthes_citrina",
+        "https://en.wikipedia.org/wiki/Zephyranthes_subg._Eithea",
+        "https://en.wikipedia.org/wiki/Zephyranthes_advena",
+        "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:67314-1",
+        "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:330336-2",
+        "https://colplanta.org/taxon/urn:lsid:ipni.org:names:330336-2",
+        "https://www.inaturalist.org/taxa/1264664-Zephyranthes-robusta",
+        "https://www.pacificbulbsociety.org/pbswiki/index.php/zephyranthes",
+        "https://www.scientificlib.com/en/Biology/Plants/Magnoliophyta/Zephyranthes.html",
+        "https://xerces.org/sites/default/files/2018-05/17-046_03_XercesSoc_Pollinator-Plants_Florida_web-3page.pdf",
+        "https://www.flawildflowers.org/attracting-bees/",
+        "https://www.gardenia.net/guide/great-pollinator-plants-for-florida",
+        "https://blog.wfsu.org/blog-coastal-health/2022/02/30-bee-friendly-plants-for-your-north-florida-garden/",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4779295/",
+        "https://environmentamerica.org/florida/articles/how-to-plant-for-butterflies-and-bees-in-florida/",
+        "https://www.floridanativeplants.com/blog/plantforpollinators",
+        "https://nwdistrict.ifas.ufl.edu/hort/tag/flower/page/2",
+        "https://www.invasivespeciesinfo.gov/us/florida",
+        "https://invasivespecies.ifas.ufl.edu/",
+        "https://www.floridainvasives.org/",
+        "https://www.tampa.gov/sites/default/files/document/2023/2017_fleppc_invasive_plant_list.pdf",
+        "https://ask.ifas.ufl.edu/publication/AG436",
+        "https://plant-directory.ifas.ufl.edu/plant-directory/",
+        "https://sfyl.ifas.ufl.edu/sarasota/natural-resources/ecology-and-natural-resources/invasive-species/",
+        "https://ask.ifas.ufl.edu/publication/FP621",
+        "https://edis.ifas.ufl.edu/publication/FP621/pdf"
+      ],
+      "searches": 4,
+      "ai_sources_dropped": 1
+    },
+    {
+      "ts": "2026-07-23T19:28:00",
+      "id": "PSBP-00099",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "ubtle Polish Suggestions\nReproduction Section: The flowers are described as appearing in synchronized flushes. Since you recently checked botanical terminology for other profiles, it's worth noting that these flowers are indeed perfect/bisexual (containing both functional male stamens and female pistils). If you ever decide to expand the technical breakdown under REPRODUCTION & IDENTIFICATION, adding that detail fits right in.\n\nFormatting Check: The bullet points under QUICK HITS and MORE INFORMATION slightly duplicate the facts about the Habranthus nodding trait and the lycorine toxicity. This is actually quite helpful for scannability, but if you prefer zero redundancy, you could swap one mention out for a brief note on how easily it propagates via bulb offsets in Florida sandy soils.",
+      "changed": [
+        "quick_hits",
+        "more_information",
+        "reproduction"
+      ],
+      "summary": "Resolved the quick_hits/more_information duplication by swapping the lycorine bullet in quick_hits for a new bulb-offset propagation fact, while keeping lycorine in full context in more_information. Lightly incorporated the reviewer's perfect/bisexual flower detail into both the Flowers reproduction block and the more_information paragraph.",
+      "sources": [],
+      "searches": 0
+    }
+  ]
+}

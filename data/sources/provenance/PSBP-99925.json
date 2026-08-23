@@ -1,0 +1,103 @@
+{
+  "psbp_id": "PSBP-99925",
+  "kingdom": "wildlife",
+  "events": [
+    {
+      "ts": "2026-06-30T23:19:56",
+      "id": "PSBP-99925",
+      "kingdom": "wildlife",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Can you do a full review of every field? This bird was mistakenly sent to production with only a few fields so they all need a fresh look",
+      "changed": [
+        "quick_hits",
+        "range_and_origin",
+        "more_information",
+        "identification",
+        "diet",
+        "behavior",
+        "sounds",
+        "ecological_role",
+        "habitat",
+        "where_to_look",
+        "when_to_see",
+        "size",
+        "seasonality",
+        "sources"
+      ],
+      "summary": "Every field was a stub placeholder or contained errors (wrong length range, wrong seasonality months, generic diet/behavior text); all have been fully replaced with species-specific, sourced content drawn from Audubon, Cornell Lab/All About Birds, eBird, Birds of the World, NatureServe, and state wildlife agencies. The seasonality months array was also corrected from a winter-presence pattern to the accurate spring and fall migration windows for Florida.",
+      "sources": [
+        "https://ebird.org/species/yetvir",
+        "https://en.wikipedia.org/wiki/Yellow-throated_vireo",
+        "https://www.audubon.org/field-guide/bird/yellow-throated-vireo",
+        "https://www.allaboutbirds.org/guide/Yellow-throated_Vireo/id",
+        "https://www.bto.org/learn/about-birds/birdfacts/yellow-throated-vireo",
+        "https://app.mybirdbuddy.com/birds/yellow-throated-vireo/e887b24b-3f6f-4f19-9d74-63dfbea3b645",
+        "https://datazone.birdlife.org/species/factsheet/yellow-throated-vireo-vireo-flavifrons",
+        "https://www.fws.gov/species/yellow-throated-vireo-vireo-flavifrons",
+        "https://www.bto.org/understanding-birds/birdfacts/yellow-throated-vireo",
+        "https://animalia.bio/yellow-throated-vireo",
+        "https://www.tn.gov/twra/wildlife/birds/forest-birds/yellow-throated-vireo.html",
+        "https://www.birdsofpei.info/p/yellow-throated-vireo.html",
+        "https://mdc.mo.gov/discover-nature/field-guide/yellow-throated-vireo",
+        "https://www.sdakotabirds.com/species/yellow_throated_vireo_info.htm",
+        "https://birdsoftheworld.org/bow/species/yetvir/cur/introduction",
+        "https://explorer.natureserve.org/Taxon/ELEMENT_GLOBAL.2.103231/Vireo_flavifrons",
+        "https://sparrowbirds.com/yellow-throated-vireo/",
+        "https://birdsoftheworld.org/bow/species/yetvir/cur/movement",
+        "https://bedfordaudubon.org/yellow-throated-vireo/",
+        "https://ebird.org/news/yellow-throated-vireo",
+        "https://birdingdepot.com/yellow-throated-vireo/",
+        "https://www.allaboutbirds.org/guide/Yellow-throated_Vireo/overview",
+        "https://www.birds-of-north-america.net/Yellow-throated_Vireo.html"
+      ],
+      "searches": 3
+    },
+    {
+      "ts": "2026-06-30T23:21:44",
+      "id": "PSBP-99925",
+      "kingdom": "wildlife",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "The draft for the Yellow-throated Vireo ($Vireo\\ flavifrons$) is structurally excellent and written in a great, accessible style for park visitors.A critical pass for absolute accuracy reveals a couple of factual errors and timeline inconsistencies that need to be cleaned up before you publish.Factual Corrections & Tweaks1. The Nest-Building Behavior (Major Error)The Issue: The draft states that when a Brown-headed Cowbird parasitizes their nest, this vireo \"sometimes responds by building a new nest floor right over the parasitized clutch.\"The Correction: This is incorrect. Building a new floor over a cowbird egg is a famous defense mechanism of the Yellow Warbler, not the Yellow-throated Vireo. Yellow-throated Vireos unfortunately do not have this defense; they will either accept the cowbird egg and raise it, or abandon the entire nest completely. You should drop this bullet point entirely to avoid publishing misinformation.2. Timeline Inconsistency (\"Late Summer\" Singing)The Issue: T",
+      "changed": [
+        "quick_hits",
+        "more_information"
+      ],
+      "summary": "Two factual errors were corrected: the cowbird 'new nest floor' defense (a Yellow Warbler trait, not a Yellow-throated Vireo trait) was removed from quick_hits and fixed in more_information paragraph 3. The 'late summer singing' quick hit was replaced with spring-migration-appropriate content, since Bradenton-area visitors only encounter this species as a transient.",
+      "sources": [
+        "https://ebird.org/atlasmddc/news/september-bird-of-the-month-yellow-throated-vireo",
+        "https://en.wikipedia.org/wiki/Brown-headed_cowbird",
+        "https://www.scienceofbirds.com/blog/what-is-brood-parasitism-in-birds",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9911624/",
+        "https://esajournals.onlinelibrary.wiley.com/doi/10.1002/ecy.3925",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3539002/",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3471865/",
+        "https://www.reconnectwithnature.org/news-events/the-buzz/brood-parasitism-brown-headed-cowbird",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7109080/",
+        "https://onlinelibrary.wiley.com/doi/10.1111/j.1439-0310.2008.01597.x",
+        "https://www.researchgate.net/publication/259729416_Clutch_Abandonment_by_Parasitized_Yellow_Warblers_Egg_Burial_or_Nest_Desertion_Abandono_de_Nidadas_Parasitadas_de_Dendroica_petechia_Entierro_de_Huevos_o_Desercion_del_Nido",
+        "https://www.sciencedirect.com/science/article/abs/pii/S0003347285701200",
+        "https://www.birdwatchersgeneralstore.com/young-yellow-warblers-are-brown/",
+        "https://academic.oup.com/condor/article/112/2/399/5152612",
+        "https://nestwatch.org/learn/general-bird-nest-info/brown-headed-cowbirds/",
+        "https://opinicon.wordpress.com/2010/01/19/coping-with-cowbirds-yellow-warblers-stack-nest/"
+      ],
+      "searches": 2
+    },
+    {
+      "ts": "2026-06-30T23:23:11",
+      "id": "PSBP-99925",
+      "kingdom": "wildlife",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "This draft for the Yellow-throated Vireo ($Vireo\\ flavifrons$) looks incredibly sharp, clean, and beautifully tailored for park patrons. The tone is relaxed and professional, and you successfully addressed the common confusion with the Pine Warbler right away.Looking at the text with an absolute zero-mistake lens, there are no remaining factual errors or timeline contradictions. You nailed it.I have just two very minor, microscopic layout/formatting observations to ensure total perfection before you hit publish:Voice vs. Quick Hits Continuity: Under the \"QUICK HITS\" section, you beautifully adjusted the timeline to note that males sing during their spring stopover. Down in the \"VOICE\" section, the text still reads, \"Males sing persistently through the breeding season.\" While technically true for their overall biology, since they don't breed at Palma Sola, you might want to tweak that line slightly to \"Males sing persistently during spring migration\" just so a casual reader doesn't get ",
+      "changed": [
+        "sounds"
+      ],
+      "summary": "One field updated. The 'sounds' field was adjusted to replace a breeding-season singing reference with a spring-migration reference, keeping the sign consistent with the park's non-breeding context. The reviewer's em-dash spacing concern was not applied because the current quick_hits text already has uniform, correct spacing throughout.",
+      "sources": [],
+      "searches": 0
+    }
+  ]
+}

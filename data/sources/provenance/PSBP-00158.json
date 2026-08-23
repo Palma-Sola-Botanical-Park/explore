@@ -1,0 +1,71 @@
+{
+  "psbp_id": "PSBP-00158",
+  "kingdom": "plants",
+  "events": [
+    {
+      "ts": "2026-07-04T11:27:07",
+      "id": "PSBP-00158",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Can you change the Common name only to \"Christmas Berry\" and put the \"Carolina Wolfberry\" in the alternate names area? Will that break anything?",
+      "changed": [
+        "alternate_names"
+      ],
+      "summary": "The common name is now 'Christmas Berry' and 'Carolina Wolfberry' has been added to the top of the alternate_names list. No other fields are affected — all content, facts, and structure remain exactly as they were.",
+      "sources": [],
+      "searches": 0
+    },
+    {
+      "ts": "2026-07-04T11:30:30",
+      "id": "PSBP-00158",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "This is a fantastic addition for a coastal Florida park profile! The narrative beautifully frames it as a native goji berry relative and highlights its incredible value to bird life.\n\nLet's do a quick pre-flight check on your index flags:\n\n📋 Index Flags Check\nNative: ✓ yes (Correct—a highly specialized southeastern coastal native).\n\nWatch / Invasive: — no (Correct).\n\nLarval Host / Nectar: — no / ✓ yes (Correct—great for native bees).\n\nForm: Groundcover & Wildflower\n\nDesign / Filter Note: While it's classified here as a groundcover/wildflower, keep in mind that Lycium carolinianum usually grows into a spiny, sprawling shrub about 3 to 8 feet tall. If your park browse filters use \"Shrub & Vine\" as a category, you might consider multi-tagging it or shifting it there so visitors know to expect a woody, thorny bush rather than a low-lying carpet.\n\nEdibility Box: 🟢 Green (Spot on—the ripe red fruits are completely edible and historically significant as a wild food).\n\nToxicity (People/Dogs): ",
+      "changed": [
+        "form"
+      ],
+      "summary": "Only the form field is changed, from 'Groundcover & Wildflower' to 'Shrub & Vine', reflecting the plant's true woody, sprawling shrub habit. All other fields were confirmed correct by the reviewer and are left exactly as-is.",
+      "sources": [],
+      "searches": 0
+    },
+    {
+      "ts": "2026-07-04T11:33:09",
+      "id": "PSBP-00158",
+      "kingdom": "plants",
+      "kind": "revise",
+      "model": "claude-sonnet-4-6",
+      "feedback": "Google says this. disagree? \n\nEdibility Box: ● Yellow 🔴 Correction Needed\n\nThe Fix: This should be changed to 🟢 Green (or your platform's safe equivalent). While your copy rightly notes that you should only eat the ripe fruit and leave the nightshade foliage alone, a Yellow box usually signals an inherent health risk, mild toxicity, or contact irritation. Because the ripe berries are fully edible, non-toxic, and celebrated as a wild food, it earns a clean Green edibility rating.\n\nToxicity (People/Dogs): ● Yellow / ● Yellow 🔴 Correction Needed\n\nThe Fix: These should both be flipped to 🟢 Green. The plant is not listed as toxic to people or pets, and keeping these at yellow conflicts with your text stating it is \"not known to be harmful\" to dogs.\n\n🔍 Content & Visual Highlights\nThe Goji Connection: Comparing it to its famous cousin is an excellent, sticky hook for park patrons.\n\nThe Ecological Story: Highlighting the relationship between these berries and the endangered whooping cranes on ",
+      "changed": [
+        "edibility",
+        "toxicity",
+        "safety_note"
+      ],
+      "summary": "Prose stripped from edibility and toxicity fields into a new safety_note, correcting the schema violations the reviewer's feedback exposed. Color levels held at Yellow across the board — authoritative sources (FNPS, PFAF) hedge on the ripe fruit and the dog-toxicity picture is genuinely ambiguous, so Green is not supportable.",
+      "sources": [
+        "https://practicalplants.org/wiki/lycium_carolinianum/",
+        "https://temperate.theferns.info/plant/Lycium+carolinianum",
+        "https://www.gardenia.net/plant/lycium-carolinianum",
+        "https://www.eattheweeds.com/tag/lycium-carolinianum/",
+        "https://www.flawildflowers.org/flower-friday-lycium-carolinianum/",
+        "https://pfaf.org/user/Plant.aspx?LatinName=Lycium+carolinianum",
+        "https://www.eattheweeds.com/christmas-wolf-goji-theyre-all-berries-2/",
+        "https://www.eattheweeds.com/tag/lycium-pallidum/",
+        "https://www.fnps.org/plant/lycium-carolinianum",
+        "https://www.eattheweeds.com/tag/lycium-barbarum/",
+        "https://www.aspca.org/pet-care/animal-poison-control/dogs-plant-list",
+        "https://www.gardenfactoryny.com/media/pdf/ToxicPlants.pdf",
+        "https://www.wildflower.org/expert/show.php?id=7444&frontpage=true",
+        "https://www.aspca.org/pet-care/aspca-poison-control/toxic-and-non-toxic-plants",
+        "https://rootandreachbotanicals.com/pages/pet-safety",
+        "https://www.aspca.org/news/do-you-know-which-flowers-and-plants-are-toxic-pets-our-experts-explain",
+        "https://www.cathouseonthekings.com/docs/plantinfo.php/mobile?species=2&toxic=yes",
+        "https://www.aspca.org/news/top-10-toxic-plants-pets-what-look-out",
+        "https://southernhorticultureflorida.com/resources/pet-friendly-gardening-saint-augustine-fl",
+        "https://www.animalhealthfoundation.org/blog/2023/10/plants-safe-for-dogs-and-cats/"
+      ],
+      "searches": 2
+    }
+  ]
+}
