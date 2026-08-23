@@ -848,6 +848,25 @@ function indexHits(blob){
 var CREDITS = {}, BY_SHOOTER = {}, NAMES = {};
 function indexCredits(rows){
   var photos = (rows && rows.photos) || rows || [];
+
+  /* REBUILT EACH REFRESH, NOT APPENDED.
+     BY_SHOOTER used push(), and the feeds are re-read every ten minutes, so
+     every refresh added all 1,046 photos again. The cohort slide sums those
+     arrays: 298 photographs on first load, 596 ten minutes later, 894 after
+     twenty, and roughly 43,000 by the 4am reload. The species count stayed
+     right the whole time because it is a dict keyed by psbp_id and duplicates
+     collapse — which is what made the photo count obviously wrong.
+
+     Guarded: an empty or failed fetch must not wipe what is already loaded.
+     The credits master is optional here (see the note above), and losing it
+     mid-day would strip dates and orientation off every slide.
+
+     Deliberately NOT done to indexHits() below — that one is called twice per
+     refresh, plants then wildlife, and uses assignment. Clearing at its top
+     would make the wildlife pass erase the plants pass. */
+  if(!photos.length) return;
+  CREDITS = {}; BY_SHOOTER = {};
+
   for(var i=0;i<photos.length;i++){
     var p=photos[i];
     if(p.photo_id) CREDITS[String(p.photo_id)] = p;
