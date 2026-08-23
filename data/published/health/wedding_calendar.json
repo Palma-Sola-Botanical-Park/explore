@@ -1,22 +1,22 @@
 {
   "tab": "wedding_calendar",
   "human": "Park-closure / not-open dates — one row per closed date.",
-  "generated_at": "2026-08-23T12:51:07+00:00",
-  "status": "green",
+  "generated_at": "2026-08-23T13:35:15+00:00",
+  "status": "amber",
   "published": true,
   "block_reason": null,
   "counts": {
-    "staged": 72,
-    "live": 72,
-    "published": 72,
+    "staged": 91,
+    "live": 91,
+    "published": 91,
     "dropped_display": 0,
     "quarantined": 0,
-    "warned": 0
+    "warned": 1
   },
   "volume_guard": {
     "min": 0,
-    "live": 72,
-    "published": 72,
+    "live": 91,
+    "published": 91,
     "blocked": false,
     "reason": null
   },
@@ -30,8 +30,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 72,
-      "passed": 72,
+      "evaluated": 91,
+      "passed": 91,
       "flagged": 0,
       "examples": []
     },
@@ -44,8 +44,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 72,
-      "passed": 72,
+      "evaluated": 91,
+      "passed": 91,
       "flagged": 0,
       "examples": []
     },
@@ -60,11 +60,16 @@
       "why": "Must be possible or booked.",
       "severity": "warn",
       "scope": "field",
-      "status": "green",
-      "evaluated": 72,
-      "passed": 72,
-      "flagged": 0,
-      "examples": []
+      "status": "amber",
+      "evaluated": 91,
+      "passed": 90,
+      "flagged": 1,
+      "examples": [
+        {
+          "row": "2027-01-12",
+          "reason": "'' is not an allowed value"
+        }
+      ]
     },
     {
       "id": "closes_park:in_vocab",
@@ -79,8 +84,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 72,
-      "passed": 72,
+      "evaluated": 91,
+      "passed": 91,
       "flagged": 0,
       "examples": []
     }
@@ -98,6 +103,12 @@
       "added": 22,
       "changed": 5,
       "removed": 12
+    },
+    {
+      "at": "2026-08-23T13:35:15+00:00",
+      "added": 16,
+      "changed": 17,
+      "removed": 1
     }
   ],
   "schema": {
