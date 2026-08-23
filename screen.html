@@ -1168,7 +1168,23 @@ function slideSpotlight(){
   if(!pool.length){ seenSpecies = []; pool = all; }
   var s = pick(pool);
   seenSpecies.push(s.id);
-  if(seenSpecies.length > Math.floor(all.length * 0.6)) seenSpecies.shift();
+  /* NO CAP — see the reset three lines above, which this used to make
+     unreachable.
+
+     It previously read:
+       if(seenSpecies.length > Math.floor(all.length * 0.6)) seenSpecies.shift();
+     which held seenSpecies at 192 of 320, so `pool` never emptied and the
+     reset never fired. Every pick was uniform-random over whichever 128
+     species happened to be outside the window — so one plant could come
+     round again while a hundred others had never been shown at all. It read
+     on the wall as some species appearing constantly and some never.
+
+     Now seenSpecies grows until every species has been shown, the reset
+     fires, and the pool refills: sampling WITHOUT replacement across the
+     whole catalogue. At 4 spotlights a cycle a full pass takes ~80 cycles.
+
+     Same principle as takeFrom() for the feeds and rotate() for the quick
+     hits — everything gets its turn before anything gets a second. */
   var hits = twoHits(s);
   return {
     bg: bigPhoto(s), bgFallback: fallbackPhoto(s), focus: s.focus,
