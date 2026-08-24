@@ -12,6 +12,7 @@ One tool, one port (8700), five tabs matching the species pipeline:
 Usage:
     python3 species_manager.py                # Start on port 8700
     python3 species_manager.py --port 8705    # Custom port
+    python3 species_manager.py --host 0.0.0.0 # Expose to the network (see HOST)
 
 Architecture doc:  SPECIES_MANAGER.md
 Shared module:     psbp_common.py
@@ -56,6 +57,15 @@ except Exception as _e:  # pragma: no cover
     wildlife_publisher = None
 
 PORT = 8700
+
+# Loopback by default, matching plant_publisher.py and wildlife_publisher.py.
+# This used to bind ("", port) — every network interface — which made the one
+# tool that can write every master, drive the AI subsystems and spend
+# ANTHROPIC_API_KEY reachable from any machine on the same network, with no
+# auth in front of it. Harmless on a home network, not harmless on park wifi,
+# and nothing warned you which one you were on.
+# Override deliberately with --host 0.0.0.0 when you actually want that.
+HOST = "127.0.0.1"
 
 # Data source paths (all relative to REPO)
 PLANT_SIGNAGE      = os.path.join(REPO, "data", "sources", "plant_signage.json")
@@ -10126,7 +10136,13 @@ def main():
         if idx + 1 < len(sys.argv):
             port = int(sys.argv[idx + 1])
 
-    server = ThreadingHTTPServer(("", port), DashboardHandler)
+    host = HOST
+    if "--host" in sys.argv:
+        idx = sys.argv.index("--host")
+        if idx + 1 < len(sys.argv):
+            host = sys.argv[idx + 1]
+
+    server = ThreadingHTTPServer((host, port), DashboardHandler)
     print(f"╔══════════════════════════════════════════════════╗")
     print(f"║  PSBP Species Manager                           ║")
     print(f"║  http://localhost:{port:<5}                       ║")
@@ -10137,6 +10153,9 @@ def main():
     print(f"║  Publish ..... http://localhost:{port}/publish    ║")
     print(f"╚══════════════════════════════════════════════════╝")
     print(f"  Data: {REPO}")
+    if host not in ("127.0.0.1", "localhost"):
+        print(f"  ⚠  Bound to {host} — reachable from other machines on this")
+        print(f"     network, and this dashboard has no authentication.")
     print(f"  Ctrl+C to stop\n")
 
     try:
