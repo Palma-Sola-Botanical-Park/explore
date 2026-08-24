@@ -429,8 +429,14 @@ def propagate_photographer_name(login):
         login: the iNat login handle (case-insensitive)
 
     Returns:
-        (count_updated, new_display_name) — how many records changed
-        and what the resolved name is.
+        (count_updated, new_display_name, affected_species) — a THREE-tuple:
+        how many photo records changed, the resolved display name, and the
+        sorted list of PSBP ids that need re-promoting to get the new name
+        onto their pages and index cards.
+
+        (This said two values until 2026-08-24, which would have raised
+        ValueError in any caller that unpacked it. Nothing called it until
+        07-24, so the error never fired.)
     """
     credits = load_json(PHOTO_CREDITS_JSON)
     name = display_name(login, "")     # resolves from photographer_names.json

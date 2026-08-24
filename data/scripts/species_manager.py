@@ -2,12 +2,19 @@
 """
 species_manager.py — Unified PSBP Species Dashboard
 
-One tool, one port (8700), five tabs matching the species pipeline:
-  Overview  → Pipeline funnel, needs-attention flags (both kingdoms)
-  Intake    → Import species from iNat, mint PSBP IDs
-  Photos    → Triage + review (hero/gallery/roles)
-  Edit      → Signage field editor with live HTML preview
-  Publish   → Promote/demote, generate HTML, rebuild indexes
+One tool, one port (8700), seven tabs matching the species pipeline:
+  Overview          → Pipeline funnel, needs-attention flags (both kingdoms)
+  Intake            → Import species from iNat, mint PSBP IDs
+  Photos            → Triage + review (hero/gallery/roles)
+  Cultivated        → The one tab that writes back to iNaturalist
+  Phenology         → Claude-vision reading of observation photos (plants only)
+  Preview & Publish → Promote/demote, generate HTML, rebuild indexes
+  Verify            → Targeted fail-closed re-check of flag fields
+
+NOTE: there is NO Edit tab. This docstring listed one until 2026-08-24, and
+the gap is real rather than cosmetic — signage fields with no home in any tab
+have to be hand-edited in the JSON, which is how a Common Raccoon reached
+`spotted` filed as animal_group "Fly". TABS below is the authority.
 
 Usage:
     python3 species_manager.py                # Start on port 8700
