@@ -2694,6 +2694,37 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
                     f"<p>{species_id} has no hero photo yet, so there's nothing to preview. "
                     f"Add one in the Photos tab first.</p>", 400)
 
+        # animal_group has to be checked BEFORE generate_html, because the page
+        # template calls theme_for(), which raises on a missing or unrecognized
+        # value — and a raised exception here becomes a stack trace instead of a
+        # page. That is how this reads from the outside: promote a species
+        # through Intake, hit Preview, get a traceback, and nothing anywhere
+        # says which field is at fault.
+        #
+        # It also made the Gaps view useless for exactly the field it most needs
+        # to report, since the render died before the overlay was injected.
+        # Fail with an explanation and still show the gaps panel.
+        if kingdom != "plants":
+            ok_ag, ag_reason = check_animal_group(species)
+            if not ok_ag:
+                gaps_html = _gaps_overlay_html(audit_gaps(kingdom, species))
+                return (
+                    '<div style="font:15px/1.6 system-ui;max-width:640px;'
+                    'margin:60px auto;padding:0 20px;color:#1a3a1f;">'
+                    f'<h1 style="font:700 22px system-ui;">Can\'t preview {species_id} yet</h1>'
+                    f'<p><strong>{ag_reason}.</strong> The page theme and the '
+                    'Nature filter bucket are both driven by <code>animal_group</code>, '
+                    'so the template cannot render without it.</p>'
+                    '<p>Set it on the <strong>Preview &amp; Publish</strong> tab — the '
+                    'dropdown next to this species offers only valid values. It is '
+                    'normally derived from iNaturalist taxonomy when the species is '
+                    'first added, so an empty one usually means the record predates '
+                    'that, or the taxonomy did not settle it (a snake, an unplaced '
+                    'insect).</p>'
+                    f'<p style="opacity:.75;">Valid values: '
+                    f'{", ".join(sorted(VALID_ANIMAL_GROUPS))}.</p></div>'
+                    + gaps_html, 200)
+
         html = pub.generate_html(species, hero, galleries.get(species_id, []))
 
         # Banner + a toggle between Visitor view and Gaps view. The gaps overlay
