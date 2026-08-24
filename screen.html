@@ -1228,10 +1228,7 @@ function slideEvent(e){
   if(e.kid_friendly==='Yes') bits.push('Kids welcome');
   var far = daysUntil(e.date) > NEAR_DAYS;
   var art = artFor(e);
-  return {
-    bg: art.bg, focus: art.focus, atmos: art.atmos,
-    poster: art.poster, credit: art.credit,
-    seconds: art.poster ? Math.round(SECONDS * 1.6) : null,
+  return fromArt(art, {
     html:
       dateStamp(e.date, e.date_end)
     + (far || e.series
@@ -1245,7 +1242,7 @@ function slideEvent(e){
     + (bits.length?'<div class="meta"><span>'+bits.map(esc).join('</span><span>')+'</span></div>':'')
     + logoBlock(e, 'With')
     + qrBlock(e, e.registration_url ? 'Scan to register' : 'Scan for details', e.registration_url || e.link_url)
-  };
+  });
 }
 
 var DOW = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',
@@ -1253,10 +1250,7 @@ var DOW = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',
 function slideClass(c){
   var art = artFor(c);
   var day = DOW[c.weekday] || c.weekday || 'Weekly';
-  return {
-    bg: art.bg, focus: art.focus, atmos: art.atmos,
-    poster: art.poster, credit: art.credit,
-    seconds: art.poster ? Math.round(SECONDS * 1.6) : null,
+  return fromArt(art, {
     html:
       '<div class="stamp">'
     +   '<span class="num word">Every</span>'
@@ -1271,7 +1265,7 @@ function slideClass(c){
     + (c.cost?'<span>'+esc(c.cost)+'</span>':'')+'</div>'
     + logoBlock(c, 'With')
     + qrBlock(c, 'Scan for details', c.registration_url || c.link_url)
-  };
+  });
 }
 
 function slideNews(n){
@@ -1279,10 +1273,9 @@ function slideNews(n){
      Blurb, intro and body2 take turns underneath. */
   var beats = beatsFrom([n.blurb, n.intro, n.body2], 3);
   var art = artFor(n, n.hero_image ? BASE+n.hero_image : null);
-  return {
-    bg: art.bg, focus: art.focus, atmos: art.atmos,
-    poster: art.poster, credit: art.credit,
-    /* a story with three turns needs longer than a species photo */
+  return fromArt(art, {
+    /* Set here, so fromArt() leaves it alone: a story with three turns needs
+       longer than a species photo. */
     seconds: art.poster ? Math.round(SECONDS * 1.6)
            : (beats.length > 1 ? Math.round(SECONDS * (1 + 0.45*(beats.length-1))) : SECONDS),
     html:
@@ -1292,54 +1285,45 @@ function slideNews(n){
     + beatsMarkup(beats)
     + logoBlock(n, 'With thanks to')
     + qrBlock(n, 'Scan to read the story', n.link_url)
-  };
+  });
 }
 
 function slideSeries(s){
   var art = artFor(s);
-  return {
-    bg: art.bg, focus: art.focus, atmos: art.atmos,
-    poster: art.poster, credit: art.credit,
-    seconds: art.poster ? Math.round(SECONDS * 1.6) : null,
+  return fromArt(art, {
     html:
       '<div class="eyebrow">'+esc(s.category||'Series')+'</div>'
     + '<div class="headline">'+esc(s.name)+'</div>'
     + (s.blurb?'<div class="body">'+rich(s.blurb)+'</div>':'')
     + logoBlock(s, 'In partnership with')
     + qrBlock(s, 'Scan for the schedule', s.flyer_url)
-  };
+  });
 }
 
 function slideVolunteer(v){
   var vArt = artFor(v, v.photo_url
     ? (/^https?:/.test(v.photo_url) ? v.photo_url : BASE+v.photo_url.replace(/^\//,''))
     : null);
-  return {
-    bg: vArt.bg, focus: vArt.focus, atmos: vArt.atmos,
-    poster: vArt.poster, credit: vArt.credit,
-    seconds: vArt.poster ? Math.round(SECONDS * 1.6) : null,
+  return fromArt(vArt, {
     html:
       '<div class="eyebrow">'+esc(v.role||'Volunteer')+'</div>'
     + '<div class="headline">'+esc(v.title)+'</div>'
     + (v.body?'<div class="body">'+rich(v.body)+'</div>':'')
     + logoBlock(v, 'With')
     + qrBlock(v, 'Scan to sign up', v.link_url)
-  };
+  });
 }
 
 function slideNewsletter(n){
   var art = artFor(n);
-  return {
-    bg: art.bg, focus: art.focus, atmos: art.atmos,
-    poster: art.poster, credit: art.credit,
-    seconds: art.poster ? Math.round(SECONDS * 1.6) : null,
+  return fromArt(art, {
     html:
       '<div class="eyebrow">Newsletter · '+esc(niceDate(n.date)||n.title)+'</div>'
     + '<div class="headline">'+esc(n.title)+'</div>'
     + (n.description?'<div class="body">'+rich(n.description)+'</div>':'')
     + (qrUrlOf(n, n.link_url)?'':'<div class="meta"><span>Pick one up at the office</span></div>')
     + qrBlock(n, 'Scan to read it', n.link_url)
-  };
+  });
 }
 
 /* Turn a set of Sheet fields into readable beats.
@@ -1444,15 +1428,44 @@ function posterImage(row){
    the collection as atmosphere. Returns the fields a slide needs.
    `fallback` lets a slide keep its existing default (news hero_image,
    volunteer photo_url) ahead of the atmospheric pick. */
+/* ALL THREE BRANCHES RETURN THE SAME KEYS. Two of them used to omit
+   `bgFallback` rather than setting it null, which made it easy to miss that
+   the third computes one — see fromArt() below. */
 function artFor(row, fallback){
   var poster = posterImage(row);
-  if(poster) return { poster:poster, bg:null, focus:null, atmos:false, credit:null };
+  if(poster) return { poster:poster, bg:null, bgFallback:null,
+                      focus:null, atmos:false, credit:null };
   var own = screenImage(row) || fallback || null;
-  if(own) return { poster:null, bg:own, focus:null, atmos:false, credit:null };
+  if(own) return { poster:null, bg:own, bgFallback:null,
+                   focus:null, atmos:false, credit:null };
   var atm = atmosPhoto();
   return { poster:null, bg: atm ? bigPhoto(atm) : null,
            bgFallback: atm ? fallbackPhoto(atm) : null,
            focus: atm && atm.focus, atmos: !!atm, credit: creditFor(atm) };
+}
+
+/* Forward what artFor() found onto the slide, in ONE place.
+   Every feed builder used to hand-copy five properties into its return
+   literal, and `bgFallback` was in none of the six — so an atmosphere photo,
+   which is pulled at `original` resolution from iNaturalist and is NOT
+   guaranteed to exist, had no fallback and rendered as an empty background.
+   That is the common path, not an edge case: most feed rows carry no
+   screen_image or screen_poster of their own.
+
+   Copying once means a new art property reaches every feed slide by itself.
+   `slide` carries what is distinctive about the format; anything it has
+   already set is left alone, which is how slideNews keeps its own dwell. */
+function fromArt(art, slide){
+  slide.bg         = art.bg;
+  slide.bgFallback = art.bgFallback || null;
+  slide.focus      = art.focus;
+  slide.atmos      = art.atmos;
+  slide.poster     = art.poster;
+  slide.credit     = art.credit;
+  /* a poster is read, not glanced at — give it longer */
+  if(slide.seconds === undefined)
+    slide.seconds = art.poster ? Math.round(SECONDS * 1.6) : null;
+  return slide;
 }
 
 /* A photograph from the collection, for slides with nothing of their own. */
