@@ -1514,6 +1514,10 @@ def _all_used_psbp_nums():
 # Plant ids live below this; wildlife ids live at/above it (the 99xxx band).
 _WILDLIFE_BAND_FLOOR = 90000
 _WILDLIFE_BAND_CEIL  = 99999
+# Free slots left in the wildlife band below which "running out" is real news.
+# Well above any plausible year of intake, and far below the ~9,900 currently
+# free — so this fires when it means something and stays quiet otherwise.
+_WILDLIFE_BAND_LOW_WATER = 250
 
 
 def _next_psbp_id(kingdom):
@@ -1538,16 +1542,33 @@ def _next_psbp_id(kingdom):
     nxt = (max(band) + 1) if band else (_WILDLIFE_BAND_FLOOR + 1)
     warn = None
     if nxt > _WILDLIFE_BAND_CEIL:
-        # Top of the band is taken — fall back to the lowest free slot.
+        # THE TOP OF THE BAND BEING TAKEN IS NOT THE BAND BEING FULL.
+        # Wildlife ids were originally allocated downward from 99999, so
+        # max(band) sits on the ceiling while the entire low end is untouched.
+        # max(band)+1 therefore overflows on every single mint, and this branch
+        # is now the NORMAL path, not an exceptional one.
+        #
+        # It used to warn "wildlife band nearly full" here unconditionally,
+        # which was alarming and false — roughly 9,900 of the 9,999 slots are
+        # free. A warning that fires every time teaches you to ignore it, which
+        # is worse than no warning at all. So: gap-fill silently, and speak up
+        # only when the band is genuinely running out.
         nxt = next((c for c in range(_WILDLIFE_BAND_FLOOR + 1, _WILDLIFE_BAND_CEIL + 1)
                     if c not in used), None)
         if nxt is None:
             return None, "wildlife ID band (90000–99999) exhausted — assign manually"
-        warn = "wildlife band nearly full — assigned a gap-fill ID; verify it reads sensibly"
     while nxt in used:
         nxt += 1
     if nxt > _WILDLIFE_BAND_CEIL:
         return None, "wildlife ID band (90000–99999) exhausted — assign manually"
+    # Fullness is a property of the band, not of which branch assigned the id —
+    # so check it on every path. Checking it only inside the gap-fill branch
+    # would stay silent in exactly the case that matters: a band filling up
+    # from the bottom, where the ceiling is still free and nxt never overflows.
+    free = (_WILDLIFE_BAND_CEIL - _WILDLIFE_BAND_FLOOR) - len(band)
+    if free <= _WILDLIFE_BAND_LOW_WATER:
+        warn = (f"wildlife band running low — {free} id(s) free in 90001–99999. "
+                f"Assigned PSBP-{nxt:05d}.")
     return f"PSBP-{nxt:05d}", warn
 
 
