@@ -107,7 +107,7 @@
         "observation_stats": "object — iNat observation counts and similar metadata; shape varies"
       }
     },
-    "updated": "2026-08-22T20:20:19",
+    "updated": "2026-08-24T15:37:39",
     "species_count": 92,
     "note": " | 2026-08-19: 14 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged."
   },
@@ -120,7 +120,9 @@
       "taxonomy": {
         "family": "Anatidae",
         "genus": "Dendrocygna",
-        "species": "autumnalis"
+        "species": "autumnalis",
+        "class": "Aves",
+        "order": "Anseriformes"
       },
       "status": "html",
       "has_sign": false,
@@ -231,7 +233,8 @@
         "https://digitalcommons.usf.edu/cgi/viewcontent.cgi?article=1647&context=ffn",
         "https://blogs.ifas.ufl.edu/polkco/2017/09/19/common-ducks-in-central-florida/"
       ],
-      "animal_group": "Bird"
+      "animal_group": "Bird",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-90002",
@@ -241,7 +244,9 @@
       "taxonomy": {
         "family": "Apidae",
         "genus": "Apis",
-        "species": "mellifera"
+        "species": "mellifera",
+        "class": "Insecta",
+        "order": "Hymenoptera"
       },
       "status": "html",
       "has_sign": false,
@@ -348,7 +353,8 @@
         "https://www.iucnredlist.org/species/42463639/277757621",
         "https://beeguards.eu/wp-content/uploads/2025/10/Honey-Bee-Watch_press-release_IUCN-Red-List-for-Apis-mellifera_IMMEDIATE.pdf"
       ],
-      "animal_group": "Bee"
+      "animal_group": "Bee",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-90005",
@@ -356,9 +362,11 @@
       "scientific_name": "Myrmeleontidae",
       "inat_taxon_id": 49358,
       "taxonomy": {
-        "family": "",
-        "genus": "Myrmeleontidae",
-        "species": ""
+        "family": "Myrmeleontidae",
+        "genus": "",
+        "species": "",
+        "class": "Insecta",
+        "order": "Neuroptera"
       },
       "status": "html",
       "has_sign": false,
@@ -467,7 +475,8 @@
         "https://journals.biologists.com/jeb/article/221/21/jeb189308/33898/Ultrasound-avoidance-by-flying-antlions",
         "https://www.researchgate.net/publication/329187102_Owlflies_are_derived_antlions_anchored_phylogenomics_supports_a_new_phylogeny_and_classification_of_Myrmeleontidae_Neuroptera"
       ],
-      "animal_group": "Fly"
+      "animal_group": "Insect",
+      "inat_rank": "family"
     },
     {
       "id": "PSBP-90006",
@@ -477,7 +486,9 @@
       "taxonomy": {
         "family": "Papilionidae",
         "genus": "Heraclides",
-        "species": "cresphontes"
+        "species": "cresphontes",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "status": "html",
       "has_sign": false,
@@ -589,7 +600,8 @@
         "https://www.science.org/doi/10.1126/science.150.3704.1733",
         "https://link.springer.com/article/10.1007/BF00987631"
       ],
-      "animal_group": "Butterfly"
+      "animal_group": "Butterfly",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-90007",
@@ -599,7 +611,9 @@
       "taxonomy": {
         "family": "Vespertilionidae",
         "genus": "Nycticeius",
-        "species": "humeralis"
+        "species": "humeralis",
+        "class": "Mammalia",
+        "order": "Chiroptera"
       },
       "status": "html",
       "has_sign": false,
@@ -706,7 +720,8 @@
         "https://sonobat.com/download/Eastern_NA_Acoustic_Table.pdf",
         "https://genomics.senescence.info/species/entry.php?species=Nycticeius_humeralis"
       ],
-      "native_notes": "Common and native throughout Florida (except the Keys) and the broader southeastern and eastern United States; listed as native to North America by FWC, Bat Conservation International, UF/IFAS, ADW, and Wikipedia citing IUCN."
+      "native_notes": "Common and native throughout Florida (except the Keys) and the broader southeastern and eastern United States; listed as native to North America by FWC, Bat Conservation International, UF/IFAS, ADW, and Wikipedia citing IUCN.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-90015",
@@ -717,7 +732,9 @@
       "taxonomy": {
         "family": "Procyonidae",
         "genus": "Procyon",
-        "species": "lotor"
+        "species": "lotor",
+        "class": "Mammalia",
+        "order": "Carnivora"
       },
       "status": "html",
       "has_sign": false,
@@ -822,7 +839,8 @@
         "https://www.iucnredlist.org/species/41687/45216604",
         "https://tpwd.texas.gov/huntwild/wild/species/raccoon",
         "https://www.nps.gov/articles/racoon.htm"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-90016",
@@ -832,10 +850,15 @@
       "taxonomy": {
         "family": "Colubridae",
         "genus": "Coluber",
-        "species": "constrictor"
+        "species": "constrictor",
+        "class": "Reptilia",
+        "order": "Squamata"
       },
       "status": "spotted",
-      "has_sign": false
+      "has_sign": false,
+      "inat_rank": "species",
+      "animal_group": "Snake",
+      "animal_group_source": "human"
     },
     {
       "id": "PSBP-99889",
@@ -845,7 +868,10 @@
       "sign_level": "Species",
       "animal_group": "Fly",
       "taxonomy": {
-        "family": "Tipulidae"
+        "family": "Tipulidae",
+        "genus": "Tipula",
+        "class": "Insecta",
+        "order": "Diptera"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -954,7 +980,8 @@
         "https://blogs.ifas.ufl.edu/escambiaco/2024/03/13/weekly-what-is-it-crane-flies/",
         "https://en.wikipedia.org/wiki/Crane_fly",
         "https://www.cirrusimage.com/flies_crane_tipula_furca/"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99890",
@@ -964,7 +991,10 @@
       "sign_level": "Species",
       "animal_group": "Bird",
       "taxonomy": {
-        "family": "Sturnidae"
+        "family": "Sturnidae",
+        "genus": "Sturnus",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -1079,7 +1109,8 @@
         "https://www.invasivespeciesinfo.gov/terrestrial/vertebrates/european-starling",
         "https://pmc.ncbi.nlm.nih.gov/articles/PMC7520211/",
         "https://www.birdsoutsidemywindow.org/2025/02/05/starlings-are-declining-in-north-america/"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99891",
@@ -1089,7 +1120,10 @@
       "sign_level": "Species",
       "animal_group": "Spider",
       "taxonomy": {
-        "family": "Scytodidae"
+        "family": "Scytodidae",
+        "genus": "Scytodes",
+        "class": "Arachnida",
+        "order": "Araneae"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -1192,7 +1226,8 @@
         "https://animaldiversity.org/accounts/Scytodes_thoracica/",
         "https://spiderid.com/locations/united-states/florida/",
         "https://grokipedia.com/page/Scytodes"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99893",
@@ -1202,7 +1237,10 @@
       "sign_level": "Species",
       "animal_group": "Wasp",
       "taxonomy": {
-        "family": "Vespidae"
+        "family": "Vespidae",
+        "genus": "Polistes",
+        "class": "Insecta",
+        "order": "Hymenoptera"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -1304,7 +1342,8 @@
         "https://blogs.ifas.ufl.edu/okaloosaco/2024/08/02/respect-for-wasps/",
         "https://nwdistrict.ifas.ufl.edu/hort/tag/paper-wasp/",
         "https://thepetenthusiast.com/wasps-in-florida/"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99897",
@@ -1314,7 +1353,10 @@
       "sign_level": "Species",
       "animal_group": "Fly",
       "taxonomy": {
-        "family": "Syrphidae"
+        "family": "Syrphidae",
+        "genus": "Meromacrus",
+        "class": "Insecta",
+        "order": "Diptera"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -1422,7 +1464,8 @@
         "https://www.inaturalist.org/taxa/Meromacrus_acutus",
         "https://www.fws.gov/species/meromacrus-acutus-meromacrus-acutus",
         "https://ncbi.nlm.nih.gov/pmc/articles/PMC7698139"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99899",
@@ -1432,7 +1475,10 @@
       "sign_level": "Species",
       "animal_group": "Spider",
       "taxonomy": {
-        "family": "Tetragnathidae"
+        "family": "Tetragnathidae",
+        "genus": "Leucauge",
+        "class": "Arachnida",
+        "order": "Araneae"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -1537,7 +1583,8 @@
         "https://www.inaturalist.org/taxa/776900-Leucauge-argyrobapta",
         "https://spiderid.com/spider/tetragnathidae/leucauge/argyrobapta/",
         "https://www.wildflphoto.com/species.php?k=a&id=181"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99905",
@@ -1547,7 +1594,10 @@
       "sign_level": "Species",
       "animal_group": "Bird",
       "taxonomy": {
-        "family": "Icteridae"
+        "family": "Icteridae",
+        "genus": "Dolichonyx",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -1658,7 +1708,8 @@
         "https://vt.audubon.org/news/bobolink-migration",
         "https://www.birds.cornell.edu/landtrust/bobolink-bobo/",
         "https://landpotential.org/habitat-hub/bobolink/"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99908",
@@ -1668,7 +1719,10 @@
       "sign_level": "Species",
       "animal_group": "Dragonfly",
       "taxonomy": {
-        "family": "Libellulidae"
+        "family": "Libellulidae",
+        "genus": "Crocothemis",
+        "class": "Insecta",
+        "order": "Odonata"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -1767,7 +1821,8 @@
         "https://www.inaturalist.org/taxa/52055-Crocothemis-servilia",
         "https://www.fws.gov/species/scarlet-skimmer-crocothemis-servilia",
         "https://plantiary.com/insect/crocothemis-servilia_4176.html"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99910",
@@ -1777,7 +1832,10 @@
       "sign_level": "Species",
       "animal_group": "Beetle",
       "taxonomy": {
-        "family": "Cicindelidae"
+        "family": "Cicindelidae",
+        "genus": "Cicindelidia",
+        "class": "Insecta",
+        "order": "Coleoptera"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -1885,7 +1943,8 @@
         "https://resjournals.onlinelibrary.wiley.com/doi/abs/10.1111/j.1365-3032.1988.tb01129.x",
         "https://royalsocietypublishing.org/doi/10.1098/rsbl.2023.0610",
         "https://bioone.org/journals/the-coleopterists-bulletin/volume-57/issue-2/538/New-Stridulatory-Structures-in-a-Tiger-Beetle-Coleoptera--Carabidae/10.1649/538.short"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99912",
@@ -1895,7 +1954,10 @@
       "sign_level": "Species",
       "animal_group": "Butterfly",
       "taxonomy": {
-        "family": ""
+        "family": "Hesperiidae",
+        "genus": "Choranthus",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "category": "Butterflies & Moths",
       "feature_tier": "Standard",
@@ -2006,7 +2068,8 @@
       "tags": null,
       "when_to_see": "Present in Manatee County for most of the year, with adults recorded from at least March through December and possibly in warm winter months as well. Multiple broods mean there is rarely a long gap between flights. Adults are most active and visible during morning and afternoon hours on warm, sunny days.",
       "where_to_look": "Check the undersides of palm fronds and the broad leaves of shrubs throughout the park, especially near saw palmetto stands or any ornamental palm plantings. Garden beds with large tubular flowers — hibiscus in particular — are good spots to find adults nectaring. This is a butterfly that rewards slow walking rather than scanning; look for something sitting very still that you might otherwise take for a fallen leaf.",
-      "last_reviewed": null
+      "last_reviewed": null,
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99921",
@@ -2083,9 +2146,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Picidae",
         "genus": "Sphyrapicus",
-        "species": "varius"
+        "species": "varius",
+        "class": "Aves",
+        "order": "Piciformes"
       },
       "has_sign": false,
       "status": "html",
@@ -2130,7 +2195,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-22"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99922",
@@ -2200,9 +2266,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Tyrannidae",
         "genus": "Myiarchus",
-        "species": "crinitus"
+        "species": "crinitus",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -2236,7 +2304,8 @@
         "first_observed": "2025-04-06",
         "last_observed": "2025-04-30"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99923",
@@ -2309,9 +2378,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Passerellidae",
         "genus": "Zonotrichia",
-        "species": "leucophrys"
+        "species": "leucophrys",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -2348,7 +2419,8 @@
         "first_observed": "2025-11-14",
         "last_observed": "2025-11-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99924",
@@ -2426,9 +2498,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Polioptilidae",
         "genus": "Polioptila",
-        "species": "caerulea"
+        "species": "caerulea",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -2474,7 +2548,8 @@
         "first_observed": "2025-11-14",
         "last_observed": "2025-11-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99925",
@@ -2541,9 +2616,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Vireonidae",
         "genus": "Vireo",
-        "species": "flavifrons"
+        "species": "flavifrons",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -2588,7 +2665,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-22"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99926",
@@ -2663,9 +2741,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Parulidae",
         "genus": "Mniotilta",
-        "species": "varia"
+        "species": "varia",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -2712,7 +2792,8 @@
         "first_observed": "2025-11-14",
         "last_observed": "2025-11-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99927",
@@ -2782,9 +2863,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Parulidae",
         "genus": "Setophaga",
-        "species": "americana"
+        "species": "americana",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -2833,7 +2916,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-22"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99928",
@@ -2911,9 +2995,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Parulidae",
         "genus": "Setophaga",
-        "species": "coronata"
+        "species": "coronata",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -2961,7 +3047,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-22"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99929",
@@ -3042,9 +3129,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Parulidae",
         "genus": "Setophaga",
-        "species": "dominica"
+        "species": "dominica",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -3093,7 +3182,8 @@
         "first_observed": "2025-11-14",
         "last_observed": "2025-11-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99930",
@@ -3166,9 +3256,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Parulidae",
         "genus": "Setophaga",
-        "species": "tigrina"
+        "species": "tigrina",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -3213,7 +3305,8 @@
         "first_observed": "2025-04-27",
         "last_observed": "2025-04-27"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99931",
@@ -3289,9 +3382,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Parulidae",
         "genus": "Setophaga",
-        "species": "palmarum"
+        "species": "palmarum",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -3343,7 +3438,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-27"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99932",
@@ -3421,9 +3517,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Tyrannidae",
         "genus": "Sayornis",
-        "species": "phoebe"
+        "species": "phoebe",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -3457,7 +3555,8 @@
         "first_observed": "2025-11-14",
         "last_observed": "2025-11-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99933",
@@ -3535,9 +3634,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Turdidae",
         "genus": "Turdus",
-        "species": "migratorius"
+        "species": "migratorius",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -3571,7 +3672,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-27"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99934",
@@ -3657,7 +3759,9 @@
       "taxonomy": {
         "family": "Hesperiidae",
         "genus": "Burnsius",
-        "species": "oileus"
+        "species": "oileus",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "has_sign": false,
       "status": "html",
@@ -3696,7 +3800,8 @@
         "https://www.butterfliesofcuba.com/burnsius-oileus---tropical-checkered-skipper.html",
         "https://www.fnps.org/plant/phyla-nodiflora",
         "https://en.wikipedia.org/wiki/Spread-winged_skipper"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99935",
@@ -3776,9 +3881,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Libellulidae",
         "genus": "Celithemis",
-        "species": "eponina"
+        "species": "eponina",
+        "class": "Insecta",
+        "order": "Odonata"
       },
       "has_sign": false,
       "status": "html",
@@ -3812,7 +3919,8 @@
         "first_observed": "2023-03-31",
         "last_observed": "2023-03-31"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99936",
@@ -3898,7 +4006,9 @@
       "taxonomy": {
         "family": "Romaleidae",
         "genus": "Romalea",
-        "species": "microptera"
+        "species": "microptera",
+        "class": "Insecta",
+        "order": "Orthoptera"
       },
       "has_sign": false,
       "status": "html",
@@ -3945,7 +4055,8 @@
         "first_observed": "2026-06-10",
         "last_observed": "2026-06-10"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99937",
@@ -4030,7 +4141,9 @@
       "taxonomy": {
         "family": "Leporidae",
         "genus": "Sylvilagus",
-        "species": "palustris"
+        "species": "palustris",
+        "class": "Mammalia",
+        "order": "Lagomorpha"
       },
       "has_sign": false,
       "status": "html",
@@ -4069,7 +4182,8 @@
         "https://myfwc.com/wildlifehabitats/profiles/mammals/land/lower-keys-rabbit/",
         "https://www.fnai.org/PDFs/FieldGuides/Sylvilagus_palustris_hefneri.pdf",
         "https://research.fs.usda.gov/download/treesearch/38582.pdf"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99938",
@@ -4153,7 +4267,9 @@
       "taxonomy": {
         "family": "Trochilidae",
         "genus": "Archilochus",
-        "species": "colubris"
+        "species": "colubris",
+        "class": "Aves",
+        "order": "Apodiformes"
       },
       "has_sign": false,
       "status": "html",
@@ -4195,7 +4311,8 @@
         "https://animaldiversity.org/accounts/Archilochus_colubris/",
         "https://en.wikipedia.org/wiki/Ruby-throated_hummingbird",
         "https://njaes.rutgers.edu/fs1316/"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99939",
@@ -4280,9 +4397,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Pelecanidae",
         "genus": "Pelecanus",
-        "species": "occidentalis"
+        "species": "occidentalis",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "has_sign": false,
       "status": "html",
@@ -4316,7 +4435,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-22"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99940",
@@ -4401,9 +4521,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Ardeidae",
         "genus": "Ardea",
-        "species": "ibis"
+        "species": "ibis",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "has_sign": false,
       "status": "html",
@@ -4437,7 +4559,8 @@
         "first_observed": "2025-11-14",
         "last_observed": "2025-11-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99941",
@@ -4523,9 +4646,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Ardeidae",
         "genus": "Egretta",
-        "species": "thula"
+        "species": "thula",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "has_sign": false,
       "status": "html",
@@ -4559,7 +4684,8 @@
         "first_observed": "2025-03-22",
         "last_observed": "2025-03-22"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99942",
@@ -4663,9 +4789,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Ardeidae",
         "genus": "Egretta",
-        "species": "caerulea"
+        "species": "caerulea",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "has_sign": false,
       "status": "html",
@@ -4681,7 +4809,8 @@
         "first_observed": "2023-09-29",
         "last_observed": "2025-04-28"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99943",
@@ -4766,9 +4895,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Strigidae",
         "genus": "Bubo",
-        "species": "virginianus"
+        "species": "virginianus",
+        "class": "Aves",
+        "order": "Strigiformes"
       },
       "has_sign": false,
       "status": "html",
@@ -4802,7 +4933,8 @@
         "first_observed": "2025-03-03",
         "last_observed": "2025-03-03"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99944",
@@ -4887,9 +5019,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Accipitridae",
         "genus": "Astur",
-        "species": "cooperii"
+        "species": "cooperii",
+        "class": "Aves",
+        "order": "Accipitriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -4923,7 +5057,8 @@
         "first_observed": "2025-03-03",
         "last_observed": "2025-03-03"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99945",
@@ -5008,9 +5143,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Accipitridae",
         "genus": "Buteo",
-        "species": "lineatus"
+        "species": "lineatus",
+        "class": "Aves",
+        "order": "Accipitriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -5044,7 +5181,8 @@
         "first_observed": "2023-05-28",
         "last_observed": "2025-05-17"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99946",
@@ -5128,9 +5266,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Icteridae",
         "genus": "Molothrus",
-        "species": "ater"
+        "species": "ater",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -5164,7 +5304,8 @@
         "first_observed": "2024-04-21",
         "last_observed": "2024-04-21"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99947",
@@ -5249,9 +5390,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Icteridae",
         "genus": "Quiscalus",
-        "species": "quiscula"
+        "species": "quiscula",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -5285,7 +5428,8 @@
         "first_observed": "2023-03-31",
         "last_observed": "2025-08-28"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99949",
@@ -5370,9 +5514,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Cathartidae",
         "genus": "Cathartes",
-        "species": "aura"
+        "species": "aura",
+        "class": "Aves",
+        "order": "Cathartiformes"
       },
       "has_sign": false,
       "status": "html",
@@ -5406,7 +5552,8 @@
         "first_observed": "2025-11-14",
         "last_observed": "2025-11-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99950",
@@ -5485,9 +5632,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Mimidae",
         "genus": "Dumetella",
-        "species": "carolinensis"
+        "species": "carolinensis",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "has_sign": false,
       "status": "html",
@@ -5521,7 +5670,8 @@
         "first_observed": "2023-01-01",
         "last_observed": "2023-03-31"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99951",
@@ -5606,9 +5756,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Picidae",
         "genus": "Dryobates",
-        "species": "pubescens"
+        "species": "pubescens",
+        "class": "Aves",
+        "order": "Piciformes"
       },
       "has_sign": false,
       "status": "html",
@@ -5642,7 +5794,8 @@
         "first_observed": "2025-11-14",
         "last_observed": "2025-11-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99952",
@@ -5727,9 +5880,11 @@
       },
       "sign_level": "Species",
       "taxonomy": {
-        "family": "",
+        "family": "Picidae",
         "genus": "Melanerpes",
-        "species": "carolinus"
+        "species": "carolinus",
+        "class": "Aves",
+        "order": "Piciformes"
       },
       "has_sign": false,
       "status": "html",
@@ -5763,7 +5918,8 @@
         "first_observed": "2023-01-01",
         "last_observed": "2026-06-14"
       },
-      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html."
+      "internal_notes": "Added 2026-06-19 from iNat observations export (June 2026 batch). Content drafted; at research status pending iNat photo collection + licensing, then promotion to html.",
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99953",
@@ -5774,7 +5930,9 @@
       "taxonomy": {
         "family": "Lycaenidae",
         "genus": "Leptotes",
-        "species": "cassius"
+        "species": "cassius",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "animal_group": "Butterfly",
       "category": "Butterflies & Moths",
@@ -5889,7 +6047,8 @@
         "https://alabama.butterflyatlas.usf.edu/species/details/86/cassius-blue",
         "https://www.fws.gov/species/cassius-blue-butterfly-leptotes-cassius-theonus",
         "https://en.wikipedia.org/wiki/Leptotes_cassius"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99955",
@@ -5900,7 +6059,9 @@
       "taxonomy": {
         "family": "Portunidae",
         "genus": "Callinectes",
-        "species": "sapidus"
+        "species": "sapidus",
+        "class": "Malacostraca",
+        "order": "Decapoda"
       },
       "animal_group": "Crustacean",
       "category": "Other Invertebrates",
@@ -6011,7 +6172,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99956",
@@ -6022,7 +6184,9 @@
       "taxonomy": {
         "family": "Coccinellidae",
         "genus": "Cryptolaemus",
-        "species": "montrouzieri"
+        "species": "montrouzieri",
+        "class": "Insecta",
+        "order": "Coleoptera"
       },
       "animal_group": "Beetle",
       "category": "Other Invertebrates",
@@ -6131,7 +6295,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99958",
@@ -6142,7 +6307,9 @@
       "taxonomy": {
         "family": "Erebidae",
         "genus": "Utetheisa",
-        "species": "ornatrix"
+        "species": "ornatrix",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "animal_group": "Moth",
       "category": "Butterflies & Moths",
@@ -6247,7 +6414,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99959",
@@ -6258,7 +6426,9 @@
       "taxonomy": {
         "family": "Libellulidae",
         "genus": "Orthemis",
-        "species": "ferruginea"
+        "species": "ferruginea",
+        "class": "Insecta",
+        "order": "Odonata"
       },
       "animal_group": "Dragonfly",
       "category": "Dragonflies & Damselflies",
@@ -6365,7 +6535,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99960",
@@ -6376,7 +6547,9 @@
       "taxonomy": {
         "family": "Libellulidae",
         "genus": "Perithemis",
-        "species": "tenera"
+        "species": "tenera",
+        "class": "Insecta",
+        "order": "Odonata"
       },
       "animal_group": "Dragonfly",
       "category": "Dragonflies & Damselflies",
@@ -6483,7 +6656,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99961",
@@ -6494,7 +6668,9 @@
       "taxonomy": {
         "family": "Erebidae",
         "genus": "Ascalapha",
-        "species": "odorata"
+        "species": "odorata",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "animal_group": "Moth",
       "category": "Butterflies & Moths",
@@ -6600,7 +6776,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99962",
@@ -6609,9 +6786,11 @@
       "inat_taxon_id": 36514,
       "sign_level": "Species",
       "taxonomy": {
-        "family": "Dactyloidae",
+        "family": "Anolidae",
         "genus": "Anolis",
-        "species": "carolinensis"
+        "species": "carolinensis",
+        "class": "Reptilia",
+        "order": "Squamata"
       },
       "animal_group": "Lizard",
       "category": "Lizards",
@@ -6729,7 +6908,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99963",
@@ -6740,7 +6920,9 @@
       "taxonomy": {
         "family": "Columbidae",
         "genus": "Zenaida",
-        "species": "macroura"
+        "species": "macroura",
+        "class": "Aves",
+        "order": "Columbiformes"
       },
       "animal_group": "Bird",
       "category": "Songbirds & Perching Birds",
@@ -6861,7 +7043,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99965",
@@ -6872,7 +7055,9 @@
       "taxonomy": {
         "family": "Corvidae",
         "genus": "Cyanocitta",
-        "species": "cristata"
+        "species": "cristata",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "animal_group": "Bird",
       "category": "Songbirds & Perching Birds",
@@ -6985,7 +7170,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99966",
@@ -6996,7 +7182,9 @@
       "taxonomy": {
         "family": "Podicipedidae",
         "genus": "Podilymbus",
-        "species": "podiceps"
+        "species": "podiceps",
+        "class": "Aves",
+        "order": "Podicipediformes"
       },
       "animal_group": "Bird",
       "category": "Waterbirds & Waterfowl",
@@ -7112,7 +7300,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99967",
@@ -7123,7 +7312,9 @@
       "taxonomy": {
         "family": "Ardeidae",
         "genus": "Nycticorax",
-        "species": "nycticorax"
+        "species": "nycticorax",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "animal_group": "Bird",
       "category": "Wading Birds",
@@ -7244,7 +7435,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99968",
@@ -7255,7 +7447,9 @@
       "taxonomy": {
         "family": "Mimidae",
         "genus": "Mimus",
-        "species": "polyglottos"
+        "species": "polyglottos",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "animal_group": "Bird",
       "category": "Songbirds & Perching Birds",
@@ -7377,7 +7571,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99969",
@@ -7388,7 +7583,9 @@
       "taxonomy": {
         "family": "Picidae",
         "genus": "Dryocopus",
-        "species": "pileatus"
+        "species": "pileatus",
+        "class": "Aves",
+        "order": "Piciformes"
       },
       "animal_group": "Bird",
       "category": "Songbirds & Perching Birds",
@@ -7502,7 +7699,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99970",
@@ -7513,7 +7711,9 @@
       "taxonomy": {
         "family": "Nymphalidae",
         "genus": "Dione",
-        "species": "vanillae"
+        "species": "vanillae",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "animal_group": "Butterfly",
       "category": "Butterflies & Moths",
@@ -7625,7 +7825,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99971",
@@ -7636,7 +7837,9 @@
       "taxonomy": {
         "family": "Nymphalidae",
         "genus": "Heliconius",
-        "species": "charithonia"
+        "species": "charithonia",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "animal_group": "Butterfly",
       "category": "Butterflies & Moths",
@@ -7745,7 +7948,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99972",
@@ -7756,7 +7960,9 @@
       "taxonomy": {
         "family": "Ardeidae",
         "genus": "Butorides",
-        "species": "virescens"
+        "species": "virescens",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "animal_group": "Bird",
       "category": "Wading Birds",
@@ -7871,7 +8077,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99973",
@@ -7882,7 +8089,9 @@
       "taxonomy": {
         "family": "Pieridae",
         "genus": "Phoebis",
-        "species": "sennae"
+        "species": "sennae",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "animal_group": "Butterfly",
       "category": "Butterflies & Moths",
@@ -7989,7 +8198,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99974",
@@ -8000,7 +8210,9 @@
       "taxonomy": {
         "family": "Nymphalidae",
         "genus": "Anartia",
-        "species": "jatrophae"
+        "species": "jatrophae",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "animal_group": "Butterfly",
       "category": "Butterflies & Moths",
@@ -8105,7 +8317,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99975",
@@ -8116,7 +8329,9 @@
       "taxonomy": {
         "family": "Emydidae",
         "genus": "Pseudemys",
-        "species": "nelsoni"
+        "species": "nelsoni",
+        "class": "Reptilia",
+        "order": "Testudines"
       },
       "animal_group": "Turtle",
       "category": "Turtles",
@@ -8240,7 +8455,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99976",
@@ -8251,7 +8467,9 @@
       "taxonomy": {
         "family": "Emydidae",
         "genus": "Trachemys",
-        "species": "scripta"
+        "species": "scripta",
+        "class": "Reptilia",
+        "order": "Testudines"
       },
       "animal_group": "Turtle",
       "category": "Turtles",
@@ -8376,7 +8594,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99977",
@@ -8387,7 +8606,9 @@
       "taxonomy": {
         "family": "Ardeidae",
         "genus": "Nyctanassa",
-        "species": "violacea"
+        "species": "violacea",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "animal_group": "Bird",
       "category": "Wading Birds",
@@ -8504,7 +8725,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99978",
@@ -8515,7 +8737,9 @@
       "taxonomy": {
         "family": "Cardinalidae",
         "genus": "Cardinalis",
-        "species": "cardinalis"
+        "species": "cardinalis",
+        "class": "Aves",
+        "order": "Passeriformes"
       },
       "animal_group": "Bird",
       "category": "Songbirds & Perching Birds",
@@ -8627,7 +8851,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99979",
@@ -8638,7 +8863,9 @@
       "taxonomy": {
         "family": "Strigidae",
         "genus": "Megascops",
-        "species": "asio"
+        "species": "asio",
+        "class": "Aves",
+        "order": "Strigiformes"
       },
       "animal_group": "Bird",
       "category": "Raptors & Birds of Prey",
@@ -8752,7 +8979,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99980",
@@ -8763,7 +8991,9 @@
       "taxonomy": {
         "family": "Hesperiidae",
         "genus": "Phocides",
-        "species": "batabano"
+        "species": "batabano",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "animal_group": "Butterfly",
       "category": "Butterflies & Moths",
@@ -8872,7 +9102,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99981",
@@ -8883,7 +9114,9 @@
       "taxonomy": {
         "family": "Pelecanidae",
         "genus": "Pelecanus",
-        "species": "erythrorhynchos"
+        "species": "erythrorhynchos",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "animal_group": "Bird",
       "category": "Waterbirds & Waterfowl",
@@ -8994,7 +9227,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99982",
@@ -9005,7 +9239,9 @@
       "taxonomy": {
         "family": "Pandionidae",
         "genus": "Pandion",
-        "species": "haliaetus"
+        "species": "haliaetus",
+        "class": "Aves",
+        "order": "Accipitriformes"
       },
       "animal_group": "Bird",
       "category": "Raptors & Birds of Prey",
@@ -9128,7 +9364,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99983",
@@ -9139,7 +9376,9 @@
       "taxonomy": {
         "family": "Accipitridae",
         "genus": "Haliaeetus",
-        "species": "leucocephalus"
+        "species": "leucocephalus",
+        "class": "Aves",
+        "order": "Accipitriformes"
       },
       "animal_group": "Bird",
       "category": "Raptors & Birds of Prey",
@@ -9261,7 +9500,8 @@
         "https://www.audubon.org/florida/news/october-marks-beginning-of-bald-eagle-nesting-season-florida",
         "https://www.audubon.org/florida/news/2023-24-bald-eagle-nesting-season-notes-field",
         "https://birdsoftheworld.org/bow/species/baleag/cur/breeding"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99984",
@@ -9272,7 +9512,9 @@
       "taxonomy": {
         "family": "Anatidae",
         "genus": "Aix",
-        "species": "sponsa"
+        "species": "sponsa",
+        "class": "Aves",
+        "order": "Anseriformes"
       },
       "animal_group": "Bird",
       "category": "Waterbirds & Waterfowl",
@@ -9390,7 +9632,8 @@
         "https://www.srs.fs.usda.gov/pubs/misc/ag_654/volume_2/quercus/virginiana.htm",
         "https://www.ducks.org/conservation/waterfowl-research-science/understanding-waterfowl-acorns-and-aquatic-invertebrates",
         "https://research.fs.usda.gov/treesearch/21072"
-      ]
+      ],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99985",
@@ -9401,7 +9644,9 @@
       "taxonomy": {
         "family": "Ardeidae",
         "genus": "Egretta",
-        "species": "tricolor"
+        "species": "tricolor",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "animal_group": "Bird",
       "category": "Wading Birds",
@@ -9515,7 +9760,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99986",
@@ -9526,7 +9772,9 @@
       "taxonomy": {
         "family": "Trionychidae",
         "genus": "Apalone",
-        "species": "ferox"
+        "species": "ferox",
+        "class": "Reptilia",
+        "order": "Testudines"
       },
       "animal_group": "Turtle",
       "category": "Turtles",
@@ -9639,7 +9887,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99987",
@@ -9650,7 +9899,9 @@
       "taxonomy": {
         "family": "Threskiornithidae",
         "genus": "Platalea",
-        "species": "ajaja"
+        "species": "ajaja",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "animal_group": "Bird",
       "category": "Wading Birds",
@@ -9767,7 +10018,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99988",
@@ -9778,7 +10030,9 @@
       "taxonomy": {
         "family": "Emydidae",
         "genus": "Pseudemys",
-        "species": "peninsularis"
+        "species": "peninsularis",
+        "class": "Reptilia",
+        "order": "Testudines"
       },
       "animal_group": "Turtle",
       "category": "Turtles",
@@ -9898,7 +10152,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99989",
@@ -9909,7 +10164,9 @@
       "taxonomy": {
         "family": "Phalacrocoracidae",
         "genus": "Nannopterum",
-        "species": "auritum"
+        "species": "auritum",
+        "class": "Aves",
+        "order": "Suliformes"
       },
       "animal_group": "Bird",
       "category": "Waterbirds & Waterfowl",
@@ -10030,7 +10287,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99990",
@@ -10041,7 +10299,9 @@
       "taxonomy": {
         "family": "Sciuridae",
         "genus": "Sciurus",
-        "species": "carolinensis"
+        "species": "carolinensis",
+        "class": "Mammalia",
+        "order": "Rodentia"
       },
       "animal_group": "Mammal",
       "category": "Mammals",
@@ -10156,7 +10416,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99991",
@@ -10167,7 +10428,9 @@
       "taxonomy": {
         "family": "Anatidae",
         "genus": "Anas",
-        "species": "fulvigula"
+        "species": "fulvigula",
+        "class": "Aves",
+        "order": "Anseriformes"
       },
       "animal_group": "Bird",
       "category": "Waterbirds & Waterfowl",
@@ -10286,7 +10549,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99992",
@@ -10297,7 +10561,9 @@
       "taxonomy": {
         "family": "Ciconiidae",
         "genus": "Mycteria",
-        "species": "americana"
+        "species": "americana",
+        "class": "Aves",
+        "order": "Ciconiiformes"
       },
       "animal_group": "Bird",
       "category": "Wading Birds",
@@ -10423,7 +10689,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99993",
@@ -10434,7 +10701,9 @@
       "taxonomy": {
         "family": "Ardeidae",
         "genus": "Ardea",
-        "species": "herodias"
+        "species": "herodias",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "animal_group": "Bird",
       "category": "Wading Birds",
@@ -10552,7 +10821,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99994",
@@ -10563,7 +10833,9 @@
       "taxonomy": {
         "family": "Nymphalidae",
         "genus": "Danaus",
-        "species": "plexippus"
+        "species": "plexippus",
+        "class": "Insecta",
+        "order": "Lepidoptera"
       },
       "animal_group": "Butterfly",
       "category": "Butterflies & Moths",
@@ -10695,7 +10967,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99995",
@@ -10706,7 +10979,9 @@
       "taxonomy": {
         "family": "Ardeidae",
         "genus": "Ardea",
-        "species": "alba"
+        "species": "alba",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "animal_group": "Bird",
       "category": "Wading Birds",
@@ -10833,7 +11108,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99996",
@@ -10844,7 +11120,9 @@
       "taxonomy": {
         "family": "Rallidae",
         "genus": "Gallinula",
-        "species": "galeata"
+        "species": "galeata",
+        "class": "Aves",
+        "order": "Gruiformes"
       },
       "animal_group": "Bird",
       "category": "Waterbirds & Waterfowl",
@@ -10962,7 +11240,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99997",
@@ -10973,7 +11252,9 @@
       "taxonomy": {
         "family": "Threskiornithidae",
         "genus": "Eudocimus",
-        "species": "albus"
+        "species": "albus",
+        "class": "Aves",
+        "order": "Pelecaniformes"
       },
       "animal_group": "Bird",
       "category": "Wading Birds",
@@ -11084,7 +11365,8 @@
       "similar_species": [],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99998",
@@ -11095,7 +11377,9 @@
       "taxonomy": {
         "family": "Anhingidae",
         "genus": "Anhinga",
-        "species": "anhinga"
+        "species": "anhinga",
+        "class": "Aves",
+        "order": "Suliformes"
       },
       "animal_group": "Bird",
       "category": "Waterbirds & Waterfowl",
@@ -11218,7 +11502,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     },
     {
       "id": "PSBP-99999",
@@ -11227,9 +11512,11 @@
       "inat_taxon_id": 116461,
       "sign_level": "Species",
       "taxonomy": {
-        "family": "Dactyloidae",
+        "family": "Anolidae",
         "genus": "Anolis",
-        "species": "sagrei"
+        "species": "sagrei",
+        "class": "Reptilia",
+        "order": "Squamata"
       },
       "animal_group": "Lizard",
       "category": "Lizards",
@@ -11346,7 +11633,8 @@
       ],
       "plant_links": [],
       "last_reviewed": null,
-      "sources": []
+      "sources": [],
+      "inat_rank": "species"
     }
   ]
 }

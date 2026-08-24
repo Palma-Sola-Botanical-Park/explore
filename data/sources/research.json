@@ -29,7 +29,8 @@
     "animal_group_audit": "2026-07-16T01:44:32",
     "animal_group_audit_note": "Corrected animal_group on 13 wildlife entries (Arachnid→Spider, Reptile→Turtle, Insect→specific by family). 11 entries left with unresolved values — no matching THEME_MAP bucket exists for bees/wasps/flies/lacewings/fungi.",
     "dedupe_vs_signage": "2026-08-14T21:14:20",
-    "dedupe_note": "Removed 8 entries already present in plant_signage.json (matched by PSBP id, botanical name, or inat_taxon_id); signage records verified as content supersets."
+    "dedupe_note": "Removed 8 entries already present in plant_signage.json (matched by PSBP id, botanical name, or inat_taxon_id); signage records verified as content supersets.",
+    "updated": "2026-08-24T15:34:52"
   },
   "species": [
     {
@@ -12865,14 +12866,19 @@
       "inat_taxon_id": 121526,
       "taxonomy": {
         "family": "Mydidae",
-        "genus": "Mydidae",
-        "species": ""
+        "genus": "",
+        "species": "",
+        "class": "Insecta",
+        "order": "Diptera"
       },
       "type": "wildlife",
       "status": "research",
       "has_sign": false,
       "research_source": "inat_observed",
-      "inat_obs_count": 1
+      "inat_obs_count": 1,
+      "inat_rank": "family",
+      "animal_group": "Fly",
+      "animal_group_source": "derived: order Diptera"
     },
     {
       "id": "PSBP-90004",
@@ -12881,14 +12887,19 @@
       "inat_taxon_id": 52425,
       "taxonomy": {
         "family": "Chrysopidae",
-        "genus": "Chrysopidae",
-        "species": ""
+        "genus": "",
+        "species": "",
+        "class": "Insecta",
+        "order": "Neuroptera"
       },
       "type": "wildlife",
       "status": "research",
       "has_sign": false,
       "research_source": "inat_observed",
-      "inat_obs_count": 1
+      "inat_obs_count": 1,
+      "inat_rank": "family",
+      "animal_group": "Insect",
+      "animal_group_source": "derived: order Neuroptera, no dedicated key"
     },
     {
       "id": "PSBP-90008",

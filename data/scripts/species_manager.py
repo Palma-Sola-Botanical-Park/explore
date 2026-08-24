@@ -39,6 +39,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from psbp_common import (
     REPO, write_json_atomic, display_name, build_credit_line,
     load_json, PHOTO_CREDITS_JSON, resolve_hero_credit, CC_LICENSES,
+    derive_animal_group, check_animal_group, VALID_ANIMAL_GROUPS,
 )
 
 # Import the proven publisher modules for HTML generation + index updates.
@@ -1646,20 +1647,47 @@ def add_discovered_to_research(payload):
     if not new_id:
         return {"ok": False, "error": warn or "Could not mint a PSBP id"}
 
-    # Best-effort taxonomy. Genus/species from the binomial; family from a
-    # single taxon lookup (only one extra request, and only on add).
-    parts = sci.split()
-    genus = parts[0] if parts else ""
-    species = parts[1] if len(parts) >= 2 else ""
-    family = ""
+    # Taxonomy from a single taxon lookup (one extra request, only on add).
+    # The ancestors list carries the whole lineage; we keep class and order as
+    # well as family/genus because they are what derive_animal_group() needs,
+    # and the request is already being paid for.
+    rank = ""
+    anc = {}
+    ag = None
+    ag_reason = ""
     if taxon_id is not None:
         tdata = _inat_get(f"https://api.inaturalist.org/v1/taxa/{taxon_id}")
         if tdata and tdata.get("results"):
-            for a in (tdata["results"][0].get("ancestors") or []):
-                if a.get("rank") == "family":
-                    family = a.get("name", "") or family
-                elif a.get("rank") == "genus":
-                    genus = a.get("name", "") or genus
+            t = tdata["results"][0]
+            rank = (t.get("rank") or "").strip()
+            anc = {a.get("rank"): a.get("name", "")
+                   for a in (t.get("ancestors") or []) if a.get("rank")}
+            if kingdom != "plants":
+                ag, ag_reason = derive_animal_group(
+                    {"rank": rank, "iconic": t.get("iconic_taxon_name"), "ancestors": anc})
+
+    # GENUS COMES FROM RANK, NOT FROM SPLITTING THE NAME.
+    # `sci.split()[0]` is only a genus when the taxon IS a species. For a
+    # family-rank taxon it puts the family name in the genus slot — which is
+    # how PSBP-90005 ended up with genus "Myrmeleontidae" and no family, and
+    # the ancestors loop could not correct it because a family-rank taxon has
+    # no genus ancestor to find.
+    parts = sci.split()
+    family = anc.get("family", "")
+    genus = anc.get("genus", "")
+    species = ""
+    if rank in ("species", "subspecies", "variety", "form", "hybrid"):
+        species = parts[1] if len(parts) >= 2 else ""
+        genus = genus or (parts[0] if parts else "")
+    elif rank == "genus":
+        genus = genus or (parts[0] if parts else "")
+    elif rank == "family":
+        family = family or (parts[0] if parts else "")
+    elif not rank:
+        # No lookup happened (no taxon_id). Fall back to the old guess, which
+        # is right for the common case of a binomial.
+        genus = parts[0] if parts else ""
+        species = parts[1] if len(parts) >= 2 else ""
 
     sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
     entry = {
@@ -1667,13 +1695,20 @@ def add_discovered_to_research(payload):
         "common_name":     common or sci,
         sci_field:         sci,
         "inat_taxon_id":   int(taxon_id) if taxon_id is not None else None,
-        "taxonomy":        {"family": family, "genus": genus, "species": species},
+        "inat_rank":       rank or None,
+        "taxonomy":        {"family": family, "genus": genus, "species": species,
+                            "class": anc.get("class", ""), "order": anc.get("order", "")},
         "type":            "plant" if kingdom == "plants" else "wildlife",
         "status":          "research",
         "has_sign":        False,
         "research_source": "inat_observed",
         "inat_obs_count":  obs_count,
     }
+    if kingdom != "plants":
+        # None when the taxonomy does not settle it — left blank on purpose so
+        # the publish gate catches it and a human picks from the dropdown.
+        entry["animal_group"] = ag
+        entry["animal_group_source"] = ("derived: " + ag_reason) if ag else ("undetermined: " + ag_reason)
 
     research = _load(RESEARCH_JSON)
     research.setdefault("species", []).append(entry)
@@ -2406,11 +2441,22 @@ def handle_api_photos_trash(params):
 # "thin." Used ONLY to render the Gaps overlay in preview. Nothing here is ever
 # written to JSON or seen by a visitor.
 #
-# Each entry: (label, accessor, kind)
-#   kind "text"  → flag if empty/whitespace; thin if very short
-#   kind "list"  → flag if empty; thin if below min_len
+# Each entry: (label, accessor, kind, arg)
+#   kind "text"  → flag if empty/whitespace; thin if very short (arg "prose")
+#   kind "list"  → flag if empty; thin if below arg
 #   kind "blocks"→ list of {label,text}; flag if empty
+#   kind "vocab" → flag if empty, OR if the value is not in arg (a set of allowed
+#                  values). This is the only kind that can report a field as
+#                  WRONG rather than absent — see the note below.
 #   accessor is a dotted path into the species dict (supports one level of nesting)
+#
+# ON "vocab": every other kind here asks "is there content?" That question is
+# blind to a field holding a real-looking value that is simply not true, which
+# is how a Common Raccoon reached `spotted` filed as animal_group "Fly" — a
+# valid key, mapping to the same theme bucket as Mammal, so it rendered
+# perfectly and every presence check passed. `vocab` closes that for fields
+# with a closed set of legal values. It cannot close it for prose, and nothing
+# here can: a field can be fluent, well-formed and wrong.
 
 PLANT_GAP_SPEC = [
     ("Common name",       "common_name",        "text",   None),
@@ -2432,7 +2478,7 @@ PLANT_GAP_SPEC = [
 WILDLIFE_GAP_SPEC = [
     ("Common name",       "common_name",        "text",   None),
     ("Scientific name",   "scientific_name",    "text",   None),
-    ("Animal group",      "animal_group",       "text",   None),
+    ("Animal group",      "animal_group",       "vocab",  VALID_ANIMAL_GROUPS),
     ("Category",          "category",           "text",   None),
     ("Quick hits",        "quick_hits",         "list",   3),
     ("Range & origin",    "range_and_origin",   "text",   "prose"),
@@ -2473,7 +2519,8 @@ def _looks_placeholder(text):
 def audit_gaps(kingdom, species):
     """Return a list of gap findings for a species. Preview-only.
 
-    Each finding: {"label","level"} where level is "missing" or "thin".
+    Each finding: {"label","level"} where level is "missing", "thin" or
+    "invalid". An "invalid" finding may carry "detail" naming the bad value.
     """
     spec = PLANT_GAP_SPEC if kingdom == "plants" else WILDLIFE_GAP_SPEC
     findings = []
@@ -2501,6 +2548,15 @@ def audit_gaps(kingdom, species):
             if not good:
                 findings.append({"label": label, "level": "missing"})
 
+        elif kind == "vocab":
+            allowed = minimum or ()
+            text = str(val).strip() if val is not None else ""
+            if not text:
+                findings.append({"label": label, "level": "missing"})
+            elif text not in allowed:
+                findings.append({"label": label, "level": "invalid",
+                                 "detail": text})
+
     return findings
 
 
@@ -2514,9 +2570,21 @@ def _gaps_overlay_html(findings):
             '<strong style="display:block;margin-bottom:4px;">✓ No gaps</strong>'
             'Every tracked field has real content. Looks publish-ready.</div>'
         )
+    # Invalid leads: an empty field is obvious the moment you look at the page,
+    # but a wrong-but-well-formed value renders perfectly and is the one thing
+    # here you would otherwise never notice.
+    invalid = [f for f in findings if f["level"] == "invalid"]
     missing = [f for f in findings if f["level"] == "missing"]
     thin = [f for f in findings if f["level"] == "thin"]
     rows = ""
+    for f in invalid:
+        detail = f.get("detail") or ""
+        shown = (detail[:18] + "…") if len(detail) > 19 else detail
+        rows += (f'<div style="display:flex;gap:6px;align-items:center;margin:3px 0;">'
+                 f'<span style="color:#ff9d3a;">▲</span>'
+                 f'<span>{f["label"]}</span>'
+                 f'<span style="margin-left:auto;font-size:10px;opacity:.85;">'
+                 f'not valid: {shown}</span></div>')
     for f in missing:
         rows += (f'<div style="display:flex;gap:6px;align-items:center;margin:3px 0;">'
                  f'<span style="color:#ff6b6b;">●</span>'
@@ -2527,16 +2595,20 @@ def _gaps_overlay_html(findings):
                  f'<span style="color:#ffd24a;">●</span>'
                  f'<span>{f["label"]}</span>'
                  f'<span style="margin-left:auto;font-size:10px;opacity:.7;">thin</span></div>')
+    counts = f'{len(missing)} empty, {len(thin)} thin'
+    if invalid:
+        counts = f'{len(invalid)} not valid, ' + counts
     return (
         '<div id="gaps-panel" style="position:fixed;right:16px;top:50px;width:250px;'
         'z-index:99998;background:#1a3a1f;color:#fff;border-radius:10px;'
         'padding:14px 16px;font:13px system-ui;box-shadow:0 4px 20px rgba(0,0,0,.3);'
         'max-height:80vh;overflow:auto;">'
         f'<strong style="display:block;margin-bottom:8px;">Gaps to fill '
-        f'({len(missing)} empty, {len(thin)} thin)</strong>'
+        f'({counts})</strong>'
         f'{rows}'
         '<div style="margin-top:10px;font-size:11px;opacity:.7;line-height:1.4;">'
-        'Red = empty/placeholder · Yellow = present but short. '
+        'Orange = value not in the allowed list · Red = empty/placeholder · '
+        'Yellow = present but short. '
         'These flags are preview-only and never publish.</div></div>'
     )
 
@@ -2805,6 +2877,8 @@ def get_publish_list(kingdom):
             "ready": ready,
             "checks": checks,
             "rare_fruit": bool(sp.get("rare_fruit")),
+            "animal_group": sp.get("animal_group") or "",
+            "animal_group_source": sp.get("animal_group_source") or "",
             "tags": sp.get("tags") or [],
             "aliases": sp.get("also_known_as") or sp.get("alternate_names") or [],
         })
@@ -2841,6 +2915,37 @@ def handle_api_rare_fruit_set(params):
     data.setdefault("meta", {})["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
     write_json_atomic(path, data)
     return {"ok": True, "id": species_id, "rare_fruit": value}
+
+
+def handle_api_animal_group_set(params):
+    """POST /api/animal-group/set  body: {id, value} — set animal_group.
+
+    Wildlife only. Membership in VALID_ANIMAL_GROUPS is enforced here, so the
+    field cannot be given a value theme_for() would choke on. An empty value
+    clears it back to unset, which the publish gate then blocks — that is a
+    legitimate state (deliberately un-deciding), not an error.
+
+    Intake derives this from iNat taxonomy; this is the human override for the
+    cases taxonomy does not settle (a snake, an unplaced insect) or gets wrong.
+    """
+    body = params.get("_body", {}) or {}
+    species_id = (body.get("id") or "").strip()
+    value = (body.get("value") or "").strip()
+    if not species_id:
+        return {"ok": False, "error": "missing species id"}
+    if value and value not in VALID_ANIMAL_GROUPS:
+        return {"ok": False,
+                "error": f"{value!r} is not a valid animal_group "
+                         f"(valid: {', '.join(sorted(VALID_ANIMAL_GROUPS))})"}
+    data = _load(WILDLIFE_SIGNAGE)
+    target = next((s for s in _get_species_list(data) if s.get("id") == species_id), None)
+    if not target:
+        return {"ok": False, "error": f"{species_id} not found in wildlife signage."}
+    target["animal_group"] = value or None
+    target["animal_group_source"] = "human" if value else None
+    data.setdefault("meta", {})["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
+    write_json_atomic(WILDLIFE_SIGNAGE, data)
+    return {"ok": True, "id": species_id, "animal_group": value or None}
 
 
 def handle_api_publish_ready(params):
@@ -2892,6 +2997,19 @@ def handle_api_publish_promote(params):
         hero = heroes.get(pid)
         if not hero:
             return {"ok": False, "error": f"No hero photo for {pid} — can't publish"}
+
+        # FAIL CLOSED ON animal_group. wildlife_publisher.py has always called
+        # this gate on its own paths; the dashboard — the tool actually in use —
+        # never did, so a wildlife species could reach the site with the field
+        # missing or holding a plausible-but-wrong value. The theme and the
+        # nature.html filter bucket both come off it.
+        if kingdom != "plants":
+            ok_ag, reason = check_animal_group(species)
+            if not ok_ag:
+                return {"ok": False,
+                        "error": f"Can't publish {pid}: {reason}. "
+                                 f"Set it on the Publish tab — valid values: "
+                                 f"{', '.join(sorted(VALID_ANIMAL_GROUPS))}."}
 
         # Generate the HTML page (publisher's proven template)
         path, _ = pub.write_html(species, hero, galleries.get(pid, []))
@@ -4140,6 +4258,12 @@ main {
 }
 .pub-search:focus { border-color: var(--green-mid); }
 .pub-btn.rarefruit { border-color: #d8b3c9; color: #8e3b6b; }
+.ag-pick { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: #4a5d50; }
+.ag-pick select { font: inherit; padding: 3px 6px; border: 1px solid #cfd8d2;
+                  border-radius: 6px; background: #fff; color: #1a3a1f; }
+.ag-pick select:disabled { opacity: .55; }
+.ag-src { font-size: 11px; letter-spacing: .04em; text-transform: uppercase;
+          color: #7d8f84; border: 1px solid #dde4e0; border-radius: 4px; padding: 1px 4px; }
 .pub-btn.rarefruit.on { background: #8e3b6b; color: #fff; border-color: #8e3b6b; }
 .pub-btn.rarefruit:hover { background: #f7edf3; }
 .pub-btn.rarefruit.on:hover { background: #7a3159; }
@@ -7061,6 +7185,7 @@ def render_photos():
 
 
 def render_publish():
+    _animal_groups_json = json.dumps(sorted(VALID_ANIMAL_GROUPS))
     return f"""
     <!-- Kingdom toggle + status filter + search -->
     <div class="photos-controls">
@@ -7104,6 +7229,9 @@ def render_publish():
     let pubKingdom = 'plants';
     let pubFilter = 'all';
     let pubAllSpecies = [];
+    /* Injected from VALID_ANIMAL_GROUPS in psbp_common.py — one source of
+       truth, so the dropdown can never offer a value theme_for() rejects. */
+    const ANIMAL_GROUPS = {_animal_groups_json};
 
     function pubToast(msg, isError) {{
         const el = document.getElementById('toast');
@@ -7253,6 +7381,10 @@ def render_publish():
             ${{tagsHtml}}
             <div class="pub-actions">${{actions}}</div>
             <div class="pub-secondary">
+                ${{pubKingdom === 'wildlife' ? `<label class="ag-pick" title="Drives the page theme and the nature.html filter bucket. Derived from iNaturalist taxonomy at intake; override here when the taxonomy doesn't settle it.">🦎 <select onchange="pubSetAnimalGroup('${{sp.id}}', this)">
+                    <option value=""${{sp.animal_group ? '' : ' selected'}}>— not set —</option>
+                    ${{ANIMAL_GROUPS.map(g => `<option value="${{g}}"${{sp.animal_group === g ? ' selected' : ''}}>${{g}}</option>`).join('')}}
+                  </select>${{sp.animal_group_source && sp.animal_group_source.indexOf('derived') === 0 ? '<span class="ag-src" title="' + esc(sp.animal_group_source) + '">auto</span>' : ''}}</label>` : ''}}
                 <button class="pub-btn rarefruit ${{sp.rare_fruit ? 'on' : ''}}" onclick="pubToggleRareFruit('${{sp.id}}')"
                         title="Is this species physically in the rare-fruit (MRFC) area? You have final say — this is a location fact, not researched.">🍈 ${{sp.rare_fruit ? 'In rare-fruit area' : 'Mark rare-fruit'}}</button>
                 <button class="pub-link-btn" onclick="pubDemoteResearch('${{sp.id}}', 'research')"
@@ -7262,6 +7394,27 @@ def render_publish():
             </div>
             <div class="ai-result" id="ai-result-${{sp.id}}"></div>
         </div>`;
+    }}
+
+    async function pubSetAnimalGroup(id, sel) {{
+        const prev = sel.dataset.prev || '';
+        sel.disabled = true;
+        try {{
+            const resp = await fetch('/api/animal-group/set', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{id: id, value: sel.value}})
+            }});
+            const d = await resp.json();
+            if (!d.ok) {{ pubToast(d.error || 'Could not set animal group', true);
+                          sel.value = prev; sel.disabled = false; return; }}
+            sel.dataset.prev = sel.value;
+            const src = sel.parentNode.querySelector('.ag-src');
+            if (src) src.remove();          /* it is a human value now, not derived */
+            sel.disabled = false;
+            pubToast(d.animal_group
+                ? 'Animal group set to ' + d.animal_group + ' — re-publish to update the theme and filter.'
+                : 'Animal group cleared — this species can no longer be published until it is set.');
+        }} catch (e) {{ pubToast(e.message, true); sel.value = prev; sel.disabled = false; }}
     }}
 
     async function pubToggleRareFruit(id) {{
@@ -9944,6 +10097,7 @@ API_ROUTES = {
     "/api/publish/ready":    handle_api_publish_ready,
     "/api/publish/promote":  handle_api_publish_promote,
     "/api/rare-fruit/set":    handle_api_rare_fruit_set,
+    "/api/animal-group/set":  handle_api_animal_group_set,
     "/api/publish/demote":   handle_api_publish_demote,
     "/api/publish/demote-research": handle_api_publish_demote_research,
     "/api/cultivated/audit":   handle_api_cultivated_audit,

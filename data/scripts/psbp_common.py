@@ -112,6 +112,7 @@ ANIMAL_GROUP_TO_THEME = {
     # ── Everything else — 'other' bucket ────────────────────
     # Reptiles
     "Lizard":      "other",
+    "Snake":       "other",
     "Turtle":      "other",
     # Mammals
     "Mammal":      "other",
@@ -126,6 +127,12 @@ ANIMAL_GROUP_TO_THEME = {
     "Dragonfly":   "other",
     "Grasshopper": "other",
     "True Bug":    "other",
+    # Any other insect order — lacewings and antlions (Neuroptera), mantids,
+    # earwigs, ants. A real value, not a dumping ground: it exists so an
+    # unlisted order can be labelled honestly instead of being forced into the
+    # nearest wrong key. PSBP-90005 (Antlions and Owlflies) was published as
+    # "Fly" for exactly that reason — antlions are Neuroptera, not Diptera.
+    "Insect":      "other",
     # Arachnids
     "Spider":      "other",
     # Crustaceans
@@ -135,6 +142,106 @@ ANIMAL_GROUP_TO_THEME = {
 # Derived — never edit; always in sync with the dict above.
 VALID_ANIMAL_GROUPS = frozenset(ANIMAL_GROUP_TO_THEME.keys())
 VALID_THEMES        = frozenset(ANIMAL_GROUP_TO_THEME.values())
+
+
+# ── deriving animal_group from iNaturalist taxonomy ─────────────────────────
+#
+# animal_group is a TAXONOMIC FACT, not a curatorial judgement. A raccoon is a
+# Mammal whatever the park thinks. It was previously hand-typed, which is how
+# one reached `spotted` filed as "Fly" — a valid key, mapping to the same theme
+# bucket as Mammal, so it rendered perfectly and would have gone live.
+#
+# The iNat /v1/taxa response already carries everything needed, and intake
+# already fetches it to read family and genus. class + order settle almost
+# every case.
+#
+# THE RULE: derive only when confident, return None otherwise. An empty value
+# is caught by check_animal_group(); a plausible wrong one is caught by nobody.
+# So snakes (Squamata, but no "Snake" key), salamanders, fish and molluscs
+# deliberately return None and wait for a human rather than being approximated.
+
+_BEE_FAMILIES = {"Apidae", "Andrenidae", "Halictidae", "Megachilidae",
+                 "Colletidae", "Melittidae", "Stenotritidae"}
+
+# order -> animal_group, for class Insecta.
+_INSECT_ORDERS = {
+    "Coleoptera":   "Beetle",
+    "Diptera":      "Fly",
+    "Odonata":      "Dragonfly",     # covers damselflies too — no separate key
+    "Orthoptera":   "Grasshopper",
+    "Hemiptera":    "True Bug",
+}
+
+
+def derive_animal_group(taxon):
+    """Best-effort animal_group from an iNat taxon dict.
+
+    `taxon` needs: rank, iconic (iconic_taxon_name), and an `ancestors` map of
+    rank -> name (at least class / order / family / superfamily).
+
+    Returns (animal_group, reason). animal_group is None when the taxonomy does
+    not settle it — the caller should leave the field blank and let a human
+    choose, NEVER substitute a near-miss.
+    """
+    anc     = taxon.get("ancestors") or {}
+    klass   = anc.get("class") or ""
+    order   = anc.get("order") or ""
+    family  = anc.get("family") or ""
+    superf  = anc.get("superfamily") or ""
+    iconic  = (taxon.get("iconic") or "").strip()
+
+    # class is the reliable discriminator; fall back to the iconic taxon, which
+    # is the same rank for every animal group the park records.
+    klass = klass or iconic
+
+    if klass == "Aves":         return "Bird", "class Aves"
+    if klass == "Mammalia":     return "Mammal", "class Mammalia"
+    if klass == "Arachnida":
+        if order and order != "Araneae":
+            return None, f"Arachnida but order {order} is not a spider"
+        return "Spider", "class Arachnida"
+    if klass == "Malacostraca": return "Crustacean", "class Malacostraca"
+
+    if klass == "Reptilia":
+        if order == "Testudines": return "Turtle", "order Testudines"
+        if order == "Squamata":
+            # Squamata is lizards AND snakes, and iNat splits them at suborder:
+            # Sauria for lizards, Serpentes for snakes. Without the suborder
+            # the order alone cannot tell them apart, so that case waits for a
+            # human rather than guessing at a coin flip.
+            sub = anc.get("suborder") or ""
+            if sub == "Sauria":    return "Lizard", "suborder Sauria"
+            if sub == "Serpentes": return "Snake", "suborder Serpentes"
+            return None, "order Squamata, suborder unknown — lizard or snake?"
+        return None, f"Reptilia, order {order or 'unknown'}"
+
+    if klass == "Amphibia":
+        if order == "Anura":
+            if family == "Bufonidae": return "Toad", "family Bufonidae"
+            return "Frog", "order Anura"
+        return None, f"Amphibia, order {order or 'unknown'}"
+
+    if klass == "Insecta":
+        if order == "Lepidoptera":
+            # Papilionoidea is butterflies and skippers; everything else is a
+            # moth. Superfamily is present on the ancestors list for both.
+            if superf == "Papilionoidea": return "Butterfly", "superfamily Papilionoidea"
+            if superf:                    return "Moth", f"Lepidoptera, superfamily {superf}"
+            return None, "Lepidoptera with no superfamily — butterfly or moth?"
+        if order == "Hymenoptera":
+            if family in _BEE_FAMILIES: return "Bee", f"family {family}"
+            if family == "Formicidae":  return "Insect", "family Formicidae (ants)"
+            if family:                  return "Wasp", f"Hymenoptera, family {family}"
+            return None, "Hymenoptera with no family — bee or wasp?"
+        if order in _INSECT_ORDERS:
+            return _INSECT_ORDERS[order], f"order {order}"
+        if order:
+            # A real insect in an order with no dedicated key — Neuroptera,
+            # Mantodea, Dermaptera. This is what "Insect" is for.
+            return "Insect", f"order {order}, no dedicated key"
+        return None, "Insecta with no order"
+
+    return None, f"class {klass or 'unknown'} has no mapping"
 
 
 def theme_for(animal_group):
