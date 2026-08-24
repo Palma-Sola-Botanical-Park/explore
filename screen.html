@@ -1046,9 +1046,14 @@ function twoHits(sp){
   return rotate('sp:'+(sp.id || sp.common || '?'), hitsOf(sp), 2);
 }
 
+/* NOT CURRENTLY CALLED — twoHits() superseded it. Kept because a one-beat
+   variant is the obvious thing to want back. If you revive it, note that the
+   empty case used to read `return String(text)`, referencing a variable that
+   does not exist in this scope: it threw a ReferenceError for any species with
+   no quick hits, and next() would have swallowed it as "nothing to show". */
 function oneHit(sp){
   var parts = hitsOf(sp);
-  if(!parts.length) return String(text);
+  if(!parts.length) return '';
   var s = pick(parts);
   /* a very short hit reads thin on a big screen — pair it with its neighbour */
   if(s.length < 90){
@@ -2130,19 +2135,42 @@ function render(s){
   return dur;
 }
 
+/* A LOOP, NOT RECURSION.
+   Skipping an empty slide used to be `return next()`, which is fine while
+   something in the deck still builds — but if EVERY builder returns null the
+   deck is walked, rebuilt, and walked again with nothing to stop it, so the
+   stack overflows and the wall goes black. It takes a narrow state to reach:
+   no species carrying a photo AND every feed empty or web-only, which slips
+   past fallback() because that only fires when right_now and plants are BOTH
+   empty. Narrow, but the failure is total, on a screen nobody is watching.
+
+   So: iterate, allow one rebuild, and if a whole fresh deck yields nothing,
+   hold what is on screen and try again on the next turn. The feeds reload
+   every ten minutes, so a transient outage recovers by itself and the worst
+   case is a stale slide rather than a dead one. */
 function next(){
-  if(at>=deck.length){ deck=buildDeck(); at=0; }
-  var item=deck[at++], s=null;
-  try{ s=item.make(); }
-  catch(e){
-    /* A builder that throws used to be indistinguishable from one that had
-       nothing to show, so a broken slide type vanished from the rotation in
-       silence — every species slide disappeared for a whole evening that way.
-       Skip it, but say so. */
-    console.error('screen.html: ' + item.type + ' slide failed —', e && e.message, e);
-    s = null;
+  var s = null, item = null, rebuilds = 0;
+  while(s === null){
+    if(at >= deck.length){
+      if(++rebuilds > 1){
+        console.error('screen.html: no slide could be built from a full deck — '
+                    + 'holding, will retry. Check the feeds loaded.');
+        timer = setTimeout(next, SECONDS * 1000);
+        return;
+      }
+      deck = buildDeck(); at = 0;
+    }
+    item = deck[at++];
+    try{ s = item.make(); }
+    catch(e){
+      /* A builder that throws used to be indistinguishable from one that had
+         nothing to show, so a broken slide type vanished from the rotation in
+         silence — every species slide disappeared for a whole evening that way.
+         Skip it, but say so. */
+      console.error('screen.html: ' + item.type + ' slide failed —', e && e.message, e);
+      s = null;
+    }
   }
-  if(!s){ return next(); }
   var dur = render(s);
   timer=setTimeout(next, dur*1000);
 }
