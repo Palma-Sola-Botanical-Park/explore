@@ -767,6 +767,19 @@ def write_html(species, hero, gallery_photos=None, dry_run=False):
     tmp = path.with_suffix(".tmp")
     tmp.write_text(html_content, encoding="utf-8")
     tmp.rename(path)
+
+    # A common_name edit moves where this writes. Reconcile what is already on
+    # disk so the id keeps exactly one page, under the name the index points at.
+    # See psbp_common.reconcile_page_siblings — the case step is load-bearing.
+    from psbp_common import reconcile_page_siblings
+    recased, dropped = reconcile_page_siblings(PLANTS_DIR, species["id"], filename)
+    if recased:
+        print(f"    ↻ {species['id']}: corrected filename case "
+              f"{recased} -> {filename}")
+    for gone in dropped:
+        print(f"    ✕ {species['id']}: removed stale page {gone} "
+              f"(renamed to {filename})")
+
     _record_publish("plants", species["id"], input_hash, generator, filename, stamp)
     return path, html_content
 

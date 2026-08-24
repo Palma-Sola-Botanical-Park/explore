@@ -752,6 +752,69 @@ def strip_page_stamp(html):
     return _STAMP_RE.sub("", html or "")
 
 
+def reconcile_page_siblings(directory, psbp_id, filename, dry_run=False):
+    """Leave `directory` holding exactly ONE page for psbp_id, named `filename`.
+
+    Call this immediately after writing a species page. `page_filename()`
+    derives the name from `common_name`, so any edit to that field changes
+    where the next publish writes — and nothing used to clean up what was
+    already there. That has bitten three times:
+
+      · PSBP-00355  "Red Lantan" typo fixed -> two pages, both published
+      · PSBP-00056  Parrots Beak -> Heliconia, old page orphaned until deleted
+      · PSBP-00561  "air potato" -> "Air Potato", which is the nasty one
+
+    THE CASE STEP HAS TO COME FIRST, AND IT IS NOT OPTIONAL.
+    macOS is case-insensitive: writing PSBP-00561-Air-Potato.html when
+    PSBP-00561-air-potato.html exists opens THAT file and keeps its old name.
+    So the page you just wrote is sitting under the wrong name, the index
+    points at the right one, and every local check passes because .exists()
+    says yes. GitHub Pages is case-sensitive, so it 404s for real visitors —
+    which it did, for five days, invisibly.
+
+    Sweeping siblings before fixing the case would therefore delete the page
+    that was just written. Rename first, then sweep what is genuinely left.
+
+    Returns (renamed_from | None, [removed_filenames]).
+    """
+    d = Path(directory)
+    if not d.is_dir():
+        return None, []
+    # 5-digit ids mean "PSBP-00056-" can never prefix another record's pages.
+    prefix = f"{psbp_id}-"
+    siblings = [f for f in os.listdir(d)
+                if f.startswith(prefix) and f.endswith(".html")]
+
+    # 1. Case. os.listdir() returns the real stored names, so membership here is
+    #    genuinely case-sensitive — unlike Path.exists(), which is not.
+    renamed_from = None
+    if filename not in siblings:
+        variant = next((f for f in siblings if f.lower() == filename.lower()), None)
+        if variant:
+            renamed_from = variant
+            if not dry_run:
+                # Via a temp name: a direct rename between two spellings of the
+                # same name is a no-op on a case-insensitive filesystem.
+                tmp = d / f".{psbp_id}.case-rename.tmp"
+                (d / variant).rename(tmp)
+                tmp.rename(d / filename)
+            siblings = [filename if f == variant else f for f in siblings]
+
+    # 2. Genuine leftovers from a real rename. Safe to delete: pages are
+    #    derived artifacts, regenerable from the master, and in git.
+    removed = []
+    for f in siblings:
+        if f == filename:
+            continue
+        removed.append(f)
+        if not dry_run:
+            try:
+                (d / f).unlink()
+            except OSError:
+                pass
+    return renamed_from, removed
+
+
 def page_content_changed(path, new_html):
     """Did anything a visitor can see actually change?
 
