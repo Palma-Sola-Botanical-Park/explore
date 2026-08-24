@@ -1227,8 +1227,23 @@ def _build_triage_view(kingdom, species_id, mode="new"):
                 if mode != "skipped":
                     continue
                 state = "skipped"
-            else:  # block — never resurface
-                continue
+            elif verdict == "block":
+                continue                      # killed for a reason; never resurface
+            else:
+                # ONLY `block` may hide a photo. This was `else: continue` with
+                # a comment claiming it meant block — a catch-all, so a photo
+                # carrying a `promoted` verdict landed here too. Combined with
+                # the registry check eight lines up (which skips anything that
+                # HAS a credit row), a promoted photo whose credit row had gone
+                # was invisible in Review and in triage simultaneously. That is
+                # the PSBP-99922 lockout: two photos unreachable in every mode
+                # for weeks, and nothing reported them missing.
+                #
+                # Demote now purges the workbench alongside the credits, so this
+                # state should no longer arise — but an unrecognised verdict
+                # must surface as work to do rather than disappear. Silence is
+                # what made the original bug expensive.
+                state = "new"
             item = dict(p)
             item["state"] = state
             out.append(item)
@@ -3209,6 +3224,45 @@ def handle_api_publish_demote_research(params):
             except OSError:
                 pass
 
+        # ── 3b. Purge photo credits AND the workbench, together ────
+        # A species out of signage owns no photos. This handler used to clean
+        # up six things and miss these two, so every research demotion left
+        # credit rows pointing at a species that existed nowhere — 25 rows
+        # across 19 species by the time it was found on 2026-08-18.
+        #
+        # THESE TWO MUST MOVE TOGETHER. Purging credits while leaving
+        # `promoted` verdicts in the workbench manufactures the PSBP-99922
+        # lockout: _build_triage_view() skips anything already in the credits
+        # registry, so a promoted photo that has just lost its credit row
+        # falls through and vanishes from Review AND triage at once. Removing
+        # the verdict is what lets the photo be seen again.
+        #
+        # RETENTION RULE: `promoted` and `skip` are working state and go with
+        # the species. `block` means "never resurface" — a photo killed for a
+        # reason — and is kept, orphaned, deliberately. Seven of those exist.
+        credits = _load(PHOTO_CREDITS)
+        before_credits = len(credits.get("photos", []))
+        credits["photos"] = [p for p in credits.get("photos", [])
+                             if p.get("psbp_id") != pid]
+        credits_purged = before_credits - len(credits["photos"])
+        if credits_purged:
+            credits.setdefault("meta", {})["photo_count"] = len(credits["photos"])
+            credits["meta"]["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
+            write_json_atomic(PHOTO_CREDITS, credits)
+
+        workbench = _load(PHOTO_WORKBENCH)
+        decisions = workbench.get("decisions", {})
+        drop = [k for k, d in decisions.items()
+                if d.get("psbp_id") == pid and d.get("decision") in ("promoted", "skip")]
+        blocks_kept = sum(1 for d in decisions.values()
+                          if d.get("psbp_id") == pid and d.get("decision") == "block")
+        if drop:
+            for k in drop:
+                decisions.pop(k, None)
+            workbench.setdefault("meta", {})["updated"] = \
+                datetime.datetime.now().isoformat(timespec="seconds")
+            write_json_atomic(PHOTO_WORKBENCH, workbench)
+
         # ── 4. Build research.json record ──────────────────────────
         record = dict(sp)
         record["status"] = reason     # "research" or "died"
@@ -3249,6 +3303,9 @@ def handle_api_publish_demote_research(params):
             "label": label,
             "deleted_files": deleted_files,
             "hero_deleted": hero_deleted,
+            "credits_purged": credits_purged,
+            "workbench_dropped": len(drop),
+            "workbench_blocks_kept": blocks_kept,
         }
     except Exception as e:
         import traceback
