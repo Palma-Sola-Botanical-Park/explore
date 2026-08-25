@@ -171,7 +171,11 @@ def build_plants_json_entry(species, hero):
         "tags": tags,                       # facet: editorial tag chips (non-boolean)
         "photo": photo,
         "page": f"plants/{page_filename(pid, species['common_name'])}",
-        "credit": hero_credit["credit_name"],
+        # `credit` is the LOGIN — the stable key a profile page joins on.
+        # `credit_name` is the DISPLAY string. Both, deliberately: logins don't
+        # change and don't collide, names do both. This used to be fed
+        # credit_name, so every card stored the name twice and the login never.
+        "credit": hero_credit["credit_login"],
         "credit_name": hero_credit["credit_name"],
         "credit_license": hero_credit["credit_license"],
         "credit_line": hero_credit["credit_line"],
@@ -516,19 +520,22 @@ def render_gallery(species, gallery_photos, hero):
         if not url:
             continue
         idx = len(lb_data)
-        photographer = display_name(p.get("photographer", ""), p.get("photographer_name", ""))
+        gal_login = p.get("photographer", "")
+        photographer = display_name(gal_login, p.get("photographer_name", ""))
         observed = _fmt_observed(p.get("observed_on", ""))
         lb_data.append({
             "src": url,
-            "credit": photographer,
+            "credit": photographer,          # display string for the lightbox caption
+            "credit_login": gal_login,       # stable key, for a future profile link
             "license": (p.get("license") or "").upper(),
             "observed": observed,
         })
         date_html = f'<div class="gal-date">📅 {h(observed)}</div>' if observed else ""
+        _gal_attr = f' data-login="{h(gal_login)}"' if gal_login else ""
         grid_items.append(
             f'<div class="gal-item" onclick="openLB({idx})">'
             f'<img src="{h(url)}" loading="lazy" alt="{h(common)} — photo by {h(photographer)}">'
-            f'<div class="gal-credit">📷 {h(photographer)}</div>{date_html}</div>'
+            f'<div class="gal-credit"{_gal_attr}>📷 {h(photographer)}</div>{date_html}</div>'
         )
 
     # Gallery section (only if there are non-hero photos)
@@ -607,7 +614,13 @@ def generate_html(species, hero, gallery_photos=None, published_on=""):
     # Credit line — resolved through photographer_names.json
     if hero:
         hc = resolve_hero_credit(hero)
-        credit_parts = [f'📷 Photo by <strong>{h(hc["credit_name"])}</strong>']
+        # data-login carries the stable key into the page without changing a
+        # single visible character. site.js can turn the name into a profile
+        # link once photographers.json says that person has a page — the
+        # decision lives there, where the feed is already loaded, rather than
+        # being baked into 321 static files that are expensive to change.
+        _login_attr = f' data-login="{h(hc["credit_login"])}"' if hc.get("credit_login") else ""
+        credit_parts = [f'📷 Photo by <strong{_login_attr}>{h(hc["credit_name"])}</strong>']
         if hc["credit_license"]:
             credit_parts.append(f' · {h(hc["credit_license"])}')
         credit_parts.append(' · via iNaturalist')

@@ -108,7 +108,10 @@ def build_wildlife_json_entry(species, hero):
         "native": bool(species.get("native")),
         "aliases": species.get("also_known_as") or [],
         "tags": species.get("tags") or [],
-        "credit": hero_credit["credit_name"],
+        # `credit` is the LOGIN — the stable key a profile page joins on.
+        # `credit_name` is the DISPLAY string. Both, deliberately. See
+        # psbp_common.resolve_hero_credit() for why.
+        "credit": hero_credit["credit_login"],
         "credit_name": hero_credit["credit_name"],
         "credit_license": hero_credit["credit_license"],
         "credit_line": hero_credit["credit_line"],
@@ -303,19 +306,22 @@ def render_gallery(species, gallery_photos, hero):
         if not url:
             continue
         idx = len(lb_data)
-        photographer = display_name(p.get("photographer", ""), p.get("photographer_name", ""))
+        gal_login = p.get("photographer", "")
+        photographer = display_name(gal_login, p.get("photographer_name", ""))
         observed = _fmt_observed(p.get("observed_on", ""))
         lb_data.append({
             "src": url,
-            "credit": photographer,
+            "credit": photographer,          # display string for the lightbox caption
+            "credit_login": gal_login,       # stable key, for a future profile link
             "license": (p.get("license") or "").upper(),
             "observed": observed,
         })
         date_html = f'<div class="gal-date">📅 {h(observed)}</div>' if observed else ""
+        _gal_attr = f' data-login="{h(gal_login)}"' if gal_login else ""
         grid_items.append(
             f'<div class="gal-item" onclick="openLB({idx})">'
             f'<img src="{h(url)}" loading="lazy" alt="{h(common)} — photo by {h(photographer)}">'
-            f'<div class="gal-credit">📷 {h(photographer)}</div>{date_html}</div>'
+            f'<div class="gal-credit"{_gal_attr}>📷 {h(photographer)}</div>{date_html}</div>'
         )
 
     if not grid_items:
@@ -394,7 +400,11 @@ def generate_html(species, hero, gallery_photos, published_on=""):
     if hero:
         hero_path = f"../photos/{pid}/{hero['filename']}"
         hc = resolve_hero_credit(hero)
-        credit_parts = [f'📷 Photo by <strong>{h(hc["credit_name"])}</strong>']
+        # data-login carries the stable key into the page with no visible
+        # change. site.js turns it into a profile link when photographers.json
+        # says that person has a page.
+        _login_attr = f' data-login="{h(hc["credit_login"])}"' if hc.get("credit_login") else ""
+        credit_parts = [f'📷 Photo by <strong{_login_attr}>{h(hc["credit_name"])}</strong>']
         if hc["credit_license"]:
             credit_parts.append(f' · {h(hc["credit_license"])}')
         credit_parts.append(' · via iNaturalist')

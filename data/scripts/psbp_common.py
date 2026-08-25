@@ -364,21 +364,34 @@ def resolve_hero_credit(hero_record):
     """Given a hero photo record from photo_credits.json, resolve the
     canonical credit fields for stamping into search cards AND HTML pages.
 
-    Returns a dict with three fields:
-        credit_name     "Rob Carr"
+    Returns a dict with four fields:
+        credit_login    "robcarr52"                                (the KEY)
+        credit_name     "Rob Carr"                                 (the DISPLAY)
         credit_license  "CC-BY-NC"
         credit_line     "© Rob Carr (CC-BY-NC), via iNaturalist"
+
+    THE LOGIN AND THE NAME ARE BOTH REQUIRED, FOR DIFFERENT JOBS.
+    The login is the stable key: display names change, logins do not, and two
+    contributors can share a display name. The name is what a human reads —
+    nobody wants `theblackd0g13` on a species page. Carrying only one of them
+    is what broke this: the card's `credit` field was fed `credit_name`, so
+    every card stored the display name twice and the login nowhere, and
+    nothing could link a photograph back to its photographer.
+
+    This function already computed the login and simply didn't return it.
 
     If hero_record is None (species has no hero), returns empty strings
     so callers don't need to guard.
     """
     if not hero_record:
-        return {"credit_name": "", "credit_license": "", "credit_line": ""}
+        return {"credit_login": "", "credit_name": "", "credit_license": "",
+                "credit_line": ""}
     login    = hero_record.get("photographer", "")
     raw_name = hero_record.get("photographer_name", "")
     name     = display_name(login, raw_name)
     lic      = (hero_record.get("license") or "").strip().upper()
     return {
+        "credit_login":   login,
         "credit_name":    name,
         "credit_license": lic,
         "credit_line":    build_credit_line(name, lic),
