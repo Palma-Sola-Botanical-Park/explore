@@ -1,7 +1,7 @@
 {
   "tab": "photographers",
   "human": "Photographer profiles — one row per contributor.",
-  "generated_at": "2026-08-25T19:19:12+00:00",
+  "generated_at": "2026-08-25T19:23:11+00:00",
   "status": "green",
   "published": true,
   "block_reason": null,
@@ -43,6 +43,25 @@
       "why": "Can't be blank.",
       "severity": "error",
       "scope": "row",
+      "status": "green",
+      "evaluated": 2,
+      "passed": 2,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "display:in_vocab",
+      "field": "display",
+      "check": "in_vocab",
+      "arg": [
+        "web",
+        "both",
+        "screen",
+        "off"
+      ],
+      "why": "Must be web, both, screen or off. Blank counts as off.",
+      "severity": "warn",
+      "scope": "field",
       "status": "green",
       "evaluated": 2,
       "passed": 2,
@@ -97,17 +116,27 @@
       "added": 1,
       "changed": 0,
       "removed": 1
+    },
+    {
+      "at": "2026-08-25T19:23:11+00:00",
+      "added": 0,
+      "changed": 1,
+      "removed": 0
     }
   ],
   "schema": {
     "required_headers": [
+      "display",
       "id",
       "name"
     ],
     "identity": [
       "id"
     ],
-    "drop_when_display": [],
+    "drop_when_display": [
+      "off",
+      ""
+    ],
     "volume_min": 1
   },
   "links": {
