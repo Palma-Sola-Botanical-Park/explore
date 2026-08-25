@@ -360,6 +360,35 @@ def fix(r, credits_blob, assume_yes=False):
         tmp.replace(CREDITS)
         print(f"  ✓ photo_credits.json {before} → {len(credits_blob['photos'])}  (backup: {b.name})")
 
+        # THE WORKBENCH GOES WITH THE CREDITS. Removing a credit row while
+        # leaving its decision behind is the asymmetry that produced the
+        # PSBP-99922 lockout, and this repair used to do exactly that — it
+        # purged credits and never wrote to the workbench at all.
+        #
+        # Same retention rule as the demote handler: `promoted` and `skip` are
+        # working state and leave with the species; `block` means "never
+        # resurface" and is kept, deliberately orphaned.
+        wb_blob = load(WORKBENCH, {"decisions": {}})
+        decisions = wb_blob.get("decisions", {})
+        drop = [k for k, d in decisions.items()
+                if d.get("psbp_id") in orphan_ids
+                and d.get("decision") in ("promoted", "skip")]
+        kept = sum(1 for d in decisions.values()
+                   if d.get("psbp_id") in orphan_ids and d.get("decision") == "block")
+        if drop:
+            wb_b = backup(WORKBENCH)
+            wb_before = len(decisions)
+            for k in drop:
+                decisions.pop(k, None)
+            wb_blob.setdefault("meta", {})["updated"] = datetime.now().isoformat(timespec="seconds")
+            tmp = WORKBENCH.with_suffix(".tmp")
+            tmp.write_text(json.dumps(wb_blob, indent=2, ensure_ascii=False), encoding="utf-8")
+            tmp.replace(WORKBENCH)
+            print(f"  ✓ photo_workbench.json {wb_before} → {len(decisions)}"
+                  f"  ({kept} block verdict(s) kept)  (backup: {wb_b.name})")
+        elif kept:
+            print(f"  · photo_workbench.json unchanged — {kept} block verdict(s) kept by design")
+
     for sid in dirs:
         d = PHOTOS_DIR / sid
         if d.is_dir():
