@@ -25,7 +25,7 @@
      (2026-08-26). Search used to sit ~1150px down the page — a hero, a
      duplicate paragraph and a gap all stood between you and the box you came
      here to use. */
-  padding: 2.25rem 1.5rem 3.75rem;
+  padding: 1.75rem 1.5rem 3.25rem;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -37,8 +37,8 @@
   opacity: .18;
 }
 .nature-hero > * { position: relative; z-index: 1; }
-.nature-hero h1 { color: var(--white); font-size: clamp(1.8rem,4vw,2.8rem); margin-bottom: .6rem; }
-.nature-hero p  { color: rgba(255,255,255,.75); font-size: 1rem; max-width: 640px; margin: 0 auto 1.6rem; line-height: 1.7; }
+.nature-hero h1 { color: var(--white); font-size: clamp(1.7rem,3.4vw,2.4rem); margin-bottom: .45rem; }
+.nature-hero p  { color: rgba(255,255,255,.75); font-size: 1rem; max-width: 660px; margin: 0 auto; line-height: 1.7; }
 .hero-cta {
   display: inline-block; margin-left: .35rem;
   color: var(--gold-light); font-weight: 700; text-decoration: none;
@@ -46,24 +46,43 @@
 }
 .hero-cta:hover { border-bottom-color: var(--gold-light); }
 
-/* Tabs on dark: the strip drops its bottom rule, and the active tab is marked
-   with a gold underline rather than a cream fill, which would fight the hero. */
-.two-tabs--hero { border-bottom: none; margin-bottom: 0; gap: .35rem; }
-.two-tabs--hero .tab-btn {
-  color: rgba(255,255,255,.72); background: transparent; border: 0;
-  padding: .6rem 1.05rem; border-radius: 8px 8px 0 0;
-}
-.two-tabs--hero .tab-btn:hover { color: #fff; background: rgba(255,255,255,.08); }
-.two-tabs--hero .tab-btn.active {
-  color: #fff; background: rgba(255,255,255,.10);
-  box-shadow: inset 0 -3px 0 var(--gold-light);
-}
+/* Tabs sit on the CARD, not the hero (2026-08-26). In the hero they read as
+   part of the photograph rather than as controls — Randy: "not clear at all
+   that you need to select Plants/Wildlife." On the white card, next to the
+   search box, they are unmistakably a control.
 
-/* The filter card lifts into the hero's lower edge so navigation, search and
-   filters read as one block instead of three stacked things. */
+   Recent Observations was demoted to a side link. The home page already
+   renders that feed, and a third tab diluted the one real choice. */
+.two-tabs--card {
+  display: flex; align-items: flex-end; gap: .2rem;
+  border: 1px solid var(--green-pale); border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  background: var(--white);
+  padding: .5rem .75rem 0;
+  margin: -2.5rem auto 0; position: relative; z-index: 2;
+  box-shadow: 0 -2px 14px rgba(26,58,31,.10);
+}
+.two-tabs--card .tab-btn {
+  border: 0; background: transparent; color: var(--text-soft);
+  padding: .6rem 1.1rem; border-radius: 9px 9px 0 0;
+  font-size: 1rem; cursor: pointer;
+}
+.two-tabs--card .tab-btn:hover { color: var(--green-deep); background: var(--cream); }
+.two-tabs--card .tab-btn.active {
+  color: var(--green-deep); font-weight: 700; background: var(--cream);
+  box-shadow: inset 0 -3px 0 var(--gold);
+}
+.tab-aside {
+  margin-left: auto; align-self: center;
+  font-size: .86rem; color: var(--green-mid); text-decoration: none;
+  padding: .35rem .5rem; white-space: nowrap;
+}
+.tab-aside:hover { text-decoration: underline; }
+
 #tabSection .filter-bar {
-  margin-top: -2.25rem; position: relative; z-index: 2;
-  box-shadow: 0 6px 22px rgba(26,58,31,.16);
+  margin-top: 0; position: relative; z-index: 2;
+  border-radius: 0 0 14px 14px; border-top: none;
+  box-shadow: 0 6px 22px rgba(26,58,31,.12);
 }
 
 /* ── Tabs ── */
@@ -412,18 +431,22 @@
      photographed by people walking this park. You don't need to be a scientist.
      <a class="hero-cta" href="get-started.html">Add the next one &rarr;</a></p>
 
-  <!-- Tabs live in the hero (2026-08-26) so navigation, search and filters read as
-       one control block instead of three things stacked down the page. -->
-  <div class="two-tabs two-tabs--hero">
-    <button class="tab-btn active" id="tab-plants"   onclick="showTab('plants')">🌿 Plants</button>
-    <button class="tab-btn"        id="tab-wildlife" onclick="showTab('wildlife')">🦜 Wildlife</button>
-    <button class="tab-btn"        id="tab-recent"   onclick="showTab('recent')">📷 Recent Observations</button>
-  </div>
 </div>
 
 <!-- TABS SECTION -->
 <section class="bg-cream" id="tabSection">
   <div class="section-inner">
+
+    <!-- Controls card: the tab strip is the card's top edge and each panel's
+         filter bar is its body, so tabs, search and filters read as one
+         object. Declared ONCE — putting a copy inside each panel duplicated
+         id="tab-plants" and broke showTab(). -->
+    <div class="two-tabs two-tabs--card">
+      <button class="tab-btn active" id="tab-plants"   onclick="showTab('plants')">🌿 Plants</button>
+      <button class="tab-btn"        id="tab-wildlife" onclick="showTab('wildlife')">🦜 Wildlife</button>
+      <a class="tab-aside" href="index.html#seenLately">📷 Seen lately &rarr;</a>
+    </div>
+
     <!-- ── PLANTS TAB ── -->
     <div class="tab-panel active" id="panel-plants">
       <div id="plants"></div>
@@ -478,6 +501,12 @@
     </div>
 
     <!-- ── RECENT OBSERVATIONS TAB ── -->
+    <!-- UNREACHABLE BY DESIGN (2026-08-26). Its tab button was removed: the
+         home page already renders this feed at #seenLately, and a third tab
+         diluted the one real choice on this page. Kept rather than deleted
+         because it costs nothing — showTab() only fetches when the tab is
+         clicked, and nothing clicks it — and restoring the tab is one button.
+         Delete it if it is still here in six months. -->
     <div class="tab-panel" id="panel-recent">
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;margin-bottom:2rem">
