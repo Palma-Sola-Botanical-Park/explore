@@ -46,6 +46,24 @@
 }
 .hero-cta:hover { border-bottom-color: var(--gold-light); }
 
+
+#tabSection .filter-bar {
+  margin-top: 0; position: relative; z-index: 2;
+  border-radius: 0 0 14px 14px; border-top: none;
+  box-shadow: 0 6px 22px rgba(26,58,31,.12);
+}
+
+/* ── Tabs ── */
+.two-tabs {
+  display: flex; justify-content: center;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 2.5rem; flex-wrap: wrap;
+}
+
+  /* NOTE: .two-tabs--card must come AFTER .two-tabs. Both are single-class
+     selectors, so source order decides — and while it sat above, this rule's
+     margin-bottom: 2.5rem overrode the card's and opened a visible gap
+     between the tab strip and the filter box. */
 /* Tabs sit on the CARD, not the hero (2026-08-26). In the hero they read as
    part of the photograph rather than as controls — Randy: "not clear at all
    that you need to select Plants/Wildlife." On the white card, next to the
@@ -79,18 +97,6 @@
 }
 .tab-aside:hover { text-decoration: underline; }
 
-#tabSection .filter-bar {
-  margin-top: 0; position: relative; z-index: 2;
-  border-radius: 0 0 14px 14px; border-top: none;
-  box-shadow: 0 6px 22px rgba(26,58,31,.12);
-}
-
-/* ── Tabs ── */
-.two-tabs {
-  display: flex; justify-content: center;
-  border-bottom: 2px solid var(--border);
-  margin-bottom: 2.5rem; flex-wrap: wrap;
-}
 .tab-btn {
   padding: .85rem 2.2rem;
   font-size: 1rem; font-weight: 700;
@@ -219,7 +225,7 @@
    A right-side plant panel that opens over the grid instead of navigating
    away. Everything below is additive — no edits to site.css or site.js.
 
-   Layout model, wide screens (>=1180px): the panel does NOT cover the
+   Layout model, wide screens (>=1000px): the panel does NOT cover the
    cards. #tabSection gains right padding so the grid reflows beside it and
    you keep your place. The active card is ringed in gold.
    Narrow screens: panel overlays with a scrim. Phones: bottom sheet.
@@ -246,10 +252,12 @@
   opacity: 0; pointer-events: none; transition: opacity .28s;
 }
 .dw-scrim.on { opacity: 1; pointer-events: auto; }
-@media (min-width: 1180px) { .dw-scrim { display: none; } }
+@media (min-width: 1000px) { .dw-scrim { display: none; } }
 
-/* Wide screens: make room instead of covering. */
-@media (min-width: 1180px) {
+/* Wide screens: make room instead of covering. Lowered to 1000 with the
+   drawer guard, so a three-card window still reflows beside the panel
+   instead of hiding behind a scrim. */
+@media (min-width: 1000px) {
   body.dw-open #tabSection { padding-right: calc(var(--dw-w) + 1.75rem); }
   #tabSection { transition: padding-right .28s cubic-bezier(.2,.7,.2,1); }
 }
@@ -353,8 +361,8 @@
 
    It was a full plate at the bottom of the panel, on the reasoning that the
    grid card behind the drawer already shows the photographer. That only holds
-   above 1180px — the one breakpoint where the grid stays visible. Between 700
-   and 1180 a scrim covers it; on a phone the drawer is a 90vh bottom sheet, so
+   above 1000px — the breakpoint where the grid stays visible. Below it, on a
+   phone, the drawer is a 90vh bottom sheet, so
    the card is gone entirely. A visitor with a QR code saw a large photograph
    with the photographer's name nowhere on screen.
 
@@ -1078,8 +1086,8 @@ loadINat();
 
   // Card click opens the panel. Modified clicks fall through to the real page.
   /* Quick view is a DESKTOP mechanism (High #4, decided 08-18, implemented
-     08-25). Below 1180px the grid does not stay beside the drawer — between
-     700 and 1180 a scrim covers it, and on a phone the drawer is a 90vh bottom
+     08-25, threshold lowered to 1000 on 08-26). Below it the grid does not stay
+     beside the drawer, and on a phone the drawer is a 90vh bottom
      sheet. Tapping a card for a slightly larger card, then tapping again for
      the real page, is a worse journey than just opening the page.
 
@@ -1090,7 +1098,13 @@ loadINat();
 
      Nothing phone-specific is built here: the card is already a real <a href>,
      so declining to intercept the click hands it straight back to the browser. */
-  function drawerAllowed() { return window.innerWidth >= 1180; }
+  /* Lowered from 1180 to 1000 (2026-08-26). At 1180 a three-card window fell
+     through to the full page while a four-card window opened the drawer —
+     same click, different outcome, no signal. 1000 covers the ordinary
+     windowed-laptop case. The matching media queries moved with it, so the
+     grid still makes ROOM for the panel rather than hiding behind a scrim;
+     at 1000px that leaves roughly two cards beside it. */
+  function drawerAllowed() { return window.innerWidth >= 1000; }
 
   grid.addEventListener('click', function (e) {
     var card = e.target.closest && e.target.closest('a.plant-card');
@@ -1241,7 +1255,7 @@ loadINat();
    filters are on is the usual failure of this pattern.
 
    Boundary is 700px, the file's existing layout breakpoint, rather than the
-   1180px the drawer uses. That one is about interaction; this one is about
+   1000px the drawer uses. That one is about interaction; this one is about
    whether the buttons fit. */
 .filter-toggle { display: none; }
 @media (max-width: 700px) {
