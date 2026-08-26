@@ -1846,3 +1846,224 @@ async function loadRightNow(targetId, opts) {
   gc.src = 'https://gc.zgo.at/count.js';
   (document.head || document.documentElement).appendChild(gc);
 })();
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SPECIES SEQUENCE NAVIGATION  (added 2026-08-25 — High #4)
+
+   A visitor who arrived from nature.html is mid-list and wants to keep going.
+   A QR scanner has no list at all. One mechanism, one conditional.
+
+   nature.html writes the FILTERED id list to sessionStorage when a card is
+   clicked; a species page reads it on load. No stored list means QR scan,
+   direct link or shared URL — and then no buttons render at all. That answers
+   the entry-point question without sniffing referrers.
+
+   Why this lives in site.js: every one of the 321 species pages already loads
+   it, so this reaches all of them with NO regeneration.
+
+   DESIGN NOTES
+   · Buttons carry the next species' NAME, not a bare arrow. On a full page an
+     arrow is ambiguous — is it the next photo, the next section, the next
+     plant? A name is not.
+   · Sequence context ("3 of 47 · Native") says WHY that species is next. A
+     bare "3 of 47" reads as an arbitrary catalogue position.
+   · "Back to the list" restores scroll AND filters, which is the other half of
+     not losing your place. It routes through #restore so a fresh visit to
+     nature.html never silently re-applies someone's old filters.
+   · Names are stored alongside the ids so a species page never has to fetch
+     plants.json just to label two buttons.
+
+   Everything is wrapped defensively: this file is shared by every page on the
+   site, so a failure here must never take a page down with it.
+   ═══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  var KEY = 'psbp_seq_v1';
+
+  function save(o) { try { sessionStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
+  function read()  { try { return JSON.parse(sessionStorage.getItem(KEY) || 'null'); } catch (e) { return null; } }
+
+  /* A species page names itself in its own URL: PSBP-00215-Queensland-....html
+     No data attribute needed, so no regeneration. */
+  function idFromUrl() {
+    var m = /(PSBP-\d{5})/.exec(location.pathname);
+    return m ? m[1] : null;
+  }
+
+  /* ── WRITE SIDE — runs on nature.html ─────────────────────────────────── */
+
+  function activeLabel(kind) {
+    if (kind !== 'plant') return '';
+    var bits = [];
+    try {
+      if (typeof _activeForm !== 'undefined' && _activeForm) bits.push(_activeForm);
+      if (typeof _activeFilters !== 'undefined' && _activeFilters.size) {
+        _activeFilters.forEach(function (f) {
+          bits.push(f === 'rare_fruit' ? 'Rare fruit' : f.charAt(0).toUpperCase() + f.slice(1));
+        });
+      }
+      var q = document.getElementById('plantSearch');
+      if (q && q.value.trim()) bits.push('“' + q.value.trim() + '”');
+    } catch (e) {}
+    return bits.join(' · ');
+  }
+
+  function captureFilters() {
+    var f = { form: '', flags: [], q: '', wq: '', scroll: 0, page: 0 };
+    try {
+      if (typeof _activeForm !== 'undefined') f.form = _activeForm || '';
+      if (typeof _activeFilters !== 'undefined') _activeFilters.forEach(function (x) { f.flags.push(x); });
+      var q = document.getElementById('plantSearch'); if (q) f.q = q.value || '';
+      var w = document.getElementById('wildSearch');  if (w) f.wq = w.value || '';
+      if (typeof _plantPage !== 'undefined') f.page = _plantPage;
+      f.scroll = window.scrollY || 0;
+    } catch (e) {}
+    return f;
+  }
+
+  function remember(list, clickedId, kind) {
+    if (!list || !list.length) return;
+    var ids = [], names = [], pages = [];
+    for (var i = 0; i < list.length; i++) {
+      ids.push(list[i].id);
+      names.push(list[i].common || list[i].name || list[i].id);
+      /* Store the card's own `page` URL. Rebuilding the slug here would be a
+         second implementation of a rule that already exists in plantCard(),
+         and the two would drift. */
+      pages.push(list[i].page || '');
+    }
+    save({
+      kind: kind, ids: ids, names: names, pages: pages,
+      label: activeLabel(kind),
+      from: location.pathname.split('/').pop() || 'nature.html',
+      hash: kind === 'plant' ? '#plants' : '#wildlife',
+      filters: captureFilters(),
+      current: clickedId || null
+    });
+  }
+
+  /* Delegated, so it survives every re-render of the grid. Fires alongside the
+     drawer's own handler on desktop — storing costs nothing there, and it is
+     what makes the drawer's "Full plant page" button land with a sequence. */
+  document.addEventListener('click', function (e) {
+    var card = e.target.closest && e.target.closest('a.plant-card, a.obs-card');
+    if (!card) return;
+    try {
+      var plant = card.classList.contains('plant-card');
+      var list  = plant ? (typeof _filteredPlants !== 'undefined' ? _filteredPlants : null)
+                        : (typeof _filteredWild   !== 'undefined' ? _filteredWild   : null);
+      var m = /(PSBP-\d{5})/.exec(card.getAttribute('href') || '');
+      remember(list, m ? m[1] : null, plant ? 'plant' : 'wild');
+    } catch (err) {}
+  }, true);
+
+  /* ── RESTORE SIDE — nature.html?#restore ──────────────────────────────── */
+
+  function restore() {
+    var s = read(); if (!s || !s.filters) return;
+    var f = s.filters;
+    try {
+      if (typeof _activeFilters !== 'undefined') {
+        _activeFilters.clear();
+        f.flags.forEach(function (x) { _activeFilters.add(x); });
+        document.querySelectorAll('#panel-plants .filter-btn').forEach(function (b) {
+          if (b.dataset.filter) b.classList.toggle('on', _activeFilters.has(b.dataset.filter));
+        });
+      }
+      if (typeof setPlantForm === 'function') setPlantForm(f.form || '');
+      var q = document.getElementById('plantSearch'); if (q) q.value = f.q || '';
+      var w = document.getElementById('wildSearch');  if (w) w.value = f.wq || '';
+      if (typeof filterPlants === 'function') filterPlants();
+      if (typeof renderPlantPage === 'function' && f.page) renderPlantPage(f.page);
+      // after the grid has re-rendered
+      setTimeout(function () { window.scrollTo(0, f.scroll || 0); }, 60);
+    } catch (e) {}
+  }
+
+  /* ── READ SIDE — runs on a species page ──────────────────────────────── */
+
+  function buildNav() {
+    var id = idFromUrl(); if (!id) return;
+    var s = read(); if (!s || !s.ids || s.ids.length < 2) return;
+    var i = s.ids.indexOf(id);
+    if (i < 0) return;                       // arrived some other way — stay quiet
+
+    var prev = i > 0 ? i - 1 : -1;
+    var next = i < s.ids.length - 1 ? i + 1 : -1;
+    if (prev >= 0 && !(s.pages && s.pages[prev])) prev = -1;
+    if (next >= 0 && !(s.pages && s.pages[next])) next = -1;
+
+    /* `pages` holds the card's own href — "plants/PSBP-00001-Tree-Crinum.html"
+       — and a species page sits one directory down, hence the ../ */
+    function href(j) {
+      var u = (s.pages && s.pages[j]) || '';
+      return u ? '../' + u : '#';
+    }
+
+    var ctx = (i + 1) + ' of ' + s.ids.length + (s.label ? ' · ' + s.label : '');
+    var html =
+      '<nav class="seq-nav" aria-label="Species sequence">' +
+        (prev >= 0
+          ? '<a class="seq-btn seq-prev" href="' + href(prev) + '">' +
+              '<span class="seq-dir">&larr; Previous</span>' +
+              '<span class="seq-name">' + String(s.names[prev]) + '</span></a>'
+          : '<span class="seq-btn seq-empty"></span>') +
+        '<a class="seq-back" href="../' + s.from + '#restore">' +
+          '<span class="seq-ctx">' + ctx + '</span>' +
+          '<span class="seq-back-label">Back to the list</span></a>' +
+        (next >= 0
+          ? '<a class="seq-btn seq-next" href="' + href(next) + '">' +
+              '<span class="seq-dir">Next &rarr;</span>' +
+              '<span class="seq-name">' + String(s.names[next]) + '</span></a>'
+          : '<span class="seq-btn seq-empty"></span>') +
+      '</nav>';
+
+    var anchor = document.querySelector('.all-plants-link, .all-wild-link');
+    if (anchor && anchor.parentNode) {
+      anchor.insertAdjacentHTML('beforebegin', html);
+      anchor.style.display = 'none';          // the nav supersedes it
+    } else {
+      var main = document.querySelector('main') || document.body;
+      main.insertAdjacentHTML('beforeend', html);
+    }
+
+    var css = document.createElement('style');
+    css.textContent =
+      '.seq-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:.75rem;align-items:stretch;' +
+        'max-width:1100px;margin:2.5rem auto 1.5rem;padding:0 1rem}' +
+      '.seq-btn{display:flex;flex-direction:column;justify-content:center;gap:.15rem;' +
+        'padding:.7rem .9rem;border:1px solid var(--border,#dde4e0);border-radius:10px;' +
+        'background:var(--cream,#faf8f3);text-decoration:none;min-height:3.4rem}' +
+      '.seq-btn:hover{border-color:var(--green-mid,#2d6a35)}' +
+      '.seq-empty{border:0;background:none}' +
+      '.seq-next{text-align:right}' +
+      '.seq-dir{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;' +
+        'color:var(--green-mid,#2d6a35)}' +
+      '.seq-name{font-size:.95rem;font-weight:700;color:var(--text,#1e1e1e);line-height:1.25}' +
+      '.seq-back{display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+        'gap:.15rem;padding:.7rem 1.1rem;border-radius:10px;text-decoration:none;' +
+        'background:var(--green-deep,#1a3a1f);color:#fff;white-space:nowrap}' +
+      '.seq-ctx{font-size:.7rem;opacity:.85;letter-spacing:.03em}' +
+      '.seq-back-label{font-size:.9rem;font-weight:700}' +
+      '@media(max-width:640px){.seq-nav{grid-template-columns:1fr 1fr;gap:.5rem}' +
+        '.seq-back{grid-column:1/-1;order:3}.seq-empty{display:none}}';
+    document.head.appendChild(css);
+  }
+
+  /* ── boot ─────────────────────────────────────────────────────────────── */
+
+  function go() {
+    try {
+      if (idFromUrl()) { buildNav(); return; }
+      if (location.hash === '#restore') {
+        history.replaceState(null, '', location.pathname + location.search);
+        setTimeout(restore, 120);            // let the feeds land first
+      }
+    } catch (e) { if (window.console) console.error('seq-nav:', e); }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+  else go();
+})();
