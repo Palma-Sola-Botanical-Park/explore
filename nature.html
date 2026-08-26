@@ -21,7 +21,11 @@
 
 .nature-hero {
   background: var(--green-deep);
-  padding: 3rem 1.5rem;
+  /* Trimmed from 3rem, with bottom room for the filter card to overlap into
+     (2026-08-26). Search used to sit ~1150px down the page — a hero, a
+     duplicate paragraph and a gap all stood between you and the box you came
+     here to use. */
+  padding: 2.25rem 1.5rem 3.75rem;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -34,7 +38,33 @@
 }
 .nature-hero > * { position: relative; z-index: 1; }
 .nature-hero h1 { color: var(--white); font-size: clamp(1.8rem,4vw,2.8rem); margin-bottom: .6rem; }
-.nature-hero p  { color: rgba(255,255,255,.75); font-size: 1rem; max-width: 620px; margin: 0 auto 1.5rem; line-height: 1.72; }
+.nature-hero p  { color: rgba(255,255,255,.75); font-size: 1rem; max-width: 640px; margin: 0 auto 1.6rem; line-height: 1.7; }
+.hero-cta {
+  display: inline-block; margin-left: .35rem;
+  color: var(--gold-light); font-weight: 700; text-decoration: none;
+  border-bottom: 1px solid rgba(234,188,90,.45);
+}
+.hero-cta:hover { border-bottom-color: var(--gold-light); }
+
+/* Tabs on dark: the strip drops its bottom rule, and the active tab is marked
+   with a gold underline rather than a cream fill, which would fight the hero. */
+.two-tabs--hero { border-bottom: none; margin-bottom: 0; gap: .35rem; }
+.two-tabs--hero .tab-btn {
+  color: rgba(255,255,255,.72); background: transparent; border: 0;
+  padding: .6rem 1.05rem; border-radius: 8px 8px 0 0;
+}
+.two-tabs--hero .tab-btn:hover { color: #fff; background: rgba(255,255,255,.08); }
+.two-tabs--hero .tab-btn.active {
+  color: #fff; background: rgba(255,255,255,.10);
+  box-shadow: inset 0 -3px 0 var(--gold-light);
+}
+
+/* The filter card lifts into the hero's lower edge so navigation, search and
+   filters read as one block instead of three stacked things. */
+#tabSection .filter-bar {
+  margin-top: -2.25rem; position: relative; z-index: 2;
+  box-shadow: 0 6px 22px rgba(26,58,31,.16);
+}
 
 /* ── Tabs ── */
 .two-tabs {
@@ -376,26 +406,26 @@
 
 <!-- HERO -->
 <div class="nature-hero">
-  <div class="label label-light">Flora & Fauna</div>
+  <div class="label label-light">Flora &amp; Fauna</div>
   <h1>Everything that lives here</h1>
-  <p>Ten acres of plants, birds, insects, and reptiles — all documented by the people who walk through this park. You don't need to be a scientist. You just need your phone.</p>
+  <p>Ten acres of plants, birds, insects and reptiles — every one of them found and
+     photographed by people walking this park. You don't need to be a scientist.
+     <a class="hero-cta" href="get-started.html">Add the next one &rarr;</a></p>
+
+  <!-- Tabs live in the hero (2026-08-26) so navigation, search and filters read as
+       one control block instead of three things stacked down the page. -->
+  <div class="two-tabs two-tabs--hero">
+    <button class="tab-btn active" id="tab-plants"   onclick="showTab('plants')">🌿 Plants</button>
+    <button class="tab-btn"        id="tab-wildlife" onclick="showTab('wildlife')">🦜 Wildlife</button>
+    <button class="tab-btn"        id="tab-recent"   onclick="showTab('recent')">📷 Recent Observations</button>
+  </div>
 </div>
 
 <!-- TABS SECTION -->
 <section class="bg-cream" id="tabSection">
   <div class="section-inner">
-    <div class="two-tabs">
-      <button class="tab-btn active" id="tab-plants"   onclick="showTab('plants')">🌿 Plants</button>
-      <button class="tab-btn"        id="tab-wildlife" onclick="showTab('wildlife')">🦜 Wildlife</button>
-      <button class="tab-btn"        id="tab-recent"   onclick="showTab('recent')">📷 Recent Observations</button>
-    </div>
-
     <!-- ── PLANTS TAB ── -->
     <div class="tab-panel active" id="panel-plants">
-      <p class="section-sub" style="max-width:780px;margin:0 0 1.25rem">
-        Every plant below was found by someone walking this park — phone in hand, photo posted to <strong>iNaturalist</strong>, identified by the community. The best photo earns a spot here, with full credit to the observer. <span id="plantCollectionCount">Hundreds</span> species so far. <a href="get-started.html" style="color:var(--green-mid);font-weight:700;white-space:nowrap">Get your name on the next one →</a>
-      </p>
-
       <div id="plants"></div>
       <div class="filter-bar">
         <input type="search" id="plantSearch" placeholder="Search by name, family, or keyword…" oninput="filterPlants()">
@@ -425,10 +455,6 @@
 
     <!-- ── WILDLIFE TAB ── -->
     <div class="tab-panel" id="panel-wildlife">
-      <p class="section-sub" style="max-width:780px;margin:0 0 1.25rem">
-        Every animal below was photographed by someone walking this park — posted to <strong>iNaturalist</strong>, identified by the community, brought here with the observer's name attached. <span id="wildCollectionCount">Dozens</span> species so far, and the bay and wetlands keep adding more. <a href="get-started.html" style="color:var(--green-mid);font-weight:700;white-space:nowrap">Photograph the next one →</a>
-      </p>
-
       <div id="wildlife"></div>
       <div class="filter-bar">
         <input type="search" id="wildSearch" placeholder="Search by name, family, or keyword…" oninput="filterWildlife()">
@@ -1197,12 +1223,16 @@ loadINat();
     background: var(--cream); color: var(--green-deep);
     font-size: .95rem; font-weight: 700; cursor: pointer;
   }
-  .filter-toggle[aria-expanded="true"] { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+  /* Solid = a filter is ON. Expanded is shown by the caret, not the fill —
+     they are different states and conflating them hid the useful one. */
+  .filter-toggle.has-filters { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+  .filter-toggle .ft-caret { transition: transform .2s; opacity: .7; }
+  .filter-toggle[aria-expanded="true"] .ft-caret { transform: rotate(180deg); }
   .filter-toggle .ft-count {
     min-width: 1.4em; padding: 0 .35rem; border-radius: 999px;
     background: rgba(0,0,0,.09); font-size: .8em; font-variant-numeric: tabular-nums;
   }
-  .filter-toggle[aria-expanded="true"] .ft-count { background: rgba(255,255,255,.25); }
+  .filter-toggle.has-filters .ft-count { background: rgba(255,255,255,.25); }
   .filter-collapse { display: none; width: 100%; }
   .filter-collapse.open { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
 }
@@ -1309,7 +1339,7 @@ loadINat();
     btn.type = 'button';
     btn.className = 'filter-toggle';
     btn.setAttribute('aria-expanded', 'false');
-    btn.innerHTML = 'Filters <span class="ft-count">0</span>';
+    btn.innerHTML = '<span class="ft-label">Filter</span> <span class="ft-count">0</span> <span class="ft-caret">&#9662;</span>';
     btn.addEventListener('click', function () {
       var open = wrap.classList.toggle('open');
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -1329,8 +1359,21 @@ loadINat();
       if (typeof _activeForm !== 'undefined' && _activeForm) n++;
       if (typeof _activeFilters !== 'undefined') n += _activeFilters.size;
     } catch (e) {}
+    /* A bare "0" reads as data about your filters, not an invitation to set
+       one — Randy tested it on a phone and the zero state did not register as
+       tappable. So the empty state uses a VERB and names its scope ("Filter
+       230 plants"), and the badge only appears once something is on.
+
+       Active state also has to be visible without opening the panel: the
+       button goes solid when a filter is set. Before this it coloured on
+       EXPANDED, which is a different thing entirely. */
     var badge = btn.querySelector('.ft-count');
-    if (badge) badge.textContent = n;
+    var label = btn.querySelector('.ft-label');
+    var shown = 0;
+    try { shown = (typeof _filteredPlants !== 'undefined' && _filteredPlants.length) || 0; } catch (e) {}
+    if (label) label.textContent = n ? 'Filters' : ('Filter ' + shown + ' plants');
+    if (badge) { badge.textContent = n; badge.style.display = n ? '' : 'none'; }
+    btn.classList.toggle('has-filters', n > 0);
   }
 
   function refresh() {
