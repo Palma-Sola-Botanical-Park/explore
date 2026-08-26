@@ -799,7 +799,7 @@ loadINat();
        trunk the species is famous for?" — which is good writing and useless
        on its own, because the payoff is in the next sentence. So accumulate
        to MIN_CHARS, then stop at the sentence boundary. */
-    var MIN_CHARS = 90, MAX_CHARS = 240;
+    var MIN_CHARS = 90, HARD_MAX = 340;
     var parts = t.match(/.+?[.!?](?:\s|$)/g) || [t];
     var out = '';
     for (var i = 0; i < parts.length; i++) {
@@ -807,7 +807,12 @@ loadINat();
       if (out.trim().length >= MIN_CHARS) break;
     }
     out = out.trim();
-    if (out.length > MAX_CHARS) out = out.slice(0, MAX_CHARS - 1).replace(/\s+\S*$/, '') + '…';
+
+    /* Whole sentences win over a tidy length. Stopping at a fixed cap put a
+       trailing ellipsis on Madagascar Bamboo Palm — a complete thought cut one
+       clause short. A slightly long teaser reads better than a truncated one,
+       so the only trim left is a backstop for a genuinely runaway sentence. */
+    if (out.length > HARD_MAX) out = out.slice(0, HARD_MAX - 1).replace(/\s+\S*$/, '') + '…';
 
     return '<hr class="dw-rule">'
          + '<p class="dw-teaser">' + esc(out) + '</p>'
