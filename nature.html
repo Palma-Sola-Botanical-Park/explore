@@ -49,7 +49,8 @@
 
 #tabSection .filter-bar {
   margin-top: 0; position: relative; z-index: 2;
-  border-radius: 0 0 14px 14px; border-top: none;
+  border-radius: 0 0 14px 14px;
+  border-top: 1px solid var(--green-pale);   /* the active tab punches through this */
   box-shadow: 0 6px 22px rgba(26,58,31,.12);
 }
 
@@ -72,28 +73,39 @@
    Recent Observations was demoted to a side link. The home page already
    renders that feed, and a third tab diluted the one real choice. */
 .two-tabs--card {
-  display: flex; align-items: flex-end; gap: .2rem;
-  border: 1px solid var(--green-pale); border-bottom: none;
-  border-radius: 14px 14px 0 0;
-  background: var(--white);
-  padding: .5rem .75rem 0;
-  margin: -2.5rem auto 0; position: relative; z-index: 2;
-  box-shadow: 0 -2px 14px rgba(26,58,31,.10);
+  /* Real folder tabs (2026-08-26). The ACTIVE tab is the same surface as the
+     panel below it — white — and physically continuous with it: the panel
+     keeps its top border, and the active tab sits 1px over that line with a
+     white fill, punching a hole in it. Inactive tabs are cream, reading as
+     sheets tucked behind.
+
+     The direction matters. Making the PANEL cream would have been the obvious
+     reading of "cream joins the active mode to the filters", but the search
+     box and every filter button are already cream — a cream panel would have
+     swallowed all of them. So the panel stays white and the active tab comes
+     to meet it. */
+  display: flex; align-items: flex-end; gap: .25rem;
+  border: none; background: transparent; box-shadow: none;
+  padding: 0 .8rem 0;
+  margin: -2.5rem auto 0; position: relative; z-index: 3;
 }
 .two-tabs--card .tab-btn {
-  border: 0; background: transparent; color: var(--text-soft);
-  padding: .6rem 1.1rem; border-radius: 9px 9px 0 0;
-  font-size: 1rem; cursor: pointer;
+  border: 1px solid var(--green-pale); border-bottom: none;
+  background: var(--cream); color: var(--text-soft);
+  padding: .5rem 1.15rem; border-radius: 10px 10px 0 0;
+  font-size: 1rem; cursor: pointer; margin-bottom: -1px;
+  transition: background .15s, color .15s;
 }
-.two-tabs--card .tab-btn:hover { color: var(--green-deep); background: var(--cream); }
+.two-tabs--card .tab-btn:hover { color: var(--green-deep); background: #fff; }
 .two-tabs--card .tab-btn.active {
-  color: var(--green-deep); font-weight: 700; background: var(--cream);
-  box-shadow: inset 0 -3px 0 var(--gold);
+  background: var(--white); color: var(--green-deep); font-weight: 700;
+  padding: .65rem 1.15rem .8rem;          /* raised, and deep enough to cover the seam */
+  box-shadow: inset 0 3px 0 var(--gold);  /* gold along the TOP, like a folder edge */
 }
 .tab-aside {
   margin-left: auto; align-self: center;
   font-size: .86rem; color: var(--green-mid); text-decoration: none;
-  padding: .35rem .5rem; white-space: nowrap;
+  padding: .35rem .5rem .55rem; white-space: nowrap;
 }
 .tab-aside:hover { text-decoration: underline; }
 
