@@ -1086,6 +1086,14 @@ loadINat();
   }
   .filter-btn.on .fcount { background: rgba(255,255,255,.28); }
   .filter-btn.fzero      { opacity: .4; }
+
+/* `form` promoted from a dropdown to a visible row (2026-08-25). A dropdown
+   hides its options and their counts until you open it, which defeats the
+   point of counting them. The <select> stays in the DOM — site.js populates
+   it from the data and clearFilters() resets it — but is visually hidden and
+   mirrored into these buttons. site.js is untouched. */
+#plantForm { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.form-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .6rem 0 0; width: 100%; }
 </style>
 <script>
 (function () {
@@ -1143,6 +1151,34 @@ loadINat();
     el.classList.toggle('fzero', count === 0 && !isActive);
   }
 
+  /* Mirror the <select> into buttons. Built once, after site.js has populated
+     it from the data — so the forms listed here are always the forms that
+     actually exist, never a hardcoded list. Clicking routes through
+     setPlantForm(), site.js's own entry point; clicking the active one clears
+     it, which a dropdown cannot do in a single gesture. */
+  function buildFormRow() {
+    var sel = document.getElementById('plantForm');
+    if (!sel || sel.options.length < 2) return;          // not populated yet
+    var row = document.querySelector('.form-row');
+    if (row && row.children.length === sel.options.length) return;   // current
+    if (!row) {
+      row = document.createElement('div');
+      row.className = 'form-row';
+      sel.parentNode.insertBefore(row, sel.nextSibling);
+    }
+    row.innerHTML = '';
+    Array.prototype.forEach.call(sel.options, function (opt) {
+      var b = document.createElement('button');
+      b.className = 'filter-btn';
+      b.dataset.form = opt.value;
+      b.textContent = opt.value || 'All forms';
+      b.addEventListener('click', function () {
+        setPlantForm(_activeForm === opt.value ? '' : opt.value);
+      });
+      row.appendChild(b);
+    });
+  }
+
   function refresh() {
     if (typeof PLANTS === 'undefined' || !PLANTS.length) return;
 
@@ -1151,18 +1187,16 @@ loadINat();
       if (btn) paint(btn, countExcluding(f.key, f.test), _activeFilters.has(f.key));
     });
 
-    // The <select> is populated from the data by site.js, so read its options
-    // rather than assuming which forms exist.
-    var sel = document.getElementById('plantForm');
-    if (!sel) return;
-    Array.prototype.forEach.call(sel.options, function (opt) {
-      if (!opt.dataset.baseLabel) opt.dataset.baseLabel = opt.textContent;
-      var base = opt.dataset.baseLabel;
-      var n = opt.value
-        ? countExcluding('form', function (p) { return p.form === opt.value; })
-        : countExcluding('form', null);
-      opt.textContent = base + '  (' + n + ')';
-      opt.disabled = (n === 0 && sel.value !== opt.value);
+    buildFormRow();
+    var row = document.querySelector('.form-row');
+    if (!row) return;
+    Array.prototype.forEach.call(row.children, function (btn) {
+      var v = btn.dataset.form;
+      var n = v ? countExcluding('form', function (p) { return p.form === v; })
+                : countExcluding('form', null);
+      var active = (v === _activeForm) || (!v && !_activeForm);
+      paint(btn, n, active);
+      btn.classList.toggle('on', active);
     });
   }
 
