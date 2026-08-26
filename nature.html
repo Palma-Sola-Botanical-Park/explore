@@ -871,7 +871,16 @@ loadINat();
   function lines(p) {
     var out = [];
 
-    if (p.origin) out.push(esc(p.origin));
+    /* `origin` is a two-value flag — Native / Non-native — so alone it can
+       never say WHERE a plant is from. `origin_short` (schema 1.5, curated for
+       the signs) is the place name, and the two read as one line:
+       "Non-native · South America". A Florida native already reads "Native to
+       Florida" in origin_short, so that stands alone rather than printing as
+       "Native · Native to Florida". */
+    var place = (p.origin_short || '').trim();
+    if (place && /^native to /i.test(place)) out.push(esc(place));
+    else if (place && p.origin)              out.push(esc(p.origin) + ' &middot; ' + esc(place));
+    else if (p.origin)                       out.push(esc(p.origin));
 
     var second = [];
     if (p.family) second.push('<a href="#" data-dw-family="' + esc(p.family) + '">' + esc(p.family) + '</a>');
@@ -907,6 +916,20 @@ loadINat();
     /* Strip the author's <b> tags before excerpting. 18 of 230 quick hits
        carry them; esc() would otherwise print literal markup. Bold is not
        worth carrying into a one-line excerpt. */
+    /* Prefer the CURATED teaser (schema 1.5) over slicing quick_hits. It was
+       written to a printed sign's length limit, so it is a whole thought
+       rather than the first N characters of a longer one, and it needs none
+       of the sentence-accumulation below. The slice stays as the fallback for
+       any record without a curated line. */
+    var curated = (p.teaser || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    if (curated) {
+      return '<hr class="dw-rule">'
+           + '<div class="dw-teaser-wrap">'
+           +   '<p class="dw-teaser">' + esc(curated) + '</p>'
+           +   '<a class="dw-more" href="' + esc(p.page || '#') + '">Read the full story &rarr;</a>'
+           + '</div>';
+    }
+
     var t = (p.quick || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     if (!t) return '';
 
