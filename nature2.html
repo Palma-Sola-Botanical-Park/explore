@@ -300,9 +300,31 @@
 /* Breathing room so the credit plate does not butt against the sticky CTA. */
 .dw-body { padding-bottom: .6rem; }
 
-/* Reuse the site's credit plate, just give it breathing room. */
-.dw .credit-plate { margin-top: 1.15rem; border-top: 1px solid var(--green-pale); }
-.dw .credit-name { font-size: 1.02rem; }
+/* Photo credit sits UNDER THE PHOTO, as a caption (2026-08-25).
+
+   It was a full plate at the bottom of the panel, on the reasoning that the
+   grid card behind the drawer already shows the photographer. That only holds
+   above 1180px — the one breakpoint where the grid stays visible. Between 700
+   and 1180 a scrim covers it; on a phone the drawer is a 90vh bottom sheet, so
+   the card is gone entirely. A visitor with a QR code saw a large photograph
+   with the photographer's name nowhere on screen.
+
+   Moving it here costs nothing: one line replaces a multi-line plate, so the
+   panel is SHORTER than before. And a credit touching the image it credits
+   reads as a caption, which is the stronger position anyway. */
+.dw-credit {
+  display: flex; align-items: baseline; gap: .4rem; flex-wrap: wrap;
+  padding: .5rem 1.25rem .1rem; font-size: .82rem; color: var(--text-soft);
+}
+.dw-cr-eyebrow {
+  font-size: .68rem; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--green-mid);
+}
+.dw-cr-name { font-weight: 700; color: var(--text); }
+.dw-cr-lic {
+  margin-left: auto; font-size: .66rem; letter-spacing: .04em;
+  color: var(--text-soft); opacity: .85; white-space: nowrap;
+}
 
 /* ── Sticky footer CTA ── */
 .dw-foot {
@@ -717,7 +739,7 @@ loadINat();
    PSBPDrawer — quick view for the plant grid
    ───────────────────────────────────────────────────────────────────────
    Reads the globals site.js already defines (PLANTS, _filteredPlants,
-   _plantPage, PLANTS_PER_PAGE, renderPlantPage, _speciesCreditPlate) and
+   _plantPage, PLANTS_PER_PAGE, renderPlantPage, _photoCreditById) and
    adds a detail panel with prev/next traversal. Design decisions, and why:
 
    • Clicking a card opens the panel instead of navigating. Cmd/Ctrl/middle
@@ -854,6 +876,21 @@ loadINat();
          + '</div>';
   }
 
+  /* One-line caption. Prefers the photo ledger the site already loads, and
+     falls back to the card's own denormalised fields when it has not arrived
+     — the panel must never wait on it. */
+  function creditLine(p) {
+    var cr = (typeof _photoCreditById !== 'undefined' && _photoCreditById && _photoCreditById[p.id]) || null;
+    var by  = (cr && (cr.photographer_name || cr.photographer)) || p.credit_name || p.credit || '';
+    var lic = (cr && cr.license) || p.credit_license || '';
+    if (!by) return '';
+    return '<div class="dw-credit">'
+         +   '<span class="dw-cr-eyebrow">Photograph by</span>'
+         +   '<span class="dw-cr-name">' + esc(by) + '</span>'
+         +   (lic ? '<span class="dw-cr-lic">' + esc(lic) + ' &middot; via iNaturalist</span>' : '')
+         + '</div>';
+  }
+
   function paint() {
     var p = cur; if (!p) return;
     var i = idx(), n = _filteredPlants.length;
@@ -871,6 +908,7 @@ loadINat();
 
     body.innerHTML =
         photoHtml(p)
+      + creditLine(p)
       + '<div class="dw-main">'
       +   '<h2 class="dw-name">' + esc(p.common) + '</h2>'
       +   '<div class="dw-sci">' + esc(p.sci) + '</div>'
@@ -880,8 +918,7 @@ loadINat();
       +   teaser(p)
       +   '<hr class="dw-rule">'
       +   lines(p)
-      + '</div>'
-      + (typeof _speciesCreditPlate === 'function' ? _speciesCreditPlate(p) : '');
+      + '</div>';
 
     elLive.textContent = p.common + (i >= 0 ? ', ' + (i + 1) + ' of ' + n : '');
     preload(i);
