@@ -1022,10 +1022,26 @@ loadINat();
   scrim.addEventListener('click', close);
 
   // Card click opens the panel. Modified clicks fall through to the real page.
+  /* Quick view is a DESKTOP mechanism (High #4, decided 08-18, implemented
+     08-25). Below 1180px the grid does not stay beside the drawer — between
+     700 and 1180 a scrim covers it, and on a phone the drawer is a 90vh bottom
+     sheet. Tapping a card for a slightly larger card, then tapping again for
+     the real page, is a worse journey than just opening the page.
+
+     On a phone the full page WITH prev/next IS the quick view. That sequence
+     navigation now exists in site.js, which is what makes turning this off an
+     upgrade rather than a downgrade — before it shipped, this would have left
+     phone visitors with nothing but the back button.
+
+     Nothing phone-specific is built here: the card is already a real <a href>,
+     so declining to intercept the click hands it straight back to the browser. */
+  function drawerAllowed() { return window.innerWidth >= 1180; }
+
   grid.addEventListener('click', function (e) {
     var card = e.target.closest && e.target.closest('a.plant-card');
     if (!card) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if (!drawerAllowed()) return;              // hand the click back to the browser
     e.preventDefault();
     var pos = Array.prototype.indexOf.call(grid.children, card);
     var p = _filteredPlants[_plantPage * PLANTS_PER_PAGE + pos];
@@ -1079,6 +1095,9 @@ loadINat();
     var m = /^#plant\/(PSBP-\d+)/.exec(location.hash);
     if (m) {
       var p = PLANTS.filter(function (x) { return x.id === m[1]; })[0];
+      /* A #plant/ link shared and opened on a phone should land on the real
+         page, not on a bottom sheet the visitor cannot browse. */
+      if (p && !drawerAllowed() && p.page) { location.replace(p.page); return; }
       if (p) {
         if (!cur) { openPlant(p, {}); }
         else if (p !== cur) { cur = p; paint(); syncGrid(); body.scrollTop = 0; }
