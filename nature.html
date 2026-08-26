@@ -1173,6 +1173,39 @@ loadINat();
    mirrored into these buttons. site.js is untouched. */
 #plantForm { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .form-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .6rem 0 0; width: 100%; }
+
+/* MOBILE: collapse the rail behind one button (2026-08-25).
+
+   With `form` promoted to a visible row, a phone shows eleven controls —
+   search, seven form buttons, three toggles and Clear — before a single
+   plant. Randy tested it: the rail ate the whole first screen.
+
+   Search stays out, because on a phone it is the primary tool and filtering
+   is the secondary one. Everything else folds behind "Filters", and the count
+   badge keeps active state visible — a collapsed rail that hides which
+   filters are on is the usual failure of this pattern.
+
+   Boundary is 700px, the file's existing layout breakpoint, rather than the
+   1180px the drawer uses. That one is about interaction; this one is about
+   whether the buttons fit. */
+.filter-toggle { display: none; }
+@media (max-width: 700px) {
+  .filter-toggle {
+    display: inline-flex; align-items: center; gap: .45rem;
+    padding: .55rem .9rem; margin: .6rem 0 0;
+    border: 1px solid var(--border); border-radius: 999px;
+    background: var(--cream); color: var(--green-deep);
+    font-size: .95rem; font-weight: 700; cursor: pointer;
+  }
+  .filter-toggle[aria-expanded="true"] { background: var(--green-deep); color: #fff; border-color: var(--green-deep); }
+  .filter-toggle .ft-count {
+    min-width: 1.4em; padding: 0 .35rem; border-radius: 999px;
+    background: rgba(0,0,0,.09); font-size: .8em; font-variant-numeric: tabular-nums;
+  }
+  .filter-toggle[aria-expanded="true"] .ft-count { background: rgba(255,255,255,.25); }
+  .filter-collapse { display: none; width: 100%; }
+  .filter-collapse.open { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+}
 </style>
 <script>
 (function () {
@@ -1258,6 +1291,48 @@ loadINat();
     });
   }
 
+  /* Move every control except the search box into a collapsible wrapper, and
+     add the toggle. Done at runtime rather than in the markup so the desktop
+     DOM is untouched and there is one source for the control list. Idempotent
+     — refresh() runs on every filter change. */
+  function buildCollapse() {
+    var bar = document.querySelector('#panel-plants .filter-bar');
+    if (!bar || bar.querySelector('.filter-collapse')) return;
+    var search = bar.querySelector('#plantSearch');
+    if (!search) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'filter-collapse';
+    while (search.nextSibling) wrap.appendChild(search.nextSibling);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'filter-toggle';
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = 'Filters <span class="ft-count">0</span>';
+    btn.addEventListener('click', function () {
+      var open = wrap.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+
+    bar.appendChild(btn);
+    bar.appendChild(wrap);
+  }
+
+  /* The badge is what keeps a collapsed rail honest — it must never hide the
+     fact that a filter is on. Search is excluded: it stays visible. */
+  function paintToggle() {
+    var btn = document.querySelector('.filter-toggle');
+    if (!btn) return;
+    var n = 0;
+    try {
+      if (typeof _activeForm !== 'undefined' && _activeForm) n++;
+      if (typeof _activeFilters !== 'undefined') n += _activeFilters.size;
+    } catch (e) {}
+    var badge = btn.querySelector('.ft-count');
+    if (badge) badge.textContent = n;
+  }
+
   function refresh() {
     if (typeof PLANTS === 'undefined' || !PLANTS.length) return;
 
@@ -1267,6 +1342,8 @@ loadINat();
     });
 
     buildFormRow();
+    buildCollapse();
+    paintToggle();
     var row = document.querySelector('.form-row');
     if (!row) return;
     Array.prototype.forEach.call(row.children, function (btn) {
