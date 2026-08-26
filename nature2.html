@@ -786,13 +786,31 @@ loadINat();
      First sentence only. Median 124 chars across the catalogue; the 29 records
      whose opener runs past 200 get trimmed on a word boundary. */
   function teaser(p) {
-    var t = (p.quick || '').replace(/\s+/g, ' ').trim();
+    /* Strip the author's <b> tags before excerpting. 18 of 230 quick hits
+       carry them; esc() would otherwise print literal markup. Bold is not
+       worth carrying into a one-line excerpt. */
+    var t = (p.quick || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     if (!t) return '';
-    var m = /^(.+?[.!?])(\s|$)/.exec(t);
-    var one = m ? m[1] : t;
-    if (one.length > 200) one = one.slice(0, 197).replace(/\s+\S*$/, '') + '\u2026';
+
+    /* Take whole sentences until there is enough to be a thought.
+
+       One sentence is not enough: 66 of 230 quick hits open with a deliberate
+       short hook — "Not a moss.", "Not related to orchids.", "That swollen
+       trunk the species is famous for?" — which is good writing and useless
+       on its own, because the payoff is in the next sentence. So accumulate
+       to MIN_CHARS, then stop at the sentence boundary. */
+    var MIN_CHARS = 90, MAX_CHARS = 240;
+    var parts = t.match(/.+?[.!?](?:\s|$)/g) || [t];
+    var out = '';
+    for (var i = 0; i < parts.length; i++) {
+      out += parts[i];
+      if (out.trim().length >= MIN_CHARS) break;
+    }
+    out = out.trim();
+    if (out.length > MAX_CHARS) out = out.slice(0, MAX_CHARS - 1).replace(/\s+\S*$/, '') + '…';
+
     return '<hr class="dw-rule">'
-         + '<p class="dw-teaser">' + esc(one) + '</p>'
+         + '<p class="dw-teaser">' + esc(out) + '</p>'
          + '<a class="dw-more" href="' + esc(p.page || '#') + '">Read the full story &rarr;</a>';
   }
 
