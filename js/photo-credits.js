@@ -5,7 +5,7 @@
    home page. Reads data/sources/photo_credits.json, builds a shuffled pool of
    publishable hero photos (plants AND wildlife), and renders:
      • the top-right hero slideshow            -> PSBPPhotos.mountHeroSlideshow()
-     • the "Ten acres" 2x2 mosaic              -> PSBPPhotos.mountHeroGrid()
+     • the "Every acre" 2x2 mosaic             -> PSBPPhotos.mountHeroGrid()
    It also exposes the shared attribution builder used by the live "What's been
    seen lately" mosaic in index.html so all three blocks credit photographers
    the same way:
@@ -26,7 +26,7 @@
    NOTE ON NAMES: photographer_names.json (data/sources/) is the canonical
    login -> display-name roster and is the source of truth for names EVERYWHERE
    on the site. It is fetched in parallel with the photo pool and merged into
-   _nameMap. All three renderers (hero slideshow, "Ten acres" mosaic, and
+   _nameMap. All three renderers (hero slideshow, "Every acre" mosaic, and
    "What's been seen lately") consult _nameMap first and fall back to the name
    baked into photo_credits.json only when the roster is silent. Result: a
    name added to the roster and pushed appears everywhere on next page load,
@@ -50,7 +50,7 @@
   var ROSTER_SRC = 'data/sources/photographer_names.json';  // canonical login -> display name
   var LOCAL_DIR  = 'photos/';   // where curated local hero JPGs live
   var HERO_COUNT = 10;          // slides in the top-right slideshow
-  var GRID_COUNT = 4;           // tiles in the "Ten acres" mosaic
+  var GRID_COUNT = 4;           // tiles in the "Every acre" mosaic
 
   var _pool = null;             // shuffled, de-duplicated hero pool (Promise-cached)
   var _nameMap = null;          // login -> display name (Promise-cached)
@@ -400,7 +400,7 @@
     });
   }
 
-  // "Ten acres" mosaic: fills tiles from a different slice of the same pool
+  // "Every acre" mosaic: fills tiles from a different slice of the same pool
   // (offset so it never duplicates whatever the slideshow is showing).
   function mountHeroGrid(elId, count, offset) {
     var host = document.getElementById(elId);

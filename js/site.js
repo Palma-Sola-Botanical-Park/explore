@@ -281,7 +281,7 @@ const NAV_HTML = `
       <ul class="subnav">
         <li><a href="index.html#rightNowSection">Right Now</a></li>
         <li><a href="index.html#seenLately">Seen Lately</a></li>
-        <li><a href="index.html#tenAcres">Your Ten Acres</a></li>
+        <li><a href="index.html#tenAcres">Your Park</a></li>
         <li><a href="news.html">News</a></li>
       </ul>
     </li>
@@ -341,7 +341,7 @@ const NAV_HTML = `
   <a href="index.html" class="nm-top">Home</a>
   <a href="index.html#rightNowSection" class="nm-sub">Right Now</a>
   <a href="index.html#seenLately" class="nm-sub">Seen Lately</a>
-  <a href="index.html#tenAcres" class="nm-sub">Your Ten Acres</a>
+  <a href="index.html#tenAcres" class="nm-sub">Your Park</a>
   <a href="news.html" class="nm-sub">News</a>
   <a href="visit.html" class="nm-top">Visit</a>
   <a href="visit.html#getting-here" class="nm-sub">Getting here</a>
@@ -505,7 +505,7 @@ function injectShared(opts = {}) {
       return;
     }
     // Close the mobile menu when a link inside it is tapped, so same-page
-    // anchors (e.g. "Your Ten Acres", "Right Now") don't leave it frozen open
+    // anchors (e.g. "Your Park", "Right Now") don't leave it frozen open
     // over the page while it quietly scrolls behind.
     if (e.target.closest('#navMobile a')) {
       const mob = document.getElementById('navMobile');

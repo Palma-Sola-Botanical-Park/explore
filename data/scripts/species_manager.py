@@ -104,7 +104,7 @@ INAT_PLACE_ID = os.environ.get("INAT_PLACE_ID", "233156")
 # NOTE: no longer used for photo scanning (see _inat_observations).
 PARK_LAT  = 27.497
 PARK_LNG  = -82.619
-PARK_RADIUS_KM = 0.5   # ~500m covers the 10-acre park with margin
+PARK_RADIUS_KM = 0.5   # ~500m covers the whole park with margin
 
 # Scan cache lives OUTSIDE the repo — throwaway, re-fetchable iNat results.
 TRIAGE_WORKSPACE = os.path.expanduser("~/Documents/PSBP_photo_workspace")
