@@ -1049,5 +1049,136 @@ loadINat();
   window.PSBPDrawer = { open: openPlant, close: close, step: step };
 })();
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     FACET COUNTS  (added 2026-08-25)
+
+     Puts a live count on every plant filter — "Native 56" — so you can see
+     what a filter is worth before you click it.
+
+     Self-contained on purpose. Reads the globals site.js defines (PLANTS,
+     _activeFilters, _activeForm) and writes nothing back, the same way the
+     detail drawer above does. site.js is shared with the LIVE nature.html,
+     which has no count elements, so nothing here can reach it.
+
+     THE RULE THAT MAKES COUNTS HONEST: each facet's count is computed against
+     every OTHER active filter but not its own. Tick "Native" and the Tree
+     count becomes the number of native trees. A count that ignored the rest
+     of the rail would promise 47 and deliver 12 — worse than no count.
+
+     Search text counts as a filter, so counts track what you type.
+
+     Zero-count options are dimmed, never hidden: hiding makes the rail
+     reflow under the cursor and you lose your place. An ACTIVE filter is
+     never dimmed even at zero, because you still need to click it off.
+     ═══════════════════════════════════════════════════════════════════════ -->
+<style>
+  .fcount {
+    display: inline-block; margin-left: .4rem; padding: 0 .35rem;
+    min-width: 1.35em; border-radius: 999px;
+    font-size: .78em; font-weight: 700; line-height: 1.5;
+    background: rgba(0,0,0,.07); color: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+  .filter-btn.on .fcount { background: rgba(255,255,255,.28); }
+  .filter-btn.fzero      { opacity: .4; }
+</style>
+<script>
+(function () {
+  'use strict';
+
+  var FACETS = [
+    { key: 'native',     test: function (p) { return !!p.native; } },
+    { key: 'butterfly',  test: function (p) { return !!p.butterfly; } },
+    { key: 'rare_fruit', test: function (p) { return !!p.rare_fruit; } }
+  ];
+
+  function query() {
+    var el = document.getElementById('plantSearch');
+    return (el && el.value || '').toLowerCase().trim();
+  }
+
+  // Mirrors the `score > 0` condition in filterPlants(): a plant is a text
+  // match if the query appears in any scored field. startsWith is subsumed.
+  function matchesText(p, q) {
+    return !q
+      || p._common.indexOf(q)  >= 0 || p._aliases.indexOf(q) >= 0
+      || p._sci.indexOf(q)     >= 0 || p._family.indexOf(q)  >= 0
+      || p._quick.indexOf(q)   >= 0;
+  }
+
+  // Count plants passing every active filter EXCEPT `skip`, plus `extra`.
+  function countExcluding(skip, extra) {
+    var q = query(), n = 0;
+    for (var i = 0; i < PLANTS.length; i++) {
+      var p = PLANTS[i];
+      if (!matchesText(p, q)) continue;
+      if (skip !== 'form' && _activeForm && p.form !== _activeForm) continue;
+      var blocked = false;
+      for (var f = 0; f < FACETS.length; f++) {
+        var key = FACETS[f].key;
+        if (key !== skip && _activeFilters.has(key) && !FACETS[f].test(p)) { blocked = true; break; }
+      }
+      if (blocked) continue;
+      if (extra && !extra(p)) continue;
+      n++;
+    }
+    return n;
+  }
+
+  function paint(el, count, isActive) {
+    var badge = el.querySelector('.fcount');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'fcount';
+      el.appendChild(document.createTextNode(' '));
+      el.appendChild(badge);
+    }
+    badge.textContent = count;
+    // Never dim a filter that is on — it still has to be clickable to turn off.
+    el.classList.toggle('fzero', count === 0 && !isActive);
+  }
+
+  function refresh() {
+    if (typeof PLANTS === 'undefined' || !PLANTS.length) return;
+
+    FACETS.forEach(function (f) {
+      var btn = document.querySelector('#panel-plants .filter-btn[data-filter="' + f.key + '"]');
+      if (btn) paint(btn, countExcluding(f.key, f.test), _activeFilters.has(f.key));
+    });
+
+    // The <select> is populated from the data by site.js, so read its options
+    // rather than assuming which forms exist.
+    var sel = document.getElementById('plantForm');
+    if (!sel) return;
+    Array.prototype.forEach.call(sel.options, function (opt) {
+      if (!opt.dataset.baseLabel) opt.dataset.baseLabel = opt.textContent;
+      var base = opt.dataset.baseLabel;
+      var n = opt.value
+        ? countExcluding('form', function (p) { return p.form === opt.value; })
+        : countExcluding('form', null);
+      opt.textContent = base + '  (' + n + ')';
+      opt.disabled = (n === 0 && sel.value !== opt.value);
+    });
+  }
+
+  // filterPlants() is the single chokepoint — search, toggles, the form
+  // dropdown, Clear, and the drawer's family link all route through it.
+  var original = window.filterPlants;
+  window.filterPlants = function () {
+    var r = original.apply(this, arguments);
+    try { refresh(); } catch (e) { if (window.console) console.error('facet counts:', e); }
+    return r;
+  };
+
+  // First paint: the plant list loads async, so wait for it to arrive.
+  var tries = 0;
+  (function poll() {
+    if (typeof PLANTS !== 'undefined' && PLANTS.length) { refresh(); return; }
+    if (++tries > 100) return;              // ~10s, then give up quietly
+    setTimeout(poll, 100);
+  })();
+})();
+</script>
 </body>
 </html>
