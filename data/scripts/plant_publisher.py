@@ -161,6 +161,17 @@ def build_plants_json_entry(species, hero):
         "cat": cat,
         "form": form,                       # facet: Form dropdown
         "origin": "Native" if native else "Non-native",
+
+        # ── Added 2026-08-26 — schema 1.5 curated sign copy on the card. ──
+        # `origin` above is a two-value flag; it cannot say WHERE a plant is
+        # from. `origin_short` is the place name in a dozen characters, and
+        # `teaser` is a self-contained 100-200 char hook. Both were written for
+        # the printed signs, where the length limit is real, which is why they
+        # read tighter than anything derived from quick_hits at render time.
+        # 230/230 populated. Emitted here so the browse drawer stops slicing
+        # prose and just uses the curated line.
+        "origin_short": (species.get("origin_short") or "").strip(),
+        "teaser":       (species.get("teaser") or "").strip(),
         "native": native,
         "butterfly": butterfly,             # larval OR nectar (rollup + back-compat)
         "larval_host": larval_host,         # filter: larval host plant
