@@ -2020,6 +2020,20 @@ async function loadRightNow(targetId, opts) {
           : '<span class="seq-btn seq-empty"></span>') +
       '</nav>';
 
+    /* The floating "All Plants" button exists because a species write-up runs
+       long and a visitor mid-scroll needs a way out. Fair — but it is a plain
+       link to nature.html#plants, so it silently discards the filters and the
+       scroll position, while the nav below returns you exactly where you were.
+
+       Two controls that look identical and behave differently is worse than
+       either alone, so point it at the same #restore route. Rewritten at
+       runtime rather than in the template: it is baked into all 321 pages and
+       this way costs no regeneration. Left untouched when there is no stored
+       list — on a QR arrival there is nothing to restore, and the plain link
+       is exactly right. */
+    var floater = document.querySelector('.plant-float-back, .wild-float-back');
+    if (floater) floater.setAttribute('href', '../' + s.from + '#restore');
+
     var anchor = document.querySelector('.all-plants-link, .all-wild-link');
     if (anchor && anchor.parentNode) {
       anchor.insertAdjacentHTML('beforebegin', html);
