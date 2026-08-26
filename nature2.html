@@ -261,27 +261,23 @@
 .dw-alias { font-size: .85rem; color: var(--text-soft); margin-top: .45rem; line-height: 1.5; }
 .dw-alias strong { color: var(--green-mid); font-weight: 700; }
 
-.dw-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin: .85rem 0 0; }
-.dw-tags .tag { font-size: .78rem; }
+/* Rewritten 2026-08-25. Chips and cream fact-boxes replaced with plain text
+   separated by hairline rules — a clean text look with subtle divisions,
+   rather than a wall of coloured pills. */
+.dw-rule { border: 0; border-top: 1px solid var(--border); margin: 1.15rem 0; }
 
-.dw-summary {
-  font-size: .93rem; line-height: 1.68; color: var(--text-soft);
-  margin: 1rem 0 0; padding-left: .8rem;
-  border-left: 3px solid var(--green-pale);
+/* The teaser carries the visual weight: it is the hook, not the metadata. */
+.dw-teaser { font-size: 1.02rem; line-height: 1.62; color: var(--text); margin: 0; }
+.dw-more {
+  display: block; margin-top: .6rem; text-align: right;
+  font-size: .88rem; font-weight: 700; color: var(--green-mid); text-decoration: none;
 }
+.dw-more:hover { text-decoration: underline; }
 
-.dw-facts {
-  display: grid; grid-template-columns: 1fr 1fr; gap: .5rem;
-  margin: 1.1rem 0 0;
-}
-.dw-fact { background: var(--cream); border-radius: 8px; padding: .6rem .7rem; min-width: 0; }
-.dw-fact-lbl {
-  font-size: .62rem; font-weight: 700; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--green-mid); margin-bottom: .15rem;
-}
-.dw-fact-val { font-size: .9rem; color: var(--text); line-height: 1.4; word-wrap: break-word; }
-.dw-fact-val a { font-weight: 700; }
-.dw-fact--wide { grid-column: 1 / -1; }
+/* Facts: quiet rows, no labels where the value speaks for itself. */
+.dw-lines { font-size: .92rem; line-height: 1.85; color: var(--text-soft); }
+.dw-lines a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.dw-warn { color: #a8420a; font-weight: 700; }
 
 /* Reuse the site's credit plate, just give it breathing room. */
 .dw .credit-plate { margin-top: 1.15rem; border-top: 1px solid var(--green-pale); }
@@ -317,7 +313,6 @@
   }
   .dw.open { transform: none; }
   .dw-photo { height: 210px; }
-  .dw-facts { grid-template-columns: 1fr; }
   /* grab handle */
   .dw-head::before {
     content: ''; position: absolute; top: .4rem; left: 50%;
@@ -718,11 +713,6 @@ loadINat();
 (function () {
   'use strict';
 
-  // Pull a one-line summary from each plant's detail page (meta description,
-  // else first real paragraph). Fail-soft: if the fetch or the tag is missing,
-  // the panel just renders without it. Set to false if the descriptions on
-  // your detail pages turn out to be boilerplate.
-  var SHOW_PAGE_SUMMARY = true;
 
   var dw      = document.getElementById('dw');
   var scrim   = document.getElementById('dwScrim');
@@ -749,38 +739,63 @@ loadINat();
 
   /* ── content ───────────────────────────────────────────────────────── */
 
-  function chips(p) {
+  /* Facts as plain text, not chips. Two rules decide what appears.
+
+     ORIGIN LEADS. Populated on all 230 cards, one word, and it answers the
+     question people actually ask in a garden: is this from here? The old chip
+     said "Non-native" while the fetched blurb said where from — the same fact
+     twice. Now one line.
+
+     EVERYTHING ELSE IS EXCEPTION-ONLY. `dogs: safe` is true of 143 plants and
+     tells a visitor nothing; `dogs: toxic` is true of 37 and is the whole
+     reason to look. Showing only exceptions keeps this to two quiet lines and
+     still surfaces safety, which the chips never did. */
+  function lines(p) {
     var out = [];
-    if (p.native) out.push(['tag-native', '🌿 ' + (p.origin || 'Native')]);
-    else if (p.origin) out.push(['tag-nonnative', p.origin]);
-    if (p.butterfly)      out.push(['tag-butterfly', '🦋 Butterfly plant']);
-    if (p.larval_host)    out.push(['tag-butterfly', 'Larval host']);
-    if (p.nectar)         out.push(['tag-butterfly', 'Nectar source']);
-    if (p.rare_fruit)     out.push(['tag-edible', '🍈 Rare fruit']);
-    if (p.watch_invasive) out.push(['tag-invasive', '⚠️ Watch — invasive']);
-    (p.tags || []).forEach(function (t) { out.push(['tag-wetland', t]); });
-    return out.map(function (c) {
-      return '<span class="tag ' + c[0] + '">' + esc(c[1]) + '</span>';
-    }).join('');
+
+    if (p.origin) out.push(esc(p.origin));
+
+    var second = [];
+    if (p.family) second.push('<a href="#" data-dw-family="' + esc(p.family) + '">' + esc(p.family) + '</a>');
+    if (p.form)   second.push(esc(p.form));
+    if (second.length) out.push(second.join(' &middot; '));
+
+    var flags = [];
+    /* TOXIC ONLY, deliberately. Including `caution` too put a warning on 42% of
+       cards, and a warning that common reads as decoration — the same failure
+       the chips had. Toxic-only lands on 25% and still stands out. `caution`
+       remains on the full plant page. To include it, restore the else-if. */
+    if (p.dogs === 'toxic') flags.push('<span class="dw-warn">Toxic to dogs</span>');
+    if (p.edible === 'toxic')      flags.push('<span class="dw-warn">Not edible &mdash; toxic</span>');
+    if (p.watch_invasive)          flags.push('<span class="dw-warn">Watch &mdash; invasive</span>');
+    if (p.larval_host && (p.larval_species || []).length) {
+      flags.push('Larval host for ' + esc(p.larval_species.join(', ')));
+    }
+    if (flags.length) out.push(flags.join('<br>'));
+
+    if (!out.length) return '';
+    return '<div class="dw-lines">' + out.join('<br>') + '</div>';
   }
 
-  function facts(p) {
-    var rows = [];
-    if (p.family) rows.push(['Family',
-      '<a href="#" data-dw-family="' + esc(p.family) + '">' + esc(p.family) + '</a>', false]);
-    if (p.form) rows.push(['Form', esc(p.form), false]);
-    if (p.cat)  rows.push(['Collection', esc(p.cat), true]);
-    if (p.larval_host && (p.larval_species || []).length) {
-      rows.push(['Larval host for', esc(p.larval_species.join(', ')), true]);
-    }
-    if (!rows.length) return '';
-    return '<div class="dw-facts">' + rows.map(function (r) {
-      return '<div class="dw-fact' + (r[2] ? ' dw-fact--wide' : '') + '">'
-           +   '<div class="dw-fact-lbl">' + esc(r[0]) + '</div>'
-           +   '<div class="dw-fact-val">' + r[1] + '</div>'
-           + '</div>';
-    }).join('') + '</div>';
+  /* The teaser. `quick` is on all 230 cards and already loaded, so this costs
+     no network at all — it REPLACES a fetch of the entire detail page, which
+     is what the old summary did to scrape a meta description those pages do
+     not have. It fell through to "first paragraph over 70 chars", which is
+     the native range: the least surprising sentence available.
+
+     First sentence only. Median 124 chars across the catalogue; the 29 records
+     whose opener runs past 200 get trimmed on a word boundary. */
+  function teaser(p) {
+    var t = (p.quick || '').replace(/\s+/g, ' ').trim();
+    if (!t) return '';
+    var m = /^(.+?[.!?])(\s|$)/.exec(t);
+    var one = m ? m[1] : t;
+    if (one.length > 200) one = one.slice(0, 197).replace(/\s+\S*$/, '') + '\u2026';
+    return '<hr class="dw-rule">'
+         + '<p class="dw-teaser">' + esc(one) + '</p>'
+         + '<a class="dw-more" href="' + esc(p.page || '#') + '">Read the full story &rarr;</a>';
   }
+
 
   function photoHtml(p) {
     if (!p.photo) return '<div class="dw-photo"><div class="dw-photo-empty" style="display:flex">🌿</div></div>';
@@ -816,15 +831,14 @@ loadINat();
       +   (aliases.length
             ? '<div class="dw-alias"><strong>Also called</strong> ' + esc(aliases.join(' · ')) + '</div>'
             : '')
-      +   '<div class="dw-tags">' + chips(p) + '</div>'
-      +   '<div id="dwSummary"></div>'
-      +   facts(p)
+      +   teaser(p)
+      +   '<hr class="dw-rule">'
+      +   lines(p)
       + '</div>'
       + (typeof _speciesCreditPlate === 'function' ? _speciesCreditPlate(p) : '');
 
     elLive.textContent = p.common + (i >= 0 ? ', ' + (i + 1) + ' of ' + n : '');
     preload(i);
-    loadSummary(p);
   }
 
   function preload(i) {
@@ -835,39 +849,6 @@ loadINat();
   }
 
   /* ── optional one-liner lifted from the detail page ─────────────────── */
-  var sumCache = {};
-  function loadSummary(p) {
-    if (!SHOW_PAGE_SUMMARY || !p.page) return;
-    if (sumCache[p.id] !== undefined) return inject(p, sumCache[p.id]);
-    fetch(p.page)
-      .then(function (r) { return r.ok ? r.text() : ''; })
-      .then(function (html) {
-        var text = '';
-        if (html) {
-          var doc = new DOMParser().parseFromString(html, 'text/html');
-          var meta = doc.querySelector('meta[name="description"]');
-          text = (meta && meta.getAttribute('content')) || '';
-          if (!text) {
-            var ps = doc.querySelectorAll('p');
-            for (var k = 0; k < ps.length; k++) {
-              var t = (ps[k].textContent || '').trim();
-              if (t.length > 70) { text = t; break; }
-            }
-          }
-          text = text.replace(/\s+/g, ' ').trim();
-          if (text.length > 250) text = text.slice(0, 247).replace(/\s+\S*$/, '') + '…';
-        }
-        sumCache[p.id] = text;
-        inject(p, text);
-      })
-      .catch(function () { sumCache[p.id] = ''; });
-
-    function inject(plant, text) {
-      if (!text || cur !== plant) return;           // panel moved on — drop it
-      var host = document.getElementById('dwSummary');
-      if (host) host.innerHTML = '<p class="dw-summary">' + esc(text) + '</p>';
-    }
-  }
 
   /* ── keeping the grid behind the panel in sync ──────────────────────── */
 
