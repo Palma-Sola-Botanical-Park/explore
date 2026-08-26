@@ -266,18 +266,39 @@
    rather than a wall of coloured pills. */
 .dw-rule { border: 0; border-top: 1px solid var(--border); margin: 1.15rem 0; }
 
-/* The teaser carries the visual weight: it is the hook, not the metadata. */
+/* The teaser carries the visual weight: it is the hook, not the metadata.
+   Colour added 2026-08-25 — removing the chips left the panel very white, and
+   the chips had been carrying all the visual variety. This puts the colour on
+   the one element that deserves emphasis instead of scattering it across
+   badges: a cream panel with a gold rule, the same treatment the Content
+   Guide tab uses for a lead paragraph. */
+.dw-teaser-wrap {
+  background: var(--cream); border-left: 3px solid var(--gold-light);
+  border-radius: 0 8px 8px 0; padding: .85rem 1rem .9rem;
+}
 .dw-teaser { font-size: 1.02rem; line-height: 1.62; color: var(--text); margin: 0; }
 .dw-more {
-  display: block; margin-top: .6rem; text-align: right;
+  display: block; margin-top: .55rem; text-align: right;
   font-size: .88rem; font-weight: 700; color: var(--green-mid); text-decoration: none;
 }
 .dw-more:hover { text-decoration: underline; }
 
-/* Facts: quiet rows, no labels where the value speaks for itself. */
+/* Facts: quiet rows, no labels where the value speaks for itself. The family
+   link carries the green so the block is not a flat grey wall. */
 .dw-lines { font-size: .92rem; line-height: 1.85; color: var(--text-soft); }
-.dw-lines a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
-.dw-warn { color: #a8420a; font-weight: 700; }
+.dw-lines a { color: var(--green-mid); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Warnings get a warm band. They appear on ~25% of plants, so the colour shows
+   up variably as you arrow through — which is where the variety comes from,
+   rather than every card looking identical. */
+.dw-warn {
+  display: inline-block; margin-top: .3rem;
+  background: #fdf3ec; color: #a8420a; font-weight: 700;
+  padding: .12rem .5rem; border-radius: 5px;
+}
+
+/* Breathing room so the credit plate does not butt against the sticky CTA. */
+.dw-body { padding-bottom: .6rem; }
 
 /* Reuse the site's credit plate, just give it breathing room. */
 .dw .credit-plate { margin-top: 1.15rem; border-top: 1px solid var(--green-pale); }
@@ -815,8 +836,10 @@ loadINat();
     if (out.length > HARD_MAX) out = out.slice(0, HARD_MAX - 1).replace(/\s+\S*$/, '') + '…';
 
     return '<hr class="dw-rule">'
-         + '<p class="dw-teaser">' + esc(out) + '</p>'
-         + '<a class="dw-more" href="' + esc(p.page || '#') + '">Read the full story &rarr;</a>';
+         + '<div class="dw-teaser-wrap">'
+         +   '<p class="dw-teaser">' + esc(out) + '</p>'
+         +   '<a class="dw-more" href="' + esc(p.page || '#') + '">Read the full story &rarr;</a>'
+         + '</div>';
   }
 
 
