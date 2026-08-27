@@ -145,6 +145,12 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 14px); }
     <div class="row" style="margin-top:var(--s3)">
       <a href="visit.html" class="btn btn-green">Plan your visit →</a>
       <a href="nature.html" class="btn btn-outline">Explore the collection</a>
+      <!-- Third door, gold: the park runs on money and hours, and the hero asked for
+           neither until now. get-involved.html opens on "Pick your door" and holds
+           #donate, #member and #volunteer, so it answers both halves of the ask
+           without picking one for the visitor. Gold is the existing accent (.btn-gold
+           was already defined) — a third tier, not a third palette. (2026-08-27) -->
+      <a href="get-involved.html" class="btn btn-gold">Support the park</a>
     </div>
   </div>
   <div class="hero-right">
@@ -199,7 +205,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 14px); }
       <h2 class="section-title rule-mark">What nature is offering right now</h2>
       <p class="section-sub">What's worth a look this week — what's blooming, fruiting, or just passing through. Kept current by the people who walk this park. <a href="nature.html#plants">Explore the collection so far →</a></p>
     </div>
-    <div id="rightNowStrip" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--s4)">
+    <div id="rightNowStrip" class="rn-strip">
       <div style="grid-column:1/-1;text-align:center;padding:var(--s7);color:var(--ink-soft)">Loading…</div>
     </div>
   </div>

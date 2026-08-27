@@ -1817,7 +1817,10 @@ async function loadRightNow(targetId, opts) {
       for (let k = 0; k < PER; k++) h += cards[(i + k) % cards.length].outerHTML;
       return h;
     };
-    el.classList.add('rn-cycling');
+    // Both classes: the grid shape lives on .rn-strip and the stacking on
+    // .rn-cycling, and the CSS keys on the pair. Adding rn-strip here too means
+    // rotation still lays out correctly if a page ever forgets it in the markup.
+    el.classList.add('rn-strip', 'rn-cycling');
     el.innerHTML = '<div class="rn-page on"></div><div class="rn-page"></div>';
     const pages = el.querySelectorAll('.rn-page');
     pages[0].innerHTML = page(0);

@@ -182,15 +182,11 @@ section { padding: 3.375rem 1.5rem; }
    three quietly becomes a different three. Mirrors .mosaic-page on the home
    page. Only applied once loadRightNow() decides there is something to rotate
    to — with three or fewer rows the strip stays a plain grid. */
-.rn-cycling { position: relative; display: block !important; }
-.rn-page {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--s4, 1rem);
-  position: absolute; inset: 0; opacity: 0;
-  transition: opacity .8s ease; pointer-events: none;
-}
-.rn-page.on { opacity: 1; pointer-events: auto; position: relative; }
-@media (prefers-reduced-motion: reduce) { .rn-page { transition: none; } }
+/* The Right Now rotation (.rn-strip / .rn-cycling / .rn-page) lives in
+   css/psbp.css, NOT here. index.html is the only page that renders the strip
+   and it loads psbp.css alone; this file dresses nature.html and the plant
+   pages. The rules were briefly duplicated here, where nothing loaded them,
+   and the strip rendered one card per row as a result. (2026-08-27) */
 
 .rn-flip {
   background: transparent; box-shadow: none; overflow: visible;

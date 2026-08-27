@@ -544,6 +544,21 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .series-card p { font-size: var(--t-sm); color: var(--ink-soft); line-height: 1.55; }
 
 /* ──────────────────────────── RIGHT NOW flip cards (site.js emits these) ── */
+/* The strip is a fixed three-up, not an auto-fit — deliberately the same
+   shape as .live-mosaic below "What's been seen lately", because the two
+   bands sit on one page and cards of two different widths read as a mistake.
+   auto-fit sized to the CONTAINER, which at this measure fit only two, so the
+   Right Now cards came out visibly larger than the mosaic's. Rotation shows
+   exactly perPage cards, so the column count is known — say it. (2026-08-27) */
+.rn-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
+.rn-strip.rn-cycling { position: relative; display: block; }
+.rn-page { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4);
+  position: absolute; inset: 0; opacity: 0; transition: opacity .8s ease; pointer-events: none; }
+.rn-page.on { opacity: 1; pointer-events: auto; position: relative; }
+@media (max-width: 980px) { .rn-strip, .rn-page { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 440px) { .rn-strip, .rn-page { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .rn-page { transition: none; } }
+
 .rn-flip { background: transparent; border: none; perspective: 1400px; cursor: pointer; border-radius: var(--r); }
 .rn-flip-inner { position: relative; display: grid; min-height: 100%; transform-style: preserve-3d;
   transition: transform .6s cubic-bezier(.2,.7,.2,1); }
