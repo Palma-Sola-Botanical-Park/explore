@@ -53,9 +53,13 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 14px); }
 .ann-cycle-item.active { opacity: 1; position: relative; }
 
 /* Live mosaic — the flip cards built by the script below. */
-.live-mosaic { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s5); }
+/* Three wide beats four narrow (2026-08-27). At four columns each card was
+   about 270px, and the flip side — two paragraphs of "did you know" — ran to a
+   tall thin ribbon of text. Wider cards fit more words per line, so the same
+   copy takes fewer lines and the card gets shorter. PER below must match. */
+.live-mosaic { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
 .live-mosaic.cycling { position: relative; display: block; }
-.mosaic-page { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s5);
+.mosaic-page { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4);
                position: absolute; inset: 0; opacity: 0; transition: opacity .8s ease; pointer-events: none; }
 .mosaic-page.on { opacity: 1; pointer-events: auto; position: relative; }
 .mosaic-card { position: relative; cursor: pointer; perspective: 1400px; }
@@ -195,7 +199,7 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 14px); }
       <h2 class="section-title rule-mark">What nature is offering right now</h2>
       <p class="section-sub">What's worth a look this week — what's blooming, fruiting, or just passing through. Kept current by the people who walk this park. <a href="nature.html#plants">Explore the collection so far →</a></p>
     </div>
-    <div id="rightNowStrip" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:var(--s5)">
+    <div id="rightNowStrip" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--s4)">
       <div style="grid-column:1/-1;text-align:center;padding:var(--s7);color:var(--ink-soft)">Loading…</div>
     </div>
   </div>
@@ -393,10 +397,10 @@ function refreshLineages(grid, pool) {
 // Show 4 cards, crossfade a fresh 4 in every ~8s. Pauses while the visitor is
 // hovering or has any card flipped, so it never pulls a card mid-read.
 function mountSeenLately(grid, pool) {
-  const PER = 4, INTERVAL = 8000;
+  const PER = 3, INTERVAL = 8000;   // must match the column count in .mosaic-page
   grid.classList.add('cycling');
 
-  // Build a page (4 cards) starting at index `start`, wrapping the pool.
+  // Build a page (PER cards) starting at index `start`, wrapping the pool.
   function pageHtml(start) {
     let html = '';
     for (let i = 0; i < PER; i++) html += buildFlipCard(pool[(start + i) % pool.length]);
