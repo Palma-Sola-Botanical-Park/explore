@@ -1776,6 +1776,8 @@ async function loadRightNow(targetId, opts) {
   catch (_) { rows = []; }
 
   rows = (rows || []).filter(r => WEB_DISPLAY.has(r.display));   // web + both only
+  // `limit` caps the POOL, not what is on screen. With rotation on, `perPage`
+  // decides how many show at once and the rest take their turn. (2026-08-27)
   if (opts.limit) rows = rows.slice(0, opts.limit);
 
   const section = opts.sectionId ? document.getElementById(opts.sectionId) : null;
@@ -1792,6 +1794,51 @@ async function loadRightNow(targetId, opts) {
     const cr  = e.psbp_id ? creditById[e.psbp_id] : null;
     return _rnCard(e, rec, cr);
   }).join('');
+
+  /* ── ROTATION ────────────────────────────────────────────────────────────
+     Added 2026-08-27. Randy: "I'm thinking I'll keep up to 10-20 most times.
+     I think a row of 3 that swaps out every X seconds would be good."
+
+     Same mechanism the home-page mosaic uses: two stacked pages, one visible,
+     crossfaded on a timer. Not a carousel — nothing slides, and there are no
+     controls to miss. A row of three simply becomes a different three.
+
+     It only engages when there is something to rotate TO. With three or fewer
+     rows the strip renders exactly as before and no timer is started, so the
+     common case pays nothing. */
+  const PER = opts.perPage || 3;
+  const EVERY = (opts.rotateSeconds || 9) * 1000;
+  if (el._rnTimer) { clearInterval(el._rnTimer); el._rnTimer = null; }
+
+  if (rows.length > PER) {
+    const cards = Array.prototype.slice.call(el.children);
+    const page = i => {
+      let h = '';
+      for (let k = 0; k < PER; k++) h += cards[(i + k) % cards.length].outerHTML;
+      return h;
+    };
+    el.classList.add('rn-cycling');
+    el.innerHTML = '<div class="rn-page on"></div><div class="rn-page"></div>';
+    const pages = el.querySelectorAll('.rn-page');
+    pages[0].innerHTML = page(0);
+
+    let active = 0, start = 0, hovering = false;
+    el.addEventListener('mouseenter', () => { hovering = true; });
+    el.addEventListener('mouseleave', () => { hovering = false; });
+    const anyFlipped = () => !!el.querySelector('.rn-flip.is-flipped');
+
+    // Wait for a calm moment: never swap the card somebody is reading or has
+    // just turned over.
+    el._rnTimer = setInterval(() => {
+      if (hovering || anyFlipped() || document.hidden) return;
+      start = (start + PER) % cards.length;
+      const incoming = 1 - active;
+      pages[incoming].innerHTML = page(start);
+      pages[incoming].classList.add('on');
+      pages[active].classList.remove('on');
+      active = incoming;
+    }, EVERY);
+  }
 
   // Flip on click / tap / keyboard (delegated). The back-side link calls
   // stopPropagation, so following it never also toggles the card.
