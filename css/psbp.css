@@ -559,7 +559,12 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 @media (max-width: 440px) { .rn-strip, .rn-page { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .rn-page { transition: none; } }
 
-.rn-flip { background: transparent; border: none; perspective: 1400px; cursor: pointer; border-radius: var(--r); }
+/* padding:0 completes the .card reset. These cards carry `class="card plant-card
+   rn-flip"`, so they inherited .card's padding: var(--s5) and the visible face
+   sat inset ~20px inside its own grid column — narrower than the .mosaic-card
+   band below, which inherits nothing, with gaps that looked 2.5x wider. Same
+   grid, different card box. The flip faces supply their own padding. */
+.rn-flip { background: transparent; border: none; padding: 0; perspective: 1400px; cursor: pointer; border-radius: var(--r); }
 .rn-flip-inner { position: relative; display: grid; min-height: 100%; transform-style: preserve-3d;
   transition: transform .6s cubic-bezier(.2,.7,.2,1); }
 .rn-flip.is-flipped .rn-flip-inner { transform: rotateY(180deg); }
