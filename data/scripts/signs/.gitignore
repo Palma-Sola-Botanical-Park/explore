@@ -1,0 +1,8 @@
+# Guard, not policy. OUT_DIR defaults to ~/Documents/PSBP/signs_out, well away
+# from here — but if anyone ever points it back at the script directory, this
+# stops 276 MB of PDFs being committed to a GitHub Pages repo by accident.
+signs_out/
+*.pdf
+sign_copy_DRAFTS.json
+venv/
+__pycache__/

@@ -52,7 +52,12 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # The website repo — READ ONLY. Override with:  export PSBP_REPO=/path/to/explore
 REPO = os.environ.get("PSBP_REPO") or os.path.expanduser("~/Documents/GitHub/explore")
 
-OUT_DIR   = os.path.join(HERE, "signs_out")   # finished PDFs land here
+# Finished PDFs land here. NOT next to the script: these scripts moved into the
+# repo on 2026-08-27, and a script-relative output path would have written 276 MB
+# of PDFs straight into a GitHub Pages repo on the next run. Output belongs
+# outside git. Override with PSBP_SIGNS_OUT=/some/path.
+OUT_DIR   = (os.environ.get("PSBP_SIGNS_OUT")
+             or os.path.expanduser("~/Documents/PSBP/signs_out"))
 FONTS_DIR = os.path.join(HERE, "fonts")       # Playfair downloads here, once
 TMP_DIR   = os.path.join(HERE, ".tmp")        # scratch; wiped at the end
 LOGO_GREEN = os.path.join(REPO, "images", "psbp_logo_green.png")

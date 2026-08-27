@@ -19,9 +19,21 @@ ever go in the repo.*
 
 ## Running them
 
-The scripts read the repo READ-ONLY and default to `~/Documents/GitHub/explore`.
-Point them elsewhere with `PSBP_REPO=/path/to/explore`. Output goes to their own
-`signs_out/`, which should sit outside the repo.
+    cd data/scripts/signs
+    python3 make_signs.py            # reads plant_signage.json, writes PDFs
+
+**Input** — the repo, READ-ONLY, defaulting to `~/Documents/GitHub/explore`.
+Override with `PSBP_REPO=/path/to/explore`.
+
+**Output** — `~/Documents/PSBP/signs_out/`, alongside the 222 PDFs already
+printed. Override with `PSBP_SIGNS_OUT=/some/path`.
+
+⚠ **`OUT_DIR` used to be script-relative** (`os.path.join(HERE, "signs_out")`),
+which was harmless while these lived in `~/Downloads`. Moving them into the repo
+turned it into a trap: the next run would have written 276 MB of PDFs into a
+GitHub Pages repo. Changed on 2026-08-27, with a `.gitignore` here as a second
+line of defence. `make_palm_signs.py` reads `OUT_DIR` out of `make_signs.py`, so
+it follows automatically.
 
 ## ⚠ `sign_copy_SUPERSEDED.json`
 
