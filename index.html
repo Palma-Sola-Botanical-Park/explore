@@ -59,13 +59,37 @@ section[id] { scroll-margin-top: calc(var(--nav-h) + 14px); }
                position: absolute; inset: 0; opacity: 0; transition: opacity .8s ease; pointer-events: none; }
 .mosaic-page.on { opacity: 1; pointer-events: auto; position: relative; }
 .mosaic-card { position: relative; cursor: pointer; perspective: 1400px; }
-.mosaic-flip-inner { position: relative; display: grid; transition: transform .6s cubic-bezier(.2,.7,.2,1);
+/* min-height:100% makes each card fill its grid row, so a row of cards ends
+   level. .rn-flip-inner has always had this; the mosaic did not, which is why
+   Right Now cards lined up and these ones did not. (2026-08-27) */
+.mosaic-flip-inner { position: relative; display: grid; min-height: 100%;
+                     transition: transform .6s cubic-bezier(.2,.7,.2,1);
                      transform-style: preserve-3d; }
 .mosaic-card.is-flipped .mosaic-flip-inner { transform: rotateY(180deg); }
 .mosaic-face { grid-area: 1/1; backface-visibility: hidden; border-radius: var(--r); overflow: hidden;
                background: var(--surface); border: 1px solid var(--rule); display: flex; flex-direction: column; }
 .mosaic-card:hover .mosaic-face { border-color: var(--green); }
-.mosaic-face-back { transform: rotateY(180deg); padding: var(--s4); position: relative; }
+/* THE FRONT SIZES THE CARD, NOT THE BACK. (2026-08-27)
+
+   Both faces used to sit in the same grid cell (grid-area: 1/1), so the cell
+   took the height of the TALLER one — and that was almost always the back. Its
+   content varies: the species name wraps or does not, and the "where it fits"
+   ladder runs one to three lines depending on how long class/order/family/
+   genus/species happen to be. So the front inherited a height set by somebody
+   else's taxonomy, and no two cards agreed.
+
+   Taking the back out of flow leaves the front — a fixed 4:3.4 photo plus a
+   caption — as the only thing with a say. overflow:auto is the safety valve:
+   if a back ever exceeds the front, it scrolls rather than being silently
+   clipped. */
+.mosaic-face-back { transform: rotateY(180deg); padding: var(--s4);
+                    position: absolute; inset: 0; overflow: auto; }
+
+/* And trim the two parts that vary most, so the back rarely needs to scroll. */
+.mosaic-face-back .obs-back-name { display: -webkit-box; -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical; overflow: hidden; }
+.mosaic-face-back .obs-ladder-path { display: -webkit-box; -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical; overflow: hidden; }
 .mosaic-face-back.flora { background: var(--gold-tint); }
 .mosaic-face-back.fauna { background: var(--green-tint); }
 .mosaic-img { position: relative; aspect-ratio: 4/3.4; background: var(--sunk); overflow: hidden; }
