@@ -1,24 +1,24 @@
 {
   "tab": "tour_stops",
   "human": "Tour stops and directions — many rows per tour, ordered by stop_number.",
-  "generated_at": "2026-08-25T20:45:31+00:00",
-  "status": "green",
-  "published": true,
-  "block_reason": null,
+  "generated_at": "2026-08-27T20:16:03+00:00",
+  "status": "red",
+  "published": false,
+  "block_reason": "only 0 row(s) would publish (floor is 1) — almost certainly a broken fetch",
   "counts": {
-    "staged": 31,
-    "live": 31,
-    "published": 31,
+    "staged": 0,
+    "live": 0,
+    "published": 0,
     "dropped_display": 0,
     "quarantined": 0,
     "warned": 0
   },
   "volume_guard": {
     "min": 1,
-    "live": 31,
-    "published": 31,
-    "blocked": false,
-    "reason": null
+    "live": 0,
+    "published": 0,
+    "blocked": true,
+    "reason": "only 0 row(s) would publish (floor is 1) — almost certainly a broken fetch"
   },
   "rules": [
     {
@@ -30,8 +30,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 31,
-      "passed": 31,
+      "evaluated": 0,
+      "passed": 0,
       "flagged": 0,
       "examples": []
     },
@@ -44,8 +44,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 31,
-      "passed": 31,
+      "evaluated": 0,
+      "passed": 0,
       "flagged": 0,
       "examples": []
     },
@@ -58,8 +58,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 31,
-      "passed": 31,
+      "evaluated": 0,
+      "passed": 0,
       "flagged": 0,
       "examples": []
     },
@@ -76,14 +76,21 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 31,
-      "passed": 31,
+      "evaluated": 0,
+      "passed": 0,
       "flagged": 0,
       "examples": []
     }
   ],
   "dropped_rows": [],
-  "timeline": [],
+  "timeline": [
+    {
+      "at": "2026-08-27T20:16:03+00:00",
+      "added": 0,
+      "changed": 0,
+      "removed": 31
+    }
+  ],
   "schema": {
     "required_headers": [
       "tour_id",
