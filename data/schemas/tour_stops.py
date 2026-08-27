@@ -38,6 +38,19 @@ SCHEMA = {
     # Composite key: which tour + which position in the sequence.
     "identity": ["tour_id", "stop_number"],
 
+    # Retired 2026-08-27. The tab was emptied and renamed "Retired-Tour Stops"
+    # once tours were parked (Low #22) — but emptying it was not enough: the
+    # volume guard could not tell "Randy retired this feed" from "the fetch
+    # broke and returned nothing", assumed the worse one, and held 31 rows of
+    # placeholder (`"title": "jljljljlkj"`) as last-known-good.
+    #
+    # volume_min: 0 does not disable the guard. It tells the guard what normal
+    # looks like for THIS feed — empty is legitimate here. Every other tab keeps
+    # its floor of 1, which is why a Google hiccup still cannot blank Events.
+    #
+    # Set this back to 1 when tours are wired up and stops actually exist.
+    "volume_min": 0,
+
     # The three columns the renderer can't sequence a tour without.
     "required_headers": ["tour_id", "stop_number", "type"],
 
