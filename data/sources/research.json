@@ -6,7 +6,7 @@
     "plant_count": 474,
     "wildlife_count": 34,
     "status_counts": {
-      "research": 492,
+      "research": 489,
       "died": 12,
       "stolen": 4
     },
@@ -3725,33 +3725,6 @@
         "spread": "3-6'",
         "light": "PS-FS",
         "zone": "2",
-        "plant_date": ""
-      },
-      "research_source": "park_inventory"
-    },
-    {
-      "id": "PSBP-00245",
-      "type": "plant",
-      "common_name": "Jave Glory Vine, Bleeding Heart Vine",
-      "botanical_name": "Clerodendrum speciosum",
-      "inat_taxon_id": 331118,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Lamiaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": false,
-      "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1). Known cultivars/varieties in park: Delectum. Original CSV names: Clerodendrum speciosum 'Delectum'.",
-      "import_source": "Sheet1",
-      "csv_data": {
-        "origin": "W Africa",
-        "height": "12-15'",
-        "spread": "10-12'",
-        "light": "FS",
-        "zone": "6",
         "plant_date": ""
       },
       "research_source": "park_inventory"
@@ -7934,33 +7907,6 @@
       "research_source": "park_inventory"
     },
     {
-      "id": "PSBP-00443",
-      "type": "plant",
-      "common_name": "Dwarf Umbrella Tree",
-      "botanical_name": "Schefflera arboricola",
-      "inat_taxon_id": 1239449,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Araliaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": false,
-      "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1). Known cultivars/varieties in park: Variegata. Original CSV names: Schefflera arboricola 'Variegata'.",
-      "import_source": "Sheet1",
-      "csv_data": {
-        "origin": "Taiwan",
-        "height": "10-12'",
-        "spread": "6-8'",
-        "light": "PS-FS",
-        "zone": "7",
-        "plant_date": ""
-      },
-      "research_source": "park_inventory"
-    },
-    {
       "id": "PSBP-00444",
       "type": "plant",
       "common_name": "Australian Astroturf",
@@ -8388,33 +8334,6 @@
         "spread": "4-5'",
         "light": "PS-FS",
         "zone": "4,7",
-        "plant_date": ""
-      },
-      "research_source": "park_inventory"
-    },
-    {
-      "id": "PSBP-00465",
-      "type": "plant",
-      "common_name": "Cape Honeysuckle",
-      "botanical_name": "Tecoma capensis",
-      "inat_taxon_id": 286772,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Bignoniaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": false,
-      "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1).",
-      "import_source": "Sheet1",
-      "csv_data": {
-        "origin": "S Africa",
-        "height": "7-10'",
-        "spread": "6'",
-        "light": "PS-FS",
-        "zone": "3",
         "plant_date": ""
       },
       "research_source": "park_inventory"
@@ -10375,10 +10294,21 @@
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "research",
-      "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "native": false,
+      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP). 2026-08-28: merged PSBP-00443 (Schefflera arboricola) into this record — same iNat taxon 1239449, entered twice under two names (park inventory vs iNaturalist). Carried over: native, csv_data.",
       "import_source": "iNat",
-      "research_source": "inat_observed"
+      "research_source": "inat_observed",
+      "csv_data": {
+        "origin": "Taiwan",
+        "height": "10-12'",
+        "spread": "6-8'",
+        "light": "PS-FS",
+        "zone": "7",
+        "plant_date": ""
+      },
+      "alternate_names": [
+        "Schefflera arboricola"
+      ]
     },
     {
       "id": "PSBP-00586",
@@ -12178,7 +12108,23 @@
       "status": "research",
       "has_sign": false,
       "research_source": "inat_observed",
-      "inat_obs_count": 1
+      "inat_obs_count": 1,
+      "sign_level": "Species",
+      "feature_tier": "Standard",
+      "native": false,
+      "import_source": "Sheet1",
+      "csv_data": {
+        "origin": "W Africa",
+        "height": "12-15'",
+        "spread": "10-12'",
+        "light": "FS",
+        "zone": "6",
+        "plant_date": ""
+      },
+      "alternate_names": [
+        "Clerodendrum speciosum"
+      ],
+      "internal_notes": "2026-08-28: merged PSBP-00245 (Clerodendrum speciosum) into this record — same iNat taxon 331118, entered twice under two names (park inventory vs iNaturalist). Carried over: sign_level, feature_tier, native, import_source, csv_data."
     },
     {
       "id": "PSBP-00705",
