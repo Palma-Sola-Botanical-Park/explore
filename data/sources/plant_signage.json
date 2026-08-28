@@ -2,10 +2,10 @@
   "meta": {
     "generated": "2026-06-23",
     "source": "PSBP_Master_Plant_Signage.xlsx",
-    "species_count": 250,
+    "species_count": 251,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-08-28T11:16:08",
+    "updated": "2026-08-28T11:56:40",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -29909,6 +29909,120 @@
         "adult_species": [],
         "notes": null
       }
+    },
+    {
+      "id": "PSBP-00779",
+      "common_name": "Reed Palm",
+      "botanical_name": "Chamaedorea seifrizii",
+      "inat_taxon_id": 160385,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Arecaceae",
+        "genus": "Chamaedorea",
+        "species": "seifrizii",
+        "class": "Liliopsida",
+        "order": "Arecales"
+      },
+      "status": "html",
+      "has_sign": false,
+      "native_notes": null,
+      "watch_invasive": true,
+      "watch_invasive_notes": "Listed as a Category II invasive by the former FLEPPC (now FISC) in Central and South Florida regions (2015 list). The Florida Keys Invasive Exotic Task Force (FKIET) 2023 list also flags it as spreading rapidly from landscaping in the Keys. It does not appear on the current statewide FISC Category I list, but its bird-dispersed seed and naturalization in disturbed habitats merit awareness. Planting new specimens near natural areas in Central or South Florida is not recommended.",
+      "rare_fruit": false,
+      "form": "Palm & Cycad",
+      "safety_note": [
+        "The ripe black fruit can irritate skin, likely from microscopic crystals in the flesh — avoid handling crushed berries with bare hands and wash after any contact with the fruit. The plant is not considered poisonous to people, and the ASPCA lists Chamaedorea as non-toxic to dogs and cats; the fruit is an irritant, not a toxin."
+      ],
+      "butterfly": {
+        "larval_food": false,
+        "larval_species": [],
+        "adult_food": false,
+        "adult_species": [],
+        "notes": null
+      },
+      "native": false,
+      "alternate_names": [
+        "Bamboo Palm",
+        "Cane Palm",
+        "Clustered Parlor Palm"
+      ],
+      "quick_hits": [
+        "Chamaedorea palms are the source of xate (pronounced SHA-tay), a major international trade in palm foliage harvested from Central American forests and shipped to florists and churches across North America and Europe for arrangements and Palm Sunday services. This species is not one of the main commercial ones, but its close relatives support an industry worth an estimated $140 million a year — and it is harvested from forest left standing.",
+        "Don't let the ringed green stems fool you: this is not bamboo. Reed Palm is a true palm; bamboo is a grass. They aren't related at all — both independently evolved a narrow, jointed stem that works well for pushing leaves toward light in a shady forest. Two very different plants, one very effective design.",
+        "Chamaedorea seifrizii was one of the plants included in NASA's famous late-1980s experiments on whether houseplants could remove certain pollutants from enclosed air. The study launched the 'air-purifying plant' idea that still sells houseplants today — though the controlled sealed-chamber conditions don't translate directly to an ordinary room.",
+        "Chamaedorea palms have a long history of use by Maya communities in southern Mexico and Central America, long before any European botanist described them. When William Seifriz collected specimens near Chichén Itzá in the 1920s, he was working in a landscape with deep roots in that human relationship with palms — and the species now carries his name."
+      ],
+      "origin": [
+        "Native to the understory of moist woodlands and forests in southeastern Mexico — primarily the Yucatán Peninsula states of Campeche, Quintana Roo, Tabasco, and Yucatán — and south through Belize, Guatemala's Petén region, and Honduras. It grows at elevations up to about 500 meters, often on limestone soils, and tolerates disturbed habitat alongside intact forest.",
+        "William Seifriz collected specimens near Chichen Itza in the 1920s, decades before the species was formally described; the German botanist Max Burret named it in his honor in 1938. The Maya relationship with these palms long predates both men.",
+        "It arrived in Florida as an ornamental introduction and is now widely used in both indoor and outdoor plantings across the state. The Atlas of Florida Plants records it as an introduced species with cultivated occurrences throughout Florida."
+      ],
+      "more_information": [
+        "Chamaedorea seifrizii forms its dense multi-stemmed clumps through basal offshoots — new stems that emerge from the base of an established plant rather than from creeping underground runners. Nurseries sometimes crowd seedlings in a single pot to speed up the full, lush look buyers expect, but the plant builds genuine clumps on its own over time.",
+        "Several Chamaedorea species are harvested as xate (SHA-tay), a major international trade in palm foliage with roots going back generations in Central America. The three principal commercial xate species are C. elegans, C. ernesti-augustii, and C. oblongata; their leaves are shipped internationally for floral arrangements and religious ceremonies, with over 30 million fronds exported to North America for Palm Sunday alone.",
+        "The xate trade illustrates a genuine conservation paradox: a forest plant can be economically valuable precisely because people don't need to cut the forest down to harvest it. The leaves can theoretically be removed without killing the palm, and Chamaedorea require the shade of intact forest to thrive.",
+        "Whether that value protects the forest depends entirely on how carefully the harvest is managed."
+      ],
+      "wildlife_value": [
+        "The Reed Palm's main wildlife contribution at Palma Sola is its fruit. The small, round drupes ripen through a sequence of green, orange-red, and finally black, and birds take them at the black stage. The fruit is eaten by birds, which may help move seeds beyond cultivated plantings — a factor worth noting given the species' documented tendency to naturalize in parts of Florida.",
+        "The small yellow flowers attract insects when in bloom. This palm has no documented role as a larval host for Florida butterflies or moths."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagates by seed and by division of the clump. The palm builds its multi-stemmed habit through basal offshoots — new stems that emerge from the base of an established plant, gradually widening the clump over time. Like all Chamaedorea, it is dioecious: male and female flowers are on separate individual plants, and only females set fruit."
+          },
+          {
+            "label": "Flowers",
+            "text": "Small, yellow, and inconspicuous, borne on branched inflorescences that emerge from the stem below the fronds — not from the crown itself, which is unusual and worth looking for. Male and female inflorescences differ in structure; female stalks often turn orange-red as the fruits develop."
+          },
+          {
+            "label": "Fruit",
+            "text": "Small round drupes, roughly 1 centimeter in diameter, ripening from green through orange-red to black. The flesh of ripe fruit irritates skin — the irritant is thought to be microscopic crystals in the fruit flesh; handle with gloves and wash hands after contact. Birds eat the black fruit and are the primary means of seed dispersal."
+          },
+          {
+            "label": "Leaves",
+            "text": "Pinnately compound (feather-palm form), deep blue-green, with lance-shaped leaflets to about 15 inches long arranged along a central rachis. Individual fronds reach roughly 2 feet in length. The foliage is the plant's main visual feature — dense, arching, and consistently tropical-looking year-round."
+          },
+          {
+            "label": "Stems",
+            "text": "Slender, cane-like, and ringed with nodes in a pattern strongly reminiscent of bamboo. Stems are green when young, maturing to gray-green, and grow in dense clusters. Individual canes are typically less than an inch in diameter."
+          }
+        ],
+        "what_to_look_for": "The easiest thing to notice is the clump itself — a tight mass of bamboo-like green canes topped with arching feathery fronds. Look closely at a stem and you will see the distinct rings, or nodes, that give it the bamboo resemblance. Then look below the lowest frond for the flower stalks, which emerge directly from the cane rather than from the crown above — that is the detail that surprises most visitors. On a female plant those stalks are followed by small round berries that move from green to orange-red and eventually black as they ripen."
+      },
+      "seasonality": {
+        "bloom_months": "spring through summer; can bloom sporadically in warm months",
+        "bloom_description": "Small yellow flowers on branched stalks emerging below the fronds; male and female flowers on separate plants.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "follows bloom; ripe black fruit typically present summer into fall",
+        "notes": "In Florida's subtropical climate, flowering and fruiting may occur across a longer window than in the species' native range. Evergreen and essentially year-round in appearance."
+      },
+      "size": {
+        "height": "6 to 12 feet in Florida landscape conditions; occasionally to 20 feet in ideal outdoor settings",
+        "spread": "3 to 6 feet — clumping habit widens gradually over time",
+        "habit": "multi-stemmed clump; upright to slightly arching canes",
+        "growth_rate": "slow to moderate",
+        "texture": "medium-fine — feathery fronds give a lighter feel than most palms"
+      },
+      "growing_conditions": {
+        "light": "part shade to full shade preferred; tolerates bright indirect light; prolonged direct afternoon sun can scorch fronds",
+        "soil_tolerances": "loam, sand, or organic-rich soil; well-drained preferred; tolerates limestone-based soils",
+        "drought_tolerance": "moderate once established; prefers consistent moisture and does not like to dry out completely",
+        "spacing": "4 to 6 feet for screening; clumps expand slowly over time"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "The species is rated USDA Hardiness Zones 10–12 by most references; at Bradenton (Zone 10A), established plants in sheltered positions typically do well, but an unusually cold winter can damage or defoliate them. New growth usually resumes from the base if the cold is not prolonged.",
+        "Because it naturalizes by bird-dispersed seed in disturbed habitats, the park's specimen should be monitored for seedlings beyond the planted area, particularly near any adjacent natural vegetation."
+      ]
     }
   ]
 }
