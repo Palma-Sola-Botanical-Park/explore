@@ -88,36 +88,109 @@ const TAB = {
 // display filter: which values should appear on the website
 const WEB_DISPLAY = new Set(['web', 'both']);
 
-// ── FEATURED ORDER ────────────────────────────────────────────
-// The "biggies" that lead the default (un-searched) grid, in this order.
-// Everything else follows in PSBP-ID order. List PSBP IDs exactly.
-// Searching or filtering uses relevance instead — featured items just
-// float to the top of whatever pool is showing.
-// Leave an array empty to fall back to plain ID order.
-const FEATURED_PLANTS = [
-  'PSBP-00011', // Baobab
-  'PSBP-00004', // Silk Floss Tree
-  'PSBP-00003', // Buccaneer Palm
-  'PSBP-00007', // Jacaranda
-  'PSBP-00001', // Tree Crinum
-];
-const FEATURED_WILDLIFE = [
-  'PSBP-99983', // Bald Eagle
-  'PSBP-99987', // Roseate Spoonbill
-  'PSBP-99982', // Osprey
-  'PSBP-99971', // Florida Zebra Longwing (state butterfly)
-  'PSBP-99977', // Yellow-crowned Night Heron
-];
+// ── BROWSE ORDER ──────────────────────────────────────────────
+// Rewritten 2026-08-28. The index used to render in PSBP-ID order — the order
+// species happened to be CATALOGUED in — so the first screen was frozen for
+// good and the rarest holdings sat on the last page (the Extinct-in-the-Wild
+// Fiji Fan Palm was card 190-odd). Now:
+//
+//   pins  →  Feature tier  →  Standard  →  Background
+//
+// shuffled WITHIN each tier and dealt round-robin across form, so the grid is
+// different every day, leads with the best of the collection, and never shows
+// six palms in a row (69 of 233 plants are palms; a blind shuffle clumps them).
+//
+// The shuffle is seeded by the DATE, not by page load. This matters: a
+// per-load shuffle reorders the grid when someone taps a plant and hits back,
+// and makes "the third one down" meaningless. Seeded by date it changes daily
+// and holds still all day.
+//
+// Tiers are curated in plant_signage.json / wildlife_signage.json and emitted
+// as `tier` by the publishers. See FEATURE_TIER.md — review every six months.
 
-// Float featured IDs to the front of a list, in the order listed above.
-// Unknown IDs are ignored; non-featured items keep their existing order.
-function orderByFeatured(list, featuredIds) {
-  const rank = new Map(featuredIds.map((id, i) => [id, i]));
-  return list.slice().sort((a, b) => {
-    const ra = rank.has(a.id) ? rank.get(a.id) : Infinity;
-    const rb = rank.has(b.id) ? rank.get(b.id) : Infinity;
-    return ra - rb; // stable sort keeps non-featured in their original order
+// Optional hand-pins. Anything listed here jumps the queue, in this order, and
+// is exempt from the shuffle — for a plant in bloom, or one tied to an event.
+// Leave empty for the normal tiered rotation. List PSBP IDs exactly.
+const FEATURED_PLANTS = [];
+const FEATURED_WILDLIFE = [];
+
+const TIER_RANK = { Feature: 0, Standard: 1, Background: 2 };
+
+// Days since epoch — the shuffle seed. Same all day, different tomorrow.
+function _daySeed() {
+  return Math.floor(Date.now() / 86400000);
+}
+
+// Small deterministic PRNG (mulberry32). Same seed, same sequence, so the
+// order is reproducible for everyone looking on the same day.
+function _rng(seed) {
+  let a = (seed >>> 0) + 0x6D2B79F5;
+  return function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function _shuffle(arr, rand) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Spread forms evenly across the tier so adjacent cards look different.
+// NOT round-robin: the form buckets are wildly uneven (14 Feature palms vs 2
+// groundcovers), and one-per-round exhausts the small buckets in the first
+// few rows — which would put the same two groundcovers on screen one every
+// day and leave a run of six palms at the end. Instead each item takes a
+// proportional slot, (i + 0.5) / bucketSize, so a big bucket appears
+// throughout and a small one is spaced right across the run.
+function _interleave(list, rand) {
+  const buckets = new Map();
+  list.forEach(item => {
+    const k = item.form || item.category || item.cat || '';
+    if (!buckets.has(k)) buckets.set(k, []);
+    buckets.get(k).push(item);
   });
+  if (buckets.size < 2) return list.slice();
+  const slotted = [];
+  buckets.forEach(items => {
+    items.forEach((item, i) => {
+      // tiny seeded jitter breaks ties between equal-sized buckets, so the
+      // same form doesn't lead every day
+      slotted.push({ item, pos: (i + 0.5) / items.length + rand() * 1e-3 });
+    });
+  });
+  return slotted.sort((a, b) => a.pos - b.pos).map(x => x.item);
+}
+
+// Order a browse pool: pins first, then by tier, shuffled and interleaved
+// within each tier. Used for the default grid and for filtered pools; the
+// search path sorts by relevance instead and never calls this.
+function orderByFeatured(list, featuredIds) {
+  const pinRank = new Map((featuredIds || []).map((id, i) => [id, i]));
+  const pins = [], rest = [];
+  list.forEach(p => (pinRank.has(p.id) ? pins : rest).push(p));
+  pins.sort((a, b) => pinRank.get(a.id) - pinRank.get(b.id));
+
+  const seed = _daySeed();
+  const tiers = [[], [], []];
+  rest.forEach(p => {
+    const r = TIER_RANK[p.tier];
+    tiers[r === undefined ? 1 : r].push(p);
+  });
+
+  const out = pins.slice();
+  tiers.forEach((group, i) => {
+    if (!group.length) return;
+    const rand = _rng(seed + i * 7919);   // distinct stream per tier
+    out.push(..._interleave(_shuffle(group, rand), rand));
+  });
+  return out;
 }
 
 // ── SHEET FETCH HELPER ────────────────────────────────────────

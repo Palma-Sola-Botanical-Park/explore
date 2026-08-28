@@ -119,6 +119,15 @@ def build_wildlife_json_entry(species, hero):
         "focus": focus or "50% 50%",
         "page": f"wildlife/{page_filename(pid, species['common_name'])}",
 
+        # ── Added 2026-08-28 — the browse index orders on this. ──
+        # feature_tier has been curated in the source since the start but was
+        # never emitted, so site.js had no way to sort on it and fell back to
+        # PSBP-ID order — i.e. the order things happened to be catalogued in,
+        # which buried the rarest holdings on the last page. Recurated
+        # 2026-08-28 around "what is here and nowhere else". See
+        # FEATURE_TIER.md; due for review every six months.
+        "tier": species.get("feature_tier") or "Standard",
+
         # ── Added 2026-08-18 — three fields the card index never carried. ──
         # searchable text: filterWildlife() in site.js has always scored against
         # w.quick, but nothing ever emitted it, so that branch compared against
