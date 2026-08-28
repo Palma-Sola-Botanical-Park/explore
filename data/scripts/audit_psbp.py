@@ -185,6 +185,36 @@ def main():
         if "gallery" in (p.get("role") or []):
             gallery[p["psbp_id"]].append(p)
 
+    # ── CONTENT ───────────────────────────────────────────────────────────
+    # The teaser is printed on the SIGN (make_signs.py, "the hook, under the
+    # photo") and shown in the nature.html drawer. quick_hits[0] opens the page
+    # the QR code leads to. So a visitor reads the teaser, scans, and lands on
+    # the first quick hit — and on 38 records in Aug 2026 those were the same
+    # sentence. The scan should reward them, not repeat the placard.
+    #
+    # The rule (Medium #5 part 4): teaser and quick_hits[0] must carry DIFFERENT
+    # facts. Measured as Jaccard word overlap; 0.50 flags the tail without
+    # firing on the many records that legitimately share a few common words.
+    if run("CONTENT"):
+        def _words(t):
+            return set(re.sub(r"[^a-z0-9 ]", " ", (t or "").lower()).split())
+
+        for sp in plants + wild:
+            if sp.get("status") != "html":
+                continue
+            teaser = sp.get("teaser")
+            hits = sp.get("quick_hits") or []
+            if not isinstance(teaser, str) or not hits or not isinstance(hits[0], str):
+                continue
+            a, b = _words(teaser), _words(hits[0])
+            if not a or not b:
+                continue
+            j = len(a & b) / len(a | b)
+            if j >= 0.50:
+                add("CONTENT", "WARN",
+                    f"{sp['id']} {sp.get('common_name')}: teaser and quick_hits[0] "
+                    f"overlap {j:.0%} — the sign and the page say the same thing")
+
     # ── PHOTOS ────────────────────────────────────────────────────────────
     if run("PHOTOS"):
         for p in photos:
@@ -569,7 +599,12 @@ def main():
                     f"the line above and correct if it has drifted")
 
     # ── report ────────────────────────────────────────────────────────────
-    order = ["PHOTOS", "CREDITS", "LINK", "DISK", "PUBLISH", "INDEX", "FK", "TAXA", "META"]
+    # ⚠ A section missing from this list is collected and silently discarded —
+    #   add() fills `findings`, but only sections named here are printed or
+    #   counted. CONTENT was added 2026-08-28 and cost twenty minutes of
+    #   debugging a check that was working perfectly.
+    order = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK", "PUBLISH", "INDEX",
+             "FK", "TAXA", "META"]
     if not args.quiet:
         for sec in order:
             rows = [f for f in findings if f[0] == sec]
