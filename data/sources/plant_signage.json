@@ -5,7 +5,7 @@
     "species_count": 250,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-08-27T22:44:15",
+    "updated": "2026-08-28T11:16:08",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -21989,7 +21989,7 @@
       "category": "",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": false,
       "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1+NonEstPalms).",
       "native_notes": null,
@@ -22009,28 +22009,26 @@
       },
       "alternate_names": [
         "Pacific Fan Palm",
-        "Piu",
-        "Niupiu"
+        "Piu (Tongan)",
+        "Niupiu (Tongan)"
       ],
       "quick_hits": [
-        "In ancient Fiji, these giant leaves were a symbol of high rank. Only chiefs were permitted to carry fans and umbrellas made from them — and the Fijian word ai viu covers both objects in a single term.",
-        "Despite its name, this palm is almost certainly not native to Fiji. Ancient Polynesian voyagers prized the leaves so much that they are believed to have carried the seeds in their canoes across thousands of miles of open ocean, spreading the palm long before European contact.",
-        "The enormous fan blades act like sails: in high winds or tropical storms the fronds shred into ragged strips. Tucking this palm into a wind-sheltered spot keeps it looking its best.",
-        "This is one of the easiest palms to work around: the long leaf stems are perfectly smooth with no teeth or spines, and the plant is completely non-toxic to people, dogs, and cats."
+        "Look at those leaves. The blade is divided only about a quarter to a third of the way toward the center, so instead of breaking into long ribbons, the segments stay joined through most of the leaf. From a distance the fronds can look almost like solid green panels. Those broad, barely-divided blades also catch wind easily — tropical storms can leave them dramatically shredded.",
+        "The common name raises an immediate question: why is it called the Fiji Fan Palm if the species is generally considered native to Tonga? Its long history of cultivation and human movement across the Pacific has made its natural distribution genuinely difficult to reconstruct — and the name itself is a clue to that tangled history.",
+        "In Fiji, the leaves were traditionally fashioned into fans and umbrellas for exclusive use by chiefs. The Fijian term ai viu covers both objects, and only one or two of these palms were typically kept in a village — enough to supply the chief's needs and no more."
       ],
       "origin": [
-        "The Fiji Fan Palm's true homeland is Tonga. Its presence across a much wider swath of the Pacific, including Fiji, Samoa, the Marquesas, and Tokelau, is thought to reflect ancient Polynesian voyaging rather than natural dispersal. Canoe culture carried this palm across thousands of miles of open ocean, probably because the leaves were so useful.",
-        "It arrived in Florida cultivation as an ornamental and is grown in the southern part of the state, where winters are warm enough to sustain it. UF/IFAS lists it as a salt-tolerant palm suited to southern Florida."
+        "The Fiji Fan Palm's native range is surprisingly hard to pin down. Most authorities, including Kew's Plants of the World Online, treat Tonga — specifically the islands of Vava'u and 'Eua — as its original home. Populations across a much wider Pacific arc, including Fiji, Samoa, the Marquesas, and Tokelau, appear to be ancient human introductions rather than natural dispersal.",
+        "The IUCN Red List classifies Pritchardia pacifica as Extinct in the Wild. No confirmed natural population survives anywhere — every one of these palms, including this one, descends from trees that people planted. That is precisely why the original range is so hard to reconstruct: there is no wild population left to point at.",
+        "Polynesian voyagers carried useful plants between islands, and palms such as this one became embedded in the landscapes and cultures of places far from their origins — which is almost certainly why the common name points to Fiji rather than Tonga. It arrived in Florida as an ornamental and is cultivated in the southern part of the state, where winters are warm enough to sustain it."
       ],
       "more_information": [
-        "The genus name honors William Thomas Pritchard (1829-1907), the first British consul stationed in Fiji. He arrived in 1858 and was described by contemporaries as an adventurer as much as a diplomat — he later wrote a book called Polynesian Reminiscences. The species epithet pacifica simply points to the Pacific Ocean.",
-        "The leaves' cultural role in Fiji was serious and specific. Craftspeople mounted the enormous fan-shaped blades onto frames of light, flexible wood to create ceremonial fans and umbrellas reserved exclusively for chiefs. The Fijian term ai viu described both objects — which gives a sense of how central this palm was to the visual language of rank and authority.",
-        "This species is sometimes confused in cultivation with its close relative Thurston's Fan Palm (Pritchardia thurstonii). The quickest tell is the flower and fruit stalks: on the Fiji Fan Palm they stay tucked short inside the crown, while on Thurston's they arch dramatically outward and downward, reaching up to two meters beyond the leaves.",
-        "The leaves are also different up close — Thurston's blade lies flat, while the Fiji Fan Palm's is gently cupped by a stiff central rib."
+        "The genus name honors William Thomas Pritchard (1829-1907), a 19th-century British consul in Fiji, adventurer, and author of Polynesian Reminiscences — which may be the simplest explanation for how a palm generally considered Tongan ended up carrying Fiji's name.",
+        "Pritchardia is an exclusively Pacific genus, with roughly 29 named species scattered from Tonga and Fiji through French Polynesia to Hawaii, where the genus proliferated into at least 22 species — eight of which are now on the US Federal Endangered Species List. This one palm in the collection is a doorway into a much larger Pacific story.",
+        "The association between this palm and political rank ran deeper than the objects made from it: the tree itself became a marker of authority, which is why a village kept only enough of them to serve its chief. Fans worked from the leaves also carry the Fijian name iri masei."
       ],
       "wildlife_value": [
-        "The small, fragrant flowers attract pollinating insects, and the dark, marble-sized fruits — ripening from reddish-brown to nearly black — are taken by birds, which are the palm's primary seed dispersers. Local Florida birds treat the ripe fruit as a reliable food source, helping spread seeds into the immediate area. The dense crown also provides reliable shelter.",
-        "As a non-native palm with no shared evolutionary history with Florida's fauna, it does not serve as a larval host for local butterflies or moths. Visitors looking for the park's best pollinator habitat will find it among the native plantings."
+        "Its wildlife value in Florida appears limited. The fragrant flowers attract insects, and birds may consume the small dark fruit, but this non-native palm is not a documented host or significant food plant for Florida wildlife. Its real story here is human history — the ecology is a modest bonus."
       ],
       "reproduction": {
         "blocks": [
@@ -22040,7 +22038,7 @@
           },
           {
             "label": "Flowers",
-            "text": "One to four branched flower clusters emerge from the junction between each leaf stem and the trunk. The flower clusters are shorter than or roughly equal in length to the leaf stems. Individual flowers are small and yellowish-green, bisexual (producing both pollen and ovules), and are noted as fragrant."
+            "text": "One to four branched flower clusters emerge from the junction between each leaf stem and the trunk, and are shorter than or roughly equal in length to the leaf stems. Individual flowers are small, yellowish-green, fragrant, and bisexual — each one carrying both pollen-producing and seed-producing parts. A single palm can therefore potentially set fruit without another tree nearby."
           },
           {
             "label": "Fruit",
@@ -22048,21 +22046,21 @@
           },
           {
             "label": "Fronds",
-            "text": "Large, gently cupped green fan leaves up to four feet wide, held on smooth leaf stems of similar length. The blade is divided about a quarter to a third of the way into many stiff-tipped segments, with the undersurface noticeably waxy. The leaf stem edges are smooth — no teeth to worry about."
+            "text": "Large, gently cupped green fan leaves up to four feet wide, held on smooth leaf stems of similar length. Notice how shallowly the blade is divided — the segments remain joined through most of their length, giving each leaf an almost solid appearance rather than the ribbon-like look of many other fan palms. Turn over a lower leaf and you will see a distinct pale, waxy coating on the underside. The leaf stem edges are smooth with no teeth."
           },
           {
             "label": "Trunk",
-            "text": "Solitary, smooth, grayish-tan, and ringed by the scars of old leaf bases. The trunk reaches roughly 10 inches in diameter at maturity — slender for a palm of this crown size, which gives the tree an elegant, upright look."
+            "text": "Solitary, smooth, grayish-tan, and ringed by the scars of old leaf bases. The trunk is relatively slender compared with the broad crown above it, giving the tree an elegant, upright silhouette."
           }
         ],
-        "what_to_look_for": "Look up first: a full, rounded head of 20 to 30 broad, bright green fans, each one gently cupped rather than flat, held above a clean, lightly ringed trunk. Unlike flat fan palms, each leaf has a stiff central rib that bows the blade into a shallow bowl. Get close to a lower leaf and check the underside — you will see a distinct pale, waxy coating and the stiff, radiating segments. The trunk stays relatively slender at about 10 inches wide, giving the tree an elegant, top-heavy silhouette. Look closely between the leaf stems for flower clusters, which are tucked short inside the crown rather than hanging out past the leaves; if the palm is fruiting, small dark olive-to-black drupes will be clustered there too."
+        "what_to_look_for": "Look up first: a full, rounded head of broad, bright green fan fronds, each one gently cupped rather than flat, held above a clean, lightly ringed trunk. The most important thing to notice is how shallowly the blades are divided — instead of breaking into long strips like many fan palms, the segments stay joined through most of their length, so each frond can look almost like a solid green panel in still air. If any fronds look shredded at the tips, wind is the cause: those near-solid blades catch a storm like a sail. Get close to a lower leaf and flip it over — the pale, waxy coating on the underside is easy to see and a reliable identification clue. The trunk stays relatively slender for the size of the crown above, giving the whole tree a top-heavy elegance. Look between the leaf stems for flower clusters tucked inside the crown; if the palm is fruiting, small dark purplish-black drupes will be clustered there."
       },
       "seasonality": {
         "bloom_months": "summer; may flower sporadically in other warm months",
         "bloom_description": "Small, fragrant, yellowish-green flowers in branched clusters emerging from the leaf axils; flower clusters are shorter than the leaf stems.",
         "leaf_behavior": "evergreen",
         "fruiting_months": "follows summer bloom",
-        "notes": "Cold sensitivity limits reliable performance in Bradenton to the warmest microclimates; fronds may show cold-spotting in a sharp winter but the palm typically grows out of it by summer."
+        "notes": "Cold sensitivity limits reliable performance in Bradenton to the warmer microclimates. Cold-spotting can appear on the fronds after a sharp winter; new growth usually replaces damaged foliage once warm weather returns."
       },
       "size": {
         "height": "30 to 50 feet (up to about 15 meters in optimal conditions; typically shorter in Florida cultivation)",
@@ -22085,10 +22083,9 @@
         "dogs_level": "Green"
       },
       "other_notes": [
-        "Lethal Yellowing is the main landscape concern with this palm in Florida. The disease is caused by a phytoplasma spread by the planthopper Haplaxius crudus (formerly known as Myndus crudus), and Pritchardia pacifica is considered highly susceptible. UF/IFAS advises against planting susceptible species in areas where Lethal Yellowing is established.",
-        "Bradenton sits in Manatee County, where UF/IFAS recorded Lethal Yellowing as recently as 2007 — putting this palm closer to active transmission territory than many growers assume. For a high-value specimen, UF/IFAS confirms that preventive trunk injections of oxytetracycline HCl (OTC) on a four-month schedule are a recognized management option.",
-        "A sharp winter freeze can also cause dark spots on the leaves, though a healthy tree typically grows clean new fans by summer.",
-        "Plant this palm in a wind-sheltered microclimate. The broad, barely-segmented fan blades catch wind like sails and shred easily in tropical storms or strong gusts. When maintaining the palm, remove only fronds that are fully brown and dead — green or partly green lower fronds are still transferring potassium to the growing tip, and removing them prematurely weakens the tree."
+        "Lethal yellowing is the main landscape concern for this palm in Florida. Pritchardia pacifica is classified as highly susceptible to the disease - caused by a phytoplasma and spread by an insect vector - and expert sources advise against planting it where lethal yellowing is established. It has been documented in Manatee County, which makes this specimen's continued health a genuine point of interest.",
+        "Cold weather can spot or discolor the leaves, especially after an unusual freeze. New growth usually replaces damaged foliage once warm weather returns.",
+        "Plant this palm in a wind-sheltered microclimate. The broad, barely-segmented fan blades catch wind easily and can shred in tropical storms or strong gusts. When maintaining the palm, remove only fronds that are fully brown and dead — green or partly green fronds should be left in place."
       ]
     },
     {
