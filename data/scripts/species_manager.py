@@ -9220,11 +9220,29 @@ def _run_audit_json(script, extra=None):
                 "stdout": proc.stdout[:800]}
 
 
+def _health_name_map():
+    """PSBP id -> common name, across every master. The audit emits ids and only
+    some checks bother appending a name; the board annotates them all rather
+    than making ten message strings agree."""
+    names = {}
+    for path in (PLANT_SIGNAGE, WILDLIFE_SIGNAGE, RESEARCH_JSON):
+        try:
+            with open(path, encoding="utf-8") as f:
+                for r in json.load(f).get("species", []):
+                    n = (r.get("common_name") or "").strip()
+                    if r.get("id") and n:
+                        names.setdefault(r["id"], n)
+        except Exception:                                       # noqa: BLE001
+            continue
+    return names
+
+
 def handle_api_health(params):
     """Both audits, freshly run. Fast enough (~0.25s total) to do on request."""
     return {
         "audit":  _run_audit_json("audit_psbp.py"),
         "orphan": _run_audit_json("psbp_orphan_audit.py"),
+        "names":  _health_name_map(),
     }
 
 
@@ -9329,6 +9347,22 @@ def render_health():
     function hEsc(t){ return String(t==null?'':t)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+    // Put the common name beside every PSBP id. Some audit checks already
+    // append one, so skip when the name is the very next thing in the string,
+    // otherwise you get "PSBP-00008 (Beach Sunflower) Beach Sunflower: ...".
+    // Character classes only, no backslash escapes -- this JS lives in a
+    // non-raw Python string and a backslash never survives the trip.
+    var H_NAMES = {};
+    function hNamed(msg){
+      return String(msg == null ? '' : msg).replace(/PSBP-[0-9]+/g, function(id, off, whole){
+        var nm = H_NAMES[id];
+        if (!nm) return id;
+        var after = whole.slice(off + id.length, off + id.length + nm.length + 2);
+        if (after.indexOf(nm) === 0 || after.indexOf(' ' + nm) === 0) return id;
+        return id + ' (' + nm + ')';
+      });
+    }
+
     function hFail(msg){ return '<div class="h-fail">' + hEsc(msg) + '</div>'; }
 
     function hSection(sec){
@@ -9349,7 +9383,7 @@ def render_health():
         h += '<div class="h-list">';
         rows.forEach(function(f){
           h += '<div class="h-item"><span class="h-lvl ' + hEsc(f.level) + '">' +
-            hEsc(f.level) + '</span><span>' + hEsc(f.message) + '</span></div>';
+            hEsc(f.level) + '</span><span>' + hEsc(hNamed(f.message)) + '</span></div>';
         });
         h += '</div>';
       }
@@ -9445,6 +9479,7 @@ def render_health():
     fetch('/api/health').then(function(r){ return r.json(); }).then(function(d){
       document.getElementById('health-loading').style.display = 'none';
       document.getElementById('health-content').style.display = '';
+      H_NAMES = d.names || {};
       hRender(d.audit || {}, d.orphan || {});
     }).catch(function(e){
       document.getElementById('health-loading').innerHTML =
