@@ -508,7 +508,7 @@ function render() {
   el('phLinks').innerHTML = links.join('');
 
   /* The record. Species count, not photo count, is the honest headline —
-     it is what the person actually added to the park's catalogue. */
+     it is what the person actually added to the park's catalog. */
   var species = {}, plants = 0, wild = 0;
   all.forEach(function (p) {
     species[p.id] = 1;

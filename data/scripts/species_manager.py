@@ -135,6 +135,7 @@ TABS = [
     {"id": "phenology", "label": "Phenology",     "route": "/phenology", "icon": "🌸"},
     {"id": "publish",  "label": "Preview & Publish", "route": "/publish", "icon": "🚀"},
     {"id": "verify",   "label": "Verify",          "route": "/verify",  "icon": "🔎"},
+    {"id": "health",   "label": "Health",          "route": "/health",  "icon": "🩺"},
 ]
 
 # Required fields for promotion readiness (per kingdom)
@@ -9184,6 +9185,275 @@ def render_verify():
     return VERIFY_BODY
 
 
+
+# ════════════════════════════════════════════════════════════════════════════
+# HEALTH — species data-integrity board  (Medium #1, built 2026-08-28)
+#
+# Renders the EXISTING audits rather than reimplementing their checks. Both
+# tools grew a --json flag for this (audit_psbp.py on 2026-08-28; the orphan
+# audit already had one), so there is exactly one implementation of every rule
+# and this page cannot drift away from what the command line reports.
+#
+# Deliberately NOT a page in the explore repo: that repo is public, and a board
+# reading "PSBP-00019 Bottle Palm: published with no gallery-role photo" is
+# internal workbench output, not visitor content. It lives here, on loopback,
+# next to the tools that fix the things it lists.
+# ════════════════════════════════════════════════════════════════════════════
+
+def _run_audit_json(script, extra=None):
+    """Run one of the audit scripts with --json and return its parsed output."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), script)
+    cmd = [sys.executable, str(path), "--json"] + (extra or [])
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+    except Exception as e:                                        # noqa: BLE001
+        return {"error": f"{script} did not run: {e}"}
+    if not proc.stdout.strip():
+        return {"error": f"{script} produced no output",
+                "stderr": (proc.stderr or "")[-800:]}
+    try:
+        return json.loads(proc.stdout)
+    except json.JSONDecodeError as e:
+        # Exit code is meaningful (1 = errors found), so a non-zero exit is not
+        # itself a failure — only unparseable output is.
+        return {"error": f"{script} emitted invalid JSON: {e}",
+                "stdout": proc.stdout[:800]}
+
+
+def handle_api_health(params):
+    """Both audits, freshly run. Fast enough (~0.25s total) to do on request."""
+    return {
+        "audit":  _run_audit_json("audit_psbp.py"),
+        "orphan": _run_audit_json("psbp_orphan_audit.py"),
+    }
+
+
+def render_health():
+    """Health tab — data-integrity board fed by the audit scripts.
+
+    ⚠ The JS below lives in a NON-raw triple-quoted Python string, so any
+      backslash escape is consumed by Python before the browser sees it.
+      Writing '\n' here emits a REAL newline into the middle of a JS string
+      literal, which is a syntax error — the whole <script> silently fails to
+      parse and the page hangs on "Running the audits…" while the API answers
+      fine. Double them ('\\n') or the page dies quietly. Cost: one debug
+      session, 2026-08-28.
+    """
+    return """
+    <style>
+      .h-banner { border-radius: var(--radius); padding: 18px 22px; margin-bottom: 16px;
+                  display: flex; align-items: center; gap: 16px; color: #fff; }
+      .h-banner.ok   { background: #2e7d4f; }
+      .h-banner.warn { background: #b8860b; }
+      .h-banner.err  { background: #a33; }
+      .h-banner .h-big { font-size: 2.2rem; font-weight: 700; line-height: 1; }
+      .h-banner .h-sub { opacity: .9; font-size: .9rem; margin-top: 3px; }
+      .h-tot { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+      .h-pill { border-radius: 999px; padding: 5px 14px; font-size: .82rem; font-weight: 700; }
+      .h-pill.e { background: #fdeaea; color: #a33; }
+      .h-pill.w { background: #fdf5e2; color: #8a6400; }
+      .h-pill.i { background: #eef1f4; color: #556; }
+      .h-group { margin-bottom: 22px; }
+      .h-group > h2 { font-size: 1.05rem; color: var(--green-deep); margin: 0 0 4px;
+                      display: flex; align-items: baseline; gap: 8px; }
+      .h-group > h2 .h-gcount { font-size: .78rem; font-weight: 400; color: #7a828a; }
+      .h-gnote { font-size: .82rem; color: #7a828a; margin: 0 0 10px; line-height: 1.5; }
+      .h-sec { border: 1px solid #e3e6ea; border-radius: var(--radius); margin-bottom: 8px;
+               overflow: hidden; background: #fff; }
+      .h-sec > summary { cursor: pointer; padding: 11px 16px; font-weight: 700;
+                         display: flex; align-items: center; gap: 10px; list-style: none; }
+      .h-sec > summary::-webkit-details-marker { display: none; }
+      .h-sec > summary:hover { background: #f7f9fa; }
+      .h-sec[open] > summary { border-bottom: 1px solid #e3e6ea; }
+      .h-name { flex: 1; }
+      .h-blurb { display: block; font-weight: 400; font-size: .78rem; color: #7a828a;
+                 margin-top: 2px; }
+      .h-tally { color: #889; font-weight: 400; font-size: .82rem; white-space: nowrap; }
+      .h-list { margin: 0; padding: 6px 0; max-height: 460px; overflow-y: auto; }
+      .h-item { display: flex; gap: 10px; padding: 6px 16px; font-size: .84rem;
+                line-height: 1.5; border-bottom: 1px solid #f2f4f6; }
+      .h-item:last-child { border-bottom: none; }
+      .h-lvl { flex: 0 0 52px; font-size: .68rem; font-weight: 700; letter-spacing: .04em;
+               padding-top: 2px; }
+      .h-lvl.ERROR { color: #a33; } .h-lvl.WARN { color: #8a6400; } .h-lvl.INFO { color: #889; }
+      .h-clean { padding: 10px 16px; color: #6a7; font-size: .85rem; }
+      .h-meta { color: #778; font-size: .8rem; margin: 4px 0 0; }
+      .h-fail { background: #fdeaea; color: #a33; padding: 12px 16px;
+                border-radius: var(--radius); font-size: .85rem; white-space: pre-wrap; }
+    </style>
+
+    <div id="health-loading" class="loading">Running the audits...</div>
+    <div id="health-content" style="display:none;">
+      <div id="h-banner"></div>
+      <div class="stat-row" id="h-stats"></div>
+      <div id="h-totals" class="h-tot"></div>
+      <div id="h-groups"></div>
+      <p class="h-meta" id="h-meta"></p>
+    </div>
+
+    <script>
+    // Display names. These live HERE, not in audit_psbp.py: the audit section
+    // keys are its own interface and renaming them there would break
+    // --only PHOTOS and every note in the docs that cites a section.
+    var H_SECTIONS = {
+      PHOTOS:  ['Photo records',        'Required fields, licences, hero and gallery roles'],
+      CREDITS: ['Photographer credits', 'Credit lines, display names, handles with no registry entry'],
+      LINK:    ['Species to photos',    'Published species missing a hero or a gallery photo'],
+      DISK:    ['Image files on disk',  'Hero files present, and stale leftovers beside them'],
+      CONTENT: ['Sign vs page wording', 'Where the printed teaser repeats the first line of the page'],
+      TAXA:    ['Duplicate names',      'Two records sharing a name or an iNaturalist taxon id'],
+      PUBLISH: ['Page freshness',       'Pages built by an older publisher than the current one'],
+      INDEX:   ['Browse indexes',       'plants.json and wildlife.json against the signage masters'],
+      FK:      ['Placements',           'Map placements pointing at species that actually exist'],
+      META:    ['File self-description','What a file claims about itself vs what it holds']
+    };
+    // Grouped so related checks read together instead of in audit order.
+    var H_GROUPS = [
+      ['Photographs', 'Every check that touches an image, its credit, or its file.',
+       ['PHOTOS','CREDITS','LINK','DISK'], true],
+      ['Species content', 'What the signs and pages actually say.',
+       ['CONTENT','TAXA'], false],
+      ['Pages and indexes', 'What has been built, and whether the browse lists agree with it.',
+       ['PUBLISH','INDEX'], false],
+      ['Data files', 'The records underneath: references, and files describing themselves.',
+       ['FK','META'], false]
+    ];
+    var H_COUNTS = {
+      signage_species: 'Species records',
+      signage_html:    'Published pages',
+      signage_spotted: 'In progress',
+      credit_photos:   'Photo records',
+      research:        'Research rows'
+    };
+
+    function hEsc(t){ return String(t==null?'':t)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function hFail(msg){ return '<div class="h-fail">' + hEsc(msg) + '</div>'; }
+
+    function hSection(sec){
+      var meta = H_SECTIONS[sec.section] || [sec.section, ''];
+      var c = sec.counts || {}, rows = sec.findings || [];
+      var bits = [];
+      if (c.ERROR) bits.push(c.ERROR + ' error' + (c.ERROR===1?'':'s'));
+      if (c.WARN)  bits.push(c.WARN + ' warning' + (c.WARN===1?'':'s'));
+      if (c.INFO)  bits.push(c.INFO + ' info');
+      var dot = c.ERROR ? '&#128308;' : (c.WARN ? '&#128993;' : (c.INFO ? '&#9899;' : '&#128994;'));
+      var h = '<details class="h-sec"' + (c.ERROR ? ' open' : '') + '><summary>' + dot +
+        '<span class="h-name">' + hEsc(meta[0]) +
+          (meta[1] ? '<span class="h-blurb">' + hEsc(meta[1]) + '</span>' : '') +
+        '</span><span class="h-tally">' + (bits.join(' &middot; ') || 'clean') +
+        '</span></summary>';
+      if (!rows.length) h += '<div class="h-clean">Nothing to report.</div>';
+      else {
+        h += '<div class="h-list">';
+        rows.forEach(function(f){
+          h += '<div class="h-item"><span class="h-lvl ' + hEsc(f.level) + '">' +
+            hEsc(f.level) + '</span><span>' + hEsc(f.message) + '</span></div>';
+        });
+        h += '</div>';
+      }
+      return h + '</details>';
+    }
+
+    // The licence inventory rides with the photo group, because that is what it
+    // is about. Only a HERO is a real question: heroes are downloaded and
+    // resized locally, and resizing makes a derivative. Gallery photos are
+    // hot-linked to iNaturalist and never modified.
+    function hLicence(orphan){
+      var rows = ((orphan.findings || {}).license_nd) || [];
+      var heroes = rows.filter(function(r){ return r.hero; }).length;
+      var dot = heroes ? '&#128993;' : '&#9899;';
+      var tally = heroes ? (heroes + ' needing a decision, ' + (rows.length - heroes) + ' informational')
+                         : (rows.length + ' informational');
+      var h = '<details class="h-sec"><summary>' + dot +
+        '<span class="h-name">Licence inventory' +
+        '<span class="h-blurb">No-derivatives photos. Only a hero is a question &mdash; ' +
+        'heroes are resized locally, gallery photos are not.</span></span>' +
+        '<span class="h-tally">' + tally + '</span></summary>';
+      if (!rows.length) h += '<div class="h-clean">Nothing to report.</div>';
+      else {
+        h += '<div class="h-list">';
+        rows.forEach(function(r){
+          var bits = [r.id, r.name, r.photographer ? '(c) ' + r.photographer : null,
+                      r.photo_id ? 'photo ' + r.photo_id : null].filter(Boolean);
+          h += '<div class="h-item"><span class="h-lvl ' + (r.hero ? 'WARN' : 'INFO') + '">' +
+            (r.hero ? 'HERO' : 'gallery') + '</span><span>' + hEsc(bits.join(' &middot; ')) +
+            (r.hero ? ' &mdash; resized locally, needs a decision'
+                    : ' &mdash; hot-linked, untouched') + '</span></div>';
+        });
+        h += '</div>';
+      }
+      return h + '</details>';
+    }
+
+    function hRender(a, o){
+      if (a.error){ document.getElementById('h-banner').innerHTML = hFail(a.error); return; }
+
+      var t = a.totals || {ERROR:0,WARN:0,INFO:0};
+      var cls  = t.ERROR ? 'err' : (t.WARN ? 'warn' : 'ok');
+      var head = t.ERROR ? (t.ERROR + ' error' + (t.ERROR===1?'':'s'))
+                         : (t.WARN ? 'No errors' : 'All clear');
+      var sub  = t.ERROR ? 'Publishing is blocked until these are resolved.'
+               : (t.WARN ? 'Warnings are advisory. Nothing is broken.' : 'Every check passed.');
+      document.getElementById('h-banner').innerHTML =
+        '<div class="h-banner ' + cls + '"><div><div class="h-big">' + hEsc(head) +
+        '</div><div class="h-sub">' + hEsc(sub) + '</div></div></div>';
+
+      var c = o.counts || {};
+      var srow = '';
+      Object.keys(H_COUNTS).forEach(function(k){
+        if (c[k] === undefined) return;
+        srow += '<div class="stat-badge"><div class="stat-num">' + c[k] +
+                '</div><div class="stat-label">' + hEsc(H_COUNTS[k]) + '</div></div>';
+      });
+      document.getElementById('h-stats').innerHTML = srow;
+
+      document.getElementById('h-totals').innerHTML =
+        '<span class="h-pill e">' + t.ERROR + ' error' + (t.ERROR===1?'':'s') + '</span>' +
+        '<span class="h-pill w">' + t.WARN + ' warning' + (t.WARN===1?'':'s') + '</span>' +
+        '<span class="h-pill i">' + t.INFO + ' info</span>';
+
+      var byKey = {};
+      (a.sections || []).forEach(function(sec){ byKey[sec.section] = sec; });
+
+      var out = '';
+      H_GROUPS.forEach(function(g){
+        var title = g[0], note = g[1], keys = g[2], withLicence = g[3];
+        var inner = '', e = 0, w = 0;
+        keys.forEach(function(k){
+          var sec = byKey[k];
+          if (!sec) return;
+          e += (sec.counts || {}).ERROR || 0;
+          w += (sec.counts || {}).WARN || 0;
+          inner += hSection(sec);
+        });
+        if (withLicence && !o.error) inner += hLicence(o);
+        if (!inner) return;
+        var tally = e ? (e + ' error' + (e===1?'':'s')) : (w ? (w + ' warning' + (w===1?'':'s')) : 'clean');
+        out += '<div class="h-group"><h2>' + hEsc(title) +
+               '<span class="h-gcount">' + tally + '</span></h2>' +
+               '<p class="h-gnote">' + hEsc(note) + '</p>' + inner + '</div>';
+      });
+      document.getElementById('h-groups').innerHTML = out;
+
+      if (o.error) document.getElementById('h-meta').innerHTML = hFail(o.error);
+      document.getElementById('h-meta').textContent =
+        'Audited ' + (a.generated || '') + ' - ' + (a.repo || '');
+    }
+
+    fetch('/api/health').then(function(r){ return r.json(); }).then(function(d){
+      document.getElementById('health-loading').style.display = 'none';
+      document.getElementById('health-content').style.display = '';
+      hRender(d.audit || {}, d.orphan || {});
+    }).catch(function(e){
+      document.getElementById('health-loading').innerHTML =
+        hFail('Could not reach /api/health: ' + e);
+    });
+    </script>
+    """
+
+
 PAGE_ROUTES = {
 
     "/":        ("overview", render_overview),
@@ -9193,6 +9463,7 @@ PAGE_ROUTES = {
     "/phenology": ("phenology", render_phenology),
     "/publish": ("publish",  render_publish),
     "/verify":  ("verify",   render_verify),
+    "/health":  ("health",   render_health),
 }
 
 # API routes: path → handler_function
@@ -9566,7 +9837,7 @@ def _ai_log_draft(entry):
     """Append a provenance record to THAT SPECIES' own file (best-effort).
 
     One file per species — data/sources/provenance/PSBP-00404.json — rather
-    than one log for the whole catalogue. Appending a draft now rewrites ~2 KB
+    than one log for the whole catalog. Appending a draft now rewrites ~2 KB
     instead of a multi-megabyte file, so git stores a small delta, the diff in
     GitHub Desktop is readable, and "what sourced this species?" is one file
     rather than a filtered scan. Same child-of-species pattern as photos/ and
@@ -10185,6 +10456,7 @@ def handle_api_phenology_review(params):
 
 
 API_ROUTES = {
+    "/api/health":           handle_api_health,
     "/api/overview":         handle_api_overview,
     "/api/species":          handle_api_species_list,
     "/api/intake/list":      handle_api_intake_list,

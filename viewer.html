@@ -119,6 +119,39 @@ injectShared({ inatBar: false });
 
   if (!fileUrl){ statusEl.textContent = 'No document specified.'; return; }
 
+  // ── Google Drive ───────────────────────────────────────────────
+  // Added 2026-08-28. Drive is now where PDFs live, so a plain share link
+  // has to work when pasted straight in.
+  //
+  // The catch, and it is silent: the share URL Drive hands you ends in
+  // /view, and /view answers with `X-Frame-Options: SAMEORIGIN`. Framed
+  // from this site it renders an EMPTY BOX — no error, no console warning,
+  // just nothing. Only /preview omits that header and is embeddable.
+  // So: pull the file id out of whatever Drive form was pasted and rebuild
+  // the URL as /preview. The "Open / Download" button keeps the /view URL,
+  // because that is the one a human wants in a new tab.
+  //
+  // The file must be shared "Anyone with the link". If it is not, the frame
+  // shows Google's own "You need access" page — which is the failure mode to
+  // check first if a document comes up blank or asks to sign in.
+  function driveFileId(u){
+    var m = u.match(/drive\.google\.com\/file\/d\/([^/?#]+)/i)
+         || u.match(/drive\.google\.com\/(?:open|uc)\?(?:[^#]*&)?id=([^&#]+)/i);
+    return m ? m[1] : '';
+  }
+  var driveId = driveFileId(fileUrl);
+  if (driveId){
+    openBtn.href = 'https://drive.google.com/file/d/' + driveId + '/view';
+    statusEl.style.display = 'none';
+    var dframe = document.createElement('iframe');
+    dframe.className = 'doc-frame';
+    dframe.src = 'https://drive.google.com/file/d/' + driveId + '/preview';
+    dframe.title = title;
+    dframe.setAttribute('allow', 'autoplay');
+    pagesEl.appendChild(dframe);
+    return;
+  }
+
   // ── Route by type ──────────────────────────────────────────────
   // PDFs go through PDF.js (below). Anything else (a published Google
   // Doc, or another embeddable web page) renders in an iframe so it

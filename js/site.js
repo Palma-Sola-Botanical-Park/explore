@@ -1990,7 +1990,7 @@ async function loadRightNow(targetId, opts) {
      arrow is ambiguous — is it the next photo, the next section, the next
      plant? A name is not.
    · Sequence context ("3 of 47 · Native") says WHY that species is next. A
-     bare "3 of 47" reads as an arbitrary catalogue position.
+     bare "3 of 47" reads as an arbitrary catalog position.
    · "Back to the list" restores scroll AND filters, which is the other half of
      not losing your place. It routes through #restore so a fresh visit to
      nature.html never silently re-applies someone's old filters.

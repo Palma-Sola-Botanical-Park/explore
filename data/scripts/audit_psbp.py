@@ -32,6 +32,7 @@ import os
 import re
 import sys
 from collections import Counter, defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 # ── locate the repo ─────────────────────────────────────────────────────────
@@ -156,6 +157,8 @@ def main():
     ap.add_argument("--quiet", action="store_true", help="summary table only")
     ap.add_argument("--max", type=int, default=15,
                     help="max examples printed per finding group")
+    ap.add_argument("--json", action="store_true",
+                    help="emit JSON instead of a report (feeds the health page)")
     args = ap.parse_args()
     only = {s.upper() for s in args.only} if args.only else None
 
@@ -597,6 +600,42 @@ def main():
                 add("META", "INFO",
                     f"research.json meta.id_allocation says {alloc} — compare with "
                     f"the line above and correct if it has drifted")
+
+    # ── JSON out ──────────────────────────────────────────────────────────
+    # Added 2026-08-28 for the species data-integrity health page (Medium #1).
+    # Shape deliberately mirrors psbp_orphan_audit.py --json so one board can
+    # render both without a second parser.
+    #
+    # NOTE: --json ignores --max. The terminal report truncates long groups
+    # because a human is reading it; the health page needs every finding, and
+    # a silently truncated feed would show "27 photo warnings" next to a list
+    # of 15 and look like a bug in the page.
+    if args.json:
+        order_j = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK", "PUBLISH",
+                   "INDEX", "FK", "TAXA", "META"]
+        secs = []
+        for sec in order_j:
+            rows = [(l, m) for s_, l, m in findings if s_ == sec]
+            if not rows and not run(sec):
+                continue
+            secs.append({
+                "section": sec,
+                "counts": {lvl: sum(1 for l, _ in rows if l == lvl)
+                           for lvl in ("ERROR", "WARN", "INFO")},
+                "findings": [{"level": l, "message": m} for l, m in rows],
+            })
+        tot_j = Counter()
+        for sec in secs:
+            for lvl, n in sec["counts"].items():
+                tot_j[lvl] += n
+        print(json.dumps({
+            "repo": str(REPO),
+            "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "sections_run": sorted(only) if only else order_j,
+            "totals": {lvl: tot_j[lvl] for lvl in ("ERROR", "WARN", "INFO")},
+            "sections": secs,
+        }, indent=2, ensure_ascii=False))
+        return 1 if tot_j["ERROR"] else 0
 
     # ── report ────────────────────────────────────────────────────────────
     # ⚠ A section missing from this list is collected and silently discarded —

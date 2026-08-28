@@ -124,21 +124,24 @@
   display:grid; grid-template-columns:auto 1fr; gap:1.75rem; align-items:center;
 }
 .qr-badge {
-  width:96px; height:96px; border-radius:14px; background:#fff;
-  display:flex; align-items:center; justify-content:center; font-size:3rem;
+  width:118px; border-radius:14px; background:#fff; padding:9px;
+  display:block; text-decoration:none;
 }
+.qr-badge img { display:block; width:100%; height:auto; }
+.qr-try {
+  display:block; margin-top:.5rem; font-size:.72rem; line-height:1.35;
+  color:rgba(255,255,255,.72); text-align:center; max-width:118px;
+}
+.qr-explain a.qr-inline { color:var(--gold-light); }
 .qr-explain h3 { color:#fff; font-size:1.35rem; margin-bottom:.5rem; }
 .qr-explain p { color:rgba(255,255,255,.8); line-height:1.7; margin-bottom:.9rem; font-size:.95rem; }
-.qr-steps { display:flex; gap:1.5rem; flex-wrap:wrap; }
-.qr-step { font-size:.86rem; color:rgba(255,255,255,.92); }
-.qr-step strong { display:block; color:var(--gold-light); font-size:1.4rem; font-family:'Playfair Display',serif; }
 
 @media (max-width:860px){
   .area-grid { grid-template-columns:1fr; }
   .parkmap-wrap { grid-template-columns:1fr; }
   .qr-explain { grid-template-columns:1fr; text-align:center; }
   .qr-badge { margin:0 auto; }
-  .qr-steps { justify-content:center; }
+  .qr-try { margin-left:auto; margin-right:auto; }
 }
 </style>
 <style>section[id]{scroll-margin-top:78px}</style>
@@ -469,15 +472,15 @@
 
       <!-- QR EXPLAINER -->
       <div class="qr-explain">
-        <div class="qr-badge">⬛</div>
         <div>
-          <h3>Every signed plant has a QR code</h3>
-          <p>Point your phone's camera at the little square on any plant sign — no app needed. It opens that plant's full profile right here on this site: what it is, where it comes from, and who photographed it.</p>
-          <div class="qr-steps">
-            <div class="qr-step"><strong>1</strong>Point your camera</div>
-            <div class="qr-step"><strong>2</strong>Open the plant's full profile</div>
-            <div class="qr-step"><strong>3</strong>Log what you see to iNaturalist</div>
-          </div>
+          <a class="qr-badge" href="nature.html?src=visitpage" aria-label="Open the plant catalog">
+            <img src="images/qr-catalog.svg" alt="QR code linking to the plant catalog" width="118" height="118">
+          </a>
+          <span class="qr-try">A real one. Go on.</span>
+        </div>
+        <div>
+          <h3>Every plant here has a page</h3>
+          <p>Scan the code on any sign and there it is — what it is, where it came from, who took the picture. Spot something we've missed? Add it to <a class="qr-inline" href="https://www.inaturalist.org/projects/palma-sola-botanical-park" target="_blank" rel="noopener">our iNaturalist project</a>. That's how the <a class="qr-inline" href="nature.html">catalog</a> grows — mostly by people noticing things.</p>
         </div>
       </div>
 
@@ -504,7 +507,7 @@
           Professional, commercial, or media photography requires prior permission. Weddings and events have specific arrangements
           through venue rental.
         </p>
-        <a href="viewer.html?url=https%3A%2F%2Fpalmasolabp.org%2Fwp-content%2Fuploads%2F2024%2F08%2FPhoto-Policy.pdf&title=Photo+Policy&back=visit.html"
+        <a href="viewer.html?url=https%3A%2F%2Fdrive.google.com%2Ffile%2Fd%2F10DsHuYL3G2Sw17m74ysJfDYdKiOFUlGl%2Fview%3Fusp%3Dsharing&amp;title=Photo+Policy&amp;back=visit.html"
            class="btn btn-green">📄 Full Photo Policy →</a>
       </div>
       <div>

@@ -4,7 +4,7 @@ psbp_live_check.py — does the PUBLISHED SITE actually serve what the repo says
 
 Every other audit here reads the repo. This one reads the web. That gap is the
 whole point: `audit_psbp.py`, `crawl_psbp.py` and `psbp_orphan_audit.py` all
-agreed the catalogue was healthy while `plants/PSBP-00561-Air-Potato.html` was
+agreed the catalog was healthy while `plants/PSBP-00561-Air-Potato.html` was
 a 404 on the live site for five days — because the repo held the file under a
 lowercase name, macOS is case-INSENSITIVE so every local check passed, and
 GitHub Pages is case-SENSITIVE so the card linked to nothing.

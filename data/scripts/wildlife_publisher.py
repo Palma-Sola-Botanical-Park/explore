@@ -122,7 +122,7 @@ def build_wildlife_json_entry(species, hero):
         # ── Added 2026-08-28 — the browse index orders on this. ──
         # feature_tier has been curated in the source since the start but was
         # never emitted, so site.js had no way to sort on it and fell back to
-        # PSBP-ID order — i.e. the order things happened to be catalogued in,
+        # PSBP-ID order — i.e. the order things happened to be cataloged in,
         # which buried the rarest holdings on the last page. Recurated
         # 2026-08-28 around "what is here and nowhere else". See
         # FEATURE_TIER.md; due for review every six months.

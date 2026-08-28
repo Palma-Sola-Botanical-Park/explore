@@ -91,33 +91,38 @@
       <p>CURATORIAL NOTE: Despite its ubiquity in warm-climate horticulture worldwide, Dietes bicolor is listed as Rare on the SANBI Red List in its native South Africa, with a wild range of only about 125 miles of Eastern Cape / southern KwaZulu-Natal coastline.</p>
       <p>GENUS NOTE: The genus Dietes occurs naturally in only two locations — the eastern coast of South Africa and Lord Howe Island in the Tasman Sea. How the island population arrived there remains unexplained.</p></div>
   </div>
+  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/661606547/large.jpg" loading="lazy" alt="African Iris — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 May 17, 2026</div></div></div></div>
   <div class="plant-section">
     <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
     <div class="alias-list"><span class="alias-tag">Fortnight Lily</span><span class="alias-tag">Butterfly Iris</span><span class="alias-tag">Yellow Wild Iris</span><span class="alias-tag">Peacock Flower</span></div>
   </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Rhonda Olschefskie (CC-BY-NC), via iNaturalist</li></ul></div>
+<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Rhonda Olschefskie (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
+        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
+        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
         <img class="lb-img" id="lbImg">
         <div class="lb-credit" id="lbCredit"></div>
-
+        <div class="lb-counter" id="lbCounter"></div>
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-00043/703358905.jpg", "credit": "Rhonda Olschefskie", "license": "CC-BY-NC", "observed": "Jun 10, 2026"}];
+    var lbData=[{"src": "../photos/PSBP-00043/703358905.jpg", "credit": "Rhonda Olschefskie", "license": "CC-BY-NC", "observed": "Jun 10, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/661606547/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "May 17, 2026"}];
     var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
+    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();});
+    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
+    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
     </script>
   <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
 </div>
 </div><!-- /.plant-wrap -->
 <a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="page-stamp">Page updated <strong>August 28, 2026</strong></div>
 <div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>
 <script>
