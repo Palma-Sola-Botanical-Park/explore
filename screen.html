@@ -845,7 +845,7 @@ function indexHits(blob){
 /* photo_id -> {observed_on, license, name}. The search index carries the
    photographer and licence but not the date, so the credits master fills it in.
    Optional: if the file can't be reached the credit falls back to name + licence. */
-var CREDITS = {}, BY_SHOOTER = {}, NAMES = {};
+var CREDITS = {}, BY_SHOOTER = {}, BY_SPECIES = {}, NAMES = {};
 function indexCredits(rows){
   var photos = (rows && rows.photos) || rows || [];
 
@@ -865,13 +865,48 @@ function indexCredits(rows){
      refresh, plants then wildlife, and uses assignment. Clearing at its top
      would make the wildlife pass erase the plants pass. */
   if(!photos.length) return;
-  CREDITS = {}; BY_SHOOTER = {};
+  CREDITS = {}; BY_SHOOTER = {}; BY_SPECIES = {};
 
   for(var i=0;i<photos.length;i++){
     var p=photos[i];
     if(p.photo_id) CREDITS[String(p.photo_id)] = p;
     if(p.photographer) (BY_SHOOTER[p.photographer] = BY_SHOOTER[p.photographer] || []).push(p);
+    /* Gallery photographs, keyed by species. The screen used to show only the
+       344 heroes — 31% of the library — so 765 published photographs never
+       reached the wall. Heroes are skipped here because the species record
+       already carries one. */
+    if(p.psbp_id && p.photo_id && !p.hero &&
+       (p.role||[]).indexOf('gallery') > -1 && p.photo_url){
+      (BY_SPECIES[p.psbp_id] = BY_SPECIES[p.psbp_id] || []).push(p);
+    }
   }
+}
+
+/* Expand a list of species into one entry per publishable photograph.
+   Every helper here — orientOf, bigEnough, creditFor, bigPhoto — resolves a
+   species through CREDITS[photoIdOf(sp.photo)], so a shallow copy with `photo`
+   repointed behaves exactly like a species whose hero is that photograph. The
+   credit line follows too, because creditFor() reads the SAME record. Nothing
+   downstream needs to know this happened.
+
+   The synthesised path is never fetched: bigPhoto() finds a credit record and
+   returns the iNaturalist original. It exists so photoIdOf() can read the id
+   back out of it, which is the convention the rest of this file already uses. */
+function withGallery(rows){
+  var out = [];
+  for(var i=0;i<rows.length;i++){
+    var sp = rows[i];
+    if(sp.photo) out.push(sp);
+    var extra = BY_SPECIES[sp.id] || [];
+    for(var j=0;j<extra.length;j++){
+      var g = extra[j], c = {};
+      for(var k in sp) c[k] = sp[k];
+      c.photo = 'photos/' + sp.id + '/' + g.photo_id + '.jpg';
+      c._gallery = true;
+      out.push(c);
+    }
+  }
+  return out;
 }
 
 /* Everyone whose registry note marks them as part of a named programme.
@@ -1470,7 +1505,7 @@ function fromArt(art, slide){
 
 /* A photograph from the collection, for slides with nothing of their own. */
 function atmosPhoto(){
-  var all = D.plants.concat(D.wildlife).filter(function(s){ return s.photo; });
+  var all = withGallery(D.plants.concat(D.wildlife).filter(function(s){ return s.photo; }));
   var pool = preferOrient(all, 'landscape', 12);
   return pool.length ? pick(pool) : (all.length ? pick(all) : null);
 }
@@ -1693,7 +1728,7 @@ function slideWeek(){
 
 /* ── ambient ─────────────────────────────────────────────────────────────── */
 function slideAmbient(){
-  var pool = D.plants.concat(D.wildlife).filter(function(x){ return x.photo; });
+  var pool = withGallery(D.plants.concat(D.wildlife).filter(function(x){ return x.photo; }));
   /* No text to carry the slide, so the crop has to be right: wide photographs
      with the pixels to fill a 4K width. */
   pool = preferOrient(pool, 'landscape', 12)
