@@ -129,7 +129,7 @@ def load_payload():
     for p in raw:
         rec = {
             "pid":    p.get("placement_id"),
-            "sid":    p.get("species_id"),
+            "sid":    p.get("subject_id", p.get("species_id")),
             "area":   p.get("area"),
             "lat":    p.get("latitude"),
             "lng":    p.get("longitude"),
@@ -137,6 +137,15 @@ def load_payload():
             "legacy": p.get("status"),
             "notes":  p.get("notes"),
             "updated": p.get("updated"),
+            # ── schema 3.0 ──────────────────────────────────────────────
+            # The whole original row rides along untouched. This tool
+            # REWRITES the file on every save, rebuilding each row from this
+            # dict — so any field not carried here is silently deleted. That
+            # would have quietly erased cultivar, planted_on, last_seen and
+            # every future field the first time anyone dragged a pin.
+            # Carrying the raw record means new fields survive without this
+            # file needing to know they exist.
+            "_raw":   p,
         }
         # A placement whose species left the signage file would otherwise be
         # invisible in the UI but still ride along on every save. Surface it.
@@ -200,14 +209,21 @@ def api_save(body):
                     "those changes — this save was not applied.",
         }
 
-    names = {s["id"]: s["c"] for s in load_species()}
     out = []
     for p in pins:
         sid = p.get("sid")
-        out.append({
+        # Start from the untouched original (schema 3.0 and anything added
+        # later), then overwrite only what this tool actually edits.
+        # `common_name` is deliberately NOT written: it is looked up from
+        # subject_id, after two rows drifted out of step with the species
+        # record. See LANDMARKS.md §11.1.
+        rec = dict(p.get("_raw") or {})
+        rec.pop("species_id", None)
+        rec.pop("common_name", None)
+        rec.update({
             "placement_id": p.get("pid"),
-            "species_id":   sid,
-            "common_name":  names.get(sid, p.get("name") or sid),
+            "subject_id":   sid,
+            "kind":         rec.get("kind") or "species",
             "area":         p.get("area") or None,
             "latitude":     p.get("lat"),
             "longitude":    p.get("lng"),
@@ -216,6 +232,7 @@ def api_save(body):
             "notes":        p.get("notes") or None,
             "updated":      p.get("updated"),
         })
+        out.append(rec)
 
     placed = sum(1 for p in out if p["latitude"] is not None)
     doc = {

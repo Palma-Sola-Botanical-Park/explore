@@ -93,12 +93,21 @@
       "id": "LND-004",
       "name": "Galleria Deck",
       "kind": "building",
-      "parent": "LND-001",
-      "role": "area",
+      "parent": null,
+      "role": "meet",
       "status": "active",
       "year_built": null,
       "named_for": null,
-      "stories": [],
+      "stories": [
+        {
+          "text": "Completely rebuilt in 2026 with a grant from the Bishop Parker Foundation — the old wood boards replaced with composite that shrugs off Florida sun and stays cooler underfoot.",
+          "kind": "donor",
+          "year": 2026,
+          "credit": "Bishop Parker Foundation",
+          "prompted_by": "ageing wood decking",
+          "trigger": "stop"
+        }
+      ],
       "aliases": [],
       "area_aliases": [],
       "accessible": null,
@@ -112,7 +121,19 @@
       "public_page": false,
       "venue_ids": [],
       "photo": null,
-      "notes": null
+      "notes": "Elevated spine connecting the Galleria and the Office. Rings the Galleria entirely and wraps the Office on three sides — west (front door), east (back and Board Room doors) and north. NO deck on the south side of the Office. Much of it is covered by the Galleria's extended overhang. NAME UNRESOLVED: the 2026 rebuild was grant-funded and the news article calls it 'the Bishop Parker deck'; donor naming is Bev's call.",
+      "connections": [
+        {
+          "from": "LND-004",
+          "to": "LND-001",
+          "note": "rings the Galleria"
+        },
+        {
+          "from": "LND-004",
+          "to": "LND-005",
+          "note": "wraps the Office on three sides"
+        }
+      ]
     },
     {
       "id": "LND-005",
@@ -1131,7 +1152,7 @@
       "public_page": true,
       "venue_ids": [],
       "photo": null,
-      "notes": null
+      "notes": "The whole fenced enclosure, which is what people mean by 'the nursery'. The building is a child."
     },
     {
       "id": "LND-042",
@@ -1332,7 +1353,7 @@
       "aliases": [],
       "area_aliases": [],
       "accessible": true,
-      "steps": false,
+      "steps": true,
       "shade": null,
       "seating": null,
       "restroom": true,
@@ -1443,6 +1464,96 @@
       "venue_ids": [],
       "photo": null,
       "notes": "Accessible ramp. Which side it sits on still to be confirmed on the map."
+    },
+    {
+      "id": "LND-054",
+      "name": "Board Room Door",
+      "kind": "building",
+      "parent": "LND-005",
+      "role": "entry",
+      "steps": false,
+      "aliases": [],
+      "notes": "Opens onto the deck beside the Office back door. Also the bridal-room entrance — same space, rented as the Board Room."
+    },
+    {
+      "id": "LND-055",
+      "name": "Pavilion North Door",
+      "kind": "structure",
+      "parent": "LND-009",
+      "role": "entry",
+      "steps": null,
+      "aliases": [],
+      "notes": "The real front — double door facing north, reached by the path from the Galleria driveway. The Grandleaf Seagrape stands about 7 m out."
+    },
+    {
+      "id": "LND-056",
+      "name": "Pavilion East Door",
+      "kind": "structure",
+      "parent": "LND-009",
+      "role": "entry",
+      "steps": null,
+      "aliases": [],
+      "notes": "Single door, smaller than the front. Faces the Butterfly Garden; the way to the restrooms."
+    },
+    {
+      "id": "LND-057",
+      "name": "Pavilion South Door",
+      "kind": "structure",
+      "parent": "LND-009",
+      "role": "entry",
+      "steps": null,
+      "aliases": [],
+      "notes": "Single door. Toward the restrooms, and the waypoint for anyone heading from the parking lot to the Rare Fruit area."
+    },
+    {
+      "id": "LND-058",
+      "name": "Pavilion Restroom Stairs",
+      "kind": "building",
+      "parent": "LND-049",
+      "role": "entry",
+      "steps": true,
+      "aliases": [],
+      "notes": null
+    },
+    {
+      "id": "LND-059",
+      "name": "Pavilion Restroom Ramp",
+      "kind": "building",
+      "parent": "LND-049",
+      "role": "entry",
+      "steps": false,
+      "aliases": [],
+      "notes": null
+    },
+    {
+      "id": "LND-060",
+      "name": "Nursery Building",
+      "kind": "building",
+      "parent": "LND-041",
+      "role": "main",
+      "steps": null,
+      "aliases": [],
+      "notes": null
+    },
+    {
+      "id": "LND-061",
+      "name": "Nursery Gate",
+      "kind": "garden",
+      "parent": "LND-041",
+      "role": "entry",
+      "steps": false,
+      "aliases": [],
+      "notes": null
+    },
+    {
+      "id": "LND-062",
+      "name": "Nursery Workbench",
+      "kind": "garden",
+      "parent": "LND-041",
+      "role": "meet",
+      "steps": null,
+      "aliases": [],
+      "notes": "Unnamed greenhouses, planting areas and a disused bathroom share this yard and are deliberately not recorded — nobody calls them anything. The workbench is recorded because people refer to it."
     }
   ],
   "connections": []

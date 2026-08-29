@@ -53,6 +53,7 @@ PHOTOG_NAMES   = SOURCES / "photographer_names.json"
 WORKBENCH      = SOURCES / "photo_workbench.json"
 RESEARCH       = SOURCES / "research.json"
 PLACEMENTS     = SOURCES / "placements.json"
+LANDMARKS      = REPO / "data" / "sources" / "landmarks.json"
 PHENOLOGY      = SOURCES / "phenology.json"
 PUBLISH_STATE  = SOURCES / "publish_state.json"
 PLANTS_JSON    = REPO / "plants.json"
@@ -504,20 +505,39 @@ def main():
     if run("FK"):
         res_by_id = {s["id"]: s for s in research}
         pl = (load(PLACEMENTS, {}) or {}).get("placements", [])
+        # ── schema 3.0 ────────────────────────────────────────────────────
+        # placements.json now holds landmarks as well as species, keyed by
+        # `subject_id` with `kind` saying which. A landmark row would fire the
+        # species FK check on every run, so it is routed to its own check
+        # against landmarks.json instead. `species_id` is still read as a
+        # fallback so a stale file audits rather than crashes.
+        lm_raw = load(LANDMARKS, [])
+        lm_ids = {r.get("id") for r in
+                  (lm_raw if isinstance(lm_raw, list)
+                   else (lm_raw or {}).get("landmarks", []))}
         for x in pl:
-            sid = x.get("species_id")
+            sid = x.get("subject_id", x.get("species_id"))
+            if (x.get("kind") or "species") != "species":
+                if not sid:
+                    add("FK", "ERROR",
+                        f"placements {x.get('placement_id')}: no subject_id")
+                elif lm_ids and sid not in lm_ids:
+                    add("FK", "ERROR",
+                        f"placements {x.get('placement_id')}: {sid} is not in "
+                        f"landmarks.json")
+                continue
             if not sid or sid in sign_ids:
                 continue
             if sid in res_by_id:
                 add("FK", "INFO",
-                    f"placements {x.get('placement_id')} {x.get('common_name')}: "
+                    f"placements {x.get('placement_id')} {x.get('subject_id')}: "
                     f"species is in research (status="
                     f"{res_by_id[sid].get('status')!r}), not yet in signage")
             else:
                 add("FK", "ERROR",
-                    f"placements {x.get('placement_id')}: species_id {sid} is in "
+                    f"placements {x.get('placement_id')}: subject_id {sid} is in "
                     f"no signage master and no research file")
-        placed = {x.get("species_id") for x in pl}
+        placed = {x.get("subject_id", x.get("species_id")) for x in pl}
         gap = len({s for s in plant_ids
                    if sign_by_id[s].get("status") == "html"} - placed)
         if gap:
