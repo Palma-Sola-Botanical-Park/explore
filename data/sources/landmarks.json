@@ -3,7 +3,7 @@
     "generated": "2026-08-26T01:40:38+00:00",
     "schema_version": 1,
     "spec": "park-library/system docs/LANDMARKS.md",
-    "count": 53,
+    "count": 63,
     "note": "Seed file, 2026-08-25. Identity only — a landmark is WHAT a place is; WHERE it is lives in placements.json as one PLC- row with kind:'landmark', the same split species already use (plant_signage.json = what, placements.json = where). One placement per landmark: if a place needs two spots, make two records joined by `parent` (see Plumeria West / East), never two placements. Stories are records: text (required) + credit/year/prompted_by/trigger. Credit groups, never a minor's full name (Low #14). No QR signs. No water fountains in the park. APPEND-ONLY — never regenerate; ids are stable and stories accrete here."
   },
   "landmarks": [
@@ -672,7 +672,7 @@
       "public_page": false,
       "venue_ids": [],
       "photo": null,
-      "notes": null
+      "notes": "Bounded, approximately: south of the Pavilion Restroom Building (LND-049), east of Big Pond (LND-028), north of the Rare Fruit Bridge (LND-037). Randy, 2026-08-29. Approximate by intent — no point-in-region rule is built on it. Developed and maintained by the Manatee Rare Fruit Council (mrfc.org). MRFC publishes a plant list for the grove; Randy: \"their list is not very accurate\" and \"I've found things in their area not listed, and vice versa\" — hunt list, not evidence."
     },
     {
       "id": "LND-025",
@@ -1554,6 +1554,33 @@
       "steps": null,
       "aliases": [],
       "notes": "Unnamed greenhouses, planting areas and a disused bathroom share this yard and are deliberately not recorded — nobody calls them anything. The workbench is recorded because people refer to it."
+    },
+    {
+      "id": "LND-063",
+      "name": "Heliconia Island",
+      "kind": "water",
+      "parent": null,
+      "role": null,
+      "status": "active",
+      "year_built": null,
+      "named_for": null,
+      "stories": [],
+      "aliases": [
+        "Heliconia Bed"
+      ],
+      "area_aliases": null,
+      "accessible": null,
+      "steps": null,
+      "shade": null,
+      "seating": null,
+      "restroom": null,
+      "water": null,
+      "indoor": null,
+      "capacity": null,
+      "public_page": null,
+      "venue_ids": null,
+      "photo": null,
+      "notes": "Planting bed between the Office and the Shade Garden, east of the office building. Named 2026-08-29 from Randy's own usage; the name was in the scrapped KML and had never reached the repo. Visible in Google Street View (2021) from the northwest, beyond the office stairs and ramp. Heliconia (PSBP-00056) is pinned nearby at PLC-0057. Kind set to 'water' to match the other four islands, though these beds are not water features — the whole set may be miskinded."
     }
   ],
   "connections": []

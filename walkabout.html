@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Walkabout Debrief — Palma Sola Botanical Park</title>
+<style>
+:root{
+  --bg:#0d1a12; --panel:#132318; --card:#18301f; --line:#254733; --line2:#1c3626;
+  --text:#eef6ee; --muted:#93b39d; --dim:#6d8f78;
+  --green:#7fe08a; --gold:#f0c04a; --blue:#8fb8ff; --rose:#ff9d8a; --violet:#c9a4ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:400 16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;padding:0 22px 80px}
+.wrap{max-width:1180px;margin:0 auto}
+h1,h2{margin:0;letter-spacing:-.02em}
+header{padding:26px 0 18px;border-bottom:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end}
+h1{font-size:30px;font-weight:800}
+.sub{color:var(--muted);font-size:14px;margin-top:4px}
+.ctrl{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+label{color:var(--muted);font-size:13px}
+input[type=time],input[type=date]{background:var(--card);border:1px solid var(--line);
+  color:var(--text);border-radius:8px;padding:7px 10px;font-size:14px;font-family:inherit}
+button{background:var(--green);color:#0d1a12;border:0;border-radius:9px;padding:9px 18px;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+button.ghost{background:none;border:1px solid var(--line);color:var(--muted);font-weight:500}
+button:active{opacity:.8}
+.big{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:22px 0 0}
+.b{background:var(--card);border-radius:14px;padding:16px 18px;text-align:center}
+.b .n{font-size:46px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--green)}
+.b .c{color:var(--muted);font-size:12.5px;margin-top:6px;letter-spacing:.03em}
+.b.gold .n{color:var(--gold)} .b.blue .n{color:var(--blue)} .b.rose .n{color:var(--rose)}
+section{margin:30px 0 0;background:var(--panel);border-radius:16px;padding:20px 22px}
+section h2{font-size:19px;font-weight:700;display:flex;align-items:baseline;gap:10px}
+section h2 .tag{margin-left:auto;font-size:12px;color:var(--dim);font-weight:400;
+  font-variant-numeric:tabular-nums}
+.note{color:var(--muted);font-size:13.5px;margin:6px 0 14px;max-width:74ch}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:left;color:var(--dim);font-weight:500;font-size:11.5px;letter-spacing:.07em;
+  text-transform:uppercase;padding:0 12px 8px 0;border-bottom:1px solid var(--line)}
+td{padding:8px 12px 8px 0;border-bottom:1px solid var(--line2);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:7px;border-radius:4px;background:var(--green);min-width:2px;display:block}
+.bar.gold{background:var(--gold)} .bar.blue{background:var(--blue)}
+.bar.rose{background:var(--rose)} .bar.violet{background:var(--violet)}
+.barcell{width:34%}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 11px;font-size:13.5px}
+.chip.hot{border-color:var(--gold);background:#2a2410;color:var(--gold);font-weight:600}
+.chip .sci{color:var(--dim);font-style:italic;font-size:12px;margin-left:5px}
+.thumbs{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(132px,1fr))}
+.th{background:var(--card);border-radius:11px;overflow:hidden;text-decoration:none;color:inherit;display:block}
+.th img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--line2)}
+.th .cap{padding:7px 9px;font-size:12px;line-height:1.35}
+.th .who{color:var(--dim);font-size:11px}
+.rank{color:var(--gold);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
+canvas{width:100%;height:auto;border-radius:12px;background:var(--card);display:block}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12.5px;margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.empty{color:var(--dim);font-size:14px;padding:8px 0}
+.err{background:#2e1712;border:1px solid #5c2a1e;color:var(--rose);border-radius:12px;
+  padding:14px 16px;margin:20px 0 0;font-size:14px}
+footer{margin:34px 0 0;color:var(--dim);font-size:12.5px;line-height:1.7;
+  border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:640px){h1{font-size:24px}.b .n{font-size:34px}.barcell{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>Walkabout Debrief</h1>
+    <div class="sub" id="sub">Palma Sola Botanical Park &middot; iNaturalist</div>
+  </div>
+  <div class="ctrl">
+    <label for="day">Day</label><input type="date" id="day">
+    <label for="from">From</label><input type="time" id="from" value="16:45">
+    <button id="go">Refresh</button>
+    <button class="ghost" id="auto">Auto: on</button>
+  </div>
+</header>
+
+<div class="big">
+  <div class="b"><div class="n" id="kObs">&hellip;</div><div class="c">observations</div></div>
+  <div class="b blue"><div class="n" id="kPeople">&hellip;</div><div class="c">observers</div></div>
+  <div class="b gold"><div class="n" id="kTaxa">&hellip;</div><div class="c">distinct taxa</div></div>
+  <div class="b"><div class="n" id="kPhotos">&hellip;</div><div class="c">photographs</div></div>
+  <div class="b rose"><div class="n" id="kNew">&hellip;</div><div class="c">new to the park</div></div>
+</div>
+
+<div id="err"></div>
+
+<section id="secNew">
+  <h2>New to the park <span class="tag" id="tNew"></span></h2>
+  <p class="note">Identified to species, and no record in <b>plant_signage</b>, <b>research</b> or <b>wildlife_signage</b> matches the taxon. If one of these holds up, somebody found something the park has never recorded.</p>
+  <div class="chips" id="newList"></div>
+</section>
+
+<section id="secUnpub">
+  <h2>Known, but no page yet <span class="tag" id="tUnpub"></span></h2>
+  <p class="note">In the research file, never promoted to a published page. Tonight&rsquo;s photograph may be what unblocks it.</p>
+  <div class="chips" id="unpubList"></div>
+</section>
+
+<section>
+  <h2>The team <span class="tag" id="tTeam"></span></h2>
+  <p class="note">Median pin accuracy is the number that decides whether tonight becomes map data. Under 10&nbsp;m means somebody dragged the pin onto the plant; 50&nbsp;m is untouched phone GPS in a park 180&nbsp;m across.</p>
+  <table><thead><tr><th>Observer</th><th class="n">Obs</th><th class="n">Taxa</th><th class="n">Photos</th><th class="n">Median pin</th><th class="barcell"></th></tr></thead>
+  <tbody id="team"></tbody></table>
+</section>
+
+<section>
+  <h2>How deep did the identifications go <span class="tag" id="tRank"></span></h2>
+  <p class="note">Anything at genus or above is unfinished business &mdash; that is the queue for the screen session.</p>
+  <table><thead><tr><th>Rank</th><th class="n">Obs</th><th class="n">Share</th><th class="barcell"></th></tr></thead>
+  <tbody id="ranks"></tbody></table>
+</section>
+
+<section>
+  <h2>Pin quality <span class="tag" id="tAcc"></span></h2>
+  <p class="note">Anything at 10&nbsp;m or better can go straight into <b>placements.json</b> as a coordinate. Anything over 30&nbsp;m cannot be used to place a plant at all.</p>
+  <table><thead><tr><th>Accuracy</th><th class="n">Obs</th><th class="n">Share</th><th class="barcell"></th></tr></thead>
+  <tbody id="acc"></tbody></table>
+</section>
+
+<section>
+  <h2>Photographs per observation <span class="tag" id="tPh"></span></h2>
+  <p class="note">One photograph is one angle. A determination usually needs bark or trunk, a leaf underside, and a flower or fruit &mdash; three photographs of different things beat three people agreeing.</p>
+  <table><thead><tr><th>Photos</th><th class="n">Obs</th><th class="n">Share</th><th class="barcell"></th></tr></thead>
+  <tbody id="photos"></tbody></table>
+</section>
+
+<section>
+  <h2>Doubled up <span class="tag" id="tDup"></span></h2>
+  <p class="note">The same taxon recorded more than once tonight. Some of that is two genuinely different plants; some is the group converging on the showy one. Worth knowing which.</p>
+  <div class="chips" id="dups"></div>
+</section>
+
+<section>
+  <h2>Where we actually walked</h2>
+  <p class="note">Every observation with a usable coordinate, plotted inside the park boundary. The lighter box is the northeast quadrant. Empty ground is next week&rsquo;s zone.</p>
+  <canvas id="map" width="1120" height="520"></canvas>
+  <div class="legend">
+    <span><i style="background:var(--green)"></i>pin under 10&thinsp;m</span>
+    <span><i style="background:var(--gold)"></i>10&ndash;30&thinsp;m</span>
+    <span><i style="background:var(--rose)"></i>over 30&thinsp;m &mdash; not usable</span>
+    <span><i style="background:var(--dim)"></i>obscured or no coordinate</span>
+  </div>
+</section>
+
+<section>
+  <h2>Needs identifying <span class="tag" id="tQueue"></span></h2>
+  <p class="note">Genus or above. Put this on the screen and work it together.</p>
+  <div class="thumbs" id="queue"></div>
+</section>
+
+<footer>
+  <span id="status">Starting&hellip;</span><br><br>
+  Counts cover <b id="windowTxt">today from 16:45</b>, by observation time, for the
+  <b>palma-sola-botanical-park</b> project. Observations still on somebody&rsquo;s phone will not
+  appear until they upload. Obscured records return no coordinate and are counted but not plotted.
+</footer>
+
+</div>
+<script>
+const PROJECT="palma-sola-botanical-park";
+const API="https://api.inaturalist.org/v1/observations";
+const KNOWN_TAXA=new Set([3454, 3751, 4246, 4327, 4328, 4334, 4742, 4756, 4937, 4938, 4940, 4956, 4981, 4999, 5020, 5063, 5206, 5305, 6432, 6893, 6922, 6930, 6948, 7107, 7120, 7493, 8001, 8229, 9083, 9176, 9602, 10286, 10373, 10487, 12727, 14850, 14886, 14995, 16028, 17008, 17365, 17855, 18205, 18463, 19765, 20044, 27137, 36514, 39566, 39682, 39776, 39782, 39820, 39824, 39825, 40569, 41663, 43102, 46017, 47160, 47219, 47351, 47441, 47442, 47450, 47563, 47780, 47787, 47902, 48233, 48234, 48319, 48363, 48484, 48522, 48550, 48651, 48662, 48663, 48678, 48865, 48872, 48878, 48891, 48895, 49013, 49150, 49181, 49193, 49322, 49323, 49358, 49504, 49666, 49667, 49761, 49766, 50147, 50184, 50334, 50616, 50644, 50821, 50822, 51119, 51122, 51446, 51534, 51599, 51768, 51769, 51772, 51833, 52055, 52078, 52348, 52398, 52425, 52497, 52599, 52643, 52673, 52763, 53195, 53547, 53691, 53722, 53768, 53804, 53854, 54759, 54793, 54795, 54834, 54880, 54890, 55269, 55844, 55854, 56019, 56091, 56099, 56890, 56917, 56955, 57140, 58213, 58300, 58389, 58792, 59040, 59096, 59379, 59774, 59776, 60121, 60146, 60335, 60439, 60742, 60749, 60773, 61369, 61503, 62529, 62741, 62809, 62811, 62819, 62826, 62831, 62839, 62844, 62850, 62852, 62853, 62888, 62911, 62915, 62924, 62934, 62936, 62937, 62941, 62946, 62949, 63735, 64103, 64119, 64240, 64323, 64342, 64547, 64571, 64696, 67325, 67435, 67440, 67574, 67707, 67710, 67823, 68225, 68226, 68230, 68233, 68313, 68314, 68317, 68563, 68679, 68717, 69223, 69234, 69813, 69845, 69940, 69972, 70022, 70025, 70027, 70029, 70045, 71036, 71940, 71956, 72384, 72388, 72418, 75379, 75604, 75732, 76444, 76949, 77541, 77739, 77977, 78554, 78555, 78631, 78755, 78998, 79291, 79521, 81159, 81489, 81490, 81500, 81515, 81804, 81901, 82095, 82303, 82506, 82529, 82752, 83070, 83074, 83102, 83117, 83139, 83434, 83435, 83583, 83634, 83642, 83832, 83892, 83912, 83927, 84002, 84531, 84537, 84813, 84816, 84964, 85024, 85378, 116461, 116999, 117308, 117444, 119095, 119100, 119955, 119956, 119986, 120027, 120488, 120934, 121022, 121467, 121526, 122034, 122303, 122318, 122519, 122521, 122530, 122711, 122777, 122835, 122965, 123003, 123438, 123472, 123476, 123481, 123516, 123572, 123728, 123736, 123757, 124349, 124423, 124426, 124826, 124839, 124842, 125381, 125396, 125683, 125854, 125855, 126165, 126249, 126289, 126305, 126319, 126404, 126405, 126507, 126510, 126563, 126565, 126569, 126574, 126585, 126633, 126634, 126846, 126882, 126888, 126980, 127010, 127036, 127063, 127066, 127270, 127279, 127284, 127285, 127387, 127389, 127390, 127890, 127906, 127907, 127908, 127912, 128268, 128270, 128652, 128655, 128717, 128825, 129036, 129103, 129327, 129540, 129783, 129808, 129814, 129857, 130028, 130215, 130382, 130734, 130818, 131242, 131243, 131568, 131579, 131594, 132078, 132451, 132576, 132759, 133299, 133308, 133309, 133310, 133327, 133334, 133335, 133457, 133607, 133688, 133690, 133826, 135235, 135243, 135249, 135250, 135329, 135343, 135348, 135394, 135400, 135401, 135559, 135560, 135589, 135590, 135595, 135844, 135898, 135902, 136025, 136082, 136085, 136086, 136093, 136159, 136164, 136173, 136231, 138577, 140907, 141285, 141291, 141303, 141375, 141376, 141512, 143209, 143955, 144018, 144455, 144479, 145231, 145233, 145242, 145245, 145246, 146643, 146977, 146978, 153449, 154283, 154290, 154558, 154794, 154798, 154842, 154846, 154862, 154888, 155137, 155170, 155598, 155898, 155984, 156122, 156463, 156695, 157138, 157164, 157841, 157908, 158023, 158103, 158226, 158570, 159049, 159199, 159269, 159346, 159678, 159817, 160169, 160385, 160544, 160656, 160739, 160741, 160759, 160760, 160837, 160873, 160878, 161124, 161126, 161146, 161150, 161235, 162153, 162214, 162418, 162839, 162855, 163323, 163363, 163640, 163763, 163766, 163916, 164011, 164035, 164044, 164051, 164090, 164240, 164242, 164316, 164328, 164423, 165063, 165118, 165138, 165144, 165296, 165400, 165529, 165543, 165599, 165752, 165876, 166214, 166493, 166546, 166729, 166920, 167309, 167311, 167506, 167539, 167570, 167660, 167793, 168256, 168423, 168847, 168854, 168863, 168953, 169050, 169171, 169322, 169351, 169520, 169521, 169735, 169741, 169872, 169878, 169883, 170055, 170202, 170271, 170401, 170883, 179304, 179305, 180035, 180228, 180255, 181543, 181672, 184500, 185264, 185509, 186006, 186063, 191503, 193076, 194547, 199373, 201453, 201454, 201458, 202172, 204165, 204244, 204744, 204927, 206169, 206170, 206171, 206177, 206192, 206271, 206275, 206302, 206310, 208742, 208746, 208766, 208797, 208814, 209871, 209889, 210990, 218000, 223938, 223964, 236504, 242256, 244084, 244459, 246102, 260753, 261475, 266198, 273713, 273715, 276307, 276548, 276805, 277083, 277459, 277579, 279439, 279677, 281082, 281140, 281562, 283216, 283915, 284040, 284175, 284560, 284831, 285445, 286772, 287245, 287757, 319135, 319141, 320055, 321501, 321686, 322318, 322755, 326086, 326087, 327355, 327366, 327856, 331118, 332683, 332889, 333484, 334348, 337352, 339474, 339914, 340008, 340357, 341902, 343814, 343820, 343829, 343901, 343969, 343971, 344178, 344235, 344269, 344879, 344943, 344961, 345537, 345576, 345585, 345932, 346357, 346367, 346381, 346382, 346383, 346384, 346398, 346406, 346408, 346605, 347370, 347721, 348429, 348791, 348793, 348794, 349191, 357524, 361290, 361831, 362921, 362951, 362952, 364198, 364204, 364206, 364207, 364208, 364465, 364469, 364569, 364574, 364575, 364577, 364998, 365049, 365068, 365075, 365081, 365092, 365210, 365221, 365223, 365244, 365485, 365486, 365638, 365645, 365650, 365670, 365717, 365733, 365948, 365949, 365961, 365968, 366013, 366014, 366015, 366038, 366039, 366062, 366088, 366112, 366118, 366128, 366151, 367277, 369881, 370011, 370492, 371103, 372067, 401513, 411086, 426720, 428002, 430869, 431188, 431224, 436068, 437501, 438336, 441411, 465713, 466003, 474465, 497641, 499120, 523772, 543581, 551247, 552439, 557893, 579676, 594756, 599962, 605174, 607338, 773039, 776900, 790732, 792725, 792988, 844242, 851888, 855610, 867073, 867364, 871544, 878610, 878751, 880921, 888838, 893820, 898674, 910750, 913367, 921783, 927986, 937796, 954006, 970366, 978421, 985690, 985710, 985726, 993493, 1038409, 1038928, 1095683, 1095846, 1117609, 1143567, 1239449, 1263542, 1263850, 1264664, 1268642, 1311723, 1401476, 1413422, 1416777, 1442171, 1454328, 1454382, 1499976, 1557768, 1564952, 1569900, 1579017, 1607210, 1607579, 1628098, 1634850, 1643959, 1649672, 1673245, 1686223, 1686226]);
+const PUBLISHED_TAXA=new Set([48363, 48872, 48895, 49013, 49193, 49323, 49666, 50184, 51599, 51768, 51833, 52078, 53547, 53722, 57140, 58300, 59040, 60146, 60335, 60439, 62809, 62811, 62831, 62839, 62844, 62850, 62924, 62934, 62949, 63735, 64103, 67574, 67710, 68225, 68313, 68317, 68679, 69223, 69813, 69972, 70022, 71036, 75732, 77541, 77739, 77977, 78554, 78631, 79291, 81500, 81515, 81804, 83074, 83102, 83634, 83642, 84002, 84531, 84537, 84813, 119955, 119956, 120934, 121022, 122318, 122519, 122521, 122965, 123003, 123438, 123481, 123572, 123728, 123736, 124426, 124839, 125381, 125396, 125855, 126305, 126563, 126565, 126633, 127010, 127036, 127063, 127270, 127279, 127387, 127912, 128652, 129783, 130734, 130818, 131242, 132576, 132759, 133309, 133327, 133607, 135250, 135343, 135348, 135400, 135559, 135560, 136085, 141375, 146643, 146977, 154283, 154290, 154794, 155170, 155598, 156463, 157841, 157908, 159346, 160169, 160385, 160544, 160741, 160759, 160760, 160873, 160878, 161124, 161146, 161150, 162153, 164035, 164240, 164242, 164328, 165400, 165529, 165543, 165876, 166546, 166729, 167506, 167570, 167660, 169050, 169520, 169735, 169741, 169872, 169878, 170202, 170401, 170883, 180255, 191503, 201453, 201454, 201458, 204744, 206271, 208746, 208766, 208797, 209871, 209889, 223964, 246102, 260753, 273713, 276548, 276805, 279439, 281562, 283915, 284175, 284560, 285445, 319135, 320055, 322318, 340008, 341902, 343820, 343829, 344943, 345932, 346381, 346384, 357524, 361831, 362921, 362951, 362952, 364198, 364207, 364208, 364569, 364574, 365049, 365068, 365075, 365081, 365210, 365221, 365223, 365244, 365485, 365486, 365638, 365650, 365670, 365949, 365961, 365968, 366038, 366062, 366118, 369881, 370011, 370492, 497641, 851888, 910750, 913367, 954006, 985726, 1038928, 1264664, 1268642, 1311723, 1454328, 1634850]);
+const BOUNDS={n:27.5150,s:27.5120,w:-82.6615,e:-82.6580};
+const NEBOX={s:27.51380,w:-82.65980};
+const $=id=>document.getElementById(id);
+const pct=(a,b)=>b?Math.round(a/b*100)+"%":"0%";
+let timer=null,autoOn=true;
+
+function todayISO(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);}
+
+async function fetchAll(day){
+  let page=1,out=[];
+  while(page<=8){
+    const url=API+"?project_id="+PROJECT+"&d1="+day+"&d2="+day+
+      "&per_page=200&page="+page+"&order_by=observed_on&order=asc&_="+Date.now();
+    const r=await fetch(url,{cache:"no-store"});
+    if(!r.ok) throw new Error("iNaturalist returned "+r.status);
+    const j=await r.json();
+    out=out.concat(j.results||[]);
+    if(out.length>=(j.total_results||0)||!(j.results||[]).length) break;
+    page++;
+  }
+  return out;
+}
+
+function afterCutoff(o,day,from){
+  const t=o.time_observed_at||o.observed_on_string||"";
+  if(!t) return true;
+  const d=new Date(t);
+  if(isNaN(d)) return true;
+  const [hh,mm]=from.split(":").map(Number);
+  const cut=new Date(d); cut.setHours(hh,mm,0,0);
+  return d>=cut;
+}
+
+function med(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;
+  return s.length%2?s[m]:Math.round((s[m-1]+s[m])/2);}
+
+function bar(v,max,cls){const w=max?Math.max(2,Math.round(v/max*100)):2;
+  return '<span class="bar '+(cls||"")+'" style="width:'+w+'%"></span>';}
+
+function render(obs){
+  const people={},taxa={},ranks={},photoDist={},accs=[],newSp=new Map(),unpub=new Map();
+  let photos=0;
+  obs.forEach(o=>{
+    const u=(o.user&&(o.user.login||o.user.name))||"unknown";
+    const p=people[u]||(people[u]={obs:0,taxa:new Set(),photos:0,acc:[]});
+    p.obs++;
+    const np=(o.photos||[]).length; p.photos+=np; photos+=np;
+    photoDist[Math.min(np,5)]=(photoDist[Math.min(np,5)]||0)+1;
+    const a=o.positional_accuracy;
+    if(typeof a==="number"){accs.push(a);p.acc.push(a);}
+    const t=o.taxon||{};
+    const rank=(t.rank||"unknown").toLowerCase();
+    ranks[rank]=(ranks[rank]||0)+1;
+    if(t.id){
+      p.taxa.add(t.id);
+      const rec=taxa[t.id]||(taxa[t.id]={n:0,name:t.preferred_common_name||t.name,sci:t.name,rank:rank,who:new Set()});
+      rec.n++; rec.who.add(u);
+      if(rank==="species"||rank==="subspecies"||rank==="variety"){
+        if(!KNOWN_TAXA.has(t.id)) newSp.set(t.id,rec);
+        else if(!PUBLISHED_TAXA.has(t.id)) unpub.set(t.id,rec);
+      }
+    }
+  });
+  const nTaxa=Object.keys(taxa).length;
+  $("kObs").textContent=obs.length;
+  $("kPeople").textContent=Object.keys(people).length;
+  $("kTaxa").textContent=nTaxa;
+  $("kPhotos").textContent=photos;
+  $("kNew").textContent=newSp.size;
+
+  const chip=(r,hot)=>'<span class="chip'+(hot?" hot":"")+'">'+
+    (r.name||r.sci)+'<span class="sci">'+(r.sci||"")+'</span></span>';
+  $("newList").innerHTML=newSp.size?[...newSp.values()].map(r=>chip(r,true)).join("")
+    :'<div class="empty">Nothing tonight that the catalogue has never seen. That is a normal result.</div>';
+  $("tNew").textContent=newSp.size?newSp.size+" to check":"";
+  $("unpubList").innerHTML=unpub.size?[...unpub.values()].map(r=>chip(r,false)).join("")
+    :'<div class="empty">Everything recorded tonight already has a page.</div>';
+  $("tUnpub").textContent=unpub.size||"";
+
+  const rows=Object.entries(people).sort((a,b)=>b[1].obs-a[1].obs);
+  const maxObs=Math.max(1,...rows.map(r=>r[1].obs));
+  $("team").innerHTML=rows.map(([u,p])=>{
+    const m=med(p.acc);
+    const col=m==null?"":(m<=10?"var(--green)":m<=30?"var(--gold)":"var(--rose)");
+    return '<tr><td>'+u+'</td><td class="n">'+p.obs+'</td><td class="n">'+p.taxa.size+
+      '</td><td class="n">'+p.photos+'</td><td class="n" style="color:'+col+'">'+
+      (m==null?"&mdash;":m+" m")+'</td><td class="barcell">'+bar(p.obs,maxObs)+'</td></tr>';
+  }).join("")||'<tr><td class="empty" colspan="6">No observations in the window yet.</td></tr>';
+  $("tTeam").textContent=rows.length?rows.length+" people":"";
+
+  const ORDER=["species","subspecies","variety","hybrid","genus","family","order","class","phylum","kingdom","unknown"];
+  const rk=Object.entries(ranks).sort((a,b)=>ORDER.indexOf(a[0])-ORDER.indexOf(b[0]));
+  const maxR=Math.max(1,...rk.map(r=>r[1]));
+  const coarse=new Set(["genus","family","order","class","phylum","kingdom","unknown"]);
+  $("ranks").innerHTML=rk.map(([r,n])=>
+    '<tr><td>'+r+'</td><td class="n">'+n+'</td><td class="n">'+pct(n,obs.length)+
+    '</td><td class="barcell">'+bar(n,maxR,coarse.has(r)?"gold":"")+'</td></tr>').join("")
+    ||'<tr><td class="empty" colspan="4">&mdash;</td></tr>';
+  const deep=obs.length-rk.filter(([r])=>coarse.has(r)).reduce((s,[,n])=>s+n,0);
+  $("tRank").textContent=obs.length?pct(deep,obs.length)+" to species":"";
+
+  const buckets=[["0 – 10 m",0,10,""],["11 – 30 m",11,30,"gold"],["over 30 m",31,1e9,"rose"]];
+  const noAcc=obs.length-accs.length;
+  const bk=buckets.map(([lab,lo,hi,cls])=>[lab,accs.filter(a=>a>=lo&&a<=hi).length,cls]);
+  bk.push(["not reported",noAcc,"violet"]);
+  const maxA=Math.max(1,...bk.map(b=>b[1]));
+  $("acc").innerHTML=bk.map(([lab,n,cls])=>
+    '<tr><td>'+lab+'</td><td class="n">'+n+'</td><td class="n">'+pct(n,obs.length)+
+    '</td><td class="barcell">'+bar(n,maxA,cls)+'</td></tr>').join("");
+  const m=med(accs);
+  $("tAcc").textContent=m==null?"":"median "+m+" m";
+
+  const pd=Object.entries(photoDist).sort((a,b)=>a[0]-b[0]);
+  const maxP=Math.max(1,...pd.map(p=>p[1]));
+  $("photos").innerHTML=pd.map(([k,n])=>
+    '<tr><td>'+(k==="5"?"5 or more":k+(k==="1"?" photo":" photos"))+'</td><td class="n">'+n+
+    '</td><td class="n">'+pct(n,obs.length)+'</td><td class="barcell">'+
+    bar(n,maxP,k==="1"?"rose":"")+'</td></tr>').join("");
+  $("tPh").textContent=obs.length?(photos/obs.length).toFixed(1)+" average":"";
+
+  const dup=Object.values(taxa).filter(t=>t.n>1).sort((a,b)=>b.n-a.n);
+  $("dups").innerHTML=dup.length?dup.map(t=>'<span class="chip">'+(t.name||t.sci)+
+    '<span class="sci">&times;'+t.n+(t.who.size>1?", "+t.who.size+" people":"")+'</span></span>').join("")
+    :'<div class="empty">No taxon recorded twice. Good strip discipline.</div>';
+  $("tDup").textContent=dup.length||"";
+
+  const q=obs.filter(o=>coarse.has(((o.taxon||{}).rank||"unknown").toLowerCase())).slice(0,36);
+  $("queue").innerHTML=q.length?q.map(o=>{
+    const ph=(o.photos||[])[0];
+    const src=ph&&ph.url?ph.url.replace("square","medium"):"";
+    const t=o.taxon||{};
+    return '<a class="th" href="'+(o.uri||("https://www.inaturalist.org/observations/"+o.id))+
+      '" target="_blank" rel="noopener">'+(src?'<img loading="lazy" src="'+src+'" alt="">':'')+
+      '<div class="cap"><div class="rank">'+(t.rank||"unknown")+'</div>'+
+      (t.preferred_common_name||t.name||"unidentified")+
+      '<div class="who">'+((o.user&&o.user.login)||"")+'</div></div></a>';
+  }).join(""):'<div class="empty">Everything got to species. Rare and excellent.</div>';
+  $("tQueue").textContent=q.length||"";
+
+  drawMap(obs);
+}
+
+function drawMap(obs){
+  const c=$("map"),g=c.getContext("2d");
+  const W=c.width,H=c.height,pad=26;
+  g.clearRect(0,0,W,H);
+  const x=lng=>pad+(lng-BOUNDS.w)/(BOUNDS.e-BOUNDS.w)*(W-pad*2);
+  const y=lat=>pad+(BOUNDS.n-lat)/(BOUNDS.n-BOUNDS.s)*(H-pad*2);
+  g.fillStyle="#18301f";g.fillRect(0,0,W,H);
+  g.fillStyle="rgba(127,224,138,.07)";
+  g.fillRect(x(NEBOX.w),y(BOUNDS.n),x(BOUNDS.e)-x(NEBOX.w),y(NEBOX.s)-y(BOUNDS.n));
+  g.strokeStyle="#254733";g.lineWidth=1;
+  g.strokeRect(pad,pad,W-pad*2,H-pad*2);
+  g.fillStyle="#6d8f78";g.font="12px -apple-system,sans-serif";
+  g.fillText("northeast quadrant",x(NEBOX.w)+10,y(BOUNDS.n)+20);
+  g.fillText("N",W/2,16);
+  obs.forEach(o=>{
+    let lat=null,lng=null;
+    if(o.geojson&&o.geojson.coordinates){lng=o.geojson.coordinates[0];lat=o.geojson.coordinates[1];}
+    else if(o.location){const p=o.location.split(",");lat=+p[0];lng=+p[1];}
+    if(lat==null||isNaN(lat)) return;
+    if(lat<BOUNDS.s||lat>BOUNDS.n||lng<BOUNDS.w||lng>BOUNDS.e) return;
+    const a=o.positional_accuracy;
+    const col=o.obscured?"#6d8f78":(typeof a!=="number"?"#c9a4ff":a<=10?"#7fe08a":a<=30?"#f0c04a":"#ff9d8a");
+    if(typeof a==="number"&&a<=60){
+      const rx=(a/111320)/(BOUNDS.e-BOUNDS.w)*(W-pad*2);
+      g.beginPath();g.arc(x(lng),y(lat),Math.max(3,rx),0,7);
+      g.fillStyle=col+"22";g.fill();
+    }
+    g.beginPath();g.arc(x(lng),y(lat),4.5,0,7);
+    g.fillStyle=col;g.fill();
+  });
+}
+
+async function update(){
+  const day=$("day").value||todayISO(),from=$("from").value||"16:45";
+  $("windowTxt").textContent=day+" from "+from;
+  $("status").textContent="Updating…";$("err").innerHTML="";
+  try{
+    const all=await fetchAll(day);
+    render(all.filter(o=>afterCutoff(o,day,from)));
+    $("status").textContent="Updated "+new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})+
+      " · "+all.length+" observations that day, "+$("kObs").textContent+" in the window";
+  }catch(e){
+    $("status").textContent="Couldn't update";
+    $("err").innerHTML='<div class="err">Couldn’t reach iNaturalist ('+e.message+
+      '). Check the connection, or open <a style="color:var(--blue)" target="_blank" rel="noopener" href="https://www.inaturalist.org/projects/'+
+      PROJECT+'">the project page</a> directly.</div>';
+  }
+}
+$("go").addEventListener("click",update);
+$("day").addEventListener("change",update);
+$("from").addEventListener("change",update);
+$("auto").addEventListener("click",()=>{
+  autoOn=!autoOn;$("auto").textContent="Auto: "+(autoOn?"on":"off");
+  if(autoOn){timer=setInterval(update,90000);update();} else clearInterval(timer);
+});
+$("day").value=todayISO();
+timer=setInterval(update,90000);
+update();
+</script>
+</body>
+</html>

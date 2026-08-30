@@ -63,7 +63,17 @@ REPO = Path(__file__).resolve().parents[2]
 SRC  = REPO / "data" / "sources"
 TODAY = datetime.date.today()
 
-WEIGHT_TIER = {"Feature": 2.0, "Standard": 1.0, "Background": 0.6}
+WEIGHT_TIER = {"Feature": 2.0, "Standard": 1.0}
+
+# Background-tier plants are EXCLUDED, not down-weighted.
+# Randy, 2026-08-29, on Ball Moss: "similar to wedelia, which is a weed, in that
+# it is ubiquitous and if it is labeled with sign, it would be just one or two
+# choice spots." Eleven of the thirteen Background plants are groundcover or
+# foliage — Ball Moss, Wedelia, Lawn Orchid, both Rattleboxes, Turkey Tangle
+# Frogfruit — and five are watch_invasive. A pin on one of these marks a good
+# EXAMPLE, not the plant's location, so "is it still there?" is not a question
+# anyone needs answered. Checking the Wedelia is not a job.
+SKIP_TIER = {"Background"}
 
 
 def _load(name, default):
@@ -111,6 +121,10 @@ def build():
         sp = sig.get(sid)
         if not sp or sp.get("status") != "html":
             continue
+        if sp.get("feature_tier") in SKIP_TIER:
+            continue
+        if (pl.get("role") or "") == "representative":
+            continue          # a chosen example of something ubiquitous
 
         # Looking is what clears an item; finding is what dates it.
         checked = _days(pl.get("last_checked"))
