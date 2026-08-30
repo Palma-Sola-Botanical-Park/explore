@@ -358,9 +358,14 @@ const WALK_MIN_OBS=11, WALK_MIN_PEOPLE=2, WALK_HOURS=4, WALK_DAYS=150;
 let WALKABOUTS={};
 
 function bestWindow(list){
-  // list: [{t:Date, who:String}] sorted ascending. Returns the densest WALK_HOURS window.
+  // list: [{t:Date, who:String}] sorted ascending.
+  // A walkabout is a GROUP outing, so prefer the busiest window that actually contains
+  // WALK_MIN_PEOPLE or more people. Picking the densest window regardless finds one
+  // person's solo burst instead — which is exactly what happened on 26 Aug 2026: five
+  // people out that day, but the densest 4 hours held 59 observations from Randy alone,
+  // so the picker promised "5 people" and the page showed one.
   const span=WALK_HOURS*3600000;
-  let best={n:0,people:0,end:null};
+  let group={n:0,people:0,end:null}, any={n:0,people:0,end:null};
   for(let i=0;i<list.length;i++){
     const startT=list[i].t.getTime();
     const who=new Set(); let n=0,lastT=startT;
@@ -368,10 +373,11 @@ function bestWindow(list){
       if(list[j].t.getTime()-startT>span) break;
       n++; who.add(list[j].who); lastT=list[j].t.getTime();
     }
-    if(n>best.n||(n===best.n&&who.size>best.people))
-      best={n:n,people:who.size,end:new Date(lastT)};
+    const cand={n:n,people:who.size,end:new Date(lastT)};
+    if(n>any.n) any=cand;
+    if(who.size>=WALK_MIN_PEOPLE && (n>group.n||(n===group.n&&who.size>group.people))) group=cand;
   }
-  return best;
+  return group.n ? group : any;      // no group window at all: fall back to the busiest
 }
 
 // Built from TWO CHEAP ENDPOINTS, not a sweep of observations. The full /observations
@@ -413,7 +419,7 @@ async function loadPriorWalkabouts(){
       const o=document.createElement("option");
       o.value=r.day;
       o.textContent=dt.toLocaleDateString([],{weekday:"short",day:"numeric",month:"short"})+
-        " — "+r.people+" people, "+r.n+" observations";
+        " · "+r.people+" people, "+r.n+" obs that day";
       sel.appendChild(o);
     });
     sel.title=rows.length
@@ -761,7 +767,7 @@ $("endt").addEventListener("change",()=>{$("prior").value="";update();});
 $("win").addEventListener("change",update);
 $("prior").addEventListener("change",()=>{
   const v=$("prior").value;
-  if(!v){ setNow(); $("win").value="4"; }
+  if(!v){ PINNED=false; setNow(); $("win").value="4"; }
   else {
     $("day").value=v;
     SNAP_NEXT=true;          // snapWindow() runs once that day's observations arrive
@@ -774,9 +780,23 @@ $("auto").addEventListener("click",()=>{
 });
 
 // Auto-refresh keeps the window rolling ONLY when it is sitting on "right now".
-function tick(){ if(!$("prior").value) setNow(); update(); }
+let PINNED=/^\d{4}-\d{2}-\d{2}$/.test(new URLSearchParams(location.search).get("day")||"");
+function tick(){ if(!$("prior").value && !PINNED) setNow(); update(); }
 
-setNow();
+// A shared link can name the walkabout it should open on, so sending someone the URL
+// does not land them on a quiet afternoon showing zeros:
+//   walkabout.html?day=2026-06-03            → that day, window snapped to the session
+//   walkabout.html?day=2026-06-03&end=13:30&win=4
+const Q=new URLSearchParams(location.search);
+if(/^\d{4}-\d{2}-\d{2}$/.test(Q.get("day")||"")){
+  $("day").value=Q.get("day");
+  if(/^\d{2}:\d{2}$/.test(Q.get("end")||"")) $("endt").value=Q.get("end");
+  else SNAP_NEXT=true;                       // no time given: land on the busiest 4 hours
+  if(["2","4","6","24"].includes(Q.get("win"))) $("win").value=Q.get("win");
+  else $("win").value=String(WALK_HOURS);
+} else {
+  setNow();
+}
 loadPriorWalkabouts();
 timer=setInterval(tick,90000);
 update();
