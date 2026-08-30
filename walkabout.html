@@ -413,6 +413,26 @@ async function loadPriorWalkabouts(){
     : "No group walkabouts found in the last five months";
 }
 
+// ---- small helpers used by render() ----------------------------------------
+function med(a){
+  if(!a.length) return null;
+  const s=[...a].sort((x,y)=>x-y), m=s.length>>1;
+  return s.length%2 ? s[m] : Math.round((s[m-1]+s[m])/2);
+}
+function bar(v,max,cls){
+  return '<span class="bar '+(cls||"")+'" style="width:'+
+    (max?Math.max(2,Math.round(v/max*100)):2)+'%"></span>';
+}
+function obsBox(o,showRank){
+  const t=o.taxon||{}, src=photoOf(o);
+  return '<a class="box" href="'+uriOf(o)+'" target="_blank" rel="noopener">'+
+    (src?'<img loading="lazy" src="'+src+'" alt="">':'<img alt="">')+
+    '<div class="cap">'+(showRank?'<div class="rk">'+esc(t.rank||"unknown")+'</div>':'')+
+    '<div class="nm">'+esc(nameOf(t))+'</div>'+
+    (t.name&&t.preferred_common_name?'<div class="sci">'+esc(t.name)+'</div>':'')+
+    '<div class="who">'+esc(whoOf(o))+'</div></div></a>';
+}
+
 function render(obs){
   const people={},taxa={},ranks={},photoDist={},accs=[],newSp=new Map(),unpub=new Map();
   let photos=0;
