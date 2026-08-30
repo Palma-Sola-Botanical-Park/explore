@@ -185,7 +185,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
   <div class="tally"><div class="n" id="kPeople">&mdash;</div><div class="c">people out walking</div></div>
   <div class="tally"><div class="n" id="kTaxa">&mdash;</div><div class="c">different species</div></div>
   <div class="tally"><div class="n" id="kPhotos">&mdash;</div><div class="c">photographs taken</div></div>
-  <div class="tally gold"><div class="n" id="kNew">&mdash;</div><div class="c">first for the park</div></div>
+  <div class="tally gold"><div class="n" id="kNew">&mdash;</div><div class="c">first ever recorded here</div></div>
 </div>
 
 <div id="err"></div>
@@ -204,7 +204,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 </section>
 
 <section id="secNew">
-  <h2>A first for the park<span class="tag" id="tNew"></span></h2>
+  <h2>Recorded here for the first time<span class="tag" id="tNew"></span></h2>
   <p class="sub" id="newSub">Species with no record anywhere in the park&rsquo;s catalogue &mdash; not on a
     plant page, not in the research file, not among the wildlife. If one of these holds up, somebody
     found something the park has never documented.</p>
@@ -222,8 +222,8 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 
 <section id="secQueue">
   <h2>Still to identify<span class="tag" id="tQueue"></span></h2>
-  <p class="sub">Recorded on the walkabout but not yet named to a species. This is the pile to work through
-    together on the screen.</p>
+  <p class="sub" id="queueSub">Recorded on the walkabout but not yet named to a species. This is
+    the pile to work through together on the screen.</p>
   <div class="boxes" id="queue"></div>
 </section>
 
@@ -291,10 +291,17 @@ const PROJECT="palma-sola-botanical-park";
 const API="https://api.inaturalist.org/v1/observations";
 const KNOWN_TAXA=new Set([3454, 3751, 4246, 4327, 4328, 4334, 4742, 4756, 4937, 4938, 4940, 4956, 4981, 4999, 5020, 5063, 5206, 5305, 6432, 6893, 6922, 6930, 6948, 7107, 7120, 7493, 8001, 8229, 9083, 9176, 9602, 10286, 10373, 10487, 12727, 14850, 14886, 14995, 16028, 17008, 17365, 17855, 18205, 18463, 19765, 20044, 27137, 36514, 39566, 39682, 39776, 39782, 39820, 39824, 39825, 40569, 41663, 43102, 46017, 47160, 47219, 47351, 47441, 47442, 47450, 47563, 47780, 47787, 47902, 48233, 48234, 48319, 48363, 48484, 48522, 48550, 48651, 48662, 48663, 48678, 48865, 48872, 48878, 48891, 48895, 49013, 49150, 49181, 49193, 49322, 49323, 49358, 49504, 49666, 49667, 49761, 49766, 50147, 50184, 50334, 50616, 50644, 50821, 50822, 51119, 51122, 51446, 51534, 51599, 51768, 51769, 51772, 51833, 52055, 52078, 52348, 52398, 52425, 52497, 52599, 52643, 52673, 52763, 53195, 53547, 53691, 53722, 53768, 53804, 53854, 54759, 54793, 54795, 54834, 54880, 54890, 55269, 55844, 55854, 56019, 56091, 56099, 56890, 56917, 56955, 57140, 58213, 58300, 58389, 58792, 59040, 59096, 59379, 59774, 59776, 60121, 60146, 60335, 60439, 60742, 60749, 60773, 61369, 61503, 62529, 62741, 62809, 62811, 62819, 62826, 62831, 62839, 62844, 62850, 62852, 62853, 62888, 62911, 62915, 62924, 62934, 62936, 62937, 62941, 62946, 62949, 63735, 64103, 64119, 64240, 64323, 64342, 64547, 64571, 64696, 67325, 67435, 67440, 67574, 67707, 67710, 67823, 68225, 68226, 68230, 68233, 68313, 68314, 68317, 68563, 68679, 68717, 69223, 69234, 69813, 69845, 69940, 69972, 70022, 70025, 70027, 70029, 70045, 71036, 71940, 71956, 72384, 72388, 72418, 75379, 75604, 75732, 76444, 76949, 77541, 77739, 77977, 78554, 78555, 78631, 78755, 78998, 79291, 79521, 81159, 81489, 81490, 81500, 81515, 81804, 81901, 82095, 82303, 82506, 82529, 82752, 83070, 83074, 83102, 83117, 83139, 83434, 83435, 83583, 83634, 83642, 83832, 83892, 83912, 83927, 84002, 84531, 84537, 84813, 84816, 84964, 85024, 85378, 116461, 116999, 117308, 117444, 119095, 119100, 119955, 119956, 119986, 120027, 120488, 120934, 121022, 121467, 121526, 122034, 122303, 122318, 122519, 122521, 122530, 122711, 122777, 122835, 122965, 123003, 123438, 123472, 123476, 123481, 123516, 123572, 123728, 123736, 123757, 124349, 124423, 124426, 124826, 124839, 124842, 125381, 125396, 125683, 125854, 125855, 126165, 126249, 126289, 126305, 126319, 126404, 126405, 126507, 126510, 126563, 126565, 126569, 126574, 126585, 126633, 126634, 126846, 126882, 126888, 126980, 127010, 127036, 127063, 127066, 127270, 127279, 127284, 127285, 127387, 127389, 127390, 127890, 127906, 127907, 127908, 127912, 128268, 128270, 128652, 128655, 128717, 128825, 129036, 129103, 129327, 129540, 129783, 129808, 129814, 129857, 130028, 130215, 130382, 130734, 130818, 131242, 131243, 131568, 131579, 131594, 132078, 132451, 132576, 132759, 133299, 133308, 133309, 133310, 133327, 133334, 133335, 133457, 133607, 133688, 133690, 133826, 135235, 135243, 135249, 135250, 135329, 135343, 135348, 135394, 135400, 135401, 135559, 135560, 135589, 135590, 135595, 135844, 135898, 135902, 136025, 136082, 136085, 136086, 136093, 136159, 136164, 136173, 136231, 138577, 140907, 141285, 141291, 141303, 141375, 141376, 141512, 143209, 143955, 144018, 144455, 144479, 145231, 145233, 145242, 145245, 145246, 146643, 146977, 146978, 153449, 154283, 154290, 154558, 154794, 154798, 154842, 154846, 154862, 154888, 155137, 155170, 155598, 155898, 155984, 156122, 156463, 156695, 157138, 157164, 157841, 157908, 158023, 158103, 158226, 158570, 159049, 159199, 159269, 159346, 159678, 159817, 160169, 160385, 160544, 160656, 160739, 160741, 160759, 160760, 160837, 160873, 160878, 161124, 161126, 161146, 161150, 161235, 162153, 162214, 162418, 162839, 162855, 163323, 163363, 163640, 163763, 163766, 163916, 164011, 164035, 164044, 164051, 164090, 164240, 164242, 164316, 164328, 164423, 165063, 165118, 165138, 165144, 165296, 165400, 165529, 165543, 165599, 165752, 165876, 166214, 166493, 166546, 166729, 166920, 167309, 167311, 167506, 167539, 167570, 167660, 167793, 168256, 168423, 168847, 168854, 168863, 168953, 169050, 169171, 169322, 169351, 169520, 169521, 169735, 169741, 169872, 169878, 169883, 170055, 170202, 170271, 170401, 170883, 179304, 179305, 180035, 180228, 180255, 181543, 181672, 184500, 185264, 185509, 186006, 186063, 191503, 193076, 194547, 199373, 201453, 201454, 201458, 202172, 204165, 204244, 204744, 204927, 206169, 206170, 206171, 206177, 206192, 206271, 206275, 206302, 206310, 208742, 208746, 208766, 208797, 208814, 209871, 209889, 210990, 218000, 223938, 223964, 236504, 242256, 244084, 244459, 246102, 260753, 261475, 266198, 273713, 273715, 276307, 276548, 276805, 277083, 277459, 277579, 279439, 279677, 281082, 281140, 281562, 283216, 283915, 284040, 284175, 284560, 284831, 285445, 286772, 287245, 287757, 319135, 319141, 320055, 321501, 321686, 322318, 322755, 326086, 326087, 327355, 327366, 327856, 331118, 332683, 332889, 333484, 334348, 337352, 339474, 339914, 340008, 340357, 341902, 343814, 343820, 343829, 343901, 343969, 343971, 344178, 344235, 344269, 344879, 344943, 344961, 345537, 345576, 345585, 345932, 346357, 346367, 346381, 346382, 346383, 346384, 346398, 346406, 346408, 346605, 347370, 347721, 348429, 348791, 348793, 348794, 349191, 357524, 361290, 361831, 362921, 362951, 362952, 364198, 364204, 364206, 364207, 364208, 364465, 364469, 364569, 364574, 364575, 364577, 364998, 365049, 365068, 365075, 365081, 365092, 365210, 365221, 365223, 365244, 365485, 365486, 365638, 365645, 365650, 365670, 365717, 365733, 365948, 365949, 365961, 365968, 366013, 366014, 366015, 366038, 366039, 366062, 366088, 366112, 366118, 366128, 366151, 367277, 369881, 370011, 370492, 371103, 372067, 401513, 411086, 426720, 428002, 430869, 431188, 431224, 436068, 437501, 438336, 441411, 465713, 466003, 474465, 497641, 499120, 523772, 543581, 551247, 552439, 557893, 579676, 594756, 599962, 605174, 607338, 773039, 776900, 790732, 792725, 792988, 844242, 851888, 855610, 867073, 867364, 871544, 878610, 878751, 880921, 888838, 893820, 898674, 910750, 913367, 921783, 927986, 937796, 954006, 970366, 978421, 985690, 985710, 985726, 993493, 1038409, 1038928, 1095683, 1095846, 1117609, 1143567, 1239449, 1263542, 1263850, 1264664, 1268642, 1311723, 1401476, 1413422, 1416777, 1442171, 1454328, 1454382, 1499976, 1557768, 1564952, 1569900, 1579017, 1607210, 1607579, 1628098, 1634850, 1643959, 1649672, 1673245, 1686223, 1686226]);
 const PUBLISHED_TAXA=new Set([48363, 48872, 48895, 49013, 49193, 49323, 49666, 50184, 51599, 51768, 51833, 52078, 53547, 53722, 57140, 58300, 59040, 60146, 60335, 60439, 62809, 62811, 62831, 62839, 62844, 62850, 62924, 62934, 62949, 63735, 64103, 67574, 67710, 68225, 68313, 68317, 68679, 69223, 69813, 69972, 70022, 71036, 75732, 77541, 77739, 77977, 78554, 78631, 79291, 81500, 81515, 81804, 83074, 83102, 83634, 83642, 84002, 84531, 84537, 84813, 119955, 119956, 120934, 121022, 122318, 122519, 122521, 122965, 123003, 123438, 123481, 123572, 123728, 123736, 124426, 124839, 125381, 125396, 125855, 126305, 126563, 126565, 126633, 127010, 127036, 127063, 127270, 127279, 127387, 127912, 128652, 129783, 130734, 130818, 131242, 132576, 132759, 133309, 133327, 133607, 135250, 135343, 135348, 135400, 135559, 135560, 136085, 141375, 146643, 146977, 154283, 154290, 154794, 155170, 155598, 156463, 157841, 157908, 159346, 160169, 160385, 160544, 160741, 160759, 160760, 160873, 160878, 161124, 161146, 161150, 162153, 164035, 164240, 164242, 164328, 165400, 165529, 165543, 165876, 166546, 166729, 167506, 167570, 167660, 169050, 169520, 169735, 169741, 169872, 169878, 170202, 170401, 170883, 180255, 191503, 201453, 201454, 201458, 204744, 206271, 208746, 208766, 208797, 209871, 209889, 223964, 246102, 260753, 273713, 276548, 276805, 279439, 281562, 283915, 284175, 284560, 285445, 319135, 320055, 322318, 340008, 341902, 343820, 343829, 344943, 345932, 346381, 346384, 357524, 361831, 362921, 362951, 362952, 364198, 364207, 364208, 364569, 364574, 365049, 365068, 365075, 365081, 365210, 365221, 365223, 365244, 365485, 365486, 365638, 365650, 365670, 365949, 365961, 365968, 366038, 366062, 366118, 369881, 370011, 370492, 497641, 851888, 910750, 913367, 954006, 985726, 1038928, 1264664, 1268642, 1311723, 1454328, 1634850]);
-const BOUNDS={n:27.5150,s:27.5120,w:-82.6615,e:-82.6580};
+
+// Canonical display names, from data/sources/photographer_names.json — the park's own
+// list, which every other PSBP tool reads through display_name(). iNaturalist only
+// supplies a name when the user has set one, so without this a Bright Futures student
+// appears on the office screen as "theblackd0g13". Embedded rather than fetched because
+// this page is often opened as a local file, where fetching a sibling file is blocked.
+// REGENERATE THIS LINE when photographer_names.json changes.
+const NAMES={"robcarr52": "Rob Carr", "jengunter": "Jenny Gunter", "aiden_gitt": "Aiden Gitt", "david_vanderbilt": "David Vanderbilt", "frankymca": "Franky McArthur", "ruby_meador": "Ruby Meador", "sophia70699": "Sophia Bailey", "yavid": "Yavid Justiniano", "theblackd0g13": "Lilah Thomas", "david_mcswain": "David McSwain", "sofia_linares": "Sofia Linares", "sethtlayne": "Seth Layne", "hailee_alenduff": "Hailee Alenduff", "harrisonmello": "Harrison Mello", "mariaaaz": "Maria Escobar", "austin_sibrian": "Austin Sibrian", "denise_sosa": "Denise Sosa", "zailibeth": "Zailibeth Perez", "joanne_walker": "Joanne Walker", "giovannym": "Giovanny Montoya", "jacob_aiden": "Jacob Aiden Ferda", "mollyevans": "Molly Evans", "taya67111": "Taya Brown", "cleamon": "Christine Leamon", "rhonda_olschefskie": "Rhonda Olschefskie", "bevburdette": "Beverly Burdette", "randall_carter": "Randall Carter"};const BOUNDS={n:27.5150,s:27.5120,w:-82.6615,e:-82.6580};
 const $=id=>document.getElementById(id);
 const pct=(a,b)=>b?Math.round(a/b*100)+"%":"0%";
-let timer=null,autoOn=true,DUPS={};
+let timer=null,autoOn=true,DUPS={},SNAP_NEXT=false;
 
 function todayISO(){const d=new Date();
   return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);}
@@ -304,7 +311,10 @@ function photoOf(o,size){const p=(o.photos||[])[0];
   return p&&p.url?p.url.replace("square",size||"medium"):"";}
 function uriOf(o){return o.uri||("https://www.inaturalist.org/observations/"+o.id);}
 function nameOf(t){return (t&&(t.preferred_common_name||t.name))||"not yet identified";}
-function whoOf(o){return (o.user&&(o.user.name||o.user.login))||"someone";}
+function whoOf(o){
+  const login=(o.user&&o.user.login)||"";
+  return NAMES[login.toLowerCase()] || (o.user&&(o.user.name||o.user.login)) || "someone";
+}
 
 async function fetchAll(day){
   let page=1,out=[];
@@ -364,53 +374,113 @@ function bestWindow(list){
   return best;
 }
 
+// Built from TWO CHEAP ENDPOINTS, not a sweep of observations. The full /observations
+// records are ~65 KB EACH — five months of them is roughly 70 MB, which "worked" but took
+// twenty seconds and left the picker looking broken. /histogram gives every day's count in
+// 2 KB, and /observers gives one day's people in 3 KB. Whole job: about 55 KB.
+// The 4-hour window is computed later, from the day actually selected — see snapWindow().
 async function loadPriorWalkabouts(){
+  const sel=$("prior");
+  const busy=document.createElement("option");
+  busy.textContent="finding walkabouts…"; busy.disabled=true; sel.appendChild(busy);
   const now=new Date(), from=new Date(now.getTime()-WALK_DAYS*86400000);
   const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
-  const byDay={};
+  const done=()=>{ if(busy.parentNode) busy.remove(); };
+  try{
+    const hr=await fetch("https://api.inaturalist.org/v1/observations/histogram?project_id="+
+      PROJECT+"&date_field=observed&interval=day&d1="+iso(from)+"&d2="+iso(now)+
+      "&_="+Date.now(),{cache:"no-store"});
+    if(!hr.ok){ done(); return; }
+    const days=((await hr.json()).results||{}).day||{};
+    const candidates=Object.entries(days).filter(([,n])=>n>=WALK_MIN_OBS)
+      .sort((a,b)=>a[0]<b[0]?1:-1).slice(0,30);
+
+    const rows=[];
+    for(const [day,n] of candidates){
+      try{
+        const orr=await fetch("https://api.inaturalist.org/v1/observations/observers?project_id="+
+          PROJECT+"&d1="+day+"&d2="+day+"&_="+Date.now(),{cache:"no-store"});
+        if(!orr.ok) continue;
+        const people=(await orr.json()).total_results||0;
+        if(people>=WALK_MIN_PEOPLE) rows.push({day:day,n:n,people:people});
+      }catch(e){ /* skip this day only */ }
+    }
+    done();
+    WALKABOUTS={};
+    rows.forEach(r=>{
+      WALKABOUTS[r.day]=r;
+      const dt=new Date(r.day+"T12:00:00");
+      const o=document.createElement("option");
+      o.value=r.day;
+      o.textContent=dt.toLocaleDateString([],{weekday:"short",day:"numeric",month:"short"})+
+        " — "+r.people+" people, "+r.n+" observations";
+      sel.appendChild(o);
+    });
+    sel.title=rows.length
+      ? rows.length+" group walkabouts: "+WALK_MIN_OBS+"+ observations in a day, from "+
+        WALK_MIN_PEOPLE+" or more people"
+      : "No group walkabouts found in the last five months";
+  }catch(e){ done(); }
+}
+
+// What had the park EVER recorded before this day? Randy, 2026-08-30: "a first for the park
+// means nothing for old walkabouts, because by then it was found." Exactly right — comparing a
+// June walkabout against today's catalogue always yields zero. So ask the project's own history
+// instead: every taxon observed up to the day BEFORE. One call, and it makes old walkabouts
+// interesting rather than empty (3 June 2026: thirty species recorded in the park for the
+// first time that day).
+const PRIOR_CACHE={};
+async function taxaBefore(day){
+  if(PRIOR_CACHE[day]) return PRIOR_CACHE[day];
+  const d=new Date(day+"T12:00:00"); d.setDate(d.getDate()-1);
+  const before=new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+  const seen=new Set();
   try{
     let page=1;
-    while(page<=10){
-      const url=API+"?project_id="+PROJECT+"&d1="+iso(from)+"&d2="+iso(now)+
-        "&per_page=200&page="+page+"&order_by=observed_on&order=desc"+
-        "&fields=observed_on,time_observed_at,user.login&_="+Date.now();
-      const r=await fetch(url,{cache:"no-store"});
-      if(!r.ok) return;
+    while(page<=4){
+      const r=await fetch("https://api.inaturalist.org/v1/observations/species_counts?project_id="+
+        PROJECT+"&d2="+before+"&per_page=500&page="+page+"&_="+Date.now(),{cache:"no-store"});
+      if(!r.ok) break;
       const j=await r.json(), res=j.results||[];
-      res.forEach(o=>{
-        const d=o.observed_on||(o.time_observed_at||"").slice(0,10);
-        const t=o.time_observed_at?new Date(o.time_observed_at):null;
-        if(!d||!t||isNaN(t)) return;                 // no clock time: cannot cluster it
-        (byDay[d]=byDay[d]||[]).push({t:t,who:(o.user&&o.user.login)||"?"});
-      });
-      if(res.length<200) break;
+      res.forEach(x=>{ if(x.taxon&&x.taxon.id) seen.add(x.taxon.id); });
+      if(res.length<500) break;
       page++;
     }
-  }catch(e){ return; }                               // picker is a convenience, never fatal
+  }catch(e){ return null; }        // null = "could not check", so the section says so
+  PRIOR_CACHE[day]=seen;
+  return seen;
+}
 
-  const rows=[];
-  Object.entries(byDay).forEach(([day,list])=>{
-    list.sort((a,b)=>a.t-b.t);
-    const b=bestWindow(list);
-    if(b.n>=WALK_MIN_OBS && b.people>=WALK_MIN_PEOPLE)
-      rows.push({day:day,n:b.n,people:b.people,end:hhmm(roundUp15(b.end))});
-  });
-  rows.sort((a,b)=>a.day<b.day?1:-1);
+// ---- what an observation WAS, at the end of the day it was made -------------
+// Randy, 2026-08-30: "everything must be compared against the status that day!" Right, and
+// it applies past the new-species count: an observation left at genus on the night may have
+// been identified weeks later, so replaying today's taxon makes a past walkabout look tidier
+// than it was. Every identification is already inside the observation payload with its date,
+// so this needs NO new file and adds nothing to the repo.
+//
+// APPROXIMATION, stated plainly: iNaturalist's displayed taxon is a COMMUNITY taxon, worked
+// out from agreement between identifiers. Recomputing that faithfully in a browser is not
+// worth it here, so this takes the LAST identification made on or before that day. For a
+// debrief that is honest enough; for anything load-bearing, trust iNaturalist.
+function taxonAsOf(o,endOfDay){
+  const ids=(o.identifications||[]).filter(i=>i.created_at&&i.taxon)
+    .filter(i=>new Date(i.created_at)<=endOfDay)
+    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+  if(!ids.length) return (o.identifications&&o.identifications.length)?null:(o.taxon||null);
+  return ids[ids.length-1].taxon;
+}
+function endOfDay(day){ return new Date(day+"T23:59:59"); }
 
-  WALKABOUTS={}; const sel=$("prior");
-  rows.slice(0,24).forEach(r=>{
-    WALKABOUTS[r.day]=r;
-    const dt=new Date(r.day+"T12:00:00");
-    const o=document.createElement("option");
-    o.value=r.day;
-    o.textContent=dt.toLocaleDateString([],{weekday:"short",day:"numeric",month:"short"})+
-      " — "+r.people+" people, "+r.n+" observations";
-    sel.appendChild(o);
-  });
-  sel.title=rows.length
-    ? rows.length+" group walkabouts found: more than "+(WALK_MIN_OBS-1)+
-      " observations inside 4 hours, by more than one person"
-    : "No group walkabouts found in the last five months";
+// A day's densest WALK_HOURS window, from observations already fetched. Used to land the
+// window on the session instead of on whatever o'clock it happens to be now.
+function snapWindow(all){
+  const list=all.map(o=>({t:o.time_observed_at?new Date(o.time_observed_at):null,
+                          who:(o.user&&(o.user.login||o.user.name))||"?"}))
+                .filter(x=>x.t&&!isNaN(x.t)).sort((a,b)=>a.t-b.t);
+  if(!list.length){ $("endt").value="23:59"; $("win").value="24"; return; }
+  const b=bestWindow(list);
+  $("endt").value=hhmm(roundUp15(b.end));
+  $("win").value=String(WALK_HOURS);
 }
 
 // ---- small helpers used by render() ----------------------------------------
@@ -424,7 +494,7 @@ function bar(v,max,cls){
     (max?Math.max(2,Math.round(v/max*100)):2)+'%"></span>';
 }
 function obsBox(o,showRank){
-  const t=o.taxon||{}, src=photoOf(o);
+  const t=o._taxon||o.taxon||{}, src=photoOf(o);
   return '<a class="box" href="'+uriOf(o)+'" target="_blank" rel="noopener">'+
     (src?'<img loading="lazy" src="'+src+'" alt="">':'<img alt="">')+
     '<div class="cap">'+(showRank?'<div class="rk">'+esc(t.rank||"unknown")+'</div>':'')+
@@ -433,10 +503,19 @@ function obsBox(o,showRank){
     '<div class="who">'+esc(whoOf(o))+'</div></div></a>';
 }
 
-function render(obs){
+function render(obs,priorTaxa){
   const people={},taxa={},ranks={},photoDist={},accs=[],newSp=new Map(),unpub=new Map();
-  let photos=0;
+  let photos=0, sinceNamed=0;
   DUPS={};
+  // Everything below reads `_taxon` — the identification as it stood that day, not today's.
+  const eod=endOfDay($("day").value||todayISO());
+  obs.forEach(o=>{
+    o._taxon=taxonAsOf(o,eod);
+    const thenRank=((o._taxon||{}).rank||"unknown").toLowerCase();
+    const nowRank=((o.taxon||{}).rank||"unknown").toLowerCase();
+    const coarseSet=["genus","family","order","class","phylum","kingdom","unknown"];
+    if(coarseSet.includes(thenRank)&&!coarseSet.includes(nowRank)) sinceNamed++;
+  });
   obs.forEach(o=>{
     const u=whoOf(o);
     const p=people[u]||(people[u]={obs:0,taxa:new Set(),photos:0,acc:[]});
@@ -445,7 +524,7 @@ function render(obs){
     photoDist[Math.min(np,5)]=(photoDist[Math.min(np,5)]||0)+1;
     const a=o.positional_accuracy;
     if(typeof a==="number"){accs.push(a);p.acc.push(a);}
-    const t=o.taxon||{},rank=(t.rank||"unknown").toLowerCase();
+    const t=o._taxon||{},rank=(t.rank||"unknown").toLowerCase();
     ranks[rank]=(ranks[rank]||0)+1;
     if(t.id){
       p.taxa.add(t.id);
@@ -453,8 +532,11 @@ function render(obs){
       rec.n++; rec.who.add(u);
       (DUPS[t.id]=DUPS[t.id]||[]).push(o);
       if(["species","subspecies","variety","hybrid"].includes(rank)){
-        if(!KNOWN_TAXA.has(t.id)) newSp.set(t.id,rec);
-        else if(!PUBLISHED_TAXA.has(t.id)) unpub.set(t.id,rec);
+        // "First for the park" is a HISTORICAL claim: nobody had recorded it here before
+        // this day. Falls back to the catalogue check if the history could not be fetched.
+        const isNew = priorTaxa ? !priorTaxa.has(t.id) : !KNOWN_TAXA.has(t.id);
+        if(isNew) newSp.set(t.id,rec);
+        if(KNOWN_TAXA.has(t.id) && !PUBLISHED_TAXA.has(t.id)) unpub.set(t.id,rec);
       }
     }
   });
@@ -472,7 +554,7 @@ function render(obs){
       "<b>"+nPeople+(nPeople===1?" person":" people")+"</b> recorded <b>"+obs.length+
       "</b> observation"+(obs.length===1?"":"s")+" of <b>"+nTaxa+"</b> different "+
       (nTaxa===1?"species":"species")+
-      (newSp.size?", including <b>"+newSp.size+"</b> never recorded here before":"")+".";
+      (newSp.size?", including <b>"+newSp.size+"</b> never recorded in the park before":"")+".";
     $("when").textContent=dayTxt+(top?" · most recorded: "+top.name:"");
   }
   $("kObs").textContent=obs.length;
@@ -484,7 +566,7 @@ function render(obs){
   // ── photo wall ──
   const withPhoto=obs.filter(o=>photoOf(o));
   $("wall").innerHTML=withPhoto.slice(0,48).map(o=>
-    '<a href="'+uriOf(o)+'" target="_blank" rel="noopener" title="'+esc(nameOf(o.taxon))+
+    '<a href="'+uriOf(o)+'" target="_blank" rel="noopener" title="'+esc(nameOf(o._taxon||o.taxon))+
     ' — '+esc(whoOf(o))+'"><img loading="lazy" src="'+photoOf(o)+'" alt=""></a>').join("")
     ||'<p class="empty">No photographs in this window yet.</p>';
   $("tWall").textContent=withPhoto.length?withPhoto.length+" photographed"+
@@ -506,10 +588,17 @@ function render(obs){
   // ── first for the park ──
   const chip=(r,hot)=>'<span class="chip'+(hot?" hot":"")+'">'+esc(r.name)+
     (r.sci?'<span class="sci">'+esc(r.sci)+'</span>':'')+'</span>';
+  const isToday=($("day").value||todayISO())===todayISO();
+  $("newSub").innerHTML = priorTaxa
+    ? "Species nobody had ever recorded in the park before "+(isToday?"today":"this day")+
+      ". Checked against every observation the park has ever collected, not against what "+
+      "we know now &mdash; so this still means something for a walkabout months ago."
+    : "Species with no record in the park&rsquo;s catalogue. (The park&rsquo;s full history "+
+      "could not be checked just now, so this is the catalogue comparison instead.)";
   $("newList").innerHTML=newSp.size?[...newSp.values()].map(r=>chip(r,true)).join("")
-    :'<p class="empty">Nothing brand new on this walkabout — which is completely normal. '+
+    :'<p class="empty">Nothing recorded here for the first time — which is completely normal. '+
      'Most walkabouts add depth rather than firsts.</p>';
-  $("tNew").textContent=newSp.size?newSp.size+" to check":"";
+  $("tNew").textContent=newSp.size?newSp.size+(priorTaxa?" first records":" to check"):"";
 
   $("unpubList").innerHTML=unpub.size?[...unpub.values()].map(r=>chip(r,false)).join("")
     :'<p class="empty">Everything recorded on this walkabout already has a finished page.</p>';
@@ -526,10 +615,17 @@ function render(obs){
 
   // ── still to identify ──
   const coarse=new Set(["genus","family","order","class","phylum","kingdom","unknown"]);
-  const q=obs.filter(o=>coarse.has(((o.taxon||{}).rank||"unknown").toLowerCase()));
+  const q=obs.filter(o=>coarse.has(((o._taxon||{}).rank||"unknown").toLowerCase()));
   $("queue").innerHTML=q.slice(0,36).map(o=>obsBox(o,true)).join("")
     ||'<p class="empty">Everything got to a species on this walkabout. That is rare and worth saying out loud.</p>';
   $("tQueue").textContent=q.length||"";
+  const qs=document.getElementById("queueSub");
+  if(qs) qs.innerHTML = sinceNamed
+    ? "As they stood at the end of that day. <b>"+sinceNamed+" "+
+      (sinceNamed===1?"has":"have")+" been identified since</b> &mdash; the work carried on after "+
+      "everyone went home."
+    : "Recorded on the walkabout but not yet named to a species. This is the pile to work "+
+      "through together on the screen.";
 
   // ── for the record ──
   const ORDER=["species","subspecies","variety","hybrid","genus","family","order","class","phylum","kingdom","unknown"];
@@ -606,9 +702,9 @@ function drawMap(obs){
       L.circle([lat,lng],{radius:a,color:col,weight:1,opacity:.5,fillColor:col,
         fillOpacity:.09,interactive:false}).addTo(LAYER);
     L.circleMarker([lat,lng],{radius:6,color:"#faf8f3",weight:2,fillColor:col,fillOpacity:.95})
-      .bindPopup('<b>'+esc(nameOf(o.taxon))+'</b>'+
-        ((o.taxon||{}).name&&(o.taxon||{}).preferred_common_name?
-          '<div class="sci">'+esc(o.taxon.name)+'</div>':'')+
+      .bindPopup('<b>'+esc(nameOf(o._taxon||o.taxon))+'</b>'+
+        (((o._taxon||o.taxon)||{}).name&&((o._taxon||o.taxon)||{}).preferred_common_name?
+          '<div class="sci">'+esc((o._taxon||o.taxon).name)+'</div>':'')+
         '<div>'+esc(whoOf(o))+(typeof a==="number"?' · '+a+' m pin':'')+'</div>'+
         '<div><a href="'+uriOf(o)+'" target="_blank" rel="noopener">See it on iNaturalist &rarr;</a></div>')
       .addTo(LAYER);
@@ -623,9 +719,9 @@ function drawMap(obs){
 async function update(){
   const day=$("day").value||todayISO();
   $("status").textContent="Updating…"; $("err").innerHTML="";
-  let all;
+  let all,prior=null;
   try{                                   // ── reaching iNaturalist ──
-    all=await fetchAll(day);
+    [all,prior]=await Promise.all([fetchAll(day),taxaBefore(day)]);
   }catch(e){
     $("status").textContent="Couldn’t update";
     $("err").innerHTML='<div class="err">Couldn’t reach iNaturalist ('+esc(e.message)+
@@ -634,12 +730,13 @@ async function update(){
     return;
   }
   try{                                   // ── drawing the page ──
+    if(SNAP_NEXT){ SNAP_NEXT=false; snapWindow(all); }
     const end=windowEnd(), h=+($("win").value||4);
     const shown=all.filter(o=>inWindow(o,end,h));
     $("windowTxt").textContent = h>=24
       ? day+", the whole day"
       : day+", the "+h+" hours up to "+($("endt").value||"23:59");
-    render(shown);
+    render(shown,prior);
     const noTime=shown.filter(o=>!o.time_observed_at).length;
     $("status").textContent="Updated "+new Date().toLocaleTimeString([],
       {hour:"numeric",minute:"2-digit"})+" · "+all.length+" observations that day, "+
@@ -666,11 +763,8 @@ $("prior").addEventListener("change",()=>{
   const v=$("prior").value;
   if(!v){ setNow(); $("win").value="4"; }
   else {
-    // The window was already computed when the walkabout was detected — land on it exactly.
-    const w=WALKABOUTS[v];
     $("day").value=v;
-    $("endt").value=(w&&w.end)||"23:59";
-    $("win").value=String(WALK_HOURS);
+    SNAP_NEXT=true;          // snapWindow() runs once that day's observations arrive
   }
   update();
 });
