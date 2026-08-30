@@ -3,70 +3,151 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Walkabout Debrief — Palma Sola Botanical Park</title>
+<title>Walkabout — Palma Sola Botanical Park</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <style>
 :root{
-  --bg:#0d1a12; --panel:#132318; --card:#18301f; --line:#254733; --line2:#1c3626;
-  --text:#eef6ee; --muted:#93b39d; --dim:#6d8f78;
-  --green:#7fe08a; --gold:#f0c04a; --blue:#8fb8ff; --rose:#ff9d8a; --violet:#c9a4ff;
+  --green-deep:#1a3a1f; --green-mid:#2d6a35; --green-light:#4a9e56; --green-pale:#e8f5ea;
+  --gold:#c5922a; --gold-light:#eabc5a; --cream:#faf8f3; --sand:#ede8df;
+  --text:#1e1e1e; --text-soft:#555; --white:#fff; --border:rgba(0,0,0,.09);
+  --rust:#9a4a24;
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
-  font:400 16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-  -webkit-font-smoothing:antialiased;padding:0 22px 80px}
-.wrap{max-width:1180px;margin:0 auto}
-h1,h2{margin:0;letter-spacing:-.02em}
-header{padding:26px 0 18px;border-bottom:1px solid var(--line);
-  display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end}
-h1{font-size:30px;font-weight:800}
-.sub{color:var(--muted);font-size:14px;margin-top:4px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Sans 3','Segoe UI',sans-serif;background:var(--cream);color:var(--text);
+  line-height:1.65;-webkit-font-smoothing:antialiased;padding:0 20px 80px}
+.wrap{max-width:1060px;margin:0 auto}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif;line-height:1.15;text-wrap:balance}
+.label{display:inline-block;font-size:.8rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--green-mid)}
+.label.gold{color:var(--gold)}
+
+/* ── header ── */
+header{padding:44px 0 26px;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end}
+h1{font-size:clamp(38px,6vw,58px);font-weight:700;color:var(--green-deep);letter-spacing:-.015em;
+  margin-top:8px}
 .ctrl{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-label{color:var(--muted);font-size:13px}
-input[type=time],input[type=date]{background:var(--card);border:1px solid var(--line);
-  color:var(--text);border-radius:8px;padding:7px 10px;font-size:14px;font-family:inherit}
-button{background:var(--green);color:#0d1a12;border:0;border-radius:9px;padding:9px 18px;
-  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
-button.ghost{background:none;border:1px solid var(--line);color:var(--muted);font-weight:500}
-button:active{opacity:.8}
-.big{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:22px 0 0}
-.b{background:var(--card);border-radius:14px;padding:16px 18px;text-align:center}
-.b .n{font-size:46px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;color:var(--green)}
-.b .c{color:var(--muted);font-size:12.5px;margin-top:6px;letter-spacing:.03em}
-.b.gold .n{color:var(--gold)} .b.blue .n{color:var(--blue)} .b.rose .n{color:var(--rose)}
-section{margin:30px 0 0;background:var(--panel);border-radius:16px;padding:20px 22px}
-section h2{font-size:19px;font-weight:700;display:flex;align-items:baseline;gap:10px}
-section h2 .tag{margin-left:auto;font-size:12px;color:var(--dim);font-weight:400;
-  font-variant-numeric:tabular-nums}
-.note{color:var(--muted);font-size:13.5px;margin:6px 0 14px;max-width:74ch}
-table{width:100%;border-collapse:collapse;font-size:14.5px}
-th{text-align:left;color:var(--dim);font-weight:500;font-size:11.5px;letter-spacing:.07em;
-  text-transform:uppercase;padding:0 12px 8px 0;border-bottom:1px solid var(--line)}
-td{padding:8px 12px 8px 0;border-bottom:1px solid var(--line2);vertical-align:middle}
+.ctrl label{font-size:.85rem;color:var(--text-soft)}
+input[type=time],input[type=date]{font-family:inherit;font-size:.92rem;padding:8px 11px;
+  border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text)}
+button{font-family:inherit;font-size:.92rem;font-weight:700;padding:9px 18px;border:0;
+  border-radius:8px;background:var(--green-mid);color:var(--white);cursor:pointer}
+button.ghost{background:var(--white);color:var(--green-mid);border:1px solid var(--border);font-weight:600}
+button:active{opacity:.85}
+
+/* ── the headline ── */
+.hero{background:var(--green-deep);color:var(--cream);border-radius:16px;padding:38px 40px;
+  margin-bottom:16px}
+.hero .lead{font-family:'Playfair Display',Georgia,serif;font-size:clamp(24px,3.4vw,36px);
+  font-weight:600;line-height:1.28;max-width:22ch}
+.hero .lead b{color:var(--gold-light);font-weight:700}
+.hero .when{color:#b9cdbd;font-size:.95rem;margin-top:14px}
+.tallies{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));margin-top:16px}
+.tally{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px 20px}
+.tally .n{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:700;line-height:1;
+  color:var(--green-mid);font-variant-numeric:tabular-nums}
+.tally .c{font-size:.84rem;color:var(--text-soft);margin-top:5px}
+.tally.gold .n{color:var(--gold)}
+
+/* ── segments ── */
+section{background:var(--white);border:1px solid var(--border);border-radius:16px;
+  padding:28px 30px;margin-top:16px}
+section.pale{background:var(--green-pale);border-color:transparent}
+section.sandy{background:var(--sand);border-color:transparent}
+h2{font-size:1.6rem;font-weight:600;color:var(--green-deep);display:flex;align-items:baseline;gap:12px}
+h2 .tag{margin-left:auto;font-family:'Source Sans 3',sans-serif;font-size:.82rem;font-weight:600;
+  color:var(--text-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sub{color:var(--text-soft);font-size:.98rem;margin:8px 0 20px;max-width:70ch}
+
+/* ── photo wall ── */
+.wall{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+.wall a{display:block;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--sand)}
+.wall img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
+.wall a:hover img{transform:scale(1.06)}
+
+/* ── observation boxes (shared by Still to identify + duplicates) ── */
+.boxes{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(146px,1fr))}
+.box{display:block;background:var(--cream);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;text-decoration:none;color:inherit}
+.box img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--sand)}
+.box .cap{padding:9px 11px 11px}
+.box .nm{font-weight:600;font-size:.92rem;line-height:1.3}
+.box .sci{font-style:italic;color:var(--text-soft);font-size:.79rem}
+.box .who{color:var(--text-soft);font-size:.79rem;margin-top:3px}
+.box .rk{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:700}
+
+/* ── people ── */
+.people{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(228px,1fr))}
+.person{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.person .nm{font-weight:700;font-size:1.02rem;color:var(--green-deep)}
+.person .st{color:var(--text-soft);font-size:.88rem;margin-top:3px}
+.person .pin{font-size:.8rem;margin-top:6px;font-weight:600}
+
+/* ── duplicates ── */
+.dups{display:flex;flex-wrap:wrap;gap:8px}
+.dup{font-family:inherit;font-size:.92rem;font-weight:600;padding:8px 14px;border-radius:999px;
+  border:1px solid var(--border);background:var(--cream);color:var(--text);cursor:pointer;
+  display:flex;align-items:baseline;gap:7px}
+.dup:hover{border-color:var(--green-light)}
+.dup[aria-expanded="true"]{background:var(--green-mid);color:var(--white);border-color:var(--green-mid)}
+.dup .ct{font-size:.8rem;opacity:.75;font-weight:400}
+.dupwrap{margin-top:16px}
+.dupwrap:empty{display:none}
+.duphead{font-size:.9rem;color:var(--text-soft);margin-bottom:11px}
+.duphead b{color:var(--green-deep)}
+
+/* ── chips ── */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--cream);border:1px solid var(--border);border-radius:999px;
+  padding:8px 14px;font-size:.92rem}
+.chip.hot{background:var(--gold-light);border-color:var(--gold);font-weight:700}
+.chip .sci{font-style:italic;color:var(--text-soft);font-size:.8rem;margin-left:6px}
+
+/* ── map ── */
+#map{width:100%;height:480px;border-radius:12px;background:var(--sand)}
+.leaflet-container{font:inherit}
+.leaflet-popup-content{margin:12px 14px;font-size:.9rem;line-height:1.45}
+.leaflet-popup-content b{color:var(--green-deep)}
+.leaflet-popup-content .sci{font-style:italic;color:var(--text-soft);font-size:.82rem}
+.legend{display:flex;gap:18px;flex-wrap:wrap;color:var(--text-soft);font-size:.85rem;margin-top:12px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;
+  vertical-align:-1px}
+.maptip{color:var(--text-soft);font-size:.88rem;margin-top:10px}
+
+/* ── for the record ── */
+details.rec{background:var(--white);border:1px solid var(--border);border-radius:16px;margin-top:16px;
+  overflow:hidden}
+details.rec>summary{padding:22px 30px;cursor:pointer;font-family:'Playfair Display',Georgia,serif;
+  font-size:1.35rem;font-weight:600;color:var(--green-deep);list-style:none}
+details.rec>summary::-webkit-details-marker{display:none}
+details.rec>summary::after{content:"›";float:right;transform:rotate(90deg);color:var(--text-soft)}
+details.rec[open]>summary::after{transform:rotate(-90deg)}
+.recbody{padding:0 30px 28px}
+.grid2{display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-size:.75rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--text-soft);font-weight:700;padding:0 10px 8px 0;border-bottom:1px solid var(--border)}
+td{padding:8px 10px 8px 0;border-bottom:1px solid var(--border)}
 tr:last-child td{border-bottom:0}
 td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.bar{height:7px;border-radius:4px;background:var(--green);min-width:2px;display:block}
-.bar.gold{background:var(--gold)} .bar.blue{background:var(--blue)}
-.bar.rose{background:var(--rose)} .bar.violet{background:var(--violet)}
-.barcell{width:34%}
-.chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 11px;font-size:13.5px}
-.chip.hot{border-color:var(--gold);background:#2a2410;color:var(--gold);font-weight:600}
-.chip .sci{color:var(--dim);font-style:italic;font-size:12px;margin-left:5px}
-.thumbs{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(132px,1fr))}
-.th{background:var(--card);border-radius:11px;overflow:hidden;text-decoration:none;color:inherit;display:block}
-.th img{width:100%;aspect-ratio:1;object-fit:cover;display:block;background:var(--line2)}
-.th .cap{padding:7px 9px;font-size:12px;line-height:1.35}
-.th .who{color:var(--dim);font-size:11px}
-.rank{color:var(--gold);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em}
-canvas{width:100%;height:auto;border-radius:12px;background:var(--card);display:block}
-.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12.5px;margin-top:10px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
-.empty{color:var(--dim);font-size:14px;padding:8px 0}
-.err{background:#2e1712;border:1px solid #5c2a1e;color:var(--rose);border-radius:12px;
-  padding:14px 16px;margin:20px 0 0;font-size:14px}
-footer{margin:34px 0 0;color:var(--dim);font-size:12.5px;line-height:1.7;
-  border-top:1px solid var(--line);padding-top:16px}
-@media (max-width:640px){h1{font-size:24px}.b .n{font-size:34px}.barcell{display:none}}
+.bar{display:block;height:7px;border-radius:4px;background:var(--green-light);min-width:2px}
+.bar.gold{background:var(--gold-light)}
+.bar.rust{background:var(--rust)}
+.barcell{width:36%}
+h3{font-size:1.05rem;color:var(--green-deep);margin-bottom:10px}
+
+.empty{color:var(--text-soft);font-size:.95rem;padding:6px 0}
+.err{background:#fbeee8;border:1px solid #e2c3b3;color:var(--rust);border-radius:12px;
+  padding:15px 18px;margin-top:16px}
+footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
+  color:var(--text-soft);font-size:.85rem;line-height:1.75}
+@media (max-width:640px){
+  .hero{padding:26px 22px}section{padding:22px 20px}.recbody{padding:0 20px 22px}
+  details.rec>summary{padding:18px 20px}.barcell{display:none}
+}
 </style>
 </head>
 <body>
@@ -74,8 +155,8 @@ footer{margin:34px 0 0;color:var(--dim);font-size:12.5px;line-height:1.7;
 
 <header>
   <div>
-    <h1>Walkabout Debrief</h1>
-    <div class="sub" id="sub">Palma Sola Botanical Park &middot; iNaturalist</div>
+    <span class="label">Palma Sola Botanical Park</span>
+    <h1>Walkabout</h1>
   </div>
   <div class="ctrl">
     <label for="day">Day</label><input type="date" id="day">
@@ -85,85 +166,109 @@ footer{margin:34px 0 0;color:var(--dim);font-size:12.5px;line-height:1.7;
   </div>
 </header>
 
-<div class="big">
-  <div class="b"><div class="n" id="kObs">&hellip;</div><div class="c">observations</div></div>
-  <div class="b blue"><div class="n" id="kPeople">&hellip;</div><div class="c">observers</div></div>
-  <div class="b gold"><div class="n" id="kTaxa">&hellip;</div><div class="c">distinct taxa</div></div>
-  <div class="b"><div class="n" id="kPhotos">&hellip;</div><div class="c">photographs</div></div>
-  <div class="b rose"><div class="n" id="kNew">&hellip;</div><div class="c">new to the park</div></div>
+<div class="hero">
+  <div class="lead" id="lead">Loading the evening&hellip;</div>
+  <div class="when" id="when"></div>
+</div>
+
+<div class="tallies">
+  <div class="tally"><div class="n" id="kObs">&mdash;</div><div class="c">observations</div></div>
+  <div class="tally"><div class="n" id="kPeople">&mdash;</div><div class="c">people out walking</div></div>
+  <div class="tally"><div class="n" id="kTaxa">&mdash;</div><div class="c">different species</div></div>
+  <div class="tally"><div class="n" id="kPhotos">&mdash;</div><div class="c">photographs taken</div></div>
+  <div class="tally gold"><div class="n" id="kNew">&mdash;</div><div class="c">first for the park</div></div>
 </div>
 
 <div id="err"></div>
 
+<section id="secWall">
+  <h2>The evening<span class="tag" id="tWall"></span></h2>
+  <p class="sub">Everything the group photographed, newest first. Click any picture to open it on iNaturalist.</p>
+  <div class="wall" id="wall"></div>
+</section>
+
+<section class="pale">
+  <h2>Who was out<span class="tag" id="tTeam"></span></h2>
+  <p class="sub">What each person recorded. The map pin figure is how precisely their observations were
+    placed &mdash; under 10 metres means the pin was put on the actual plant.</p>
+  <div class="people" id="team"></div>
+</section>
+
 <section id="secNew">
-  <h2>New to the park <span class="tag" id="tNew"></span></h2>
-  <p class="note">Identified to species, and no record in <b>plant_signage</b>, <b>research</b> or <b>wildlife_signage</b> matches the taxon. If one of these holds up, somebody found something the park has never recorded.</p>
+  <h2>A first for the park<span class="tag" id="tNew"></span></h2>
+  <p class="sub" id="newSub">Species with no record anywhere in the park&rsquo;s catalogue &mdash; not on a
+    plant page, not in the research file, not among the wildlife. If one of these holds up, somebody
+    found something the park has never documented.</p>
   <div class="chips" id="newList"></div>
 </section>
 
-<section id="secUnpub">
-  <h2>Known, but no page yet <span class="tag" id="tUnpub"></span></h2>
-  <p class="note">In the research file, never promoted to a published page. Tonight&rsquo;s photograph may be what unblocks it.</p>
+<section id="secDup" class="sandy">
+  <h2>Seen more than once<span class="tag" id="tDup"></span></h2>
+  <p class="sub">The same species recorded several times tonight. Some of those are genuinely
+    different plants in different places &mdash; and some are the group crowding round the same one.
+    <b>Click a name to see the photographs side by side and tell which.</b></p>
+  <div class="dups" id="dups"></div>
+  <div class="dupwrap" id="dupwrap"></div>
+</section>
+
+<section id="secQueue">
+  <h2>Still to identify<span class="tag" id="tQueue"></span></h2>
+  <p class="sub">Recorded tonight but not yet named to a species. This is the pile to work through
+    together on the screen.</p>
+  <div class="boxes" id="queue"></div>
+</section>
+
+<section id="secUnpub" class="pale">
+  <h2>Known here, research not completed yet<span class="tag" id="tUnpub"></span></h2>
+  <p class="sub">The park knows it has these, but they have no finished page on the website yet.
+    Tonight&rsquo;s photographs may be what gets one written.</p>
   <div class="chips" id="unpubList"></div>
 </section>
 
 <section>
-  <h2>The team <span class="tag" id="tTeam"></span></h2>
-  <p class="note">Median pin accuracy is the number that decides whether tonight becomes map data. Under 10&nbsp;m means somebody dragged the pin onto the plant; 50&nbsp;m is untouched phone GPS in a park 180&nbsp;m across.</p>
-  <table><thead><tr><th>Observer</th><th class="n">Obs</th><th class="n">Taxa</th><th class="n">Photos</th><th class="n">Median pin</th><th class="barcell"></th></tr></thead>
-  <tbody id="team"></tbody></table>
-</section>
-
-<section>
-  <h2>How deep did the identifications go <span class="tag" id="tRank"></span></h2>
-  <p class="note">Anything at genus or above is unfinished business &mdash; that is the queue for the screen session.</p>
-  <table><thead><tr><th>Rank</th><th class="n">Obs</th><th class="n">Share</th><th class="barcell"></th></tr></thead>
-  <tbody id="ranks"></tbody></table>
-</section>
-
-<section>
-  <h2>Pin quality <span class="tag" id="tAcc"></span></h2>
-  <p class="note">Anything at 10&nbsp;m or better can go straight into <b>placements.json</b> as a coordinate. Anything over 30&nbsp;m cannot be used to place a plant at all.</p>
-  <table><thead><tr><th>Accuracy</th><th class="n">Obs</th><th class="n">Share</th><th class="barcell"></th></tr></thead>
-  <tbody id="acc"></tbody></table>
-</section>
-
-<section>
-  <h2>Photographs per observation <span class="tag" id="tPh"></span></h2>
-  <p class="note">One photograph is one angle. A determination usually needs bark or trunk, a leaf underside, and a flower or fruit &mdash; three photographs of different things beat three people agreeing.</p>
-  <table><thead><tr><th>Photos</th><th class="n">Obs</th><th class="n">Share</th><th class="barcell"></th></tr></thead>
-  <tbody id="photos"></tbody></table>
-</section>
-
-<section>
-  <h2>Doubled up <span class="tag" id="tDup"></span></h2>
-  <p class="note">The same taxon recorded more than once tonight. Some of that is two genuinely different plants; some is the group converging on the showy one. Worth knowing which.</p>
-  <div class="chips" id="dups"></div>
-</section>
-
-<section>
-  <h2>Where we actually walked</h2>
-  <p class="note">Every observation with a usable coordinate, plotted inside the park boundary. The lighter box is the northeast quadrant. Empty ground is next week&rsquo;s zone.</p>
-  <canvas id="map" width="1120" height="520"></canvas>
+  <h2>Where we walked</h2>
+  <p class="sub">Every observation with a location, on the satellite view. The shaded box is the
+    northeast quadrant. Empty ground is somewhere nobody has been yet.</p>
+  <div id="map"></div>
   <div class="legend">
-    <span><i style="background:var(--green)"></i>pin under 10&thinsp;m</span>
-    <span><i style="background:var(--gold)"></i>10&ndash;30&thinsp;m</span>
-    <span><i style="background:var(--rose)"></i>over 30&thinsp;m &mdash; not usable</span>
-    <span><i style="background:var(--dim)"></i>obscured or no coordinate</span>
+    <span><i style="background:#2d6a35"></i>pin placed on the plant &mdash; under 10&thinsp;m</span>
+    <span><i style="background:#c5922a"></i>10&ndash;30&thinsp;m</span>
+    <span><i style="background:#9a4a24"></i>over 30&thinsp;m &mdash; too vague to use</span>
+    <span><i style="background:#8e9c90"></i>location hidden by iNaturalist</span>
   </div>
+  <p class="maptip" id="maptip"></p>
 </section>
 
-<section>
-  <h2>Needs identifying <span class="tag" id="tQueue"></span></h2>
-  <p class="note">Genus or above. Put this on the screen and work it together.</p>
-  <div class="thumbs" id="queue"></div>
-</section>
+<details class="rec">
+  <summary>For the record</summary>
+  <div class="recbody">
+    <p class="sub">The working numbers &mdash; useful for deciding what to fix, not especially
+      interesting on a screen in the office.</p>
+    <div class="grid2">
+      <div>
+        <h3>How far identifications got</h3>
+        <table><thead><tr><th>Level</th><th class="n">Obs</th><th class="n">Share</th><th class="barcell"></th></tr></thead>
+        <tbody id="ranks"></tbody></table>
+      </div>
+      <div>
+        <h3>How precisely pins were placed</h3>
+        <table><thead><tr><th>Accuracy</th><th class="n">Obs</th><th class="n">Share</th><th class="barcell"></th></tr></thead>
+        <tbody id="acc"></tbody></table>
+      </div>
+      <div>
+        <h3>Photographs per observation</h3>
+        <table><thead><tr><th>Photos</th><th class="n">Obs</th><th class="n">Share</th><th class="barcell"></th></tr></thead>
+        <tbody id="photos"></tbody></table>
+      </div>
+    </div>
+  </div>
+</details>
 
 <footer>
   <span id="status">Starting&hellip;</span><br><br>
-  Counts cover <b id="windowTxt">today from 16:45</b>, by observation time, for the
-  <b>palma-sola-botanical-park</b> project. Observations still on somebody&rsquo;s phone will not
-  appear until they upload. Obscured records return no coordinate and are counted but not plotted.
+  Live from iNaturalist, covering <b id="windowTxt">today from 16:45</b> by the time each observation
+  was made, for the <b>palma-sola-botanical-park</b> project. Anything still on somebody&rsquo;s phone
+  will appear here once they upload it.
 </footer>
 
 </div>
@@ -176,15 +281,23 @@ const BOUNDS={n:27.5150,s:27.5120,w:-82.6615,e:-82.6580};
 const NEBOX={s:27.51380,w:-82.65980};
 const $=id=>document.getElementById(id);
 const pct=(a,b)=>b?Math.round(a/b*100)+"%":"0%";
-let timer=null,autoOn=true;
+let timer=null,autoOn=true,DUPS={};
 
-function todayISO(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);}
+function todayISO(){const d=new Date();
+  return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);}
+function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,c=>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function photoOf(o,size){const p=(o.photos||[])[0];
+  return p&&p.url?p.url.replace("square",size||"medium"):"";}
+function uriOf(o){return o.uri||("https://www.inaturalist.org/observations/"+o.id);}
+function nameOf(t){return (t&&(t.preferred_common_name||t.name))||"not yet identified";}
+function whoOf(o){return (o.user&&(o.user.name||o.user.login))||"someone";}
 
 async function fetchAll(day){
   let page=1,out=[];
   while(page<=8){
     const url=API+"?project_id="+PROJECT+"&d1="+day+"&d2="+day+
-      "&per_page=200&page="+page+"&order_by=observed_on&order=asc&_="+Date.now();
+      "&per_page=200&page="+page+"&order_by=observed_on&order=desc&_="+Date.now();
     const r=await fetch(url,{cache:"no-store"});
     if(!r.ok) throw new Error("iNaturalist returned "+r.status);
     const j=await r.json();
@@ -194,179 +307,238 @@ async function fetchAll(day){
   }
   return out;
 }
-
-function afterCutoff(o,day,from){
-  const t=o.time_observed_at||o.observed_on_string||"";
+function afterCutoff(o,from){
+  const t=o.time_observed_at||"";
   if(!t) return true;
-  const d=new Date(t);
-  if(isNaN(d)) return true;
+  const d=new Date(t); if(isNaN(d)) return true;
   const [hh,mm]=from.split(":").map(Number);
   const cut=new Date(d); cut.setHours(hh,mm,0,0);
   return d>=cut;
 }
-
 function med(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;
   return s.length%2?s[m]:Math.round((s[m-1]+s[m])/2);}
-
-function bar(v,max,cls){const w=max?Math.max(2,Math.round(v/max*100)):2;
-  return '<span class="bar '+(cls||"")+'" style="width:'+w+'%"></span>';}
+function bar(v,max,cls){return '<span class="bar '+(cls||"")+'" style="width:'+
+  (max?Math.max(2,Math.round(v/max*100)):2)+'%"></span>';}
+function obsBox(o,showRank){
+  const t=o.taxon||{},src=photoOf(o);
+  return '<a class="box" href="'+uriOf(o)+'" target="_blank" rel="noopener">'+
+    (src?'<img loading="lazy" src="'+src+'" alt="">':'<img alt="">')+
+    '<div class="cap">'+(showRank?'<div class="rk">'+esc(t.rank||"unknown")+'</div>':'')+
+    '<div class="nm">'+esc(nameOf(t))+'</div>'+
+    (t.name&&t.preferred_common_name?'<div class="sci">'+esc(t.name)+'</div>':'')+
+    '<div class="who">'+esc(whoOf(o))+'</div></div></a>';
+}
 
 function render(obs){
   const people={},taxa={},ranks={},photoDist={},accs=[],newSp=new Map(),unpub=new Map();
   let photos=0;
+  DUPS={};
   obs.forEach(o=>{
-    const u=(o.user&&(o.user.login||o.user.name))||"unknown";
+    const u=whoOf(o);
     const p=people[u]||(people[u]={obs:0,taxa:new Set(),photos:0,acc:[]});
     p.obs++;
     const np=(o.photos||[]).length; p.photos+=np; photos+=np;
     photoDist[Math.min(np,5)]=(photoDist[Math.min(np,5)]||0)+1;
     const a=o.positional_accuracy;
     if(typeof a==="number"){accs.push(a);p.acc.push(a);}
-    const t=o.taxon||{};
-    const rank=(t.rank||"unknown").toLowerCase();
+    const t=o.taxon||{},rank=(t.rank||"unknown").toLowerCase();
     ranks[rank]=(ranks[rank]||0)+1;
     if(t.id){
       p.taxa.add(t.id);
-      const rec=taxa[t.id]||(taxa[t.id]={n:0,name:t.preferred_common_name||t.name,sci:t.name,rank:rank,who:new Set()});
+      const rec=taxa[t.id]||(taxa[t.id]={n:0,name:nameOf(t),sci:t.name,who:new Set()});
       rec.n++; rec.who.add(u);
-      if(rank==="species"||rank==="subspecies"||rank==="variety"){
+      (DUPS[t.id]=DUPS[t.id]||[]).push(o);
+      if(["species","subspecies","variety","hybrid"].includes(rank)){
         if(!KNOWN_TAXA.has(t.id)) newSp.set(t.id,rec);
         else if(!PUBLISHED_TAXA.has(t.id)) unpub.set(t.id,rec);
       }
     }
   });
-  const nTaxa=Object.keys(taxa).length;
+  const nPeople=Object.keys(people).length,nTaxa=Object.keys(taxa).length;
+
+  // ── the headline ──
+  const dayTxt=new Date(($("day").value||todayISO())+"T12:00:00")
+    .toLocaleDateString([], {weekday:"long", day:"numeric", month:"long"});
+  if(!obs.length){
+    $("lead").innerHTML="Nothing recorded in this window yet.";
+    $("when").textContent=dayTxt+" — try setting the time to 00:00, or pick a day the group was out.";
+  } else {
+    const top=Object.values(taxa).sort((a,b)=>b.n-a.n)[0];
+    $("lead").innerHTML=
+      "<b>"+nPeople+(nPeople===1?" person":" people")+"</b> recorded <b>"+obs.length+
+      "</b> observation"+(obs.length===1?"":"s")+" of <b>"+nTaxa+"</b> different "+
+      (nTaxa===1?"species":"species")+
+      (newSp.size?", including <b>"+newSp.size+"</b> never recorded here before":"")+".";
+    $("when").textContent=dayTxt+(top?" · most recorded: "+top.name:"");
+  }
   $("kObs").textContent=obs.length;
-  $("kPeople").textContent=Object.keys(people).length;
+  $("kPeople").textContent=nPeople;
   $("kTaxa").textContent=nTaxa;
   $("kPhotos").textContent=photos;
   $("kNew").textContent=newSp.size;
 
-  const chip=(r,hot)=>'<span class="chip'+(hot?" hot":"")+'">'+
-    (r.name||r.sci)+'<span class="sci">'+(r.sci||"")+'</span></span>';
-  $("newList").innerHTML=newSp.size?[...newSp.values()].map(r=>chip(r,true)).join("")
-    :'<div class="empty">Nothing tonight that the catalogue has never seen. That is a normal result.</div>';
-  $("tNew").textContent=newSp.size?newSp.size+" to check":"";
-  $("unpubList").innerHTML=unpub.size?[...unpub.values()].map(r=>chip(r,false)).join("")
-    :'<div class="empty">Everything recorded tonight already has a page.</div>';
-  $("tUnpub").textContent=unpub.size||"";
+  // ── photo wall ──
+  const withPhoto=obs.filter(o=>photoOf(o));
+  $("wall").innerHTML=withPhoto.slice(0,48).map(o=>
+    '<a href="'+uriOf(o)+'" target="_blank" rel="noopener" title="'+esc(nameOf(o.taxon))+
+    ' — '+esc(whoOf(o))+'"><img loading="lazy" src="'+photoOf(o)+'" alt=""></a>').join("")
+    ||'<p class="empty">No photographs in this window yet.</p>';
+  $("tWall").textContent=withPhoto.length?withPhoto.length+" photographed"+
+    (withPhoto.length>48?" · showing 48":""):"";
 
+  // ── people ──
   const rows=Object.entries(people).sort((a,b)=>b[1].obs-a[1].obs);
-  const maxObs=Math.max(1,...rows.map(r=>r[1].obs));
   $("team").innerHTML=rows.map(([u,p])=>{
     const m=med(p.acc);
-    const col=m==null?"":(m<=10?"var(--green)":m<=30?"var(--gold)":"var(--rose)");
-    return '<tr><td>'+u+'</td><td class="n">'+p.obs+'</td><td class="n">'+p.taxa.size+
-      '</td><td class="n">'+p.photos+'</td><td class="n" style="color:'+col+'">'+
-      (m==null?"&mdash;":m+" m")+'</td><td class="barcell">'+bar(p.obs,maxObs)+'</td></tr>';
-  }).join("")||'<tr><td class="empty" colspan="6">No observations in the window yet.</td></tr>';
-  $("tTeam").textContent=rows.length?rows.length+" people":"";
+    const col=m==null?"var(--text-soft)":(m<=10?"var(--green-mid)":m<=30?"var(--gold)":"var(--rust)");
+    const word=m==null?"no pin accuracy recorded":
+      (m<=10?"pins on the plant — "+m+" m":m<=30?"pins near the plant — "+m+" m":"pins too vague — "+m+" m");
+    return '<div class="person"><div class="nm">'+esc(u)+'</div><div class="st">'+
+      p.obs+(p.obs===1?" observation":" observations")+" · "+p.taxa.size+" species · "+
+      p.photos+" photos</div><div class=\"pin\" style=\"color:"+col+"\">"+word+"</div></div>";
+  }).join("")||'<p class="empty">Nobody yet.</p>';
+  $("tTeam").textContent=rows.length?rows.length+(rows.length===1?" person":" people"):"";
 
+  // ── first for the park ──
+  const chip=(r,hot)=>'<span class="chip'+(hot?" hot":"")+'">'+esc(r.name)+
+    (r.sci?'<span class="sci">'+esc(r.sci)+'</span>':'')+'</span>';
+  $("newList").innerHTML=newSp.size?[...newSp.values()].map(r=>chip(r,true)).join("")
+    :'<p class="empty">Nothing brand new tonight — which is completely normal. Most evenings add '+
+     'depth rather than firsts.</p>';
+  $("tNew").textContent=newSp.size?newSp.size+" to check":"";
+
+  $("unpubList").innerHTML=unpub.size?[...unpub.values()].map(r=>chip(r,false)).join("")
+    :'<p class="empty">Everything recorded tonight already has a finished page.</p>';
+  $("tUnpub").textContent=unpub.size||"";
+
+  // ── seen more than once ──
+  const dup=Object.entries(taxa).filter(([,t])=>t.n>1).sort((a,b)=>b[1].n-a[1].n);
+  $("dups").innerHTML=dup.map(([id,t])=>
+    '<button class="dup" type="button" aria-expanded="false" data-taxon="'+id+'">'+esc(t.name)+
+    '<span class="ct">'+t.n+' times'+(t.who.size>1?", "+t.who.size+" people":"")+'</span></button>').join("")
+    ||'<p class="empty">Every species was recorded once. Good spacing out.</p>';
+  $("dupwrap").innerHTML="";
+  $("tDup").textContent=dup.length?dup.length+" species":"";
+
+  // ── still to identify ──
+  const coarse=new Set(["genus","family","order","class","phylum","kingdom","unknown"]);
+  const q=obs.filter(o=>coarse.has(((o.taxon||{}).rank||"unknown").toLowerCase()));
+  $("queue").innerHTML=q.slice(0,36).map(o=>obsBox(o,true)).join("")
+    ||'<p class="empty">Everything got to a species tonight. That is rare and worth saying out loud.</p>';
+  $("tQueue").textContent=q.length||"";
+
+  // ── for the record ──
   const ORDER=["species","subspecies","variety","hybrid","genus","family","order","class","phylum","kingdom","unknown"];
   const rk=Object.entries(ranks).sort((a,b)=>ORDER.indexOf(a[0])-ORDER.indexOf(b[0]));
   const maxR=Math.max(1,...rk.map(r=>r[1]));
-  const coarse=new Set(["genus","family","order","class","phylum","kingdom","unknown"]);
-  $("ranks").innerHTML=rk.map(([r,n])=>
-    '<tr><td>'+r+'</td><td class="n">'+n+'</td><td class="n">'+pct(n,obs.length)+
-    '</td><td class="barcell">'+bar(n,maxR,coarse.has(r)?"gold":"")+'</td></tr>').join("")
+  $("ranks").innerHTML=rk.map(([r,n])=>'<tr><td>'+r+'</td><td class="n">'+n+'</td><td class="n">'+
+    pct(n,obs.length)+'</td><td class="barcell">'+bar(n,maxR,coarse.has(r)?"gold":"")+'</td></tr>').join("")
     ||'<tr><td class="empty" colspan="4">&mdash;</td></tr>';
-  const deep=obs.length-rk.filter(([r])=>coarse.has(r)).reduce((s,[,n])=>s+n,0);
-  $("tRank").textContent=obs.length?pct(deep,obs.length)+" to species":"";
 
-  const buckets=[["0 – 10 m",0,10,""],["11 – 30 m",11,30,"gold"],["over 30 m",31,1e9,"rose"]];
-  const noAcc=obs.length-accs.length;
-  const bk=buckets.map(([lab,lo,hi,cls])=>[lab,accs.filter(a=>a>=lo&&a<=hi).length,cls]);
-  bk.push(["not reported",noAcc,"violet"]);
+  const bk=[["0 – 10 m",accs.filter(a=>a<=10).length,""],
+            ["11 – 30 m",accs.filter(a=>a>10&&a<=30).length,"gold"],
+            ["over 30 m",accs.filter(a=>a>30).length,"rust"],
+            ["not recorded",obs.length-accs.length,""]];
   const maxA=Math.max(1,...bk.map(b=>b[1]));
-  $("acc").innerHTML=bk.map(([lab,n,cls])=>
-    '<tr><td>'+lab+'</td><td class="n">'+n+'</td><td class="n">'+pct(n,obs.length)+
-    '</td><td class="barcell">'+bar(n,maxA,cls)+'</td></tr>').join("");
-  const m=med(accs);
-  $("tAcc").textContent=m==null?"":"median "+m+" m";
+  $("acc").innerHTML=bk.map(([l,n,c])=>'<tr><td>'+l+'</td><td class="n">'+n+'</td><td class="n">'+
+    pct(n,obs.length)+'</td><td class="barcell">'+bar(n,maxA,c)+'</td></tr>').join("");
 
   const pd=Object.entries(photoDist).sort((a,b)=>a[0]-b[0]);
   const maxP=Math.max(1,...pd.map(p=>p[1]));
-  $("photos").innerHTML=pd.map(([k,n])=>
-    '<tr><td>'+(k==="5"?"5 or more":k+(k==="1"?" photo":" photos"))+'</td><td class="n">'+n+
-    '</td><td class="n">'+pct(n,obs.length)+'</td><td class="barcell">'+
-    bar(n,maxP,k==="1"?"rose":"")+'</td></tr>').join("");
-  $("tPh").textContent=obs.length?(photos/obs.length).toFixed(1)+" average":"";
-
-  const dup=Object.values(taxa).filter(t=>t.n>1).sort((a,b)=>b.n-a.n);
-  $("dups").innerHTML=dup.length?dup.map(t=>'<span class="chip">'+(t.name||t.sci)+
-    '<span class="sci">&times;'+t.n+(t.who.size>1?", "+t.who.size+" people":"")+'</span></span>').join("")
-    :'<div class="empty">No taxon recorded twice. Good strip discipline.</div>';
-  $("tDup").textContent=dup.length||"";
-
-  const q=obs.filter(o=>coarse.has(((o.taxon||{}).rank||"unknown").toLowerCase())).slice(0,36);
-  $("queue").innerHTML=q.length?q.map(o=>{
-    const ph=(o.photos||[])[0];
-    const src=ph&&ph.url?ph.url.replace("square","medium"):"";
-    const t=o.taxon||{};
-    return '<a class="th" href="'+(o.uri||("https://www.inaturalist.org/observations/"+o.id))+
-      '" target="_blank" rel="noopener">'+(src?'<img loading="lazy" src="'+src+'" alt="">':'')+
-      '<div class="cap"><div class="rank">'+(t.rank||"unknown")+'</div>'+
-      (t.preferred_common_name||t.name||"unidentified")+
-      '<div class="who">'+((o.user&&o.user.login)||"")+'</div></div></a>';
-  }).join(""):'<div class="empty">Everything got to species. Rare and excellent.</div>';
-  $("tQueue").textContent=q.length||"";
+  $("photos").innerHTML=pd.map(([k,n])=>'<tr><td>'+(k==="5"?"5 or more":k+(k==="1"?" photo":" photos"))+
+    '</td><td class="n">'+n+'</td><td class="n">'+pct(n,obs.length)+'</td><td class="barcell">'+
+    bar(n,maxP,k==="1"?"rust":"")+'</td></tr>').join("");
 
   drawMap(obs);
 }
 
+// ── duplicates: click to open the photographs beneath ──
+document.addEventListener("click",e=>{
+  const b=e.target.closest(".dup");
+  if(!b) return;
+  const id=b.dataset.taxon, open=b.getAttribute("aria-expanded")==="true";
+  document.querySelectorAll(".dup").forEach(x=>x.setAttribute("aria-expanded","false"));
+  const wrap=$("dupwrap");
+  if(open){ wrap.innerHTML=""; return; }
+  b.setAttribute("aria-expanded","true");
+  const list=DUPS[id]||[];
+  const nm=(list[0]&&nameOf(list[0].taxon))||"these";
+  const who=[...new Set(list.map(whoOf))];
+  wrap.innerHTML='<p class="duphead"><b>'+esc(nm)+'</b> — '+list.length+
+    ' observations by '+who.map(esc).join(", ")+
+    '. Same plant seen several times, or different plants in different places?</p>'+
+    '<div class="boxes">'+list.map(o=>obsBox(o,false)).join("")+'</div>';
+  wrap.scrollIntoView({behavior:"smooth",block:"nearest"});
+});
+
+let MAP=null,LAYER=null;
 function drawMap(obs){
-  const c=$("map"),g=c.getContext("2d");
-  const W=c.width,H=c.height,pad=26;
-  g.clearRect(0,0,W,H);
-  const x=lng=>pad+(lng-BOUNDS.w)/(BOUNDS.e-BOUNDS.w)*(W-pad*2);
-  const y=lat=>pad+(BOUNDS.n-lat)/(BOUNDS.n-BOUNDS.s)*(H-pad*2);
-  g.fillStyle="#18301f";g.fillRect(0,0,W,H);
-  g.fillStyle="rgba(127,224,138,.07)";
-  g.fillRect(x(NEBOX.w),y(BOUNDS.n),x(BOUNDS.e)-x(NEBOX.w),y(NEBOX.s)-y(BOUNDS.n));
-  g.strokeStyle="#254733";g.lineWidth=1;
-  g.strokeRect(pad,pad,W-pad*2,H-pad*2);
-  g.fillStyle="#6d8f78";g.font="12px -apple-system,sans-serif";
-  g.fillText("northeast quadrant",x(NEBOX.w)+10,y(BOUNDS.n)+20);
-  g.fillText("N",W/2,16);
+  if(typeof L==="undefined"){
+    $("map").innerHTML='<p class="empty" style="padding:22px">The map could not load — '+
+      'everything above is unaffected.</p>'; return;
+  }
+  if(!MAP){
+    MAP=L.map("map",{scrollWheelZoom:false});
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      {maxZoom:21,maxNativeZoom:19,attribution:"Imagery &copy; Esri, Maxar, Earthstar Geographics"}).addTo(MAP);
+    L.rectangle([[BOUNDS.s,BOUNDS.w],[BOUNDS.n,BOUNDS.e]],
+      {color:"#eabc5a",weight:2,fill:false,dashArray:"6,6",interactive:false}).addTo(MAP);
+    L.rectangle([[NEBOX.s,NEBOX.w],[BOUNDS.n,BOUNDS.e]],
+      {color:"#c5922a",weight:1.5,fillColor:"#c5922a",fillOpacity:.08,interactive:false}).addTo(MAP);
+    MAP.fitBounds([[BOUNDS.s,BOUNDS.w],[BOUNDS.n,BOUNDS.e]],{padding:[12,12]});
+    MAP.on("click",()=>MAP.scrollWheelZoom.enable());
+  }
+  if(LAYER) MAP.removeLayer(LAYER);
+  LAYER=L.layerGroup().addTo(MAP);
+  let plotted=0,offmap=0;
   obs.forEach(o=>{
     let lat=null,lng=null;
     if(o.geojson&&o.geojson.coordinates){lng=o.geojson.coordinates[0];lat=o.geojson.coordinates[1];}
     else if(o.location){const p=o.location.split(",");lat=+p[0];lng=+p[1];}
-    if(lat==null||isNaN(lat)) return;
-    if(lat<BOUNDS.s||lat>BOUNDS.n||lng<BOUNDS.w||lng>BOUNDS.e) return;
+    if(lat==null||isNaN(lat)||lng==null||isNaN(lng)) return;
+    if(lat<BOUNDS.s-0.002||lat>BOUNDS.n+0.002||lng<BOUNDS.w-0.002||lng>BOUNDS.e+0.002){offmap++;return;}
     const a=o.positional_accuracy;
-    const col=o.obscured?"#6d8f78":(typeof a!=="number"?"#c9a4ff":a<=10?"#7fe08a":a<=30?"#f0c04a":"#ff9d8a");
-    if(typeof a==="number"&&a<=60){
-      const rx=(a/111320)/(BOUNDS.e-BOUNDS.w)*(W-pad*2);
-      g.beginPath();g.arc(x(lng),y(lat),Math.max(3,rx),0,7);
-      g.fillStyle=col+"22";g.fill();
-    }
-    g.beginPath();g.arc(x(lng),y(lat),4.5,0,7);
-    g.fillStyle=col;g.fill();
+    const col=o.obscured?"#8e9c90":(typeof a!=="number"?"#8e9c90":a<=10?"#2d6a35":a<=30?"#c5922a":"#9a4a24");
+    if(typeof a==="number"&&a>3&&a<=120)
+      L.circle([lat,lng],{radius:a,color:col,weight:1,opacity:.5,fillColor:col,
+        fillOpacity:.09,interactive:false}).addTo(LAYER);
+    L.circleMarker([lat,lng],{radius:6,color:"#faf8f3",weight:2,fillColor:col,fillOpacity:.95})
+      .bindPopup('<b>'+esc(nameOf(o.taxon))+'</b>'+
+        ((o.taxon||{}).name&&(o.taxon||{}).preferred_common_name?
+          '<div class="sci">'+esc(o.taxon.name)+'</div>':'')+
+        '<div>'+esc(whoOf(o))+(typeof a==="number"?' · '+a+' m pin':'')+'</div>'+
+        '<div><a href="'+uriOf(o)+'" target="_blank" rel="noopener">See it on iNaturalist &rarr;</a></div>')
+      .addTo(LAYER);
+    plotted++;
   });
+  $("maptip").innerHTML=plotted||offmap
+    ? plotted+" shown on the map"+(offmap?", "+offmap+" left off because iNaturalist hid or scattered their location":"")+
+      ". The rings show how precisely each pin was placed. Click the map once to enable scroll-zoom."
+    : "Nothing to place on the map for this window.";
 }
 
 async function update(){
   const day=$("day").value||todayISO(),from=$("from").value||"16:45";
   $("windowTxt").textContent=day+" from "+from;
-  $("status").textContent="Updating…";$("err").innerHTML="";
+  $("status").textContent="Updating…"; $("err").innerHTML="";
   try{
     const all=await fetchAll(day);
-    render(all.filter(o=>afterCutoff(o,day,from)));
-    $("status").textContent="Updated "+new Date().toLocaleTimeString([],{hour:"numeric",minute:"2-digit",second:"2-digit"})+
-      " · "+all.length+" observations that day, "+$("kObs").textContent+" in the window";
+    render(all.filter(o=>afterCutoff(o,from)));
+    $("status").textContent="Updated "+new Date().toLocaleTimeString([],
+      {hour:"numeric",minute:"2-digit"})+" · "+all.length+" observations that day, "+
+      $("kObs").textContent+" in this window";
   }catch(e){
-    $("status").textContent="Couldn't update";
-    $("err").innerHTML='<div class="err">Couldn’t reach iNaturalist ('+e.message+
-      '). Check the connection, or open <a style="color:var(--blue)" target="_blank" rel="noopener" href="https://www.inaturalist.org/projects/'+
-      PROJECT+'">the project page</a> directly.</div>';
+    $("status").textContent="Couldn’t update";
+    $("err").innerHTML='<div class="err">Couldn’t reach iNaturalist ('+esc(e.message)+
+      '). Check the connection, or open <a href="https://www.inaturalist.org/projects/'+PROJECT+
+      '" target="_blank" rel="noopener">the project page</a> directly.</div>';
   }
 }
 $("go").addEventListener("click",update);
 $("day").addEventListener("change",update);
 $("from").addEventListener("change",update);
 $("auto").addEventListener("click",()=>{
-  autoOn=!autoOn;$("auto").textContent="Auto: "+(autoOn?"on":"off");
+  autoOn=!autoOn; $("auto").textContent="Auto: "+(autoOn?"on":"off");
   if(autoOn){timer=setInterval(update,90000);update();} else clearInterval(timer);
 });
 $("day").value=todayISO();
