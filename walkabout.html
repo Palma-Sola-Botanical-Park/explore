@@ -286,7 +286,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
   somebody&rsquo;s phone will appear here once they upload it &mdash; and an observation with no
   time recorded is kept rather than dropped, so a few may sit outside the window.
   <br><br>
-  The <b>Walkabout</b> list is built from the project itself: any day in the last five months with
+  The <b>Walkabout</b> list is built from the project itself: any day in the last four months with
   twelve or more observations. Choosing one jumps to that day and lands the window on its last
   observation.
 </footer>
@@ -362,15 +362,15 @@ function setNow(){const n=roundUp15(new Date());
 // ---- find previous walkabouts ----------------------------------------------
 // A walkabout is a GROUP outing, not one person's collecting run. Randy, 2026-08-30:
 // "more than 10 observations in 4 hours, and more than 1 person. I'd rather not pollute
-// them with my mass collections." So: sweep the last five months, and for each day find
+// them with my mass collections." So: check the last four months, and for each busy day
 // the busiest 4-hour window. Keep the day only if that window holds MORE THAN 10
 // observations from MORE THAN ONE person.
-const WALK_MIN_OBS=11, WALK_MIN_PEOPLE=2, WALK_HOURS=4, WALK_DAYS=150;
+const WALK_MIN_OBS=11, WALK_MIN_PEOPLE=2, WALK_HOURS=4, WALK_DAYS=120;  // ~4 months
 const WALK_SAME_DAY=0.5;   // at least half the day's records uploaded the same day
 let WALKABOUTS={};
 
 // Built from TWO CHEAP ENDPOINTS, not a sweep of observations. The full /observations
-// records are ~65 KB EACH — five months of them is roughly 70 MB, which "worked" but took
+// records are ~65 KB EACH — four months of them is roughly 60 MB, which "worked" but took
 // twenty seconds and left the picker looking broken. /histogram gives every day's count in
 // 2 KB, and /observers gives one day's people in 3 KB. Whole job: about 55 KB.
 // Selecting one of these shows that WHOLE DAY; the rolling 4-hour window is only for "Right now".
@@ -390,7 +390,7 @@ function fillPicker(rows){
   sel.title=rows.length
     ? rows.length+" group walkabouts: "+WALK_MIN_OBS+"+ observations in a day, from "+
       WALK_MIN_PEOPLE+" or more people, uploaded the same day"
-    : "No group walkabouts found in the last five months";
+    : "No group walkabouts found in the last four months";
 }
 
 async function loadPriorWalkabouts(){
