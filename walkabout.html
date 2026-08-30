@@ -236,8 +236,8 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 
 <section>
   <h2>Where we walked</h2>
-  <p class="sub">Every observation with a location, on the satellite view. The shaded box is the
-    northeast quadrant. Empty ground is somewhere nobody has been yet.</p>
+  <p class="sub">Every observation with a location, on the satellite view. Empty ground is
+    somewhere nobody walked.</p>
   <div id="map"></div>
   <div class="legend">
     <span><i style="background:#2d6a35"></i>pin placed on the plant &mdash; under 10&thinsp;m</span>
@@ -292,7 +292,6 @@ const API="https://api.inaturalist.org/v1/observations";
 const KNOWN_TAXA=new Set([3454, 3751, 4246, 4327, 4328, 4334, 4742, 4756, 4937, 4938, 4940, 4956, 4981, 4999, 5020, 5063, 5206, 5305, 6432, 6893, 6922, 6930, 6948, 7107, 7120, 7493, 8001, 8229, 9083, 9176, 9602, 10286, 10373, 10487, 12727, 14850, 14886, 14995, 16028, 17008, 17365, 17855, 18205, 18463, 19765, 20044, 27137, 36514, 39566, 39682, 39776, 39782, 39820, 39824, 39825, 40569, 41663, 43102, 46017, 47160, 47219, 47351, 47441, 47442, 47450, 47563, 47780, 47787, 47902, 48233, 48234, 48319, 48363, 48484, 48522, 48550, 48651, 48662, 48663, 48678, 48865, 48872, 48878, 48891, 48895, 49013, 49150, 49181, 49193, 49322, 49323, 49358, 49504, 49666, 49667, 49761, 49766, 50147, 50184, 50334, 50616, 50644, 50821, 50822, 51119, 51122, 51446, 51534, 51599, 51768, 51769, 51772, 51833, 52055, 52078, 52348, 52398, 52425, 52497, 52599, 52643, 52673, 52763, 53195, 53547, 53691, 53722, 53768, 53804, 53854, 54759, 54793, 54795, 54834, 54880, 54890, 55269, 55844, 55854, 56019, 56091, 56099, 56890, 56917, 56955, 57140, 58213, 58300, 58389, 58792, 59040, 59096, 59379, 59774, 59776, 60121, 60146, 60335, 60439, 60742, 60749, 60773, 61369, 61503, 62529, 62741, 62809, 62811, 62819, 62826, 62831, 62839, 62844, 62850, 62852, 62853, 62888, 62911, 62915, 62924, 62934, 62936, 62937, 62941, 62946, 62949, 63735, 64103, 64119, 64240, 64323, 64342, 64547, 64571, 64696, 67325, 67435, 67440, 67574, 67707, 67710, 67823, 68225, 68226, 68230, 68233, 68313, 68314, 68317, 68563, 68679, 68717, 69223, 69234, 69813, 69845, 69940, 69972, 70022, 70025, 70027, 70029, 70045, 71036, 71940, 71956, 72384, 72388, 72418, 75379, 75604, 75732, 76444, 76949, 77541, 77739, 77977, 78554, 78555, 78631, 78755, 78998, 79291, 79521, 81159, 81489, 81490, 81500, 81515, 81804, 81901, 82095, 82303, 82506, 82529, 82752, 83070, 83074, 83102, 83117, 83139, 83434, 83435, 83583, 83634, 83642, 83832, 83892, 83912, 83927, 84002, 84531, 84537, 84813, 84816, 84964, 85024, 85378, 116461, 116999, 117308, 117444, 119095, 119100, 119955, 119956, 119986, 120027, 120488, 120934, 121022, 121467, 121526, 122034, 122303, 122318, 122519, 122521, 122530, 122711, 122777, 122835, 122965, 123003, 123438, 123472, 123476, 123481, 123516, 123572, 123728, 123736, 123757, 124349, 124423, 124426, 124826, 124839, 124842, 125381, 125396, 125683, 125854, 125855, 126165, 126249, 126289, 126305, 126319, 126404, 126405, 126507, 126510, 126563, 126565, 126569, 126574, 126585, 126633, 126634, 126846, 126882, 126888, 126980, 127010, 127036, 127063, 127066, 127270, 127279, 127284, 127285, 127387, 127389, 127390, 127890, 127906, 127907, 127908, 127912, 128268, 128270, 128652, 128655, 128717, 128825, 129036, 129103, 129327, 129540, 129783, 129808, 129814, 129857, 130028, 130215, 130382, 130734, 130818, 131242, 131243, 131568, 131579, 131594, 132078, 132451, 132576, 132759, 133299, 133308, 133309, 133310, 133327, 133334, 133335, 133457, 133607, 133688, 133690, 133826, 135235, 135243, 135249, 135250, 135329, 135343, 135348, 135394, 135400, 135401, 135559, 135560, 135589, 135590, 135595, 135844, 135898, 135902, 136025, 136082, 136085, 136086, 136093, 136159, 136164, 136173, 136231, 138577, 140907, 141285, 141291, 141303, 141375, 141376, 141512, 143209, 143955, 144018, 144455, 144479, 145231, 145233, 145242, 145245, 145246, 146643, 146977, 146978, 153449, 154283, 154290, 154558, 154794, 154798, 154842, 154846, 154862, 154888, 155137, 155170, 155598, 155898, 155984, 156122, 156463, 156695, 157138, 157164, 157841, 157908, 158023, 158103, 158226, 158570, 159049, 159199, 159269, 159346, 159678, 159817, 160169, 160385, 160544, 160656, 160739, 160741, 160759, 160760, 160837, 160873, 160878, 161124, 161126, 161146, 161150, 161235, 162153, 162214, 162418, 162839, 162855, 163323, 163363, 163640, 163763, 163766, 163916, 164011, 164035, 164044, 164051, 164090, 164240, 164242, 164316, 164328, 164423, 165063, 165118, 165138, 165144, 165296, 165400, 165529, 165543, 165599, 165752, 165876, 166214, 166493, 166546, 166729, 166920, 167309, 167311, 167506, 167539, 167570, 167660, 167793, 168256, 168423, 168847, 168854, 168863, 168953, 169050, 169171, 169322, 169351, 169520, 169521, 169735, 169741, 169872, 169878, 169883, 170055, 170202, 170271, 170401, 170883, 179304, 179305, 180035, 180228, 180255, 181543, 181672, 184500, 185264, 185509, 186006, 186063, 191503, 193076, 194547, 199373, 201453, 201454, 201458, 202172, 204165, 204244, 204744, 204927, 206169, 206170, 206171, 206177, 206192, 206271, 206275, 206302, 206310, 208742, 208746, 208766, 208797, 208814, 209871, 209889, 210990, 218000, 223938, 223964, 236504, 242256, 244084, 244459, 246102, 260753, 261475, 266198, 273713, 273715, 276307, 276548, 276805, 277083, 277459, 277579, 279439, 279677, 281082, 281140, 281562, 283216, 283915, 284040, 284175, 284560, 284831, 285445, 286772, 287245, 287757, 319135, 319141, 320055, 321501, 321686, 322318, 322755, 326086, 326087, 327355, 327366, 327856, 331118, 332683, 332889, 333484, 334348, 337352, 339474, 339914, 340008, 340357, 341902, 343814, 343820, 343829, 343901, 343969, 343971, 344178, 344235, 344269, 344879, 344943, 344961, 345537, 345576, 345585, 345932, 346357, 346367, 346381, 346382, 346383, 346384, 346398, 346406, 346408, 346605, 347370, 347721, 348429, 348791, 348793, 348794, 349191, 357524, 361290, 361831, 362921, 362951, 362952, 364198, 364204, 364206, 364207, 364208, 364465, 364469, 364569, 364574, 364575, 364577, 364998, 365049, 365068, 365075, 365081, 365092, 365210, 365221, 365223, 365244, 365485, 365486, 365638, 365645, 365650, 365670, 365717, 365733, 365948, 365949, 365961, 365968, 366013, 366014, 366015, 366038, 366039, 366062, 366088, 366112, 366118, 366128, 366151, 367277, 369881, 370011, 370492, 371103, 372067, 401513, 411086, 426720, 428002, 430869, 431188, 431224, 436068, 437501, 438336, 441411, 465713, 466003, 474465, 497641, 499120, 523772, 543581, 551247, 552439, 557893, 579676, 594756, 599962, 605174, 607338, 773039, 776900, 790732, 792725, 792988, 844242, 851888, 855610, 867073, 867364, 871544, 878610, 878751, 880921, 888838, 893820, 898674, 910750, 913367, 921783, 927986, 937796, 954006, 970366, 978421, 985690, 985710, 985726, 993493, 1038409, 1038928, 1095683, 1095846, 1117609, 1143567, 1239449, 1263542, 1263850, 1264664, 1268642, 1311723, 1401476, 1413422, 1416777, 1442171, 1454328, 1454382, 1499976, 1557768, 1564952, 1569900, 1579017, 1607210, 1607579, 1628098, 1634850, 1643959, 1649672, 1673245, 1686223, 1686226]);
 const PUBLISHED_TAXA=new Set([48363, 48872, 48895, 49013, 49193, 49323, 49666, 50184, 51599, 51768, 51833, 52078, 53547, 53722, 57140, 58300, 59040, 60146, 60335, 60439, 62809, 62811, 62831, 62839, 62844, 62850, 62924, 62934, 62949, 63735, 64103, 67574, 67710, 68225, 68313, 68317, 68679, 69223, 69813, 69972, 70022, 71036, 75732, 77541, 77739, 77977, 78554, 78631, 79291, 81500, 81515, 81804, 83074, 83102, 83634, 83642, 84002, 84531, 84537, 84813, 119955, 119956, 120934, 121022, 122318, 122519, 122521, 122965, 123003, 123438, 123481, 123572, 123728, 123736, 124426, 124839, 125381, 125396, 125855, 126305, 126563, 126565, 126633, 127010, 127036, 127063, 127270, 127279, 127387, 127912, 128652, 129783, 130734, 130818, 131242, 132576, 132759, 133309, 133327, 133607, 135250, 135343, 135348, 135400, 135559, 135560, 136085, 141375, 146643, 146977, 154283, 154290, 154794, 155170, 155598, 156463, 157841, 157908, 159346, 160169, 160385, 160544, 160741, 160759, 160760, 160873, 160878, 161124, 161146, 161150, 162153, 164035, 164240, 164242, 164328, 165400, 165529, 165543, 165876, 166546, 166729, 167506, 167570, 167660, 169050, 169520, 169735, 169741, 169872, 169878, 170202, 170401, 170883, 180255, 191503, 201453, 201454, 201458, 204744, 206271, 208746, 208766, 208797, 209871, 209889, 223964, 246102, 260753, 273713, 276548, 276805, 279439, 281562, 283915, 284175, 284560, 285445, 319135, 320055, 322318, 340008, 341902, 343820, 343829, 344943, 345932, 346381, 346384, 357524, 361831, 362921, 362951, 362952, 364198, 364207, 364208, 364569, 364574, 365049, 365068, 365075, 365081, 365210, 365221, 365223, 365244, 365485, 365486, 365638, 365650, 365670, 365949, 365961, 365968, 366038, 366062, 366118, 369881, 370011, 370492, 497641, 851888, 910750, 913367, 954006, 985726, 1038928, 1264664, 1268642, 1311723, 1454328, 1634850]);
 const BOUNDS={n:27.5150,s:27.5120,w:-82.6615,e:-82.6580};
-const NEBOX={s:27.51380,w:-82.65980};
 const $=id=>document.getElementById(id);
 const pct=(a,b)=>b?Math.round(a/b*100)+"%":"0%";
 let timer=null,autoOn=true,DUPS={};
@@ -339,42 +338,79 @@ function hhmm(d){return String(d.getHours()).padStart(2,"0")+":"+
 function setNow(){const n=roundUp15(new Date());
   $("day").value=todayISO(); $("endt").value=hhmm(n);}
 
-// ---- find previous walkabouts: days with a real cluster of observations ----
-async function loadPriorWalkabouts(){
-  const end=new Date(), start=new Date(end.getTime()-150*86400000);
-  const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
-  try{
-    const r=await fetch("https://api.inaturalist.org/v1/observations/histogram?project_id="+
-      PROJECT+"&date_field=observed&interval=day&d1="+iso(start)+"&d2="+iso(end)+"&_="+Date.now(),
-      {cache:"no-store"});
-    if(!r.ok) return;
-    const j=await r.json(), days=(j.results&&j.results.day)||{};
-    const rows=Object.entries(days).filter(([,n])=>n>=12)
-      .sort((a,b)=>a[0]<b[0]?1:-1).slice(0,24);
-    const sel=$("prior");
-    rows.forEach(([d,n])=>{
-      const dt=new Date(d+"T12:00:00");
-      const o=document.createElement("option");
-      o.value=d;
-      o.textContent=dt.toLocaleDateString([],{weekday:"short",day:"numeric",month:"short"})+
-        " — "+n+" observations";
-      sel.appendChild(o);
-    });
-    if(rows.length) sel.title=rows.length+" days with 12 or more observations in the last five months";
-  }catch(e){ /* the picker is a convenience; never let it break the page */ }
+// ---- find previous walkabouts ----------------------------------------------
+// A walkabout is a GROUP outing, not one person's collecting run. Randy, 2026-08-30:
+// "more than 10 observations in 4 hours, and more than 1 person. I'd rather not pollute
+// them with my mass collections." So: sweep the last five months, and for each day find
+// the busiest 4-hour window. Keep the day only if that window holds MORE THAN 10
+// observations from MORE THAN ONE person.
+const WALK_MIN_OBS=11, WALK_MIN_PEOPLE=2, WALK_HOURS=4, WALK_DAYS=150;
+let WALKABOUTS={};
+
+function bestWindow(list){
+  // list: [{t:Date, who:String}] sorted ascending. Returns the densest WALK_HOURS window.
+  const span=WALK_HOURS*3600000;
+  let best={n:0,people:0,end:null};
+  for(let i=0;i<list.length;i++){
+    const startT=list[i].t.getTime();
+    const who=new Set(); let n=0,lastT=startT;
+    for(let j=i;j<list.length;j++){
+      if(list[j].t.getTime()-startT>span) break;
+      n++; who.add(list[j].who); lastT=list[j].t.getTime();
+    }
+    if(n>best.n||(n===best.n&&who.size>best.people))
+      best={n:n,people:who.size,end:new Date(lastT)};
+  }
+  return best;
 }
-function med(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;
-  return s.length%2?s[m]:Math.round((s[m-1]+s[m])/2);}
-function bar(v,max,cls){return '<span class="bar '+(cls||"")+'" style="width:'+
-  (max?Math.max(2,Math.round(v/max*100)):2)+'%"></span>';}
-function obsBox(o,showRank){
-  const t=o.taxon||{},src=photoOf(o);
-  return '<a class="box" href="'+uriOf(o)+'" target="_blank" rel="noopener">'+
-    (src?'<img loading="lazy" src="'+src+'" alt="">':'<img alt="">')+
-    '<div class="cap">'+(showRank?'<div class="rk">'+esc(t.rank||"unknown")+'</div>':'')+
-    '<div class="nm">'+esc(nameOf(t))+'</div>'+
-    (t.name&&t.preferred_common_name?'<div class="sci">'+esc(t.name)+'</div>':'')+
-    '<div class="who">'+esc(whoOf(o))+'</div></div></a>';
+
+async function loadPriorWalkabouts(){
+  const now=new Date(), from=new Date(now.getTime()-WALK_DAYS*86400000);
+  const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+  const byDay={};
+  try{
+    let page=1;
+    while(page<=10){
+      const url=API+"?project_id="+PROJECT+"&d1="+iso(from)+"&d2="+iso(now)+
+        "&per_page=200&page="+page+"&order_by=observed_on&order=desc"+
+        "&fields=observed_on,time_observed_at,user.login&_="+Date.now();
+      const r=await fetch(url,{cache:"no-store"});
+      if(!r.ok) return;
+      const j=await r.json(), res=j.results||[];
+      res.forEach(o=>{
+        const d=o.observed_on||(o.time_observed_at||"").slice(0,10);
+        const t=o.time_observed_at?new Date(o.time_observed_at):null;
+        if(!d||!t||isNaN(t)) return;                 // no clock time: cannot cluster it
+        (byDay[d]=byDay[d]||[]).push({t:t,who:(o.user&&o.user.login)||"?"});
+      });
+      if(res.length<200) break;
+      page++;
+    }
+  }catch(e){ return; }                               // picker is a convenience, never fatal
+
+  const rows=[];
+  Object.entries(byDay).forEach(([day,list])=>{
+    list.sort((a,b)=>a.t-b.t);
+    const b=bestWindow(list);
+    if(b.n>=WALK_MIN_OBS && b.people>=WALK_MIN_PEOPLE)
+      rows.push({day:day,n:b.n,people:b.people,end:hhmm(roundUp15(b.end))});
+  });
+  rows.sort((a,b)=>a.day<b.day?1:-1);
+
+  WALKABOUTS={}; const sel=$("prior");
+  rows.slice(0,24).forEach(r=>{
+    WALKABOUTS[r.day]=r;
+    const dt=new Date(r.day+"T12:00:00");
+    const o=document.createElement("option");
+    o.value=r.day;
+    o.textContent=dt.toLocaleDateString([],{weekday:"short",day:"numeric",month:"short"})+
+      " — "+r.people+" people, "+r.n+" observations";
+    sel.appendChild(o);
+  });
+  sel.title=rows.length
+    ? rows.length+" group walkabouts found: more than "+(WALK_MIN_OBS-1)+
+      " observations inside 4 hours, by more than one person"
+    : "No group walkabouts found in the last five months";
 }
 
 function render(obs){
@@ -529,11 +565,10 @@ function drawMap(obs){
     MAP=L.map("map",{scrollWheelZoom:false});
     L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
       {maxZoom:21,maxNativeZoom:19,attribution:"Imagery &copy; Esri, Maxar, Earthstar Geographics"}).addTo(MAP);
-    L.rectangle([[BOUNDS.s,BOUNDS.w],[BOUNDS.n,BOUNDS.e]],
-      {color:"#eabc5a",weight:2,fill:false,dashArray:"6,6",interactive:false}).addTo(MAP);
-    L.rectangle([[NEBOX.s,NEBOX.w],[BOUNDS.n,BOUNDS.e]],
-      {color:"#c5922a",weight:1.5,fillColor:"#c5922a",fillOpacity:.08,interactive:false}).addTo(MAP);
+    // No boundary or quadrant overlay — the satellite image already shows where the park is,
+    // and at this zoom a drawn rectangle runs off the frame and reads as a rendering fault.
     MAP.fitBounds([[BOUNDS.s,BOUNDS.w],[BOUNDS.n,BOUNDS.e]],{padding:[12,12]});
+    MAP.setZoom(MAP.getZoom()+1);        // Randy: one click of + frames the park exactly right
     MAP.on("click",()=>MAP.scrollWheelZoom.enable());
   }
   if(LAYER) MAP.removeLayer(LAYER);
@@ -565,26 +600,11 @@ function drawMap(obs){
     : "Nothing to place on the map for this window.";
 }
 
-let SNAP_NEXT=false;                        // set when a prior walkabout was just chosen
 async function update(){
   const day=$("day").value||todayISO();
-  const hours=+($("win").value||4);
   $("status").textContent="Updating…"; $("err").innerHTML="";
   try{
     const all=await fetchAll(day);
-
-    // Landing on a past walkabout: snap the end time to its last observation, so the
-    // window sits on the session instead of on whatever o'clock it happens to be now.
-    if(SNAP_NEXT){
-      SNAP_NEXT=false;
-      const times=all.map(o=>o.time_observed_at).filter(Boolean)
-                     .map(t=>new Date(t)).filter(d=>!isNaN(d));
-      if(times.length){
-        const last=roundUp15(new Date(Math.max(...times)));
-        $("endt").value=hhmm(last);
-      } else { $("endt").value="23:59"; $("win").value="24"; }
-    }
-
     const end=windowEnd(), h=+($("win").value||4);
     const shown=all.filter(o=>inWindow(o,end,h));
     $("windowTxt").textContent = h>=24
@@ -611,7 +631,13 @@ $("win").addEventListener("change",update);
 $("prior").addEventListener("change",()=>{
   const v=$("prior").value;
   if(!v){ setNow(); $("win").value="4"; }
-  else { $("day").value=v; SNAP_NEXT=true; }
+  else {
+    // The window was already computed when the walkabout was detected — land on it exactly.
+    const w=WALKABOUTS[v];
+    $("day").value=v;
+    $("endt").value=(w&&w.end)||"23:59";
+    $("win").value=String(WALK_HOURS);
+  }
   update();
 });
 $("auto").addEventListener("click",()=>{
