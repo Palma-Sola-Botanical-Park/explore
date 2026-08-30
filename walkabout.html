@@ -42,8 +42,8 @@ button:active{opacity:.85}
 /* ── the headline ── */
 .hero{background:var(--green-deep);color:var(--cream);border-radius:16px;padding:38px 40px;
   margin-bottom:16px}
-.hero .lead{font-family:'Playfair Display',Georgia,serif;font-size:clamp(24px,3.4vw,36px);
-  font-weight:600;line-height:1.28;max-width:22ch}
+.hero .lead{font-family:'Playfair Display',Georgia,serif;font-size:clamp(26px,3.6vw,42px);
+  font-weight:600;line-height:1.22;max-width:24em;text-wrap:balance}
 .hero .lead b{color:var(--gold-light);font-weight:700}
 .hero .when{color:#b9cdbd;font-size:.95rem;margin-top:14px}
 .tallies{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));margin-top:16px}
@@ -355,6 +355,7 @@ function setNow(){const n=roundUp15(new Date());
 // the busiest 4-hour window. Keep the day only if that window holds MORE THAN 10
 // observations from MORE THAN ONE person.
 const WALK_MIN_OBS=11, WALK_MIN_PEOPLE=2, WALK_HOURS=4, WALK_DAYS=150;
+const WALK_SAME_DAY=0.5;   // at least half the day's records uploaded the same day
 let WALKABOUTS={};
 
 // Built from TWO CHEAP ENDPOINTS, not a sweep of observations. The full /observations
@@ -385,7 +386,20 @@ async function loadPriorWalkabouts(){
           PROJECT+"&d1="+day+"&d2="+day+"&_="+Date.now(),{cache:"no-store"});
         if(!orr.ok) continue;
         const people=(await orr.json()).total_results||0;
-        if(people>=WALK_MIN_PEOPLE) rows.push({day:day,n:n,people:people});
+        if(people<WALK_MIN_PEOPLE) continue;
+
+        // Was it actually a walkabout, or a batch upload of older photographs?
+        // Randy, 2026-08-30: "Rob did his stuff in batch uploads, not walkabouts in our
+        // sense. Rhonda likely had some too." The signal is decisive: on a real outing the
+        // observations are uploaded the same day they are made. Measured 2026-08-30 —
+        // 3 Jun 100%, 26 Aug 100%, 14 Jul 100%; 14 Jun (Rob's batch) 0%.
+        const sr=await fetch(API+"?project_id="+PROJECT+"&d1="+day+"&d2="+day+
+          "&created_d1="+day+"&created_d2="+day+"&per_page=0&_="+Date.now(),{cache:"no-store"});
+        if(!sr.ok) continue;
+        const sameDay=(await sr.json()).total_results||0;
+        if(sameDay/n < WALK_SAME_DAY) continue;      // observed then, uploaded later
+
+        rows.push({day:day,n:n,people:people});
       }catch(e){ /* skip this day only */ }
     }
     done();
@@ -449,7 +463,11 @@ function taxonAsOf(o,endOfDay){
   const ids=(o.identifications||[]).filter(i=>i.created_at&&i.taxon)
     .filter(i=>new Date(i.created_at)<=endOfDay)
     .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
-  if(!ids.length) return (o.identifications&&o.identifications.length)?null:(o.taxon||null);
+  // If nothing was identified by then, the observation usually did not EXIST by then —
+  // it was uploaded later. Randy, 2026-08-30: "why does it say 0 species? he batch uploaded
+  // them... later he edited them." Asking what a record was on a day before it was created
+  // has no answer, so fall back to what it is now rather than reporting nothing.
+  if(!ids.length) return o.taxon||null;
   return ids[ids.length-1].taxon;
 }
 function endOfDay(day){ return new Date(day+"T23:59:59"); }
