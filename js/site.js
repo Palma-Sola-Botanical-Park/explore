@@ -1172,7 +1172,7 @@ async function loadEventsPage(opts){
     });
   } catch(err){
     if (agendaEl) agendaEl.innerHTML =
-      '<p class="text-soft" style="padding:1rem">Could not load events. <a href="https://palmasolabp.org/calendar/" target="_blank" rel="noopener">See the park calendar →</a></p>';
+      '<p class="text-soft" style="padding:1rem">Could not load events. <a href="events.html">See the park calendar →</a></p>';
   }
 }
 
@@ -1195,7 +1195,7 @@ async function loadEvents(containerId, maxItems=8){
       : '<p class="text-soft" style="padding:1rem 0">No upcoming events scheduled. Check back soon.</p>';
     return events;
   } catch(err){
-    el.innerHTML = '<p class="text-soft" style="padding:1rem">Could not load events. <a href="https://palmasolabp.org/calendar/" target="_blank" rel="noopener">See the park calendar →</a></p>';
+    el.innerHTML = '<p class="text-soft" style="padding:1rem">Could not load events. <a href="events.html">See the park calendar →</a></p>';
     return [];
   }
 }

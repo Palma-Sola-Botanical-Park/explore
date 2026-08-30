@@ -140,7 +140,7 @@
 <div id="nav-placeholder"></div>
 <main id="venueMain">
 <div class="page-hero">
-  <div class="page-hero-bg" style="background-image:url('https://palmasolabp.org/wp-content/uploads/2024/02/wedding2.jpg')"></div>
+  <div class="page-hero-bg" style="background-image:url('images/venue-wedding-hero.jpg')"></div>
   <div class="page-hero-content" style="text-align:center;margin:0 auto">
     <div class="label label-light">Venue Rentals</div>
     <h1>Your event, in a living garden</h1>
@@ -327,7 +327,7 @@ async function loadVenue(){
   const rentals=venues.filter(v=>(v.category||'').toLowerCase()==='rental');
   renderData(calRows,gallery,wed,rentals);
  }catch(e){console.error('Venue load failed',e);
-  document.querySelectorAll('[data-fallback]').forEach(el=>el.innerHTML='<p style="padding:1.2rem;color:#777">Couldn’t load live pricing right now — please call (941) 761-2866 or visit <a href="https://palmasolabp.org/venue-rentals/">our venue page</a>.</p>');}
+  document.querySelectorAll('[data-fallback]').forEach(el=>el.innerHTML='<p style="padding:1.2rem;color:#777">Couldn’t load live pricing right now — please call (941) 761-2866 or email <a href="mailto:info@palmasolabp.org?subject=Venue%20rental%20enquiry">info@palmasolabp.org</a>.</p>');}
 }
 
 loadVenue();
