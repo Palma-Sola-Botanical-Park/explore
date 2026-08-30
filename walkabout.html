@@ -196,52 +196,43 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 <div id="err"></div>
 
 <section id="secWall">
-  <h2>The walkabout<span class="tag" id="tWall"></span></h2>
+  <h2><span id="wallH">Here&rsquo;s a batch of the first 20 taken this walkabout</span><span class="tag" id="tWall"></span></h2>
   <p class="sub">Everything the group photographed, newest first. Click any picture to open it on iNaturalist.</p>
   <div class="wall" id="wall"></div>
   <button class="more" id="wallMore" hidden></button>
 </section>
 
 <section class="pale">
-  <h2>Who was out<span class="tag" id="tTeam"></span></h2>
+  <h2>These people went on this walkabout<span class="tag" id="tTeam"></span></h2>
   <p class="sub">What each person recorded. The map pin figure is how precisely their observations were
     placed &mdash; under 10 metres means the pin was put on the actual plant.</p>
   <div class="people" id="team"></div>
 </section>
 
 <section id="secNew">
-  <h2>Recorded here for the first time<span class="tag" id="tNew"></span></h2>
+  <h2>We recorded the first observations of these plants<span class="tag" id="tNew"></span></h2>
   <p class="sub" id="newSub">Species with no record anywhere in the park&rsquo;s catalogue &mdash; not on a
     plant page, not in the research file, not among the wildlife. If one of these holds up, somebody
     found something the park has never documented.</p>
   <div class="chips" id="newList"></div>
 </section>
 
-<section id="secDup" class="sandy">
-  <h2>Seen more than once<span class="tag" id="tDup"></span></h2>
-  <p class="sub">The same species recorded more than once on this walkabout. Some of those are genuinely
-    different plants in different places &mdash; and some are the group crowding round the same one.
-    <b>Click a name to see the photographs side by side and tell which.</b></p>
-  <div class="dups" id="dups"></div>
-  <div class="dupwrap" id="dupwrap"></div>
-</section>
-
-<section id="secQueue">
-  <h2>Still to identify<span class="tag" id="tQueue"></span></h2>
-  <p class="sub" id="queueSub">Recorded on the walkabout but not yet named to a species. This is
-    the pile to work through together on the screen.</p>
-  <div class="boxes" id="queue"></div>
-</section>
-
 <section id="secUnpub" class="pale">
-  <h2>Known here, research not completed yet<span class="tag" id="tUnpub"></span></h2>
+  <h2>The park already knew these plants, but no research is ready for publishing yet<span class="tag" id="tUnpub"></span></h2>
   <p class="sub">The park knows it has these, but they have no finished page on the website yet.
     These photographs may be what gets one written.</p>
   <div class="chips" id="unpubList"></div>
 </section>
 
-<section>
-  <h2>Where we walked</h2>
+<section id="secQueue">
+  <h2>These plants were not initially identified by us during the walkabout<span class="tag" id="tQueue"></span></h2>
+  <p class="sub" id="queueSub">Recorded on the walkabout but not yet named to a species. This is
+    the pile to work through together on the screen.</p>
+  <div class="boxes" id="queue"></div>
+</section>
+
+<section class="pale">
+  <h2>Here are the locations we hit this walkabout</h2>
   <p class="sub">Every observation with a location, on the satellite view. Empty ground is
     somewhere nobody walked.</p>
   <div id="map"></div>
@@ -252,6 +243,15 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
     <span><i style="background:#8e9c90"></i>location hidden by iNaturalist</span>
   </div>
   <p class="maptip" id="maptip"></p>
+</section>
+
+<section id="secDup" class="sandy">
+  <h2>The team overlapped observations on these<span class="tag" id="tDup"></span></h2>
+  <p class="sub">The same species recorded more than once on this walkabout. Some of those are genuinely
+    different plants in different places &mdash; and some are the group crowding round the same one.
+    <b>Click a name to see the photographs side by side and tell which.</b></p>
+  <div class="dups" id="dups"></div>
+  <div class="dupwrap" id="dupwrap"></div>
 </section>
 
 <details class="rec">
@@ -630,6 +630,10 @@ function render(obs,priorTaxa){
     };
   } else { moreBtn.hidden=true; moreBtn.onclick=null; }
   $("tWall").textContent=withPhoto.length?withPhoto.length+" photographed":"";
+  const shownN=Math.min(FIRST,withPhoto.length);
+  $("wallH").textContent = !withPhoto.length ? "Photographs from this walkabout"
+    : rest.length ? "Here\u2019s a batch of the first "+shownN+" taken this walkabout"
+    : "Here are all "+shownN+" photograph"+(shownN===1?"":"s")+" taken this walkabout";
 
   // ── people ──
   const rows=Object.entries(people).sort((a,b)=>b[1].obs-a[1].obs);
