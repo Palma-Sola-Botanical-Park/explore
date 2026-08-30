@@ -89,8 +89,9 @@ h2 .tag{margin-left:auto;font-family:'Source Sans 3',sans-serif;font-size:.82rem
 .people{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(228px,1fr))}
 .person{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .person .nm{font-weight:700;font-size:1.02rem;color:var(--green-deep)}
-.person .st{color:var(--text-soft);font-size:.88rem;margin-top:3px}
-.person .pin{font-size:.8rem;margin-top:6px;font-weight:600}
+.person .st{color:var(--text-soft);font-size:.9rem;margin-top:4px}
+.person .st b{color:var(--text);font-weight:700}
+.person .pin{font-size:.85rem;margin-top:7px;color:var(--green-mid);font-weight:600}
 
 /* ── duplicates ── */
 .dups{display:flex;flex-wrap:wrap;gap:8px}
@@ -219,22 +220,27 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 
 <section id="secUnpub" class="pale">
   <h2>The park already knew these plants, but no research is ready for publishing yet<span class="tag" id="tUnpub"></span></h2>
-  <p class="sub">The park knows it has these, but they have no finished page on the website yet.
-    These photographs may be what gets one written.</p>
+  <p class="sub">The park knows it has these, but no finished page has been written yet. These
+    photographs may be what gets one done. <b>This list is as things stand today, not as they stood
+    on the walkabout</b> &mdash; so for an older outing, some of what was outstanding then has since
+    been published and no longer appears here.</p>
   <div class="chips" id="unpubList"></div>
 </section>
 
 <section id="secQueue">
   <h2>These plants were not initially identified by us during the walkabout<span class="tag" id="tQueue"></span></h2>
-  <p class="sub" id="queueSub">Recorded on the walkabout but not yet named to a species. This is
-    the pile to work through together on the screen.</p>
+  <p class="sub" id="queueSub">Photographed on the walkabout but not identified to species level
+    on the day.</p>
   <div class="boxes" id="queue"></div>
 </section>
 
 <section class="pale">
   <h2>Here are the locations we hit this walkabout</h2>
-  <p class="sub">Every observation with a location, on the satellite view. Empty ground is
-    somewhere nobody walked.</p>
+  <p class="sub">Every observation with a location, on the satellite view. <b>Look closely at the
+    circle around each one</b> &mdash; that is how sure the phone was, and a wide ring means the
+    plant could be anywhere inside it. Under tree cover a phone can be fifty metres out, in a park
+    only a hundred and eighty metres across, which is why placing a pin by hand matters so much.
+    Fuller numbers on that are in <b>For the record</b> at the foot of the page.</p>
   <div id="map"></div>
   <div class="legend">
     <span><i style="background:#2d6a35"></i>pin placed on the plant &mdash; under 10&thinsp;m</span>
@@ -636,15 +642,37 @@ function render(obs,priorTaxa){
     : "Here are all "+shownN+" photograph"+(shownN===1?"":"s")+" taken this walkabout";
 
   // ── people ──
+  // How far did each person actually walk? Straight lines between their observations in
+  // time order — a MINIMUM, since nobody walks in straight lines. Legs are counted only
+  // where both pins were well placed (30 m or better), because 50 m GPS scatter otherwise
+  // invents distance: on 3 June it inflated one person's walk from 505 m to 1034 m.
+  obs.forEach(o=>{
+    const g=(o.geojson||{}).coordinates;
+    const t=o.time_observed_at?new Date(o.time_observed_at):null;
+    if(!g||!t||isNaN(t)) return;
+    const p=people[whoOf(o)];
+    if(p) (p.track=p.track||[]).push({t:t,lat:g[1],lng:g[0],a:o.positional_accuracy});
+  });
+  const metres=(a,b)=>Math.hypot((a.lat-b.lat)*111320,(a.lng-b.lng)*98800);
+  Object.values(people).forEach(p=>{
+    const tr=(p.track||[]).sort((a,b)=>a.t-b.t);
+    let d=0;
+    for(let i=1;i<tr.length;i++){
+      const x=tr[i-1], y=tr[i];
+      if(typeof x.a==="number"&&typeof y.a==="number"&&x.a<=30&&y.a<=30) d+=metres(x,y);
+    }
+    p.walked=d;
+  });
   const rows=Object.entries(people).sort((a,b)=>b[1].obs-a[1].obs);
   $("team").innerHTML=rows.map(([u,p])=>{
-    const m=med(p.acc);
-    const col=m==null?"var(--text-soft)":(m<=10?"var(--green-mid)":m<=30?"var(--gold)":"var(--rust)");
-    const word=m==null?"no pin accuracy recorded":
-      (m<=10?"pins on the plant — "+m+" m":m<=30?"pins near the plant — "+m+" m":"pins too vague — "+m+" m");
+    const yd=Math.round(p.walked*1.094);
+    const walk = yd>=40
+      ? "covered at least "+(yd>=880?(yd/1760).toFixed(1)+" miles":yd+" yards")+" doing it"
+      : "";
     return '<div class="person"><div class="nm">'+esc(u)+'</div><div class="st">'+
-      p.obs+(p.obs===1?" observation":" observations")+" · "+p.taxa.size+" species · "+
-      p.photos+" photos</div><div class=\"pin\" style=\"color:"+col+"\">"+word+"</div></div>";
+      '<b>'+p.obs+'</b>'+(p.obs===1?" observation":" observations")+" · <b>"+p.taxa.size+
+      "</b> species · <b>"+p.photos+"</b> photographs</div>"+
+      (walk?'<div class="pin">'+walk+'</div>':'')+"</div>";
   }).join("")||'<p class="empty">Nobody yet.</p>';
   $("tTeam").textContent=rows.length?rows.length+(rows.length===1?" person":" people"):"";
 
@@ -684,12 +712,13 @@ function render(obs,priorTaxa){
     ||'<p class="empty">Everything got to a species on this walkabout. That is rare and worth saying out loud.</p>';
   $("tQueue").textContent=q.length||"";
   const qs=document.getElementById("queueSub");
-  if(qs) qs.innerHTML = sinceNamed
-    ? "As they stood at the end of that day. <b>"+sinceNamed+" "+
-      (sinceNamed===1?"has":"have")+" been identified since</b> &mdash; the work carried on after "+
-      "everyone went home."
-    : "Recorded on the walkabout but not yet named to a species. This is the pile to work "+
-      "through together on the screen.";
+  if(qs) qs.innerHTML =
+    "Photographed on the walkabout but not identified to species level on the day. "+
+    (sinceNamed
+      ? "<b>Our team of identifiers has since named "+sinceNamed+" of them.</b> "
+      : "")+
+    "Identifying is done from a laptop, anywhere, any time \u2014 you do not have to walk the park "+
+    "to help. <b>If you would like to join that team, we would love the help with these.</b>";
 
   // ── for the record ──
   const ORDER=["species","subspecies","variety","hybrid","genus","family","order","class","phylum","kingdom","unknown"];
