@@ -623,8 +623,17 @@ function drawMap(obs){
 async function update(){
   const day=$("day").value||todayISO();
   $("status").textContent="Updating…"; $("err").innerHTML="";
-  try{
-    const all=await fetchAll(day);
+  let all;
+  try{                                   // ── reaching iNaturalist ──
+    all=await fetchAll(day);
+  }catch(e){
+    $("status").textContent="Couldn’t update";
+    $("err").innerHTML='<div class="err">Couldn’t reach iNaturalist ('+esc(e.message)+
+      '). Check the connection, or open <a href="https://www.inaturalist.org/projects/'+PROJECT+
+      '" target="_blank" rel="noopener">the project page</a> directly.</div>';
+    return;
+  }
+  try{                                   // ── drawing the page ──
     const end=windowEnd(), h=+($("win").value||4);
     const shown=all.filter(o=>inWindow(o,end,h));
     $("windowTxt").textContent = h>=24
@@ -637,10 +646,15 @@ async function update(){
       shown.length+" in this window"+
       (noTime?" (including "+noTime+" with no time recorded)":"");
   }catch(e){
-    $("status").textContent="Couldn’t update";
-    $("err").innerHTML='<div class="err">Couldn’t reach iNaturalist ('+esc(e.message)+
-      '). Check the connection, or open <a href="https://www.inaturalist.org/projects/'+PROJECT+
-      '" target="_blank" rel="noopener">the project page</a> directly.</div>';
+    // iNaturalist answered — this is a fault in THIS PAGE. Say so, rather than blaming
+    // the connection, which is what an earlier version did and it sent Randy looking in
+    // the wrong place.
+    console.error(e);
+    $("status").textContent="Page error";
+    $("err").innerHTML='<div class="err"><b>iNaturalist answered fine — this is a bug in this '+
+      'page.</b><br>'+esc(e.message)+'<br><span style="font-size:.85em">'+
+      esc(all?all.length+" observations were fetched successfully.":"")+
+      ' Open the browser console for the full trace.</span></div>';
   }
 }
 
