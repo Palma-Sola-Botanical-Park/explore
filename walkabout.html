@@ -70,7 +70,9 @@ h2 .tag{margin-left:auto;font-family:'Source Sans 3',sans-serif;font-size:.82rem
 .wall a:hover img{transform:scale(1.06)}
 
 /* ── observation boxes (shared by Still to identify + duplicates) ── */
-.boxes{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(146px,1fr))}
+.boxes{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));
+  content-visibility:auto;contain-intrinsic-size:220px}
+.wall{content-visibility:auto;contain-intrinsic-size:400px}
 .box{display:block;background:var(--cream);border:1px solid var(--border);border-radius:12px;
   overflow:hidden;text-decoration:none;color:inherit}
 .box img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--sand)}
@@ -307,8 +309,13 @@ function todayISO(){const d=new Date();
   return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);}
 function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,c=>
   ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+// iNaturalist serves square 75px (11 KB) · small 240px (57 KB) · medium 500px (229 KB).
+// The wall cells are 120 px and the boxes 146 px, so "small" is already retina-sharp for
+// both — and "medium" was costing four times the bytes for pixels nobody can see. Measured
+// 2026-08-30: 48 wall images + 36 boxes at medium is ~19 MB, which was the page taking a
+// minute on a real connection. At small it is under 5 MB.
 function photoOf(o,size){const p=(o.photos||[])[0];
-  return p&&p.url?p.url.replace("square",size||"medium"):"";}
+  return p&&p.url?p.url.replace("square",size||"small"):"";}
 function uriOf(o){return o.uri||("https://www.inaturalist.org/observations/"+o.id);}
 function nameOf(t){return (t&&(t.preferred_common_name||t.name))||"not yet identified";}
 function whoOf(o){
@@ -363,10 +370,34 @@ let WALKABOUTS={};
 // twenty seconds and left the picker looking broken. /histogram gives every day's count in
 // 2 KB, and /observers gives one day's people in 3 KB. Whole job: about 55 KB.
 // Selecting one of these shows that WHOLE DAY; the rolling 4-hour window is only for "Right now".
+function fillPicker(rows){
+  const sel=$("prior");
+  [...sel.querySelectorAll("option")].slice(1).forEach(o=>o.remove());
+  WALKABOUTS={};
+  rows.forEach(r=>{
+    WALKABOUTS[r.day]=r;
+    const dt=new Date(r.day+"T12:00:00");
+    const o=document.createElement("option");
+    o.value=r.day;
+    o.textContent=dt.toLocaleDateString([],{weekday:"short",day:"numeric",month:"short"})+
+      " · "+r.people+" people, "+r.n+" obs that day";
+    sel.appendChild(o);
+  });
+  sel.title=rows.length
+    ? rows.length+" group walkabouts: "+WALK_MIN_OBS+"+ observations in a day, from "+
+      WALK_MIN_PEOPLE+" or more people, uploaded the same day"
+    : "No group walkabouts found in the last five months";
+}
+
 async function loadPriorWalkabouts(){
   const sel=$("prior");
+  // Show yesterday's answer instantly, then quietly bring it up to date. The list changes
+  // at most once a week, so a visitor almost never waits for it.
+  const cached=cacheGet("walks", 12*3600000);
+  if(cached){ fillPicker(cached); }
   const busy=document.createElement("option");
-  busy.textContent="finding walkabouts…"; busy.disabled=true; sel.appendChild(busy);
+  busy.textContent=cached?"checking for newer…":"finding walkabouts…";
+  busy.disabled=true; sel.appendChild(busy);
   const now=new Date(), from=new Date(now.getTime()-WALK_DAYS*86400000);
   const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
   const done=()=>{ if(busy.parentNode) busy.remove(); };
@@ -379,45 +410,62 @@ async function loadPriorWalkabouts(){
     const candidates=Object.entries(days).filter(([,n])=>n>=WALK_MIN_OBS)
       .sort((a,b)=>a[0]<b[0]?1:-1).slice(0,30);
 
+    // Each candidate day needs two tiny lookups. Done one after another that was ~37
+    // round trips in series and the picker took the best part of fifteen seconds. Both
+    // lookups per day now run together, and days run six at a time — fast enough to feel
+    // instant, gentle enough not to hammer iNaturalist.
     const rows=[];
-    for(const [day,n] of candidates){
+    const probe=async([day,n])=>{
       try{
-        const orr=await fetch("https://api.inaturalist.org/v1/observations/observers?project_id="+
-          PROJECT+"&d1="+day+"&d2="+day+"&_="+Date.now(),{cache:"no-store"});
-        if(!orr.ok) continue;
-        const people=(await orr.json()).total_results||0;
-        if(people<WALK_MIN_PEOPLE) continue;
-
-        // Was it actually a walkabout, or a batch upload of older photographs?
-        // Randy, 2026-08-30: "Rob did his stuff in batch uploads, not walkabouts in our
-        // sense. Rhonda likely had some too." The signal is decisive: on a real outing the
-        // observations are uploaded the same day they are made. Measured 2026-08-30 —
-        // 3 Jun 100%, 26 Aug 100%, 14 Jul 100%; 14 Jun (Rob's batch) 0%.
-        const sr=await fetch(API+"?project_id="+PROJECT+"&d1="+day+"&d2="+day+
-          "&created_d1="+day+"&created_d2="+day+"&per_page=0&_="+Date.now(),{cache:"no-store"});
-        if(!sr.ok) continue;
-        const sameDay=(await sr.json()).total_results||0;
-        if(sameDay/n < WALK_SAME_DAY) continue;      // observed then, uploaded later
-
-        rows.push({day:day,n:n,people:people});
-      }catch(e){ /* skip this day only */ }
+        const [orr,sr]=await Promise.all([
+          fetch("https://api.inaturalist.org/v1/observations/observers?project_id="+
+            PROJECT+"&d1="+day+"&d2="+day+"&_="+Date.now(),{cache:"no-store"}),
+          fetch(API+"?project_id="+PROJECT+"&d1="+day+"&d2="+day+
+            "&created_d1="+day+"&created_d2="+day+"&per_page=0&_="+Date.now(),{cache:"no-store"})
+        ]);
+        if(!orr.ok||!sr.ok) return null;
+        const [oj,sj]=await Promise.all([orr.json(),sr.json()]);
+        const people=oj.total_results||0, sameDay=sj.total_results||0;
+        if(people<WALK_MIN_PEOPLE) return null;
+        // Was it a walkabout, or a batch upload of older photographs? Randy, 2026-08-30:
+        // "Rob did his stuff in batch uploads, not walkabouts in our sense." On a real
+        // outing the records are uploaded the same day. Measured: 3 Jun 100%, 26 Aug 100%,
+        // 14 Jul 100%; 14 Jun, Rob's batch, 0%.
+        if(sameDay/n < WALK_SAME_DAY) return null;
+        return {day:day,n:n,people:people};
+      }catch(e){ return null; }
+    };
+    for(let i=0;i<candidates.length;i+=6){
+      const batch=await Promise.all(candidates.slice(i,i+6).map(probe));
+      batch.forEach(r=>{ if(r) rows.push(r); });
     }
     done();
-    WALKABOUTS={};
-    rows.forEach(r=>{
-      WALKABOUTS[r.day]=r;
-      const dt=new Date(r.day+"T12:00:00");
-      const o=document.createElement("option");
-      o.value=r.day;
-      o.textContent=dt.toLocaleDateString([],{weekday:"short",day:"numeric",month:"short"})+
-        " · "+r.people+" people, "+r.n+" obs that day";
-      sel.appendChild(o);
-    });
-    sel.title=rows.length
-      ? rows.length+" group walkabouts: "+WALK_MIN_OBS+"+ observations in a day, from "+
-        WALK_MIN_PEOPLE+" or more people"
-      : "No group walkabouts found in the last five months";
+    const keep=sel.value;
+    fillPicker(rows);
+    if(keep) sel.value=keep;
+    cacheSet("walks",rows);
   }catch(e){ done(); }
+}
+
+// ---- a small cache that survives reloads -----------------------------------
+// Randy, 2026-08-30: "page takes a minute to load on server." Two of the three lookups
+// barely change between visits — the list of past walkabouts moves at most once a week,
+// and what the park had recorded before a PAST day never changes at all. Caching them in
+// the browser turns every visit after the first into an instant one. Wrapped in try/catch
+// throughout: private windows and locked-down browsers make localStorage throw.
+const CACHE_V="psbp-walk-v1";
+function cacheGet(key,maxAgeMs){
+  try{
+    const raw=localStorage.getItem(CACHE_V+":"+key);
+    if(!raw) return null;
+    const o=JSON.parse(raw);
+    if(maxAgeMs && Date.now()-o.at>maxAgeMs) return null;
+    return o.v;
+  }catch(e){ return null; }
+}
+function cacheSet(key,v){
+  try{ localStorage.setItem(CACHE_V+":"+key,JSON.stringify({at:Date.now(),v:v})); }
+  catch(e){ /* full or blocked — the page just runs uncached */ }
 }
 
 // What had the park EVER recorded before this day? Randy, 2026-08-30: "a first for the park
@@ -429,6 +477,10 @@ async function loadPriorWalkabouts(){
 const PRIOR_CACHE={};
 async function taxaBefore(day){
   if(PRIOR_CACHE[day]) return PRIOR_CACHE[day];
+  // For a day already past, the answer can never change — cache it indefinitely.
+  const past=day<todayISO();
+  const hit=cacheGet("prior:"+day, past?0:6*3600000);
+  if(hit){ const set=new Set(hit); PRIOR_CACHE[day]=set; return set; }
   const d=new Date(day+"T12:00:00"); d.setDate(d.getDate()-1);
   const before=new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
   const seen=new Set();
@@ -445,6 +497,7 @@ async function taxaBefore(day){
     }
   }catch(e){ return null; }        // null = "could not check", so the section says so
   PRIOR_CACHE[day]=seen;
+  cacheSet("prior:"+day,[...seen]);
   return seen;
 }
 
@@ -578,6 +631,7 @@ function render(obs,priorTaxa){
   const chip=(r,hot)=>'<span class="chip'+(hot?" hot":"")+'">'+esc(r.name)+
     (r.sci?'<span class="sci">'+esc(r.sci)+'</span>':'')+'</span>';
   const isToday=($("day").value||todayISO())===todayISO();
+  if(!priorTaxa) $("tNew").textContent="checking the park's history…";
   $("newSub").innerHTML = priorTaxa
     ? "Species nobody had ever recorded in the park before "+(isToday?"today":"this day")+
       ". Checked against every observation the park has ever collected, not against what "+
@@ -708,9 +762,14 @@ function drawMap(obs){
 async function update(){
   const day=$("day").value||todayISO();
   $("status").textContent="Updating…"; $("err").innerHTML="";
+  // The "first recorded here" check asks iNaturalist to summarise the project's ENTIRE
+  // history — 433 KB but ~5 seconds of server work, and nothing else on the page needs it.
+  // So start it, draw everything the moment the observations land, and let that one section
+  // fill itself in a moment later. Randy, 2026-08-30: "it is a slow processing page."
   let all,prior=null;
+  const priorP=taxaBefore(day).catch(()=>null);
   try{                                   // ── reaching iNaturalist ──
-    [all,prior]=await Promise.all([fetchAll(day),taxaBefore(day)]);
+    all=await fetchAll(day);
   }catch(e){
     $("status").textContent="Couldn’t update";
     $("err").innerHTML='<div class="err">Couldn’t reach iNaturalist ('+esc(e.message)+
@@ -724,7 +783,8 @@ async function update(){
     $("windowTxt").textContent = h>=24
       ? day+", the whole day"
       : day+", the "+h+" hours up to "+($("endt").value||"23:59");
-    render(shown,prior);
+    render(shown,null);                  // draw now, with the catalogue as a stand-in
+    priorP.then(p=>{ if(p) render(shown,p); });   // then correct it against park history
     const noTime=shown.filter(o=>!o.time_observed_at).length;
     $("status").textContent="Updated "+new Date().toLocaleTimeString([],
       {hour:"numeric",minute:"2-digit"})+" · "+all.length+" observations that day, "+
