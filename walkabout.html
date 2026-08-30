@@ -301,7 +301,7 @@ const PUBLISHED_TAXA=new Set([48363, 48872, 48895, 49013, 49193, 49323, 49666, 5
 const NAMES={"robcarr52": "Rob Carr", "jengunter": "Jenny Gunter", "aiden_gitt": "Aiden Gitt", "david_vanderbilt": "David Vanderbilt", "frankymca": "Franky McArthur", "ruby_meador": "Ruby Meador", "sophia70699": "Sophia Bailey", "yavid": "Yavid Justiniano", "theblackd0g13": "Lilah Thomas", "david_mcswain": "David McSwain", "sofia_linares": "Sofia Linares", "sethtlayne": "Seth Layne", "hailee_alenduff": "Hailee Alenduff", "harrisonmello": "Harrison Mello", "mariaaaz": "Maria Escobar", "austin_sibrian": "Austin Sibrian", "denise_sosa": "Denise Sosa", "zailibeth": "Zailibeth Perez", "joanne_walker": "Joanne Walker", "giovannym": "Giovanny Montoya", "jacob_aiden": "Jacob Aiden Ferda", "mollyevans": "Molly Evans", "taya67111": "Taya Brown", "cleamon": "Christine Leamon", "rhonda_olschefskie": "Rhonda Olschefskie", "bevburdette": "Beverly Burdette", "randall_carter": "Randall Carter"};const BOUNDS={n:27.5150,s:27.5120,w:-82.6615,e:-82.6580};
 const $=id=>document.getElementById(id);
 const pct=(a,b)=>b?Math.round(a/b*100)+"%":"0%";
-let timer=null,autoOn=true,DUPS={},SNAP_NEXT=false;
+let timer=null,autoOn=true,DUPS={};
 
 function todayISO(){const d=new Date();
   return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);}
@@ -357,34 +357,11 @@ function setNow(){const n=roundUp15(new Date());
 const WALK_MIN_OBS=11, WALK_MIN_PEOPLE=2, WALK_HOURS=4, WALK_DAYS=150;
 let WALKABOUTS={};
 
-function bestWindow(list){
-  // list: [{t:Date, who:String}] sorted ascending.
-  // A walkabout is a GROUP outing, so prefer the busiest window that actually contains
-  // WALK_MIN_PEOPLE or more people. Picking the densest window regardless finds one
-  // person's solo burst instead — which is exactly what happened on 26 Aug 2026: five
-  // people out that day, but the densest 4 hours held 59 observations from Randy alone,
-  // so the picker promised "5 people" and the page showed one.
-  const span=WALK_HOURS*3600000;
-  let group={n:0,people:0,end:null}, any={n:0,people:0,end:null};
-  for(let i=0;i<list.length;i++){
-    const startT=list[i].t.getTime();
-    const who=new Set(); let n=0,lastT=startT;
-    for(let j=i;j<list.length;j++){
-      if(list[j].t.getTime()-startT>span) break;
-      n++; who.add(list[j].who); lastT=list[j].t.getTime();
-    }
-    const cand={n:n,people:who.size,end:new Date(lastT)};
-    if(n>any.n) any=cand;
-    if(who.size>=WALK_MIN_PEOPLE && (n>group.n||(n===group.n&&who.size>group.people))) group=cand;
-  }
-  return group.n ? group : any;      // no group window at all: fall back to the busiest
-}
-
 // Built from TWO CHEAP ENDPOINTS, not a sweep of observations. The full /observations
 // records are ~65 KB EACH — five months of them is roughly 70 MB, which "worked" but took
 // twenty seconds and left the picker looking broken. /histogram gives every day's count in
 // 2 KB, and /observers gives one day's people in 3 KB. Whole job: about 55 KB.
-// The 4-hour window is computed later, from the day actually selected — see snapWindow().
+// Selecting one of these shows that WHOLE DAY; the rolling 4-hour window is only for "Right now".
 async function loadPriorWalkabouts(){
   const sel=$("prior");
   const busy=document.createElement("option");
@@ -476,18 +453,6 @@ function taxonAsOf(o,endOfDay){
   return ids[ids.length-1].taxon;
 }
 function endOfDay(day){ return new Date(day+"T23:59:59"); }
-
-// A day's densest WALK_HOURS window, from observations already fetched. Used to land the
-// window on the session instead of on whatever o'clock it happens to be now.
-function snapWindow(all){
-  const list=all.map(o=>({t:o.time_observed_at?new Date(o.time_observed_at):null,
-                          who:(o.user&&(o.user.login||o.user.name))||"?"}))
-                .filter(x=>x.t&&!isNaN(x.t)).sort((a,b)=>a.t-b.t);
-  if(!list.length){ $("endt").value="23:59"; $("win").value="24"; return; }
-  const b=bestWindow(list);
-  $("endt").value=hhmm(roundUp15(b.end));
-  $("win").value=String(WALK_HOURS);
-}
 
 // ---- small helpers used by render() ----------------------------------------
 function med(a){
@@ -736,7 +701,6 @@ async function update(){
     return;
   }
   try{                                   // ── drawing the page ──
-    if(SNAP_NEXT){ SNAP_NEXT=false; snapWindow(all); }
     const end=windowEnd(), h=+($("win").value||4);
     const shown=all.filter(o=>inWindow(o,end,h));
     $("windowTxt").textContent = h>=24
@@ -769,8 +733,14 @@ $("prior").addEventListener("change",()=>{
   const v=$("prior").value;
   if(!v){ PINNED=false; setNow(); $("win").value="4"; }
   else {
+    // A past walkabout shows THE WHOLE DAY. Randy, 2026-08-30, after seeing 26 Aug snap to
+    // a group-only window of 11: "I am ok with whatever solution you had there, merging into
+    // one big walkabout." The multi-person rule was always about which days QUALIFY as
+    // walkabouts — not about excluding his own records from a day that was one. Showing the
+    // day also stops the picker's label ("5 people, 67 obs that day") contradicting the page.
     $("day").value=v;
-    SNAP_NEXT=true;          // snapWindow() runs once that day's observations arrive
+    $("endt").value="23:59";
+    $("win").value="24";
   }
   update();
 });
@@ -791,9 +761,9 @@ const Q=new URLSearchParams(location.search);
 if(/^\d{4}-\d{2}-\d{2}$/.test(Q.get("day")||"")){
   $("day").value=Q.get("day");
   if(/^\d{2}:\d{2}$/.test(Q.get("end")||"")) $("endt").value=Q.get("end");
-  else SNAP_NEXT=true;                       // no time given: land on the busiest 4 hours
+  else $("endt").value="23:59";              // no time given: the whole day
   if(["2","4","6","24"].includes(Q.get("win"))) $("win").value=Q.get("win");
-  else $("win").value=String(WALK_HOURS);
+  else $("win").value="24";
 } else {
   setNow();
 }
