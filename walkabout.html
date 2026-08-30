@@ -68,6 +68,9 @@ h2 .tag{margin-left:auto;font-family:'Source Sans 3',sans-serif;font-size:.82rem
 .wall a{display:block;border-radius:10px;overflow:hidden;aspect-ratio:1;background:var(--sand)}
 .wall img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
 .wall a:hover img{transform:scale(1.06)}
+.more{display:block;margin:16px auto 0;background:var(--white);color:var(--green-mid);
+  border:1px solid var(--border);font-weight:600;padding:11px 26px}
+.more:hover{border-color:var(--green-light)}
 
 /* ── observation boxes (shared by Still to identify + duplicates) ── */
 .boxes{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));
@@ -196,6 +199,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
   <h2>The walkabout<span class="tag" id="tWall"></span></h2>
   <p class="sub">Everything the group photographed, newest first. Click any picture to open it on iNaturalist.</p>
   <div class="wall" id="wall"></div>
+  <button class="more" id="wallMore" hidden></button>
 </section>
 
 <section class="pale">
@@ -606,13 +610,26 @@ function render(obs,priorTaxa){
   $("kNew").textContent=newSp.size;
 
   // ── photo wall ──
+  // Twenty is enough to land the point — Randy, 2026-08-30: "20 is plenty to get the gist
+  // that lotsa good pics were taken. That's the best point." The rest are one click away,
+  // and holding them back is most of what keeps a big day from costing megabytes on open.
   const withPhoto=obs.filter(o=>photoOf(o));
-  $("wall").innerHTML=withPhoto.slice(0,48).map(o=>
-    '<a href="'+uriOf(o)+'" target="_blank" rel="noopener" title="'+esc(nameOf(o._taxon||o.taxon))+
-    ' — '+esc(whoOf(o))+'"><img loading="lazy" src="'+photoOf(o)+'" alt=""></a>').join("")
+  const tile=o=>'<a href="'+uriOf(o)+'" target="_blank" rel="noopener" title="'+
+    esc(nameOf(o._taxon||o.taxon))+' — '+esc(whoOf(o))+
+    '"><img loading="lazy" src="'+photoOf(o)+'" alt=""></a>';
+  const FIRST=20;
+  $("wall").innerHTML=withPhoto.slice(0,FIRST).map(tile).join("")
     ||'<p class="empty">No photographs in this window yet.</p>';
-  $("tWall").textContent=withPhoto.length?withPhoto.length+" photographed"+
-    (withPhoto.length>48?" · showing 48":""):"";
+  const moreBtn=$("wallMore"), rest=withPhoto.slice(FIRST);
+  if(rest.length){
+    moreBtn.hidden=false;
+    moreBtn.textContent="Show the other "+rest.length+" photograph"+(rest.length===1?"":"s");
+    moreBtn.onclick=()=>{
+      $("wall").insertAdjacentHTML("beforeend",rest.map(tile).join(""));
+      moreBtn.hidden=true;
+    };
+  } else { moreBtn.hidden=true; moreBtn.onclick=null; }
+  $("tWall").textContent=withPhoto.length?withPhoto.length+" photographed":"";
 
   // ── people ──
   const rows=Object.entries(people).sort((a,b)=>b[1].obs-a[1].obs);
