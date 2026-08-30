@@ -10161,7 +10161,15 @@ def handle_api_ai_revise(params):
 PHENO_MODEL          = "claude-haiku-4-5-20251001"  # cheap + vision; bump to sonnet/opus for tougher IDs
 PHENOLOGY_JSON       = os.path.join(REPO, "data", "sources", "phenology.json")
 PHENO_SIGNS          = ["flowers", "flower_buds", "leaves", "leaf_buds", "fruit", "seeds"]
-PHENO_PHOTOS_PER_OBS = 3       # photos sent to the model per observation
+PHENO_PHOTOS_PER_OBS = 8       # photos sent to the model per observation.
+                               # Was 3, raised 2026-08-29. Randy: "I want it to look
+                               # at ALL the photos." One observation gets ONE verdict,
+                               # so every photo of it is evidence toward that verdict —
+                               # a flower may only be visible in the fifth frame. 265 of
+                               # 664 stored records were capped at 3 and may have been
+                               # scored blind to later photos; re-scan with force=True to
+                               # revisit those. 8 is a ceiling for cost, not a judgement:
+                               # observations with more than 8 photos are rare.
 PHENO_MAX_TOKENS     = 700
 PHENO_SCAN_DEFAULT   = 8       # observations analyzed per "scan" click
 
