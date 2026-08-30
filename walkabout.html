@@ -31,8 +31,9 @@ h1{font-size:clamp(38px,6vw,58px);font-weight:700;color:var(--green-deep);letter
   margin-top:8px}
 .ctrl{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .ctrl label{font-size:.85rem;color:var(--text-soft)}
-input[type=time],input[type=date]{font-family:inherit;font-size:.92rem;padding:8px 11px;
+input[type=time],input[type=date],select{font-family:inherit;font-size:.92rem;padding:8px 11px;
   border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text)}
+select{cursor:pointer;max-width:230px}
 button{font-family:inherit;font-size:.92rem;font-weight:700;padding:9px 18px;border:0;
   border-radius:8px;background:var(--green-mid);color:var(--white);cursor:pointer}
 button.ghost{background:var(--white);color:var(--green-mid);border:1px solid var(--border);font-weight:600}
@@ -159,15 +160,23 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
     <h1>Walkabout</h1>
   </div>
   <div class="ctrl">
-    <label for="day">Day</label><input type="date" id="day">
-    <label for="from">From</label><input type="time" id="from" value="16:45">
+    <label for="prior">Walkabout</label>
+    <select id="prior"><option value="">Right now</option></select>
+    <label for="day">Ending</label><input type="date" id="day">
+    <input type="time" id="endt">
+    <select id="win">
+      <option value="2">last 2 hours</option>
+      <option value="4" selected>last 4 hours</option>
+      <option value="6">last 6 hours</option>
+      <option value="24">the whole day</option>
+    </select>
     <button id="go">Refresh</button>
     <button class="ghost" id="auto">Auto: on</button>
   </div>
 </header>
 
 <div class="hero">
-  <div class="lead" id="lead">Loading the evening&hellip;</div>
+  <div class="lead" id="lead">Loading the walkabout&hellip;</div>
   <div class="when" id="when"></div>
 </div>
 
@@ -182,7 +191,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 <div id="err"></div>
 
 <section id="secWall">
-  <h2>The evening<span class="tag" id="tWall"></span></h2>
+  <h2>The walkabout<span class="tag" id="tWall"></span></h2>
   <p class="sub">Everything the group photographed, newest first. Click any picture to open it on iNaturalist.</p>
   <div class="wall" id="wall"></div>
 </section>
@@ -204,7 +213,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 
 <section id="secDup" class="sandy">
   <h2>Seen more than once<span class="tag" id="tDup"></span></h2>
-  <p class="sub">The same species recorded several times tonight. Some of those are genuinely
+  <p class="sub">The same species recorded more than once on this walkabout. Some of those are genuinely
     different plants in different places &mdash; and some are the group crowding round the same one.
     <b>Click a name to see the photographs side by side and tell which.</b></p>
   <div class="dups" id="dups"></div>
@@ -213,7 +222,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 
 <section id="secQueue">
   <h2>Still to identify<span class="tag" id="tQueue"></span></h2>
-  <p class="sub">Recorded tonight but not yet named to a species. This is the pile to work through
+  <p class="sub">Recorded on the walkabout but not yet named to a species. This is the pile to work through
     together on the screen.</p>
   <div class="boxes" id="queue"></div>
 </section>
@@ -221,7 +230,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 <section id="secUnpub" class="pale">
   <h2>Known here, research not completed yet<span class="tag" id="tUnpub"></span></h2>
   <p class="sub">The park knows it has these, but they have no finished page on the website yet.
-    Tonight&rsquo;s photographs may be what gets one written.</p>
+    These photographs may be what gets one written.</p>
   <div class="chips" id="unpubList"></div>
 </section>
 
@@ -266,9 +275,14 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 
 <footer>
   <span id="status">Starting&hellip;</span><br><br>
-  Live from iNaturalist, covering <b id="windowTxt">today from 16:45</b> by the time each observation
-  was made, for the <b>palma-sola-botanical-park</b> project. Anything still on somebody&rsquo;s phone
-  will appear here once they upload it.
+  Live from iNaturalist, covering <b id="windowTxt">the last 4 hours</b>, by the time each
+  observation was made, for the <b>palma-sola-botanical-park</b> project. Anything still on
+  somebody&rsquo;s phone will appear here once they upload it &mdash; and an observation with no
+  time recorded is kept rather than dropped, so a few may sit outside the window.
+  <br><br>
+  The <b>Walkabout</b> list is built from the project itself: any day in the last five months with
+  twelve or more observations. Choosing one jumps to that day and lands the window on its last
+  observation.
 </footer>
 
 </div>
@@ -307,13 +321,47 @@ async function fetchAll(day){
   }
   return out;
 }
-function afterCutoff(o,from){
+function windowEnd(){                       // the moment the window closes
+  const d=$("day").value||todayISO(), t=$("endt").value||"23:59";
+  return new Date(d+"T"+t+":59");
+}
+function inWindow(o,end,hours){
+  if(hours>=24) return true;                // "the whole day" — no time filter
   const t=o.time_observed_at||"";
-  if(!t) return true;
+  if(!t) return true;                       // no time recorded: keep it, say so in the footer
   const d=new Date(t); if(isNaN(d)) return true;
-  const [hh,mm]=from.split(":").map(Number);
-  const cut=new Date(d); cut.setHours(hh,mm,0,0);
-  return d>=cut;
+  return d<=end && d>=new Date(end.getTime()-hours*3600000);
+}
+function roundUp15(d){const x=new Date(d);x.setSeconds(0,0);
+  x.setMinutes(Math.ceil(x.getMinutes()/15)*15);return x;}
+function hhmm(d){return String(d.getHours()).padStart(2,"0")+":"+
+  String(d.getMinutes()).padStart(2,"0");}
+function setNow(){const n=roundUp15(new Date());
+  $("day").value=todayISO(); $("endt").value=hhmm(n);}
+
+// ---- find previous walkabouts: days with a real cluster of observations ----
+async function loadPriorWalkabouts(){
+  const end=new Date(), start=new Date(end.getTime()-150*86400000);
+  const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+  try{
+    const r=await fetch("https://api.inaturalist.org/v1/observations/histogram?project_id="+
+      PROJECT+"&date_field=observed&interval=day&d1="+iso(start)+"&d2="+iso(end)+"&_="+Date.now(),
+      {cache:"no-store"});
+    if(!r.ok) return;
+    const j=await r.json(), days=(j.results&&j.results.day)||{};
+    const rows=Object.entries(days).filter(([,n])=>n>=12)
+      .sort((a,b)=>a[0]<b[0]?1:-1).slice(0,24);
+    const sel=$("prior");
+    rows.forEach(([d,n])=>{
+      const dt=new Date(d+"T12:00:00");
+      const o=document.createElement("option");
+      o.value=d;
+      o.textContent=dt.toLocaleDateString([],{weekday:"short",day:"numeric",month:"short"})+
+        " — "+n+" observations";
+      sel.appendChild(o);
+    });
+    if(rows.length) sel.title=rows.length+" days with 12 or more observations in the last five months";
+  }catch(e){ /* the picker is a convenience; never let it break the page */ }
 }
 function med(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y);const m=s.length>>1;
   return s.length%2?s[m]:Math.round((s[m-1]+s[m])/2);}
@@ -403,12 +451,12 @@ function render(obs){
   const chip=(r,hot)=>'<span class="chip'+(hot?" hot":"")+'">'+esc(r.name)+
     (r.sci?'<span class="sci">'+esc(r.sci)+'</span>':'')+'</span>';
   $("newList").innerHTML=newSp.size?[...newSp.values()].map(r=>chip(r,true)).join("")
-    :'<p class="empty">Nothing brand new tonight — which is completely normal. Most evenings add '+
-     'depth rather than firsts.</p>';
+    :'<p class="empty">Nothing brand new on this walkabout — which is completely normal. '+
+     'Most walkabouts add depth rather than firsts.</p>';
   $("tNew").textContent=newSp.size?newSp.size+" to check":"";
 
   $("unpubList").innerHTML=unpub.size?[...unpub.values()].map(r=>chip(r,false)).join("")
-    :'<p class="empty">Everything recorded tonight already has a finished page.</p>';
+    :'<p class="empty">Everything recorded on this walkabout already has a finished page.</p>';
   $("tUnpub").textContent=unpub.size||"";
 
   // ── seen more than once ──
@@ -424,7 +472,7 @@ function render(obs){
   const coarse=new Set(["genus","family","order","class","phylum","kingdom","unknown"]);
   const q=obs.filter(o=>coarse.has(((o.taxon||{}).rank||"unknown").toLowerCase()));
   $("queue").innerHTML=q.slice(0,36).map(o=>obsBox(o,true)).join("")
-    ||'<p class="empty">Everything got to a species tonight. That is rare and worth saying out loud.</p>';
+    ||'<p class="empty">Everything got to a species on this walkabout. That is rare and worth saying out loud.</p>';
   $("tQueue").textContent=q.length||"";
 
   // ── for the record ──
@@ -517,16 +565,37 @@ function drawMap(obs){
     : "Nothing to place on the map for this window.";
 }
 
+let SNAP_NEXT=false;                        // set when a prior walkabout was just chosen
 async function update(){
-  const day=$("day").value||todayISO(),from=$("from").value||"16:45";
-  $("windowTxt").textContent=day+" from "+from;
+  const day=$("day").value||todayISO();
+  const hours=+($("win").value||4);
   $("status").textContent="Updating…"; $("err").innerHTML="";
   try{
     const all=await fetchAll(day);
-    render(all.filter(o=>afterCutoff(o,from)));
+
+    // Landing on a past walkabout: snap the end time to its last observation, so the
+    // window sits on the session instead of on whatever o'clock it happens to be now.
+    if(SNAP_NEXT){
+      SNAP_NEXT=false;
+      const times=all.map(o=>o.time_observed_at).filter(Boolean)
+                     .map(t=>new Date(t)).filter(d=>!isNaN(d));
+      if(times.length){
+        const last=roundUp15(new Date(Math.max(...times)));
+        $("endt").value=hhmm(last);
+      } else { $("endt").value="23:59"; $("win").value="24"; }
+    }
+
+    const end=windowEnd(), h=+($("win").value||4);
+    const shown=all.filter(o=>inWindow(o,end,h));
+    $("windowTxt").textContent = h>=24
+      ? day+", the whole day"
+      : day+", the "+h+" hours up to "+($("endt").value||"23:59");
+    render(shown);
+    const noTime=shown.filter(o=>!o.time_observed_at).length;
     $("status").textContent="Updated "+new Date().toLocaleTimeString([],
       {hour:"numeric",minute:"2-digit"})+" · "+all.length+" observations that day, "+
-      $("kObs").textContent+" in this window";
+      shown.length+" in this window"+
+      (noTime?" (including "+noTime+" with no time recorded)":"");
   }catch(e){
     $("status").textContent="Couldn’t update";
     $("err").innerHTML='<div class="err">Couldn’t reach iNaturalist ('+esc(e.message)+
@@ -534,15 +603,28 @@ async function update(){
       '" target="_blank" rel="noopener">the project page</a> directly.</div>';
   }
 }
+
 $("go").addEventListener("click",update);
-$("day").addEventListener("change",update);
-$("from").addEventListener("change",update);
+$("day").addEventListener("change",()=>{$("prior").value="";update();});
+$("endt").addEventListener("change",()=>{$("prior").value="";update();});
+$("win").addEventListener("change",update);
+$("prior").addEventListener("change",()=>{
+  const v=$("prior").value;
+  if(!v){ setNow(); $("win").value="4"; }
+  else { $("day").value=v; SNAP_NEXT=true; }
+  update();
+});
 $("auto").addEventListener("click",()=>{
   autoOn=!autoOn; $("auto").textContent="Auto: "+(autoOn?"on":"off");
-  if(autoOn){timer=setInterval(update,90000);update();} else clearInterval(timer);
+  if(autoOn){timer=setInterval(tick,90000);tick();} else clearInterval(timer);
 });
-$("day").value=todayISO();
-timer=setInterval(update,90000);
+
+// Auto-refresh keeps the window rolling ONLY when it is sitting on "right now".
+function tick(){ if(!$("prior").value) setNow(); update(); }
+
+setNow();
+loadPriorWalkabouts();
+timer=setInterval(tick,90000);
 update();
 </script>
 </body>
