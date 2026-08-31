@@ -222,10 +222,11 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 
 <section id="secUnpub" class="pale">
   <h2>The park already knew these plants, but no research is ready for publishing yet<span class="tag" id="tUnpub"></span></h2>
-  <p class="sub">The park knows it has these, but no finished page has been written yet. These
-    photographs may be what gets one done. <b>This list is as things stand today, not as they stood
-    on the walkabout</b> &mdash; so for an older outing, some of what was outstanding then has since
-    been published and no longer appears here.</p>
+  <p class="sub">Recorded here before, but no finished page has been written yet. These
+    photographs may be what gets one done. Anything found for the first time on this walkabout is
+    in the section above instead, not here. <b>This list is as things stand today, not as they
+    stood on the walkabout</b> &mdash; so for an older outing, some of what was outstanding then
+    has since been published and no longer appears.</p>
   <div class="chips" id="unpubList"></div>
 </section>
 
@@ -594,8 +595,14 @@ function render(obs,priorTaxa){
         // "First for the park" is a HISTORICAL claim: nobody had recorded it here before
         // this day. Falls back to the catalogue check if the history could not be fetched.
         const isNew = priorTaxa ? !priorTaxa.has(t.id) : !KNOWN_TAXA.has(t.id);
+        // MUTUALLY EXCLUSIVE, and the reason matters. Intake creates a research stub FROM a
+        // new observation (research_source: "inat_observed"), so a first record acquires a
+        // catalogue entry a day or two later. Listing it under "the park already knew these"
+        // then states the exact opposite of the truth: the park learned it FROM this walkabout.
+        // Randy caught Pampas Grass in both lists on the 25 Aug report — PSBP-00759, created
+        // 27 Aug, two days after the walkabout that found it.
         if(isNew) newSp.set(t.id,rec);
-        if(KNOWN_TAXA.has(t.id) && !PUBLISHED_TAXA.has(t.id)) unpub.set(t.id,rec);
+        else if(KNOWN_TAXA.has(t.id) && !PUBLISHED_TAXA.has(t.id)) unpub.set(t.id,rec);
       }
     }
   });
