@@ -9511,8 +9511,17 @@ PAGE_ROUTES = {
 # never overwrites human/Gemini-written content, and never touches structural,
 # ID, taxonomy, photo, or URL-load-bearing fields. The API key is read from the
 # ANTHROPIC_API_KEY environment variable and is never stored. A provenance trail
-# is written to data/sources/ai_draft_log.json (a sidecar — the signage schema
-# is left clean).
+# is written to data/sources/provenance/<PSBP-id>.json — ONE SMALL FILE PER
+# SPECIES. It used to be a single ai_draft_log.json; per-species files are the
+# better shape because a draft touches one small record instead of rewriting a
+# 2.7 MB blob, which keeps diffs readable and edits independent.
+#
+# NOT for repo size, and it is worth recording why: measured 2026-08-30, all 132
+# versions of the old ai_draft_log.json occupy 0.6 MB PACKED, and every JSON file
+# in this repo across 756 commits totals 4.9 MB. Git delta-compresses text almost
+# perfectly. The 391 MB of history here is 276 MB of .jpg and 59 MB of .pdf —
+# BINARIES, which cannot be delta-compressed. If repo size ever matters, look at
+# images, never at JSON.
 # ════════════════════════════════════════════════════════════════════════════
 
 ANTHROPIC_URL      = "https://api.anthropic.com/v1/messages"
@@ -9520,7 +9529,12 @@ ANTHROPIC_VERSION  = "2023-06-01"
 AI_MODEL           = "claude-sonnet-4-6"   # bump to "claude-opus-4-8" for max quality
 AI_MAX_TOKENS      = 8000
 AI_WEB_SEARCH_USES = 8
-AI_DRAFT_LOG       = os.path.join(REPO, "data", "sources", "ai_draft_log.json")
+# RETIRED 2026-08-16 — superseded by AI_PROVENANCE_DIR below. The old log is kept
+# in the repo as a historical artifact but is NO LONGER WRITTEN; provenance/ holds
+# everything it did and more (8,884 source URLs vs the log's 1,933, plus feedback
+# and changed fields). Nothing reads this constant. Do not start writing it again.
+# Its whole history costs 0.6 MB packed — not worth rewriting history to remove.
+# AI_DRAFT_LOG     = os.path.join(REPO, "data", "sources", "ai_draft_log.json")
 AI_PROVENANCE_DIR  = os.path.join(REPO, "data", "sources", "provenance")
 
 # Field → (json-shape, instruction). This is the ONLY surface the AI may write.
