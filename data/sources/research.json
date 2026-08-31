@@ -2,9 +2,9 @@
   "meta": {
     "generated": "2026-06-23",
     "description": "Staging file for species under research — not yet promoted to spotted or html. Plants and wildlife coexist, distinguished by the 'type' field.",
-    "species_count": 506,
-    "plant_count": 474,
-    "wildlife_count": 34,
+    "species_count": 508,
+    "plant_count": 468,
+    "wildlife_count": 40,
     "status_counts": {
       "research": 490,
       "died": 12,
@@ -699,12 +699,12 @@
     {
       "id": "PSBP-00111",
       "common_name": "Cranberry Hibiscus",
-      "botanical_name": "Hibiscus acetosella",
+      "botanical_name": "Sabdariffa acetosella",
       "inat_taxon_id": 1686223,
       "sign_level": "Species",
       "taxonomy": {
         "family": "Malvaceae",
-        "genus": "Hibiscus",
+        "genus": "Sabdariffa",
         "species": "acetosella"
       },
       "category": "Tropical Foliage and Accent Plants",
@@ -783,9 +783,13 @@
         "notes": "Not on Florida's FISC invasive plant list. Not flagged by UF/IFAS."
       },
       "other_notes": null,
-      "internal_notes": null,
+      "internal_notes": [
+        "2026-08-31: name updated to Sabdariffa acetosella. iNaturalist moved the taxon out of Hibiscus, and FOUR identifiers independently followed it there on 2026-06-11 — variegated-crouton, hcoste, russellbarrett and randall_carter, all of whom had previously called it Hibiscus acetosella. That is a genuine determination with outside expert backing, not a computer-vision suggestion.\nDETERMINATION IS SETTLED — this is ready to publish. One observation (turtleteam, 2023-11-14, ±68 m) with five identifiers on it. Cranberry hibiscus is unmistakable in the field: deep maroon palmate foliage, grown for the leaves rather than the flowers, and nothing else in a Florida garden resembles it. It is NOT part of the ornamental-hibiscus hybrid problem — see BOTANICAL_QUESTIONS.md entry 6.\n⚠ Do not merge or deduplicate against PSBP-00658 Sheep's sorrel (Rumex acetosella). Same epithet, unrelated plant, different family.",
+        "⚠ 2026-08-31: DO NOT PUBLISH YET — the plant may be gone. Randy: \"Cranberry hibiscus might be dead. It used to be around the office but haven't seen it in years. Maybe salt intrusion killed it.\"\nThe DETERMINATION is settled (see the note above — four identifiers, Sabdariffa acetosella) and the research content is written. What is not established is PRESENCE. Those are different things, and a published page for a plant that is not there is worse than no page.\nEvidence for the doubt: ONE observation ever, turtleteam 2023-11-14, and nothing in the nearly two years since — in a park that now logs 1,700 observations. Its stated position is ±68 m, a circle covering 1.5 hectares of a 3.3-hectare park, so the record cannot even say where to look.\nTO RESOLVE: look near the Office. Deep maroon palmate foliage, unmistakable, grown for leaves rather than flowers. If found, photograph it — the only existing photo is All Rights Reserved (turtleteam licenses all 166 of their observations that way), so the park has no usable image and cannot publish without one. If not found, set status to died and record salt intrusion as the suspected cause.\n⚠ SALT INTRUSION would be the first time this cause is recorded in the catalogue. Randy has mentioned it before — the duck potato \"faded back in salt water.\" If a second plant is lost to it, that is a pattern the horticulture team should know about, not a footnote."
+      ],
       "type": "plant",
-      "research_source": "prior_research"
+      "research_source": "prior_research",
+      "scientific_name": "Sabdariffa acetosella"
     },
     {
       "id": "PSBP-00114",
@@ -3757,33 +3761,6 @@
       "research_source": "park_inventory"
     },
     {
-      "id": "PSBP-00248",
-      "type": "plant",
-      "common_name": "Sea Grape",
-      "botanical_name": "Coccoloba uvifera",
-      "inat_taxon_id": 127284,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Polygonaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": true,
-      "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1).",
-      "import_source": "Sheet1",
-      "csv_data": {
-        "origin": "NATIVE",
-        "height": "25-30'",
-        "spread": "20-30'",
-        "light": "FS - PSh",
-        "zone": "",
-        "plant_date": "11/11/20"
-      },
-      "research_source": "park_inventory"
-    },
-    {
       "id": "PSBP-00249",
       "type": "plant",
       "common_name": "Florida Silver Palm",
@@ -4919,33 +4896,6 @@
         "light": "PSh",
         "zone": "3",
         "plant_date": "1/20/21"
-      },
-      "research_source": "park_inventory"
-    },
-    {
-      "id": "PSBP-00312",
-      "type": "plant",
-      "common_name": "Japanese Fern Tree",
-      "botanical_name": "Filicium decipiens",
-      "inat_taxon_id": 348794,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Sapindaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": false,
-      "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1).",
-      "import_source": "Sheet1",
-      "csv_data": {
-        "origin": "India, Sri Lanka",
-        "height": "20-25'",
-        "spread": "10'",
-        "light": "PS - FS",
-        "zone": "4",
-        "plant_date": "3/10/20"
       },
       "research_source": "park_inventory"
     },
@@ -9092,25 +9042,6 @@
       "research_source": "inat_observed"
     },
     {
-      "id": "PSBP-00506",
-      "type": "plant",
-      "common_name": "aloe vera",
-      "botanical_name": "Aloe vera",
-      "inat_taxon_id": 126882,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Asphodelaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
-      "import_source": "iNat",
-      "research_source": "inat_observed"
-    },
-    {
       "id": "PSBP-00507",
       "type": "plant",
       "common_name": "Common Climbing Aloe",
@@ -9187,29 +9118,6 @@
       "research_source": "inat_observed"
     },
     {
-      "id": "PSBP-00516",
-      "type": "plant",
-      "common_name": "Breadfruit",
-      "botanical_name": "Artocarpus altilis",
-      "inat_taxon_id": 70027,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Moraceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": null,
-      "internal_notes": [
-        "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
-        "2026-08-31: rare_fruit set to true ahead of promotion. Randy: \"set flag for species that match their list and observations show are over there.\" Named on the Manatee Rare Fruit Council list for this grove (Breadfruit, Artocarpus altilis) and observed there."
-      ],
-      "import_source": "iNat",
-      "research_source": "inat_observed",
-      "rare_fruit": true
-    },
-    {
       "id": "PSBP-00517",
       "type": "plant",
       "common_name": "Chinese violet",
@@ -9272,25 +9180,6 @@
       "common_name": "Punting Pole Bamboo",
       "botanical_name": "Bambusa tuldoides",
       "inat_taxon_id": 279677,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Poaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
-      "import_source": "iNat",
-      "research_source": "inat_observed"
-    },
-    {
-      "id": "PSBP-00522",
-      "type": "plant",
-      "common_name": "common bamboo",
-      "botanical_name": "Bambusa vulgaris",
-      "inat_taxon_id": 122530,
       "sign_level": "Species",
       "taxonomy": {
         "family": "Poaceae"
@@ -9876,25 +9765,6 @@
       "sign_level": "Genus",
       "taxonomy": {
         "family": "Ebenaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
-      "import_source": "iNat",
-      "research_source": "inat_observed"
-    },
-    {
-      "id": "PSBP-00563",
-      "type": "plant",
-      "common_name": "Ceylon Gooseberry",
-      "botanical_name": "Dovyalis hebecarpa",
-      "inat_taxon_id": 401513,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Salicaceae"
       },
       "category": "",
       "feature_tier": "Standard",
@@ -12477,22 +12347,6 @@
       "inat_obs_count": 1
     },
     {
-      "id": "PSBP-00744",
-      "common_name": "Crape-myrtle",
-      "botanical_name": "Lagerstroemia indica",
-      "inat_taxon_id": 135394,
-      "taxonomy": {
-        "family": "Lythraceae",
-        "genus": "Lagerstroemia",
-        "species": "indica"
-      },
-      "type": "plant",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 1
-    },
-    {
       "id": "PSBP-00745",
       "common_name": "Cryosophila stauracantha",
       "botanical_name": "Cryosophila stauracantha",
@@ -12641,25 +12495,6 @@
       "inat_obs_count": 1
     },
     {
-      "id": "PSBP-00757",
-      "common_name": "Zanzibar gem",
-      "botanical_name": "Zamioculcas zamiifolia",
-      "inat_taxon_id": 367277,
-      "inat_rank": "species",
-      "taxonomy": {
-        "family": "Araceae",
-        "genus": "Zamioculcas",
-        "species": "zamiifolia",
-        "class": "Liliopsida",
-        "order": "Alismatales"
-      },
-      "type": "plant",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 1
-    },
-    {
       "id": "PSBP-00758",
       "common_name": "common passionfruit",
       "botanical_name": "Passiflora edulis",
@@ -12690,25 +12525,6 @@
         "species": "selloana",
         "class": "Liliopsida",
         "order": "Poales"
-      },
-      "type": "plant",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 1
-    },
-    {
-      "id": "PSBP-00760",
-      "common_name": "Gregorywood",
-      "botanical_name": "Terminalia buceras",
-      "inat_taxon_id": 867073,
-      "inat_rank": "species",
-      "taxonomy": {
-        "family": "Combretaceae",
-        "genus": "Terminalia",
-        "species": "buceras",
-        "class": "Magnoliopsida",
-        "order": "Myrtales"
       },
       "type": "plant",
       "status": "research",
@@ -13002,6 +12818,122 @@
       "inat_obs_count": 1
     },
     {
+      "id": "PSBP-00780",
+      "type": "plant",
+      "common_name": "African Tulip Tree",
+      "scientific_name": "Spathodea campanulata",
+      "botanical_name": "Spathodea campanulata",
+      "inat_taxon_id": 126566,
+      "sign_level": "Species",
+      "taxonomy": {
+        "family": "Bignoniaceae"
+      },
+      "category": "",
+      "feature_tier": "Standard",
+      "has_sign": false,
+      "status": "research",
+      "native": false,
+      "rare_fruit": false,
+      "internal_notes": "Created 2026-08-31 from observation 381672978 (ruby_meador, 2026-07-15), at 27.514377, -82.659833 ±7 m — out by the road on the north edge of the park, root-suckering from a cut stump.\nDETERMINATION: David Vanderbilt PLANTED THIS TREE and identified it as Spathodea campanulata. Randy independently reached the same answer from the plant itself — pinnately compound leaves, vigorous vertical suckering from a stump, and the species' habit of crimson-orange bell flowers in late summer through winter. David's earlier comment on the observation: \"This is not correct. from Africa and gets an orange flower. Need to catch in bloom.\" **The person who planted it saying what it is outranks any photograph.**\n⚠ THE iNAT RECORD IS STUCK AT CLASS (Magnoliopsida) and it is NOT a botanical dispute. Three current identifications: ruby_meador -> Sambucus canadensis, randall_carter and davidvanderbilt -> Spathodea campanulata. Two of three is 66.7%, and iNat's community taxon needs MORE than two-thirds, so it falls back to the common ancestor. It clears the moment EITHER Ruby withdraws her identification (2 of 2) OR any third person adds Spathodea (3 of 4). No new evidence is required.\nTO VERIFY IN BLOOM: late summer through winter, large upward-facing crimson-orange bells. A flowering photograph would settle it beyond argument and is worth going back for.\n⚠ INVASIVE STATUS NOT YET RESEARCHED. Spathodea campanulata is widely reported as invasive in tropical regions; whether it carries a FISC listing in Florida must be checked before this is published or signed. iNaturalist holds no conservation status for it.",
+      "import_source": "iNat",
+      "research_source": "inat_observed"
+    },
+    {
+      "id": "PSBP-00781",
+      "common_name": "Caryota maxima",
+      "botanical_name": "Caryota maxima",
+      "inat_taxon_id": 323026,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Arecaceae",
+        "genus": "Caryota",
+        "species": "maxima",
+        "class": "Liliopsida",
+        "order": "Arecales"
+      },
+      "type": "plant",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1
+    },
+    {
+      "id": "PSBP-00782",
+      "common_name": "Star jasmine",
+      "botanical_name": "Trachelospermum jasminoides",
+      "inat_taxon_id": 169856,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Apocynaceae",
+        "genus": "Trachelospermum",
+        "species": "jasminoides",
+        "class": "Magnoliopsida",
+        "order": "Gentianales"
+      },
+      "type": "plant",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1
+    },
+    {
+      "id": "PSBP-00783",
+      "common_name": "Marlberry",
+      "botanical_name": "Ardisia escallonioides",
+      "inat_taxon_id": 131598,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Primulaceae",
+        "genus": "Ardisia",
+        "species": "escallonioides",
+        "class": "Magnoliopsida",
+        "order": "Ericales"
+      },
+      "type": "plant",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1
+    },
+    {
+      "id": "PSBP-00784",
+      "common_name": "Lipsticktree",
+      "botanical_name": "Bixa orellana",
+      "inat_taxon_id": 127676,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Bixaceae",
+        "genus": "Bixa",
+        "species": "orellana",
+        "class": "Magnoliopsida",
+        "order": "Malvales"
+      },
+      "type": "plant",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1
+    },
+    {
+      "id": "PSBP-00785",
+      "common_name": "Indian shot",
+      "botanical_name": "Canna indica",
+      "inat_taxon_id": 146643,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Cannaceae",
+        "genus": "Canna",
+        "species": "indica",
+        "class": "Liliopsida",
+        "order": "Zingiberales"
+      },
+      "type": "plant",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 6
+    },
+    {
       "id": "PSBP-90003",
       "common_name": "Mydas Flies",
       "scientific_name": "Mydidae",
@@ -13221,6 +13153,132 @@
       "inat_obs_count": 1,
       "animal_group": "Turtle",
       "animal_group_source": "derived: order Testudines"
+    },
+    {
+      "id": "PSBP-90021",
+      "common_name": "Double-banded Plushback",
+      "scientific_name": "Palpada agrorum",
+      "inat_taxon_id": 366384,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Syrphidae",
+        "genus": "Palpada",
+        "species": "agrorum",
+        "class": "Insecta",
+        "order": "Diptera"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Fly",
+      "animal_group_source": "derived: order Diptera"
+    },
+    {
+      "id": "PSBP-90022",
+      "common_name": "Common Longhorn Bee",
+      "scientific_name": "Melissodes communis",
+      "inat_taxon_id": 224858,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Apidae",
+        "genus": "Melissodes",
+        "species": "communis",
+        "class": "Insecta",
+        "order": "Hymenoptera"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Bee",
+      "animal_group_source": "derived: family Apidae"
+    },
+    {
+      "id": "PSBP-90023",
+      "common_name": "Black-throated Blue Warbler",
+      "scientific_name": "Setophaga caerulescens",
+      "inat_taxon_id": 199916,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Parulidae",
+        "genus": "Setophaga",
+        "species": "caerulescens",
+        "class": "Aves",
+        "order": "Passeriformes"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Bird",
+      "animal_group_source": "derived: class Aves"
+    },
+    {
+      "id": "PSBP-90024",
+      "common_name": "Gray Kingbird",
+      "scientific_name": "Tyrannus dominicensis",
+      "inat_taxon_id": 16798,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Tyrannidae",
+        "genus": "Tyrannus",
+        "species": "dominicensis",
+        "class": "Aves",
+        "order": "Passeriformes"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Bird",
+      "animal_group_source": "derived: class Aves"
+    },
+    {
+      "id": "PSBP-90025",
+      "common_name": "Brown Thrasher",
+      "scientific_name": "Toxostoma rufum",
+      "inat_taxon_id": 14898,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Mimidae",
+        "genus": "Toxostoma",
+        "species": "rufum",
+        "class": "Aves",
+        "order": "Passeriformes"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Bird",
+      "animal_group_source": "derived: class Aves"
+    },
+    {
+      "id": "PSBP-90026",
+      "common_name": "Boat-tailed Grackle",
+      "scientific_name": "Quiscalus major",
+      "inat_taxon_id": 9601,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Icteridae",
+        "genus": "Quiscalus",
+        "species": "major",
+        "class": "Aves",
+        "order": "Passeriformes"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Bird",
+      "animal_group_source": "derived: class Aves"
     },
     {
       "id": "PSBP-99887",
@@ -14070,27 +14128,6 @@
       "plant_links": [],
       "type": "wildlife",
       "research_source": "prior_research"
-    },
-    {
-      "id": "PSBP-00780",
-      "type": "plant",
-      "common_name": "African Tulip Tree",
-      "scientific_name": "Spathodea campanulata",
-      "botanical_name": "Spathodea campanulata",
-      "inat_taxon_id": 126566,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Bignoniaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": false,
-      "rare_fruit": false,
-      "internal_notes": "Created 2026-08-31 from observation 381672978 (ruby_meador, 2026-07-15), at 27.514377, -82.659833 ±7 m — out by the road on the north edge of the park, root-suckering from a cut stump.\nDETERMINATION: David Vanderbilt PLANTED THIS TREE and identified it as Spathodea campanulata. Randy independently reached the same answer from the plant itself — pinnately compound leaves, vigorous vertical suckering from a stump, and the species' habit of crimson-orange bell flowers in late summer through winter. David's earlier comment on the observation: \"This is not correct. from Africa and gets an orange flower. Need to catch in bloom.\" **The person who planted it saying what it is outranks any photograph.**\n⚠ THE iNAT RECORD IS STUCK AT CLASS (Magnoliopsida) and it is NOT a botanical dispute. Three current identifications: ruby_meador -> Sambucus canadensis, randall_carter and davidvanderbilt -> Spathodea campanulata. Two of three is 66.7%, and iNat's community taxon needs MORE than two-thirds, so it falls back to the common ancestor. It clears the moment EITHER Ruby withdraws her identification (2 of 2) OR any third person adds Spathodea (3 of 4). No new evidence is required.\nTO VERIFY IN BLOOM: late summer through winter, large upward-facing crimson-orange bells. A flowering photograph would settle it beyond argument and is worth going back for.\n⚠ INVASIVE STATUS NOT YET RESEARCHED. Spathodea campanulata is widely reported as invasive in tropical regions; whether it carries a FISC listing in Florida must be checked before this is published or signed. iNaturalist holds no conservation status for it.",
-      "import_source": "iNat",
-      "research_source": "inat_observed"
     }
   ]
 }
