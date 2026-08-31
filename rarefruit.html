@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rare Fruit Grove — Palma Sola Botanical Park</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+:root{--green-deep:#1a3a1f;--green-mid:#2d6a35;--green-light:#4a9e56;--green-pale:#e8f5ea;
+ --gold:#c5922a;--gold-light:#eabc5a;--cream:#faf8f3;--sand:#ede8df;--text:#1e1e1e;
+ --text-soft:#555;--border:rgba(0,0,0,.09);--rust:#9a4a24}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Sans 3',system-ui,sans-serif;background:var(--cream);color:var(--text);
+ line-height:1.6;-webkit-font-smoothing:antialiased;padding:0 20px 70px}
+.wrap{max-width:1120px;margin:0 auto}
+h1,h2{font-family:'Playfair Display',Georgia,serif;text-wrap:balance}
+header{padding:38px 0 20px}
+.kicker{font-size:.8rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--green-mid)}
+h1{font-size:clamp(32px,5vw,48px);color:var(--green-deep);margin-top:8px;line-height:1.05}
+.dek{color:var(--text-soft);font-size:1.03rem;max-width:66ch;margin-top:12px}
+.tallies{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin:22px 0}
+.t{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px 18px}
+.t .n{font-family:'Playfair Display',serif;font-size:2.3rem;font-weight:700;line-height:1;color:var(--green-mid)}
+.t.gold .n{color:var(--gold)} .t.rust .n{color:var(--rust)}
+.t .c{font-size:.82rem;color:var(--text-soft);margin-top:5px}
+section{background:#fff;border:1px solid var(--border);border-radius:16px;padding:26px 28px;margin-top:16px}
+section.pale{background:var(--green-pale);border-color:transparent}
+section.sandy{background:var(--sand);border-color:transparent}
+h2{font-size:1.5rem;font-weight:600;color:var(--green-deep);display:flex;align-items:baseline;gap:12px}
+h2 .tag{margin-left:auto;font-family:'Source Sans 3',sans-serif;font-size:.8rem;font-weight:600;color:var(--text-soft)}
+.sub{color:var(--text-soft);font-size:.96rem;margin:8px 0 18px;max-width:72ch}
+#map{width:100%;height:560px;border-radius:12px;background:var(--sand)}
+.leaflet-popup-content{margin:12px 14px;font-size:.92rem;line-height:1.45}
+.leaflet-popup-content b{color:var(--green-deep);font-size:1rem}
+.leaflet-popup-content .sci{font-style:italic;color:var(--text-soft);font-size:.82rem}
+.leaflet-popup-content img{width:100%;border-radius:8px;margin-top:8px}
+.lbl{background:none;border:0;box-shadow:none;font-weight:700;font-size:11.5px;color:#fff;
+ text-shadow:0 1px 3px #000,0 0 6px #000;white-space:nowrap}
+.legend{display:flex;gap:18px;flex-wrap:wrap;color:var(--text-soft);font-size:.85rem;margin-top:12px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.grid{display:grid;gap:9px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));list-style:none}
+.grid li{background:var(--cream);border:1px solid var(--border);border-radius:11px;padding:11px 13px;
+ display:flex;gap:9px;align-items:baseline;font-size:.95rem}
+.grid li.hot{background:var(--gold-light);border-color:var(--gold)}
+.grid .b{flex:0 0 auto;width:15px;height:15px;border:1.5px solid var(--text);border-radius:3px;position:relative;top:2px}
+.grid .sci{font-style:italic;color:var(--text-soft);font-size:.78rem;display:block}
+.grid .n{margin-left:auto;font-size:.78rem;color:var(--text-soft);white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:var(--cream);border:1px solid var(--border);border-radius:999px;padding:7px 13px;font-size:.9rem}
+.chip .sci{font-style:italic;color:var(--text-soft);font-size:.78rem;margin-left:5px}
+footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);color:var(--text-soft);
+ font-size:.85rem;line-height:1.7}
+@media print{@page{margin:12mm} body{background:#fff;padding:0} #map{height:420px}
+ section,.t{border:.7pt solid #999;background:#fff;break-inside:avoid} .grid{grid-template-columns:1fr 1fr 1fr}}
+</style>
+</head>
+<body><div class="wrap">
+
+<header>
+  <div class="kicker">Palma Sola Botanical Park · Manatee Rare Fruit Council</div>
+  <h1>The Rare Fruit Grove</h1>
+  <p class="dek">Everything the park has photographed in the southeast quadrant — east of Big Pond,
+  north of the bridge, running south from the Black Sapote. Built from iNaturalist observations, so
+  every dot is a plant somebody actually stood in front of.</p>
+</header>
+
+<div class="tallies">
+  <div class="t"><div class="n" id="kRare">—</div><div class="c">rare fruit mapped</div></div>
+  <div class="t"><div class="n" id="kObs">—</div><div class="c">observations behind them</div></div>
+  <div class="t gold"><div class="n" id="kPin">—</div><div class="c">pinned in placements</div></div>
+  <div class="t rust"><div class="n" id="kMiss">—</div><div class="c">on the MRFC list, never found</div></div>
+</div>
+
+<section>
+  <h2>The map<span class="tag" id="tMap"></span></h2>
+  <p class="sub">Gold dots are rare fruit; green are everything else growing among them. Circles show
+  how precisely the observations were placed. Click any dot for the plant, its photograph, and a link
+  to the observation.</p>
+  <div id="map"></div>
+  <div class="legend">
+    <span><i style="background:#c5922a"></i>rare fruit</span>
+    <span><i style="background:#2d6a35"></i>other plants in the grove</span>
+    <span><i style="background:#9a4a24"></i>position uncertain — over 20&thinsp;m</span>
+  </div>
+</section>
+
+<section class="pale">
+  <h2>What is here<span class="tag" id="tHere"></span></h2>
+  <p class="sub">Every rare-fruit species photographed in the quadrant, with how many observations
+  stand behind it. Gold means it has a pin in <b>placements.json</b>; the rest are known from
+  photographs but have never had a coordinate recorded.</p>
+  <ul class="grid" id="here"></ul>
+</section>
+
+<section class="sandy">
+  <h2>Go find these<span class="tag" id="tHunt"></span></h2>
+  <p class="sub">On the Manatee Rare Fruit Council's list for this grove, and <b>never recorded
+  anywhere in the park</b>. Some may have died; some are certainly still standing and simply
+  unphotographed. <b>This is the list to hand somebody.</b></p>
+  <div class="chips" id="hunt"></div>
+</section>
+
+<section>
+  <h2>Known, but not photographed here<span class="tag" id="tElse"></span></h2>
+  <p class="sub">The park has a record for these, but nothing in this quadrant. Either they grow
+  elsewhere, or nobody has photographed the grove's plant.</p>
+  <div class="chips" id="elsewhere"></div>
+</section>
+
+<footer>
+  Built <b id="built"></b> from the <b>palma-sola-botanical-park</b> iNaturalist project and the
+  park's own catalogue. Positions are the median of each species' best-placed observations, so a
+  dot marks <i>roughly where that fruit is</i>, not a specific tree — several species have more than
+  one plant here.<br><br>
+  <b>The MRFC list is a hunt list, not an inventory.</b> Randy: “I know I've found things in their
+  area not listed, and vice versa.” Absence from this map means nobody has photographed it, which is
+  not the same as absence from the park.
+</footer>
+
+</div>
+<script>
+const DATA={"rare": [{"name": "Papaya", "sci": "Carica papaya", "tid": 62811, "n": 9, "lat": 27.513545, "lng": -82.6590633333, "acc": 6, "psbp": "PSBP-00079", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/717891058/small.jpg", "last": "2026-08-05", "common": "Papaya", "pinned": false, "area": null}, {"name": "Indian mango", "sci": "Mangifera indica", "tid": 48872, "n": 7, "lat": 27.51293134555, "lng": -82.65920537439999, "acc": 6, "psbp": "PSBP-00090", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/689659098/small.jpg", "last": "2026-06-24", "common": "Mango", "pinned": false, "area": null}, {"name": "Lychee", "sci": "Litchi chinensis", "tid": 223964, "n": 5, "lat": 27.5134328979, "lng": -82.6590459907, "acc": 6, "psbp": "PSBP-00606", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/702740316/small.jpg", "last": "2026-07-22", "common": "Lychee", "pinned": false, "area": null}, {"name": "pomegranate", "sci": "Punica granatum", "tid": 58300, "n": 5, "lat": 27.5131270741, "lng": -82.65911527, "acc": 4, "psbp": "PSBP-00123", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/689653719/small.jpg", "last": "2026-07-01", "common": "Pomegranate", "pinned": false, "area": null}, {"name": "Starfruit", "sci": "Averrhoa carambola", "tid": 146977, "n": 4, "lat": 27.5135058827, "lng": -82.6590735472, "acc": 10, "psbp": "PSBP-00124", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/702733204/small.jpg", "last": "2026-07-22", "common": "Starfruit", "pinned": false, "area": null}, {"name": "Black Sapote", "sci": "Diospyros nigra", "tid": 343829, "n": 4, "lat": 27.51356193755, "lng": -82.65905342015, "acc": 14, "psbp": "PSBP-00127", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/698448573/small.jpg", "last": "2026-07-15", "common": "Black Sapote", "pinned": true, "area": "Rare Fruit"}, {"name": "Noni", "sci": "Morinda citrifolia", "tid": 121022, "n": 2, "lat": 27.5130883333, "lng": -82.6590116667, "acc": 33, "psbp": "PSBP-00616", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/689615081/small.jpg", "last": "2026-06-24", "common": "Noni", "pinned": false, "area": null}, {"name": "Avocado", "sci": "Persea americana", "tid": 62831, "n": 2, "lat": 27.5129275304, "lng": -82.6590499935, "acc": 39, "psbp": "PSBP-00129", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/689614584/small.jpg", "last": "2026-06-24", "common": "Avocado", "pinned": false, "area": null}, {"name": "Tamarind", "sci": "Tamarindus indica", "tid": 62844, "n": 2, "lat": 27.51340619815, "lng": -82.65924147679999, "acc": 27, "psbp": "PSBP-00682", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/685324400/small.jpg", "last": "2026-06-24", "common": "Tamarind", "pinned": false, "area": null}, {"name": "Pond Apple", "sci": "Annona glabra", "tid": 69972, "n": 2, "lat": 27.5138084814, "lng": -82.659170771, "acc": 14, "psbp": "PSBP-00128", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/685290905/small.jpg", "last": "2026-06-24", "common": "Pond Apple", "pinned": true, "area": "Rare Fruit"}, {"name": "Longan", "sci": "Dimocarpus longan", "tid": 191503, "n": 2, "lat": 27.5132519688, "lng": -82.6591150554, "acc": 6, "psbp": "PSBP-00126", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/680902995/small.jpg", "last": "2026-06-17", "common": "Longan", "pinned": true, "area": "Rare Fruit"}, {"name": "Night-blooming Cereus", "sci": "Selenicereus undatus", "tid": 1038928, "n": 2, "lat": 27.5134716667, "lng": -82.6590583333, "acc": 34, "psbp": "PSBP-00080", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672204986/small.jpg", "last": "2026-06-03", "common": "Dragon Fruit", "pinned": true, "area": "Rare Fruit"}, {"name": "Surinam cherry", "sci": "Eugenia uniflora", "tid": 83642, "n": 1, "lat": 27.5130051409, "lng": -82.6591871655, "acc": 6, "psbp": "PSBP-00723", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/702747141/small.jpg", "last": "2026-07-22", "common": "Surinam cherry", "pinned": false, "area": null}, {"name": "Olive", "sci": "Olea europaea", "tid": 57140, "n": 1, "lat": 27.5135536845, "lng": -82.6590241031, "acc": 3, "psbp": "PSBP-00716", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/698449442/small.jpg", "last": "2026-07-15", "common": "Olive", "pinned": false, "area": null}, {"name": "White sapote", "sci": "Casimiroa edulis", "tid": 209889, "n": 1, "lat": 27.5129496568, "lng": -82.6591949047, "acc": 3, "psbp": "PSBP-00712", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/689659482/small.jpg", "last": "2026-06-24", "common": "White sapote", "pinned": false, "area": null}, {"name": "Moringa tree", "sci": "Moringa oleifera", "tid": 165529, "n": 1, "lat": 27.5128540809, "lng": -82.659055792, "acc": 4, "psbp": "PSBP-00086", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/689615277/small.jpg", "last": "2026-06-24", "common": "Moringa", "pinned": true, "area": "Front Pond"}, {"name": "Plum", "sci": "Prunus domestica", "tid": 63735, "n": 1, "lat": 27.5129381825, "lng": -82.6591272006, "acc": 5, "psbp": "PSBP-00711", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/689614979/small.jpg", "last": "2026-06-24", "common": "Plum", "pinned": false, "area": null}, {"name": "Jackfruit", "sci": "Artocarpus heterophyllus", "tid": 123003, "n": 1, "lat": 27.5137675594, "lng": -82.6593945381, "acc": 20, "psbp": "PSBP-00132", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/685291076/small.jpg", "last": "2026-06-24", "common": "Jackfruit", "pinned": false, "area": null}, {"name": "Acerola", "sci": "Malpighia emarginata", "tid": 285445, "n": 1, "lat": 27.5136491475, "lng": -82.6592699404, "acc": 5, "psbp": "PSBP-00096", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/663459827/small.jpg", "last": "2026-05-20", "common": "Barbados Cherry", "pinned": false, "area": null}, {"name": "Plantain", "sci": "Musa × paradisiaca", "tid": 170883, "n": 1, "lat": 27.513579108, "lng": -82.659269341, "acc": 4, "psbp": "PSBP-00621", "rare": true, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/663459731/small.jpg", "last": "2026-05-20", "common": "Plantain", "pinned": false, "area": null}], "other": [{"name": "Golden Shower Tree", "sci": "Cassia fistula", "tid": 68679, "n": 4, "lat": 27.5137272876, "lng": -82.6591260711, "acc": 11, "psbp": "PSBP-00125", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/685278221/small.jpg", "last": "2026-06-24", "common": "Golden Shower Tree", "pinned": true, "area": "Butterfly Garden"}, {"name": "Tropical sage", "sci": "Salvia coccinea", "tid": 128652, "n": 3, "lat": 27.51394581455, "lng": -82.6590985209, "acc": 5, "psbp": "PSBP-00156", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/703865987/small.jpg", "last": "2026-06-02", "common": "Tropical Sage", "pinned": false, "area": null}, {"name": "Manila Palm", "sci": "Adonidia merrillii", "tid": 208746, "n": 3, "lat": 27.5127, "lng": -82.6593783333, "acc": 16, "psbp": "PSBP-00497", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/697850045/small.jpg", "last": "2026-07-14", "common": "Christmas Palm", "pinned": true, "area": "Big Pond"}, {"name": "grandleaf sea grape", "sci": "Coccoloba pubescens", "tid": 361831, "n": 3, "lat": 27.5139116977, "lng": -82.6592766822, "acc": 2, "psbp": "PSBP-00054", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672201533/small.jpg", "last": "2026-06-03", "common": "Grandleaf Seagrape", "pinned": true, "area": "Pavilion Field"}, {"name": "sunshine mimosa", "sci": "Mimosa strigillosa", "tid": 165400, "n": 3, "lat": 27.5127528582, "lng": -82.6594491025, "acc": 4, "psbp": "PSBP-00013", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672185979/small.jpg", "last": "2026-06-02", "common": "Sunshine Mimosa", "pinned": true, "area": "Front Pond"}, {"name": "firewheel", "sci": "Gaillardia pulchella", "tid": 51768, "n": 3, "lat": 27.5139293773, "lng": -82.6590716667, "acc": 9, "psbp": "PSBP-00009", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672185239/small.jpg", "last": "2026-06-02", "common": "Firewheel", "pinned": true, "area": "Butterfly Garden"}, {"name": "saba nut tree", "sci": "Pachira glabra", "tid": 346408, "n": 2, "lat": 27.5133420155, "lng": -82.6590976865, "acc": 18, "psbp": "PSBP-00634", "rare": false, "status": "spotted", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/689614532/small.jpg", "last": "2026-06-24", "common": "saba nut tree", "pinned": false, "area": null}, {"name": "Sweet viburnum", "sci": "Viburnum odoratissimum", "tid": 357524, "n": 2, "lat": 27.51376925645, "lng": -82.65920438744999, "acc": 6, "psbp": "PSBP-00119", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/680905925/small.jpg", "last": "2026-06-17", "common": "Sweet Viburnum", "pinned": true, "area": null}, {"name": "Neem", "sci": "Azadirachta indica", "tid": 319135, "n": 1, "lat": 27.5128257466, "lng": -82.659161223, "acc": 13, "psbp": "PSBP-00520", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/723663988/small.jpg", "last": "2026-08-26", "common": "Neem", "pinned": true, "area": "Big Pond"}, {"name": "Allagoptera arenaria", "sci": "Allagoptera arenaria", "tid": 364198, "n": 1, "lat": 27.5127745063, "lng": -82.6594893775, "acc": 31, "psbp": "PSBP-00182", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/723663722/small.jpg", "last": "2026-08-26", "common": "Seashore Palm", "pinned": true, "area": "Big Pond"}, {"name": "dwarf black olive", "sci": "Terminalia molinetii", "tid": 551247, "n": 1, "lat": 27.51272, "lng": -82.6591866667, "acc": 3, "psbp": "PSBP-00467", "rare": false, "status": "spotted", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/719612954/small.jpg", "last": "2026-08-04", "common": "Spiny Black Olive", "pinned": false, "area": null}, {"name": "Tricolor Hibiscus", "sci": "Hibiscus × rosa-sinensis", "tid": 1628098, "n": 1, "lat": 27.513847665, "lng": -82.6594744063, "acc": 5, "psbp": "PSBP-00588", "rare": false, "status": "spotted", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/713089637/small.jpg", "last": "2026-08-05", "common": "Tricolor Hibiscus", "pinned": false, "area": null}, {"name": "Satakentia liukiuensis", "sci": "Satakentia liukiuensis", "tid": 366038, "n": 1, "lat": 27.512687, "lng": -82.659211, "acc": null, "psbp": "PSBP-00439", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/697849766/small.jpg", "last": "2026-07-14", "common": "Satake Palm", "pinned": true, "area": null}, {"name": "Açaí Palm", "sci": "Euterpe oleracea", "tid": 365244, "n": 1, "lat": 27.5127032475, "lng": -82.6592212037, "acc": 3, "psbp": "PSBP-00305", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/697849650/small.jpg", "last": "2026-07-14", "common": "Acai Palm", "pinned": true, "area": null}, {"name": "Queen palm", "sci": "Syagrus romanzoffiana", "tid": 79291, "n": 1, "lat": 27.5139833791, "lng": -82.6591423018, "acc": 52, "psbp": "PSBP-00460", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/697849468/small.jpg", "last": "2026-07-14", "common": "Queen Palm", "pinned": true, "area": "Big Pond"}, {"name": "Mediterranean fan palm", "sci": "Chamaerops humilis", "tid": 132759, "n": 1, "lat": 27.5136838656, "lng": -82.6593462999, "acc": 56, "psbp": "PSBP-00239", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/697842138/small.jpg", "last": "2026-07-14", "common": "European Fan Palm", "pinned": false, "area": null}, {"name": "blue latan palm", "sci": "Latania loddigesii", "tid": 365486, "n": 1, "lat": 27.5136103562, "lng": -82.6593613954, "acc": 69, "psbp": "PSBP-00604", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/697821750/small.jpg", "last": "2026-07-14", "common": "Blue Latan Palm", "pinned": false, "area": null}, {"name": "Fiji fan palm", "sci": "Pritchardia pacifica", "tid": 346384, "n": 1, "lat": 27.513836, "lng": -82.65905, "acc": 3, "psbp": "PSBP-00414", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/697791885/small.jpg", "last": "2026-07-14", "common": "Fiji Fan Palm", "pinned": false, "area": null}, {"name": "Elegant Palm", "sci": "Ptychosperma elegans", "tid": 167570, "n": 1, "lat": 27.5133816199, "lng": -82.6592461299, "acc": 9, "psbp": "PSBP-00418", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/698426723/small.jpg", "last": "2026-07-08", "common": "Solitaire Palm", "pinned": true, "area": "Big Pond"}, {"name": "southern magnolia", "sci": "Magnolia grandiflora", "tid": 83074, "n": 1, "lat": 27.5137007264, "lng": -82.6593642045, "acc": 4, "psbp": "PSBP-00730", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/689676606/small.jpg", "last": "2026-07-01", "common": "Southern Magnolia", "pinned": false, "area": null}, {"name": "Reclining Date Palm", "sci": "Phoenix reclinata", "tid": 166729, "n": 1, "lat": 27.5138785098, "lng": -82.6592011069, "acc": 19, "psbp": "PSBP-00084", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/685291015/small.jpg", "last": "2026-06-24", "common": "Reclining Date Palm", "pinned": false, "area": null}, {"name": "Everglades palm", "sci": "Acoelorraphe wrightii", "tid": 155598, "n": 1, "lat": 27.513874932, "lng": -82.6591859634, "acc": 24, "psbp": "PSBP-00017", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/685278416/small.jpg", "last": "2026-06-24", "common": "Paurotis Palm", "pinned": true, "area": "Pavilion"}, {"name": "Trailing Daisy", "sci": "Sphagneticola trilobata", "tid": 246102, "n": 1, "lat": 27.513848646, "lng": -82.6592400413, "acc": 5, "psbp": "PSBP-00107", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/680907058/small.jpg", "last": "2026-06-17", "common": "Wedelia", "pinned": true, "area": null}, {"name": "Macarthur Palm", "sci": "Ptychosperma propinquum", "tid": 365961, "n": 1, "lat": 27.5128134946, "lng": -82.6594932285, "acc": 15, "psbp": "PSBP-00655", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672215821/small.jpg", "last": "2026-06-03", "common": "Macarthur Palm", "pinned": false, "area": null}, {"name": "Southern Seaside Goldenrod", "sci": "Solidago mexicana", "tid": 954006, "n": 1, "lat": 27.5139095495, "lng": -82.6590833546, "acc": 3, "psbp": "PSBP-00117", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672185888/small.jpg", "last": "2026-06-02", "common": "Southern Seaside Goldenrod", "pinned": true, "area": null}, {"name": "groundsel tree", "sci": "Baccharis halimifolia", "tid": 84813, "n": 1, "lat": 27.5139148347, "lng": -82.6591222455, "acc": 4, "psbp": "PSBP-00116", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672185829/small.jpg", "last": "2026-06-02", "common": "Saltbush", "pinned": false, "area": null}, {"name": "Firebush", "sci": "Hamelia patens", "tid": 126305, "n": 1, "lat": 27.5139392462, "lng": -82.6590498244, "acc": 3, "psbp": "PSBP-00074", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672185714/small.jpg", "last": "2026-06-02", "common": "Firebush", "pinned": true, "area": "Shade Garden"}, {"name": "Necklace pod", "sci": "Sophora tomentosa", "tid": 127036, "n": 1, "lat": 27.5139660051, "lng": -82.6590474736, "acc": 3, "psbp": "PSBP-00098", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672185543/small.jpg", "last": "2026-06-02", "common": "Necklace Pod", "pinned": false, "area": null}, {"name": "Madagascar Periwinkle", "sci": "Catharanthus roseus", "tid": 62924, "n": 1, "lat": 27.5139538205, "lng": -82.6591313726, "acc": 6, "psbp": "PSBP-00067", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/672185307/small.jpg", "last": "2026-06-02", "common": "Madagascar Periwinkle", "pinned": true, "area": "Office"}, {"name": "Shrimp plant", "sci": "Justicia brandegeeana", "tid": 84531, "n": 1, "lat": 27.5139862714, "lng": -82.6590591203, "acc": 6, "psbp": "PSBP-00350", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/671726650/small.jpg", "last": "2026-06-02", "common": "Shrimp Plant", "pinned": false, "area": null}, {"name": "swamp milkweed", "sci": "Asclepias incarnata", "tid": 125381, "n": 1, "lat": 27.5130714895, "lng": -82.6591802482, "acc": 8, "psbp": "PSBP-00078", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/668445054/small.jpg", "last": "2026-05-28", "common": "Swamp Milkweed", "pinned": false, "area": null}, {"name": "Umbrella Papyrus", "sci": "Cyperus alternifolius", "tid": 208766, "n": 1, "lat": 27.5126962104, "lng": -82.6594975946, "acc": 6, "psbp": "PSBP-00557", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/663459153/small.jpg", "last": "2026-05-20", "common": "Umbrella Papyrus", "pinned": false, "area": null}, {"name": "Cape Honeysuckle", "sci": "Tecomaria capensis", "tid": 286772, "n": 1, "lat": 27.5138255225, "lng": -82.6589787698, "acc": 5, "psbp": "PSBP-00684", "rare": false, "status": "spotted", "photo": "https://static.inaturalist.org/photos/627050933/small.jpg", "last": "2026-03-21", "common": "Cape Honeysuckle", "pinned": false, "area": null}, {"name": "angel-wing jasmine", "sci": "Jasminum laurifolium", "tid": 344943, "n": 1, "lat": 27.513995, "lng": -82.659425, "acc": 3, "psbp": "PSBP-00146", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/626742661/small.jpg", "last": "2026-03-20", "common": "Angel-wing Jasmine", "pinned": true, "area": null}, {"name": "Royal Palm", "sci": "Roystonea regia", "tid": 201453, "n": 1, "lat": 27.513875, "lng": -82.659225, "acc": 3, "psbp": "PSBP-00035", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/626742537/small.jpg", "last": "2026-03-20", "common": "Royal Palm", "pinned": true, "area": "Pavilion Field"}, {"name": "Scorpion's-tail", "sci": "Heliotropium angiospermum", "tid": 48895, "n": 1, "lat": 27.5139833333, "lng": -82.6590883333, "acc": 9, "psbp": "PSBP-00042", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/626742303/small.jpg", "last": "2026-03-20", "common": "Scorpion Tail", "pinned": true, "area": "Office"}, {"name": "Yellow Cosmos", "sci": "Cosmos sulphureus", "tid": 48651, "n": 1, "lat": 27.5139566667, "lng": -82.659125, "acc": 4, "psbp": "PSBP-00553", "rare": false, "status": "spotted", "photo": "https://static.inaturalist.org/photos/592551569/small.jpg", "last": "2025-11-14", "common": "Yellow Cosmos", "pinned": false, "area": null}, {"name": "turkey tangle frogfruit", "sci": "Phyla nodiflora", "tid": 59040, "n": 1, "lat": 27.5126616667, "lng": -82.659395, "acc": 3, "psbp": "PSBP-00113", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/499007983/small.jpg", "last": "2025-05-02", "common": "Turkey Tangle Frogfruit", "pinned": false, "area": null}, {"name": "crown flower", "sci": "Calotropis gigantea", "tid": 67574, "n": 1, "lat": 27.5137833333, "lng": -82.6590883333, "acc": 5, "psbp": "PSBP-00039", "rare": false, "status": "html", "photo": "https://static.inaturalist.org/photos/478662752/small.jpg", "last": "2025-03-22", "common": "Giant Milkweed", "pinned": true, "area": "Butterfly Garden"}, {"name": "lesser bougainvillea", "sci": "Bougainvillea glabra", "tid": 159346, "n": 1, "lat": 27.5138416667, "lng": -82.65905, "acc": 5, "psbp": "PSBP-00093", "rare": false, "status": "html", "photo": "https://static.inaturalist.org/photos/478662575/small.jpg", "last": "2025-03-22", "common": "Lesser Bougainvillea", "pinned": false, "area": null}, {"name": "Walter's Viburnum", "sci": "Viburnum obovatum", "tid": 170202, "n": 1, "lat": 27.513985718, "lng": -82.6590983273, "acc": 3, "psbp": "PSBP-00122", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/477907917/small.jpg", "last": "2025-03-19", "common": "Walter's Viburnum", "pinned": false, "area": null}, {"name": "yellow trumpet flower", "sci": "Tecoma stans", "tid": 48363, "n": 1, "lat": 27.5139684004, "lng": -82.6590287978, "acc": 9, "psbp": "PSBP-00072", "rare": false, "status": "html", "photo": "https://inaturalist-open-data.s3.amazonaws.com/photos/366833134/small.jpg", "last": "2024-04-15", "common": "Yellow Trumpet Flower", "pinned": true, "area": "Bird of Paradise Island"}], "missing": [{"id": "PSBP-00607", "name": "Canistel"}, {"id": "PSBP-00556", "name": "Lemon Grass"}, {"id": "PSBP-00130", "name": "Pineapple"}, {"id": "PSBP-00701", "name": "Swiss Cheese Plant"}], "mrfc_only": ["Abiu", "African Breadnut", "Atemoya", "Australian Brown Pine", "Bird Plum", "Fig", "Guava", "Jaboticaba", "Kumquat", "Key Lime", "Rangpur Lime", "Malabar Chestnut", "Mulberry", "Pomelo", "Star Apple", "Strawberry Tree", "Sugar Apple", "Tangerine"], "research": ["Grumichama", "Loquat", "Macadamia Nut", "Peach", "Persimmon", "Sapodilla"]};
+const $=i=>document.getElementById(i);
+$("built").textContent=new Date().toLocaleDateString([], {day:"numeric",month:"long",year:"numeric"});
+const esc=t=>String(t==null?"":t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rare=DATA.rare, other=DATA.other;
+$("kRare").textContent=rare.length;
+$("kObs").textContent=rare.reduce((s,r)=>s+r.n,0);
+$("kPin").textContent=rare.filter(r=>r.pinned).length;
+$("kMiss").textContent=DATA.mrfc_only.length;
+$("tMap").textContent=rare.length+" rare fruit · "+other.length+" other";
+
+$("here").innerHTML=rare.slice().sort((a,b)=>a.common.localeCompare(b.common)).map(r=>
+  '<li class="'+(r.pinned?"hot":"")+'"><span class="b"></span><span>'+esc(r.common)+
+  '<span class="sci">'+esc(r.sci)+'</span></span><span class="n">'+r.n+
+  (r.n===1?" obs":" obs")+'</span></li>').join("");
+$("tHere").textContent=rare.filter(r=>r.pinned).length+" of "+rare.length+" pinned";
+
+$("hunt").innerHTML=DATA.mrfc_only.map(n=>'<span class="chip">'+esc(n)+'</span>').join("");
+$("tHunt").textContent=DATA.mrfc_only.length;
+$("elsewhere").innerHTML=DATA.missing.map(m=>'<span class="chip">'+esc(m.name)+'</span>').join("")
+  +DATA.research.map(n=>'<span class="chip">'+esc(n)+' <span class="sci">research stage</span></span>').join("");
+$("tElse").textContent=DATA.missing.length+DATA.research.length;
+
+const all=rare.concat(other);
+const lats=all.map(r=>r.lat), lngs=all.map(r=>r.lng);
+const map=L.map("map",{scrollWheelZoom:false});
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+ {maxZoom:22,maxNativeZoom:19,attribution:"Imagery © Esri, Maxar, Earthstar Geographics"}).addTo(map);
+map.fitBounds([[Math.min(...lats),Math.min(...lngs)],[Math.max(...lats),Math.max(...lngs)]],{padding:[40,40]});
+map.on("click",()=>map.scrollWheelZoom.enable());
+function draw(r,isRare){
+  const col = r.acc>20 ? "#9a4a24" : (isRare ? "#c5922a" : "#2d6a35");
+  if(r.acc && r.acc<=120)
+    L.circle([r.lat,r.lng],{radius:r.acc,color:col,weight:1,opacity:.45,
+      fillColor:col,fillOpacity:.07,interactive:false}).addTo(map);
+  const mk=L.circleMarker([r.lat,r.lng],{radius:isRare?9:5,color:"#faf8f3",
+    weight:isRare?2.5:1.5,fillColor:col,fillOpacity:.95}).addTo(map);
+  mk.bindPopup('<b>'+esc(r.common||r.name)+'</b><div class="sci">'+esc(r.sci)+'</div>'+
+    '<div>'+r.n+' observation'+(r.n===1?'':'s')+(r.acc?' · pins ±'+r.acc+' m':'')+
+    (r.pinned?' · <b>pinned</b>'+(r.area?' ('+esc(r.area)+')':''):' · no pin yet')+'</div>'+
+    (r.photo?'<img loading="lazy" src="'+r.photo+'" alt="">':'')+
+    (r.psbp?'<div><a href="plants/'+r.psbp+'-'+esc((r.common||"").replace(/[^A-Za-z0-9]+/g,"-"))+
+      '.html">Plant page →</a></div>':''));
+  if(isRare) mk.bindTooltip(esc(r.common||r.name),{permanent:true,direction:"right",
+    className:"lbl",offset:[8,0]});
+}
+other.forEach(r=>draw(r,false));
+rare.forEach(r=>draw(r,true));
+</script>
+</body></html>

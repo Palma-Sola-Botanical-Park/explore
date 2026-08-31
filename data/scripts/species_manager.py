@@ -1096,17 +1096,29 @@ def _inat_observations(taxon_id, exclude_taxa=None):
     Set it per species via `photo_exclude_taxa` on the signage record.
 
     Queries the iNat PROJECT (project_id), not a place polygon or a lat/lng
-    radius. The project is the curated MEMBERSHIP list: an observation belongs
-    because it was collected in the park, regardless of where its PUBLIC pin
-    lands. That matters because obscured observations (rare species, or any
-    casual obs with geoprivacy on) have a public coordinate scattered far from
-    the park — so a place_id / radius query silently drops them, while the
-    project still returns them as members. Confirmed in practice: the obscured
-    casual Foxtail Palm (public place "Florida, US") is returned by project_id
-    but NOT by place_id.
+    radius, because project membership is the most complete single key available
+    — a raw place query drops more.
 
-    For a collection project keyed on the park, project membership is a superset
-    of a raw place query, so project_id is the most complete single key.
+    ⚠ CORRECTED 2026-08-31. An earlier version of this note claimed the project
+    returns OBSCURED observations as members regardless of where their public pin
+    lands, citing a Foxtail Palm that project_id found and place_id did not. That
+    generalised from one case and is WRONG. A collection project applies its place
+    rule to the PUBLIC coordinate, so an obscured observation whose pin is
+    scattered kilometres away fails the rule and is never a member.
+
+    Measured that day: of Ruby Meador's 104 observations, 95 are in the project.
+    Three of the nine outside are obscured, with public pins 5.1 km, 13.4 km and
+    13.8 km from the park — two of them palms from her 15 July palm walk. And
+    Veitchia arecina (Montgomery Palm), which the park grows and has pinned at Big
+    Pond, returns ZERO observations both in the project and in a wide box around
+    it.
+
+    So: obscured observations are not merely coordinate-hidden, they are ABSENT.
+    They cannot be counted, listed, or have photos pulled. No boundary change
+    recovers them. Two routes exist, and neither is a code change here:
+      • Appeal the obscuring — see park-library INAT_OBSCURING_APPEALS.md
+      • Set INAT_TOKEN (below) to an account trusted with the project's hidden
+        coordinates, which makes them visible to this function
 
     verifiable=any keeps cultivated/casual-grade observations in — most of a
     botanical garden's plantings are casual grade.

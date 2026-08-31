@@ -2,18 +2,18 @@
   "meta": {
     "generated": "2026-06-23",
     "description": "Staging file for species under research — not yet promoted to spotted or html. Plants and wildlife coexist, distinguished by the 'type' field.",
-    "species_count": 505,
+    "species_count": 506,
     "plant_count": 474,
     "wildlife_count": 34,
     "status_counts": {
-      "research": 489,
+      "research": 490,
       "died": 12,
       "stolen": 4
     },
     "id_allocation": {
-      "plants": "PSBP-00001 upward (next available: PSBP-00756)",
+      "plants": "PSBP-00001 upward (next available: PSBP-00781)",
       "wildlife": "PSBP-90000–99999 band. Two blocks are in use: 99887–99999 (allocated downward from the ceiling, historically) and 90001–90016. The allocator computes max(band)+1, which overflows the 99999 ceiling, so it now gap-fills upward from the low block (next available: PSBP-90017).",
-      "measured": "2026-08-24",
+      "measured": "2026-08-31",
       "note": "Descriptive, not authoritative — _next_psbp_id() in species_manager.py is the only thing that mints an id. Re-measure with audit_psbp.py --only META."
     },
     "import_date": "2026-06-23",
@@ -9201,9 +9201,13 @@
       "has_sign": false,
       "status": "research",
       "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "internal_notes": [
+        "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+        "2026-08-31: rare_fruit set to true ahead of promotion. Randy: \"set flag for species that match their list and observations show are over there.\" Named on the Manatee Rare Fruit Council list for this grove (Breadfruit, Artocarpus altilis) and observed there."
+      ],
       "import_source": "iNat",
-      "research_source": "inat_observed"
+      "research_source": "inat_observed",
+      "rare_fruit": true
     },
     {
       "id": "PSBP-00517",
@@ -12052,9 +12056,13 @@
       "has_sign": false,
       "status": "research",
       "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "internal_notes": [
+        "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+        "2026-08-31: rare_fruit set to true ahead of promotion. Randy: \"set flag for species that match their list and observations show are over there.\" A fruit planting in the grove — Randy 2026-08-31 named it himself: a bit west on the pond, north of the bathrooms, with the banana. Three observations at 3-5 m, clustered with the plantain."
+      ],
       "import_source": "iNat",
-      "research_source": "inat_observed"
+      "research_source": "inat_observed",
+      "rare_fruit": true
     },
     {
       "id": "PSBP-00697",
@@ -12071,9 +12079,13 @@
       "has_sign": false,
       "status": "research",
       "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "internal_notes": [
+        "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+        "2026-08-31: rare_fruit set to true ahead of promotion. Randy: \"set flag for species that match their list and observations show are over there.\" Same planting as PSBP-00696, identified to species. Native Florida grape."
+      ],
       "import_source": "iNat",
-      "research_source": "inat_observed"
+      "research_source": "inat_observed",
+      "rare_fruit": true
     },
     {
       "id": "PSBP-00699",
@@ -12332,7 +12344,9 @@
       "status": "research",
       "has_sign": false,
       "research_source": "inat_observed",
-      "inat_obs_count": 1
+      "inat_obs_count": 1,
+      "rare_fruit": true,
+      "internal_notes": "2026-08-31: rare_fruit set to true ahead of promotion. Randy: \"set flag for species that match their list and observations show are over there.\" Named on the MRFC list for this grove (Grumichama, Eugenia brasiliensis) and observed there."
     },
     {
       "id": "PSBP-00735",
@@ -14056,6 +14070,27 @@
       "plant_links": [],
       "type": "wildlife",
       "research_source": "prior_research"
+    },
+    {
+      "id": "PSBP-00780",
+      "type": "plant",
+      "common_name": "African Tulip Tree",
+      "scientific_name": "Spathodea campanulata",
+      "botanical_name": "Spathodea campanulata",
+      "inat_taxon_id": 126566,
+      "sign_level": "Species",
+      "taxonomy": {
+        "family": "Bignoniaceae"
+      },
+      "category": "",
+      "feature_tier": "Standard",
+      "has_sign": false,
+      "status": "research",
+      "native": false,
+      "rare_fruit": false,
+      "internal_notes": "Created 2026-08-31 from observation 381672978 (ruby_meador, 2026-07-15), at 27.514377, -82.659833 ±7 m — out by the road on the north edge of the park, root-suckering from a cut stump.\nDETERMINATION: David Vanderbilt PLANTED THIS TREE and identified it as Spathodea campanulata. Randy independently reached the same answer from the plant itself — pinnately compound leaves, vigorous vertical suckering from a stump, and the species' habit of crimson-orange bell flowers in late summer through winter. David's earlier comment on the observation: \"This is not correct. from Africa and gets an orange flower. Need to catch in bloom.\" **The person who planted it saying what it is outranks any photograph.**\n⚠ THE iNAT RECORD IS STUCK AT CLASS (Magnoliopsida) and it is NOT a botanical dispute. Three current identifications: ruby_meador -> Sambucus canadensis, randall_carter and davidvanderbilt -> Spathodea campanulata. Two of three is 66.7%, and iNat's community taxon needs MORE than two-thirds, so it falls back to the common ancestor. It clears the moment EITHER Ruby withdraws her identification (2 of 2) OR any third person adds Spathodea (3 of 4). No new evidence is required.\nTO VERIFY IN BLOOM: late summer through winter, large upward-facing crimson-orange bells. A flowering photograph would settle it beyond argument and is worth going back for.\n⚠ INVASIVE STATUS NOT YET RESEARCHED. Spathodea campanulata is widely reported as invasive in tropical regions; whether it carries a FISC listing in Florida must be checked before this is published or signed. iNaturalist holds no conservation status for it.",
+      "import_source": "iNat",
+      "research_source": "inat_observed"
     }
   ]
 }
