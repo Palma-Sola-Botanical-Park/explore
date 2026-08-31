@@ -1018,8 +1018,82 @@ def _inat_post(url, token, params=None):
         return (False, 0, str(e)[:200])
 
 
-def _inat_observations(taxon_id):
+def _photo_taxa(rec):
+    """Which iNat taxa to FETCH for this record, as a list.
+
+    Normally just the record's own inat_taxon_id — and because iNat's taxon_id
+    includes every descendant, a genus record picks up genus-level, species-level
+    and hybrid identifications together. That is almost always what you want:
+    Randy, 2026-08-31: "I can't control what an observation is identified as. So
+    I will have to accept other levels."
+
+    `photo_taxa` overrides it with an explicit list, for the case where the plant
+    is known to be ONE OF A FEW species rather than anything in the genus. Randy:
+    "What if the genus has 40 species, but I know one of our plants is one of 3?"
+    iNat's taxon_id accepts a comma-separated union, so listing the candidates
+    fetches exactly those and nothing else. Measured 2026-08-31: genus
+    Stachytarpheta returns 9 park observations; the two candidate porterweeds
+    together return 5.
+
+    Use it sparingly. The default is right for nearly everything.
+    """
+    v = (rec or {}).get("photo_taxa") or []
+    if isinstance(v, (int, str)):
+        v = [v]
+    out = []
+    for t in v:
+        try:
+            out.append(int(t))
+        except (TypeError, ValueError):
+            continue
+    if out:
+        return out
+    tid = (rec or {}).get("inat_taxon_id")
+    return [int(tid)] if tid else []
+
+
+def _photo_exclude_taxa(rec):
+    """iNat taxa to leave OUT when fetching for this record.
+
+    Only needed where the park keeps a GENUS-level record and a SPECIES-level
+    record in the same genus — a genus fetch would otherwise claim the other
+    record's observations, because iNat's taxon_id includes all descendants.
+    Set `photo_exclude_taxa: [taxon_id, ...]` on the signage record. Absent or
+    empty means no exclusion, which is the normal case.
+    """
+    v = (rec or {}).get("photo_exclude_taxa") or []
+    if isinstance(v, (int, str)):
+        v = [v]
+    out = []
+    for t in v:
+        try:
+            out.append(int(t))
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
+def _inat_observations(taxon_id, exclude_taxa=None):
     """All park observations for one taxon, paginated.
+
+    ── exclude_taxa ─────────────────────────────────────────────────────────
+    iNat's taxon_id matches the taxon AND EVERY DESCENDANT. That is usually what
+    you want, and occasionally exactly what you do not. Randy, 2026-08-30:
+
+        "My worry is that when you search Genus Canna you get NOT ONLY those
+         labeled as Genus in iNat, but also ANY SPECIES under that genus."
+
+    Correct, and it matters when the park holds a genus-level record ALONGSIDE a
+    species-level one in the same genus. Measured that day, in the park project:
+    genus Canna (127280) returns 14 observations; Canna indica 6; Canna flaccida
+    3; Canna x hybrida 1. So a genus fetch for the ornamental cannas would drag
+    in the three native Golden Canna records, which belong to PSBP-00034.
+
+    Pass exclude_taxa=[127279] and the query returns 11 — genus + indica +
+    hybrida, without the native. iNat's without_taxon_id excludes descendants
+    too, so one id removes a whole branch.
+
+    Set it per species via `photo_exclude_taxa` on the signage record.
 
     Queries the iNat PROJECT (project_id), not a place polygon or a lat/lng
     radius. The project is the curated MEMBERSHIP list: an observation belongs
@@ -1041,11 +1115,19 @@ def _inat_observations(taxon_id):
     INAT_TOKEN env var to a token for an account trusted with the project's
     hidden coordinates (a project curator). _inat_get already forwards it.
     """
+    if isinstance(taxon_id, (list, tuple, set)):
+        taxon_id = ",".join(str(t) for t in taxon_id if t)
+    excl = ""
+    if exclude_taxa:
+        ids = ",".join(str(t) for t in exclude_taxa if t)
+        if ids:
+            excl = f"&without_taxon_id={ids}"
     out, page = [], 1
     while True:
         url = ("https://api.inaturalist.org/v1/observations"
                f"?taxon_id={taxon_id}&project_id={INAT_PROJECT_ID}"
                f"&per_page=200&page={page}&verifiable=any"
+               f"{excl}"
                "&order=desc&order_by=created_at")
         data = _inat_get(url)
         if not data:
@@ -1149,7 +1231,8 @@ def _scan_species(kingdom, species, decided=None, registry_ids=None):
     taxon_id = species.get("inat_taxon_id")
     if not taxon_id:
         return {"error": f"{species.get('id')} has no inat_taxon_id in the signage JSON."}
-    obs = _inat_observations(taxon_id)
+    obs = _inat_observations(_photo_taxa(species) or taxon_id,
+                             _photo_exclude_taxa(species))
     cc, non_cc = _cc_photos_from_observations(obs)
     payload = _write_cache(kingdom, species["id"], cc, non_cc)
     payload["new_count"] = _count_new_candidates(species["id"], cc, decided, registry_ids)
@@ -10224,7 +10307,8 @@ def _pheno_plant_index():
         seen.add(sp.get("id"))
         out.append({"id": sp.get("id"), "common_name": sp.get("common_name", ""),
                     "scientific_name": sp.get("botanical_name", ""),
-                    "taxon_id": tid, "status": sp.get("status", "")})
+                    "taxon_id": tid, "status": sp.get("status", ""),
+                    "photo_exclude_taxa": sp.get("photo_exclude_taxa") or []})
     # research plants
     for sp in get_research_list("plants"):
         tid = sp.get("inat_taxon_id")
@@ -10233,7 +10317,8 @@ def _pheno_plant_index():
         seen.add(sp.get("id"))
         out.append({"id": sp.get("id"), "common_name": sp.get("common_name", ""),
                     "scientific_name": sp.get("scientific_name", ""),
-                    "taxon_id": tid, "status": sp.get("status", "")})
+                    "taxon_id": tid, "status": sp.get("status", ""),
+                    "photo_exclude_taxa": sp.get("photo_exclude_taxa") or []})
     # Order: published (html) first, then spotted, then research, then strays.
     # Within each status band, sort alphabetically by common name.
     _rank = {"html": 0, "spotted": 1, "research": 2}
@@ -10341,7 +10426,8 @@ def phenology_scan(psbp_id, limit=PHENO_SCAN_DEFAULT, force=False):
     if not sp:
         return {"ok": False, "error": f"{psbp_id} not found as a plant with an iNat taxon."}
 
-    observations = _inat_observations(sp["taxon_id"])   # GET only
+    observations = _inat_observations(_photo_taxa(sp) or sp["taxon_id"],
+                                     _photo_exclude_taxa(sp))   # GET only
     if observations is None:
         return {"ok": False, "error": "Could not reach iNaturalist (check network / INAT_TOKEN)."}
 

@@ -5252,8 +5252,8 @@
     {
       "id": "PSBP-00041",
       "common_name": "Canna Lilies",
-      "botanical_name": "Canna indica",
-      "inat_taxon_id": 146643,
+      "botanical_name": "Canna",
+      "inat_taxon_id": 127280,
       "sign_level": "Species",
       "taxonomy": {
         "family": "Cannaceae",
@@ -5375,7 +5375,7 @@
         "PARK CONTEXT (confirmed): Non-native ornamental cannas. The only NATIVE cannas at the park are Canna flaccida introduced in 2023 by Cypress Pond (see Golden Canna, PSBP-00034) — everything else is non-native C. indica. These non-native cannas grew for years unnoticed among the heliconia by the office (looked close enough that nobody realized they were cannas).",
         "Now deliberately separated: non-native by the office, native by Cypress Pond. A Cypress Pond canna planting was hit by ~1 ft saltwater flooding from a 2024 hurricane; cannas struggled there afterward. High school volunteers are taught to distinguish canna from heliconia and to lift/transplant wandering canna rhizomes intact to the adjacent canna area (flushing back week by week)."
       ],
-      "internal_notes": null,
+      "internal_notes": "2026-08-30: demoted from Canna indica to the genus Canna, per the rule in BOTANICAL_QUESTIONS.md — wild species get a species name, garden hybrids stay at the genus. Ornamental cannas in Florida are overwhelmingly hybrids (iNat files them under Canna x hybrida, 'Garden Canna'), and the indica claim was an unsupported guess. Randy: \"I can spot native canna easily. but the non-natives confuse me and not sure what we have. iNat isn't great, and people seem to be all over the place.\"\nphoto_exclude_taxa holds Canna flaccida (127279) because iNat's taxon_id includes every descendant: a genus fetch returns 14 park observations, of which 3 are the native Golden Canna belonging to PSBP-00034. Excluding it returns 11 — genus 4, indica 6, x hybrida 1 — which is exactly this record's material. Cultivar names, if any plant-sale record survives, belong on the PLACEMENT, not here.",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -5392,6 +5392,9 @@
       "safety_note": [
         "This is a genuine food plant — the starchy rhizomes are grown as a crop ('Queensland arrowroot') in parts of Australia and Southeast Asia, and the seeds have served as a coffee substitute.",
         "It has no known toxicity to people and isn't listed as toxic to dogs."
+      ],
+      "photo_exclude_taxa": [
+        127279
       ]
     },
     {
@@ -12139,7 +12142,8 @@
       "quick_hits": [
         "Named for its trigger: a soaking summer rain after a dry spell brings on a flush of flowers within days, often many at once across a whole planting, then silence again until the next storm.",
         "Each flower nods at a slight angle on its stalk — a tell-tale trait inherited from its former genus Habranthus. It is one of the features that separates this species from other pink rain lilies.",
-        "A single clump quietly multiplies underground, pushing out bulb offsets that root readily in Florida's sandy soils. A colony that starts as a handful of bulbs can fill an edge planting in just a few seasons without any help."
+        "A single clump quietly multiplies underground, pushing out bulb offsets that root readily in Florida's sandy soils. A colony that starts as a handful of bulbs can fill an edge planting in just a few seasons without any help.",
+        "Nearly every rain lily in the park was carried here by hand. Volunteers divide clumps that have filled in, move the offsets to a bed that has none, and bring bulbs from their own gardens — a handful at a time, season after season, so the flowering borders reach a little further into the park each year. The plant's habit of multiplying underground is what makes it possible; passing it along is what makes it spread."
       ],
       "teaser": "A soaking rain after a dry spell sets it off: the whole planting flowers within days, then goes quiet again until the next storm.",
       "origin": [
@@ -24779,9 +24783,12 @@
       "has_sign": false,
       "status": "html",
       "native": false,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "internal_notes": [
+        "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+        "2026-08-30: watch_invasive corrected to true. Its own watch_invasive_notes already said FISC Category I since 1993 and a Florida Noxious Weed under FDACS 5B-57.007 — possession, introduction, movement or release prohibited — while the flag read false, so nothing in the system treated the most heavily regulated plant in the catalogue as unusual. Randy, same day, on where it actually is: \"Air potato grows near the Palm Alley Gazebo and it is relentless. It's mostly just there, but it will grow quickly in the rainy season. Doubt anyone will search it, or read about it. No sign.\" So this is a MANAGEMENT flag, not a signage one — sign_state stays needs_sign=false in spirit; do not queue a sign for it. The point of the flag is that it shows up wherever invasives are listed, and that anyone walking the northeast quadrant knows to look at it in the wet season."
+      ],
       "native_notes": null,
-      "watch_invasive": false,
+      "watch_invasive": true,
       "watch_invasive_notes": "FISC (Florida Invasive Species Council, formerly FLEPPC) Category I since 1993. Also listed as a Florida Noxious Weed by FDACS (Florida Administrative Code 5B-57.007) — possession, introduction, movement, or release without a permit is prohibited by state law.",
       "rare_fruit": false,
       "form": "Shrub & Vine",
@@ -24895,7 +24902,8 @@
         "(Some Asian varieties are processed to remove the bitterness, but those aren't the plants here.)",
         "The bulbils and tubers are toxic to animals as well. A dog that eats a bulbil should be seen by a vet.",
         "Keep pets away from fallen bulbils, which can litter the ground in large numbers beneath an infestation in fall."
-      ]
+      ],
+      "invasive": true
     },
     {
       "id": "PSBP-00572",
