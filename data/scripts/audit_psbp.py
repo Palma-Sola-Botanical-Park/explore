@@ -310,16 +310,21 @@ def main():
                 f"{sid} {sign_by_id[sid].get('common_name')}: status=html but no hero "
                 f"photo — the page will render a broken image")
         for sid in sorted(pub_ids - set(gallery)):
-            h = heroes.get(sid)
-            add("LINK", "WARN",
-                f"{sid} {sign_by_id[sid].get('common_name')}: published with no "
-                f"gallery-role photo (hero role={h.get('role') if h else None}) — "
-                f"the Photo Credits block may be the only attribution on the page")
-        stray = sorted(set(by_species) & sign_ids - pub_ids)
-        for sid in stray:
-            add("LINK", "INFO",
-                f"{sid}: photos on file but status="
-                f"{sign_by_id[sid].get('status')!r} (not published)")
+            # Say the plain thing. Nearly always this means the plant has been
+            # photographed once, so the page shows a hero and nothing else —
+            # a field-work gap, not a data error. Only word it as a tagging
+            # problem when there really are several photos and none is a gallery.
+            n = len(by_species.get(sid, []))
+            name = sign_by_id[sid].get("common_name")
+            if n <= 1:
+                add("LINK", "WARN", f"{sid} {name}: only one photo published.")
+            else:
+                add("LINK", "WARN",
+                    f"{sid} {name}: {n} photos, but none tagged for the gallery.")
+        # (Removed 2026-09-01) There used to be an INFO here for species with
+        # photos on file that are not yet published. Randy reviews photos before
+        # every publish without exception, so it flagged a state that is normal
+        # and expected — noise, not signal.
 
     # ── DISK ──────────────────────────────────────────────────────────────
     if run("DISK"):
