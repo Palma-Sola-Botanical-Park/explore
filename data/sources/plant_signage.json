@@ -5,7 +5,7 @@
     "species_count": 264,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-09-01T07:51:05",
+    "updated": "2026-09-01T17:09:26",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -22024,27 +22024,115 @@
       "inat_taxon_id": 365733,
       "sign_level": "Species",
       "taxonomy": {
-        "family": "Arecaceae"
+        "family": "Arecaceae",
+        "genus": "Phoenix",
+        "species": "sylvestris"
       },
-      "category": "",
+      "category": "Tropical and Exotic Palms",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": false,
       "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1+NonEstPalms).",
       "native_notes": null,
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "UF/IFAS Assessment of Non-Native Plants in Florida's Natural Areas rates Phoenix sylvestris as Low Invasion Risk across all Florida zones (North, Central, South; assessed 2024). The species does not appear on the Florida Invasive Species Council (FISC) Category I or II list.",
       "rare_fruit": false,
       "form": "Palm & Cycad",
-      "safety_note": [],
+      "safety_note": [
+        "The lower leaflets of each frond are rigid and needle-sharp. Keep hands and faces away from them, and take care walking or working close to the palm. The concern here is the spines, not toxicity."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "alternate_names": [
+        "Sylvester Palm",
+        "Wild Date Palm",
+        "Sugar Date Palm",
+        "Toddy Palm",
+        "Indian Date"
+      ],
+      "quick_hits": [
+        "In India and Bangladesh, people have tapped this palm for centuries for its sweet sap. The sap is collected in winter, then used fresh, boiled into palm jaggery, or fermented into toddy — making Silver Date Palm the source of one of Bengal's most distinctive food traditions.",
+        "Like all date palms, every Silver Date Palm is either male or female, and you cannot tell which until it flowers. Only a female with a male nearby will ever set fruit.",
+        "The sharp spines near the base of each frond are not thorns — they are actual modified leaflets, called acanthophylls. The palm has simply repurposed its own lower leaflets into needles.",
+        "Silver Date Palm is one of the closest living relatives of the cultivated date palm, Phoenix dactylifera — close enough that hybrids between the two have been documented in India."
+      ],
+      "origin": [
+        "Native to the Indian subcontinent, where it grows in open country, scrub and seasonally wet lowlands. Sources differ on the precise limits of its natural range, and centuries of cultivation have blurred them further.",
+        "It reached Florida as an ornamental and is now one of the most widely planted palms in the state's landscapes.",
+        "Birds disperse its seeds locally, but the species has not established invasive populations in Florida's natural areas."
+      ],
+      "more_information": [
+        "In India and Bangladesh this palm has been tapped for its sweet sap for centuries. The sap runs in the cool months and is drunk fresh, boiled down into palm jaggery, or left to ferment into toddy. In Bengal that jaggery underpins an entire winter tradition of sweets — the same tree that stands in Florida landscapes for its silver crown feeds a food culture half a world away.",
+        "It is also one of the closest living relatives of the cultivated date palm, Phoenix dactylifera. The fruit tells you why the two are not interchangeable: the same shape and the same ripening colours, but a thin layer of flesh where a date has a thick sweet one."
+      ],
+      "wildlife_value": [
+        "Birds eat the fruit and are the palm's primary seed dispersers. Flowering palms are also visited by bees and other insects. In Florida its wildlife value is mainly as a source of fruit, shelter, and perching sites rather than as a specialist host plant."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagation is by seed. Phoenix sylvestris is dioecious: male and female flowers are borne on entirely separate trees. A female will only set fruit if a pollen-producing male is somewhere nearby. Wind carries the pollen from male to female inflorescences; bees also visit and assist."
+          },
+          {
+            "label": "Flowers",
+            "text": "Small and white, produced in large numbers on branching, pendant inflorescences roughly one to three feet long that emerge from among the leaf bases. Flowering generally occurs in spring."
+          },
+          {
+            "label": "Fruit",
+            "text": "Clusters of small oval drupes, roughly an inch long, each with a single hard seed under a thin layer of flesh. They ripen from orange to dark red or purple. Edible, but the flesh is thin and far less sweet than a commercial date."
+          },
+          {
+            "label": "Fronds",
+            "text": "Pinnate (feather-type), arching, and blue-green to silver-green — the silvery cast is the most obvious visual difference from the Canary Island Date Palm. Fronds can reach nine to ten feet in length on mature specimens."
+          },
+          {
+            "label": "Trunk",
+            "text": "Solitary, with a characteristic swollen base. The trunk surface is patterned with closely spaced, diamond-shaped leaf scars left as old fronds fall away — a texture that makes this palm instantly recognizable."
+          }
+        ],
+        "what_to_look_for": "The silver-green colour of the fronds is the first thing to notice — bluer and more silvery than most palms in the collection. Look down toward the base of each frond for the stiff, yellow-green spines set along the petiole. On the trunk, find the diamond-shaped leaf-scar pattern and the swollen base. If the palm is in fruit, look for hanging clusters of small oval drupes ripening from orange through dark red or purple. Set it beside a Canary Island Date Palm and the difference in colour is immediate."
+      },
+      "seasonality": {
+        "bloom_months": "spring (primarily)",
+        "bloom_description": "Small white flowers on branching pendant inflorescences emerging from among the leaf bases.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "summer into fall, following spring flowering",
+        "notes": "Fruit clusters can persist on the tree for an extended period as they ripen from orange to dark red or purple."
+      },
+      "size": {
+        "height": "Usually about 40 feet at maturity, sometimes approaching 50 feet.",
+        "spread": "Dense and rounded crown, roughly 20 feet across on a mature tree.",
+        "habit": "solitary trunk, swollen at base; dense rounded crown of arching pinnate fronds",
+        "growth_rate": "slow to moderate",
+        "texture": "medium-coarse — fine individual leaflets but a large, dense crown overall"
+      },
+      "growing_conditions": {
+        "light": "full sun; tolerates part shade but performs best in direct sun",
+        "soil_tolerances": "sand, loam, clay — adaptable; prefers well-drained soils",
+        "drought_tolerance": "good once established"
+      },
+      "edibility": {
+        "level": "Yellow",
+        "detail": "The fruit is edible but barely worth eating — a thin layer of flesh over a large seed, nothing like a commercial date. Not a food crop here."
+      },
+      "toxicity": {
+        "level": "Green",
+        "people": "No significant toxicity documented. The hazard from this palm is physical: the needle-sharp spines at the base of each frond.",
+        "dogs_level": "Green",
+        "dogs": "No significant toxicity to dogs documented."
+      },
+      "other_notes": [
+        "Silver Date Palm is susceptible to lethal yellowing and lethal bronzing — both serious phytoplasma diseases of palms with no cure. Lethal bronzing was first detected in Florida in the Sarasota-to-Tampa corridor, and Phoenix sylvestris was among the original host species identified. An infected palm can die within months of the first symptoms appearing.",
+        "Phoenix species hybridize readily, and hybrids involving Silver Date Palm and the cultivated date palm have been documented in India. Hybridization can complicate identification, and a specimen labelled Silver Date Palm in cultivation may occasionally be a hybrid rather than a pure species."
+      ],
+      "teaser": "The blue-silver cast to these fronds is what separates it from the darker Canary Island Date Palm — same genus, same shape, caught in a different light."
     },
     {
       "id": "PSBP-00411",
