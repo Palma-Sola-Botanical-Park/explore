@@ -93,6 +93,28 @@ RESEARCH_JSON      = os.path.join(REPO, "data", "sources", "research.json")
 # Override with the INAT_PROJECT_ID env var if needed.
 INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
 
+# ── The observer roster — the fallback when the project cannot see a species ──
+# A project query is scoped by PLACE, and iNaturalist obscures the coordinates of
+# threatened taxa: the public pin lands ~20 km away, so the observation is not a
+# project member and a normal scan returns ZERO. Measured 2026-09-01: 20 published
+# or spotted species are invisible this way, 13 of them palms.
+#
+# Widening the park boundary does NOT fix it — obscuring ignores the boundary.
+# The only way to reach those photos is to ask by OBSERVER instead of by place.
+#
+# Scoped by taxon_id as well, so this can only ever return the species being
+# scanned. It cannot drag in someone's back garden.
+#
+# Keep this list short and current: the people who actively photograph in the park.
+#
+# ⚠ These are iNat LOGINS and must match exactly. David Vanderbilt has TWO
+#   accounts, made by accident and both live:
+#       david_vanderbilt   phone    — his OBSERVATIONS live here. Use this one.
+#       davidvanderbilt    computer — his IDENTIFICATIONS. Zero observations.
+#   Querying the second for photos returns nothing, silently.
+PARK_OBSERVERS = [o.strip() for o in os.environ.get(
+    "PSBP_OBSERVERS", "randall_carter,david_vanderbilt,ruby_meador").split(",") if o.strip()]
+
 # Curated iNat place drawn for the park boundary (inaturalist.org/places/233156).
 # RETAINED FOR REFERENCE ONLY — the photo scan and intake check query the
 # PROJECT (project_id), not this place, because project membership includes
@@ -1153,6 +1175,38 @@ def _inat_observations(taxon_id, exclude_taxa=None):
         if page > 10:
             break
         time.sleep(API_DELAY)
+
+    # ── Fallback: obscured taxa are invisible to a project query ──────────────
+    # If the project returned nothing, ask the observer roster for the same
+    # taxon. Only fires on an empty result, so normal species cost one query and
+    # behave exactly as before. Photos found this way land in the same scan
+    # cache and go through the same "View New Only" review — nothing is
+    # auto-accepted.
+    if not out and PARK_OBSERVERS:
+        seen = set()
+        for who in PARK_OBSERVERS:
+            page = 1
+            while page <= 5:
+                url = ("https://api.inaturalist.org/v1/observations"
+                       f"?taxon_id={taxon_id}&user_login={who}"
+                       f"&per_page=200&page={page}&verifiable=any"
+                       f"{excl}"
+                       "&order=desc&order_by=created_at")
+                data = _inat_get(url)
+                if not data:
+                    break
+                results = data.get("results", [])
+                for o in results:
+                    if o.get("id") not in seen:
+                        seen.add(o["id"])
+                        out.append(o)
+                if len(results) < 200:
+                    break
+                page += 1
+                time.sleep(API_DELAY)
+        if out:
+            print(f"    [roster] project found 0 for taxon {taxon_id}; "
+                  f"{len(out)} observation(s) via {', '.join(PARK_OBSERVERS)}")
     return out
 
 

@@ -3,8 +3,9 @@
     "generated": "2026-08-26T01:40:38+00:00",
     "schema_version": 1,
     "spec": "park-library/system docs/LANDMARKS.md",
-    "count": 63,
-    "note": "Seed file, 2026-08-25. Identity only — a landmark is WHAT a place is; WHERE it is lives in placements.json as one PLC- row with kind:'landmark', the same split species already use (plant_signage.json = what, placements.json = where). One placement per landmark: if a place needs two spots, make two records joined by `parent` (see Plumeria West / East), never two placements. Stories are records: text (required) + credit/year/prompted_by/trigger. Credit groups, never a minor's full name (Low #14). No QR signs. No water fountains in the park. APPEND-ONLY — never regenerate; ids are stable and stories accrete here."
+    "count": 64,
+    "note": "Seed file, 2026-08-25. Identity only — a landmark is WHAT a place is; WHERE it is lives in placements.json as one PLC- row with kind:'landmark', the same split species already use (plant_signage.json = what, placements.json = where). One placement per landmark: if a place needs two spots, make two records joined by `parent` (see Plumeria West / East), never two placements. Stories are records: text (required) + credit/year/prompted_by/trigger. Credit groups, never a minor's full name (Low #14). No QR signs. No water fountains in the park. APPEND-ONLY — never regenerate; ids are stable and stories accrete here.",
+    "updated": "2026-09-01T15:11:55"
   },
   "landmarks": [
     {
@@ -1581,6 +1582,54 @@
       "venue_ids": null,
       "photo": null,
       "notes": "Planting bed between the Office and the Shade Garden, east of the office building. Named 2026-08-29 from Randy's own usage; the name was in the scrapped KML and had never reached the repo. Visible in Google Street View (2021) from the northwest, beyond the office stairs and ramp. Heliconia (PSBP-00056) is pinned nearby at PLC-0057. Kind set to 'water' to match the other four islands, though these beds are not water features — the whole set may be miskinded. Kind corrected 2026-08-30: was 'water'. These \"islands\" are planting beds, not water features — the seed file miskinded the whole set. Randy: \"make the five islands as some sort of planting bed. You're right, not water!\" Using the existing 'garden' kind rather than inventing one."
+    },
+    {
+      "id": "LND-064",
+      "name": "Free Library Box",
+      "kind": "structure",
+      "parent": "LND-013",
+      "role": null,
+      "status": "active",
+      "year_built": 2024,
+      "named_for": null,
+      "stories": [
+        {
+          "text": "Gifted to the park in 2024 by the Manatee High School Key Club. It holds about a hundred books — take one, leave one.",
+          "kind": "donor",
+          "year": 2024,
+          "credit": "Manatee High School Key Club",
+          "prompted_by": null,
+          "trigger": "stop"
+        },
+        {
+          "text": "By 2026 the paint was wearing off. Sofia Linares, a Bright Futures student, began repainting it in the summer of 2026 and is still at work on it. She photographed several of the park's plants the same summer — the Silk Floss Tree, the Heliconia, the Bridal Veil Tree and the Showy Rattlebox all carry her name on their pages.",
+          "kind": "volunteer",
+          "year": 2026,
+          "credit": "Sofia Linares",
+          "prompted_by": "the original paint wearing off",
+          "trigger": "stop"
+        }
+      ],
+      "aliases": [
+        "Little Free Library",
+        "Library Box",
+        "Book Box"
+      ],
+      "area_aliases": [
+        "Butterfly Garden"
+      ],
+      "accessible": null,
+      "steps": null,
+      "shade": null,
+      "seating": null,
+      "restroom": false,
+      "water": false,
+      "indoor": false,
+      "capacity": null,
+      "public_page": false,
+      "venue_ids": [],
+      "photo": null,
+      "notes": "A book exchange box holding about 100 books, gifted by the Manatee High School Key Club in 2024 and being repainted by a Bright Futures student through 2026. LOCATION: on the sidewalk running from the Pavilion to the Butterfly Garden — a stretch of roughly ten yards — standing on the NORTH side of that path, on your left as you walk from the Pavilion toward the garden. No pin yet. ⚠ STILL TO CONFIRM: what Sofia is painting on it. ⚠ CREDIT: Low #14 says credit groups, not a student's full name. Named here deliberately, consistent with Randy's decision to credit her by name on four photo records so she would see her name on a sign. Confirm before this reaches a printed tour or a public page."
     }
   ],
   "connections": []
