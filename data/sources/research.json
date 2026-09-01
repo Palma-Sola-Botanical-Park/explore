@@ -2,16 +2,16 @@
   "meta": {
     "generated": "2026-06-23",
     "description": "Staging file for species under research — not yet promoted to spotted or html. Plants and wildlife coexist, distinguished by the 'type' field.",
-    "species_count": 508,
-    "plant_count": 468,
+    "species_count": 509,
+    "plant_count": 469,
     "wildlife_count": 40,
     "status_counts": {
-      "research": 490,
+      "research": 493,
       "died": 12,
       "stolen": 4
     },
     "id_allocation": {
-      "plants": "PSBP-00001 upward (next available: PSBP-00781)",
+      "plants": "PSBP-00001 upward (next available: PSBP-00787)",
       "wildlife": "PSBP-90000–99999 band. Two blocks are in use: 99887–99999 (allocated downward from the ceiling, historically) and 90001–90016. The allocator computes max(band)+1, which overflows the 99999 ceiling, so it now gap-fills upward from the low block (next available: PSBP-90017).",
       "measured": "2026-08-31",
       "note": "Descriptive, not authoritative — _next_psbp_id() in species_manager.py is the only thing that mints an id. Re-measure with audit_psbp.py --only META."
@@ -12932,6 +12932,25 @@
       "has_sign": false,
       "research_source": "inat_observed",
       "inat_obs_count": 6
+    },
+    {
+      "id": "PSBP-00786",
+      "common_name": "Copernicia fallaensis",
+      "botanical_name": "Copernicia fallaensis",
+      "inat_taxon_id": 365054,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Arecaceae",
+        "genus": "Copernicia",
+        "species": "fallaensis",
+        "class": "Liliopsida",
+        "order": "Arecales"
+      },
+      "type": "plant",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1
     },
     {
       "id": "PSBP-90003",

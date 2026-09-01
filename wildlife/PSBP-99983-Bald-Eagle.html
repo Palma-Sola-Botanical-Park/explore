@@ -31,8 +31,11 @@
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Fish are the primary prey, but bald eagles are opportunists. They hunt fish and waterbirds, take mammals when they can, scavenge carrion, and sometimes chase an osprey until it drops its catch — a behavior called kleptoparasitism.</p></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Overhead or perched high in a large tree near water. A genuine thrill when it happens, but an occasional visitor rather than an everyday sight.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Present in Florida year-round, but Florida&#x27;s breeding schedule is the reverse of northern populations. Eagles return to local territories in October, with egg-laying peaking between December and early January and young fledging by May. Most breeding adults — especially in the southern peninsula — stay in Florida year-round; it is subadults and non-breeding birds that head north for summer. Late fall through spring is the best window for a park sighting.</p></div></div></div>
     <div class="wild-caution-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Never approach or disturb an active nest. If you spot one, observe from a distance with binoculars or a long lens and move on. The Bald and Golden Eagle Protection Act protects not just the bird itself but its nest and breeding behavior — human activity that substantially interferes with nesting can constitute illegal disturbance.</p></div></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Gallery</span></div>
+    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
+    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/470533353/large.jpg" loading="lazy" alt="Bald Eagle — photo by katiet5"><div class="gal-credit" data-login="katiet5">📷 katiet5</div><div class="gal-date">📅 Feb 16, 2025</div></div></div></div>
     <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">American Eagle</span></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rob Carr (CC-BY-NC), via iNaturalist</li></ul></div>
+    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rob Carr (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© katiet5 (CC-BY-NC), via iNaturalist</li></ul></div>
     <div class="lightbox" id="lb" onclick="closeLB(event)">
       <div class="lb-inner">
         <button class="lb-close" onclick="closeLB()">&times;</button>
@@ -44,7 +47,7 @@
       </div>
     </div>
     <script>
-    var lbData=[{"src": "../photos/PSBP-99983/681678605.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Nov 14, 2025"}];
+    var lbData=[{"src": "../photos/PSBP-99983/681678605.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Nov 14, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/470533353/large.jpg", "credit": "katiet5", "credit_login": "katiet5", "license": "CC-BY-NC", "observed": "Feb 16, 2025"}];
     var lbIdx=0;
     function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
     function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
@@ -57,7 +60,7 @@
 
 <a class="wild-float-back theme-bird" href="../nature.html#wildlife">🦜 All Wildlife</a>
 
-<div class="page-stamp">Page updated <strong>August 28, 2026</strong></div>
+<div class="page-stamp">Page updated <strong>August 31, 2026</strong></div>
 <div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
