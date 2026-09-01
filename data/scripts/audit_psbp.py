@@ -336,16 +336,23 @@ def main():
             add("LINK", "ERROR",
                 f"{sid} {sign_by_id[sid].get('common_name')}: status=html but no hero "
                 f"photo — the page will render a broken image")
-        for sid in sorted(pub_ids - set(gallery)):
-            # Say the plain thing. Nearly always this means the plant has been
-            # photographed once, so the page shows a hero and nothing else —
-            # a field-work gap, not a data error. Only word it as a tagging
-            # problem when there really are several photos and none is a gallery.
+        # Two different problems, so two different tests.
+        #
+        # 1. ONE PHOTO — INFO, not WARN. Counted on the photo records, NOT on
+        #    gallery roles: ticking "gallery" on a lone hero used to silence this
+        #    even though the record still had a single photo. (Found by Randy on
+        #    PSBP-00424, 2026-09-01.) Nothing is broken — the page renders that
+        #    photo once as the hero and lists it in the lightbox array, which is
+        #    data, not a second image. It is simply a field-work note: this
+        #    species has been photographed once.
+        # 2. SEVERAL PHOTOS, NONE TAGGED GALLERY. A tagging gap: the pictures
+        #    exist, the page just cannot show them.
+        for sid in sorted(pub_ids):
             n = len(by_species.get(sid, []))
             name = sign_by_id[sid].get("common_name")
             if n <= 1:
-                add("LINK", "WARN", f"{sid} {name}: only one photo published.")
-            else:
+                add("LINK", "INFO", f"{sid} {name}: only one photo published.")
+            elif sid not in gallery:
                 add("LINK", "WARN",
                     f"{sid} {name}: {n} photos, but none tagged for the gallery.")
         # (Removed 2026-09-01) There used to be an INFO here for species with
