@@ -19,8 +19,11 @@
     font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
     font-size:19px;line-height:1.66;-webkit-font-smoothing:antialiased}
 
-  .masthead{background:var(--green-deep);color:var(--cream);padding:56px 24px 48px}
+  .masthead{background:var(--green-deep);color:var(--cream);padding:56px 24px 54px}
   .masthead .wrap{max-width:54rem;margin:0 auto}
+  .masthead .eyebrow{font-family:"Source Sans 3",sans-serif;font-style:normal;
+    font-size:.82rem;font-weight:600;letter-spacing:.19em;text-transform:uppercase;
+    color:var(--gold);margin:0 0 14px}
   .masthead h1{font-family:"Playfair Display",Georgia,serif;font-weight:700;
     font-size:clamp(2.4rem,6vw,3.6rem);line-height:1.08;margin:0 0 10px;color:var(--white);
     border:0;padding:0}
@@ -28,7 +31,8 @@
     font-family:"Playfair Display",Georgia,serif}
 
   /* alternating full-width bands, so each tour feels like a new place */
-  .band{padding:8px 24px 30px}
+  .band{padding:30px 24px 34px}
+  .band:first-of-type{padding-top:56px}
   .band.b0{background:var(--cream)}
   .band.b1{background:var(--white)}
   .band .wrap{max-width:54rem;margin:0 auto}
@@ -87,12 +91,13 @@
 </head>
 <body>
 <div class="masthead"><div class="wrap">
+  <p class="eyebrow">Palma Sola Botanical Park</p>
   <h1>Park Tours</h1>
   <p>A working brief &middot; September 2026</p>
 </div></div>
 <section class="band b0"><div class="wrap">
-<p><strong>Nine tours. Three exist as beta drafts, three as name-and-blurb stubs, three are new here.</strong> Almost nothing here needs research: 232 plant pages and 91 animal pages are finished, each carrying a one-line story written for somebody standing in front of the plant in the sun. <strong>What is missing is a voice and a route</strong> — somebody to choose the order, write the joins, and give each tour a personality.</p>
-<hr>
+<p><strong>Nine tours. Three exist as beta drafts, three as name-and-blurb stubs, three are new here.</strong> Almost nothing here needs research: 232 plant pages and 91 animal pages are finished, each carrying a one-line story written for somebody standing in front of the plant in the sun.</p>
+<p><strong>What is missing is a voice, a route, and a look.</strong> Somebody to choose the order, write the joins, give each tour a personality — and bring all nine under one set of park branding: the logo, a common cover, a shared layout, and the same way of doing things from the first tour to the ninth. Right now they were made at different times by different hands, and it shows.</p>
 <hr>
 <h2 id="the-nine">The nine</h2>
 <div class="tw"><table><thead><tr><th>#</th><th>Tour</th><th>Status</th><th>Length</th></tr></thead><tbody><tr><td>1</td><td><a href="#1-bite-sized-tour-beta"><strong>Bite-Sized Tour</strong></a></td><td>🅑 beta — PDF exists</td><td>8 stops · ~20 min</td></tr><tr><td>2</td><td><a href="#2-kids-nature-tour-beta"><strong>Kids Nature Tour</strong></a></td><td>🅑 beta — PDF exists</td><td>6 stops · ~20 min</td></tr><tr><td>3</td><td><a href="#3-saving-our-ponds-beta"><strong>Saving Our Ponds</strong></a></td><td>🅑 beta — PDF exists</td><td>4 stops · ~20 min</td></tr><tr><td>4</td><td><a href="#4-rare-fruit-trail-draft"><strong>Rare Fruit Trail</strong></a></td><td>📝 draft — blurb only</td><td>~25 min · 24 candidates</td></tr><tr><td>5</td><td><a href="#5-rare-palm-plumeria-draft"><strong>Rare Palm &amp; Plumeria</strong></a></td><td>📝 draft — blurb only</td><td>~30 min · 69 candidates</td></tr><tr><td>6</td><td><a href="#6-everything-here-is-lying-to-you-new"><strong>Everything Here Is Lying to You</strong></a></td><td>✨ new</td><td>19 ready now, 53 in total</td></tr><tr><td>7</td><td><a href="#7-the-shopfront-new"><strong>The Shopfront</strong></a> — outside the fence</td><td>✨ new</td><td>19 species, 30 specimens</td></tr><tr><td>8</td><td><a href="#8-host-and-nectar-new"><strong>Host and Nectar</strong></a></td><td>✨ new</td><td>43 hosts, 60 nectar plants</td></tr><tr><td>9</td><td><a href="#9-the-grand-tour-draft"><strong>The Grand Tour</strong></a></td><td>📝 draft — blurb only</td><td>60–90 min · <strong>built from all of the above</strong></td></tr></tbody></table></div>
@@ -207,7 +212,6 @@
 </ol>
 <p><strong>What it needs:</strong> to be built <strong>last</strong>. Cheapest of the nine once the others exist, most expensive if attempted first.</p>
 <hr>
-<hr>
 <h2 id="the-best-thing-about-this-park-is-already-written-down">The best thing about this park is already written down</h2>
 <p><strong>Two hundred and twenty-nine plants already carry a one-line story</strong>, and behind those sit <strong>948 further facts</strong>. Somebody has already done the hard part. A tour writer&#x27;s job here is choosing and sequencing, not researching.</p>
 <p>To show what that means, eight of them, untouched:</p>
@@ -234,14 +238,12 @@
 <li><strong>The subtitles are the craft.</strong> <em>Three Lives. The Cactus That Climbs. Right Plant, Right Place. The Idea, Grown Up.</em> Four words that tell you why to stop walking.</li>
 </ol>
 <hr>
-<hr>
 <h2 id="ground-rules">Ground rules</h2>
 <p><strong>Say one thing per stop.</strong> The visitor is standing in the sun. One fact well chosen is remembered; four are not.</p>
 <p><strong>Lead with the thing, not the taxonomy.</strong> <em>&quot;British cannonballs bounced off the hull of the USS Constitution — that&#x27;s how it got the name Old Ironsides, and this is the tree&quot;</em> beats <em>&quot;Quercus virginiana, family Fagaceae.&quot;</em></p>
 <p><strong>Do not promise a plant will be doing anything.</strong> Flowering, fruiting and bearing caterpillars are conditional. Write stops that work when nothing is happening; treat a bloom as a bonus.</p>
 <p><strong>Safety notes go in the script, not just on the page</strong> — particularly with children present.</p>
 <p><strong>Credit groups, not children.</strong> &quot;The Bright Futures students&quot;, &quot;the Manatee County Garden Club&quot; — never a student&#x27;s full name.</p>
-<hr>
 <hr>
 <h2 id="this-is-a-snapshot-of-a-moving-train">⚠ This is a snapshot of a moving train</h2>
 <p><strong>Everything counted in this document was true on 1 September 2026 and will be out of date by the time you use it.</strong> The park is still working through its own collection — finding plants, identifying them, photographing them, marking them on the map and writing them up. <strong>This is not a finished inventory. It is a snapshot of an ongoing job, and the collection described here is the smallest it will ever be.</strong></p>
@@ -255,7 +257,6 @@
 <li><strong>Ask about the map especially.</strong> Plants get their locations pinned week by week, and a plant with no location when this was written may have a precise one now, which changes what routes are possible.</li>
 </ul>
 <p><strong>None of this is a reason to wait.</strong> It is a reason to treat the tables below as a starting shortlist rather than a closed set, and to ask &quot;what else has turned up?&quot; before committing a route to print.</p>
-<hr>
 <hr>
 <h2 id="ideas-to-flesh-out-placeholders-not-proposals">Ideas to flesh out — placeholders, not proposals</h2>
 <p><strong>Blooming tour.</strong> The obvious one, and the hardest to maintain: it would have to be updated constantly, and <code>bloom_months</code> in the database is free-text prose, so nothing can query it by month. Needs a data change or a weekly walk.</p>
