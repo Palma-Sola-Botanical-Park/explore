@@ -17,139 +17,92 @@
   *{box-sizing:border-box}
   body{margin:0;background:var(--cream);color:var(--text);
     font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-    font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
-  .masthead{background:var(--green-deep);color:var(--cream);padding:44px 24px 38px}
-  .masthead .in{max-width:52rem;margin:0 auto}
+    font-size:19px;line-height:1.66;-webkit-font-smoothing:antialiased}
+
+  .masthead{background:var(--green-deep);color:var(--cream);padding:56px 24px 48px}
+  .masthead .wrap{max-width:54rem;margin:0 auto}
   .masthead h1{font-family:"Playfair Display",Georgia,serif;font-weight:700;
-    font-size:clamp(2rem,5vw,2.9rem);line-height:1.12;margin:0 0 8px;color:var(--white)}
-  .masthead p{margin:0;color:var(--gold-light);font-size:1.05rem;font-style:italic;
+    font-size:clamp(2.4rem,6vw,3.6rem);line-height:1.08;margin:0 0 10px;color:var(--white);
+    border:0;padding:0}
+  .masthead p{margin:0;color:var(--gold-light);font-size:1.15rem;font-style:italic;
     font-family:"Playfair Display",Georgia,serif}
-  main{max-width:52rem;margin:0 auto;padding:34px 24px 90px}
-  h1{font-family:"Playfair Display",Georgia,serif;font-weight:700;font-size:1.72rem;
-    line-height:1.2;color:var(--green-deep);margin:2.6em 0 .5em;
-    padding-top:.5em;border-top:3px solid var(--gold)}
-  h1:first-child{margin-top:0}
-  h2{font-family:"Playfair Display",Georgia,serif;font-weight:700;font-size:1.28rem;
-    color:var(--green-mid);margin:2em 0 .45em;line-height:1.25}
-  h3{font-size:.83rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
-    color:var(--gold);margin:1.7em 0 .4em}
-  p{margin:0 0 1em}
+
+  /* alternating full-width bands, so each tour feels like a new place */
+  .band{padding:8px 24px 30px}
+  .band.b0{background:var(--cream)}
+  .band.b1{background:var(--white)}
+  .band .wrap{max-width:54rem;margin:0 auto}
+
+  h1{font-family:"Playfair Display",Georgia,serif;font-weight:700;
+    font-size:clamp(2.1rem,4.6vw,3rem);line-height:1.12;color:var(--green-deep);
+    margin:.5em 0 .45em;padding:0 0 .22em;border-bottom:4px solid var(--gold)}
+  h2{font-family:"Playfair Display",Georgia,serif;font-weight:700;
+    font-size:clamp(1.45rem,2.6vw,1.85rem);color:var(--green-mid);
+    margin:1.9em 0 .5em;line-height:1.22}
+  h3{font-size:.88rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--gold);margin:2em 0 .5em}
+  p{margin:0 0 1.05em}
   strong{font-weight:600;color:#000}
-  em{font-style:italic}
-  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.85em;
     background:var(--sand);padding:1px 5px;border-radius:3px}
   a{color:var(--green-mid)}
+  a:hover{color:var(--gold)}
   hr{border:0;border-top:1px solid var(--sand);margin:2.2em 0}
-  ul,ol{margin:0 0 1em;padding-left:1.35em}
-  li{margin:.3em 0}
-  blockquote{margin:1.1em 0;padding:.75em 1.1em;background:var(--white);
-    border-left:4px solid var(--gold);border-radius:0 8px 8px 0;
-    font-family:"Playfair Display",Georgia,serif;font-size:1.02rem;color:var(--green-deep)}
+  ul,ol{margin:0 0 1.05em;padding-left:1.4em}
+  li{margin:.34em 0}
+
+  blockquote{margin:1.15em 0;padding:.9em 1.25em;background:var(--green-pale);
+    border-left:5px solid var(--gold);border-radius:0 10px 10px 0;
+    font-family:"Playfair Display",Georgia,serif;font-size:1.08rem;line-height:1.5;
+    color:var(--green-deep)}
+  .b1 blockquote{background:var(--cream)}
   blockquote strong{color:var(--green-deep)}
-  .tw{overflow-x:auto;margin:1.2em 0;border:1px solid var(--sand);border-radius:9px;background:var(--white)}
-  table{border-collapse:collapse;width:100%;font-size:.9rem}
+
+  .tw{overflow-x:auto;margin:1.3em 0;border:1px solid var(--sand);border-radius:10px;
+    background:var(--white)}
+  .b1 .tw{background:var(--cream)}
+  table{border-collapse:collapse;width:100%;font-size:.96rem}
   th{background:var(--green-deep);color:var(--white);text-align:left;font-weight:600;
-    padding:9px 12px;font-size:.82rem;letter-spacing:.03em;white-space:nowrap}
-  td{padding:9px 12px;border-top:1px solid var(--sand);vertical-align:top}
+    padding:11px 14px;font-size:.88rem;letter-spacing:.03em;white-space:nowrap}
+  td{padding:10px 14px;border-top:1px solid var(--sand);vertical-align:top}
   tbody tr:nth-child(even){background:var(--cream)}
+  .b1 tbody tr:nth-child(even){background:var(--white)}
   td em{color:var(--soft)}
-  footer{max-width:52rem;margin:0 auto;padding:0 24px 60px;color:var(--soft);font-size:.86rem}
-  footer .rule{border-top:2px solid var(--gold);margin-bottom:14px}
+
+  footer{background:var(--green-deep);color:var(--sand);padding:34px 24px 44px;font-size:.95rem}
+  footer .wrap{max-width:54rem;margin:0 auto}
+  footer a{color:var(--gold-light)}
+
   @media print{
-    body{background:#fff;font-size:10.5pt}
+    body{background:#fff;font-size:11pt}
     .masthead{background:#fff;color:var(--green-deep);padding:0 0 12pt;border-bottom:2pt solid var(--gold)}
     .masthead h1{color:var(--green-deep)} .masthead p{color:var(--soft)}
-    main{padding:12pt 0} h1{page-break-after:avoid} h2,h3{page-break-after:avoid}
-    .tw,blockquote{page-break-inside:avoid} th{background:var(--green-deep)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .band{padding:0;background:#fff!important}
+    h1{page-break-after:avoid;font-size:20pt} h2,h3{page-break-after:avoid}
+    .tw,blockquote{page-break-inside:avoid}
+    th{background:var(--green-deep)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    footer{background:#fff;color:var(--soft)}
   }
 </style>
 </head>
 <body>
-<div class="masthead"><div class="in">
+<div class="masthead"><div class="wrap">
   <h1>Park Tours</h1>
   <p>A working brief &middot; September 2026</p>
 </div></div>
-<main>
+<section class="band b0"><div class="wrap">
 <p><strong>Nine tours. Three exist as beta drafts, three as name-and-blurb stubs, three are new here.</strong> Almost nothing here needs research: 232 plant pages and 91 animal pages are finished, each carrying a one-line story written for somebody standing in front of the plant in the sun. <strong>What is missing is a voice and a route</strong> — somebody to choose the order, write the joins, and give each tour a personality.</p>
 <hr>
-<hr>
-<h2 id="this-is-a-snapshot-of-a-moving-train">⚠ This is a snapshot of a moving train</h2>
-<p>**Everything counted in this document was true on 1 September 2026 and will be out of date by the time you use it.** The park is still working through its own collection — finding plants, identifying them, photographing them, marking them on the map and writing them up. **This is not a finished inventory. It is a snapshot of an ongoing job, and the collection described here is the smallest it will ever be.**</p>
-<p>Where things stood the day this was written:</p>
-<div class="tw"><table><tbody><tr><td>Plants with a finished page</td><td><strong>232</strong></td></tr><tr><td>Animals with a finished page</td><td><strong>91</strong></td></tr><tr><td>Known plants still to be written up</td><td><strong>522</strong></td></tr><tr><td>Plants marked on the map</td><td><strong>217</strong></td></tr></tbody></table></div>
-<p><strong>That backlog is the point.</strong> Over five hundred plants are known to be here and simply have not been written up yet. <strong>Palms and rare fruit are where the most is still coming in</strong> — seventy-seven palms and cycads are waiting to be written up, and the rare fruit grove gains new plants regularly. Both feed tours 4 and 5 directly.</p>
-<h3>So check with us before you finalise a tour</h3>
-<ul>
-<li><strong>The website is always the current version.</strong> If this document and the site disagree, the site is right.</li>
-<li><strong>Ask before you print.</strong> A quick word will surface what has been added, what has moved and what has died since — none of which a document can know.</li>
-<li><strong>Ask about the map especially.</strong> Plants get their locations pinned week by week, and a plant with no location when this was written may have a precise one now, which changes what routes are possible.</li>
-</ul>
-<p><strong>None of this is a reason to wait.</strong> It is a reason to treat the tables below as a starting shortlist rather than a closed set, and to ask &quot;what else has turned up?&quot; before committing a route to print.</p>
-<hr>
-<h2 id="why-the-park-should-have-tours-at-all">Why the park should have tours at all</h2>
-<p><strong>A botanical park is a collection that looks like a garden.</strong> A visitor walks in, sees that it is pretty, walks a loop and leaves — having missed a palm with fewer than fifty survivors in the wild, a plant Nabisco once ground into animal crackers, and a tree whose timber bounced British cannonballs. The plants do not announce themselves. **A tour is the difference between a nice walk and a collection.**</p>
-<ul>
-<li><strong>It gives a volunteer something to do that is not weeding.</strong> Somebody who can lead a forty-minute walk is worth more than another pair of hands on a Saturday.</li>
-<li><strong>It gives the board something to point at.</strong> &quot;We run four themed tours&quot; is a different organisation from &quot;we have a nice garden.&quot;</li>
-<li><strong>It is the cheapest programming there is.</strong> No build, no purchase, no permit — a printed sheet and somebody willing to talk.</li>
-<li><strong>It creates a reason to come back.</strong> Nobody visits a garden twice for the same reason. They will come back for rare fruit in July and butterflies in September.</li>
-</ul>
-<hr>
-<hr>
-<h2 id="the-best-thing-about-this-park-is-already-written-down">The best thing about this park is already written down</h2>
-<p><strong>Two hundred and twenty-nine plants already carry a one-line story</strong>, and behind those sit <strong>948 further facts</strong>. Somebody has already done the hard part. A tour writer&#x27;s job here is choosing and sequencing, not researching.</p>
-<p>To show what that means, eight of them, untouched:</p>
-<blockquote><strong>Silk Floss Tree</strong> — The conical spines on this trunk are thought to be armor against giant</blockquote>
-<blockquote>ground sloths and gomphotheres — South American megafauna long since extinct.</blockquote>
-<blockquote><strong>Live Oak</strong> — British cannonballs bounced off the Live Oak hull of the USS Constitution in 1812.</blockquote>
-<blockquote>That is how she earned the name Old Ironsides.</blockquote>
-<blockquote><strong>Kentia Palm</strong> — Potted Kentias lined the first-class Palm Court of the Titanic. In the wild</blockquote>
-<blockquote>they grow on one island in the Tasman Sea and nowhere else on Earth.</blockquote>
-<blockquote><strong>Coontie</strong> — Nabisco once ground twenty tons of coontie root a day into animal crackers, until</blockquote>
-<blockquote>the FDA banned it in 1925. It is also the sole host of the Atala butterfly.</blockquote>
-<blockquote><strong>Amazon Lily</strong> — Handed down through the Baden family since the 1880s — the most historically</blockquote>
-<blockquote>precious plant in the park, kept alive by bulb division for a century and a half.</blockquote>
-<blockquote><strong>Ouricury Palm</strong> — This palm&#x27;s nut makes up about ninety-five percent of the entire diet of</blockquote>
-<blockquote>Lear&#x27;s Macaw. By 1990 fewer than sixty of those parrots were left alive.</blockquote>
-<blockquote><strong>Alligator Flag</strong> — The name is literal. When an alligator moves through a stand of it, the tall</blockquote>
-<blockquote>leaves wave along its path — and trackers read the flag.</blockquote>
-<blockquote><strong>Blue Latan Palm</strong> — Its only wild population clings to Round Island, about a square mile of</blockquote>
-<blockquote>volcanic rock off Mauritius, where goats and rabbits nearly finished it off.</blockquote>
-<p><strong>Every plant listed in every tour below comes with a line like these</strong>, printed in full in the tables. Read them for pleasure before deciding anything — the tour will half-choose itself.</p>
-<h2 id="a-format-has-been-started-worth-building-on">A format has been started — worth building on</h2>
-<p><strong>The three written tours are beta.</strong> They were made quickly, by whoever was willing, to prove the idea was worth pursuing — and they proved it. They are not a finished house style, and they have not been through a branding pass or checked against each other for consistency.</p>
-<p><strong>But they arrived at something that works</strong>, and the next person should start from it rather than from a blank page. Every stop is <strong>number · name · a four-word subtitle · a direction line · two or three sentences.</strong></p>
-<blockquote><strong>1  Staghorn Fern — The Plant That Lives in Trees</strong></blockquote>
-<blockquote><em>Paver path through the trellis, elevated on your left</em></blockquote>
-<blockquote>This whole colony clings to a tree trunk with no soil at all…</blockquote>
-<blockquote><strong>1  Century Plant — Three Lives</strong></blockquote>
-<blockquote><em>Crushed shell path, Cactus &amp; Succulent Garden</em></blockquote>
-<blockquote>The Century Plant does NOT live 100 years — that&#x27;s a myth. It grows for 10 to 30 years, building</blockquote>
-<blockquote>up energy the whole time. Then one day it shoots a flower stalk into the sky, taller than a</blockquote>
-<blockquote>grown-up, blooms once, and dies. One chance. That&#x27;s it.</blockquote>
-<blockquote><strong>YOUR CHALLENGE</strong> …</blockquote>
-<p><strong>Four things worth keeping from them:</strong></p>
-<ol>
-<li><strong>Open with &quot;Can you find them all?&quot;</strong> and a <em>Before You Start</em> page listing every stop.</li>
-<li><strong>&quot;No phone required — keep it in your pocket and enjoy the park around you.&quot;</strong> A deliberate stance, and the right one. Do not design a tour that needs an app.</li>
-<li><strong>The Kids tour gives each stop a YOUR CHALLENGE.</strong> That device is doing a lot of work and should travel to other tours.</li>
-<li><strong>The subtitles are the craft.</strong> *Three Lives. The Cactus That Climbs. Right Plant, Right Place. The Idea, Grown Up.* Four words that tell you why to stop walking.</li>
-</ol>
-<hr>
-<h2 id="ground-rules">Ground rules</h2>
-<p><strong>Say one thing per stop.</strong> The visitor is standing in the sun. One fact well chosen is remembered; four are not.</p>
-<p><strong>Lead with the thing, not the taxonomy.</strong> *&quot;British cannonballs bounced off the hull of the USS Constitution — that&#x27;s how it got the name Old Ironsides, and this is the tree&quot;<em> beats </em>&quot;Quercus virginiana, family Fagaceae.&quot;*</p>
-<p><strong>Never scold the visitor or the sign.</strong> Especially on tour 6. Common names are legitimate usage, often centuries old.</p>
-<p><strong>Do not promise a plant will be doing anything.</strong> Flowering, fruiting and bearing caterpillars are conditional. Write stops that work when nothing is happening; treat a bloom as a bonus.</p>
-<p><strong>Safety notes go in the script, not just on the page</strong> — particularly with children present.</p>
-<p><strong>Credit groups, not children.</strong> &quot;The Bright Futures students&quot;, &quot;the Manatee County Garden Club&quot; — never a student&#x27;s full name.</p>
 <hr>
 <h2 id="the-nine">The nine</h2>
 <div class="tw"><table><thead><tr><th>#</th><th>Tour</th><th>Status</th><th>Length</th></tr></thead><tbody><tr><td>1</td><td><a href="#1-bite-sized-tour-beta"><strong>Bite-Sized Tour</strong></a></td><td>🅑 beta — PDF exists</td><td>8 stops · ~20 min</td></tr><tr><td>2</td><td><a href="#2-kids-nature-tour-beta"><strong>Kids Nature Tour</strong></a></td><td>🅑 beta — PDF exists</td><td>6 stops · ~20 min</td></tr><tr><td>3</td><td><a href="#3-saving-our-ponds-beta"><strong>Saving Our Ponds</strong></a></td><td>🅑 beta — PDF exists</td><td>4 stops · ~20 min</td></tr><tr><td>4</td><td><a href="#4-rare-fruit-trail-draft"><strong>Rare Fruit Trail</strong></a></td><td>📝 draft — blurb only</td><td>~25 min · 24 candidates</td></tr><tr><td>5</td><td><a href="#5-rare-palm-plumeria-draft"><strong>Rare Palm &amp; Plumeria</strong></a></td><td>📝 draft — blurb only</td><td>~30 min · 69 candidates</td></tr><tr><td>6</td><td><a href="#6-everything-here-is-lying-to-you-new"><strong>Everything Here Is Lying to You</strong></a></td><td>✨ new</td><td>19 ready now, 53 in total</td></tr><tr><td>7</td><td><a href="#7-the-shopfront-new"><strong>The Shopfront</strong></a> — outside the fence</td><td>✨ new</td><td>19 species, 30 specimens</td></tr><tr><td>8</td><td><a href="#8-host-and-nectar-new"><strong>Host and Nectar</strong></a></td><td>✨ new</td><td>43 hosts, 60 nectar plants</td></tr><tr><td>9</td><td><a href="#9-the-grand-tour-draft"><strong>The Grand Tour</strong></a></td><td>📝 draft — blurb only</td><td>60–90 min · <strong>built from all of the above</strong></td></tr></tbody></table></div>
 <p><strong>Tours 4, 5 and 9 are the cheapest wins.</strong> They already have a name, a blurb and a slot on the website. They are missing only stops, and the stops are listed below.</p>
 <p><strong>⭐ What the whole set is really waiting for is one person to hold it together.</strong> Three tours were written by different hands at different times; three are stubs; three are proposals in this document. <strong>Nobody has yet passed over all nine and made them feel like one park&#x27;s tours</strong> — same voice, same layout, same cover, same way of giving directions. That job is worth more than any single new tour.</p>
 <p><strong>Tour 9 is deliberately last, and deliberately different</strong> — it is assembled from the other eight rather than researched on its own, so it reads as a route rather than a collection.</p>
+<p><strong>Click any tour above to jump to it.</strong> The nine follow immediately. Everything after them is context — what is already written, the house style, and what to check before you print — and it keeps until you need it.</p>
 <hr>
+</div></section>
+<section class="band b1"><div class="wrap">
 <h1 id="1-bite-sized-tour-beta">1 — Bite-Sized Tour  🅑 beta</h1>
 <p><strong>The pitch.</strong> *&quot;Only have a few minutes? The greatest-hits loop — the things you shouldn&#x27;t miss, on the shortest path that touches them all.&quot;* Eight stops, about twenty minutes.</p>
 <p><strong>Why it works.</strong> It is the tour for the visitor who did not come for a tour, which is most of them. It also does the most useful job any of these can do: it proves to somebody that the park is more interesting than it looks, in the time they were going to spend anyway.</p>
@@ -157,6 +110,8 @@
 <div class="tw"><table><thead><tr><th>Stop</th><th>Where</th><th>The line its page already uses</th></tr></thead><tbody><tr><td><strong>Staghorn Fern</strong> · <em>Platycerium</em></td><td>Pavilion Field</td><td>It grows two kinds of leaf: flat brown shields that grip the host and catch falling debris for compost, and arching antlers that do the photosynthesis.</td></tr><tr><td><strong>Dragon Fruit</strong> · <em>Selenicereus undatus</em></td><td>Rare Fruit</td><td>The flower opens once, after dark, up to a foot across, then closes by morning. Bats and moths pollinate it while the park is asleep.</td></tr><tr><td><strong>White Bird of Paradise</strong> · <em>Strelitzia nicolai</em></td><td>Office</td><td>It contains bilirubin — a pigment otherwise found in animals, made when red blood cells break down. One of the very few plants confirmed to produce it.</td></tr><tr><td><strong>Royal Poinciana</strong> · <em>Delonix regia</em></td><td>Nursery</td><td>Look closely at a flower: the top petal is splashed yellow and white, a landing strip aimed at pollinators. In bloom the whole canopy goes vermillion.</td></tr><tr><td><strong>Alligator Flag</strong> · <em>Thalia geniculata</em></td><td>Front Pond</td><td>The name is literal. When an alligator moves through a stand of it, the tall leaves wave along its path — and trackers read the flag.</td></tr><tr><td><strong>Grandleaf Seagrape</strong> · <em>Coccoloba pubescens</em></td><td>Pavilion Field</td><td>Leaves reach three feet across, big enough to hold over your head in rain, which is why it is also called Eve&#x27;s Umbrella. Young plants grow the largest ones.</td></tr><tr><td><strong>Screw Pine</strong> · <em>Pandanus utilis</em></td><td>Welcome Island</td><td>No pine at all — it is closer to grasses and orchids than to any conifer. It walks on stilt roots, and its leaves spiral up the trunk like a screw thread.</td></tr><tr><td><strong>Silk Floss Tree</strong> · <em>Ceiba speciosa</em></td><td>Office</td><td>The conical spines on this trunk are thought to be armor against giant ground sloths and gomphotheres — South American megafauna long since extinct.</td></tr></tbody></table></div>
 <p><strong>Where it stands.</strong> A finished PDF exists and <strong>we can send it to you</strong> — treat it as a good first draft rather than a finished piece. It has never been through a branding pass, and one thing is worth a fresh eye: whether Royal Poinciana, out in the Nursery, really belongs on a &quot;shortest path&quot; loop.</p>
 <hr>
+</div></section>
+<section class="band b0"><div class="wrap">
 <h1 id="2-kids-nature-tour-beta">2 — Kids Nature Tour  🅑 beta</h1>
 <p><strong>The pitch.</strong> *&quot;A short loop built for young explorers — find-it prompts, touchable textures, and the most kid-pleasing plants in the park.&quot;* Six stops, about twenty minutes.</p>
 <p><strong>Why it works.</strong> It picks plants with a <strong>story a seven-year-old can hold</strong>: a plant that saves up for thirty years to flower once and die, a trunk that holds tens of thousands of gallons, spines grown to stop giant ground sloths. And <strong>YOUR CHALLENGE</strong> at each stop turns a walk into a game.</p>
@@ -164,6 +119,8 @@
 <div class="tw"><table><thead><tr><th>Stop</th><th>Where</th><th>The line its page already uses</th></tr></thead><tbody><tr><td><strong>Century Plant</strong> · <em>Agave americana</em></td><td>Cacti and Succulents</td><td>It spends ten to thirty years saving up for one bloom. The stalk then rockets up a foot a day to twenty feet — and the whole plant dies, having flowered once.</td></tr><tr><td><strong>Madagascar Palm</strong> · <em>Pachypodium lamerei</em></td><td>Cacti and Succulents</td><td>No palm at all. It is a succulent with a fat, water-storing trunk, more closely related to milkweed and oleander than to anything in the palm family.</td></tr><tr><td><strong>Baobab</strong> · <em>Adansonia digitata</em></td><td>Serenity Garden</td><td>It can live a thousand years and hold tens of thousands of gallons of water in its trunk. In drought, elephants tear the trunks open to get at it.</td></tr><tr><td><strong>Dragon Fruit</strong> · <em>Selenicereus undatus</em></td><td>Rare Fruit</td><td>The flower opens once, after dark, up to a foot across, then closes by morning. Bats and moths pollinate it while the park is asleep.</td></tr><tr><td><strong>Staghorn Fern</strong> · <em>Platycerium</em></td><td>Pavilion Field</td><td>It grows two kinds of leaf: flat brown shields that grip the host and catch falling debris for compost, and arching antlers that do the photosynthesis.</td></tr><tr><td><strong>Silk Floss Tree</strong> · <em>Ceiba speciosa</em></td><td>Office</td><td>The conical spines on this trunk are thought to be armor against giant ground sloths and gomphotheres — South American megafauna long since extinct.</td></tr></tbody></table></div>
 <p><strong>Where it stands.</strong> A finished PDF exists and <strong>we can send it to you.</strong> Also preliminary — and it has never been tested with an actual group of children, which is the only test that matters for this one. <strong>The YOUR CHALLENGE device is the best idea in any of the three</strong> and deserves to be pushed further here and borrowed elsewhere.</p>
 <hr>
+</div></section>
+<section class="band b1"><div class="wrap">
 <h1 id="3-saving-our-ponds-beta">3 — Saving Our Ponds  🅑 beta</h1>
 <p><strong>The pitch.</strong> *&quot;How a problem pond became a model for the bay. Walk the restoration from the troubled Front Pond to the native plantings that turned it around.&quot;* Four stops, three ponds.</p>
 <p><strong>Why it works.</strong> It is the only existing tour that <strong>tells a story rather than listing plants</strong> — the problem, where we began, the work at scale, and the payoff. It also names its people and its funders: a <strong>Bay Mini-Grant from the Tampa Bay Estuary Program</strong> and a crew of **Bright Futures students**. That is what turns a walk into a case for support, and it is the model every other tour should learn from.</p>
@@ -171,6 +128,8 @@
 <div class="tw"><table><thead><tr><th>Stop</th><th>Where</th><th>The line its page already uses</th></tr></thead><tbody><tr><td><strong>Alligator Flag</strong> · <em>Thalia geniculata</em></td><td>Front Pond</td><td>The name is literal. When an alligator moves through a stand of it, the tall leaves wave along its path — and trackers read the flag.</td></tr><tr><td><strong>Golden Canna</strong> · <em>Canna flaccida</em></td><td>Cypress Pond</td><td>Its seeds are so hard they have been found intact — and still able to sprout — in pre-Columbian archaeological sites.</td></tr><tr><td><strong>Bald Cypress</strong> · <em>Taxodium distichum</em></td><td>Cypress Pond</td><td>The oldest known Bald Cypress is 2,624 years old, the oldest living tree in eastern North America. This one drops every needle each fall; few conifers do.</td></tr><tr><td><strong>Red Mangrove</strong> · <em>Rhizophora mangle</em></td><td>Cypress Pond</td><td>Its seeds germinate while still on the tree, then drop into the water as foot-long seedlings that can float for a year and cross an ocean before rooting.</td></tr><tr><td><strong>Traveller&#x27;s Palm</strong> · <em>Ravenala madagascariensis</em></td><td>Big Pond</td><td>In Madagascar it is pollinated by lemurs, which push their faces into the flowers and carry the pollen away on their snouts.</td></tr><tr><td><strong>Muhly Grass</strong> · <em>Muhlenbergia capillaris</em></td><td>Front Pond</td><td>Every October it throws up a cloud of pink seed plumes so fine they seem to float — the reason it now lines miles of Florida highway median.</td></tr></tbody></table></div>
 <p><strong>Where it stands.</strong> A finished PDF exists and <strong>we can send it to you.</strong> **This is the tour to show a funder**, which is exactly why it deserves a proper edition rather than the quick one it has. The plantings have grown since it was written, so parts are already out of date — and the restoration has continued, so there is more story to tell than four stops can hold.</p>
 <hr>
+</div></section>
+<section class="band b0"><div class="wrap">
 <h1 id="4-rare-fruit-trail-draft">4 — Rare Fruit Trail  📝 draft</h1>
 <p><strong>The pitch.</strong> *&quot;Walk the Manatee Rare Fruit Council&#x27;s exotic plantings. Best in fruiting season — what&#x27;s ripe changes month to month.&quot;* Already on the site; needs its stops.</p>
 <p><strong>Why it works.</strong> Food is the easiest way into botany ever invented — nobody needs persuading to care about a fruit. It is also the most naturally clustered walk here: the grove sits between the bathroom, the Big Pond and the bridge, so it routes itself. And the <strong>MRFC partnership</strong> gives it a story about people as well as plants.</p>
@@ -178,6 +137,8 @@
 <div class="tw"><table><thead><tr><th>Stop</th><th>Where</th><th>The line its page already uses</th></tr></thead><tbody><tr><td><strong>Papaya</strong> · <em>Carica papaya</em></td><td>—</td><td>Not a tree at all — the trunk is soft and pithy, with no wood in it. A papaya grown from seed can be carrying fruit in under a year.</td></tr><tr><td><strong>Dragon Fruit</strong> · <em>Selenicereus undatus</em></td><td>Rare Fruit</td><td>The flower opens once, after dark, up to a foot across, then closes by morning. Bats and moths pollinate it while the park is asleep.</td></tr><tr><td><strong>Moringa</strong> · <em>Moringa oleifera</em></td><td>Front Pond</td><td>Gram for gram the leaves carry more vitamin C than oranges, more calcium than milk, more iron than spinach and more potassium than bananas.</td></tr><tr><td><strong>Mango</strong> · <em>Mangifera indica</em></td><td>—</td><td>It belongs to the cashew family, alongside poison ivy and sumac. The sap and skin carry related compounds, which is why some people react to handling it.</td></tr><tr><td><strong>Barbados Cherry</strong> · <em>Malpighia emarginata</em></td><td>—</td><td>A single cherry carries roughly sixty-five times the vitamin C of an orange the same size. You never see them in supermarkets because they spoil within days.</td></tr><tr><td><strong>Pomegranate</strong> · <em>Punica granatum</em></td><td>—</td><td>The word grenade comes from this fruit. Early grenades were named for the pomegranate they resembled, packed seeds and all.</td></tr><tr><td><strong>Starfruit</strong> · <em>Averrhoa carambola</em></td><td>—</td><td>Slice it crosswise and every piece is a perfect five-pointed star. It also carries a neurotoxin that healthy kidneys filter out — and impaired ones cannot.</td></tr><tr><td><strong>Longan</strong> · <em>Dimocarpus longan</em></td><td>Rare Fruit</td><td>Peel one and it looks startlingly like an eye — translucent flesh around a glossy black seed. That is exactly what the Cantonese name means: dragon eye.</td></tr><tr><td><strong>Black Sapote</strong> · <em>Diospyros nigra</em></td><td>Rare Fruit</td><td>Ripe, it looks like a green tomato and scoops out like chocolate pudding. There is no chocolate in it — the flavor and texture are entirely the fruit&#x27;s own.</td></tr><tr><td><strong>Pond Apple</strong> · <em>Annona glabra</em></td><td>Rare Fruit</td><td>Also called alligator apple, after the gators that share its swamps and eat the fallen fruit. The fruit floats, so the tree plants itself downstream.</td></tr><tr><td><strong>Avocado</strong> · <em>Persea americana</em></td><td>—</td><td>Each flower opens as female one day and male the next, switching on a schedule so the tree cannot pollinate itself. The fruit is a single-seeded berry.</td></tr><tr><td><strong>Pineapple</strong> · <em>Ananas comosus</em></td><td>Rare Fruit</td><td>Not one fruit but dozens of separate flowers fused into a single mass. The enzyme inside actually digests protein, which is why fresh pineapple stings the tongue.</td></tr><tr><td><strong>Jackfruit</strong> · <em>Artocarpus heterophyllus</em></td><td>—</td><td>The largest fruit of any tree on Earth, over a hundred pounds. They grow straight out of the trunk rather than the twigs, because only the wood can carry them.</td></tr><tr><td><strong>Lemon Grass</strong> · <em>Cymbopogon citratus</em></td><td>—</td><td>Beekeepers bait swarm traps with its oil because the scent mimics the pheromone scout bees use to signal a good new home. Chemically, this grass speaks bee.</td></tr><tr><td><strong>Lychee</strong> · <em>Litchi chinensis</em></td><td>—</td><td>The Tang emperor Xuanzong ran a horse-relay courier system to rush fresh lychees hundreds of miles to his court. The fruit was that perishable, and that prized.</td></tr><tr><td><strong>Canistel</strong> · <em>Lucuma campechiana</em></td><td>—</td><td>The ripe flesh has the dense, dry texture of a hard-boiled egg yolk — which is where the name eggfruit comes from — and tastes of sweet potato pie rather than anything you would expect from a fruit.</td></tr><tr><td><strong>Noni</strong> · <em>Morinda citrifolia</em></td><td>—</td><td>Cheese fruit and vomit fruit are both honest nicknames. The pungent, fermented smell is a broadcast aimed squarely at the fruit bats that spread its seeds.</td></tr><tr><td><strong>Plantain</strong> · <em>Musa × paradisiaca</em></td><td>—</td><td>It is not a tree — that trunk is a column of packed leaf bases that shoots up twenty feet in a season, fruits once, then dies back while new shoots take over.</td></tr><tr><td><strong>Tamarind</strong> · <em>Tamarindus indica</em></td><td>—</td><td>Arab traders found it thriving in India and called it tamar hindi, Indian date. Linnaeus made that official in 1753, and the name has hidden its African origin since.</td></tr><tr><td><strong>Swiss Cheese Plant</strong> · <em>Monstera deliciosa</em></td><td>Pavilion Field</td><td>The holes are not damage. The plant makes them deliberately, killing off cells in a pattern as the leaf forms — a trick almost no other flowering plant uses.</td></tr><tr><td><strong>Plum</strong> · <em>Prunus domestica</em></td><td>—</td><td>It carries six copies of its genome instead of the usual two, and no wild population has ever been found — meaning humans shaped it from the very beginning.</td></tr><tr><td><strong>White sapote</strong> · <em>Casimiroa edulis</em></td><td>—</td><td>The genus honors Casimiro Gómez, an Otomi man who died fighting for Mexican independence — one of very few plant genera named for an indigenous person.</td></tr><tr><td><strong>Olive</strong> · <em>Olea europaea</em></td><td>—</td><td>An olive straight off the tree is almost inedible, savagely bitter with oleuropein. Every olive you have ever eaten was cured, brined or fermented first.</td></tr><tr><td><strong>Surinam cherry</strong> · <em>Eugenia uniflora</em></td><td>—</td><td>One shrub carries green, orange, bright red and near-black fruit all at once, each at a different stage of ripening. The darker the berry, the sweeter it is.</td></tr></tbody></table></div>
 <p><strong>What it needs:</strong> a seasonal line. A script that promises jackfruit in January will embarrass its guide. <strong>Black Sapote, Longan and Jackfruit are the three most likely to stop a visitor dead</strong> — build around those.</p>
 <hr>
+</div></section>
+<section class="band b1"><div class="wrap">
 <h1 id="5-rare-palm-plumeria-draft">5 — Rare Palm &amp; Plumeria  📝 draft</h1>
 <p><strong>The pitch.</strong> *&quot;Specimen palms you won&#x27;t find in a typical yard, paired with fragrant plumeria that perfume the path in summer.&quot;* <strong>Keep this pairing</strong> — scent gives the walk a second sense, and it is a better hook than palms alone.</p>
 <p><strong>Why it works.</strong> Palms are the collection the park is actually known for, and this tour can teach one transferable skill: <strong>how to tell palms apart.</strong> Crownshaft or no crownshaft, fan or feather, solitary or clumping. Teach that in the first three stops and the visitor spends the rest of the walk identifying things unaided — the most satisfying thing a tour can do.</p>
@@ -185,6 +146,8 @@
 <div class="tw"><table><thead><tr><th>Stop</th><th>Where</th><th>The line its page already uses</th></tr></thead><tbody><tr><td><strong>Buccaneer Palm</strong> · <em>Pseudophoenix sargentii</em></td><td>Palm Exhibit</td><td>Fewer than fifty survive in the wild in Florida, all on Elliott Key. Every one growing in cultivation is a conservation choice somebody made.</td></tr><tr><td><strong>Paurotis Palm</strong> · <em>Acoelorrhaphe wrightii</em></td><td>Pavilion</td><td>Unlike almost every other palm, it suckers from the base. Plant one and it slowly becomes a grove without you ever planting a second.</td></tr><tr><td><strong>Bottle Palm</strong> · <em>Hyophorbe lagenicaulis</em></td><td>Butterfly Garden</td><td>Fewer than fifteen mature trees survive in the wild, on one small island — yet it is among the most commonly planted ornamental palms in South Florida.</td></tr><tr><td><strong>Canary Island Date Palm</strong> · <em>Phoenix canariensis</em></td><td>Office</td><td>The Canary Islands were named for dogs, not birds — Canariae Insulae, Islands of the Dogs. The bird was named after the islands, and this palm after both.</td></tr><tr><td><strong>Traveller&#x27;s Palm</strong> · <em>Ravenala madagascariensis</em></td><td>Big Pond</td><td>In Madagascar it is pollinated by lemurs, which push their faces into the flowers and carry the pollen away on their snouts.</td></tr><tr><td><strong>Coontie Palm</strong> · <em>Zamia integrifolia</em></td><td>Butterfly Garden</td><td>Nabisco once ground twenty tons of coontie root a day into animal crackers, until the FDA banned it in 1925. It is also the sole host of the Atala butterfly.</td></tr><tr><td><strong>Royal Palm</strong> · <em>Roystonea regia</em></td><td>Pavilion Field</td><td>That smooth green column below the fronds is not trunk. It is a crownshaft of wrapped leaf bases, and the palm sheds it whole when it self-cleans.</td></tr><tr><td><strong>Screw Pine</strong> · <em>Pandanus utilis</em></td><td>Welcome Island</td><td>No pine at all — it is closer to grasses and orchids than to any conifer. It walks on stilt roots, and its leaves spiral up the trunk like a screw thread.</td></tr><tr><td><strong>Burmese Fishtail Palm</strong> · <em>Caryota mitis</em></td><td>—</td><td>The leaflets look like torn paper, or a fish&#x27;s tail. Each trunk fruits exactly once and then dies, while the clump carries on from new stems at the base.</td></tr><tr><td><strong>Madagascar Palm</strong> · <em>Pachypodium lamerei</em></td><td>Cacti and Succulents</td><td>No palm at all. It is a succulent with a fat, water-storing trunk, more closely related to milkweed and oleander than to anything in the palm family.</td></tr><tr><td><strong>Reclining Date Palm</strong> · <em>Phoenix reclinata</em></td><td>—</td><td>Its trunks lean outward from the base instead of standing straight, growing in clumps along African rivers — the reclining habit that named it.</td></tr><tr><td><strong>Little Lady Palm</strong> · <em>Rhapis excelsa</em></td><td>—</td><td>One of the most shade-tolerant palms in cultivation. It grows under closed forest canopy, which makes it the answer for deep shade beneath a Live Oak.</td></tr><tr><td><strong>Cabbage Palmetto</strong> · <em>Sabal palmetto</em></td><td>—</td><td>The bud at its center is the original swamp cabbage, a regional delicacy. Taking it kills the tree — a palm has only that one growing point.</td></tr><tr><td><strong>Seashore Palm</strong> · <em>Allagoptera arenaria</em></td><td>Big Pond</td><td>It has no visible trunk at all. The stem runs horizontally underground, firing fronds up out of the sand — one of very few palms that lives below grade.</td></tr><tr><td><strong>Piccabeen Palm</strong> · <em>Archontophoenix cunninghamiana</em></td><td>Shade Garden</td><td>Every other palm in its genus flowers white or cream. This one comes out lavender, a soft purple-pink found nowhere else in the group.</td></tr><tr><td><strong>Myola King Palm</strong> · <em>Archontophoenix myolensis</em></td><td>—</td><td>One of the smallest natural ranges of any Australian palm, and endangered at home. Catch it in a gust here and the leaflets flash silver underneath.</td></tr><tr><td><strong>Purple King Palm</strong> · <em>Archontophoenix purpurea</em></td><td>—</td><td>That smooth collar under the crown turns purple with age, and no two do it alike — a young one reads grey-green, an old one deep lavender. Same species.</td></tr><tr><td><strong>Bismarck Palm</strong> · <em>Bismarckia nobilis</em></td><td>—</td><td>That silver-blue is not pigment but a heavy coat of wax the palm secretes over every frond — sunscreen that reflects tropical UV and slows water loss.</td></tr></tbody></table></div>
 <p><strong>What it needs:</strong> the first three stops chosen to <strong>teach the looking-skill</strong>, not to impress. Save Buccaneer Palm and Bottle Palm — both down to a handful of wild survivors — until the visitor can see what makes them different.</p>
 <hr>
+</div></section>
+<section class="band b0"><div class="wrap">
 <h1 id="6-everything-here-is-lying-to-you-new">6 — Everything Here Is Lying to You  ✨ new</h1>
 <p><strong>The pitch.</strong> Every stop is a plant the visitor thinks they already know, and every one is mislabelled by its own common name. Not a palm. Not a lily. Not a cherry, an apple, an olive or a bamboo. It is funny, it is true, and by the end the visitor knows what a cycad, a bromeliad and an arum are — without once being taught.</p>
 <p><strong>Why it works.</strong> It has a spine: <em>common names record what a plant looks like, not what it is.</em> Every stop teaches the same lesson from a different angle. The stops are scattered across the park rather than clustered, which a walking route wants. <strong>And it is the only funny one.</strong></p>
@@ -195,6 +158,8 @@
 <p><strong>And the mirror image, worth a laugh:</strong> Madagascar <em>Bamboo</em> Palm genuinely is a palm, and is not bamboo.</p>
 <p><strong>What it needs:</strong> a route order and the joins. Nothing else.</p>
 <hr>
+</div></section>
+<section class="band b1"><div class="wrap">
 <h1 id="7-the-shopfront-new">7 — The Shopfront  ✨ new</h1>
 <p><strong>The pitch.</strong> A row of specimen palms grows between the fence and the road — the plants every driver on 17th Ave NW sees, and for most people the only part of the collection they will ever look at. <strong>This is the only tour that does not require entering the park:</strong> no gate, no opening hours, no admission.</p>
 <p><strong>Why it works.</strong> It changes who a tour is <em>for</em>. Everything else serves somebody already inside; this reaches somebody who was not going to visit at all. Signs and a QR code out here turn passing traffic into outreach for the price of a stake.</p>
@@ -205,6 +170,8 @@
 <p><strong>All nineteen are already recorded</strong> — eleven have a finished page with photographs and an anecdote; eight are known plants that nobody has written up yet.</p>
 <p><strong>What it needs:</strong> a walk along the frontage to confirm nothing has been missed, and those eight written up. **The five Sabal species side by side are the best teaching opportunity in the park** — palmetto, bermudana, causiarum, mauritiiformis, with the Washingtonia next to them. One genus, five silhouettes, twenty feet apart.</p>
 <hr>
+</div></section>
+<section class="band b0"><div class="wrap">
 <h1 id="8-host-and-nectar-new">8 — Host and Nectar  ✨ new</h1>
 <p><strong>The pitch.</strong> Everybody plants flowers for butterflies and wonders why they do not stay. The answer is that a butterfly needs two entirely different plants — **one to drink from and one to lay eggs on** — and the second is usually something people pull up as scruffy. The park has 43 host plants and 60 nectar plants with finished pages, so the lesson can be walked rather than explained.</p>
 <p><strong>Why it works.</strong> It sends people home able to <em>do</em> something, which is rare in a garden tour. And it has a perfect closing stop: <strong>Coontie and the Atala butterfly</strong> — a species thought gone from Florida, which returned when people replanted its one host plant.</p>
@@ -212,6 +179,8 @@
 <div class="tw"><table><thead><tr><th>Stop</th><th>Where</th><th>The line its page already uses</th></tr></thead><tbody><tr><td><strong>Beach Sunflower</strong> · <em>Helianthus debilis</em></td><td>Front Pond</td><td>It grows where almost nothing else will, on bare coastal dune, and its seeds feed songbirds migrating down the Gulf Coast every fall.</td></tr><tr><td><strong>Sunshine Mimosa</strong> · <em>Mimosa strigillosa</em></td><td>Front Pond</td><td>Touch the leaves and they fold shut in seconds — a defense that confuses insects and startles nearly everyone who walks past.</td></tr><tr><td><strong>Gumbo Limbo</strong> · <em>Bursera simaruba</em></td><td>Front Pond</td><td>Florida calls it the Tourist Tree, because the bark is always red and peeling. Cut a branch, stick it in the ground, and it roots — the Seminoles built living fences.</td></tr><tr><td><strong>Coontie Palm</strong> · <em>Zamia integrifolia</em></td><td>Butterfly Garden</td><td>Nabisco once ground twenty tons of coontie root a day into animal crackers, until the FDA banned it in 1925. It is also the sole host of the Atala butterfly.</td></tr><tr><td><strong>Dahoon Holly</strong> · <em>Ilex cassine</em></td><td>Welcome Island</td><td>Its berries ferment on the branch. Cedar Waxwings that gorge on them have been documented flying drunk — and colliding with windows.</td></tr><tr><td><strong>Live Oak</strong> · <em>Quercus virginiana</em></td><td>Office</td><td>British cannonballs bounced off the Live Oak hull of the USS Constitution in 1812. That is how she earned the name Old Ironsides.</td></tr><tr><td><strong>Red Mangrove</strong> · <em>Rhizophora mangle</em></td><td>Cypress Pond</td><td>Its seeds germinate while still on the tree, then drop into the water as foot-long seedlings that can float for a year and cross an ocean before rooting.</td></tr><tr><td><strong>American Elm</strong> · <em>Ulmus americana</em></td><td>Natives</td><td>Dutch elm disease erased the arching canopies that once lined American streets coast to coast. Florida&#x27;s own variety still stands in floodplain forests.</td></tr><tr><td><strong>Wild Lime</strong> · <em>Zanthoxylum fagara</em></td><td>Pavilion Gazebo</td><td>Small, thorny, easy to overlook — and the essential host plant for the Giant Swallowtail, Florida&#x27;s largest butterfly, with a six-inch wingspan.</td></tr><tr><td><strong>Golden Canna</strong> · <em>Canna flaccida</em></td><td>Cypress Pond</td><td>Its seeds are so hard they have been found intact — and still able to sprout — in pre-Columbian archaeological sites.</td></tr><tr><td><strong>Royal Palm</strong> · <em>Roystonea regia</em></td><td>Pavilion Field</td><td>That smooth green column below the fronds is not trunk. It is a crownshaft of wrapped leaf bases, and the palm sheds it whole when it self-cleans.</td></tr><tr><td><strong>Giant Milkweed</strong> · <em>Calotropis gigantea</em></td><td>Butterfly Garden</td><td>Monarch and Queen caterpillars do not just eat this plant — they absorb its cardiac toxins and carry that chemical armor into adulthood, poisonous to birds.</td></tr><tr><td><strong>Canna Lilies</strong> · <em>Canna</em></td><td>Cypress Pond</td><td>The seeds are so hard and round they were once loaded into shotguns as improvised pellets — which is how the plant earned its old name, Indian Shot.</td></tr><tr><td><strong>Plumbago</strong> · <em>Plumbago auriculata</em></td><td>Welcome Island</td><td>Touch a spent bloom and it sticks. Glandular hairs at the flower base hitch a ride on fur and clothing, carrying the seed somewhere new.</td></tr></tbody></table></div>
 <p><strong>What it needs:</strong> pairing. It works best as host/nectar couplets rather than a list — walk to the milkweed, then the pentas, and say why a garden needs both.</p>
 <hr>
+</div></section>
+<section class="band b1"><div class="wrap">
 <h1 id="9-the-grand-tour-draft">9 — The Grand Tour  📝 draft</h1>
 <p><strong>The pitch.</strong> *&quot;The works. Every area, in a sensible order, with the full story along the way — the default &#x27;see it all&#x27; route to hand anyone who asks.&quot;* 60–90 minutes.</p>
 <p><strong>Why it works.</strong> It is the only tour that shows the collection whole, and it can be assembled almost entirely from stops written for the other eight — so it costs very little **once they exist.**</p>
@@ -229,6 +198,56 @@
 <p><strong>What it needs:</strong> to be built <strong>last</strong>. Cheapest of the nine once the others exist, most expensive if attempted first.</p>
 <hr>
 <hr>
+<h2 id="the-best-thing-about-this-park-is-already-written-down">The best thing about this park is already written down</h2>
+<p><strong>Two hundred and twenty-nine plants already carry a one-line story</strong>, and behind those sit <strong>948 further facts</strong>. Somebody has already done the hard part. A tour writer&#x27;s job here is choosing and sequencing, not researching.</p>
+<p>To show what that means, eight of them, untouched:</p>
+<blockquote><strong>Silk Floss Tree</strong> — The conical spines on this trunk are thought to be armor against giant ground sloths and gomphotheres — South American megafauna long since extinct.</blockquote>
+<blockquote><strong>Live Oak</strong> — British cannonballs bounced off the Live Oak hull of the USS Constitution in 1812. That is how she earned the name Old Ironsides.</blockquote>
+<blockquote><strong>Kentia Palm</strong> — Potted Kentias lined the first-class Palm Court of the Titanic. In the wild they grow on one island in the Tasman Sea and nowhere else on Earth.</blockquote>
+<blockquote><strong>Coontie</strong> — Nabisco once ground twenty tons of coontie root a day into animal crackers, until the FDA banned it in 1925. It is also the sole host of the Atala butterfly.</blockquote>
+<blockquote><strong>Amazon Lily</strong> — Handed down through the Baden family since the 1880s — the most historically precious plant in the park, kept alive by bulb division for a century and a half.</blockquote>
+<blockquote><strong>Ouricury Palm</strong> — This palm&#x27;s nut makes up about ninety-five percent of the entire diet of Lear&#x27;s Macaw. By 1990 fewer than sixty of those parrots were left alive.</blockquote>
+<blockquote><strong>Alligator Flag</strong> — The name is literal. When an alligator moves through a stand of it, the tall leaves wave along its path — and trackers read the flag.</blockquote>
+<blockquote><strong>Blue Latan Palm</strong> — Its only wild population clings to Round Island, about a square mile of volcanic rock off Mauritius, where goats and rabbits nearly finished it off.</blockquote>
+<p><strong>Every plant listed in every tour below comes with a line like these</strong>, printed in full in the tables. Read them for pleasure before deciding anything — the tour will half-choose itself.</p>
+<hr>
+<h2 id="a-format-has-been-started-worth-building-on">A format has been started — worth building on</h2>
+<p><strong>The three written tours are beta.</strong> They were made quickly, by whoever was willing, to prove the idea was worth pursuing — and they proved it. They are not a finished house style, and they have not been through a branding pass or checked against each other for consistency.</p>
+<p><strong>But they arrived at something that works</strong>, and the next person should start from it rather than from a blank page. Every stop is <strong>number · name · a four-word subtitle · a direction line · two or three sentences.</strong></p>
+<blockquote><strong>1  Staghorn Fern — The Plant That Lives in Trees</strong> <em>Paver path through the trellis, elevated on your left</em> This whole colony clings to a tree trunk with no soil at all…</blockquote>
+<blockquote><strong>1  Century Plant — Three Lives</strong> <em>Crushed shell path, Cactus &amp; Succulent Garden</em> The Century Plant does NOT live 100 years — that&#x27;s a myth. It grows for 10 to 30 years, building up energy the whole time. Then one day it shoots a flower stalk into the sky, taller than a grown-up, blooms once, and dies. One chance. That&#x27;s it. <strong>YOUR CHALLENGE</strong> …</blockquote>
+<p><strong>Four things worth keeping from them:</strong></p>
+<ol>
+<li><strong>Open with &quot;Can you find them all?&quot;</strong> and a <em>Before You Start</em> page listing every stop.</li>
+<li><strong>&quot;No phone required — keep it in your pocket and enjoy the park around you.&quot;</strong> A deliberate stance, and the right one. Do not design a tour that needs an app.</li>
+<li><strong>The Kids tour gives each stop a YOUR CHALLENGE.</strong> That device is doing a lot of work and should travel to other tours.</li>
+<li><strong>The subtitles are the craft.</strong> *Three Lives. The Cactus That Climbs. Right Plant, Right Place. The Idea, Grown Up.* Four words that tell you why to stop walking.</li>
+</ol>
+<hr>
+<hr>
+<h2 id="ground-rules">Ground rules</h2>
+<p><strong>Say one thing per stop.</strong> The visitor is standing in the sun. One fact well chosen is remembered; four are not.</p>
+<p><strong>Lead with the thing, not the taxonomy.</strong> *&quot;British cannonballs bounced off the hull of the USS Constitution — that&#x27;s how it got the name Old Ironsides, and this is the tree&quot;<em> beats </em>&quot;Quercus virginiana, family Fagaceae.&quot;*</p>
+<p><strong>Never scold the visitor or the sign.</strong> Especially on tour 6. Common names are legitimate usage, often centuries old.</p>
+<p><strong>Do not promise a plant will be doing anything.</strong> Flowering, fruiting and bearing caterpillars are conditional. Write stops that work when nothing is happening; treat a bloom as a bonus.</p>
+<p><strong>Safety notes go in the script, not just on the page</strong> — particularly with children present.</p>
+<p><strong>Credit groups, not children.</strong> &quot;The Bright Futures students&quot;, &quot;the Manatee County Garden Club&quot; — never a student&#x27;s full name.</p>
+<hr>
+<hr>
+<h2 id="this-is-a-snapshot-of-a-moving-train">⚠ This is a snapshot of a moving train</h2>
+<p>**Everything counted in this document was true on 1 September 2026 and will be out of date by the time you use it.** The park is still working through its own collection — finding plants, identifying them, photographing them, marking them on the map and writing them up. **This is not a finished inventory. It is a snapshot of an ongoing job, and the collection described here is the smallest it will ever be.**</p>
+<p>Where things stood the day this was written:</p>
+<div class="tw"><table><tbody><tr><td>Plants with a finished page</td><td><strong>232</strong></td></tr><tr><td>Animals with a finished page</td><td><strong>91</strong></td></tr><tr><td>Known plants still to be written up</td><td><strong>522</strong></td></tr><tr><td>Plants marked on the map</td><td><strong>217</strong></td></tr></tbody></table></div>
+<p><strong>That backlog is the point.</strong> Over five hundred plants are known to be here and simply have not been written up yet. <strong>Palms and rare fruit are where the most is still coming in</strong> — seventy-seven palms and cycads are waiting to be written up, and the rare fruit grove gains new plants regularly. Both feed tours 4 and 5 directly.</p>
+<h3>So check with us before you finalise a tour</h3>
+<ul>
+<li><strong>The website is always the current version.</strong> If this document and the site disagree, the site is right.</li>
+<li><strong>Ask before you print.</strong> A quick word will surface what has been added, what has moved and what has died since — none of which a document can know.</li>
+<li><strong>Ask about the map especially.</strong> Plants get their locations pinned week by week, and a plant with no location when this was written may have a precise one now, which changes what routes are possible.</li>
+</ul>
+<p><strong>None of this is a reason to wait.</strong> It is a reason to treat the tables below as a starting shortlist rather than a closed set, and to ask &quot;what else has turned up?&quot; before committing a route to print.</p>
+<hr>
+<hr>
 <h2 id="ideas-to-flesh-out-placeholders-not-proposals">Ideas to flesh out — placeholders, not proposals</h2>
 <p><strong>Blooming tour.</strong> The obvious one, and the hardest to maintain: it would have to be updated constantly, and <code>bloom_months</code> in the database is free-text prose, so nothing can query it by month. Needs a data change or a weekly walk.</p>
 <p><strong>Creatures tour.</strong> 91 animals already have a page, from an Atlantic blue crab in a pond to a spider that spits venom. Blocked on knowing <strong>what gets seen when</strong> — the seasonality is not recorded yet. Worth building once it is.</p>
@@ -240,13 +259,12 @@
 <div class="tw"><table><tbody><tr><td>Finished plant pages</td><td><strong>232</strong>, each with a one-line story and about <strong>4 further facts</strong></td></tr><tr><td>Finished animal pages</td><td><strong>91</strong></td></tr><tr><td>Individual facts written across the collection</td><td><strong>948</strong></td></tr><tr><td>Held for each plant</td><td>origin · size · growing conditions · wildlife value · how it reproduces · seasonality · whether it is edible or toxic · safety notes</td></tr><tr><td>Photographs</td><td>credited to the volunteers who took them</td></tr><tr><td>Location data</td><td><strong>latitude and longitude for hundreds of individual plants</strong>, by area, with the maps to match</td></tr></tbody></table></div>
 <p><strong>When the team is ready to produce materials, the park can hand over the whole database</strong> — including the location data and maps, so a route can be walked and measured rather than guessed at, and so a printed brochure can show a visitor exactly where to stand.</p>
 <p><strong>None of that is needed to start.</strong> A tour can be chosen from the tables in this document, walked on a Saturday morning, and run off a printed sheet the following week. **The database is there for when somebody wants to make it beautiful.**</p>
-</main>
-<footer>
-  <div class="rule"></div>
+</div></section>
+<footer><div class="wrap">
   Palma Sola Botanical Park &middot; Bradenton, Florida &middot;
   <a href="https://palmasolabp.org">palmasolabp.org</a><br>
-  This is a working document and is updated as the collection grows.
-  Print it from your browser if you would like a PDF.
-</footer>
+  A working document, updated as the collection grows.
+  Print from your browser if you would like a PDF.
+</div></footer>
 </body>
 </html>
