@@ -304,6 +304,34 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 <script>
 const PROJECT="palma-sola-botanical-park";
 const API="https://api.inaturalist.org/v1/observations";
+
+// SCOPE — a circle round the park, NOT the iNat project. Changed 2026-09-01.
+//
+// WHY. An observation whose coordinates land outside the park boundary is dropped
+// from the project entirely: it does not appear in the wrong place, it does not
+// appear at all. On the 26 Aug walkabout that silently removed 3 of 77 records,
+// and it is how the Pagoda Flower sat unnoticed as "died" for three months while
+// Randy's own photo of it in flower existed. A radius has no boundary to fall out of.
+//
+// It also makes off-site walks work. Randy, 2026-09-01: "if i do a walkabout for
+// palms outside park, definitely the space will help." A project query can never
+// show a walk down the street; this can.
+//
+// WHY 0.5 km AND NOT MORE. Measured over the last 120 days — days reaching the
+// 11-observation threshold: project 17, at 0.25 km 17, at 0.5 km 17, at 1.0 km 22.
+// The five extra days at 1 km are other people's outings, several with ZERO park
+// records. So 0.5 km is free: no false walkabout day, and wide enough for every
+// drift found (worst was 82 m outside). On real walkabout days it added 1-2
+// observations, nearly all Randy's own that had fallen out.
+//
+// verifiable=any is REQUIRED. A planted collection is nearly all cultivated, and
+// cultivated is casual grade, which the default view hides.
+const PARK_LAT=27.51346, PARK_LNG=-82.65989;
+const KM=(()=>{
+  const v=parseFloat(new URLSearchParams(location.search).get("km"));
+  return (isFinite(v)&&v>0&&v<=5)?v:0.5;      // ?km=1.5 for a walk beyond the park
+})();
+const SCOPE="lat="+PARK_LAT+"&lng="+PARK_LNG+"&radius="+KM+"&verifiable=any";
 // Plants AND wildlife. Randy, 2026-08-30: "I know I have published common gallinule and
 // brown anole. Is there a chance you're only checking plant_signage?" — yes, there was.
 // 91 published wildlife records were missing from the published set, so every animal the
@@ -344,7 +372,7 @@ function whoOf(o){
 async function fetchAll(day){
   let page=1,out=[];
   while(page<=8){
-    const url=API+"?project_id="+PROJECT+"&d1="+day+"&d2="+day+
+    const url=API+"?"+SCOPE+"&d1="+day+"&d2="+day+
       "&per_page=200&page="+page+"&order_by=observed_on&order=desc&_="+Date.now();
     const r=await fetch(url,{cache:"no-store"});
     if(!r.ok) throw new Error("iNaturalist returned "+r.status);
@@ -403,8 +431,8 @@ function fillPicker(rows){
   });
   sel.title=rows.length
     ? rows.length+" group walkabouts: "+WALK_MIN_OBS+"+ observations in a day, from "+
-      WALK_MIN_PEOPLE+" or more people, uploaded the same day"
-    : "No group walkabouts found in the last four months";
+      WALK_MIN_PEOPLE+" or more people, uploaded the same day, within "+KM+" km of the park"
+    : "No group walkabouts found in the last four months within "+KM+" km of the park";
 }
 
 async function loadPriorWalkabouts(){
@@ -420,8 +448,8 @@ async function loadPriorWalkabouts(){
   const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
   const done=()=>{ if(busy.parentNode) busy.remove(); };
   try{
-    const hr=await fetch("https://api.inaturalist.org/v1/observations/histogram?project_id="+
-      PROJECT+"&date_field=observed&interval=day&d1="+iso(from)+"&d2="+iso(now)+
+    const hr=await fetch("https://api.inaturalist.org/v1/observations/histogram?"+
+      SCOPE+"&date_field=observed&interval=day&d1="+iso(from)+"&d2="+iso(now)+
       "&_="+Date.now(),{cache:"no-store"});
     if(!hr.ok){ done(); return; }
     const days=((await hr.json()).results||{}).day||{};
@@ -436,9 +464,9 @@ async function loadPriorWalkabouts(){
     const probe=async([day,n])=>{
       try{
         const [orr,sr]=await Promise.all([
-          fetch("https://api.inaturalist.org/v1/observations/observers?project_id="+
-            PROJECT+"&d1="+day+"&d2="+day+"&_="+Date.now(),{cache:"no-store"}),
-          fetch(API+"?project_id="+PROJECT+"&d1="+day+"&d2="+day+
+          fetch("https://api.inaturalist.org/v1/observations/observers?"+
+            SCOPE+"&d1="+day+"&d2="+day+"&_="+Date.now(),{cache:"no-store"}),
+          fetch(API+"?"+SCOPE+"&d1="+day+"&d2="+day+
             "&created_d1="+day+"&created_d2="+day+"&per_page=0&_="+Date.now(),{cache:"no-store"})
         ]);
         if(!orr.ok||!sr.ok) return null;
@@ -505,8 +533,8 @@ async function taxaBefore(day){
   try{
     let page=1;
     while(page<=4){
-      const r=await fetch("https://api.inaturalist.org/v1/observations/species_counts?project_id="+
-        PROJECT+"&d2="+before+"&per_page=500&page="+page+"&_="+Date.now(),{cache:"no-store"});
+      const r=await fetch("https://api.inaturalist.org/v1/observations/species_counts?"+
+        SCOPE+"&d2="+before+"&per_page=500&page="+page+"&_="+Date.now(),{cache:"no-store"});
       if(!r.ok) break;
       const j=await r.json(), res=j.results||[];
       res.forEach(x=>{ if(x.taxon&&x.taxon.id) seen.add(x.taxon.id); });
