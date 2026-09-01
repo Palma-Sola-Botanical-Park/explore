@@ -163,7 +163,16 @@ TABS = [
 
 # Required fields for promotion readiness (per kingdom)
 # Plants use "botanical_name"; wildlife uses "scientific_name"
-PLANT_REQUIRED = ["common_name", "botanical_name", "more_information"]
+# "teaser" added 2026-09-01. It began as SIGN copy — "the hook, under the photo"
+# in make_signs.py, capped at 175 characters — and later took a second job in the
+# quick-view drawer on nature.html. A plant published without one ships a
+# hookless sign and an empty drawer.
+# ⚠ Not in WILDLIFE_REQUIRED — YET. Wildlife is never signed, so the field was
+#   never built for it: wildlife_publisher.py has no teaser and wildlife.json has
+#   no teaser key. But the wildlife rework (Low #6) brings a new page and a new
+#   index with a quick view, and that quick view needs a short blurb. Add it here
+#   when the publisher and the index can actually produce one — not before.
+PLANT_REQUIRED = ["common_name", "botanical_name", "more_information", "teaser"]
 WILDLIFE_REQUIRED = ["common_name", "scientific_name", "animal_group"]
 
 

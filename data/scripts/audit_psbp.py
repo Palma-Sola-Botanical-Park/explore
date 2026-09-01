@@ -203,6 +203,33 @@ def main():
         def _words(t):
             return set(re.sub(r"[^a-z0-9 ]", " ", (t or "").lower()).split())
 
+        # A published PLANT with no teaser ships a sign with no hook and an
+        # empty drawer on nature.html.
+        #
+        # PLANTS ONLY — FOR NOW. Randy, 2026-09-01: "teaser originated with
+        # signage. Wildlife will have no sign. Then we decided to use it in
+        # index." The field was born as sign copy and only later took a second
+        # job in the browse index. Wildlife is never signed, so it never grew
+        # one: wildlife_publisher.py has no teaser, and wildlife.json has no
+        # teaser key.
+        #
+        # ⚠ THIS IS A "NOT YET", NOT A "NEVER". Randy, same day: "soon wildlife
+        #   will get a new published page, and a new index with a quick view and
+        #   the quick view needs a good short blurb." That is Low #6 — the
+        #   wildlife publisher rework. When it lands, wildlife needs a short
+        #   blurb of its own and this check should cover it.
+        #
+        # Order matters: the publisher and wildlife.json need the field FIRST.
+        # Turning this on before then would flag all 91 published animals for
+        # lacking something their pipeline cannot yet produce.
+        for sp in plants:
+            if sp.get("status") != "html":
+                continue
+            if not (sp.get("teaser") or "").strip():
+                add("CONTENT", "WARN",
+                    f"{sp['id']} {sp.get('common_name')}: published with no teaser — "
+                    f"the sign has no hook and the quick-view drawer opens empty")
+
         for sp in plants + wild:
             if sp.get("status") != "html":
                 continue
@@ -572,21 +599,30 @@ def main():
     if run("TAXA"):
         sci = defaultdict(list)
         tax = defaultdict(list)
-        for s in plants + wild + research:
-            name = (s.get("botanical_name") or s.get("scientific_name") or "").strip().lower()
-            if name:
-                sci[name].append((s["id"], s.get("status")))
-            if s.get("inat_taxon_id"):
-                tax[s["inat_taxon_id"]].append(s["id"])
+        # Track WHICH file each record came from. A duplicate between two
+        # research stubs is housekeeping; one between a published page and a
+        # research stub is a different problem, and the message should say so.
+        for src, group in (("plant_signage", plants),
+                           ("wildlife_signage", wild),
+                           ("research", research)):
+            for s in group:
+                who = (s["id"], s.get("common_name") or "?", s.get("status"), src)
+                name = (s.get("botanical_name") or s.get("scientific_name") or "").strip().lower()
+                if name:
+                    sci[name].append(who)
+                if s.get("inat_taxon_id"):
+                    tax[s["inat_taxon_id"]].append(who)
+
+        def _fmt(recs):
+            return "; ".join(f"{i} {nm} ({st} in {src}.json)" for i, nm, st, src in recs)
+
         for name, recs in sci.items():
             if len(recs) > 1:
-                add("TAXA", "WARN",
-                    f"{name!r} appears {len(recs)}x: "
-                    f"{', '.join(f'{i} ({st})' for i, st in recs)}")
+                add("TAXA", "WARN", f"{name!r} appears {len(recs)}x — {_fmt(recs)}")
         for tid, recs in tax.items():
             if len(recs) > 1:
                 add("TAXA", "WARN",
-                    f"inat_taxon_id {tid} shared by {recs}")
+                    f"inat_taxon_id {tid} used by {len(recs)} records — {_fmt(recs)}")
 
     # ── META ──────────────────────────────────────────────────────────────
     if run("META"):

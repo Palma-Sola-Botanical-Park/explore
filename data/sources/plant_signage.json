@@ -5,7 +5,7 @@
     "species_count": 264,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-09-01T17:09:26",
+    "updated": "2026-09-01T17:58:48",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -22028,7 +22028,6 @@
         "genus": "Phoenix",
         "species": "sylvestris"
       },
-      "category": "Tropical and Exotic Palms",
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "html",
@@ -22817,12 +22816,13 @@
       "inat_taxon_id": 167793,
       "sign_level": "Species",
       "taxonomy": {
-        "family": "Arecaceae"
+        "family": "Arecaceae",
+        "genus": "Rhapidophyllum",
+        "species": "hystrix"
       },
-      "category": "",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": true,
       "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1+NonEstPalms).",
       "native_notes": "Confirmed native by FNPS, the Atlas of Florida Plants (USF), Wikipedia, Missouri Botanical Garden, and NC State Extension — native range is coastal SE South Carolina south through Florida and west to Mississippi and Alabama; no contest in any source.",
@@ -22831,8 +22831,8 @@
       "rare_fruit": false,
       "form": "Palm & Cycad",
       "safety_note": [
-        "The spines at the base of this plant are the primary hazard — rigid, black, and up to ten inches long, they are needle-sharp and genuinely dangerous. Keep children and pets away from the base, and maintenance staff should treat this plant with the same respect as a cactus.",
-        "The fruits carry a strong fetid odor that discourages any interest in eating them, and no toxicity to people, dogs, or cats has been documented; the plant is otherwise harmless."
+        "The rigid black spines around the base are the primary hazard — needle-sharp and capable of causing serious puncture wounds. Do not reach into the centre of the clump, and keep children and pets from playing around the plant. Take particular care when walking or working close to it.",
+        "No toxicity from ingestion has been documented for people or dogs."
       ],
       "butterfly": {
         "larval_food": false,
@@ -22845,83 +22845,81 @@
         "Porcupine Palm"
       ],
       "quick_hits": [
-        "This is the most cold-hardy palm on Earth. Established plants have survived temperatures of -9°F with zero protection and zero damage — a staggering feat for a plant that looks as though it belongs in a jungle.",
-        "The base of this palm is armored with rigid, jet-black spines up to ten inches long. They are not decorative — they are genuinely dangerous, and they are the reason bears can smell the fruits but cannot easily reach the growing point.",
-        "Rhapidophyllum hystrix is the only member of its genus — a monotypic genus found nowhere outside the southeastern United States. There is no close living relative anywhere on Earth.",
-        "The flowers are pollinated almost entirely by tiny weevils (Notolomus sp.) drawn in by a heavy, musky scent. The ripe fall fruits smell genuinely terrible to people, but that odor is deliberate: it is an evolutionary signal aimed precisely at bears, raccoons, and large birds, who eat the fruits and carry the seeds away."
+        "The Needle Palm is among the most cold-hardy palms in the world. One specialist nursery recorded an established plant surviving -9°F with no protection and no damage — extraordinary for a palm native to the subtropical Southeast.",
+        "What looks like a shrub is a single palm with almost no trunk. It spreads by sending up new shoots from its own base, so a large clump is usually one plant that has been widening slowly for decades.",
+        "Rhapidophyllum hystrix is the only member of its genus — a monotypic genus found nowhere outside the southeastern United States.",
+        "Tiny weevils in the genus Notolomus are thought to be the palm's principal pollinators, drawn to the flowers by their musky scent. In fall, the ripe fruits smell genuinely terrible to people — but bears and other mammals eat them willingly and carry the seeds away."
       ],
       "origin": [
-        "The Needle Palm is native to the southeastern coastal plain from Beaufort County, South Carolina, south through Georgia and peninsular Florida — reaching as far south as Highlands and Hardee counties — and west through Alabama to south-central Mississippi. It does not occur in the Caribbean or Central America; its range is strictly North American.",
-        "In Florida it grows in hydric hammocks, rich bottomland forests, slope forests, and seepage swamps, most commonly where limestone lies near the surface. It is officially classified as a facultative wetland plant, meaning it turns up most often in wet habitats but is not confined to them.",
-        "Within the park's latitude it is a genuinely local native, common in appropriate north-Florida habitats and well-suited to Central Florida landscapes."
+        "The Needle Palm is native to the southeastern United States, from South Carolina south through Georgia and Florida and west through Alabama to Mississippi. In Florida it grows in rich, moist woodlands, hydric hammocks, bottomland forests, slope forests, and seepage swamps, most commonly where limestone lies near the surface.",
+        "This is one of Florida's native palms, though its natural Florida range is concentrated farther north and inland than Palma Sola. It is officially classified as a facultative wetland plant, meaning it turns up most often in wet habitats but is not confined to them."
       ],
       "more_information": [
-        "The Needle Palm is extraordinarily slow-growing and long-lived — the Florida Native Plant Society notes a likely lifespan of 50 years or more. An established clump several feet wide may represent many decades of quiet growth, and once it is settled in, it is essentially immovable: the dense, spiny base makes transplanting a large specimen a formidable undertaking.",
-        "The species name hystrix is the ancient Greek word for porcupine — the same root that gives us the alternate common name Porcupine Palm. The genus name Rhapidophyllum combines rhaphis (needle) and phyllon (leaf), a reference to how the leaf segments divide, echoing a similarity to Asian fan palms in the genus Rhapis.",
-        "In the wild, the spiny clump of a mature Needle Palm functions as a nature fortress. Ground-nesting birds, small mammals, and native reptiles shelter and nest deep inside it because larger predators simply cannot get past the spines. The inflorescences are tucked within this same fortress — accessible only to the small weevils that pollinate them.",
-        "Because wild Needle Palms are so slow to mature, they have historically been targeted by collectors who dig them from natural populations to sell into the nursery trade. Florida lists the species as commercially exploited, and sourcing from nursery-propagated stock is the responsible choice. The species does propagate from seed, though germination takes six months to a year."
+        "The Needle Palm is extraordinarily slow-growing and long-lived — the Florida Native Plant Society cites a likely lifespan of more than 50 years. A large, established clump may represent many decades of quiet growth, and the dense, spiny base makes transplanting a mature specimen a formidable undertaking.",
+        "The species name hystrix is the ancient Greek word for porcupine — the same root that gives us the alternate common name Porcupine Palm. The genus name Rhapidophyllum combines rhaphis (needle) and phyllon (leaf), a nod to the leaf segments' similarity to those of Asian fan palms in the genus Rhapis.",
+        "Florida lists the Needle Palm as a commercially exploited native plant because wild specimens have been dug from natural populations for the nursery trade. Florida regulates the harvest of commercially exploited plants, and nursery-propagated stock is the responsible choice."
       ],
       "wildlife_value": [
-        "The dense, spiny clump of a mature Needle Palm functions as one of the better wildlife fortresses in the Florida understory. Small mammals, ground-nesting birds, and reptiles shelter and nest inside it precisely because the spines deter most predators. The thicket is impenetrable to deer and nearly so to everything larger than a raccoon.",
-        "Pollination is handled almost entirely by small weevils in the genus Notolomus, which are lured to the flowers by a musky scent and rewarded with pollen and flower tissue. In fall, the ripe reddish-brown drupes feed mammals — including bears — along with large birds. The fruit's strong odor, unappealing to people, appears to be an evolutionary signal aimed directly at these dispersers."
+        "Dense clumps provide shelter for small animals, ground-nesting birds, and reptiles. The spiny base deters most predators and makes the interior of a large clump one of the more secure retreats in the Florida understory.",
+        "In fall the reddish-brown fruits are eaten by mammals, including black bears, and by birds, which carry the seeds away from the parent clump."
       ],
       "reproduction": {
         "blocks": [
           {
             "label": "Reproduction",
-            "text": "Reproduces by seed and, vegetatively, by suckering from the base — though suckering plays a minor role compared to seed. The species is typically dioecious: male and female flowers are borne on separate plants. Pollination is carried out by weevils (Notolomus sp.) attracted by a musky floral scent. Seeds germinate slowly, typically in six to twelve months."
+            "text": "In wild populations, the Needle Palm spreads primarily by producing new shoots from the base — a large clump may therefore be a single, slowly expanding plant rather than many unrelated seedlings. Seed reproduction also occurs, though germination is slow, typically taking six to twelve months. Male and female flowers are usually found on separate plants, although both types of inflorescence can occur on a single individual."
           },
           {
             "label": "Flowers",
-            "text": "Small, yellowish-brown, three-petaled, and borne in dense clusters that emerge from within the spiny leaf sheaths — effectively hidden from view. Flowers appear in spring to early summer and are not showy. Both male and female inflorescences produce the musky scent that attracts beetle pollinators."
+            "text": "Small, yellowish-brown, borne in dense clusters that emerge from within the spiny leaf sheaths — effectively hidden from view. They appear in spring to early summer and carry a musky scent."
           },
           {
             "label": "Fruit",
-            "text": "Female plants produce small, roundish to oval drupes about one inch long, covered in brownish woolly hairs and ripening to a reddish-brown in fall. The fruit pulp has a strong, fetid odor. Each drupe contains a single seed."
+            "text": "Female plants produce small roundish to oval drupes about an inch long, covered in brownish woolly hairs and ripening to reddish-brown in fall. Each holds a single seed."
           },
           {
             "label": "Leaves",
-            "text": "Fan-shaped (palmate), glossy dark green above and pale silvery-green beneath, reaching up to 30 inches across and divided into 5 to 12 narrow, stiff segments. Petioles are unarmed — the spines are on the leaf sheaths below, not on the leaf stems themselves."
+            "text": "Fan-shaped (palmate), glossy dark green above and pale silvery-green beneath, reaching up to 30 inches across and divided deeply into many narrow, stiff segments."
           },
           {
             "label": "Stems and Spines",
-            "text": "Essentially stemless or very short-stemmed; what looks like a trunk is a dense mass of fibrous old leaf bases. From those bases emerge the defining feature: rigid, black, needle-like spines up to ten inches long that project outward and slightly upward, armoring the plant's center against virtually any intruder."
+            "text": "Essentially stemless or very short-stemmed; what looks like a trunk is a dense mass of fibrous old leaf bases. The spines emerge from those bases, projecting outward from the plant's centre."
           }
         ],
-        "what_to_look_for": "Start at the base: the long black needles projecting from the fibrous matting are the plant's signature, and they are worth a close look — just not too close. Notice that while the base is formidably armed, the long stems holding the fan-shaped fronds above are completely smooth and free of any teeth or barbs. Look up into those fronds: shiny, deep green on top, pale and slightly silvery-green underneath, each leaf divided deeply almost to its center. Then look back down, deep inside the needle cluster — in spring you may spot tight, fuzzy bunches of yellowish-brown flowers. In fall, look for small, fuzzy reddish-brown fruits tucked safely away from anything that cannot squeeze past the spines. If you find them, you are looking at fruits that weevils, not bees, helped to create."
+        "what_to_look_for": "From a safe distance, look toward the center of the clump near ground level: the long black needles projecting from the fibrous matting are the plant's signature, and they are worth a close look — but do not reach in. Notice that while the base is heavily armed, the long stems holding the fan-shaped fronds above are completely smooth and free of any teeth or barbs. Look up into those fronds: shiny, deep green on top, pale and distinctly silvery-green underneath, each leaf divided deeply almost to its center. Then look back toward the base, deep inside the needle cluster — in spring you may spot tight, fuzzy bunches of yellowish-brown flowers. In fall, look for small, fuzzy reddish-brown fruits tucked safely away from anything that cannot squeeze past the spines."
       },
       "seasonality": {
         "bloom_months": "spring to early summer",
-        "bloom_description": "Small, yellowish-brown, three-petaled flowers in dense clusters hidden within the spiny leaf sheaths; not showy, but fragrant enough to attract beetle pollinators.",
+        "bloom_description": "Small, yellowish-brown flowers in dense clusters hidden within the spiny leaf sheaths. Not showy, and easy to miss entirely.",
         "leaf_behavior": "evergreen",
         "fruiting_months": "fall",
-        "notes": "Only female plants fruit, and only when a pollen-producing male is present nearby. The fibrous leaf bases and spine clusters persist year-round and are the plant's most visible feature in any season."
+        "notes": "Male and female flowers are usually on separate plants, though both can occur on one individual. The fibrous leaf bases and spine clusters persist year-round and are the plant's most visible feature in any season."
       },
       "size": {
-        "height": "6 to 8 feet at maturity (UF/IFAS); occasionally to 10 feet",
-        "spread": "6 to 8 feet — slowly expanding clump",
+        "height": "3 to 6 feet tall at maturity (occasionally to 8 feet)",
+        "spread": "4 to 8 feet — slowly expanding clump",
         "habit": "shrubby, clumping, nearly stemless; multiple crowns form a dense rounded mass",
-        "growth_rate": "slow; an established clump may represent many decades of growth",
-        "texture": "medium-coarse — glossy fan leaves with a bold, clean look"
+        "growth_rate": "slow; an established clump may represent many decades of growth"
       },
       "growing_conditions": {
         "light": "part shade to full shade preferred; tolerates full sun with adequate moisture",
-        "soil_tolerances": "moist to wet; tolerates clay, loam, and sand; performs best in rich soils with good organic content; tolerates moderate flooding",
-        "drought_tolerance": "moderate once established, but prefers consistent moisture; not a xeric plant",
-        "spacing": "allow 6 to 8 feet — the clump expands slowly but is nearly impossible to move once large; site it carefully"
+        "soil_tolerances": "naturally associated with moist, rich soils; tolerates clay, loam, and sand; tolerates moderate flooding",
+        "drought_tolerance": "moderate once established, but prefers consistent moisture; not a xeric plant"
       },
       "edibility": {
-        "level": "Green"
+        "level": "Yellow",
+        "detail": "The fruit is not eaten by people — a thin woolly drupe around a single seed, with a strong fetid odour. Wildlife takes it readily; nobody else does."
       },
       "toxicity": {
         "level": "Green",
-        "dogs_level": "Green"
+        "people": "No toxicity from ingestion has been documented. The hazard from this palm is physical: the needle-sharp spines at the base.",
+        "dogs_level": "Green",
+        "dogs": "No toxicity to dogs documented."
       },
       "other_notes": [
-        "Scientists believe the Needle Palm's extreme cold tolerance is a kind of genetic memory from ancient glacial periods, when a cooler climate forced the plant's ancestors to develop the internal chemistry needed to survive bitter cold.",
-        "The range later contracted southward as temperatures warmed, but the cold-hardiness never disappeared — leaving us with a palm that looks fully tropical yet laughs at a hard freeze.",
-        "At Palma Sola Botanical Park, this species is at home in more than one sense: it is a true Florida native, it thrives in the warm, humid conditions of Manatee County, and it needs almost no intervention once established. It is the kind of plant that rewards patience."
-      ]
+        "At Palma Sola, set the Needle Palm beside the other palms in the collection: fan-shaped leaves and a low spiny clump against tall smooth trunks. It is the only palm here that never rises to meet you."
+      ],
+      "teaser": "Those black needles at the base can be a foot long. Above them the leaf stems are completely smooth — the palm arms its centre and nothing else."
     },
     {
       "id": "PSBP-00432",
