@@ -47,6 +47,7 @@ from psbp_common import (
     REPO, write_json_atomic, display_name, build_credit_line,
     load_json, PHOTO_CREDITS_JSON, resolve_hero_credit, CC_LICENSES,
     derive_animal_group, check_animal_group, VALID_ANIMAL_GROUPS,
+    proper_common_name,
 )
 
 # Import the proven publisher modules for HTML generation + index updates.
@@ -1757,7 +1758,11 @@ def add_discovered_to_research(payload):
     """
     taxon_id = payload.get("taxon_id")
     sci = (payload.get("scientific_name") or "").strip()
-    common = (payload.get("common_name") or "").strip()
+    # Title-case on the way in. iNat hands back its own casing ("aloe vera",
+    # "century plants"), and correcting those by hand in the JSON afterwards is
+    # a real chore when a batch of species is being added. Hyphenated names are
+    # returned untouched — see proper_common_name().
+    common = proper_common_name(payload.get("common_name") or "")
     iconic = (payload.get("iconic") or "").strip().lower()
     obs_count = payload.get("obs_count")
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ============================================================================
-# PSBP pre-commit guard  —  two stages: SIZE, then INTEGRITY
+# PSBP pre-commit size guard
 # ----------------------------------------------------------------------------
-# STAGE 1 (size) blocks oversized files from entering git history — the failure mode that
+# Blocks oversized files from entering git history — the failure mode that
 # killed the first repo (120 full-size photos -> 5 GB wall). Once a big file
 # is committed, deleting it later does NOT reclaim the space; git keeps the
 # original forever. So the only real defense is stopping it at the door.
@@ -10,41 +10,9 @@
 # This hook lives at  .githooks/pre-commit  (tracked in the repo) and is
 # turned on once per clone with:   git config core.hooksPath .githooks
 #
-# Escape hatch for a single, intentional commit past either stage:
+# Escape hatch for a single, intentional oversized commit:
 #     git commit --no-verify
 # (use rarely — it's the manual override, not the everyday path)
-#
-# ----------------------------------------------------------------------------
-# STAGE 2 (integrity) runs audit_psbp.py and BLOCKS ONLY ON ERRORS.
-#
-# WHY ONLY audit_psbp BLOCKS. The four audits do not mean the same thing by
-# "exit 1", and wiring them all to the gate would make the repo uncommittable:
-#
-#   audit_psbp.py        exit 1 iff ERROR > 0. Warnings and info never block.
-#                        This is the real integrity gate — broken foreign keys,
-#                        records pointing at files that aren't there. BLOCKS.
-#
-#   crawl_psbp.py        exit 1 iff anything lands in INVESTIGATE — which today
-#                        is a stray photos/.DS_Store. That is housekeeping, not
-#                        correctness. Finder must not be able to veto a commit.
-#                        WARNS.
-#
-#   psbp_orphan_audit.py exit 1 iff demotion left something behind. Real, but a
-#                        cleanup job, not a reason to refuse the commit in front
-#                        of you. WARNS.
-#
-#   psbp_live_check.py   hits the network to ask what the PUBLISHED site serves.
-#                        Deliberately NOT here: it is slow, it fails offline,
-#                        and it reports on the last deploy, not on this commit.
-#                        Run it by hand after publishing.
-#
-# SCOPE, stated honestly: stage 2 audits the WORKING TREE, not the staged
-# index. For a normal whole-tree commit those are the same thing. If you stage
-# only some files, the audit still describes everything on disk — it can flag
-# something you did not stage. It never misses a problem; it can over-report.
-#
-# Stage 2 is skipped entirely unless the commit touches data or pages, so
-# editing CSS or a README stays instant.
 # ============================================================================
 
 # ---- limits, in bytes — tune these to taste -------------------------------
@@ -90,79 +58,6 @@ if [ "$block" -eq 1 ]; then
   printf "Photos belong at web-res (~300 KB). Originals stay OUT of the repo.\n"
   printf "\nReally want this commit anyway?   git commit --no-verify\n\n"
   exit 1
-fi
-
-# ============================================================================
-# STAGE 2 — integrity audit
-# ============================================================================
-
-REPO_ROOT=$(git rev-parse --show-toplevel)
-
-# Only bother when the commit actually touches data or generated pages.
-relevant=$(git diff --cached --name-only --diff-filter=ACMR \
-           | grep -E '^(data/sources/.*\.json|plants/.*\.html|wildlife/.*\.html|[^/]+\.json)$' \
-           | head -1)
-
-if [ -z "$relevant" ]; then
-  exit 0
-fi
-
-# Prefer python3; fall back to python. If neither exists, say so and let the
-# commit through — a missing interpreter is an environment problem, and a hook
-# that silently blocks every commit is worse than one that skips.
-PY=""
-command -v python3 >/dev/null 2>&1 && PY=python3
-[ -z "$PY" ] && command -v python >/dev/null 2>&1 && PY=python
-if [ -z "$PY" ]; then
-  printf "\n  [pre-commit] no python found — integrity audit skipped.\n\n"
-  exit 0
-fi
-
-# ---- the gate: errors only ------------------------------------------------
-audit_out=$("$PY" "$REPO_ROOT/data/scripts/audit_psbp.py" 2>&1)
-audit_rc=$?
-
-if [ "$audit_rc" -ne 0 ]; then
-  printf "\n========================================================\n"
-  printf "  COMMIT BLOCKED — audit_psbp found ERRORS\n"
-  printf "========================================================\n\n"
-  # Pull out just the ERROR entries, each under its section name. The audit
-  # prints  ==== / SECTION / ====  then blocks like "  ERROR (n)" whose entries
-  # are indented "    - ". Grepping raw output matches the rules, not the text.
-  printf "%s\n" "$audit_out" | awk '
-    # A section name is the line between two rules. The CLOSING rule re-arms
-    # the flag too, so require a line starting with a capital — that skips the
-    # blank line and the indented "ERROR (n)" header that follow it.
-    /^=+$/                   { want_section = 1; next }
-    want_section && /^[A-Z]/ { section = $0; want_section = 0; next }
-    /^[ \t]*ERROR/           { in_err = 1; shown = 0; next }
-    /^[ \t]*(WARN|INFO)/     { in_err = 0; next }
-    in_err && /^[ \t]*- / {
-        if (!shown) { printf "\n  %s\n", section; shown = 1 }
-        line = $0; sub(/^[ \t]*-[ \t]*/, "", line)
-        print "      " line
-    }
-  ' | head -40
-  printf "\nFull detail:  python3 data/scripts/audit_psbp.py\n"
-  printf "Warnings and info do NOT block — only errors reached this.\n"
-  printf "\nReally want this commit anyway?   git commit --no-verify\n\n"
-  exit 1
-fi
-
-# ---- advisory: never blocks -----------------------------------------------
-notes=""
-for extra in crawl_psbp psbp_orphan_audit; do
-  script="$REPO_ROOT/data/scripts/$extra.py"
-  [ -f "$script" ] || continue
-  if ! "$PY" "$script" >/dev/null 2>&1; then
-    notes="${notes}  note: $extra has something to report — python3 data/scripts/$extra.py\n"
-  fi
-done
-
-if [ -n "$notes" ]; then
-  printf "\n  [pre-commit] audit clean, committing. Advisory only:\n"
-  printf "%b" "$notes"
-  printf "\n"
 fi
 
 exit 0

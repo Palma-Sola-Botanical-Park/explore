@@ -302,6 +302,58 @@ def load_json(path, default=None):
         return json.load(f)
 
 
+# ===========================================================================
+# COMMON-NAME CASING
+# ===========================================================================
+
+_TITLE_SMALL_WORDS = {
+    "a", "an", "and", "as", "at", "but", "by", "de", "del", "for", "in", "la",
+    "of", "on", "or", "the", "to", "van", "von", "with", "upon",
+}
+
+
+def proper_common_name(name):
+    """Title-case a common name the way the catalogue writes them.
+
+    iNaturalist returns common names in its own casing — 'aloe vera',
+    'thorny olive', 'century plants' — and the original spreadsheet was no more
+    consistent. Left alone they have to be corrected by hand, one record at a
+    time, which is the chore this removes. Applied at intake so it never
+    accumulates.
+
+    HYPHENATED NAMES ARE RETURNED UNCHANGED, DELIBERATELY.
+    'Black-throated Blue Warbler' and 'black-eyed Susan' are the CORRECT forms:
+    ornithological and botanical usage both lowercase the second element of a
+    hyphenated compound. Capitalising it would be an error, not a fix, and iNat
+    already has these right. 'Four-o-clock' is a further trap — that 'o' is a
+    contraction of o'clock. So anything with a hyphen is left exactly as found
+    and stays a human decision.
+
+    Also never capitalises the letter after an apostrophe ("Buddha's Belly",
+    not "Buddha'S Belly"), keeps existing acronyms, and keeps small words
+    lowercase unless they lead or close the name.
+    """
+    n = (name or "").strip()
+    if not n or "-" in n:
+        return name
+
+    def cap(tok, first, last):
+        if len(tok) > 1 and tok.isupper():
+            return tok
+        if tok.lower() in _TITLE_SMALL_WORDS and not first and not last:
+            return tok.lower()
+        out, up = [], True
+        for ch in tok:
+            out.append(ch.upper() if (up and ch.isalpha()) else ch.lower())
+            if up and ch.isalpha():
+                up = False
+        return "".join(out)
+
+    words = n.split(" ")
+    return " ".join(cap(w, i == 0, i == len(words) - 1)
+                    for i, w in enumerate(words))
+
+
 def write_json_atomic(path, data):
     """Write JSON via temp + os.replace so a crash can never truncate.
 
