@@ -2,18 +2,18 @@
   "meta": {
     "generated": "2026-06-23",
     "description": "Staging file for species under research — not yet promoted to spotted or html. Plants and wildlife coexist, distinguished by the 'type' field.",
-    "species_count": 509,
-    "plant_count": 469,
+    "species_count": 510,
+    "plant_count": 470,
     "wildlife_count": 40,
     "status_counts": {
-      "research": 493,
+      "research": 494,
       "died": 12,
       "stolen": 4
     },
     "id_allocation": {
-      "plants": "PSBP-00001 upward (next available: PSBP-00787)",
+      "plants": "PSBP-00001 upward (next available: PSBP-00788)",
       "wildlife": "PSBP-90000–99999 band. Two blocks are in use: 99887–99999 (allocated downward from the ceiling, historically) and 90001–90016. The allocator computes max(band)+1, which overflows the 99999 ceiling, so it now gap-fills upward from the low block (next available: PSBP-90017).",
-      "measured": "2026-08-31",
+      "measured": "2026-09-01",
       "note": "Descriptive, not authoritative — _next_psbp_id() in species_manager.py is the only thing that mints an id. Re-measure with audit_psbp.py --only META."
     },
     "import_date": "2026-06-23",
@@ -32,7 +32,7 @@
     "animal_group_audit_note": "Corrected animal_group on 13 wildlife entries (Arachnid→Spider, Reptile→Turtle, Insect→specific by family). 11 entries left with unresolved values — no matching THEME_MAP bucket exists for bees/wasps/flies/lacewings/fungi.",
     "dedupe_vs_signage": "2026-08-14T21:14:20",
     "dedupe_note": "Removed 8 entries already present in plant_signage.json (matched by PSBP id, botanical name, or inat_taxon_id); signage records verified as content supersets.",
-    "updated": "2026-08-31T22:10:39"
+    "updated": "2026-09-01T08:57:40"
   },
   "species": [
     {
@@ -233,7 +233,7 @@
       "category": "Flowering Shrubs and Vines",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "died",
+      "status": "research",
       "native": false,
       "alternate_names": [
         "Pagoda Clerodendrum"
@@ -302,8 +302,8 @@
         "dogs_level": "Green",
         "dogs": "No significant toxicity to dogs documented."
       },
-      "other_notes": "The Pagoda Flower recorded at Palma Sola grew on Welcome Island and was lost in the storms. The park's Tree Crinums have since expanded into that space, as they tend to do. All park observations predate the loss.",
-      "internal_notes": "REMOVED specimen (Welcome Island); storm loss; Tree Crinums took the space. Published as species page for now. Placeholder hero says 'help us photograph this' — mismatch for a gone plant; see §7 gone-plant placeholder decision.",
+      "other_notes": "The Pagoda Flower was believed lost in the storms — it grew on Welcome Island and the park's Tree Crinums expanded into that space, as they tend to do. It is back, and it came back in the same place: Randy's 2026 photograph of it in full flower sits 8 metres from where the plant was recorded in 2022, before the storms. The species spreads by underground suckers, which is how it survived — the top was destroyed and the roots were not. A young visitor found a second shoot of it 29 metres away in July 2026, so the colony is spreading as well as returning.",
+      "internal_notes": "✅ NOT DEAD — status corrected from 'died' to 'research' on 2026-09-01 on photographic evidence.\n  · obs 365781230, 27 May 2026, randall_carter — MATURE PLANT IN FULL FLOWER. Decisive.\n  · obs 383958811, 22 Jul 2026, yavid — a single young shoot in bare mulch, no flowers.\n  · obs 143085055, 27 Nov 2022, victoriashein — the pre-storm plant.\nCORROBORATION: after Randy corrected the coordinates on 2026-09-01 (52 m accuracy down to 10 m), the 2026 flowering plant sits 8 m from the 2022 one. Same spot, two years and two hurricanes apart. yavid's shoot is 29 m from both — a spreading sucker, or a second plant. A 2016 record (obs 4504007) sits 71 m away, so the colony has moved about over a decade.\n⚠ WHY THIS WAS MISSED FOR THREE MONTHS: obs 365781230 originally carried 52 m accuracy and landed 8 m OUTSIDE the park boundary, so iNaturalist excluded it from the project entirely. It was never wrong, it was invisible. Randy: \"i prob took it quick and it auto-identified and i never saw it in the park again.\" He then looked for the plant, failed to find it, and every system he could check agreed it was gone. The record was the weak link, not his memory. Now corrected and back in the project.\n⚠ LOCATION: the old note said Welcome Island. The corrected coordinates and the 2022 observation agree with each other; whether that is what the park calls Welcome Island is Randy's to confirm.\nPrevious note, now superseded: 'REMOVED specimen (Welcome Island); storm loss; Tree Crinums took the space.'",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
@@ -12951,6 +12951,31 @@
       "has_sign": false,
       "research_source": "inat_observed",
       "inat_obs_count": 1
+    },
+    {
+      "id": "PSBP-00787",
+      "common_name": "Laurel Fig",
+      "botanical_name": "Ficus microcarpa",
+      "inat_taxon_id": 54982,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Moraceae",
+        "genus": "Ficus",
+        "species": "microcarpa",
+        "class": "Magnoliopsida",
+        "order": "Rosales"
+      },
+      "type": "plant",
+      "status": "died",
+      "has_sign": false,
+      "alternate_names": [
+        "Chinese Banyan",
+        "Indian Laurel",
+        "Curtain Fig"
+      ],
+      "other_notes": "A very large fig stood in the north-west of the park and was lost in the 2024 storms. Nothing of it survives in the park's records — no photograph, no observation, no placement — and it is recorded here from Randy's recollection so that the loss is not forgotten entirely.",
+      "internal_notes": "⚠ SPECIES NOT CONFIRMED. Randy, 2026-09-01: \"I don't know what type of tree. laurel fig? It was huge\" — then confirmed \"yes laurel fig\" when asked. That is a recollection of a tree that has been gone for two years, not a determination, and there is no photograph to check it against. Treat the species as probable, not settled. YEAR: 2024, per Randy — \"they all blur\". Manatee County took Helene (late Sep 2024) and Milton (Oct 2024) within a fortnight; either could be it. NOT TO BE PUBLISHED as a species page — the park has no photograph and the plant is gone. This record exists to hold the history. ⚠ If the species is ever confirmed, check the FISC listing before anyone proposes replanting one: Ficus microcarpa is widely listed as invasive in Florida and that has NOT been verified here. SEE ALSO obs 78739849 (14 May 2021, anghp) — a big fig at the PAVILION, still at genus with conflicting IDs (benghalensis vs aurea). Different location, so probably a different tree, but worth checking whether that one still stands. ⚠ Do NOT link this to PLC-0224 Gregorywood. Randy, 2026-09-01: \"that area of the field did NOT lose its canopy.. that is too far to the south and east. It was a big tree but didn't cover that far.\" An earlier draft asserted that connection and it is wrong — the fig's canopy did not reach the Gregorywood's field.",
+      "research_source": "randy_recollection"
     },
     {
       "id": "PSBP-90003",
