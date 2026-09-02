@@ -246,6 +246,47 @@ def main():
                     f"{sp['id']} {sp.get('common_name')}: teaser and quick_hits[0] "
                     f"overlap {j:.0%} — the sign and the page say the same thing")
 
+        # UNITS — imperial, spelled out, rounded. Randy, 2026-09-01: "I prefer
+        # rough numbers and imperial. Instead of 18, use almost 20."
+        #
+        # The corpus already voted: 976 uses of "feet" against 67 of "meters"
+        # before the 2026-09-01 pass. What that pass fixed was 102 metric-only
+        # figures a Florida visitor could not read ("berries up to 1.7 cm"),
+        # 23 metric parentheticals, and converted figures carrying false
+        # precision — "49 to 66 feet" is a arithmetic conversion of a round
+        # 15-to-20-metre estimate, and implies a survey nobody did.
+        #
+        # internal_notes is EXEMPT: it cites sources, and sources are metric.
+        _METRIC = re.compile(r"\b\d[\d.,]*\s?(?:mm|cm|millimet(?:er|re)s?|centimet(?:er|re)s?|met(?:er|re)s?)\b"
+                             r"|\b\d\s?m\b(?!\w)", re.I)
+        _ABBREV = re.compile(r"(?<=[\d\s])\bft\b|(?<=\d)\s*\bin\.(?=\s+[a-z])")
+
+        def _visible(sp):
+            out = []
+            def w(v):
+                if isinstance(v, str):
+                    out.append(v)
+                elif isinstance(v, list):
+                    for x in v: w(x)
+                elif isinstance(v, dict):
+                    for k, x in v.items():
+                        if k != "internal_notes": w(x)
+            w({k: v for k, v in sp.items() if k != "internal_notes"})
+            return " ".join(out)
+
+        for sp in plants + wild:
+            t = _visible(sp)
+            m = _METRIC.search(t)
+            if m:
+                add("CONTENT", "WARN",
+                    f"{sp['id']} {sp.get('common_name')}: metric in visitor prose "
+                    f"(\u201c{m.group(0)}\u201d) — convert to imperial and round it")
+            a = _ABBREV.search(t)
+            if a:
+                add("CONTENT", "WARN",
+                    f"{sp['id']} {sp.get('common_name')}: abbreviated unit "
+                    f"(\u201c{a.group(0).strip()}\u201d) — spell out feet/inches")
+
     # ── PHOTOS ────────────────────────────────────────────────────────────
     if run("PHOTOS"):
         for p in photos:
