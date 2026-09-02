@@ -1192,10 +1192,12 @@ function renderDataSections(s, hero) {
   }
   if (safetyHtml) html += dataSection('Edibility & Toxicity', safetyHtml);
 
-  // Invasive
-  if (s.invasive) {
-    html += dataSection('Invasive Status', `<div class="data-row"><div class="label">Level: ${s.invasive.level}</div><div class="value">${esc(s.invasive.notes || '')}</div></div>`);
-  }
+  // Invasive Status block removed 2026-09-01. It rendered the retired
+  // invasive{level,notes} traffic-light, which survives on ~131 records and
+  // disagrees with the live watch_invasive flag on five of them. Showing it
+  // here is how PSBP-00119 Sweet Viburnum came to be published as a "FISC
+  // Category I invasive" it is not: the dict said Red, the flag said false,
+  // and the prose was written from the screen. Invasive status lives in prose.
 
   // Aliases
   if (s.alternate_names?.length) {

@@ -892,9 +892,13 @@ loadINat();
        cards, and a warning that common reads as decoration — the same failure
        the chips had. Toxic-only lands on 25% and still stands out. `caution`
        remains on the full plant page. To include it, restore the else-if. */
-    if (p.dogs === 'toxic') flags.push('<span class="dw-warn">Toxic to dogs</span>');
-    if (p.edible === 'toxic')      flags.push('<span class="dw-warn">Not edible &mdash; toxic</span>');
-    if (p.watch_invasive)          flags.push('<span class="dw-warn">Watch &mdash; invasive</span>');
+    // Toxicity chips removed 2026-09-01 — prose only, per Randy. The full plant page keeps a
+    // proper Toxicity section with the actual detail (species, symptoms, ASPCA sourcing),
+    // which is more use than a two-word badge. Nothing safety-relevant was lost here.
+    // 'Watch — invasive' chip removed 2026-09-01. watch_invasive is tripped by EITHER a
+    // formal listing OR observed behaviour on the grounds, and a reader cannot tell which —
+    // it read as a state designation on plants Florida does not list, while missing listed
+    // ones (Queen Palm is FISC Cat II for Central and never showed it). Invasive status is prose.
     if (p.larval_host && (p.larval_species || []).length) {
       flags.push('Larval host for ' + esc(p.larval_species.join(', ')));
     }
