@@ -2,7 +2,7 @@
   "meta": {
     "generated": "2026-08-31",
     "source": "psbp_placements.py",
-    "placement_count": 218,
+    "placement_count": 220,
     "placed_count": 217,
     "schema_version": "3.0",
     "note": "subject_id + kind: species|landmark. sign_state: has_sign | needs_sign | not_needed | null. last_seen = confirmed present; last_checked = someone looked. last_checked newer than last_seen means looked for and not found. coord_source: surveyed|gps|google_earth|derived|estimated. google_earth = Randy hand-placed the pin from knowledge of the park; was called 'kml' until 2026-08-29, renamed because the format name read as bulk-import residue when it is hand work. See LANDMARKS.md §11. role: for landmarks main|entry|meet|area|view; for species, 'edging' means the plant borders a bed rather than standing as a specimen — several pins trace one planting, they are not separate plants.",
@@ -381,13 +381,13 @@
       "cultivar": null,
       "planted_on": null,
       "sign_state": "needs_sign",
-      "last_seen": null,
-      "last_checked": null,
+      "last_seen": "2026-09-02",
+      "last_checked": "2026-09-02",
       "zone": null,
       "story": null,
       "status": "not_started",
-      "notes": null,
-      "updated": "2026-07-25T20:32:59.440Z"
+      "notes": "2026-09-02: confirmed on the ground by Randy, phone GPS 27.513586,-82.660214 — 1.2 m from the stored google_earth coordinate. Both sources agree.",
+      "updated": "2026-09-02T14:25:08"
     },
     {
       "placement_id": "PLC-0022",
@@ -4368,6 +4368,46 @@
       "status": "not_started",
       "notes": "NOT YET RELOCATED — and Randy has already looked. Randy, 2026-09-01: \"i was confident her observation was walters viburnum but I haven't found it yet... I figured I would eventually.\" The identification is not in doubt; the plant just has not been found on the ground. LOOK IN MID-FEBRUARY, NOT NOW. Viburnum obovatum is recorded in Florida 913 times in February and 68 times in June — thirteen to one. It is not commoner in February, it is FINDABLE in February: in bloom it is covered in white and unmissable, and out of bloom it is an anonymous small-leaved shrub in a mixed native bed. Bev's photo is dated 19 Mar 2025; every search since has happened in the eleven months when the plant does not announce itself. Coordinate from iNaturalist obs 266013464, +/-3 m, photographed by Bev Burdette (who has TWO observations in her life — she stopped for this one plant alone at 17:12 and recorded nothing else that day). Randy confirmed the area independently on 2026-09-01: \"Yes butterfly garden area for sure.\" Nearest catalogued neighbours: PLC-0009 Firewheel (6 m), PLC-0103 Royal Palm (9 m), PLC-0097 Coontie Palm (10 m). ASK BEV FIRST — she may remember the bed, which collapses the whole problem. ON ARRIVAL: confirm leaves in OPPOSITE PAIRS, about an inch, spoon-shaped, and NO spines; set last_checked; take the second, third and fourth photographs. SEE ALSO BOTANICAL_QUESTIONS entry 20, which flags a factual error in this species' published teaser (sign copy), and entry 19 — this plant is the on-site reference for the rare fruit bridge comparison.",
       "updated": "2026-09-01T21:47:12"
+    },
+    {
+      "placement_id": "PLC-0226",
+      "subject_id": "PSBP-00063",
+      "kind": "species",
+      "role": null,
+      "area": "Welcome Island",
+      "latitude": 27.514131,
+      "longitude": -82.659703,
+      "coord_source": "phone_gps",
+      "cultivar": null,
+      "planted_on": null,
+      "sign_state": "needs_sign",
+      "last_seen": "2026-09-02",
+      "last_checked": "2026-09-02",
+      "zone": null,
+      "story": null,
+      "status": "not_started",
+      "notes": "2026-09-02: located and confirmed on the ground by Randy, phone GPS. FIRST placement for this species. ⚠ This plant had been recorded as DIED — the record was corrected after one of Randy's own photographs showed it in flower. It is alive and now has a coordinate, so the died-status question is closed. Nearest catalogued neighbours: PLC-0001 Tree Crinum (4 m), PLC-0064 Heavenly Bamboo (6 m), PLC-0111 Screw Pine (6 m).",
+      "updated": "2026-09-02T14:30:11"
+    },
+    {
+      "placement_id": "PLC-0227",
+      "subject_id": "PSBP-00322",
+      "kind": "species",
+      "role": null,
+      "area": "Front Pond",
+      "latitude": 27.513854,
+      "longitude": -82.660178,
+      "coord_source": "inat_observation",
+      "cultivar": null,
+      "planted_on": null,
+      "sign_state": "needs_sign",
+      "last_seen": "2026-09-02",
+      "last_checked": "2026-09-02",
+      "zone": null,
+      "story": null,
+      "status": "not_started",
+      "notes": "2026-09-02: FIRST placement for this species. Coordinate from iNaturalist obs 396723185 (Randy), hand-corrected on satellite view with the accuracy circle tightened to +/-8 m — the raw GPS fix had been 27 m away at +/-12 m. Bev raised this plant, which is why it was photographed. GUAIACUM SANCTUM IS THE MOST PROTECTED PLANT IN THE COLLECTION: Florida state-listed Endangered, CITES Appendix II since 1973, IUCN Endangered. Its natural Florida range is Miami-Dade and Monroe (Keys) only, so this tree is a Florida native growing well north of where it occurs in the wild — say that rather than just 'native'. SEE BOTANICAL_QUESTIONS entry 21: PSBP-00579 (bare genus Guaiacum) is the same tree and should be merged into PSBP-00322; the record is still a stub.",
+      "updated": "2026-09-02T14:49:59"
     }
   ]
 }
