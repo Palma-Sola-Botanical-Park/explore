@@ -629,7 +629,10 @@ def main():
         if not photo: print(f"  SKIP {pid}: no photo available"); continue
 
         if URL_STYLE=='short':
-            url=SHORT_BASE+re.sub(r'\D','',pid).lstrip('0')
+            # Keep all five digits: the sign, the JSON and the URL all say PSBP-00719 / p/00719.
+            # Zero-padding costs nothing in the QR (both measure the same grid) and stripping it
+            # made the printed URL the one place the id read differently. Randy, 2026-09-03.
+            url=SHORT_BASE+re.sub(r'\D','',pid)
         else:
             pages=glob.glob(os.path.join(REPO,'plants',pid+'-*.html'))
             if pages: url=SITE_BASE+os.path.basename(pages[0])
