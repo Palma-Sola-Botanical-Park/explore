@@ -2,10 +2,10 @@
   "meta": {
     "generated": "2026-06-23",
     "source": "PSBP_Master_Plant_Signage.xlsx",
-    "species_count": 266,
+    "species_count": 269,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-09-02T23:41:39",
+    "updated": "2026-09-03T09:46:00",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -20869,6 +20869,120 @@
       ]
     },
     {
+      "id": "PSBP-00311",
+      "common_name": "Triangle Ficus",
+      "botanical_name": "Ficus triangularis",
+      "inat_taxon_id": 346406,
+      "sign_level": "Species",
+      "taxonomy": {
+        "family": "Moraceae"
+      },
+      "category": "",
+      "feature_tier": "Standard",
+      "has_sign": false,
+      "status": "spotted",
+      "native": false,
+      "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1).",
+      "native_notes": null,
+      "watch_invasive": false,
+      "watch_invasive_notes": null,
+      "rare_fruit": false,
+      "form": "Foliage & Accent",
+      "safety_note": [
+        "The milky white sap that oozes from any cut stem or leaf is a latex that can irritate skin and mucous membranes on contact — people with latex allergies should be especially cautious around this plant. The ASPCA lists the Ficus genus as toxic to dogs, cats, and horses; ingestion can cause drooling, vomiting, and gastrointestinal upset, and sap on the skin can cause dermatitis in sensitive animals.",
+        "The small figs, if they form, are not considered a safe food for people. If a pet has ingested any part of this plant, contact your veterinarian or the ASPCA Animal Poison Control Center at (888) 426-4435."
+      ],
+      "butterfly": {
+        "larval_food": false,
+        "larval_species": [],
+        "adult_food": false,
+        "adult_species": [],
+        "notes": null
+      },
+      "alternate_names": [
+        "Triangle Fig",
+        "Triangle Fig Tree",
+        "Sweetheart Tree"
+      ],
+      "quick_hits": [
+        "Every fig 'fruit' is actually a hollow, inside-out flower cluster. The tiny flowers line the interior of a swollen stem — called a syconium — and are never exposed to the open air at all. What you see on the outside of a fig is not a fruit in the conventional sense; it is an inflorescence that has turned itself inward.",
+        "Each Ficus species is pollinated by its own dedicated species of fig wasp — a mutualism so specific that the two lineages have been evolving together for at least 60 million years. Without its native African wasp present in Florida, this tree very rarely sets viable fruit in cultivation.",
+        "The triangular leaf shape is genuinely unusual in the fig genus, most of whose 700-plus species carry oval or elongated leaves. The shape gave the species both its botanical name — triangularis is Latin for 'triangular' — and every one of its common names."
+      ],
+      "origin": [
+        "Ficus triangularis is native to tropical and southern Africa, including South Africa, where it grows as a shrub or small tree in warm, humid forest-edge and scrub habitats. It is one of several hundred African Ficus species that have co-evolved with local fig wasps and a wide array of fruit-eating wildlife over millions of years.",
+        "In Florida it is grown as an ornamental accent plant, valued for its compact, bushy form and distinctly shaped leaves. The green-leaved species and its variegated cultivar — with cream-and-green foliage — are occasionally available in specialty nurseries, though neither is common in the retail trade."
+      ],
+      "more_information": [
+        "The genus Ficus is one of the largest genera of woody plants on Earth, with somewhere around 750 to 800 species distributed across the tropics and subtropics worldwide. What unites them all is the syconium — an enclosed, hollow receptacle whose inner walls are lined entirely with tiny male and female flowers.",
+        "From the outside it looks like a small fruit; from the inside it is an entire flower show, sealed from the world.",
+        "That closed-chamber design demands a very specific pollinator. Each fig species is served by its own dedicated wasp species in the family Agaonidae: the wasp enters the syconium through a narrow pore at the tip, pollinates the flowers, and lays her eggs inside. The arrangement is so tight that fig and wasp have been tracking each other's evolution for at least 60 million years.",
+        "A Ficus triangularis growing in Florida is missing its native African partner, which is why fruiting is rare or absent in cultivation here.",
+        "In its home range, fig trees function as ecological keystones. They tend to produce fruit across multiple seasons rather than in a single synchronized flush, which means they provide food for birds, bats, and mammals during stretches when almost nothing else is fruiting. Remove the figs from a tropical forest and the animals that depend on them often follow."
+      ],
+      "wildlife_value": [
+        "In its native African range, Ficus triangularis supports the full web of wildlife that fig trees are known for — fig wasps complete their life cycle inside the syconia, while birds and small mammals take the ripe fruit and disperse the seeds.",
+        "In Florida cultivation, that network is largely absent: without the specific African fig wasp, the tree produces little or no viable fruit, and it has no co-evolutionary ties to local pollinators or butterflies.",
+        "As a landscape or container plant here, its primary wildlife contribution is structural — dense evergreen foliage that can offer shelter and perching cover. Visitors interested in watching pollinators at work will find richer activity among the park's native plantings."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Like all figs, Ficus triangularis relies on a species-specific fig wasp (family Agaonidae) for pollination. In its native African habitat, female wasps enter the syconium through a small pore at the tip, pollinate the enclosed flowers, and lay their eggs inside. Without the native wasp present in Florida, the tree very rarely sets seed in cultivation here."
+          },
+          {
+            "label": "Flowers",
+            "text": "There are no visible, open flowers. All flowers are enclosed inside the syconium — the swollen, hollow stem structure that looks like a small fruit. Male and female flowers line the inner wall of the syconium; they are never exposed to the air."
+          },
+          {
+            "label": "Fruit",
+            "text": "When pollinated, the syconium matures into a small fig — round to slightly elliptic, reddish to dark red when ripe, produced in the leaf axils along the stems. Fruiting is rare in Florida cultivation due to the absence of the native fig wasp."
+          },
+          {
+            "label": "Leaves",
+            "text": "The leaves are the most immediately striking feature: distinctly triangular to broadly heart-shaped, dark glossy green, and fairly small compared to most ficus relatives — typically one to three inches across. The variegated cultivar carries the same shape with irregular cream or white margins. Leaves are alternate and carried on flexible, arching stems."
+          },
+          {
+            "label": "Stems and Form",
+            "text": "Bushy and multi-stemmed, with a naturally compact, upright to slightly arching habit. The bark is smooth and gray-brown; the stems exude a milky white latex sap when cut or broken. In warm outdoor conditions the plant can develop into a small, densely branched tree."
+          }
+        ],
+        "what_to_look_for": "Start with the leaves — small, triangular, glossy, and distinctly unlike the large paddle-shaped leaves of most other figs you might know. Look along the stems where they join the leaves for any small, rounded figs tucked into the leaf axils; they sit close to the stem rather than dangling. On the variegated cultivar, look for the same triangular leaves edged in cream or pale green. If you snap a small stem, you will likely see a thin white latex sap — a hallmark of the whole Ficus genus."
+      },
+      "seasonality": {
+        "bloom_months": null,
+        "bloom_description": "Flowers are enclosed within the syconium and not visible externally; no distinct bloom season is apparent to the observer.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": null,
+        "notes": "In Florida cultivation, fruiting is rare due to the absence of the native African fig wasp. When it does occur, small reddish figs appear in the leaf axils."
+      },
+      "size": {
+        "height": "4 to 8 feet in cultivation; potentially larger as an established outdoor shrub or small tree in a frost-free climate",
+        "spread": "2 to 4 feet in typical cultivation",
+        "habit": "bushy, multi-stemmed, upright to slightly arching",
+        "growth_rate": "slow to moderate",
+        "texture": "medium-fine — small glossy leaves give a relatively delicate look for a Ficus"
+      },
+      "growing_conditions": {
+        "light": "bright indirect light to filtered sun; tolerates some morning direct sun but dislikes harsh midday exposure",
+        "soil_tolerances": "well-draining, fertile soil; does not tolerate waterlogged conditions",
+        "drought_tolerance": "low to moderate — prefers consistent moisture; allow soil to partially dry between waterings but do not let it remain dry for extended periods",
+        "spacing": "allow 3 to 4 feet from neighboring plants in a mixed bed; dislikes being moved or disturbed once established"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Yellow"
+      },
+      "other_notes": [
+        "Ficus triangularis is frequently grown as a houseplant in temperate climates; at Palma Sola Botanical Park it is grown outdoors, where Bradenton's warmth lets the plant develop into more of the small, bushy tree it would become in its native range.",
+        "A variegated cultivar — Ficus triangularis 'Variegata' — is the form most often encountered in the nursery trade. It carries the same distinctive triangular leaves but with irregular cream or white margins, and it tends to be somewhat more compact than the green-leaved species."
+      ]
+    },
+    {
       "id": "PSBP-00332",
       "common_name": "Kentia Palm",
       "botanical_name": "Howea forsteriana",
@@ -27684,6 +27798,126 @@
       ]
     },
     {
+      "id": "PSBP-00646",
+      "common_name": "Japanese Yew",
+      "botanical_name": "Podocarpus macrophyllus",
+      "inat_taxon_id": 135329,
+      "sign_level": "Species",
+      "taxonomy": {
+        "family": "Podocarpaceae"
+      },
+      "category": "",
+      "feature_tier": "Standard",
+      "has_sign": false,
+      "status": "spotted",
+      "native": false,
+      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "native_notes": null,
+      "watch_invasive": false,
+      "watch_invasive_notes": "UF/IFAS lists Podocarpus macrophyllus as 'not considered a problem species at this time, may be recommended' for North, Central, and South Florida. No FISC (formerly FLEPPC) Category I or II listing was found.",
+      "rare_fruit": false,
+      "form": "Tree",
+      "safety_note": [
+        "Do not let pets eat any part of this plant. The ASPCA lists Podocarpus macrophyllus as toxic to dogs, cats, and horses; ingestion can cause vomiting and diarrhea, and the seed (the hard, round part sitting on top of the fleshy receptacle) is the most concentrated source of toxic compounds.",
+        "If a pet has eaten any part of the plant, contact your veterinarian or the ASPCA Animal Poison Control Center at (888) 426-4435.",
+        "For people, the picture is more nuanced but warrants caution. The fleshy, swollen receptacle beneath the seed is edible — in East Asia it is occasionally eaten fresh or used in preserves — but the seed itself is toxic and should never be eaten. Because the seed sits visibly atop the receptacle and is easily separated, accidental ingestion of the seed is a real concern, particularly for children.",
+        "The wisest approach at a public garden is simply to leave the fruit alone."
+      ],
+      "butterfly": {
+        "larval_food": false,
+        "larval_species": [],
+        "adult_food": false,
+        "adult_species": [],
+        "notes": null
+      },
+      "alternate_names": [
+        "Yew Pine",
+        "Buddhist Pine",
+        "Yew Plum Pine",
+        "Southern Yew",
+        "Kusamaki",
+        "Inumaki"
+      ],
+      "quick_hits": [
+        "Despite the needle-like leaves and cone-bearing habit, Podocarpus is not a pine — it belongs to an entirely different conifer family, Podocarpaceae, and is more closely related to the southern hemisphere's podocarps of New Zealand and South America than to any Florida native conifer.",
+        "The fruit has a backwards architecture: the fleshy, edible part is not the fruit wall but the swollen seed stalk — called a receptacle — that sits beneath the seed like a little pedestal. The seed rides on top, and the seed is the toxic part.",
+        "In China this tree is called luohan song — 'arhat pine' — after the Buddhist monks who attained enlightenment. It is a prized feng shui tree in Hong Kong and southern China, where old specimens fetch extraordinary prices.",
+        "Left alone, this plant can top 35 to 50 feet. Most Floridians never see that — they keep it sheared into a hedge — but the specimen form is a genuinely handsome narrow tree with peeling reddish-brown bark that gradually turns gray."
+      ],
+      "origin": [
+        "Podocarpus macrophyllus is native to the warm-temperate and subtropical forests of southern China, southern Japan, Taiwan, and nearby parts of mainland Southeast Asia. It grows from near sea level to around 3,300 feet elevation, appearing in forests, open thickets, and along roadsides. It is the northernmost species in its genus.",
+        "The tree has a long history of cultivation in East Asia — planted in temple gardens, used as a hedge plant in Japan, trained as bonsai, and valued in China for centuries as a feng shui specimen. Western botanists introduced it to European gardens as early as 1804.",
+        "It arrived in Florida cultivation in the twentieth century and is now thoroughly established across the state, recommended by UF/IFAS for Zones 8B through 11 — the full range of Florida."
+      ],
+      "more_information": [
+        "The genus name tells you something useful. Podocarpus comes from the Greek pous (foot) and karpos (fruit) — a reference to the swollen, fleshy receptacle that sits beneath the seed like a little foot or stalk. That structure, not a conventional fruit wall, is what birds eat and what ripens to reddish purple. It is an arrangement you will not find in a pine or a cypress.",
+        "Podocarpaceae is the largest conifer family in the southern hemisphere, with most species native to New Zealand, Australia, and South America. P. macrophyllus is an outlier that pushed far into the northern hemisphere — it is the genus's northernmost species.",
+        "When you look at it alongside Florida's native conifers (slash pine, bald cypress, pond cypress), you are looking at a representative of a completely different evolutionary lineage that has barely overlapped with North America.",
+        "In Japan, where it has been cultivated for well over a thousand years, the wood is prized for construction of high-quality buildings. The var. maki form has long been trained as a hedge plant throughout East Asia and is one of the most popular bonsai subjects in Japanese horticulture. That same compact, manageable character is exactly what made it so useful in Florida landscapes."
+      ],
+      "wildlife_value": [
+        "The main wildlife draw is the fruit. Female trees produce small, fleshy, reddish-purple receptacles that ripen in late summer and fall, and birds find them readily. Seed dispersal is almost entirely bird-driven, which is why self-sown seedlings occasionally appear some distance from the parent plant.",
+        "Beyond fruit, the dense evergreen canopy provides reliable shelter and nesting cover year-round — a practical asset in a manicured landscape where dense cover can be scarce. Podocarpus macrophyllus has no documented role as a larval host for Florida butterflies or moths, and its inconspicuous, wind-pollinated flowers draw little insect activity.",
+        "Visitors looking for the park's best pollinator and butterfly habitat will find it among the native plantings."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagation is by seed or hardwood cuttings. The plant is dioecious: male and female structures are on separate individual plants. Only female plants bear fruit, and only when a pollen source is nearby. Hardwood cuttings root reliably and are the preferred nursery method for producing uniform plants."
+          },
+          {
+            "label": "Pollen Cones",
+            "text": "Male plants produce small, elongated, yellowish pollen cones in clusters. They are not showy and are easily missed. Pollination is by wind."
+          },
+          {
+            "label": "Fruit",
+            "text": "The 'fruit' is really two parts: a swollen, fleshy receptacle (the edible portion) that turns reddish purple at maturity, topped by a single seed about half an inch long. The receptacle ripens in late summer to fall. Birds eat the receptacle and disperse the seed."
+          },
+          {
+            "label": "Leaves",
+            "text": "Strap-shaped, flat, and leathery — roughly 2 to 4 inches long and about a third of an inch wide, with a clearly visible central midrib. Dark, lustrous green above and paler beneath. Arranged in dense spirals along the stems. The foliage releases a pleasant fragrance when bruised."
+          },
+          {
+            "label": "Bark and Trunk",
+            "text": "Typically single-trunked in tree form. Bark is reddish brown and shredding on younger growth, turning gray and more furrowed with age. Branches do not droop and carry no thorns."
+          }
+        ],
+        "what_to_look_for": "Look first at the leaves: flat, strap-like, dark green, arranged in a dense spiral that gives the stems a bottlebrush look. On a female plant in late summer or fall, search among the foliage for the small reddish-purple receptacles — they look roughly like a tiny plum sitting on a stubby green stalk. On male plants, look in spring for the small yellowish pollen cones clustered at the branch tips. If the plant has grown as a tree rather than a hedge, step back and notice the peeling reddish-brown bark that ages to gray — and the narrow, upright crown that stays tighter than most conifers."
+      },
+      "seasonality": {
+        "bloom_months": "spring",
+        "bloom_description": "Inconspicuous yellowish pollen cones on male plants; female plants produce small ovulate structures. Neither is showy. Pollination is by wind.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "late summer to fall",
+        "notes": "Fruit ripens on female plants only; a male must be present for fruit set. Only female plants produce the fleshy, reddish-purple receptacles that attract birds."
+      },
+      "size": {
+        "height": "30 to 40 feet in Florida cultivation (UF/IFAS); can reach 35 to 50 feet unpruned; up to 65 feet in the wild",
+        "spread": "20 to 25 feet as a tree; commonly maintained far smaller as a hedge",
+        "habit": "narrow, upright, columnar to oval crown; single trunk in tree form; dense and multi-stemmed when hedged",
+        "growth_rate": "slow",
+        "texture": "fine — the narrow, strap-like leaves give the plant a refined, almost feathery look up close"
+      },
+      "growing_conditions": {
+        "light": "full sun to part shade; best form and density in full sun; tolerates the north side of a building with little direct sun",
+        "soil_tolerances": "wide range of well-drained soils; prefers slightly acidic pH; tolerates poor soils and restricted root space; does not tolerate wet or poorly drained sites",
+        "drought_tolerance": "high once established; also salt-tolerant, making it well-suited to coastal landscapes",
+        "spacing": "allow 20 to 25 feet for tree form; hedge use allows much tighter spacing — commonly maintained at whatever width is desired through pruning"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Red"
+      },
+      "other_notes": [
+        "Several varieties and cultivars are in common Florida use. Var. maki is a more compact, columnar selection with shorter leaves (1.5 to 3 inches); var. angustifolius has curved leaves and a narrow form; the dwarf 'Pringles' tops out around 3 to 5 feet. The plant at the park may belong to any of these — worth noting on the label if the variety is known.",
+        "UF/IFAS notes that Podocarpus is underused as a street and urban tree in Florida. Allowed to develop its natural form — single trunk, lower branches lifted to reveal the peeling bark — it is a more interesting plant than the clipped hedge walls most people associate with the name."
+      ]
+    },
+    {
       "id": "PSBP-00655",
       "common_name": "Macarthur Palm",
       "botanical_name": "Ptychosperma propinquum",
@@ -29004,6 +29238,120 @@
         "Caryota obtusa is listed as a nationally protected species in China (grade two), where deforestation has reduced populations in the wild. Specimens in botanical gardens like this one serve a quiet conservation role alongside their ornamental one.",
         "Cold tolerance is meaningful for Central Florida: Palmpedia lists a cold tolerance of roughly 27 degrees F for this species, which makes it one of the more cold-hardy fishtail palms and a reasonable choice for Bradenton's USDA Zone 9b to 10a climate — though hard freezes remain a threat to young plants.",
         "For home gardeners growing this species, canopy maintenance requires extra caution. Dead fronds do not drop cleanly on their own and must be sawn away; the leaf bases are lined with a dense matrix of stiff, dark, hair-like fibers that can irritate bare skin, so heavy canvas gloves and long sleeves are strongly recommended during any pruning work."
+      ]
+    },
+    {
+      "id": "PSBP-00705",
+      "common_name": "Mistletoe Fig",
+      "botanical_name": "Ficus deltoidea",
+      "inat_taxon_id": 344879,
+      "taxonomy": {
+        "family": "Moraceae",
+        "genus": "Ficus",
+        "species": "deltoidea"
+      },
+      "status": "spotted",
+      "has_sign": false,
+      "native_notes": null,
+      "watch_invasive": false,
+      "watch_invasive_notes": null,
+      "rare_fruit": false,
+      "form": "Shrub & Vine",
+      "safety_note": [
+        "The milky white latex sap in the leaves and stems is an irritant: skin contact can cause contact dermatitis in sensitive people, and the sap can irritate eyes and mucous membranes. The small figs are not a food source — they are not truly edible in the culinary sense.",
+        "The entire Ficus genus carries genus-wide caution for pets: the latex contains ficin and psoralens, which can cause oral irritation, drooling, vomiting, and gastrointestinal upset in dogs and cats if chewed or ingested. Effects are generally mild and rarely serious, but if a pet has eaten any part of the plant, contact your veterinarian or the ASPCA Animal Poison Control Center at (888) 426-4435."
+      ],
+      "butterfly": {
+        "larval_food": false,
+        "larval_species": [],
+        "adult_food": false,
+        "adult_species": [],
+        "notes": null
+      },
+      "native": false,
+      "alternate_names": [
+        "Fig Shrub",
+        "Delta Fig",
+        "Mistletoe Rubber Plant",
+        "Mas Cotek"
+      ],
+      "quick_hits": [
+        "It is widely cited as the only fig species that will reliably produce fruit indoors — small pea-sized syconia ripen from yellow through orange to red, and they appear year-round rather than in a single flush.",
+        "Like all figs, the Mistletoe Fig relies on a single, highly specialized species of fig wasp for pollination — and each fig species has its own dedicated wasp. Without that partner, the plant can bloom and fruit (the syconia still form) but produces no viable seed.",
+        "Male and female plants are physically distinct: females tend to have larger, rounder leaves while males carry smaller, more elongated ones. It is one of the few plants where you can, with a little practice, tell the sexes apart by their foliage alone.",
+        "The undersides of the leaves give away something the top surface hides: turn a leaf over and you will find a golden-yellow surface dotted with small black glands tucked between the veins — a detail easy to miss but hard to unsee once you know to look."
+      ],
+      "origin": [
+        "Ficus deltoidea is native to tropical Southeast Asia — from peninsular Malaysia and Thailand through Sumatra, Borneo, Java, and the Philippines. In its home range it grows in tropical rainforest, often as an epiphyte perched on tree branches or rock faces, though it can also grow as a free-standing shrub or small tree in more open situations.",
+        "It arrived in Western horticulture as an ornamental and houseplant, valued for its compact size, attractive foliage, and its unusual ability among figs to fruit reliably in cultivation. In Florida it is grown as a container or landscape plant in the warmest zones, with no record of naturalized populations."
+      ],
+      "more_information": [
+        "The genus Ficus contains roughly 900 species, and the fig-wasp partnership is one of the most refined examples of co-evolution in the plant world: each fig species relies on a single, species-specific wasp from the family Agaonidae to carry pollen between flowers hidden inside the syconium.",
+        "For the Mistletoe Fig, that pollinator is a Blastophaga wasp native to Southeast Asia — almost certainly absent from Florida landscapes, which means the fruits you see here developed without sexual reproduction.",
+        "The plant is dioecious, meaning male and female flowers are carried on separate individual plants. The syconium — the structure we think of as the fruit — contains tiny flowers of three types hidden inside a fleshy, hollow receptacle. What looks like a fruit from the outside is really a flowering chamber turned inside out.",
+        "Ficus deltoidea is recognized by the Royal Horticultural Society with its Award of Garden Merit, and it has a long history of use in traditional medicine in eastern peninsular Malaysia and Borneo, where its leaves, fruit, stems, and roots have been used in folk treatments for a range of conditions.",
+        "Plant extracts are still commercially sold in Malaysia for their supposed medicinal properties, though these claims are not evaluated by Western regulatory bodies."
+      ],
+      "wildlife_value": [
+        "In its native Southeast Asian forests, the small figs are eaten by birds and, according to field reports, by parrots, small mammals, and other frugivores. Ficus species as a group are considered keystone plants in tropical ecosystems, providing fruit year-round when other sources run dry.",
+        "In a Florida garden setting the Mistletoe Fig's wildlife value is modest by comparison — birds may take the ripe figs, but the plant has no established co-evolutionary role with local fauna.",
+        "Without the specific Blastophaga fig wasp from Southeast Asia present to complete pollination, any seed produced in Florida cultivation is unlikely to be viable. The plant does not appear on any Florida butterfly host-plant list and is not documented as a notable nectar source for local pollinators."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Ficus deltoidea is dioecious — male and female flowers are borne on entirely separate plants. Pollination in the wild is performed exclusively by a species-specific fig wasp (Blastophaga sp.) native to Southeast Asia; that wasp is not established in Florida, so seed production here is effectively absent. The plant is propagated in cultivation by stem cuttings."
+          },
+          {
+            "label": "Flowers",
+            "text": "The flowers are minute and entirely hidden inside the syconium — the fleshy, hollow receptacle we call the fig. Three flower types are enclosed within: male, long-styled female, and short-styled gall flowers. There is no visible bloom in the traditional sense; the syconium is both the flowering structure and the developing fruit."
+          },
+          {
+            "label": "Fruit",
+            "text": "Syconia are produced in pairs at the leaf axils, globose to slightly elliptical, about half an inch in diameter. They ripen year-round, passing from green through yellow and orange to red. The figs are not edible in the culinary sense and contain no viable seed in Florida cultivation."
+          },
+          {
+            "label": "Leaves",
+            "text": "Alternate, simple, and stiffly leathery — deltoid (triangular) to broadly spoon-shaped, rounded at the tip and tapering at the base, roughly one to three inches long. The upper surface is dark, glossy green; the underside is golden yellow with distinctive black glands dotting the vein junctions. Leaf shape varies noticeably between male and female plants."
+          },
+          {
+            "label": "Stems and Roots",
+            "text": "The plant produces a milky white latex sap when a stem or leaf is broken. In warm, humid conditions it can develop aerial roots. In Southeast Asia it frequently grows as an epiphyte, anchoring itself on tree limbs or rocky outcrops — a habit it will occasionally hint at in cultivation when given something to lean on."
+          }
+        ],
+        "what_to_look_for": "Start with the leaves: small, stiff, and glossy on top with that telltale golden-yellow underside — flip one over and look for the black glandular dots between the veins. Then check the leaf axils for the paired syconia in whatever stage of ripening they happen to be in: green, yellow, orange, or red. A broken stem will weep milky white latex. If you can compare two nearby plants, look at whether their leaves differ in shape — that may tell you which is the male and which is the female."
+      },
+      "seasonality": {
+        "bloom_months": "year-round",
+        "bloom_description": "Flowers are entirely enclosed within the syconium and not visible externally; figs in various stages of development are present on the plant throughout the year.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "year-round",
+        "notes": "The year-round fruiting phenology is one of the species' most noted traits and is linked to its co-evolved fig-wasp pollination system in its native range."
+      },
+      "size": {
+        "height": "typically 6 to 15 feet in Florida cultivation; up to 23 feet noted in warmer climates; can reach larger sizes in its native range",
+        "spread": "6 to 12 feet, spreading and rounded",
+        "habit": "upright and spreading evergreen shrub or small tree; occasionally epiphytic in its native habitat",
+        "growth_rate": "slow",
+        "texture": "medium-fine; small waxy leaves give a neat, layered appearance"
+      },
+      "growing_conditions": {
+        "light": "full sun to partial shade; tolerates lower light but fruits and grows best with good light",
+        "soil_tolerances": "adaptable; prefers rich, well-drained soil; tolerates a range of soil types including sandy and loamy; moderate flood and salt tolerance noted",
+        "drought_tolerance": "moderate; thick leaves store some water but performs best with consistent moisture",
+        "spacing": "allow 6 to 10 feet from structures and other plants at maturity; responds well to pruning and can be maintained at almost any size"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Yellow"
+      },
+      "other_notes": [
+        "The species was previously sold and catalogued under the synonym Ficus diversifolia — that name may still appear on older nursery labels and reference books.",
+        "Ficus deltoidea is rated for USDA Hardiness Zones 10a through 11. Bradenton sits at the edge of Zone 10a, so established plants in the ground may suffer leaf damage or dieback in an unusually cold winter; container plants can be moved to protection when a freeze threatens."
       ]
     },
     {
