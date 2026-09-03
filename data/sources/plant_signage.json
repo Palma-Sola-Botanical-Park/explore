@@ -2,10 +2,10 @@
   "meta": {
     "generated": "2026-06-23",
     "source": "PSBP_Master_Plant_Signage.xlsx",
-    "species_count": 263,
+    "species_count": 262,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-09-01T23:13:48",
+    "updated": "2026-09-02T22:02:30",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -18124,6 +18124,43 @@
       ]
     },
     {
+      "id": "PSBP-00219",
+      "common_name": "Pindo Palm",
+      "botanical_name": "Butia odorata",
+      "alternate_names": [
+        "Jelly Palm",
+        "South American Jelly Palm",
+        "Butia capitata"
+      ],
+      "inat_taxon_id": 364998,
+      "photo_taxa": [
+        180225
+      ],
+      "sign_level": "Species",
+      "taxonomy": {
+        "family": "Arecaceae"
+      },
+      "category": "",
+      "feature_tier": "Standard",
+      "has_sign": false,
+      "status": "spotted",
+      "native": false,
+      "internal_notes": "Imported 2026-06-23 from park inventory (EstPalms). 2026-09-02: RENAMED from 'Pindo Palm, Jelly Palm' / Butia capitata. The binomial was superseded in 2011 when B. odorata was raised from B. capitata var. odorata; palms cultivated worldwide as B. capitata are almost all B. odorata, and true B. capitata (Minas Gerais/Goias) is neither hardy nor in the trade. Palmpedia redirects Butia_capitata to Butia_odorata; UF/IFAS ST105 is titled 'Butia odorata: Pindo Palm'. The old binomial and the second common name entered from source archive/PalmaSola_Inventory.csv, which reads exactly: Butia capitata,\"Pindo Palm, Jelly Palm\". PSBP-00728 (Butia odorata, from an iNat observation) is the same palm and has been marked a duplicate of this record. SEE BOTANICAL_QUESTIONS entry 23. 2026-09-02: photo_taxa set to [180225] (genus Butia). The record's own taxon is now Butia odorata (364998), which returns only 2 park observations / 7 photos, because three of the five park observations are DEADLOCKED at genus — davidvanderbilt, jroch and ruby_meador hold Butia capitata against odorata from randall_carter and jimmy_plinco, and no species reaches iNat's two-thirds threshold. The genus fetch returns all 5 observations / 20 photos and covers every outcome, so it needs no revisiting when the community taxon resolves. No photo_exclude_taxa is required: the only other Butia record, PSBP-00728, is retired.",
+      "native_notes": null,
+      "watch_invasive": false,
+      "watch_invasive_notes": null,
+      "rare_fruit": false,
+      "form": "Palm & Cycad",
+      "safety_note": [],
+      "butterfly": {
+        "larval_food": false,
+        "larval_species": [],
+        "adult_food": false,
+        "adult_species": [],
+        "notes": null
+      }
+    },
+    {
       "id": "PSBP-00226",
       "common_name": "Vanuatu Palm",
       "alternate_names": [
@@ -25135,35 +25172,6 @@
       ]
     },
     {
-      "id": "PSBP-00533",
-      "common_name": "scarlet powder-puff",
-      "botanical_name": "Calliandra haematocephala",
-      "inat_taxon_id": 47441,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Fabaceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "spotted",
-      "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (2 obs at PSBP).",
-      "native_notes": null,
-      "watch_invasive": false,
-      "watch_invasive_notes": null,
-      "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
-      "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
-        "adult_food": false,
-        "adult_species": [],
-        "notes": null
-      }
-    },
-    {
       "id": "PSBP-00543",
       "common_name": "Areca Palm",
       "botanical_name": "Chrysalidocarpus lutescens",
@@ -25774,7 +25782,7 @@
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
-      "native": null,
+      "native": false,
       "internal_notes": [
         "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
         "2026-08-31: rare_fruit set true. Dovyalis hebecarpa is a genuine rare fruit and is observed in the grove east of Big Pond. Not on the Manatee Rare Fruit Council's published list, which is known to be incomplete in both directions — Randy: \"I know I've found things in their area not listed, and vice versa.\""
@@ -25783,15 +25791,100 @@
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": true,
-      "form": "",
-      "safety_note": [],
+      "form": "Shrub & Vine",
+      "safety_note": [
+        "The spines along the stems are sharp and abundant, particularly on younger growth — approach the shrub carefully and avoid reaching into the interior. The fruit is edible but strongly acidic and covered in short velvety hairs that most people find unpleasant; it is best processed into jams, jellies, or juice rather than eaten fresh. No known toxicity to people, dogs, or cats."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "alternate_names": [
+        "Ketembilla",
+        "Kitambilla",
+        "Ketcot"
+      ],
+      "quick_hits": [
+        "The species name hebecarpa is Greek for 'downy fruit' — a direct description of the velvety, hair-covered skin that makes the berry so distinctive and is one reason most people process it into jam rather than eat it out of hand.",
+        "David Fairchild — the botanist who introduced mangoes, soybeans, and avocados to the American table — brought the ketembilla to the United States too. He was candid that it was one of the few fruits he introduced that he never actually liked.",
+        "The ketembilla is dioecious, meaning male and female flowers grow on separate plants — but some female individuals sidestep that requirement entirely, producing viable seed on their own through parthenogenesis. One plant, no partner needed.",
+        "Florida used this plant's genetics to build a better fruit. In 1953, plant breeders crossed D. hebecarpa with D. abyssinica (the Abyssinian gooseberry) and produced a hybrid called the 'ketcot' or tropical apricot — a milder, less acidic fruit that is also grown in South Florida gardens today."
+      ],
+      "origin": [
+        "Dovyalis hebecarpa is native to Sri Lanka (formerly Ceylon, which gives the plant its common name) and southern India, where it grows in seasonally dry tropical habitat. The genus Dovyalis belongs to the willow family, Salicaceae — a placement that surprises most visitors who expect willows and pussywillows to be distant relatives of a spiny tropical shrub.",
+        "The plant reached the United States through Dr. David Fairchild, the USDA botanist responsible for introducing an estimated 200,000 exotic plants and crop varieties to the country over his career. The first fruiting specimens in the western hemisphere were apparently those growing in southern Florida.",
+        "From there, seeds moved to Cuba, Hawaii, and Honduras, and the species has since naturalized in Hawaii, Puerto Rico, parts of Central America, South Africa, and Florida."
+      ],
+      "more_information": [
+        "In Hawaii, the ketembilla was introduced not as a fruit crop but as living fencing — its dense growth and formidable spines made it an effective hedge for keeping cattle away from sugar cane plantations. The fruit economy came later. That dual role as both barrier and food source has followed the plant wherever it has traveled.",
+        "The fruit's flavor is intense and polarizing: a deep purple-red flesh that is extremely acidic and astringent when fresh, with notes that range from cranberry to lemon to faint apricot depending on ripeness. The skin is covered in short velvety hairs that most people find unpleasant to eat directly.",
+        "For all these reasons, the fruit is rarely enjoyed straight off the shrub — it earns its best reviews as jelly, jam, juice, or spiced preserves, where the acidity becomes an asset.",
+        "Fruit quality improves noticeably with ripeness: the berries are most palatable when slightly overripe and beginning to wrinkle, as this is when the sugars are most concentrated. A productive individual shrub can yield around 40 kilograms of fruit per year, making it a serious fruiting plant even at modest size."
+      ],
+      "wildlife_value": [
+        "The ketembilla's small, petal-free flowers attract generalist pollinators — bees and small insects drawn to the inconspicuous but accessible blooms. Because the plant is dioecious, both male and female shrubs contribute to a garden's pollinator activity across the bloom period.",
+        "The fruit is the plant's main wildlife currency. The deep purple berries, ripe in late spring to early summer, are readily taken by birds, which are the primary seed dispersers in naturalized populations.",
+        "The dense, thorny growth also provides reliable shelter and nesting cover — the same spines that make harvesting the fruit a careful business make the interior of the shrub an effective refuge for small birds."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "The ketembilla is dioecious — male and female flowers are borne on separate plants — though some female individuals are parthenogenetic and can produce viable seed without any pollination at all. In cultivation, propagation is by seed or, for air-layered plants, vegetatively; air-layered specimens tend to be less thorny and fruit sooner than seed-grown plants."
+          },
+          {
+            "label": "Flowers",
+            "text": "Flowers are small, inconspicuous, and lack petals entirely. Female flowers are typically solitary; male flowers are clustered. Both are greenish-yellow and appear in the leaf axils. The overall effect is modest — you are much more likely to notice the fruit than the bloom."
+          },
+          {
+            "label": "Fruit",
+            "text": "Small, round berries roughly 1 to 2.5 centimeters across. Skin transitions from orange-brown when unripe to deep maroon-purple at maturity and is covered in a fine, suede-like fuzz. The juicy interior flesh is purple-red and highly acidic; each berry contains 8 to 12 small hairy seeds. Ripe fruit is most palatable when it begins to wrinkle slightly."
+          },
+          {
+            "label": "Leaves",
+            "text": "Alternately arranged, simple, broadly lanceolate to elliptical, roughly 5 to 10 centimeters long. Margins are entire or finely toothed, and the surface has a soft, slightly velvety texture. Leaves are gray-green, with pinkish woolly petioles on young growth."
+          },
+          {
+            "label": "Spines",
+            "text": "Sharp, woody spines 3 to 6 centimeters long arise from the leaf axils along the stems, especially on younger growth. Thornless cultivars exist, but most plants in general cultivation carry spines — a detail worth knowing before reaching into the shrub."
+          }
+        ],
+        "what_to_look_for": "Start with the spines — sharp, axillary thorns on the stems are the first thing you notice up close. Look at the leaves for their alternately arranged, slightly velvety texture and gently wavy margins. In late spring to summer, watch the stems for the small, inconspicuous petal-free flowers nestled in the leaf axils. If the shrub is fruiting, the deep maroon-purple, fuzzy berries clustering along the branches are unmistakable — they really do look like dark velvet gooseberries."
+      },
+      "seasonality": {
+        "bloom_months": "spring",
+        "bloom_description": "Small, petal-free, greenish-yellow flowers, solitary (female) or clustered (male), appearing in the leaf axils; inconspicuous.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "late spring to early summer; some plants produce a second crop later in the year",
+        "notes": "Fruiting follows spring bloom. In warmer South Florida conditions, plants may fruit more than once annually."
+      },
+      "size": {
+        "height": "15 to 20 feet (4.5 to 6 m) in cultivation; occasionally larger",
+        "spread": "up to 30 feet — long, arching, wide-spreading branches",
+        "habit": "dense, spreading shrub or small tree; branches arch outward and often droop at the tips",
+        "growth_rate": "fast once established under warm, moist conditions",
+        "texture": "medium-fine foliage; overall impression is dense and bushy"
+      },
+      "growing_conditions": {
+        "light": "full sun; tolerates partial shade but fruits best with direct sun",
+        "soil_tolerances": "tolerates a wide range including wet and dry soils; adequate moisture during fruit development improves yield; prefers pH 5.5 to 7.5",
+        "drought_tolerance": "moderate once established; best fruiting with consistent moisture",
+        "spacing": "allow ample room — the spreading habit and long arching branches can cover 25 to 30 feet; keep clear of foot-traffic paths given the axillary spines"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "The ketembilla has a documented history as a hedgerow plant: its dense, thorny growth makes it an effective living fence, and it has been used for that purpose in Hawaii and parts of Central America. At Palma Sola it is best appreciated as the fruiting specimen it is, with room to spread.",
+        "Dovyalis hebecarpa is in the willow family (Salicaceae) — a family whose members in Florida range from coastal willows to pop ash to the governor's plum. The family's common thread is not appearance but a shared evolutionary lineage that modern molecular work has dramatically expanded beyond what older taxonomy would have predicted."
+      ]
     },
     {
       "id": "PSBP-00571",
@@ -25806,21 +25899,105 @@
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
-      "native": null,
+      "native": false,
       "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
       "native_notes": null,
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "Euphorbia tirucalli does not appear on the statewide FISC (formerly FLEPPC) Category I or II list. The Florida Keys Invasive Exotic Task Force notes occasional escapes near hammock edges in the Keys from dumping — a localized Keys concern, not relevant to Bradenton's latitude.",
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Foliage & Accent",
+      "safety_note": [
+        "The white latex sap is the real hazard here, and it is released the moment any stem is broken or cut. Skin contact causes a painful, burning rash; if the sap reaches the eyes, it can cause temporary blindness. Always wear gloves and eye protection when pruning or handling this plant, and wash any exposed skin immediately with soap and water.",
+        "The ASPCA lists Euphorbia tirucalli as toxic to dogs, cats, and horses — the sap causes immediate burning in the mouth, drooling, vomiting, and potentially serious skin reactions if a pet rolls in or chews the plant. If that happens, contact your veterinarian or the ASPCA Animal Poison Control Center at (888) 426-4435. Do not burn cut stems; the smoke is also irritating."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "alternate_names": [
+        "Pencil Cactus",
+        "Pencil Tree",
+        "Sticks on Fire",
+        "Milk Bush",
+        "Indian Tree Spurge",
+        "Naked Lady"
+      ],
+      "quick_hits": [
+        "The sap is not just unpleasant — it is one of the more chemically aggressive plant latexes known, and contact with the eyes can cause temporary blindness. That is not hyperbole; it is why field workers in Africa who remove or prune this plant wear eye protection.",
+        "Despite looking convincingly like a cactus, the Fire Stick has no relation to the cactus family. It is a euphorb — kin to poinsettias, cassava, and rubber trees — and it arrived at its pencil-thin, succulent-stem look entirely independently, through convergent evolution in a similarly dry climate.",
+        "In the 1970s and 1980s, researchers seriously investigated Euphorbia tirucalli as a petroleum crop. The latex contains hydrocarbons that can be cracked into high-octane gasoline, and estimates put the potential yield at one to two tons of crude oil per hectare per year.",
+        "The fiery orange and red color that gives this cultivar its name is not the plant's normal look. The straight species is plain green. The color intensifies in cool temperatures and full sun — a stress response that happens to be spectacular."
+      ],
+      "origin": [
+        "Euphorbia tirucalli is native to the semi-arid tropics of eastern and southern Africa, where it grows across open savanna, rocky outcrops, dry woodland, and river margins. Its natural range runs from South Africa north through Mozambique, Tanzania, Kenya, and into Ethiopia — covering much of the continent's hot, dry interior.",
+        "The plant has been cultivated and traded by people for so long that its precise original boundaries are genuinely hard to pin down. Arab and Indian Ocean traders carried it across the Arabian Peninsula and into South and Southeast Asia centuries ago, and it is now naturalized across the broader tropics.",
+        "It arrived in Florida as an ornamental and is grown across South Florida and warmer parts of Central Florida, typically in USDA Zones 10 and 11.",
+        "The 'Sticks on Fire' cultivar — the colorful form most often sold under the Fire Stick name — was collected from a naturally occurring orange-red form in South Africa and selected for its vivid stem color."
+      ],
+      "more_information": [
+        "The genus name Euphorbia honors Euphorbus, a first-century physician to King Juba II of Mauritania, who is believed to have used plants of this genus medicinally.",
+        "Linnaeus chose the species epithet tirucalli from a word used by the native people of Malabar, in southern India — a reminder that this African plant was already well established in Asia by the time European botanists formally described it.",
+        "The plant has no true leaves to speak of — the tiny oval leaves that appear briefly at branch tips are shed almost immediately. All photosynthesis happens through the green, pencil-thick stems themselves, which is why the plant can thrive in environments where a leafy plant would simply desiccate. The stems are the functional leaf.",
+        "Across rural East Africa, Euphorbia tirucalli has long been planted as a living fence — a dense, nearly impenetrable hedge around homesteads and livestock enclosures. The toxic sap that makes it dangerous to touch also makes it effective as a stock-proof barrier.",
+        "It coppices readily and can be trimmed to maintain a hedge, which is why it has been so widely adopted across the dry tropics for centuries."
+      ],
+      "wildlife_value": [
+        "The small yellow flowers attract bees, butterflies, and other insects in the plant's native range, where it functions as a minor but reliable nectar source in otherwise sparse, dry-season habitat. The flowers produce only minute quantities of nectar, so insect visits are primarily about what little is there.",
+        "In Florida, generalist bees may visit the flowers when the plant blooms, but no specialist pollinators have been documented here.",
+        "In southern Africa, birds nest in the dense branching structure and eat the seeds; the thorny, impenetrable form of a mature plant provides useful cover. In a Florida landscape setting, the plant's wildlife value is modest — it has no co-evolutionary history with local fauna and serves neither as a larval host for Florida butterflies nor as a significant nectar source.",
+        "Its main value in the garden is architectural and visual."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Propagation",
+            "text": "In cultivation, Fire Stick is almost always propagated by stem cuttings. A cutting is dipped briefly in water to stop the sap from flowing, then allowed to dry and callous for several days before being set in gritty, well-drained mix. The plant can also produce seed, but this is rarely the method used in horticulture."
+          },
+          {
+            "label": "Flowers",
+            "text": "The flowers are small, yellow, and easy to overlook — they appear at the tips of the branchlets in compact clusters. In the 'Sticks on Fire' cultivar, blooming tends to occur in cooler months when it occurs at all, and the flowers are never the main event. The floral structure is technically a cyathium, the cup-shaped pseudoflower characteristic of all euphorbias: what looks like a single bloom is actually a cluster of reduced male and female flowers surrounded by bracts and nectar-producing glands."
+          },
+          {
+            "label": "Stems",
+            "text": "The plant's defining feature is its mass of smooth, pencil-thin, cylindrical stems — roughly 5 to 8 millimeters in diameter — arranged in whorling, brush-like clusters. In the standard species these stems are green year-round. In the 'Sticks on Fire' cultivar they grade from green at the base through yellow and orange to vivid red at the tips, with the color intensifying in full sun and cooler temperatures."
+          }
+        ],
+        "what_to_look_for": "Look at the stem tips — that is where both the color and the flowers concentrate. In cool weather and bright sun the upper stems will be their most vivid orange-red. If the plant is blooming, you may spot tiny yellow clusters right at the branch tips, easy to miss against the colorful stems. Break no stems: the white sap that immediately oozes from any cut or wound is the plant's most memorable feature, and not in a pleasant way."
+      },
+      "seasonality": {
+        "bloom_months": "cooler months; late fall through winter in Florida",
+        "bloom_description": "Small, inconspicuous yellow cyathia appear at branch tips; rarely showy and easily overlooked against the colorful stems.",
+        "leaf_behavior": "effectively leafless — tiny deciduous leaves appear briefly at branch tips and are shed almost immediately; stems are the primary photosynthetic organ",
+        "fruiting_months": null,
+        "notes": "Stem color is most vivid in cooler months (fall through early spring) and in full sun. In Florida's warm summers the stems often fade toward yellow-green."
+      },
+      "size": {
+        "height": "4 to 8 feet in landscape settings for the 'Sticks on Fire' cultivar; the straight species can reach 20 to 30 feet",
+        "spread": "3 to 5 feet",
+        "habit": "upright, multi-stemmed shrub with irregular branching; denser and more compact than the straight species",
+        "growth_rate": "moderate",
+        "texture": "fine to medium — the pencil-thin stems read as fine-textured from a distance, coarser as a mass planting"
+      },
+      "growing_conditions": {
+        "light": "full sun; color is most vivid in full sun — partial shade produces greener, less colorful stems",
+        "soil_tolerances": "well-drained sandy or gritty soils; tolerates poor, lean, and rocky soils; cannot tolerate wet or waterlogged conditions",
+        "drought_tolerance": "excellent once established; one of the more drought-tolerant landscape shrubs available in South and Central Florida",
+        "spacing": "allow 3 to 5 feet; can be used as a bold accent or in small groupings — keep well away from pathways and high-traffic areas given the caustic sap"
+      },
+      "edibility": {
+        "level": "Red"
+      },
+      "toxicity": {
+        "level": "Red",
+        "dogs_level": "Red"
+      },
+      "other_notes": [
+        "The 'Sticks on Fire' cultivar sold under the Fire Stick name is notably more compact than the straight species, which can reach tree-like proportions in truly warm climates. At Palma Sola Botanical Park's Zone 10A latitude, established plants may be set back by an unusually cold winter, but typically rebound from the base.",
+        "Despite the cactus look, no spines are present anywhere on this plant. Visitors who want to touch it are deterred not by puncture risk but by the sap — which is a good reason to admire it with eyes rather than hands."
+      ]
     },
     {
       "id": "PSBP-00572",
@@ -27306,7 +27483,7 @@
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
-      "native": null,
+      "native": false,
       "internal_notes": [
         "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
         "2026-08-31: rare_fruit set to true. It was false while the plant is observed in the rare fruit grove and belongs to that collection. Randy: \"set flag for species that match their list and observations show are over there.\" On the MRFC list as Malabar Chestnut / Guyana Chestnut (Pachira aquatica); the park's plants key to the closely related P. glabra. Two observations in the grove."
@@ -27315,14 +27492,98 @@
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": true,
-      "form": "",
-      "safety_note": [],
+      "form": "Tree",
+      "safety_note": [
+        "The seeds have a long history of being eaten in Brazil and West Africa — roasted, boiled, or ground — and are widely regarded as edible, with a flavor similar to peanuts. However, a published medical case report documented serious toxicity (including neurological effects) in a person who consumed large quantities of 'money tree' seeds — identified as Pachira glabra or the closely related P.",
+        "macrocarpa — over an extended period. Eat sparingly and with caution, and do not eat unripe seeds, which may cause digestive upset. The plant is not considered toxic to dogs or cats in the amounts a pet would typically encounter, though any animal ingesting large amounts of plant material can experience gastrointestinal upset; contact your vet if concerned."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
+      },
+      "alternate_names": [
+        "Guinea Peanut",
+        "French Peanut",
+        "Glabrous Pachira",
+        "Money Tree",
+        "Lucky Tree",
+        "Bombacopsis glabra"
+      ],
+      "quick_hits": [
+        "That braided 'money tree' on a thousand windowsills is almost certainly this species — not Pachira aquatica, despite what the tag says. The mix-up began in Taiwan, where nurseries first braided and exported P. glabra in the 1980s and labeled it P. aquatica by mistake. The error is now baked into global commerce.",
+        "The seeds pack about 40 to 50 percent fat and 16 percent protein — roughly the nutritional profile of a peanut — and in parts of Brazil and West Africa they are eaten roasted or boiled as a real food crop. The tree you're looking at isn't purely ornamental; it just gets treated that way outside its homeland.",
+        "The flowers open after dark and are down by midday — so a clear morning is genuinely your best window for finding one fully open on the tree.",
+        "The trunk starts to bulge noticeably at the base almost from seedling stage, an early sign of the water-storage tissue packed into the lower wood. In the wild this helps the tree ride out both dry spells and seasonal floods along Brazilian river margins."
+      ],
+      "origin": [
+        "Native to eastern Brazil, where it grows along rivers and other waterways in alluvial lowland forest. It is not very common in its natural state — secondary formations near riverbanks rather than dense primary forest are where it is most reliably found. Some sources extend the range northward through the Guianas and into Central America, though eastern Brazil is the best-documented core.",
+        "From Brazil the species spread widely in cultivation across the tropics and subtropics — valued both as a food crop (its protein-rich seeds) and as an ornamental. In Florida it arrived as a landscape tree suited to the wet-tolerant, fast-growing category, and it has settled in comfortably in the warmer zones of the state. It is not documented as escaped or naturalized in Florida's natural areas."
+      ],
+      "more_information": [
+        "Pachira glabra sits in the subfamily Bombacoideae alongside some remarkable company — kapok, balsa, and the baobab all belong to the same group, and they share a family trait: swollen trunks or trunk bases adapted to store water through dry seasons or droughts. The Saba Nut shows this in miniature, with a distinctly bulging base even on young trees.",
+        "The species formerly traveled under the name Bombacopsis glabra, before Bombacaceae was folded into the much larger mallow family Malvaceae. The old genus name still shows up on older labels and in some nursery literature, so you may see both in circulation.",
+        "Worldwide, Pachira glabra is probably best known as the plant misidentified as the 'money tree' — a role it shares, confusingly, with its close relative Pachira aquatica. The braided houseplant sold under that name in garden centers is almost always P. glabra. The two look very similar, but in flower they give themselves away: P. glabra's stamens are creamy white throughout, while P.",
+        "aquatica's are tipped in red."
+      ],
+      "wildlife_value": [
+        "The flowers of Pachira glabra are large, white, fragrant, and strictly nocturnal — they open after dark and fall by midday, a profile that points squarely toward nighttime pollinators.",
+        "The genus Pachira has been associated with sphingid hawkmoths as pollinators, and the flower form — wide, accessible, pale, and fragrant at night — is broadly consistent with bat visitation as well, though specific pollinator records for this species in Florida are not well documented.",
+        "As a non-native tree with no long co-evolutionary history with Florida's fauna, the Saba Nut does not function as a larval host for local butterflies or moths. Visitors looking for the park's richest pollinator habitat will find it in the native plantings, but this tree's nighttime flower display is worth watching for on a warm evening visit."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagated readily from seed — germination rates are high and seedlings develop quickly, typically ready to transplant within three to four months of sprouting. Stem cuttings and air layers also root reliably. The tree is hermaphroditic, meaning individual flowers carry both male and female parts, so a single tree can set fruit without a partner."
+          },
+          {
+            "label": "Flowers",
+            "text": "Large, white, and fragrant, with long strap-like petals that reflex to reveal a showy brush of creamy-white stamens. Flowers are borne on a long terminal stalk, open after dark, and typically fall by midday the following day. In Florida, flowering occurs mainly in warmer months."
+          },
+          {
+            "label": "Fruit",
+            "text": "A smooth green capsule roughly 4 to 8 inches long that splits open when ripe to reveal 10 to 25 large, irregularly rounded brown seeds. Unlike its relative P. aquatica, the capsule stays green rather than turning brown. Seeds are oil-rich and edible when properly prepared."
+          },
+          {
+            "label": "Leaves",
+            "text": "Palmately compound, with 5 to 9 lance-shaped leaflets radiating from a long petiole — the arrangement that prompted the five-element symbolism in feng shui tradition. Leaflets are glossy green, 6 to 11 inches long, and held on long petioles that give the crown an open, airy look."
+          },
+          {
+            "label": "Trunk and Bark",
+            "text": "Smooth, greenish-gray to olive-gray bark that retains its green tint even on mature specimens — a useful field mark distinguishing it from P. aquatica, which develops rougher, grayer bark with age. The trunk base is often noticeably swollen, even on young trees, from water-storage tissue in the wood."
+          }
+        ],
+        "what_to_look_for": "Start with the trunk: smooth, distinctly greenish-gray bark with a swollen base, even on young trees. The palmately compound leaves — five to nine lance-shaped leaflets splaying outward like a hand — are distinctive and held on long, arching petioles. If the tree is in fruit, look for smooth green capsules (not brown) that split to show large rounded seeds inside. And if you're at the park early on a warm morning, check the branch tips for the white brushy flowers, which open overnight and are often still present at dawn."
+      },
+      "seasonality": {
+        "bloom_months": "primarily warm months; in Florida roughly spring through early fall",
+        "bloom_description": "Large, white, fragrant flowers with long reflexed petals and a showy brush of creamy stamens; nocturnal, opening after dusk and dropping by midday.",
+        "leaf_behavior": "evergreen to semi-deciduous; largely evergreen in the warm conditions of Bradenton",
+        "fruiting_months": "follows flowering; green capsules ripen and split in summer through fall",
+        "notes": "Individual flowers last less than 24 hours; the tree flowers over an extended season rather than in a single flush. Fruit capsules are green even when ripe."
+      },
+      "size": {
+        "height": "13 to 40 feet in cultivation; up to 55 feet in the wild",
+        "spread": "15 to 25 feet",
+        "habit": "upright to broadly spreading; often multi-stemmed; open canopy with arching compound leaves",
+        "growth_rate": "fast — one of the faster-growing ornamental trees for Florida's warm zones",
+        "texture": "medium-coarse; large compound leaves give a tropical, open feel"
+      },
+      "growing_conditions": {
+        "light": "full sun to partial shade; most vigorous in full sun",
+        "soil_tolerances": "adaptable to sandy, loamy, and clay soils; tolerates both acidic and alkaline pH; notably tolerant of both drought and periodic flooding — a riverbank tree by nature",
+        "drought_tolerance": "good once established; water-storage tissue in the trunk base aids survival through dry spells",
+        "spacing": "allow 15 to 20 feet from structures; the spreading canopy and fast growth rate need room"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Green"
       }
     },
     {
@@ -27929,10 +28190,13 @@
       "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP). 2026-08-28: merged PSBP-00465 (Tecoma capensis) into this record — same iNat taxon 286772, entered twice under two names (park inventory vs iNaturalist). Carried over: type, native, import_source, csv_data, research_source.",
       "native_notes": null,
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "UF/IFAS Predictive Assessment: high probability of becoming invasive in Florida's natural areas — planting is not recommended by UF/IFAS. Not currently on the FISC (formerly FLEPPC) Category I or II list, but has escaped cultivation in central and southern Florida. This specimen predates the flag and is maintained as an established collection plant.",
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Shrub & Vine",
+      "safety_note": [
+        "Some people develop skin irritation from handling the foliage or stems — gloves are a sensible precaution when pruning. The plant is not considered seriously toxic, but ingestion of any part may cause mild digestive upset in people or pets; it is not a food plant and should not be eaten.",
+        "If a pet ingests a significant amount, contact your veterinarian or the ASPCA Animal Poison Control Center at (888) 426-4435."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
@@ -27953,6 +28217,85 @@
       "research_source": "park_inventory",
       "alternate_names": [
         "Tecoma capensis"
+      ],
+      "quick_hits": [
+        "Despite the name, Cape Honeysuckle has nothing to do with true honeysuckles — it belongs to the trumpet-vine family, Bignoniaceae, and its closest North American relatives are the yellow bells (Tecoma stans) and our native crossvine.",
+        "Tecomaria capensis is the only species in its genus — and in its South African homeland, sunbirds are its primary pollinators, hovering at the curved tubular flowers the same way Ruby-throated Hummingbirds work them here.",
+        "When this plant scrambles into a neighboring shrub and blooms from its canopy, it can look convincingly as though the host plant has burst into orange flowers. The trick has fooled more than one gardener.",
+        "The species epithet capensis simply means 'of the Cape' — a reference to the Cape of Good Hope region of South Africa, where the plant was first collected and described in the late 1700s."
+      ],
+      "origin": [
+        "Native to coastal and inland southern and central Africa, from the Western and Eastern Cape of South Africa north through KwaZulu-Natal, Mpumalanga, and Limpopo, and continuing into Eswatini, Mozambique, Tanzania, and beyond. In the wild it favors forest margins and drainage lines in dense woodland, equally at home in moist spots and dry scrub.",
+        "It reached Florida through the ornamental trade and is now a common landscape shrub across the southern two-thirds of the state, valued for fast growth, drought tolerance, and nearly year-round bloom.",
+        "The plant has escaped cultivation in parts of central and southern Florida, and UF/IFAS has flagged it as a species whose planting is not recommended due to a high probability of becoming invasive in Florida's natural areas."
+      ],
+      "more_information": [
+        "In its South African range, Cape Honeysuckle is a workhorse plant with deep cultural roots. Bark, leaves, and roots have long been used in traditional medicine to treat fever, pain, insomnia, bronchitis, dysentery, and bleeding gums — a remarkably broad pharmacopoeia for a single shrub.",
+        "These are ethnobotanical records, not clinical endorsements, but they speak to how embedded this plant is in the landscapes where it evolved.",
+        "The genus name Tecomaria is a botanical nod to Tecoma, a closely related New World genus — the name was coined specifically to signal the family resemblance while marking the plant as distinctly African.",
+        "The two genera share the trumpet-vine family (Bignoniaceae) and a similar flower architecture, which is why hummingbirds, shaped by millions of years of Tecoma, take to Cape Honeysuckle so readily.",
+        "Cape Honeysuckle can be a bit of a shapeshifter in the garden. Left to its own devices it sprawls and scrambles, using neighboring plants for support, and can reach well over eight feet. Pruned hard and regularly, it tightens into a dense, billowing hedge. Tied to a fence or trellis, it functions convincingly as a vine. Few shrubs are this adaptable to the gardener's intentions."
+      ],
+      "wildlife_value": [
+        "The tubular, curved flowers are built for bird pollination, and in Florida hummingbirds are the primary takers — Ruby-throated Hummingbirds work the blooms actively during migration and the winter months when few other red-orange tubular flowers are available.",
+        "Sulphur butterflies and honeybees are regular nectar visitors as well, making the plant a reliable pollinator resource through the warm season.",
+        "The dense, multi-stemmed branching provides good nesting cover and shelter for small birds. In its African homeland the plant also supports sunbirds as its chief pollinators, and the foliage feeds livestock and game — context that helps explain why it has traveled so widely as an ornamental. At Palma Sola, watch the flowers in the morning for the most activity."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagated easily from semi-hardwood or hardwood cuttings, by layering, or by division of rooted suckers. Seed is viable but cuttings are the more reliable method. The plant does not spread by aggressive underground runners, but wind-dispersed seeds can carry beyond the garden."
+          },
+          {
+            "label": "Flowers",
+            "text": "Tubular, two-lipped, and about two inches long, clustered in showy terminal heads. Flower color in the straight species is orange to orange-red; cultivars extend the range to yellow, apricot, and deep red. The stamens are exserted — they protrude visibly beyond the flower mouth — a detail that makes the blooms look slightly untamed up close."
+          },
+          {
+            "label": "Fruit",
+            "text": "A long, narrow, flattened capsule — roughly five inches long and less than half an inch wide — that turns from green to brown as it matures, then splits lengthwise to release many papery, winged seeds. The wings allow wind dispersal over a meaningful distance."
+          },
+          {
+            "label": "Leaves",
+            "text": "Pinnately compound with typically five to nine leaflets per leaf. Leaflets are broadly oval to nearly round, glossy dark green, and edged with blunt teeth. The leaf rachis and petiole are slightly flattened or winged — a detail easier to see than to describe, once you know to look for it."
+          },
+          {
+            "label": "Stems and Bark",
+            "text": "Multi-stemmed, arching, and somewhat scrambling. Young stems are pale brown with visible lenticels (small pores). Older wood is pale tan to gray. The plant does not produce thorns."
+          }
+        ],
+        "what_to_look_for": "The most immediate clue is the flower clusters: hot orange trumpets in tight heads at the branch tips, with stamens that poke out beyond the petals. Look at a compound leaf and count the leaflets — usually seven, glossy, with scalloped edges and a slightly flattened central stalk. After flowering, look for the long, slender seed pods drying on the plant; when ripe they split open and you may catch the papery winged seeds drifting off. Up close, young stems show scattered pale lenticels against pale brown bark."
+      },
+      "seasonality": {
+        "bloom_months": "nearly year-round in frost-free conditions; peak fall through spring",
+        "bloom_description": "Terminal clusters of tubular orange to orange-red flowers, about two inches long, with protruding stamens. Flowering is described as erratic — bursts can occur in almost any month.",
+        "leaf_behavior": "evergreen in Bradenton's climate; may lose leaves briefly after an unusual cold event",
+        "fruiting_months": "follows bloom flushes; long narrow capsules can be found on the plant through much of the year",
+        "notes": "Bloom timing in central Florida tends toward fall and winter peak, which coincides well with hummingbird migration and the relative scarcity of other nectar sources."
+      },
+      "size": {
+        "height": "6 to 10 feet as a managed shrub; can exceed 15 feet when scrambling unsupported",
+        "spread": "8 to 10 feet or more",
+        "habit": "multi-stemmed, arching, and scrambling — shrub or informal vine depending on how it is managed",
+        "growth_rate": "fast — can put on several feet per year in warm climates",
+        "texture": "medium — the glossy compound leaves give a lively, slightly tropical look without reading as coarse"
+      },
+      "growing_conditions": {
+        "light": "full sun to partial shade; blooms most freely in full sun",
+        "soil_tolerances": "adaptable — sand, loam, or clay; tolerates both acidic and alkaline pH; prefers well-drained but handles occasional moisture",
+        "drought_tolerance": "high once established",
+        "spacing": "allow 8 to 10 feet — this plant spreads freely and will need periodic pruning to keep it in bounds; site where its scrambling habit can be managed or directed"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Yellow"
+      },
+      "other_notes": [
+        "The botanical name is in active taxonomic flux: some authorities, including USDA PLANTS and Kew's Plants of the World Online, have subsumed Tecomaria into Tecoma, making the accepted name Tecoma capensis (Thunb.) Lindl. Other sources retain Tecomaria capensis. The park's label uses the traditional Tecomaria capensis, which remains in wide horticultural use.",
+        "Several cultivars are in the trade, most notably 'Aurea' (yellow flowers) and 'Apricot' (a more compact form with soft orange blooms). The plant displayed here is the straight species in its natural orange-red."
       ]
     },
     {
@@ -27968,21 +28311,111 @@
       "feature_tier": "Standard",
       "has_sign": false,
       "status": "spotted",
-      "native": null,
+      "native": false,
       "internal_notes": "Imported 2026-06-23 from iNaturalist observations (2 obs at PSBP).",
       "native_notes": null,
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Foliage & Accent",
+      "safety_note": [
+        "Every part of this plant contains insoluble calcium oxalate crystals, and chewing or swallowing any portion — leaf, stem, or fruit — causes immediate burning and swelling of the mouth, tongue, and throat, along with drooling, vomiting, and difficulty swallowing. Do not eat any part of this plant.",
+        "The ASPCA lists Thaumatophyllum and Philodendron species as toxic to dogs and cats on the same grounds; keep pets and small children away from it. The sap can also irritate skin and eyes on contact. If a person or pet ingests any part of the plant, contact a physician or the ASPCA Animal Poison Control Center at (888) 426-4435."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "alternate_names": [
+        "Selloum",
+        "Split-Leaf Philodendron",
+        "Lacy Tree Philodendron",
+        "Horsehead Philodendron",
+        "Guaimbé",
+        "Philodendron selloum"
+      ],
+      "quick_hits": [
+        "The flower heats itself up. When the inflorescence opens, the plant burns fat — not sugar, the way almost all plants do — to raise the temperature of its spadix to as high as 115°F (46°C) above the surrounding air. The heat volatilizes scent compounds and carries them farther, drawing in the scarab beetles that pollinate it in the wild.",
+        "That same beetle, Erioscelis emarginata, does not exist in the United States. So in cultivation here, the plant can flower freely but sets seed only with hand pollination — every seedling in a Florida nursery is the product of deliberate human intervention.",
+        "The name Thaumatophyllum means 'wonder leaf' in Greek, and bipinnatifidum means 'twice deeply divided' — both names are simply describing what you see. The leaf is cut almost to the midrib in a double pattern, giving it that distinctive, almost architectural silhouette.",
+        "What look like eye-drop shapes on the trunk are leaf scars — each one the exact outline of where a petiole once attached. On a mature plant you can count them up the stem like tree rings and get a rough sense of age."
+      ],
+      "origin": [
+        "The Tree Philodendron is native to South America — from eastern Bolivia through Paraguay and southern Brazil into northeastern Argentina. In the wild it is a habitat generalist: it grows in rainforest and riverside forest but also turns up in seasonally drier woodland, on swampy ground, and on rocky coastal slopes.",
+        "It arrived in Florida as an ornamental and is now one of the most commonly planted large-leaved tropicals in the state. UF/IFAS recognizes it as a landscape plant across USDA hardiness zones 8B through 11, which covers all of Florida. It is also an important nursery crop — Central Florida is a significant production center for it."
+      ],
+      "more_information": [
+        "The genus name Thaumatophyllum was originally coined by botanist Heinrich Wilhelm Schott in 1859, but was soon merged back into Philodendron and largely forgotten for over 150 years.",
+        "DNA work led by Cassia Sakuragui at the Federal University of Rio de Janeiro revived it in 2018, when genetic analysis showed that these large, self-supporting, tree-like aroids are not closely related to true climbing Philodendrons.",
+        "The reclassification is still unsettled: as of late 2025, Plants of the World Online and Kew's World Checklist treat Thaumatophyllum as a synonym of Philodendron, while other databases accept it as a separate genus. You will find this plant labeled both ways in references, nurseries, and botanical gardens — both names refer to the same plant.",
+        "In the wild, the Tree Philodendron is more flexible in its growth habit than it appears in cultivation. Plants may root directly in the ground or grow against trees, anchored by thick aerial roots that emerge from older sections of the stem. The sprawling, ground-level clumps you see in Florida landscapes are only one expression of what this plant can do when it has a structure to lean on."
+      ],
+      "wildlife_value": [
+        "In its South American home range, the Tree Philodendron has a specialized and intimate relationship with a single large scarab beetle, Erioscelis emarginata. When the inflorescence opens, the plant generates intense heat — burning fat rather than carbohydrates to do so — which volatilizes aromatic compounds and broadcasts them over a long distance.",
+        "The heat also creates a warm, sheltered microclimate inside the spathe that encourages beetles to linger and mate, increasing the chance of pollination. It is a remarkably engineered exchange.",
+        "That beetle does not live in Florida, so here the plant provides no equivalent pollinator value when it flowers. It is also not a documented larval host for any Florida butterfly or moth. Its wildlife contribution in a local garden context is modest: the dense, low canopy offers shelter, and in rare cases where fruit is set it can attract birds.",
+        "Visitors looking for rich pollinator and butterfly habitat will find it in the park's native plantings."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagated by seed or by division of the basal offshoots (pups) that mature plants produce. Seed set in Florida requires hand pollination because the plant's native beetle pollinator does not occur in the United States. The female flowers on an inflorescence become receptive roughly 48 hours before the male flowers shed pollen — a timing gap that prevents self-pollination and makes natural fruit set here essentially impossible without human intervention."
+          },
+          {
+            "label": "Flowers",
+            "text": "The inflorescence is a classic aroid structure: a cream to greenish-white spathe (the hood-like bract) wrapped around a central spadix. It is not especially showy at a distance, but it is biologically remarkable — the spadix generates intense heat during anthesis to volatilize and broadcast scent compounds that attract its beetle pollinator. Temperatures as high as 115°F (46°C) above ambient air have been recorded."
+          },
+          {
+            "label": "Fruit",
+            "text": "When seed does set, the result is a fleshy, multi-seeded berry clustered along the spadix, ripening from green to orange-yellow. Fruit is rarely seen on Florida plants without deliberate hand pollination."
+          },
+          {
+            "label": "Leaves",
+            "text": "The leaves are the main event: large, deeply and repeatedly lobed — cut almost to the midrib in mature specimens — dark glossy green, and attached to long, thick petioles. Juvenile leaves are less divided and more heart-shaped; the characteristic adult lacing develops as the plant matures. Leaves can exceed three feet across on established plants growing in good conditions."
+          },
+          {
+            "label": "Stem and Roots",
+            "text": "The stem is stout, woody, and slow to elongate — the plant spends its early years as a ground-level clump before developing any appreciable trunk. The stem is marked with distinctive oval 'eye-drop' leaf scars where old petioles detached. Long, cord-like aerial roots emerge from older stem sections and anchor the plant; in the wild these roots can be substantial enough to support the plant against a tree or bank."
+          }
+        ],
+        "what_to_look_for": "Start at the base: look for the thick, scarred stem and the long aerial roots running outward along the ground. The eye-drop leaf scars on the stem are distinctive — each one the exact silhouette of an old petiole base. Then look up into the canopy of leaves: on a mature plant they are deeply cut, almost to the midrib, in a way that makes the whole leaf look like an elaborate lace pattern. If an inflorescence is present, look for the cream-colored spathe cupping the central spadix — and on a warm morning you may actually be able to feel heat radiating from it if you hold your hand close."
+      },
+      "seasonality": {
+        "bloom_months": "spring to summer (may flower sporadically in warm months)",
+        "bloom_description": "A cream to greenish-white spathe surrounding a heat-generating spadix; not showy at a distance but biologically notable. The plant generates intense warmth during anthesis to disperse scent and attract beetle pollinators.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "fruit rarely develops in Florida without hand pollination; when present, follows bloom",
+        "notes": "Outdoors in Bradenton's climate this plant grows year-round and does not have a pronounced dormant season. Cold below about 28°F can damage or kill the foliage, but established plants typically resprout from the base."
+      },
+      "size": {
+        "height": "6 to 15 feet in typical Florida landscape use; can exceed 15 feet in ideal conditions over many years",
+        "spread": "8 to 15 feet or more — the plant spreads by producing basal offshoots and the leaves arch widely",
+        "habit": "clumping, ground-level rosette when young; develops a short, stout trunk with age; overall silhouette is broad and tropical",
+        "growth_rate": "moderate; faster with regular water and fertility",
+        "texture": "very coarse — one of the boldest leaf textures in the landscape"
+      },
+      "growing_conditions": {
+        "light": "full sun to deep shade — remarkably adaptable; grows most vigorously in bright indirect light or morning sun with afternoon shade in Florida's climate",
+        "soil_tolerances": "adaptable to a wide range of soils — sand, loam, or organic-rich mix; prefers moist, well-drained, slightly alkaline to neutral soil; does not tolerate high salt concentrations",
+        "drought_tolerance": "moderate once established; performs best with consistent moisture",
+        "spacing": "allow at least 6 to 10 feet from structures and other plants — the clump spreads steadily via basal offshoots and needs room"
+      },
+      "edibility": {
+        "level": "Red"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Yellow"
+      },
+      "other_notes": [
+        "The name on the label may confuse visitors. 'Philodendron selloum' and 'Philodendron bipinnatifidum' are older synonyms you will still see widely in nurseries, garden books, and online references — they all refer to this same plant.",
+        "The genus Thaumatophyllum was revived by DNA research in 2018 but is not yet universally accepted by taxonomic databases; Kew's World Checklist currently treats it as a synonym of Philodendron. Either name on a label is botanically defensible today.",
+        "The common name 'split-leaf philodendron' creates a frequent identification error: it is also routinely applied to Monstera deliciosa, which is an entirely different plant in a different genus. If you see that name in a nursery, check the leaf — on a true Monstera the lobes have holes (fenestrations) in them; on this plant they do not."
+      ]
     },
     {
       "id": "PSBP-00700",
@@ -29912,15 +30345,100 @@
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Foliage & Accent",
+      "safety_note": [
+        "The leaf margins are finely serrated and will scratch bare skin — worth keeping in mind when walking close to the plant. The ASPCA lists Beaucarnea recurvata as non-toxic to dogs, cats, and horses. The fruit is not a food source, but it is not toxic either. Otherwise harmless."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "native": false,
+      "alternate_names": [
+        "Ponytail Palm",
+        "Bottle Palm",
+        "Elephant Foot Tree"
+      ],
+      "quick_hits": [
+        "That swollen base is a living water tank. The caudex — the technical name for this woody reservoir — lets the plant survive months of drought in its native Mexican dry forest, and it works exactly the same way in a Florida summer: the tree simply draws on its own reserves.",
+        "This plant is simultaneously one of the world's most popular ornamentals and one of Mexico's most threatened wild plants. The IUCN lists it as Critically Endangered in the wild, with international trade regulated under CITES Appendix II — yet cultivated plants number in the countless millions worldwide.",
+        "Despite every name pointing elsewhere, the Elephant's-foot is not a palm, not a bottle palm in the Arecaceae sense, and not closely related to any true palm. It is a member of the asparagus family — a closer botanical relative of agave and yucca than of a coconut.",
+        "A mature wild specimen can live for centuries. Registered individuals in Mexico are estimated to be 350 years old, which means some of those plants were already old trees when the first European botanists arrived in the New World."
+      ],
+      "origin": [
+        "Beaucarnea recurvata is native to the semi-arid deciduous forests of eastern Mexico — principally the state of Veracruz, with historically documented populations also in Oaxaca, Puebla, San Luis Potosí, and Tamaulipas. It grows on rocky, well-drained soils in low dry forest, often alongside agave and yucca relatives.",
+        "The species arrived in cultivation in Europe during the nineteenth century and has since spread to warm-climate gardens worldwide. In Florida it is grown as a landscape specimen in the southern half of the state, and UF/IFAS rates it suitable for USDA Hardiness Zones 10A through 11.",
+        "At Bradenton's latitude it performs well in the ground; a cold snap below the mid-teens Fahrenheit can damage or kill unprotected plants."
+      ],
+      "more_information": [
+        "The genus name honors Jean-Baptiste Beaucarne, a nineteenth-century Belgian collector of succulents. The species epithet recurvata — Latin for 'bent back' or 'curved' — describes the characteristic arch of its long, strap-like leaves, which droop and curl at the tips rather than standing stiffly upright.",
+        "The trunk base of an old specimen is one of botany's more dramatic sights. UF/IFAS notes the caudex can reach seven feet across in mature plants, tapering into a much narrower stem before branching near the top. That dramatic taper, widest at the soil line, is the silhouette that earned the plant its 'elephant's foot' and 'bottle palm' names.",
+        "In the wild, Beaucarnea recurvata is in serious trouble. Habitat conversion to agriculture and pasture has destroyed much of its native dry forest, and the plant's slow growth rate means populations cannot recover quickly from losses. Illegal collection of large wild specimens for the ornamental trade has compounded the problem.",
+        "The species is protected under Mexican law, listed as Critically Endangered by the IUCN, and regulated under CITES Appendix II — meaning any international trade requires documentation certifying nursery origin. Plants in cultivation far outnumber those left in the wild."
+      ],
+      "wildlife_value": [
+        "In its native Mexican dry forest, Beaucarnea recurvata produces panicles of small creamy-white to yellow flowers that attract pollinating insects, particularly bees and flies active in open, sun-exposed habitats. In Florida cultivation, the inflorescences similarly draw general pollinators when they appear.",
+        "Because this is a non-native plant with no evolutionary history shared with Florida's fauna, it does not serve as a larval host for local butterflies or moths. Visitors looking for the park's most productive butterfly and pollinator habitat will find it among the native plantings."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagated by seed; no suckering in young plants, though old multi-trunked specimens occasionally produce offsets at the base. The plant is dioecious — male and female flowers are borne on separate individuals — so only female plants in the presence of a male will set fruit."
+          },
+          {
+            "label": "Flowers",
+            "text": "Creamy yellow to white, tiny individually but massed into large, showy panicles held above the leaf tufts. UF/IFAS notes they are quite showy and appear in spring or summer, sometimes two or three times a year on vigorous plants. Mature size is typically needed before flowering begins."
+          },
+          {
+            "label": "Fruit",
+            "text": "Small reddish, three-winged capsules, roughly half an inch long, follow the flowers on female plants. They are not edible and not ornamentally significant compared to the flowers."
+          },
+          {
+            "label": "Leaves",
+            "text": "Long, narrow, strap-like, and dark green — up to five feet long and three-quarters of an inch wide, according to UF/IFAS. They are produced in dense tufts at branch tips and arch outward and downward, curling loosely at the ends. The leaf margins are finely serrated and can scratch skin on contact."
+          },
+          {
+            "label": "Trunk",
+            "text": "The most distinctive feature: a dramatically swollen, bulbous caudex at the base — sometimes reaching seven feet across in very old specimens — that tapers into a much narrower stem. The bark is gray-brown, becoming deeply fissured and corky with age. Older plants eventually branch near the crown, each branch tip capped with its own ponytail of leaves."
+          }
+        ],
+        "what_to_look_for": "Start at the base: the dramatic bulge at soil level, widest right where the plant meets the ground, is the plant's defining feature and the source of every common name it carries. Trace the trunk upward as it narrows, then look for where it branches in older specimens, each branch topped with a cascade of long, arching dark-green leaves. Run a careful finger along a leaf edge and you'll feel the fine serrations that give those graceful leaves a surprisingly sharp margin. If the plant is in bloom, look for the tall, branching flower stalks rising above the leaf tufts — they can extend well beyond the leaves."
+      },
+      "seasonality": {
+        "bloom_months": "spring and summer; occasionally again later in the year",
+        "bloom_description": "Showy panicles of small creamy yellow to white flowers held above the foliage; only produced on mature plants and only if the specimen is old enough to have flowered before.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "follows spring and summer bloom on female plants",
+        "notes": "Plants must reach maturity before flowering — young specimens in containers may never bloom. Flowering is most reliable in the ground in a warm, sunny exposure."
+      },
+      "size": {
+        "height": "12 to 18 feet in Florida landscapes (UF/IFAS); rarely exceeds 10 feet in containers; up to 30 feet in the wild",
+        "spread": "10 to 15 feet at the crown",
+        "habit": "single trunk, swollen at the base, upright and narrowing; branching near the top in older plants, each branch tipped with a leaf tuft",
+        "growth_rate": "slow",
+        "texture": "fine — the narrow, arching leaves create a delicate visual texture despite the bold trunk"
+      },
+      "growing_conditions": {
+        "light": "full sun preferred; tolerates partial shade but best form and flowering in full sun",
+        "soil_tolerances": "wide range — sand, loam, rocky soils; well-drained is essential; UF/IFAS notes a strong tendency toward root rot on poorly drained or wet soils",
+        "drought_tolerance": "excellent — the swollen caudex stores water for extended dry periods; established plants require minimal irrigation",
+        "spacing": "allow 10 to 15 feet from structures and other large plants; the crown spreads 10 to 15 feet at maturity"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "UF/IFAS rates this species for USDA Hardiness Zones 10A through 11. Bradenton sits at the edge of Zone 10A, so established in-ground specimens here are at mild risk in an unusually cold winter. The plant at Palma Sola Botanical Park is a reasonable test of what this species can sustain at the northern limit of its outdoor range.",
+        "Any large Beaucarnea recurvata you see for sale deserves a second look at its provenance. Wild populations in Mexico are critically endangered and protected under both Mexican law and CITES Appendix II. Unusually large, old-looking specimens with unclear origins are a conservation red flag; nursery-propagated plants are the responsible choice."
+      ]
     },
     {
       "id": "PSBP-00729",
@@ -30153,131 +30671,6 @@
       "feature_tier": "Standard"
     },
     {
-      "id": "PSBP-00731",
-      "common_name": "Suriname Stickpea",
-      "botanical_name": "Calliandra surinamensis",
-      "inat_taxon_id": 337352,
-      "taxonomy": {
-        "family": "Fabaceae",
-        "genus": "Calliandra",
-        "species": "surinamensis"
-      },
-      "status": "spotted",
-      "has_sign": false,
-      "native_notes": null,
-      "watch_invasive": false,
-      "watch_invasive_notes": "Not listed on the FISC (formerly FLEPPC) Category I or II invasive plant list for Florida. UF/IFAS rates its invasive potential as 'not assessed / incomplete assessment' — it has not been fully evaluated, so the absence of a listing should not be read as a clean bill of health, only as a current non-flagging. Not documented as a problem species in Florida's natural areas.",
-      "rare_fruit": false,
-      "form": "Shrub & Vine",
-      "safety_note": [
-        "No significant toxicity to people, dogs, or cats is documented in the major poison-control references we reviewed. Pruning the plant can bring the sap into contact with skin, so gloves are a sensible precaution for heavy pruning work — people with very sensitive skin may notice mild irritation. No part of this plant is used or recognized as a food; otherwise harmless in ordinary garden contact."
-      ],
-      "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
-        "adult_food": true,
-        "adult_species": [
-          "Giant Swallowtail (Papilio cresphontes)",
-          "Zebra Longwing (Heliconius charithonia)",
-          "White Peacock (Anartia jatrophae)"
-        ],
-        "notes": "Documented as an adult nectar source for Giant Swallowtails, Zebra Longwings, and White Peacocks in Florida butterfly-gardening references. No authoritative source confirms it as a larval host for any butterfly or moth species. Hummingbirds and bees are also reported visitors to the flowers."
-      },
-      "native": false,
-      "alternate_names": [
-        "Surinam Powderpuff",
-        "Suriname Stickpea",
-        "Surinamese Stickpea",
-        "Pompon de Marin"
-      ],
-      "quick_hits": [
-        "That pink powderpuff is not really a flower — not in the way most people mean. It is a dense ball of tiny individual flowers whose hundreds of thread-fine stamens create the entire spectacle. The genus name says so plainly: Calliandra comes from the Greek for beautiful stamens.",
-        "Tiny glands on the leaf stems — extrafloral nectaries — produce a sugary reward that has nothing to do with pollination. Ants collect it and in return patrol the plant, discouraging insects that would otherwise browse the foliage. Look closely at the leaf stems: ants may be working them right now.",
-        "The leaves fold shut at dusk and reopen at dawn, a movement called nyctinasty — the same response that makes a mimosa sensitive plant curl when touched. Come back near sunset to catch the leaflets beginning to close."
-      ],
-      "teaser": "Each pink powderpuff is not one flower but a cluster, and the color comes entirely from the stamens — the petals are small and green and easy to miss.",
-      "origin": [
-        "Calliandra surinamensis is native to northern and central South America, most at home along creeks, river edges, and sunny disturbed habitats such as rocky outcroppings and forest margins. The species name surinamensis refers to Suriname, the small country on the continent's northeastern coast where early botanical specimens were collected and first described by George Bentham in 1844.",
-        "It has been planted widely as an ornamental across the tropics and subtropics and arrived in Florida through the nursery trade, where UF/IFAS includes it in landscape fact sheets for South Florida. At Palma Sola it is grown as a cultivated ornamental and wildlife resource — not as a representative Florida native, but not flagged as an invasive threat either.",
-        "It is not currently listed on Florida's invasive plant lists, though UF/IFAS notes its invasive potential has not been fully assessed."
-      ],
-      "origin_short": "South America",
-      "more_information": [
-        "That pink puff is not a single flower. It is a dense cluster of many small flowers, each contributing its long, silky filaments to the collective display. The genus name tells you exactly what you are looking at: Calliandra comes from the Greek kalos (beautiful) and aner/andros (stamen) — beautiful stamens. The species earns that name without argument.",
-        "The common name Stickpea applies to the entire Calliandra genus in English — you will find dwarf stickpea, twoflower stickpea, and Surinamese stickpea all named on the same pattern.",
-        "The USDA Plants Database records stickpea as the official English name for the genus, but no source we have reviewed explains what the stick refers to or why these plants were called stickpeas rather than powderpuffs or something else. If you know, we would love to hear it.",
-        "In its native South American range, this shrub grows in dynamic, disturbed habitats — riversides, forest edges, and rocky outcroppings subject to periodic flooding. That preference for sunny, well-drained, frequently disturbed ground translates well to Florida landscapes, where the plant tolerates sandy soils, drought, and salt air once established.",
-        "Like other members of Fabaceae, Calliandra surinamensis forms symbiotic associations with rhizobial bacteria in root nodules. These bacteria convert atmospheric nitrogen from the atmosphere into forms the plant can use — an underground partnership that helps it thrive in the nutrient-poor soils it favors in the wild.",
-        "Visitors sometimes confuse this plant with its close relative, Red Powderpuff (Calliandra haematocephala). The distinction is immediate once you know it: Red Powderpuff has larger leaflets that emerge coppery and hairy, and its flower heads are solid, deep crimson.",
-        "Pink Powderpuff has many more but far smaller leaflets — fine-textured, light green, and smooth even when young — and its puffs grade from white at the base to soft pink at the tips, never the saturated red of haematocephala."
-      ],
-      "wildlife_value": [
-        "When the powderpuffs are blooming, watch the canopy. Ruby-throated Hummingbirds are reported visitors to Calliandra flowers in South Florida, and the long, accessible stamens are well-suited to hummingbird foraging — especially during migration. Butterflies including Giant Swallowtails, Zebra Longwings, and White Peacocks have been documented nectaring on the blooms in Florida.",
-        "These are all nectar visitors; no authoritative source documents this plant as a larval host for any butterfly or moth.",
-        "Bees also work the flowers heavily, and because the plant blooms nearly year-round in warm climates it provides a reliable nectar source when other plants are between bloom cycles.",
-        "A subtler wildlife story plays out on the leaves: tiny extrafloral nectaries on the leaf stems secrete a sugar solution that ants collect, and in exchange the ants police the plant, removing or deterring insect herbivores. Look closely at the leaf stems to find the ants at work."
-      ],
-      "reproduction": {
-        "blocks": [
-          {
-            "label": "Reproduction",
-            "text": "Propagation is by seed or stem cuttings. Seeds benefit from soaking in warm water for 24 hours before planting to soften the seed coat. Stem cuttings of 4 to 6 inches taken from non-flowering growth root readily with rooting hormone."
-          },
-          {
-            "label": "Flowers",
-            "text": "Globose flower heads two to three inches across, composed of numerous long, silky stamens — white at the base shading to pink at the tips — with petals that are small and largely hidden beneath the stamen mass. Flowers are fragrant and short-lived individually, but the plant produces them in such profusion, and so continuously in warm weather, that the display feels nearly constant."
-          },
-          {
-            "label": "Fruit and Seeds",
-            "text": "The fruit is a flat, slightly curved pod that starts green and turns brown at maturity, typically three to six inches long and containing five to six seeds. When ripe, the pods split open forcefully, helping fling seeds away from the parent plant. Mature plants often carry pods in several stages at once — flat green ones, browning ones, and split empty husks still hanging on the branch."
-          },
-          {
-            "label": "Leaves",
-            "text": "Bipinnate — each leaf divided into pairs of pinnae, each pinna in turn divided into small oblong leaflets. New growth emerges light green and hairless, maturing to a dark, slightly glossy green. The leaves are nyctinastic: they fold shut at dusk and reopen at dawn."
-          },
-          {
-            "label": "Stems and Bark",
-            "text": "Multiple slender trunks and long, arching branches that will droop to the ground if left unpruned. Bark is thin and gray-brown; periodic pruning to develop a scaffold of main branches improves both form and wind resistance."
-          }
-        ],
-        "what_to_look_for": "Start with the flowers — round pink-and-white puffs two to three inches across scattered through the canopy. Step closer and you will see they are masses of individual stamens, not petals; the actual petals are tiny and nearly hidden at the base of each flower cluster. Next, check the leaf stems for the tiny nectary glands and for ants working them. Then look at the leaves themselves: if you visit near dusk, you may catch the leaflets beginning to fold together for the night. Look also for seed pods in several stages — flat green ones, browning ones, and split empty husks. To compare this plant with Red Powderpuff (Calliandra haematocephala) nearby: our leaflets are small, numerous, smooth, and light green even when young; Red Powderpuff's are fewer, much larger, and emerge coppery and hairy. The flower color settles it — our puffs fade from white to soft pink; Red Powderpuff blazes solid crimson."
-      },
-      "seasonality": {
-        "bloom_months": "spring through fall; potentially year-round during mild winters",
-        "bloom_description": "Globose heads of long pink-and-white stamens, two to three inches across, fragrant and produced in flushes throughout the warm season.",
-        "leaf_behavior": "evergreen; leaves fold shut at night (nyctinastic)",
-        "fruiting_months": "follows each flush of bloom; pods can be found most of the year",
-        "notes": "Bloom is heaviest in spring and summer but continues with little interruption in Bradenton's climate during warm weather. At Palma Sola, actual bloom duration will depend on this specimen's microclimate and on winter temperatures; a hard freeze can burn foliage or kill stems to the ground, though established plants typically resprout from the roots or undamaged wood once temperatures rise."
-      },
-      "size": {
-        "height": "6 to 15 feet in cultivation, depending on pruning; can reach up to 15 to 20 feet unpruned (UF/IFAS; Wikipedia citing UF)",
-        "spread": "8 to 15 feet — wide-arching when left to grow naturally",
-        "habit": "multi-trunked, low-branching, rounded to vase-shaped; branches arch and droop with age",
-        "growth_rate": "fast — reported at up to 4 feet per year under favorable conditions",
-        "texture": "fine to medium — feathery compound leaves give a light, airy look"
-      },
-      "growing_conditions": {
-        "light": "full sun preferred; tolerates light shade but blooms most heavily in full sun",
-        "soil_tolerances": "wide range of well-drained soils — sand, loam, clay; tolerates acidic to slightly alkaline pH; not suited to poorly drained or waterlogged sites",
-        "drought_tolerance": "good once established; also reported as salt-tolerant, making it suitable for coastal landscapes",
-        "spacing": "allow 8 to 12 feet from structures; arching branches need room and benefit from periodic pruning to maintain clearance",
-        "hardiness": "USDA zones 9A through 11. Manatee County sits in zone 9B–10A, so a hard freeze can burn foliage or kill stems to the ground — but established plants typically resprout vigorously from the roots or undamaged wood once temperatures rise in spring."
-      },
-      "edibility": {
-        "level": "Green"
-      },
-      "toxicity": {
-        "level": "Green",
-        "dogs_level": "Green"
-      },
-      "other_notes": [
-        "The common name 'Pompon de Marin' — sailor's pompom — is the name recorded in French for this species, and captures something of its association with tropical port landscapes.",
-        "The claim that it is widely naturalized across Caribbean islands or historically tied to coastal settlements is not well-supported by authoritative sources we have reviewed; we treat it here as a cultivated ornamental with a French common name, nothing more.",
-        "Pruning is the main ongoing task with this plant. Left alone, the long arching branches eventually sweep the ground, and the multi-stemmed base can become dense and twiggy. Removing lower branches to expose the trunks and thinning interior growth gives a cleaner, more tree-like silhouette and improves airflow.",
-        "As a South American native grown here as an ornamental, this plant sits in a middle category: not a Florida native contributing to local ecology in the way indigenous species do, but also not flagged as a threat to natural areas. Its value at Palma Sola is primarily as a cultivated specimen and a reliable nectar resource for hummingbirds, butterflies, and bees."
-      ]
-    },
-    {
       "id": "PSBP-00733",
       "common_name": "Triangle cactus",
       "botanical_name": "Acanthocereus tetragonus",
@@ -30406,17 +30799,101 @@
       "has_sign": false,
       "native_notes": null,
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "Rated 'High Invasion Risk' in North, Central, and South Florida by the UF/IFAS Assessment of Non-native Plants in Florida's Natural Areas; UF/IFAS does not recommend planting it. Not yet assigned a FISC (formerly FLEPPC) Category I or II designation, but the UF/IFAS flag is a substantive caution.",
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Shrub & Vine",
+      "safety_note": [
+        "Do not eat any part of this plant. All parts — leaves, stems, roots, and especially the fruit — contain irritant terpenoids and iridoids with strong purgative effects; ingestion can cause vomiting, diarrhea, and swollen lips, and larger amounts are more seriously harmful.",
+        "The milky sap that oozes from cut or broken stems can irritate skin on contact, so wearing gloves when pruning is a sensible precaution. The plant is toxic to dogs, cats, and livestock as well; if a pet has ingested any part of it, contact your veterinarian or the ASPCA Animal Poison Control Center at (888) 426-4435."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "native": false,
+      "alternate_names": [
+        "Yellow Allamanda",
+        "Golden Trumpet Vine",
+        "Common Trumpet Vine",
+        "Brownbud Allamanda"
+      ],
+      "quick_hits": [
+        "The species name cathartica is not accidental — it means 'purgative' in Latin, and all parts of the plant contain irritant compounds that act on the digestive system. Traditional healers in tropical South America used leaf and root preparations as a laxative, though in large doses the effect tips from medicinal to dangerous.",
+        "Golden Trumpet sets very little seed in cultivation. The plant is self-incompatible, meaning it needs genetic strangers nearby to fertilize it — so the spiny capsule fruits that follow pollination are rarely seen on garden plants. The seeds themselves are flat and winged, designed to ride the wind when they do appear.",
+        "The genus honors Frédéric-Louis Allamand, an 18th-century Swiss botanist and physician who first sent seeds of this plant to Linnaeus in Europe — and Linnaeus returned the favor by naming the whole genus after him.",
+        "UF/IFAS rates this plant a 'High Invasion Risk' across all of Florida and does not recommend planting it. Its beauty in a controlled garden setting is real, but in the wild it is a fast, aggressive climber that can smother native vegetation."
+      ],
+      "origin": [
+        "Golden Trumpet is native to tropical South America — ranging from Venezuela, Guyana, Suriname, and French Guiana westward through Brazil and into Bolivia and Peru. It grows in wet tropical habitats and is among the most widely cultivated ornamental vines in the tropics worldwide.",
+        "It arrived in Florida horticulture as a showpiece tropical vine, prized for its large flowers and tolerance of heat and humidity. Gardeners have grown it across Central and South Florida for generations, and it is still widely available in nurseries despite UF/IFAS's recommendation against planting it."
+      ],
+      "more_information": [
+        "Allamanda cathartica belongs to the dogbane family, Apocynaceae — a group that also includes oleander, plumeria, and milkweed. Most members of the family share a characteristic milky sap loaded with biologically active compounds, and Golden Trumpet is no exception. The latex in its stems and leaves contains terpenoids and iridoids that give the plant its toxic and formerly medicinal properties.",
+        "In its South American homeland the plant scrambles vigorously through forest edges and riverbanks, climbing by twining stems that can run six meters or considerably more. In Florida gardens it is most often kept trimmed as a dense flowering shrub, a form quite different from its natural sprawling habit, but one that keeps the blooms where visitors can enjoy them.",
+        "The flowers open from distinctive fuzzy brown buds — one of the traits behind the alternate name 'brownbud allamanda.' Each bloom is a broad, five-lobed yellow trumpet up to about five inches across, often with faint white markings in the throat. In a true tropical climate flowering continues year-round; in Bradenton, the main show runs from late spring through fall."
+      ],
+      "wildlife_value": [
+        "The large, nectar-rich trumpets are genuine pollinator magnets. Bees are frequent visitors, and butterflies — including the White Peacock, a species common in Central Florida — work the flowers as a nectar source. Hummingbirds will also investigate the blooms, drawn by the flower's tubular shape and bold color.",
+        "Golden Trumpet does not serve as a documented larval host plant for any Florida butterfly or moth, so its wildlife value here is primarily as a nectar source for adult insects and birds rather than as a breeding habitat. Visitors looking for the park's best larval-host plants will find them among the native plantings."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagation in cultivation is almost always by stem-tip cuttings. The plant is self-incompatible, meaning it requires pollen from a genetically distinct individual to set seed — so spiny fruit capsules are rarely seen in garden settings. When seed does form, it is flat, slightly winged, and wind-dispersed."
+          },
+          {
+            "label": "Flowers",
+            "text": "Large, golden-yellow, five-lobed trumpets up to about five inches across open from distinctive fuzzy brown buds. Flowers are held in clusters at shoot tips and leaf axils. In Bradenton's climate blooming runs primarily from late spring through fall; in frost-free years it can continue into winter."
+          },
+          {
+            "label": "Fruit",
+            "text": "When produced, the fruit is a rounded, green capsule densely covered with soft spines roughly an inch long, turning brown at maturity and splitting to release flat, slightly winged seeds. Fruit is rarely seen on garden plants due to self-incompatibility."
+          },
+          {
+            "label": "Leaves",
+            "text": "Leathery, glossy, dark green, and lance- to oval-shaped, arranged in whorls of four along the stems (occasionally opposite). Leaves are roughly two to four inches long. Stems and leaves exude a milky white sap when cut or broken."
+          },
+          {
+            "label": "Stems",
+            "text": "Twining, smooth, and green, capable of reaching six meters or more when allowed to climb. In garden culture the plant is almost always kept pruned to a shrubby form. The milky sap present throughout the stems can irritate skin on contact."
+          }
+        ],
+        "what_to_look_for": "Start with the flowers: wide golden-yellow trumpets opening from fuzzy brown buds, clustered at the shoot tips. The glossy dark green leaves arranged in neat whorls of four around the stem are distinctive up close. If you snap a leaf stem gently, watch for the milky white sap — a family trait shared with oleander and milkweed. Fruit capsules covered in soft spines are occasionally present but are the exception rather than the rule on cultivated plants."
+      },
+      "seasonality": {
+        "bloom_months": "late spring through fall; potentially year-round in warm winters",
+        "bloom_description": "Large golden-yellow trumpet flowers up to five inches across open from fuzzy brown buds in clusters at shoot tips; fragrant in full sun.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "sporadic; rarely produced in cultivation",
+        "notes": "Fruit set is uncommon on cultivated plants because the species is self-incompatible and requires cross-pollination to produce seed. Cold snaps will cause tip dieback; the plant typically recovers from the roots."
+      },
+      "size": {
+        "height": "10 to 20 feet as a vine; 4 to 6 feet as a pruned shrub",
+        "spread": "3 to 6 feet as a shrub; considerably wider if allowed to scramble",
+        "habit": "scrambling, twining vine; typically maintained as a rounded shrub in cultivation",
+        "growth_rate": "fast — can put on significant growth in a single warm season",
+        "texture": "medium-coarse; large glossy leaves and bold flowers"
+      },
+      "growing_conditions": {
+        "light": "full sun; needs strong direct light to flower well",
+        "soil_tolerances": "adaptable to a range of well-drained soils; tolerates sandy and loamy conditions typical of the Bradenton area",
+        "drought_tolerance": "moderate once established; performs best with regular moisture during the growing season",
+        "spacing": "allow 4 to 6 feet for a shrubby form; considerably more if training as a vine on a trellis or fence"
+      },
+      "edibility": {
+        "level": "Red"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Yellow"
+      },
+      "other_notes": [
+        "A Florida native alternative with a similar look is wild allamanda, now placed in the genus Pentalinon (Pentalinon luteum, formerly Urechites lutea). It produces smaller but similar yellow flowers and is recommended by UF/IFAS Extension as a pollinator-friendly substitute that carries none of the invasion-risk concerns."
+      ]
     },
     {
       "id": "PSBP-00744",
@@ -30432,17 +30909,103 @@
       "has_sign": false,
       "native_notes": null,
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "The UF/IFAS Assessment of Non-Native Plants in Florida's Natural Areas classifies Lagerstroemia indica as 'not a problem species' in North, Central, and South Florida. It does not appear on the FISC (formerly FLEPPC) Category I or II list. UF/IFAS notes it has been observed occasionally in natural spaces but does not consider it invasive.",
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Tree",
+      "safety_note": [
+        "Crape myrtle is not toxic to people, dogs, or cats — no known toxicity has been documented. The flowers can stain surfaces including car paint and walkways when they drop, so placement matters in a garden setting. Otherwise harmless; it is grown purely as an ornamental."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "native": false,
+      "alternate_names": [
+        "Crepe Myrtle",
+        "Crapemyrtle",
+        "Lilac of the South",
+        "Indian Crape Myrtle"
+      ],
+      "quick_hits": [
+        "The genus name honors Magnus von Lagerstroem, an 18th-century Swedish botanist and Director of the Swedish East Indies Company — and a personal friend of Carl Linnaeus, who formally named the genus in 1759. Lagerstroem never described the plant himself; he simply supplied specimens to Linnaeus from Asia.",
+        "Crape myrtle has been cultivated in China for roughly 1,700 years — longer than in any other part of the world — long before it ever reached a Western garden.",
+        "The blooms can last up to a hundred days on a single tree, an almost unmatched run for a flowering woody plant in the South. The tree manages this by producing flowers on new growth, so each flush of pruned or spent tips can trigger another round.",
+        "What looks like peeling damage on the trunk is actually the tree working as designed: the thin outer bark sheds on its own through the summer, revealing smooth underlayers in shades of cinnamon, orange, and gray. No other common Florida street tree does this so dramatically."
+      ],
+      "origin": [
+        "Native to China and surrounding parts of temperate and tropical Asia — the Himalayas, Southeast Asia, Korea, and Japan fall within the broad native range — Lagerstroemia indica has been cultivated in China for roughly 1,700 years, longer than anywhere else on Earth. Its actual wild origin is somewhat obscured by that long history of cultivation.",
+        "The species reached Europe in 1759 and was introduced to North America in the late 18th century, with one of the earliest recorded plantings in South Carolina. It spread rapidly through the American South, valued for its heat tolerance and unusually long bloom season, and has been a fixture of Florida landscapes ever since."
+      ],
+      "more_information": [
+        "The common name traces directly to the flowers: each small blossom has petals that are ruffled and crinkled, looking very much like crepe paper. The 'myrtle' part reflects an old comparison to true myrtles, though crape myrtle belongs to the family Lythraceae — the loosestrife family — and its closest relatives include pomegranate and purple loosestrife.",
+        "Cultivar development over the past century has been remarkably productive. Beginning in the 1960s, the U.S. National Arboretum crossed Lagerstroemia indica with the Japanese species L. fauriei, producing a wave of named cultivars — most given Native American tribal names like Natchez, Muskogee, and Tuscarora — selected for mildew resistance, bark color, and a wider range of mature sizes.",
+        "Today the nursery trade offers forms ranging from three-foot groundcover shrubs to thirty-foot trees.",
+        "In Florida, crape myrtle is deciduous: it drops its leaves in winter and stands bare-trunked until spring. That dormant season is actually when the exfoliating bark is most visible and most striking — worth a second look on a winter walk through the park."
+      ],
+      "wildlife_value": [
+        "Crape myrtle is primarily a pollen plant rather than a nectar plant. A Florida Entomologist study conducted in north Florida documented at least ten bee species visiting Lagerstroemia cultivars for pollen, including both native bees and honey bees. The large, open flower clusters are accessible to a wide range of foraging insects during the tree's long summer bloom.",
+        "Butterflies visit the flowers opportunistically for whatever nectar is available, and the round seed capsules that persist through fall and winter can attract seed-eating birds. The tree has no co-evolutionary history with Florida's lepidoptera and is not documented as a larval host for any Florida butterfly or moth species."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagation is by seed or stem cuttings. Named cultivars are almost always propagated by cuttings to preserve their characteristics, since seedlings are variable. The tree flowers on new growth, which means it can produce multiple flushes of bloom in a single season if spent flower clusters are removed."
+          },
+          {
+            "label": "Flowers",
+            "text": "Large terminal panicles — clusters 6 to 12 inches long — of small, crinkled flowers appear at the tips of branches from late spring through summer in Florida. Individual flowers have distinctively ruffled, crepe-paper-like petals in white, pink, red, lavender, or purple depending on cultivar. Flowers attract bees and other pollinators."
+          },
+          {
+            "label": "Fruit",
+            "text": "Round, dry seed capsules roughly a quarter to a half inch in diameter follow the flowers and persist on the branches well into winter. They split open at maturity to release small winged seeds. The capsule clusters are a useful winter identification feature on otherwise bare trees."
+          },
+          {
+            "label": "Leaves",
+            "text": "Small, simple leaves — roughly one to three inches long — are elliptic to oblong and emerge with a reddish tinge in spring, deepen to dark green in summer, and turn yellow, orange, and red in fall before dropping. Leaf arrangement is alternate to sub-opposite."
+          },
+          {
+            "label": "Trunk and Bark",
+            "text": "Typically multi-trunked with an upright to vase-shaped habit. The thin outer bark exfoliates naturally through the summer months, peeling away to reveal smooth underlayers in varying shades of brown, cinnamon, orange, and gray. This exfoliating bark is one of the tree's most distinctive year-round features and is especially visible in winter when the canopy is bare."
+          }
+        ],
+        "what_to_look_for": "In summer, look for the large plumy flower clusters at the branch tips — the ruffled, tissue-paper texture of the individual petals is distinctive up close. Check the trunk: if the outer bark is actively peeling and showing smooth, warm-toned underlayers, the tree is doing exactly what it's supposed to do. In fall, watch for the seed capsule clusters and the leaf color change before drop. In winter, the bare trunk and persistent capsules are the best identification cues."
+      },
+      "seasonality": {
+        "bloom_months": "late spring through summer; May through September in Florida",
+        "bloom_description": "Large terminal panicles of crinkled, crepe-paper-like flowers in white, pink, red, or lavender appear at branch tips. Bloom is exceptionally long — potentially up to 100 days — because the tree flowers on new wood and can rebloom after spent clusters are removed.",
+        "leaf_behavior": "deciduous — drops leaves in winter; fall color is yellow, orange, and red",
+        "fruiting_months": "late summer through winter; capsules persist on bare branches",
+        "notes": "The bark exfoliation is most visible in midsummer and most striking in winter when the canopy is bare. In Bradenton's climate the tree leafs out early and holds color well into fall."
+      },
+      "size": {
+        "height": "20 to 25 feet for most tree-form cultivars; dwarf selections to 3 to 4 feet; some large hybrids to 30 feet (UF/IFAS)",
+        "spread": "10 to 15 feet for typical tree forms; varies widely by cultivar",
+        "habit": "typically multi-trunked; upright, upright-spreading, or vase-shaped, widening as it ascends",
+        "growth_rate": "moderate to fast, especially in warm Florida conditions",
+        "texture": "medium — small leaves and airy flower panicles give a lighter canopy than most flowering trees"
+      },
+      "growing_conditions": {
+        "light": "full sun; blooms best and has fewest disease problems in full sun with good air circulation",
+        "soil_tolerances": "adaptable to a wide range of soils — sand, loam, clay; tolerates acidic and alkaline pH; prefers well-drained sites",
+        "drought_tolerance": "good once established; drought-tolerant after roughly two years in the ground",
+        "spacing": "allow 10 to 15 feet from structures for typical tree-form cultivars; always match cultivar size to site before planting"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "The practice of severely topping crape myrtles — cutting the main branches back to stubs each winter — is widespread enough to have earned its own name: 'crape murder.' UF/IFAS and most Extension services are unambiguous that this practice disfigures the tree, weakens branch structure, increases disease susceptibility, and is unnecessary.",
+        "A crape myrtle grown to its natural form is a more attractive, longer-lived tree.",
+        "Many plants sold in Florida nurseries as Lagerstroemia indica are actually L. indica x L. fauriei hybrids, developed at the U.S. National Arboretum beginning in the 1960s for improved mildew resistance and bark interest. If the cultivar name is a Native American tribal name — Natchez, Muskogee, Tuscarora, Apalachee — it is almost certainly a hybrid rather than straight L. indica."
+      ]
     },
     {
       "id": "PSBP-00753",
@@ -30814,8 +31377,12 @@
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Foliage & Accent",
+      "safety_note": [
+        "Do not eat any part of this plant. Every tissue — leaves, stems, rhizomes — contains insoluble calcium oxalate crystals (raphides), microscopic needle-like structures that cause immediate burning and irritation in the mouth and throat if chewed or swallowed.",
+        "The effect is mechanical, not a systemic poison, and serious reactions are uncommon — but it is unpleasant enough to deter most animals and should deter people. NC State Extension classifies the ZZ plant as having medium-severity poison characteristics. The same crystals can cause mild skin irritation when sap contacts broken skin; wear gloves when dividing or cutting the plant.",
+        "Dogs and cats that chew the leaves can experience oral pain, drooling, and gastrointestinal upset; if a pet ingests any part of the plant, contact your veterinarian or the ASPCA Animal Poison Control Center at (888) 426-4435."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
@@ -30828,6 +31395,84 @@
         "Emerald Palm",
         "Aroid Palm",
         "Eternity Plant"
+      ],
+      "native": false,
+      "quick_hits": [
+        "A single detached leaflet — dropped on the ground or deliberately planted — can sprout roots, form a new rhizome, and become a whole new plant. It is one of the few members of the aroid family known to propagate this way, and the process works even on a leaflet that has already fallen off on its own.",
+        "The name 'ZZ' is simply shorthand for the tongue-twisting genus and species: Zamioculcas zamiifolia. The species name means 'having leaves like Zamia' — a nod to the cycads it superficially resembles, though the two are not remotely related. One is a flowering plant; the other's lineage predates dinosaurs.",
+        "The swollen, potato-like rhizomes underground are the plant's survival insurance. During a drought in the wild, the leaflets drop off and the bare petiole base just sits there, hoarding water, until rain returns — at which point the plant rebuilds itself from the base up.",
+        "Although ZZ plants had been known to Western botanists since 1829, large-scale commercial production didn't begin until 1996, when Dutch nurseries recognized their propagating potential. The plant went from obscure African wildflower to global bestseller in under three decades."
+      ],
+      "origin": [
+        "The ZZ plant is native to eastern Africa, where it ranges from Kenya south through Tanzania, Malawi, Mozambique, and Zimbabwe to KwaZulu-Natal in South Africa. In the wild it grows in seasonally dry grasslands, open woodland, and along forest margins — places where rainfall is unpredictable and periods of drought are the norm.",
+        "Western botanists first described the plant in 1829, classifying it under the genus Caladium; it was moved into its own genus, Zamioculcas, in 1856 and given its current full name in 1905. Despite that long scientific history, it remained virtually unknown in horticulture until Dutch nurseries recognized its commercial potential and began distributing it worldwide in 1996.",
+        "It is now one of the most widely sold foliage plants on Earth.",
+        "In Florida, UF/IFAS lists the ZZ plant as suitable for year-round outdoor cultivation in USDA Hardiness Zones 10B through 12. Bradenton sits at the edge of Zone 10A, so the plant you see here benefits from the park's warm microclimate and is grown primarily as a shade-tolerant foliage accent."
+      ],
+      "more_information": [
+        "Zamioculcas zamiifolia is the only species in its genus — a monotypic genus with no close relatives in cultivation. Its placement in the aroid family (Araceae) puts it in the company of peace lilies, philodendrons, and anthuriums, though nothing about its appearance gives that away at first glance.",
+        "The pinnate, arching fronds and glossy oval leaflets look far more like a cycad or a small palm than a typical aroid.",
+        "The resemblance to cycads is exactly what the name commemorates: zamiifolia is Latin for 'leaves like Zamia,' referring to the Florida native coontie and its relatives. The confusion is understandable — both plants have stiff, pinnate fronds arising from a central base — but the kinship is pure coincidence.",
+        "Cycads are gymnosperms whose lineage predates the dinosaurs; the ZZ plant is a flowering plant that evolved its cycad-like look independently.",
+        "The plant's extraordinary drought tolerance is architectural. The rhizomes underground function like water-storage tanks, and the petioles themselves are swollen and succulent. When drought stress becomes severe, the plant sheds its leaflets from the top of each frond downward, leaving the bare, water-filled petiole base to carry the plant through until conditions improve.",
+        "It is a measured retreat, not a collapse."
+      ],
+      "wildlife_value": [
+        "The ZZ plant's inconspicuous flowers — a small, pale spathe sheltering a short spadix, typical of the aroid family — rely on close-range insect visitors for pollination, but the specific pollinators in its native East African range are not well documented.",
+        "In Florida cultivation, particularly indoors or in shaded garden settings, it rarely flowers at all, and any wildlife value is correspondingly minimal.",
+        "This is a plant with no co-evolutionary history with Florida's fauna. It does not serve as a larval host for any documented Florida butterfly or moth, and its foliage chemistry — calcium oxalate crystals throughout every tissue — makes it unpalatable to most browsing animals. Visitors looking for the park's strongest pollinator habitat will find it in the native plantings."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "In cultivation, ZZ plants are propagated by division of the rhizome or by individual leaflet cuttings — a trick unique among the aroids. A single leaflet pressed into moist medium will form its own rhizome and eventually produce new fronds, though the process takes several months. In the wild, sexual reproduction through seed is possible but the plant relies heavily on vegetative spread."
+          },
+          {
+            "label": "Flowers",
+            "text": "Flowers are small and easy to miss: a short, pale greenish-yellow spathe (the modified leaf that wraps the flower spike) surrounds a stubby spadix near the base of the plant. They appear infrequently, typically at the soil line tucked between the petioles, and are not the plant's main attraction. In indoor and shaded Florida cultivation, flowering is rare."
+          },
+          {
+            "label": "Leaves",
+            "text": "What look like individual leaves are actually pinnately compound fronds — each arching stem (the petiole and rachis) carries paired rows of individual glossy oval leaflets. Leaflets are thick, waxy, and so uniformly shiny they can appear artificial. New growth emerges pale and brightens to deep green as it matures. The 'Raven' cultivar is an exception: new leaflets emerge green and mature to a deep, near-black purple."
+          },
+          {
+            "label": "Rhizomes",
+            "text": "The visible plant is only part of the story. Beneath the soil sit swollen, potato-like rhizomes that store water and nutrients and anchor the plant between fronds. These rhizomes are the plant's long-term survival structure — they persist through drought, leaflet drop, and damage, and are the source of new growth when conditions improve."
+          }
+        ],
+        "what_to_look_for": "The easiest thing to notice is the deep gloss of the leaflets — they catch light in a way that makes the plant look almost lacquered. Look at the base of the plant and you may see the petioles swelling into slightly bulbous bases where they meet the soil; that swelling is the above-ground expression of the water-storage system below. If the plant is flowering, look close to the ground between the fronds for a small, pale, hood-like spathe. And if you see a detached leaflet lying in the pot or on the ground nearby, look closely — it may already be forming a tiny rhizome at its base."
+      },
+      "seasonality": {
+        "bloom_months": "sporadic; most often in warmer months",
+        "bloom_description": "Small, inconspicuous inflorescences with a pale greenish-yellow spathe and short spadix, produced at or near soil level between the fronds. Rarely seen in shaded cultivation.",
+        "leaf_behavior": "evergreen; leaflets may drop during drought stress but the rhizome persists and resprouts",
+        "fruiting_months": null,
+        "notes": "In Florida's warmer zones the plant holds its foliage year-round under normal conditions. Chilling injury can occur below 50 degrees F, and the plant has no frost tolerance."
+      },
+      "size": {
+        "height": "2 to 4 feet",
+        "spread": "2 to 4 feet",
+        "habit": "stemless, clumping; arching fronds rise directly from underground rhizomes",
+        "growth_rate": "slow",
+        "texture": "medium-fine — the individual leaflets are small and numerous, giving an overall tidy, layered look"
+      },
+      "growing_conditions": {
+        "light": "bright indirect light preferred; tolerates low light; avoid prolonged direct sun, which can scorch leaflets",
+        "soil_tolerances": "tolerant of a wide range of well-drained soils; will not tolerate waterlogged conditions — root rot is the primary cultural threat (UF/IFAS)",
+        "drought_tolerance": "excellent once established; rhizomes store significant water reserves",
+        "spacing": "allow 3 to 4 feet between plants; works well as a single specimen or in a massed shaded planting"
+      },
+      "edibility": {
+        "level": "Red"
+      },
+      "toxicity": {
+        "level": "Yellow",
+        "dogs_level": "Yellow"
+      },
+      "other_notes": [
+        "UF/IFAS lists outdoor year-round planting as suitable for USDA Hardiness Zones 10B through 12. Bradenton is Zone 10A, meaning the plant at Palma Sola Botanical Park is at the cool edge of its outdoor comfort zone. It performs best here in a sheltered, frost-free microclimate with filtered light.",
+        "The genus Zamioculcas is monotypic — this is the only species. A growing number of cultivars are available in the nursery trade, including 'Raven' (near-black mature foliage), 'Chameleon' (yellow and green variegation), and several compact dwarf forms. The species as a whole has been the subject of active breeding programs in the Netherlands since the late 1990s."
       ]
     },
     {
@@ -30850,19 +31495,100 @@
       },
       "status": "spotted",
       "has_sign": false,
-      "native_notes": null,
+      "native_notes": "Its native status in Florida is genuinely contested — UF/IFAS calls it a Keys native, Kew and Flora of North America treat it as introduced; we follow the Kew/FNA position and display it as a non-native ornamental.",
       "watch_invasive": false,
-      "watch_invasive_notes": null,
+      "watch_invasive_notes": "UF/IFAS Assessment status: 'caution, may be recommended but manage to prevent escape' in South Florida. Not considered a problem species in North and Central Florida. Not listed on the FISC (formerly FLEPPC) Category I or II statewide list. The caution applies specifically to southern Florida, where naturalized populations have established in Broward, Collier, and Miami-Dade counties.",
       "rare_fruit": false,
       "form": "Tree",
-      "safety_note": [],
+      "safety_note": [
+        "The fruit is not edible — it is hard, resinous, and not a food source — but it is not toxic to people or animals. No known toxicity has been documented for any part of this tree.",
+        "The tannin-rich fruit and caterpillar frass can stain skin or clothing on contact, much as they stain pavement, so handling fallen fruit and then touching light fabric is worth a thought — otherwise this is a harmless tree."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "native": false,
+      "quick_hits": [
+        "The wood is extraordinarily hard — a Janka rating of 2,940 lbf puts it well above white oak and in the company of ironwoods. During the Age of Sail, Caribbean shipbuilders prized it enough that the frame of the Jamaican vessel Trelawney Planter, launched in 1790, was constructed from bullet tree wood.",
+        "Look for neat rows of small holes spiraling up the trunk. Those are not disease — they are the calling card of yellow-bellied sapsuckers, which return to the same tree year after year and tap it like a well.",
+        "The notorious rust-colored stains that appear on sidewalks under these trees are not caused by the fruit or leaves. A tiny caterpillar (Characoma nilotica) tunnels inside galls produced by eriophyid mites, and the tannin-loaded frass it pushes out is the real culprit — fruit and leaf staining alone would rank about a 2 or 3 on a 10-point scale; the caterpillar frass bumps it straight to 8 or 9.",
+        "Despite being called 'black olive,' this tree is not remotely related to the edible olive. The name comes entirely from the small, dark fruit capsule — the two plants are in completely different families."
+      ],
+      "origin": [
+        "Terminalia buceras is native to Mexico, Central America, the Caribbean, and northern South America, where it grows in coastal swamps, seasonally dry tropical forests, and wet inland forests at low elevations. Its range runs from central Mexico south to Colombia, and across the Caribbean island chain.",
+        "In Florida it is most associated with the upper Keys, where some botanists have argued for native status. The Flora of North America and Kew's Plants of the World Online treat Florida populations as naturalized introductions, and the species is probably best considered naturalized in Broward, Collier, and Miami-Dade counties.",
+        "It has long since spread well beyond the Keys as a planted street and shade tree throughout South Florida."
+      ],
+      "more_information": [
+        "The genus name Terminalia comes from the Latin terminus, a reference to the way the leaves cluster at the very tips of the branches — a trait clearly visible on this tree. That tufted, branch-tip arrangement gives the canopy its fine, layered texture despite leaves that are individually leathery and substantial.",
+        "Young trees carry a distinctly pagoda-like silhouette, with tiers of horizontal branches spaced almost evenly up the trunk. As the tree matures the crown fills in and rounds out, and the top often flattens so the whole canopy spreads sideways rather than up — which is why this species became one of the most-planted median and street trees across coastal South Florida.",
+        "The wood is among the hardest produced by any tree in the Caribbean basin — dense, slow to decay, and highly resistant to both fungi and wood-boring insects. In Belize it is still called 'bullet tree,' a name that refers to the density and toughness of the timber rather than to any particular use as ammunition.",
+        "Historically the bark, loaded with tannins, served for curing leather, and the same tannins explain why the tree's fruit and fallen debris can stain paving surfaces."
+      ],
+      "wildlife_value": [
+        "The small greenish-yellow flowers attract pollinating insects, and the dark fruit capsules are visited by birds. The dense, year-round canopy provides reliable shelter and nesting cover — sapsuckers in particular are drawn to established trees, returning repeatedly to work the same spiraling rows of sap wells up the trunk.",
+        "Because it has no co-evolutionary history with Florida's native fauna, Terminalia buceras does not serve as a larval host for any documented butterfly or moth species here. Visitors looking for the park's most active butterfly habitat will find it in the native plantings."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagation is by seed (with some difficulty) or by layering. Seeds have relatively low viability and germination can be inconsistent. The tree does not sucker or spread clonally."
+          },
+          {
+            "label": "Flowers",
+            "text": "Small, inconspicuous, greenish-yellow flowers are produced in dense 4-inch-long spikes from spring through summer. They are not showy but are attractive to insects at close range."
+          },
+          {
+            "label": "Fruit",
+            "text": "The flowers ripen into small, hard, dark brown to black capsules — the 'olives' that give the tree its common name. The fruit is not edible but is not toxic; it does contain tannins that can stain surfaces below the tree, especially in combination with caterpillar activity."
+          },
+          {
+            "label": "Leaves",
+            "text": "Dark bluish-green, leathery, two to four inches long, with an obovate to oblanceolate shape. Leaves are clustered at branch tips in the classic Terminalia pattern. Branches follow a slight zigzag pattern between each leaf cluster. Young or juvenile trees may have short spines along the branches; mature trees are generally without them."
+          },
+          {
+            "label": "Trunk and Bark",
+            "text": "The trunk is straight and smooth on young trees; bark becomes slightly rougher, gray to light brown, and develops irregular plating with age. Mature trees frequently display spiraling rows of small holes from yellow-bellied sapsucker activity — a distinctive identification clue on established specimens."
+          }
+        ],
+        "what_to_look_for": "The leaf arrangement is the first thing to notice: dark leathery leaves tufted at the branch tips, not spread evenly along the stem. Stand back and look at the overall crown — young trees have a strongly tiered, horizontal structure; older ones round out and often flatten at the top. On the trunk, look for the neat spiral rows of small holes left by sapsuckers. In spring and summer, the 4-inch flower spikes emerge from the branch tips, often going unnoticed until you look closely. And in fruit, the small dark capsules clustered at branch ends are the 'olives' that name the tree."
+      },
+      "seasonality": {
+        "bloom_months": "spring through summer",
+        "bloom_description": "Small, greenish-yellow flowers in dense 4-inch-long spikes at branch tips; inconspicuous individually but numerous.",
+        "leaf_behavior": "evergreen, with steady low-level leaf fall year-round",
+        "fruiting_months": "summer into fall, following spring-summer bloom",
+        "notes": "Plants may sustain minor damage at 32°F and are killed at 25°F, placing this species squarely in USDA Zone 10B to 11 — Bradenton is at the northern edge of reliable hardiness."
+      },
+      "size": {
+        "height": "40 to 50 feet in cultivation (UF/IFAS); up to 65 to 100 feet in native range",
+        "spread": "35 to 50 feet at maturity",
+        "habit": "pyramidal when young, becoming dense oval to rounded, often flattening at the crown top with age; strongly horizontal branching",
+        "growth_rate": "slow to moderate",
+        "texture": "fine — small leaves clustered at branch tips give a layered, delicate canopy texture despite the leathery leaf surface"
+      },
+      "growing_conditions": {
+        "light": "full sun to partial shade; best form and density in full sun",
+        "soil_tolerances": "adaptable — sand, loam, clay; tolerates a range of pH but may show leaf yellowing on high-pH (alkaline) soils; well-drained preferred",
+        "drought_tolerance": "good once established; also highly tolerant of salt spray, making it well suited to coastal sites",
+        "spacing": "allow at least 15 to 20 feet from structures and paving; roots can lift paving stones on confined sites, and the broad mature spread warrants generous clearance"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "The cultivar 'Shady Lady' is a compact, more uniform-crowned selection of Terminalia buceras widely planted along Florida's Gulf Coast as a median and street tree. It tends to be more consistently spineless and somewhat smaller in overall scale than the straight species.",
+        "The genus Terminalia — with roughly 100 to 200 species across the tropics worldwide — takes its name from the Latin for 'end' or 'boundary,' referring to the distinctive leaf-clustering habit at branch terminals that all species in the genus share. It is the same genus as the tropical almond (T. catappa), which visitors may recognize from beachside plantings throughout coastal Florida."
+      ]
     },
     {
       "id": "PSBP-00761",
@@ -30883,15 +31609,98 @@
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Tree",
+      "safety_note": [
+        "The ripe fruit's sweet pulp is edible and has been eaten by people for generations, but skip the seed — it's bitter and not recommended for consumption. No significant toxicity to people, dogs, or cats has been documented for this plant. Otherwise harmless."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "native": true,
+      "alternate_names": [
+        "Twinberry",
+        "Nakedwood"
+      ],
+      "quick_hits": [
+        "The name 'stopper' has two competing explanations, and both may be right. Historically the plant was used as a remedy for diarrhea — it literally stopped something. But the dense, multi-trunked thicket it forms also stops anyone who tries to walk through it.",
+        "Every flower and every fruit grows on a forked, Y-shaped stalk — two to a stem, always paired. That is where the name 'twinberry' comes from, and once you know it you'll see it every time.",
+        "The botanical name encodes the flower in Latin and Greek: Myrcianthes means 'many-thorned' — a reference not to actual thorns but to the flower's crowd of long white stamens — and fragrans simply means fragrant. The whole name is a description of the bloom.",
+        "The plant was once formally called Eugenia simpsonii, honoring Charles Torrey Simpson — a self-taught naturalist and conservationist who adopted South Florida as his home in the early 1900s and became known as 'the Sage of Biscayne Bay.' When taxonomy reshuffled the genus, the scientific name changed; the common name kept his memory."
+      ],
+      "origin": [
+        "Simpson's Stopper is native to coastal and hammock habitats of central and southern Florida, including the Keys, with documented populations as far north as St. Johns County on the Atlantic coast. Beyond Florida, its range extends through the Caribbean, Mexico, Central America, and northern South America as far as Colombia and Venezuela.",
+        "In Florida it grows naturally in coastal strand, tropical rockland hammock, and seaside hammock — communities that are themselves uncommon and in many places reduced. The plant's adaptations to salt, drought, and alkaline soils reflect those demanding coastal origins. It has become increasingly popular in Florida native-plant horticulture and is now widely planted well north of its natural range."
+      ],
+      "more_information": [
+        "Simpson's Stopper belongs to the Myrtaceae — the myrtle family — which also claims guava, allspice, and eucalyptus. That botanical neighborhood shows up in the chemistry: the leaves hold aromatic oils that release a scent described variously as nutmeg, citrus, or pine when crushed, depending on who is doing the crushing.",
+        "The oils are concentrated in tiny glands visible as dark dots on the leaf surface when held up to light.",
+        "The exfoliating bark is one of the plant's most distinctive features. The outer layer peels away in thin patches to reveal a smooth inner surface in shades of copper, cinnamon, and tan — a mottled, living mosaic that gives the trunk its 'nakedwood' character and makes the plant worth stopping to look at even when it isn't in flower or fruit.",
+        "A Florida-endemic variety, Myrcianthes fragrans var. simpsonii, was recognized by botanist Robert Long in 1970, distinguished by larger flowers and inflorescences. UF/IFAS notes this variety is considered threatened in Florida — a reminder that even plants common in cultivation can be genuinely scarce in the wild."
+      ],
+      "wildlife_value": [
+        "The flowers are generous with nectar and draw a steady stream of native bees, honeybees, and butterflies throughout much of the year. Bloom can occur in any warm month, with the heaviest flush in spring — which means this plant is rarely out of service as a pollinator resource. The fragrance helps: you often hear the bees before you see the flowers.",
+        "The ripe berries — bright orange-red and produced reliably after flowering — are eagerly taken by birds. Buntings, cardinals, blue jays, and mockingbirds are among the regular visitors, and the dense evergreen canopy doubles as shelter and nesting cover. For a relatively compact plant, Simpson's Stopper punches well above its weight in the wildlife garden."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagated readily from seed; also spreads by suckers from the root system, which can gradually expand a planting into a small colony. Both seedlings and root sprouts can appear around established plants."
+          },
+          {
+            "label": "Flowers",
+            "text": "Small, fragrant, white, and densely clustered — each bloom has four petals and a showy burst of long white stamens that give the flower a frothy, puffball look. Flowers are borne in pairs on a forked stalk, a quirk that explains the common name 'twinberry.' Bloom is most prolific in spring but can occur intermittently throughout the year in warm weather."
+          },
+          {
+            "label": "Fruit",
+            "text": "Small, round to ovoid berries that ripen from green through yellow-orange to bright red-orange, also borne in pairs on the forked stalk. The sweet pulp surrounding the seed is edible; the bitter seed inside is not. Birds take the fruit readily and are the primary dispersal agents."
+          },
+          {
+            "label": "Leaves",
+            "text": "Small, leathery, ovate to elliptic, dark glossy green, with entire (smooth) margins and an opposite arrangement on the stem. The leaf surface is dotted with tiny dark oil glands visible when backlit. New growth often emerges in wine-red or chartreuse tones before maturing to green. Crushed leaves release a spicy-citrus aroma from those aromatic oils."
+          },
+          {
+            "label": "Bark and Trunk",
+            "text": "Often multi-trunked with a graceful, somewhat crape-myrtle-like branching habit. The bark is the plant's year-round showpiece: smooth, continuously exfoliating in thin flakes to reveal a mottled inner surface of copper, cinnamon, tan, and gray. This is the trait behind the alternate name 'nakedwood.'"
+          }
+        ],
+        "what_to_look_for": "Start with the bark — look for the peeling, patchwork surface of copper and tan on the trunks and larger branches; it's distinctive enough to identify the plant from a few feet away. Then find the leaves: small, glossy, dark green, opposite on the stem, with tiny dark dots when you hold one to the light. If the plant is in bloom, look for the frothy white flower clusters and their paired, Y-shaped stalks. In fruit, those same forked stalks carry paired orange-red berries. New growth flushing in red or chartreuse is another good field mark."
+      },
+      "seasonality": {
+        "bloom_months": "spring (peak); sporadic throughout the year in warm weather",
+        "bloom_description": "Clusters of small, fragrant white flowers with prominent stamens; borne in pairs on forked stalks. Heaviest bloom in spring and early summer.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "follows bloom; fruit can be present most of the year on mature plants",
+        "notes": "New foliage flushes in wine-red to pale chartreuse tones and is ornamental in its own right. The plant can carry flowers and ripe fruit simultaneously."
+      },
+      "size": {
+        "height": "10 to 20 feet in landscape conditions; occasionally larger in the wild",
+        "spread": "6 to 15 feet",
+        "habit": "multi-trunked shrub to small tree; dense, rounded to irregular canopy",
+        "growth_rate": "slow",
+        "texture": "fine to medium — small leaves and twiggy branching give a refined, dense look"
+      },
+      "growing_conditions": {
+        "light": "full sun to partial shade; denser and more floriferous in full sun",
+        "soil_tolerances": "sand, loam, and calcareous soils; tolerates alkaline and slightly acidic pH; adaptable to well-drained to periodically moist conditions",
+        "drought_tolerance": "excellent once established; also tolerates salt spray and coastal wind",
+        "spacing": "allow 6 to 10 feet for a specimen or small tree; 4 to 6 feet for a hedge or screen"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "Simpson's Stopper is at home in Manatee County — the Bradenton area sits within the northern reach of its cultivated range and not far outside its documented natural range along Florida's central peninsula coast. It is as well-suited to this park as any native in the collection.",
+        "The FNPS notes that both suckers and seedlings will appear around established plants — worth knowing if this specimen is near a path or bed edge, but also a sign that the plant is thriving."
+      ]
     },
     {
       "id": "PSBP-00763",
@@ -30913,14 +31722,95 @@
       "watch_invasive_notes": null,
       "rare_fruit": false,
       "form": "Groundcover & Wildflower",
-      "safety_note": [],
+      "safety_note": [
+        "Raw bamboo shoots contain cyanogenic glycosides — compounds that release hydrogen cyanide when chewed and digested. The good news is that these break down readily with heat: thorough boiling makes them safe. That said, Bambusa ventricosa is an ornamental species, not a culinary one, and its shoots are not recommended as food.",
+        "The mature plant poses no toxicity concern to people, dogs, or cats — just don't eat the raw shoots."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "native": false,
+      "alternate_names": [
+        "Buddha Bamboo",
+        "Buddha Belly Bamboo",
+        "Swollen-stemmed Bamboo"
+      ],
+      "quick_hits": [
+        "The swollen belly is not the plant's natural shape — it is a stress response. When the bamboo is cramped in a container, starved of water, or under-fertilized during shoot development, the internodes bulge outward instead of growing tall and straight. Give it rich soil and steady moisture in the ground, and it shoots up to 30 or 40 feet with perfectly cylindrical culms.",
+        "The species name ventricosa is Latin for 'wide in the middle and tapering at the ends' — an accurate description of exactly what happens to the culms when the plant is grown hard.",
+        "Bamboo is technically a grass. Bambusa ventricosa is a member of Poaceae — the same family as corn, rice, and your lawn — and its jointed culms, hollow between nodes, are just a very large version of an ordinary grass stem.",
+        "Most bamboos flower rarely and all at once — a phenomenon called gregarious flowering — then die after setting seed. Some species go 50 years or more between flowering events. Bambusa ventricosa follows this pattern, which means a clump you plant today may never flower in your lifetime."
+      ],
+      "origin": [
+        "Bambusa ventricosa is native to subtropical forests of southern China — primarily Guangdong province — and Vietnam. It belongs to a large genus of clumping bamboos centered on tropical and subtropical Asia.",
+        "It has been cultivated as an ornamental across subtropical regions worldwide for generations, arriving in Florida as a landscape plant suited to the warm, humid conditions of the southern part of the state. Unlike running bamboos, its clumping rhizome system keeps the plant in a tidy, expanding mound rather than spreading aggressively through a yard."
+      ],
+      "more_information": [
+        "The 'belly' effect that gives this bamboo its name is essentially a growth distortion triggered by environmental stress during the brief window when a new shoot is elongating. Internodes form and expand rapidly in the first weeks after a shoot emerges; if the plant is short on water or nutrients during that window, each internode puffs outward rather than stretching upward.",
+        "Once an internode is set, its shape is permanent — no amount of later care will straighten it.",
+        "In the ground with generous water and fertilizer, the plant usually produces mostly normal, straight culms — the famous belly appears on only a portion of shoots, and even then mainly near the base. Container culture, with its inherent limitations on root space and moisture, is the reliable way to get the exaggerated, stacked-belly form seen in bonsai collections and specimen plantings.",
+        "As a clumping bamboo with a pachymorph (non-running) rhizome system, Buddha's Belly does not spread the way running bamboos can. New culms emerge from the edge of an expanding central clump rather than from far-flung underground rhizomes, making it a much more manageable choice for Florida gardens than the running species that have caused problems elsewhere."
+      ],
+      "wildlife_value": [
+        "Bambusa ventricosa offers modest but real wildlife value in a Florida garden. The dense clump of arching culms and foliage creates reliable shelter — birds will nest and roost in established clumps, and the layered structure provides cover for small lizards and other fauna year-round.",
+        "As a non-native grass with no long co-evolutionary history with Florida's insects, it does not function as a larval host for local butterflies or moths and is not a notable pollinator plant. Its wildlife contribution here is primarily structural — good cover, not food."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Buddha's Belly spreads vegetatively in the landscape by producing new culms at the expanding perimeter of its clumping rhizome system. It does not run. In cultivation it is propagated by division of the clump or by culm cuttings. Flowering is rare — most bamboos in this genus go decades between flowering events — and the plant typically dies after setting seed."
+          },
+          {
+            "label": "Culms",
+            "text": "The culms (stems) are jointed, hollow between nodes, and deep glossy green when young, maturing to yellow-green. Under stress — drought, root restriction, low fertility — internodes swell into the rounded, stacked shapes the plant is named for. Under good conditions, culms are mostly cylindrical. Culm walls are thick relative to culm diameter."
+          },
+          {
+            "label": "Leaves",
+            "text": "Linear to lance-shaped, dark green, and up to about 7 inches long, arranged in feathery sprays along the upper portions of each culm. Leaf sheaths are usually persistent. New foliage emerges lime-green and darkens with age."
+          },
+          {
+            "label": "Rhizome",
+            "text": "Clumping (pachymorph) — the rhizomes are short and curved, producing new shoots at the edge of an ever-widening crown rather than sending runners underground. This is the trait that makes Bambusa species far less invasive in the landscape than running bamboos."
+          }
+        ],
+        "what_to_look_for": "Look at the base of the clump for the stacked, swollen internodes that give the plant its name — they are most pronounced on culms that grew under stress, often near the soil line or in potted specimens. Higher on the same culm, internodes are frequently more cylindrical. Notice the jointed structure: each node is a slight ring around the culm, separating one hollow internode from the next. The overall clump expands outward over time, with older culms in the center and new, brighter-green shoots emerging at the edges each growing season."
+      },
+      "seasonality": {
+        "bloom_months": null,
+        "bloom_description": null,
+        "leaf_behavior": "evergreen",
+        "fruiting_months": null,
+        "notes": "Flowering is extremely rare in cultivation — most Bambusa species flower gregariously after very long intervals (often decades) and then die. Visitors are unlikely to see this plant in bloom. New culms emerge and elongate quickly during the warm growing season; the clump is evergreen year-round in frost-free conditions."
+      },
+      "size": {
+        "height": "30 to 45 feet in the ground in Florida (up to 55 feet in its native range); 5 to 8 feet in containers",
+        "spread": "clump slowly expands over time; container specimens remain compact",
+        "habit": "clumping; culms erect at first, arching outward under foliage weight at maturity",
+        "growth_rate": "fast once established in warm, moist conditions",
+        "texture": "medium-fine — feathery foliage on woody culms"
+      },
+      "growing_conditions": {
+        "light": "full sun to part shade; most vigorous in full sun",
+        "soil_tolerances": "prefers deep, rich, consistently moist, well-drained soil; adaptable to clay, loam, or sandy substrates; avoid waterlogged conditions",
+        "drought_tolerance": "low to moderate — consistent moisture produces the best growth; drought stress during shoot emergence triggers the swollen-internode effect",
+        "spacing": "allow a clump to expand freely — new culms appear at the perimeter each season; site away from structures unless the expanding base can be managed"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "Bambusa ventricosa is a clumping bamboo — its rhizomes are short and curved, not long runners — so it does not spread the way golden bamboo (Phyllostachys aurea) and other running species do. It is considered non-invasive in Florida landscapes, and no FISC (formerly FLEPPC) listing was found for this species.",
+        "The cultivar 'Kimmei' (Yellow Buddha Belly) has golden-yellow culms with green striping and can reach similar heights; it is occasionally offered in the trade alongside the standard green form."
+      ]
     },
     {
       "id": "PSBP-00766",
@@ -31059,15 +31949,104 @@
       "watch_invasive": false,
       "watch_invasive_notes": null,
       "rare_fruit": false,
-      "form": "",
-      "safety_note": [],
+      "form": "Tree",
+      "safety_note": [
+        "Do not eat or handle any part of this tree carelessly. All parts — bark, leaves, roots, and seeds — contain rotenone and related compounds (piscidone, piscerythrone, ichthynone) that are toxic to people, dogs, and other mammals in sufficient quantity. Historically, bark extracts were used as anesthetics and sedatives, but the margin between a medicinal and a harmful dose is narrow.",
+        "The bark has a sharply acrid taste and can cause a burning sensation in the mouth. If a person or pet ingests any part of the plant, contact Poison Control (1-800-222-1222) or, for pets, the ASPCA Animal Poison Control Center (888-426-4435). The compounds are extremely toxic to fish — do not allow leaf litter or clippings to enter ponds or water features."
+      ],
       "butterfly": {
         "larval_food": false,
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "native": true,
+      "alternate_names": [
+        "Florida Fishpoison Tree",
+        "Fishfuddle",
+        "Fish Poison Tree",
+        "Jamaica Dogwood"
+      ],
+      "quick_hits": [
+        "The name says it all: the genus Piscidia means 'fish killer' and the species name piscipula means 'little fish.' The Taino and other Indigenous peoples crushed bark, roots, and leaves into shallow water to stun fish — which would float to the surface and could simply be picked up by hand. Using the tree this way is illegal in Florida today.",
+        "Despite the name, Jamaican Dogwood has nothing to do with dogwoods. The 'dog' refers to a ship's dog — a metal cleat used to grip rigging and spars on sailing vessels — made from the tree's hard wood. It was marine hardware, not botany, that earned it the name.",
+        "This tree blooms before it puts out a single leaf. In spring, bare branches erupt with dense clusters of pea-shaped pink-and-white flowers — a spectacle that rivals Royal Poinciana — and then the foliage arrives once flowering is nearly done.",
+        "In a hurricane, Jamaican Dogwood has an unusual survival strategy: it drops its limbs rather than toppling. The tree sacrifices branches to preserve its root system, which may be one reason it grows so robustly in Florida's coastal storm zone."
+      ],
+      "origin": [
+        "Jamaican Dogwood is native to extreme southern Florida — primarily the Florida Keys — and ranges through the Bahamas, the Greater Antilles, and the coastal lowlands from Panama north through Mexico. In Florida, wild populations occur in rockland hammocks and shell mound hammocks along the coast from Miami-Dade and Monroe counties north along the Gulf coast to at least Pinellas County.",
+        "The shell mound sites in this part of its range are significant: the tree naturally colonizes the alkaline, well-drained soils of Indigenous shell middens, growing in the same coastal hammock communities as gumbo limbo, pigeon plum, and false mastic. Its tolerance of salt, drought, and thin soils makes it a natural fit for Florida's coastal uplands."
+      ],
+      "more_information": [
+        "The fish-stunning chemistry is concentrated mainly in the bark, roots, twigs, and leaves. The principal compound is rotenone — a naturally occurring flavonoid also found in several other legumes worldwide and well known to fisheries biologists as a tool for removing invasive fish from managed waters.",
+        "Rotenone interferes with cellular respiration in gill-breathing animals, making it lethal to fish at very low concentrations while being far less hazardous to birds and mammals at the same doses.",
+        "The tree's bark and roots also contain related compounds including piscidone, piscerythrone, and ichthynone — a chemistry suite specific enough that the genus was essentially named after it.",
+        "Historically, the same extracts were explored as analgesics and sedatives in 19th-century medicine, and the plant has been used in herbal traditions to treat pain, nervous conditions, and insomnia, though its potency makes unsupervised use risky.",
+        "As a legume, Jamaican Dogwood is in good family company: Fabaceae includes not only beans and acacias but also Royal Poinciana, wild tamarind, and the coral bean. Like many of its relatives, it likely fixes atmospheric nitrogen through root associations, which helps it establish on the thin, nutrient-poor soils of shell mounds and limestone hammock edges."
+      ],
+      "wildlife_value": [
+        "When Jamaican Dogwood blooms in spring — its branches bare of leaves and fully covered in flower — it becomes one of the more conspicuous bee trees in the coastal hammock. UF/IFAS notes it is particularly attractive to a diversity of bees, and the open, accessible pea-flowers are well suited to native bees of many sizes.",
+        "The spring bloom is brief but dense enough to be a meaningful early-season nectar source.",
+        "The tree is a documented larval host for three butterfly species: the Cassius Blue, the Hammock Skipper, and the Fulvous Hairstreak. The Cassius Blue and Hammock Skipper are native Florida species; the Fulvous Hairstreak is an introduced species now established in South Florida.",
+        "Caterpillars feed on the foliage, so a leafed-out Jamaican Dogwood in summer is worth a close look for small skippers and blues nectaring nearby or laying eggs on new growth."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Propagated by seed. The tree is hermaphroditic — each flower contains both male and female parts — so a single tree can set seed without a pollination partner, though insect visitation improves fruit set. Seeds are contained in distinctive four-winged papery pods."
+          },
+          {
+            "label": "Flowers",
+            "text": "Pea-shaped (papilionoid) flowers in dense clusters, white to pale pink with rosy markings and often greenish spots at the center. They appear in spring on bare branches before the new leaves emerge, making the floral display especially showy. Flowers are fragrant and attract bees and other insects."
+          },
+          {
+            "label": "Fruit and Seeds",
+            "text": "The fruit is a flat, papery legume pod with four longitudinal wings running its length — distinctive among Florida's native trees. Pods are beige to light brown and tend to rattle audibly in the wind when dry. Each pod contains several reddish-brown seeds."
+          },
+          {
+            "label": "Leaves",
+            "text": "Pinnately compound with typically seven to nine oval, smooth-edged leaflets, emerging after the spring flowers have largely finished. The leaf undersides have a fine covering of short hairs. Leaves drop in winter, making this one of the few native Florida upland trees that is fully deciduous."
+          },
+          {
+            "label": "Bark and Trunk",
+            "text": "The trunk is short and stout, supporting a broad, spreading to irregular crown. Bark is gray-brown and somewhat fissured, with an unpleasant, acrid odor when cut or bruised — a hint at the chemistry inside. The wood is hard and durable, which contributed to its historical use in boatbuilding."
+          }
+        ],
+        "what_to_look_for": "In spring, you cannot miss a blooming Jamaican Dogwood — bare branches smothered in pink-and-white flower clusters before a single leaf appears. Later in the season, look for the compound leaves with their oval, paired leaflets, and then the four-winged papery seed pods that develop through summer and rattle when ripe. The bark is gray-brown and furrowed; crush a small piece and the sharp, bitter smell is unmistakable. In summer, look along the leaf stems and new growth for the small caterpillars of Cassius Blues or Hammock Skippers."
+      },
+      "seasonality": {
+        "bloom_months": "spring (primarily March through May)",
+        "bloom_description": "Dense clusters of pea-shaped, white to pale pink flowers with rosy and greenish markings cover the bare branches before new foliage emerges. The display is brief but striking.",
+        "leaf_behavior": "deciduous — drops leaves in winter; new foliage emerges after flowering in spring",
+        "fruiting_months": "summer into fall",
+        "notes": "The sequence is unusual for Florida: winter leaf drop, spring bloom on bare wood, then leaf-out and fruit development through summer. At Bradenton's latitude (Zone 10A, the northern edge of this tree's hardiness range), leaf drop and bloom timing can shift somewhat with winter temperatures."
+      },
+      "size": {
+        "height": "30 to 50 feet (UF/IFAS); FNPS lists to 45 feet in Florida",
+        "spread": "30 to 50 feet at maturity (UF/IFAS)",
+        "habit": "short trunk, broad and irregular spreading crown; upright in youth, more wide-spreading with age",
+        "growth_rate": "fast (UF/IFAS)",
+        "texture": "medium"
+      },
+      "growing_conditions": {
+        "light": "full sun preferred; tolerates partial shade",
+        "soil_tolerances": "highly adaptable — tolerates any soil texture and any pH from 4.5 to 8.0 (UF/IFAS); prefers well-drained soils but tolerates periodically wet conditions; high salt tolerance makes it well suited to coastal sites",
+        "drought_tolerance": "high once established",
+        "spacing": "allow at least 20 to 25 feet from structures — this tree spreads wide and the crown can become very broad at maturity"
+      },
+      "edibility": {
+        "level": "Red"
+      },
+      "toxicity": {
+        "level": "Red",
+        "dogs_level": "Red"
+      },
+      "other_notes": [
+        "The four-winged seed pod is one of the most reliable field marks for this species — no other common Florida hammock tree produces a legume pod with four papery longitudinal wings. It is worth looking for on the ground beneath the tree through fall and winter.",
+        "UF/IFAS lists Jamaican Dogwood for USDA Hardiness Zones 10A through 11. Bradenton sits in Zone 10A, placing this tree at the northern edge of its reliable range. Established specimens handle the local climate well, but an unusually hard freeze can cause significant damage."
+      ]
     },
     {
       "id": "PSBP-00779",
