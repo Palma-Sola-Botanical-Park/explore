@@ -5,7 +5,7 @@
     "species_count": 269,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-09-03T09:46:00",
+    "updated": "2026-09-03T12:28:33",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -20522,12 +20522,12 @@
       "category": "",
       "feature_tier": "Standard",
       "has_sign": false,
-      "status": "spotted",
+      "status": "html",
       "native": false,
       "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1).",
       "native_notes": null,
-      "watch_invasive": false,
-      "watch_invasive_notes": "Listed as invasive by the UF/IFAS Assessment of Non-Native Plants for South Florida's natural areas; not recommended for landscape use in South Florida. No FISC (formerly FLEPPC) Category I or II listing was found at the statewide level. The risk is tied to South Florida's wetter, frost-free climate; at Bradenton's latitude (Central Florida, Zone 10A) it is at the northern edge of reliable establishment and the practical escape risk is lower.",
+      "watch_invasive": true,
+      "watch_invasive_notes": "Listed as invasive by the UF/IFAS Assessment of Non-Native Plants, rated High Invasion Risk statewide — North, Central, and South Florida alike, Bradenton included. UF/IFAS: \"Predicted to be invasive and not recommended by IFAS.\" No FISC (formerly FLEPPC) Category I or II listing was found at the statewide level.",
       "rare_fruit": false,
       "form": "Tree",
       "safety_note": [
@@ -20547,24 +20547,27 @@
         "Bagras"
       ],
       "quick_hits": [
-        "Of the roughly 900 species in the genus Eucalyptus, almost all are native to Australia. The Rainbow Eucalyptus is one of only four exceptions — and the only one native to the Northern Hemisphere.",
-        "The bark is not dyed or treated. Every color on that trunk follows a predictable sequence: the outer bark peels away to reveal bright green inner bark, which then oxidizes through blue and purple, deepens into orange and red, and finally fades to brown — at which point the cycle starts over. Different patches are always at different stages, which is why the whole trunk reads as a mosaic.",
-        "Its most famous commercial product is white paper. Plantations of Rainbow Eucalyptus have been producing pulpwood across the tropics for about a century, and the same fast growth that makes it striking in a park makes it one of the most productive timber trees on earth.",
-        "In its home forests, the Rainbow Eucalyptus is classified as Vulnerable by the IUCN — threatened by logging and agricultural expansion across its island range. The trees you see in botanical gardens and Florida landscapes may one day be valuable insurance for the species."
+        "The bark is not dyed or treated. Every color on that trunk follows a predictable sequence: the outer bark peels away to reveal bright green inner bark, which then shifts through blue and purple, deepens into orange and red, and finally fades to brown — at which point the cycle starts over. Different patches are always at different stages, which is why the whole trunk reads as a mosaic.",
+        "Of the roughly 900 species in the genus Eucalyptus, almost all are native to Australia. The Rainbow Eucalyptus is one of only a handful of exceptions — native not to Australia but to the tropical rainforests of Southeast Asia and the Pacific.",
+        "It is the only eucalyptus species whose native range extends into the Northern Hemisphere. Every other member of this enormous genus is found naturally south of the equator.",
+        "Most people picture eucalyptus as a dry-climate Australian tree — and almost all of them are. This one is a genuine rainforest species, growing naturally in the high-rainfall island forests of the Philippines, Indonesia, and Papua New Guinea. It is almost counterintuitive in the context of its own genus.",
+        "Its most famous commercial product is white paper. Plantations of Rainbow Eucalyptus have been producing pulpwood across the tropics for about a century, and the same extraordinary growth rate that makes it striking in a park has made it commercially important for pulp worldwide."
       ],
       "origin": [
-        "The Rainbow Eucalyptus is native to the tropical rainforests of the Philippines, Indonesia, and Papua New Guinea — specifically the islands of Mindanao, Seram, Sulawesi, New Guinea, and New Britain. It grows in high-rainfall lowland and lower montane forests, often along rivers and on disturbed volcanic soils, at elevations below roughly 6,000 feet.",
-        "It is the only eucalyptus species native to the Northern Hemisphere and the only one naturally adapted to rainforest habitats — a striking exception in a genus that is almost entirely Australian. It was introduced to Florida cultivation as an ornamental and has been grown here for decades, appreciated for its extraordinary bark and fast growth in South Florida's frost-free zones."
+        "The Rainbow Eucalyptus is native to the tropical rainforests of the Philippines, Indonesia, and Papua New Guinea — specifically the islands of Mindanao, Seram, Sulawesi, New Guinea, and New Britain. The only part of its native range north of the equator is Mindanao, making it the sole Northern Hemisphere member of the species in the wild.",
+        "It grows in high-rainfall lowland and lower montane forests, often along rivers and on disturbed volcanic soils, at elevations below roughly 6,000 feet.",
+        "It is the only eucalyptus species native to the Northern Hemisphere and the only one naturally adapted to rainforest habitats — a striking exception in a genus that is almost entirely Australian and associated with drier climates.",
+        "It was introduced to Florida cultivation as an ornamental and has been grown here for decades, appreciated for its extraordinary bark and fast growth in South Florida's frost-free zones."
       ],
       "more_information": [
-        "The species epithet deglupta means 'peeled' in Latin — a straightforward description of the tree's defining habit. The bark sheds in long, narrow strips throughout the tree's life, a continuous process rather than a seasonal one. Because patches across the trunk are always at different points in their color cycle, the trunk never looks the same twice.",
-        "The science behind the colors is straightforward once you know it: the freshly exposed inner bark is green because it contains chlorophyll. As that surface is exposed to air, chlorophyll breaks down and tannins accumulate in the surface cells, driving the progression from green through blue and purple and finally into the warm reds and oranges before the bark browns and eventually peels.",
-        "No pigments are added; it is all oxidation and chemistry.",
+        "The species epithet deglupta means 'peeled' in Latin — a straightforward description of the tree's defining habit. The bark sheds in long, narrow strips throughout the tree's life, a continuous process rather than a seasonal one. Because patches across the trunk are always at different points in their color cycle, the trunk is continuously changing.",
+        "The science behind the colors is not fully resolved, but the broad picture is this: the freshly exposed inner bark is green because it contains chlorophyll.",
+        "As that surface ages and its chemistry changes, tannins accumulate in the surface cells and the chlorophyll beneath declines — and the interplay of those shifts appears to drive the progression from green through blue and purple and into the warm reds and oranges before the bark browns and eventually peels.",
         "Despite being the most visually flamboyant tree in the eucalyptus genus, the Rainbow Eucalyptus produces an unusually pale, low-resin wood — which is precisely what makes it ideal for pulping into bright white paper.",
         "Pantropical plantations have been growing it commercially for pulpwood since the early twentieth century, and it is considered one of the fastest-growing large trees in the world under ideal tropical conditions."
       ],
       "wildlife_value": [
-        "The fluffy white flower clusters are genuine bee magnets — both honey bees and native bees work them actively for nectar. In its native island forests, the tree also provides canopy structure and foraging habitat for birds and small mammals, and its roots stabilize streamside soils in ways that support aquatic life downstream.",
+        "The fluffy white flower clusters are visited actively by honey bees and native bees for nectar. In its native island forests, the tree also provides canopy structure and foraging habitat for birds and small mammals.",
         "In Florida cultivation the picture is more modest. The tree has no co-evolutionary relationship with local butterflies or moths and does not function as a larval host. Its value here is primarily as a nectar source for generalist bees and as large-canopy shelter. Visitors looking for Florida's best butterfly and pollinator habitat will find it among the park's native plantings."
       ],
       "reproduction": {
@@ -20590,17 +20593,17 @@
             "text": "The trunk is straight, tall, and develops buttresses at the base in old age. The bark is the defining feature: smooth, continuously shedding in strips to reveal an ever-changing mosaic of green, blue, purple, orange, and red. Branchlets are roughly square in cross section with narrow wings at the corners — a useful identification detail up close."
           }
         ],
-        "what_to_look_for": "The trunk is unmistakable — look for the patchwork of colors at different stages of the cycle, from bright chartreuse green on freshly exposed bark to blue-purple and then warm orange and rusty red as the same patches age. Lean in close and you can often see the brown outer bark still lifting away at the edges of a fresh patch. Look at the branchlets for the subtle square cross section with winged corners. If the tree is in bloom, look for the small pom-pom clusters of white stamens near the branch tips — and listen for bees."
+        "what_to_look_for": "The trunk is unmistakable — look for the patchwork of colors at different stages of the cycle, from bright chartreuse green on freshly exposed bark to blue-purple and then warm orange and rusty red as the same patches age. If it has rained recently, the newly exposed green patches will be especially saturated; a wet trunk shows the full spectrum at its most vivid. Lean in close and you can often see the brown outer bark still lifting away at the edges of a fresh patch. Look at the branchlets for the subtle square cross section with winged corners. If the tree is in bloom, look for the small pom-pom clusters of white stamens near the branch tips."
       },
       "seasonality": {
         "bloom_months": "sporadically year-round in warm conditions; most active in warmer months",
         "bloom_description": "Small clusters of fluffy white to cream staminate flowers near branch tips; not dramatically showy individually but attractive en masse and a reliable bee draw.",
         "leaf_behavior": "evergreen",
         "fruiting_months": "follows bloom; small woody capsules can be present at most times of year",
-        "notes": "Bark peeling and color change are continuous year-round — there is no off-season for the trunk display. Colors may be slightly more muted in cooler months."
+        "notes": "Bark peeling and color change are continuous year-round — there is no off-season for the trunk display. Colors may be slightly more muted in cooler months. After rain, freshly exposed green patches look especially vivid; a wet trunk is one of the best times to see the full color range at once."
       },
       "size": {
-        "height": "up to 60 feet in South Florida landscapes (to 200+ feet in native rainforest)",
+        "height": "realistically 40 to 60 feet in South Florida landscapes, though exceptional specimens may grow taller (to 200+ feet in native rainforest — the contrast is real)",
         "spread": "20 to 30 feet",
         "habit": "strongly upright, single straight trunk, narrow to broadly pyramidal crown",
         "growth_rate": "very fast — among the fastest-growing trees in the world under tropical conditions; more moderate in Florida",
@@ -20620,8 +20623,9 @@
         "dogs_level": "Yellow"
       },
       "other_notes": [
-        "This species is frost-sensitive — more so than almost any other eucalyptus. It can tolerate brief dips into the upper 20s Fahrenheit but is not reliably cold-hardy above the frost line, which puts Bradenton near its northern limit. A hard freeze can set it back severely or kill it outright.",
-        "Plantation foresters consider the Rainbow Eucalyptus one of the fastest-growing trees in the world. A South Florida nursery specialist has noted it may be the fastest-growing forestry tree on earth in ideal settings — which gives some context for just how quickly this specimen has reached its current size at Palma Sola Botanical Park."
+        "This species is frost-sensitive — more so than almost any other eucalyptus, and generally rated for USDA Zones 10–11. It does not tolerate freezing temperatures well, and how much cold an individual tree can survive depends substantially on its size and age, the duration of the freeze, wind exposure, and site conditions.",
+        "An established tree with substantial trunk mass handles brief cold snaps considerably better than a newly planted sapling, which helps explain why a well-rooted specimen can survive a winter dip that would kill a young tree outright.",
+        "Plantation foresters consider the Rainbow Eucalyptus one of the fastest-growing trees in the world. That growth rate — which can be extraordinary in a true tropical climate — gives some context for just how quickly this specimen has reached its current size at Palma Sola Botanical Park."
       ]
     },
     {
