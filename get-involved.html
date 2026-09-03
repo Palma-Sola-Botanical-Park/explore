@@ -587,6 +587,7 @@ section[id], div[id]{ scroll-margin-top: 84px; }
   .nl-form button{margin-top:1.1rem;width:100%;background:var(--gold);color:var(--green-deep);border:none;border-radius:9px;padding:.9rem 1rem;font-family:inherit;font-size:1.05rem;font-weight:700;cursor:pointer;transition:background .15s,transform .15s}
   .nl-form button:hover{background:var(--gold-light);transform:translateY(-1px)}
   .nl-form .nl-fine{margin:.9rem 0 0;font-size:.82rem;color:rgba(255,255,255,.55)}
+  .nl-form .nl-fields + .nl-fields{margin-top:.75rem}
   @media(max-width:520px){.nl-form .nl-fields{flex-direction:column}}
 </style>
 <section class="bg-deep" style="text-align:center">
@@ -594,22 +595,28 @@ section[id], div[id]{ scroll-margin-top: 84px; }
     <span class="label label-light">Stay connected</span>
     <h2 class="section-title" style="color:var(--white);margin-bottom:.75rem">Join the mailing list</h2>
     <p style="color:rgba(255,255,255,.72);margin-bottom:.5rem">Park news, what's blooming, and first word on events and classes — a friendly note about once a month.</p>
-    <!-- ┌─ Mailchimp form: fill the TWO values from Bev's embed code (Audience → Signup forms → Embedded forms) ─┐ -->
+    <!-- ┌─ Mailchimp — LIVE 2026-09-03. Audience 05dff80d4b (us6). Posts EMAIL/FNAME/LNAME. ─┐ -->
     <form class="nl-form"
-          action="https://XXXXXXXX.us00.list-manage.com/subscribe/post?u=USERID&amp;id=LISTID"  <!-- ⬅ PASTE action URL -->
-          method="post" target="_blank" rel="noopener" novalidate onsubmit="return false">  <!-- ⬅ demo stub: DELETE onsubmit when wiring the real action -->
+          action="https://palmasolabp.us6.list-manage.com/subscribe/post?u=7286ca37dd7e41932ea6f1795&amp;id=05dff80d4b&amp;f_id=004c1ce2f0"
+          method="post" target="_blank" rel="noopener" novalidate>
       <div class="nl-fields">
         <div class="nl-field">
-          <label for="nl-name-gi">Name</label>
-          <input type="text" id="nl-name-gi" name="FNAME" placeholder="Your name" autocomplete="given-name">
+          <label for="nl-fname-gi">First name</label>
+          <input type="text" id="nl-fname-gi" name="FNAME" placeholder="First name" autocomplete="given-name">
         </div>
+        <div class="nl-field">
+          <label for="nl-lname-gi">Last name</label>
+          <input type="text" id="nl-lname-gi" name="LNAME" placeholder="Last name" autocomplete="family-name">
+        </div>
+      </div>
+      <div class="nl-fields">
         <div class="nl-field">
           <label for="nl-email-gi">Email *</label>
           <input type="email" id="nl-email-gi" name="EMAIL" placeholder="you@example.com" required autocomplete="email">
         </div>
       </div>
       <div aria-hidden="true" style="position:absolute;left:-5000px">
-        <input type="text" name="b_XXXXXXXX_YYYYYYYY" tabindex="-1" value="">  <!-- ⬅ PASTE honeypot name -->
+        <input type="text" name="b_7286ca37dd7e41932ea6f1795_05dff80d4b" tabindex="-1" value="">
       </div>
       <button type="submit" name="subscribe">Subscribe</button>
       <p class="nl-fine">No spam, just the park. Unsubscribe anytime.</p>
