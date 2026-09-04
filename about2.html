@@ -118,7 +118,10 @@
     padding:1.5rem 1.6rem 1.6rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
   /* DIRECT children only. `.honors div` also matched .yr and .hrow, which gave
      the year its own divider and stranded it above the heading it belongs to. */
-  .honors > div{padding:.95rem 0;border-top:1px solid var(--rule)}
+  .honors > div{padding:1.15rem 0;border-top:1px solid var(--rule);
+    display:flex;align-items:center;gap:1.4rem}
+  .honors .htext{flex:1 1 auto;min-width:0}
+  .honors > .feat{display:block}
   .honors > div:first-child{border-top:0;padding-top:.2rem}
   .honors h3{font-size:1.02rem;margin:0 0 .28rem;line-height:1.3;color:var(--ink)}
   .honors p{margin:0;color:var(--ink-soft);font-size:.92rem;line-height:1.6}
@@ -138,9 +141,14 @@
      height alone rendered them ~26px wide and illegible. Height leads, width
      is the guard. Kept lightly desaturated at rest so four brand palettes
      don't fight the panel, full colour on hover. */
-  .honors .mark{flex:0 0 auto;max-height:56px;max-width:66px;object-fit:contain;
-    filter:saturate(.55);opacity:.8;transition:filter .25s,opacity .25s}
+  /* The badge uses the full height of its row rather than sitting beside the
+     heading. At mark size a detailed seal like Bradenton's Best was an
+     illegible grey blob — these need to be READ, not decorated with. */
+  .honors .mark{flex:0 0 auto;max-height:100px;max-width:112px;object-fit:contain;
+    filter:saturate(.8);opacity:.92;transition:filter .25s,opacity .25s}
   .honors > div:hover .mark{filter:saturate(1);opacity:1}
+  @media(max-width:520px){.honors > div{flex-direction:column;align-items:flex-start;gap:.9rem}
+    .honors .mark{max-height:80px}}
   .honors .feat .mark{max-height:64px;max-width:76px;opacity:.9}
 
   /* the newest and most meaningful one gets real prominence */
@@ -148,6 +156,13 @@
     margin-bottom:.4rem}
   .honors .feat h3{font-size:1.18rem;color:var(--green-ink)}
   .honors .feat p{color:var(--ink)}
+
+  /* The award artwork is a WIDE TEXT LOCKUP, not a logo — at mark size its
+     words are unreadable, so it gets full panel width. White stage because the
+     lockup's gold would wash out on the gold tint behind it. The heading still
+     carries the claim in text, so nothing is lost if the image fails. */
+  .honors .feat .lockup{background:#fff;border-radius:8px;padding:.9rem 1.1rem;margin-top:.9rem}
+  .honors .feat .lockup img{display:block;width:100%;max-width:320px;margin:0 auto;height:auto}
 
 
   /* ── CERTIFICATIONS — credentials, not coverage. These sit with the mission
@@ -232,27 +247,37 @@
           <div class="honors">
             <div class="feat">
               <div class="yr">2026</div>
-              <div class="hrow"><h3>Manatee Chamber of Commerce</h3>
-                <img class="mark" src="images/partners/manatee-community.jpg" alt="" onerror="this.remove()"></div>
-              <p>Named one of five finalists for the county's top nonprofit.</p>
+              <h3>Non-Profit of the Year finalist</h3>
+              <p>One of five finalists named by the Manatee Chamber of Commerce.</p>
+              <div class="lockup">
+                <img src="images/recognition/chamber-nonprofit-awards-2026.png"
+                     alt="46th Annual Manatee Chamber of Commerce Small Business &amp; Non-Profit of the Year Awards"
+                     onerror="this.parentNode.remove()">
+              </div>
             </div>
             <div>
-              <div class="yr">2026</div>
-              <div class="hrow"><h3>Bradenton's Best</h3>
-                <img class="mark" src="images/recognition/bradentons-best-2026.png" alt="" onerror="this.remove()"></div>
-              <p>Recognized by the community we serve — though we're proudest of being free and open every day.</p>
+              <div class="htext">
+                <div class="yr">2026</div>
+                <h3>Bradenton's Best</h3>
+                <p>Recognized by the community we serve — though we're proudest of being free and open every day.</p>
+              </div>
+              <img class="mark" src="images/recognition/bradentons-best-2026.png" alt="Bradenton's Best 2026 winner" onerror="this.remove()">
             </div>
             <div>
-              <div class="hrow"><h3>Bay News 9</h3>
-                <img class="mark" src="images/recognition/bay-news-9.png" alt="" onerror="this.remove()"></div>
-              <p>Featured on "Florida on a Tankful," thirty-three years after neighbors saved the site from development.</p>
-              <a href="news.html?Story=Bay">See the story →</a>
+              <div class="htext">
+                <h3>Bay News 9</h3>
+                <p>Featured on "Florida on a Tankful," thirty-three years after neighbors saved the site from development.</p>
+                <a href="news.html?Story=Bay">See the story →</a>
+              </div>
+              <img class="mark" src="images/recognition/bay-news-9.png" alt="Bay News 9" onerror="this.remove()">
             </div>
             <div>
-              <div class="hrow"><h3>Horticulture Magazine</h3>
-                <img class="mark" src="images/recognition/horticulture-magazine.jpg" alt="" onerror="this.remove()"></div>
-              <p>Featured in the national publication for our collections and mission.</p>
-              <a href="news.html?Story=Horticulture">See the story →</a>
+              <div class="htext">
+                <h3>Horticulture Magazine</h3>
+                <p>Featured in the national publication for our collections and mission.</p>
+                <a href="news.html?Story=Horticulture">See the story →</a>
+              </div>
+              <img class="mark" src="images/recognition/horticulture-magazine.jpg" alt="Horticulture Magazine" onerror="this.remove()">
             </div>
           </div>
         </div>
