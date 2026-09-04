@@ -689,12 +689,10 @@ def main():
                     f"{Path(path).name}: meta.{key}={declared} but the file holds "
                     f"{actual}")
         rmeta = ((load(RESEARCH, {}) or {}).get("meta") or {})
-        declared_sc = rmeta.get("status_counts")
-        actual_sc = dict(Counter(s.get("status") for s in research))
-        if declared_sc and declared_sc != actual_sc:
-            add("META", "WARN",
-                f"research.json: meta.status_counts={declared_sc} but actual="
-                f"{actual_sc}")
+        # The meta.status_counts check was removed 2026-09-03 with the field it
+        # watched. It duplicated a fact the records already carry, drifted when a
+        # write path forgot it, and nothing read it — so this check existed only
+        # to report on the problem the field created. Don't reinstate either.
         nums = [int(s["id"].split("-")[1]) for s in plants + wild + research
                 if re.match(r"PSBP-\d+$", s.get("id", ""))]
         if nums:

@@ -2015,13 +2015,10 @@ def handle_api_intake_set_status(params):
         return {"ok": True, "id": species_id, "note": "No change"}
 
     sp["status"] = new_status
-    # Update meta status_counts
-    research.setdefault("meta", {})
-    counts = {}
-    for s in species_list:
-        st = s.get("status", "research")
-        counts[st] = counts.get(st, 0) + 1
-    research["meta"]["status_counts"] = counts
+    # meta.status_counts REMOVED 2026-09-03 (Randy's call). It duplicated a fact
+    # the records already carry, drifted whenever a write path forgot it, and
+    # nothing ever read it — the Overview tab counts statuses live from the
+    # records (see get_overview_data). Single source of truth; don't reinstate.
     write_json_atomic(RESEARCH_JSON, research)
 
     return {
@@ -3443,12 +3440,8 @@ def handle_api_publish_demote_research(params):
         wildlife_r = sum(1 for s in research["species"] if s.get("type") == "wildlife")
         research["meta"]["plant_count"] = plants_r
         research["meta"]["wildlife_count"] = wildlife_r
-        # Update status_counts
-        status_counts = {}
-        for s in research["species"]:
-            st = s.get("status", "research")
-            status_counts[st] = status_counts.get(st, 0) + 1
-        research["meta"]["status_counts"] = status_counts
+        # meta.status_counts REMOVED 2026-09-03 — see the note in the set-status
+        # handler above. Nothing read it; the Overview tab counts live.
         write_json_atomic(RESEARCH_JSON, research)
 
         # ── 6. Remove from signage JSON ────────────────────────────
