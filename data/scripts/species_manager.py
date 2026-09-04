@@ -9702,7 +9702,7 @@ _DRAFT_SPEC_PLANTS = {
     "form":               ("str",  "growth form — EXACTLY one of: Tree | Shrub & Vine | Palm & Cycad | Groundcover & Wildflower | Foliage & Accent | Aquatic & Wetland"),
     "alternate_names":    ("list", "common alternate names — list of short strings"),
     "butterfly":          ("dict", 'object {"larval_food":bool,"larval_species":[str],"adult_food":bool,"adult_species":[str],"notes":str|null} — larval_food + larval_species: documented larval HOST for named butterflies/moths as "Common (Scientific)"; adult_food: notable nectar source (keep adult_species [] unless ONE specific specialist); notes: brief caveat or null'),
-    "quick_hits":         ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings). LEAN LOCAL where the species gives you something — Florida, the Gulf coast, Manatee County, or this park. A strong preference, not a quota and not a rule: if a local angle is there it usually beats the general fact, and park-level detail beats both. \"Florida's entire population traces back to eleven birds that wintered near Sarasota in 1981\" is the register. What you are avoiding is a set that reads like a Wikipedia summary. Never manufacture a local detail to satisfy this — a genuinely good general fact is better than a thin local one."),
+    "quick_hits":         ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings). LEAN LOCAL where the species offers it — Florida, the Gulf coast, Manatee County, this park. A preference, not a quota: park-level detail beats a Florida angle, which beats a general fact. What you are avoiding is a set that reads like Wikipedia. Never manufacture a local detail — a good general fact beats a thin local one."),
     "origin":             ("list", "native range and how it came to Florida cultivation, as a list of one or two paragraph strings (never newlines inside a string)"),
     "more_information":   ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
     "wildlife_value":     ("list", "1-2 short paragraphs on the pollinators and wildlife it supports — this is where any real butterfly host / nectar value belongs, in prose (list of strings)."),
@@ -9721,8 +9721,8 @@ _DRAFT_SPEC_PLANTS = {
 _DRAFT_SPEC_WILDLIFE = {
     "native":           ("bool", "true if native to Florida; false if introduced"),
     "also_known_as":    ("list", "alternate common names — list of strings"),
-    "teaser":           ("str",  "ONE self-contained sentence or two, 120-175 characters, for the quick-view drawer on the wildlife index. It is the FIRST thing a visitor reads about this animal. It may be a shortened, reworded version of quick_hits[1], [2] or [3] — but NEVER of quick_hits[0], and never a near-copy of any hit verbatim. The reason: a reader taps the quick view, then opens the page, and the page OPENS with quick_hits[0]. If the teaser and that first hit say the same thing the same way, the click was wasted — and the photograph is already the same on both surfaces, so the words are the only thing that can differ. Write it to make somebody want the page, not to summarise it."),
-    "quick_hits":       ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings). LEAN LOCAL where the species gives you something — Florida, the Gulf coast, Manatee County, or this park. A strong preference, not a quota and not a rule: if a local angle is there it usually beats the general fact, and park-level detail beats both. \"Florida's entire population traces back to eleven birds that wintered near Sarasota in 1981\" is the register. What you are avoiding is a set that reads like a Wikipedia summary. Never manufacture a local detail to satisfy this — a genuinely good general fact is better than a thin local one."),
+    "teaser":           ("str",  "One or two sentences, 120-175 characters, for the quick-view drawer — the first thing a visitor reads. It must carry a DIFFERENT FACT from quick_hits[0], not the same fact reworded ('forages by day' to 'works the day shift' is the same fact and is the failure). Prefer quick_hits[2] or [3]: the page opens with [0], and the photo is already identical on both surfaces, so the words are all that can differ. Make somebody want the page; don't summarise it."),
+    "quick_hits":       ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings). LEAN LOCAL where the species offers it — Florida, the Gulf coast, Manatee County, this park. A preference, not a quota: park-level detail beats a Florida angle, which beats a general fact. What you are avoiding is a set that reads like Wikipedia. Never manufacture a local detail — a good general fact beats a thin local one."),
     "range_and_origin": ("str",  "short paragraph: native range and status in Florida"),
     "more_information": ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
     "identification":   ("dict", 'object {"blocks":[{"label":str,"text":str}], "what_to_look_for":str}'),
@@ -9733,9 +9733,9 @@ _DRAFT_SPEC_WILDLIFE = {
     "habitat":          ("str",  "preferred habitat"),
     "where_to_look":    ("str",  "where in a Florida park a visitor would spot it"),
     "when_to_see":      ("str",  "time of day / year it is active and visible"),
-    "size":             ("dict", 'object {"length":str,"lifespan":str} — length in ROUNDED IMPERIAL, spelled out ("about six inches", "roughly two feet"), never metric. Where a scientific measure and a perceivable one differ, give the perceivable: a visitor can judge height standing at the animal and cannot judge beak-to-tail length. Say what they would actually see.'),
-    "danger":           ("dict", 'object {"people_level":"Red|Yellow|Green","people":str,"pets_level":"Red|Yellow|Green","pets":str} — LEAD with whatever matters most; if there is a genuine hazard (bite, sting, venom) open with THAT plainly. Do not march through people-then-pets in order and never repeat a point. If the animal is harmless say so once and stop — "Harmless to people. Does not bite or sting." Green is the DEFAULT.'),
-    "interaction":      ("dict", 'object {"level":"Red|Yellow|Green","guidance":str} — how to watch it respectfully. Give the visitor something to DO, not a warning to absorb ("a hand lens or phone macro reveals a surprisingly intricate insect; replace the leaf as you found it"). Green is the DEFAULT for anything that simply wants leaving alone.'),
+    "size":             ("dict", 'object {"length":str,"lifespan":str} — ROUNDED IMPERIAL spelled out ("about six inches"), never metric. Prefer the perceivable measure over the scientific one: a visitor can judge height at the animal, not beak-to-tail length.'),
+    "danger":           ("dict", 'object {"people_level":"Red|Yellow|Green","people":str,"pets_level":"Red|Yellow|Green","pets":str} — LEAD with the real hazard if there is one (bite, sting, venom); do not march people-then-pets, and never repeat a point. Harmless animals say so once and stop. Green is the DEFAULT.'),
+    "interaction":      ("dict", 'object {"level":"Red|Yellow|Green","guidance":str} — how to watch it respectfully. Give the visitor something to DO, not a warning to absorb. Green is the DEFAULT for anything that just wants leaving alone.'),
     "invasive":         ("dict", 'object {"level":"Red|Yellow|Green","notes":str}'),
     "conservation":     ("dict", 'object {"level":"Red|Yellow|Green","status":str}'),
     "seasonality":      ("dict", 'object {"presence":str,"reliability":str,"months":[ints 1-12],"peak":str|null,"note":str}'),
@@ -9805,23 +9805,32 @@ def _ai_exemplars(kingdom, n=2):
     return [{k: e[k] for k in spec if _is_filled(e.get(k))} for e in chosen[:n]]
 
 
-def _ai_build_messages(species, kingdom):
-    """Return (system, user_text) for the drafting call."""
-    spec = _draft_spec(kingdom)
-    noun = "plant" if kingdom == "plants" else "animal"
-    sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
-    tax = species.get("taxonomy") or {}
-
-    system = (
+# ── SHARED HOUSE RULES ────────────────────────────────────────────────────
+# Voice, shelf life, contested facts, accuracy and format. Used by BOTH Draft
+# and Revise (2026-09-03). They previously had SEPARATE system prompts and had
+# drifted: Revise carried none of these, which is why a revise pass replaced a
+# dated 'spreading since the 1990s' with 'Today' — it had never been told the
+# shelf-life rule. One constant, one place to edit, no drift.
+_HOUSE_RULES = (
         "You write interpretive signage for Palma Sola Botanical Park, a public garden in "
         "Bradenton, Manatee County, Florida.\n\n"
         "VOICE: an upbeat naturalist who genuinely loves this stuff but never overdoes it. "
         "Warm and inviting — you want visitors to share the delight — yet never cloying, "
         "breathless, or showing off. Deliver solid, specific information plainly: no "
-        "theatrics, no purple prose, no exclamation-point energy. Do NOT tell the reader something is remarkable, amazing, stunning or extraordinary — show them the thing and let them decide. Cut any phrase that is noticeably written. Light touch by default; "
+        "theatrics, no purple prose, no exclamation-point energy. Do not push enthusiasm "
+        "at the reader — no 'isn't this fascinating', no sustained selling of how "
+        "amazing the thing is. Show it and let them decide. A single earned "
+        "'remarkable' is fine; a barrage of them is the failure. Light touch by "
+        "default; "
         "go deeper only where something genuinely needs explaining. Your reader is a "
         "curious adult who is not a botanist — quietly relate to them, don't lecture, and "
         "don't come across as a know-it-all.\n\n"
+        "SHELF LIFE: these pages sit unchanged for years, so never anchor a FACT to an "
+        "unstated now. Date events — 'first recorded in Key West in 1887', 'spreading "
+        "since the 1990s'. Date any figure that can move — 'fewer than 50 remained as "
+        "of 2024', never 'today fewer than 50 remain'. The fault is the anchoring, not "
+        "the word: 'if it is currently flowering, look up' and 'not commonly eaten "
+        "today' are both fine, because neither dates anything.\n\n"
         "CONTESTED FACTS: when something is debated — native status, a name change, a "
         "taxonomic squabble — do NOT rehash the back-and-forth; naming disputes and "
         "'once thought native, then a 2020 study said otherwise' blow-by-blows drain the "
@@ -9840,6 +9849,16 @@ def _ai_build_messages(species, kingdom):
         "per paragraph. Keep paragraphs short — about three sentences (~400 characters) "
         "max; split longer content into separate list items."
     )
+
+
+def _ai_build_messages(species, kingdom):
+    """Return (system, user_text) for the drafting call."""
+    spec = _draft_spec(kingdom)
+    noun = "plant" if kingdom == "plants" else "animal"
+    sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
+    tax = species.get("taxonomy") or {}
+
+    system = _HOUSE_RULES
 
     schema_lines = "\n".join(
         f'  - "{field}" ({shape}): {instr}' for field, (shape, instr) in spec.items()
@@ -10247,20 +10266,17 @@ def _ai_build_revise_messages(species, kingdom, feedback):
     noun = "plant" if kingdom == "plants" else "animal"
     current = {k: species[k] for k in spec if _is_filled(species.get(k))}
 
-    system = (
-        "You are an editor refining existing signage content for Palma Sola Botanical "
-        "Park, a public garden in Bradenton, Florida. Apply the reviewer's feedback "
-        "precisely. Change ONLY the fields the feedback actually implicates; leave "
-        "everything else exactly as it is. Preserve the park's established voice — warm, "
-        "specific, factual, lightly surprising, never padded. If the feedback is factual "
-        "(a correction, a disputed claim, a request to verify), use the web_search tool "
-        "to confirm against authoritative sources (UF/IFAS and other .edu, USDA, FNPS, "
-        "ADW, IUCN) before changing it. If the feedback is purely tone, length, or "
-        "formatting, no search is needed. Never invent facts. THE CURRENT CONTENT MAY ALREADY REFLECT EARLIER DELIBERATE EDITS — material that looks missing was often removed on purpose. Do not restore or re-add anything unless this round's feedback actually asks for it. Inside every string value "
-        "write plain prose only — no markdown, asterisk emphasis, or bullet characters. "
-        "Never put a newline inside any string value; for multi-paragraph fields use one "
-        "list item per paragraph. Keep every paragraph short — at most about three "
-        "sentences (~400 characters); split longer content into separate list items."
+    system = _HOUSE_RULES + (
+        "\n\nYOU ARE EDITING, NOT DRAFTING. Everything above still applies — the "
+        "house rules do not relax because a reviewer asked for a change.\n\n"
+        "Apply the reviewer's feedback precisely. Change ONLY the fields the feedback "
+        "actually implicates; leave everything else exactly as it is. THE CURRENT "
+        "CONTENT MAY ALREADY REFLECT EARLIER DELIBERATE EDITS — material that looks "
+        "missing was often removed on purpose. Do not restore or re-add anything "
+        "unless this round's feedback asks for it. If the feedback is factual (a "
+        "correction, a disputed claim, a request to verify), use the web_search tool "
+        "to confirm before changing it; if it is purely tone, length or formatting, "
+        "no search is needed."
     )
 
     schema_lines = "\n".join(

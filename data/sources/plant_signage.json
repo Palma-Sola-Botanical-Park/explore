@@ -2,10 +2,10 @@
   "meta": {
     "generated": "2026-06-23",
     "source": "PSBP_Master_Plant_Signage.xlsx",
-    "species_count": 270,
+    "species_count": 272,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-09-03T14:46:10",
+    "updated": "2026-09-03T22:45:45",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -27443,6 +27443,128 @@
       ]
     },
     {
+      "id": "PSBP-00613",
+      "common_name": "Sapodilla",
+      "botanical_name": "Manilkara zapota",
+      "inat_taxon_id": 165144,
+      "sign_level": "Species",
+      "taxonomy": {
+        "family": "Sapotaceae"
+      },
+      "category": "",
+      "feature_tier": "Standard",
+      "has_sign": false,
+      "status": "spotted",
+      "native": false,
+      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "native_notes": null,
+      "watch_invasive": false,
+      "watch_invasive_notes": "FISC (formerly FLEPPC) Category I invasive species. UF/IFAS rates it invasive and not recommended for planting in Central and South Florida. The tree escapes cultivation via bird-dispersed seeds into hardwood hammocks and disturbed natural areas, where its dense shade suppresses native understory plants. UF/IFAS considers it not a problem species in North Florida (including Manatee County's zone), but the Category I listing reflects documented ecological impact in southern parts of the state.",
+      "rare_fruit": true,
+      "form": "Tree",
+      "safety_note": [
+        "Eat only fully ripe fruit — unripe sapodilla is loaded with tannins and sticky latex that cause significant mouth irritation and digestive discomfort. Ripe flesh is safe and widely eaten across the tropics. The hard black seeds are not edible; they are a choking hazard and should be discarded.",
+        "Any cut to the bark, branches, or unripe fruit releases a sticky white latex that is difficult to wash off skin, so gloves are worth wearing when pruning. The tree is not known to be toxic to people or pets in the way that causes serious harm, but the seeds and unripe parts are best kept away from dogs and children."
+      ],
+      "butterfly": {
+        "larval_food": false,
+        "larval_species": [],
+        "adult_food": false,
+        "adult_species": [],
+        "notes": null
+      },
+      "alternate_names": [
+        "Chikoo",
+        "Chiku",
+        "Naseberry",
+        "Dilly",
+        "Chicozapote",
+        "Níspero",
+        "Marmalade Plum"
+      ],
+      "quick_hits": [
+        "The sticky white latex that bleeds from a cut in the bark is chicle — the original base of chewing gum. The Maya were harvesting it thousands of years before Wrigley put it in a wrapper. By the 1920s Americans were chewing roughly a hundred sticks of gum a year, and nearly all of it came from tapped sapodilla forests in the Yucatán and Central America.",
+        "Scratch the skin of an unripe sapodilla and the flesh beneath is hard and astringent — full of tannins and sticky latex. Let the same fruit fully ripen off the tree and it turns into something often described as brown sugar dissolved into a pear. The chemistry flips completely.",
+        "Florida has a native cousin of this tree: Manilkara bahamensis, the wild dilly, grows in the Florida Keys and is the only member of this genus actually native to the United States. The sapodilla you're looking at here arrived from Central America as a crop tree in 1883.",
+        "A grafted sapodilla can begin bearing fruit in as few as two to four years. Grow one from seed and you may wait six to eight years or more for the first fruit — one reason named cultivars like 'Brown Sugar' and 'Prolific' dominate Florida's small commercial industry."
+      ],
+      "origin": [
+        "Manilkara zapota is native to the tropical lowlands of southern Mexico, particularly the Yucatán Peninsula, and extends through Belize, Guatemala, and Central America into the Caribbean. The Maya cultivated it extensively — for its fruit, its latex, and its exceptionally hard timber — and it spread through trade routes to the rest of tropical America long before European contact.",
+        "It reached Florida as an introduced fruit crop in 1883, likely via the Bahamas, and was being grown commercially in the Keys by the early 1900s. The tree proved so well adapted to south Florida's rocky, calcareous soils that it escaped cultivation and naturalized in hammocks and disturbed sites.",
+        "From Florida, the species had already been carried by colonial-era traders to the Philippines by the 1600s, and from there it spread across South and Southeast Asia, where it is now a major commercial crop in India, Sri Lanka, and the Philippines."
+      ],
+      "more_information": [
+        "The word 'chicle' comes from the Nahuatl tzictli, meaning sticky or to stick — the Aztec name for the latex they adopted from Mayan trade networks. When bark is cut, the tree responds by flooding the wound with this milky white latex, which hardens into a rubbery mass.",
+        "Mayan laborers called chicleros scored living trees in zigzag patterns with machetes, collected the flowing sap, cooked it into blocks, and shipped it to American gum companies. Demand from brands like Adams and Wrigley was so intense that by the mid-1930s unsustainable tapping had killed roughly a quarter of Mexico's sapodilla trees.",
+        "Synthetic gum base, introduced in the 1950s, ended the industry before the forests were lost entirely.",
+        "The sapodilla's wood is one of the hardest and most durable produced by any tropical tree — the Maya used it for lintels and roof beams in temple construction, and many of those original timbers are still in place at sites like Tikal and Chichén Itzá, having outlasted stone carvings around them.",
+        "In Florida, the timber is not harvested commercially, but the tree's density and wind-resistance make it structurally formidable: UF/IFAS notes it endures hurricanes well.",
+        "Leaves emerge pinkish-bronze and mature to a glossy, deep green, arranged in spirals that cluster near the branch tips. The flowers are small, creamy-white, bell-shaped, and fragrant, appearing year-round from the leaf axils rather than in a single dramatic flush.",
+        "Fruit can take several months to mature and does not ripen further once separated from the tree while still green — it must be picked at the right stage and allowed to soften off the branch."
+      ],
+      "wildlife_value": [
+        "The small, fragrant flowers open year-round and draw honeybees and other generalist pollinators. Fruit-eating birds and small mammals take ripe sapodillas when available, which is part of how the tree has spread beyond cultivated settings in south Florida — birds disperse the hard black seeds into surrounding hammock habitat, a dynamic that underlies its Category I invasive listing.",
+        "As a non-native tree, sapodilla carries none of the co-evolved relationships with Florida's native insects that a native Manilkara like the wild dilly would.",
+        "Its dense canopy does provide nesting cover, and the fruit is a reliable food source for opportunistic wildlife, but its ecological role here is essentially that of a generous stranger — welcomed by generalists, but not woven into the native food web."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Reproduction",
+            "text": "Sapodilla bears flowers with both male and female parts, so a single tree can set fruit without a second tree nearby. Commercial growers propagate named cultivars by veneer grafting onto seedling rootstock; home growers and naturalized trees reproduce from seed. The hard black seeds are dispersed primarily by fruit-eating birds and mammals, which is how the tree spreads into natural areas."
+          },
+          {
+            "label": "Flowers",
+            "text": "Small, creamy-white, and bell-shaped, with six petals and a faint sweet fragrance. They emerge singly or in small clusters from the leaf axils near branch tips and can appear in multiple flushes throughout the year rather than in a single season. Not showy from a distance — you notice them up close by their scent before you spot them by sight."
+          },
+          {
+            "label": "Fruit",
+            "text": "Round to oval, with rough, dull-brown skin that looks like a small russet potato. The skin is slightly gritty to the touch. Inside: soft, translucent, reddish-brown to caramel-colored flesh surrounding one to five hard, glossy black seeds. Fruit takes several months to develop and does not ripen off the tree if picked green — it must reach the correct stage on the branch before harvest."
+          },
+          {
+            "label": "Leaves",
+            "text": "Simple, alternate, and glossy dark green at maturity, arranged in spirals that cluster noticeably at the ends of branches. New leaves emerge with a distinctive pinkish to bronze flush before hardening to deep green. Blades are elliptic, two to five inches long, with smooth margins."
+          },
+          {
+            "label": "Bark and Latex",
+            "text": "Bark on mature trees is dark brown and becomes deeply furrowed with age. Any cut or wound to the bark, branches, or unripe fruit releases a sticky white latex — chicle — that was historically harvested as the base of natural chewing gum. The latex dries quickly on skin and is difficult to remove, so take care when pruning."
+          }
+        ],
+        "what_to_look_for": "Start with the leaves: look for the spiral clusters of glossy dark green foliage packed toward the branch tips — that arrangement is distinctive. If the tree is carrying fruit, look for what appears to be small russet potatoes hanging from the branches; scratch the skin gently and notice the gritty texture. Check near the leaf axils for the small, creamy, bell-shaped flowers — lean in for the faint sweet scent. Finally, if you spot a nick or cut on the bark, look for the white latex beading up at the wound: that is chicle, the same substance the Maya tapped from this tree for centuries."
+      },
+      "seasonality": {
+        "bloom_months": "year-round",
+        "bloom_description": "Small, creamy-white, fragrant, bell-shaped flowers emerge from leaf axils in multiple flushes throughout the year rather than in a single concentrated season.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": "February to September",
+        "notes": "UF/IFAS records the bearing season for cultivated sapodilla in Florida as February through September, though individual trees may carry fruit outside this window. Fruit development from flower to harvest can take three to six months."
+      },
+      "size": {
+        "height": "40 to 60 feet in cultivation (UF/IFAS); can exceed 100 feet in native forest conditions",
+        "spread": "35 to 45 feet",
+        "habit": "single upright trunk with a symmetrical, dense, rounded to pyramidal crown",
+        "growth_rate": "moderate — roughly 12 to 24 inches per year under good conditions, slowing as the tree matures",
+        "texture": "coarse — large, glossy leaves clustered at branch tips give a bold, dense canopy"
+      },
+      "growing_conditions": {
+        "light": "full sun required for best growth and fruit production",
+        "soil_tolerances": "tolerates a wide range of poor soils, including sandy, rocky, and highly calcareous soils; prefers well-drained conditions; notably adapted to south Florida's oolitic limestone soils",
+        "drought_tolerance": "high once established — UF/IFAS rates it very drought-resistant; one of its strengths as a landscape tree in Florida's dry periods",
+        "spacing": "allow at least 20 to 25 feet from other large trees and structures; keep 8 to 10 feet from sidewalks and curbs, as the trunk and roots expand considerably on older specimens"
+      },
+      "edibility": {
+        "level": "Yellow"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Yellow"
+      },
+      "other_notes": [
+        "A close native relative, Manilkara bahamensis (wild dilly), is native to the Florida Keys and represents what a native Manilkara looks like in this region. The sapodilla is sometimes confused with mamey sapote (Pouteria sapota) in the marketplace — both belong to Sapotaceae and produce brown-skinned tropical fruits, but they are distinct species with different fruit size, flesh color, and flavor.",
+        "Named cultivars grown in Florida include 'Brown Sugar,' 'Prolific,' 'Modello,' and 'Russel.' Grafted trees of these selections bear fruit in two to four years; seedling trees commonly take six to eight years or more. Scales and fruit flies are the most commonly reported pest issues in Florida cultivation."
+      ]
+    },
+    {
       "id": "PSBP-00614",
       "common_name": "Musk Fern",
       "botanical_name": "Microsorum grossum",
@@ -27678,6 +27800,113 @@
         "The seeds are naturally buoyant and water-resistant — each one carries a small air chamber and a hydrophobic seed coat that lets it float for months without losing viability. This is how noni colonized Pacific atolls long before humans arrived with canoes, and it is part of what makes the species such a capable long-distance traveler.",
         "For those curious enough to try processing noni at home, the traditional method involves placing ripe, yellow-white fruits in a sealed glass jar at ambient temperature and allowing them to ferment naturally for roughly two months. The fruit breaks down and releases juice that seeps out on its own — no pressing needed.",
         "The result is tart and funky; most people blend it with sweeter fruit juice before drinking."
+      ]
+    },
+    {
+      "id": "PSBP-00620",
+      "common_name": "Cavendish Banana",
+      "botanical_name": "Musa acuminata",
+      "inat_taxon_id": 140907,
+      "sign_level": "Species",
+      "taxonomy": {
+        "family": "Musaceae"
+      },
+      "category": "",
+      "feature_tier": "Standard",
+      "has_sign": false,
+      "status": "spotted",
+      "native": false,
+      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
+      "native_notes": null,
+      "watch_invasive": false,
+      "watch_invasive_notes": "UF/IFAS rates Musa spp. as 'not considered a problem species at this time, may be recommended' across north, central, and south Florida. The Cavendish group does not appear on the FISC (formerly FLEPPC) Category I or II invasive plant list.",
+      "rare_fruit": false,
+      "form": "Foliage & Accent",
+      "safety_note": [
+        "Ripe and unripe banana fruit, the flower bracts, and young flower stalks are eaten in many cuisines worldwide. The plant is not generally considered toxic to people, dogs, or cats, although individual food allergies are always possible."
+      ],
+      "butterfly": {
+        "larval_food": false,
+        "larval_species": [],
+        "adult_food": false,
+        "adult_species": [],
+        "notes": null
+      },
+      "alternate_names": [
+        "Banana",
+        "Dessert Banana",
+        "Dwarf Cavendish",
+        "Edible Banana"
+      ],
+      "quick_hits": [
+        "This plant is not actually a tree. What looks like a trunk is a pseudostem — a tight column of overlapping leaf-base sheaths with no wood in it at all. Botanists classify it as a giant herb, in the same broad category as a basil plant.",
+        "Each pseudostem flowers exactly once, then dies. The clump survives because the underground rhizome keeps sending up new shoots called pups or suckers, so the plant renews itself season after season without ever being replanted.",
+        "The Cavendish replaced the Gros Michel banana after Panama disease devastated commercial plantations in the mid-20th century. Since the 1990s a different strain of the same fungal pathogen, Tropical Race 4, has been spreading through Cavendish production in many parts of the world.",
+        "A banana is botanically a berry. Cavendish bananas develop without pollination, so the familiar fruit contains only tiny vestiges of seeds — unlike wild bananas, which are full of hard, gritty seeds and are barely edible."
+      ],
+      "origin": [
+        "Musa acuminata is native to the tropical and subtropical forests of southern Asia, with a range spanning the Indian subcontinent and Southeast Asia. Bananas have been cultivated by people for thousands of years — archaeological evidence from Papua New Guinea puts cultivation back at least 7,000 years — making them one of humanity's oldest crop plants.",
+        "Cavendish-type bananas are widely grown in Florida, and Bradenton's warm climate allows them to grow and fruit for much of the year. A hard freeze can kill a pseudostem, but the underground rhizome typically survives and sends up new growth. UF/IFAS recommends Cavendish-type bananas for home landscapes across all three regions of the state."
+      ],
+      "more_information": [
+        "The Cavendish subgroup takes its English name from William Cavendish, the 6th Duke of Devonshire, whose gardener successfully fruited the plants at Chatsworth House in Derbyshire, England, in the 1830s.",
+        "Inside the pseudostem, the true stem grows upward and eventually pushes through the top as a long flowering spike. The inflorescence is a dramatic pendant structure — the familiar purple-red banana heart — whose bracts lift in sequence to reveal rows of developing fingers."
+      ],
+      "wildlife_value": [
+        "In their native Southeast Asian range, wild Musa species are pollinated primarily by bats and sunbirds drawn to the nectar-rich flowers. Though the cultivated Cavendish sets fruit without pollination, its open bracts can still offer nectar to visiting insects and opportunistic wildlife.",
+        "Ripe fruit left on or near the plant may attract birds and other fruit-eating wildlife in Florida. As a non-native plant, Musa acuminata is not a documented larval host for Florida butterflies or moths."
+      ],
+      "reproduction": {
+        "blocks": [
+          {
+            "label": "Pseudostem and Rhizome",
+            "text": "Beneath each pseudostem lies a fleshy underground rhizome (commonly called a corm) from which both the pseudostem and new suckers arise. Each pseudostem flowers, fruits, and then dies; the rhizome continuously produces new suckers to replace it."
+          },
+          {
+            "label": "Flowering",
+            "text": "The banana does not flower on a seasonal schedule — it flowers when its pseudostem has grown large enough, which under favorable Florida conditions can happen in less than a year. The true stem rises through the interior of the pseudostem and emerges at the top as a long drooping stalk bearing the inflorescence. A reddish-purple bract (the banana heart) encloses the developing flowers, which emerge in clusters called hands as successive bracts lift and fall away."
+          },
+          {
+            "label": "Fruit",
+            "text": "Cultivated Cavendish bananas are parthenocarpic — the fruit develops without pollination. Each finger is botanically a berry, and the faint dark specks inside are the vestigial remnants of seeds that never fully formed. Fruit generally takes several months to mature after flowering, depending on temperature and growing conditions."
+          },
+          {
+            "label": "Suckers",
+            "text": "New plants arise from suckers — shoots that emerge from the rhizome at the base of the clump. Once a pseudostem has fruited and is cut down, one or two suckers are allowed to develop as replacements. Extra suckers are removed to concentrate the plant's energy; they can be separated and replanted to start new clumps."
+          }
+        ],
+        "what_to_look_for": "Start at the base of the park's clump: look for one main pseudostem and any smaller suckers pushing up from the shared rhizome. This is how the clump replaces itself. If a pseudostem is currently flowering or fruiting, look up for the pendant inflorescence; the large reddish-purple bract — the banana heart — may still be visible below the developing hands, or successive bracts may have already lifted and dropped away, leaving rows of curved fingers pointing upward. Trace the pseudostem and notice it carries no bark, no wood, and no branches — it is pure layered leaf-base."
+      },
+      "seasonality": {
+        "bloom_months": null,
+        "bloom_description": "A drooping, reddish-purple spike (the banana heart) from which clusters of flowers emerge in sequence; flowers when the pseudostem is sufficiently mature rather than on a fixed calendar.",
+        "leaf_behavior": "evergreen",
+        "fruiting_months": null,
+        "notes": "In Bradenton's frost-light climate, a well-established clump can produce fruit year-round if suckers are managed in succession. Flowering and fruiting are triggered by pseudostem maturity, not by season. In years with unusual cold, pseudostems may be damaged or killed back, but the rhizome typically resprouts. Fruit matures several months after flowering, with warm weather speeding the process."
+      },
+      "size": {
+        "height": "6 to 15 feet depending on cultivar; Dwarf Cavendish typically 6 to 8 feet; standard Cavendish selections can reach 12 to 15 feet",
+        "spread": "4 to 8 feet for an established clump",
+        "habit": "multi-pseudostem clump arising from a shared underground rhizome; upright, arching leaves from the crown of each pseudostem",
+        "growth_rate": "fast — in warm, well-watered Florida conditions, new leaves unfurl quickly through the growing season",
+        "texture": "coarse — the large, paddle-shaped leaves give a bold tropical texture; leaves frequently develop lengthwise tears in wind, which is normal and does not harm the plant"
+      },
+      "growing_conditions": {
+        "light": "full sun preferred; tolerates partial shade but fruits best with at least six hours of direct sun daily",
+        "soil_tolerances": "fertile, moist, well-drained soil preferred; tolerates a range of soil types but performs poorly in waterlogged conditions; most Florida soils are sandy, so regular fertilization through the growing season supports productive plants",
+        "drought_tolerance": "low to moderate — bananas need consistent moisture and will produce inferior or delayed fruit under stress; thick mulch over the root zone helps retain moisture through Florida's dry season",
+        "spacing": "give each clump generous room — the large leaves and arching habit need open space, and siting away from strong prevailing winds helps protect pseudostems carrying heavy fruit bunches"
+      },
+      "edibility": {
+        "level": "Green"
+      },
+      "toxicity": {
+        "level": "Green",
+        "dogs_level": "Green"
+      },
+      "other_notes": [
+        "UF/IFAS identifies scales and nematodes as the two most common pest problems for banana in Florida, and notes susceptibility to Sigatoka leaf-spot, Cercospora leaf-spot, and Panama disease.",
+        "Home plantings in Manatee County are generally not at significant commercial-scale disease risk, but nematode pressure in sandy soils is worth watching; incorporating organic matter and avoiding waterlogged conditions helps."
       ]
     },
     {
