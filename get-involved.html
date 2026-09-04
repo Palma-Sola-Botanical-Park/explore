@@ -14,6 +14,19 @@
 /* Anchored sections shouldn't hide under the fixed nav */
 section[id], div[id]{ scroll-margin-top: 84px; }
 
+/* ── SECTION PADDING — not inherited, and this is why. ──────────────────────
+   psbp.css puts padding on `.section`, a CLASS. These sections are toned with
+   `bg-white` / `bg-sunk` and never carry it, so they have NO padding of their
+   own: the vertical rhythm on this page is whatever the LAST CHILD's bottom
+   margin happens to leave behind. Headings and paragraphs have one, so most
+   sections looked fine by accident — but `.give-paths` is a grid with no
+   bottom margin, so the Give once / Become a member cards sat flush against
+   the next section with no band of colour under them at all.
+   Padding the tone classes directly makes the spacing deliberate.
+   (Same latent gap exists on contact.html; left alone there for now.) */
+section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
+@media (max-width:700px){ section[class*="bg-"]{ padding: 2.5rem 1rem; } }
+
 /* ── Four-door chooser ── */
 .door-grid{
   display:grid;
@@ -122,6 +135,13 @@ section[id], div[id]{ scroll-margin-top: 84px; }
   text-transform:uppercase; color:var(--gold); margin:0 0 .55rem; }
 .vdesk-body{ font-size:.97rem; color:var(--text-soft); line-height:1.68; margin:0; }
 .vdesk-more{ margin-top:.8rem; }
+
+/* "Find your place" heading with the sign-up button on the same line.
+   Wraps below the heading on narrow screens, where grid-2 has already
+   collapsed to one column (psbp.css, max-width 900px). */
+.vfit-head{ display:flex; align-items:center; justify-content:space-between;
+  gap:1rem 1.25rem; flex-wrap:wrap; margin-bottom:1.2rem; }
+.vfit-head .btn{ flex:0 0 auto; }
 
 </style>
 </head>
@@ -358,16 +378,18 @@ section[id], div[id]{ scroll-margin-top: 84px; }
         <!-- Rendered from the `volunteer` tab of the Sheet. Bev is the editor:
              set display to web/both and the row appears here. -->
         <div class="vdesk" id="volDesk"></div>
-
-        <div style="margin-top:1.75rem">
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfesCyhXAVtjD9oQr36ayPjeFIh3Tm85B1xsYg5V9K7tYHFOg/viewform"
-             target="_blank" rel="noopener" class="btn btn-gold">Sign up to volunteer →</a>
-        </div>
       </div>
 
       <div>
         <span class="label">Where You Fit</span>
-        <h3 class="section-title" style="font-size:1.5rem;margin-bottom:1.2rem">Find your place</h3>
+        <!-- The sign-up button rides alongside this heading rather than sitting
+             under the desk list, where its height depended on how much Bev had
+             posted that week. Here it lands at a fixed spot on the page. -->
+        <div class="vfit-head">
+          <h3 class="section-title" style="font-size:1.5rem;margin:0">Find your place</h3>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfesCyhXAVtjD9oQr36ayPjeFIh3Tm85B1xsYg5V9K7tYHFOg/viewform"
+             target="_blank" rel="noopener" class="btn btn-gold">Sign up to volunteer →</a>
+        </div>
 
         <div style="display:flex;flex-direction:column;gap:.75rem">
 

@@ -2275,9 +2275,31 @@ function start(){
     }).catch(function(){});
   }, (10*60*1000) / SPEED);
 
+  /* THE NIGHTLY RELOAD — two guards, both learned the hard way rather than seen.
+
+     navigator.onLine: every FETCH here fails soft, but a reload throws away a
+     working page and asks for a fresh one. With the network down at 4am — and
+     consumer routers commonly reboot on a nightly schedule — the browser lands
+     on its offline error page and STAYS THERE until a human walks past. A black
+     wall from 4am, intermittent, and near-impossible to diagnose after the fact.
+     onLine only reports the link layer, so it is not a perfect test, but it
+     catches the common case and can never make things worse: if it reads false
+     we simply skip the reload and keep running on the last good page.
+
+     The day-stamp: this interval is 30 minutes and the hour test is true for TWO
+     consecutive checks, so the old version reloaded twice every night — it fired,
+     restarted its own interval, and half an hour later the hour was still 4.
+     In-memory state cannot fix that because the reload wipes it, so the stamp
+     goes in localStorage. It is written only when we actually reload, so an
+     offline 4am doesn't burn the day: the 4:45 check still gets its chance. */
   setInterval(function(){
-    var h=new Date().getHours();
-    if(h===4) location.reload();
+    var d = new Date();
+    if(d.getHours() !== 4 || !navigator.onLine) return;
+    try {
+      if(localStorage.getItem('psbp:lastReload') === d.toDateString()) return;
+      localStorage.setItem('psbp:lastReload', d.toDateString());
+    } catch(e){ /* storage blocked — fall through; worst case is the old twice */ }
+    location.reload();
   }, 30*60*1000);
 
   /* keep the display awake where the browser allows it */
