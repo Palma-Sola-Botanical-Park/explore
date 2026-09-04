@@ -126,8 +126,14 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
 .vdesk{ margin-top:1.4rem; border-top:1px solid var(--border); }
 .vdesk-item{ display:flex; gap:1.2rem; align-items:flex-start;
   padding:1.4rem 0; border-bottom:1px solid var(--border); }
-.vdesk-photo{ flex:0 0 104px; width:104px; height:78px; border-radius:9px;
-  object-fit:cover; background:var(--sand); }
+/* SQUARE, and cropped toward the top — not a 4:3 landscape box.
+   The photo library in images/volunteers/ is 24 portrait, 7 square, 7 landscape:
+   these are people, usually shot vertically. A landscape frame with object-fit
+   cover crops a standing portrait through the chest and loses the face, which is
+   the only part that matters. Square survives all three orientations, and the
+   25% vertical origin keeps heads in frame instead of centring on a torso. */
+.vdesk-photo{ flex:0 0 100px; width:100px; height:100px; border-radius:9px;
+  object-fit:cover; object-position:50% 25%; background:var(--sand); }
 .vdesk-text{ flex:1; min-width:0; }
 .vdesk-title{ font-family:'Playfair Display',serif; font-size:1.24rem;
   color:var(--green-deep); line-height:1.2; margin:0 0 .22rem; text-align:left; }
