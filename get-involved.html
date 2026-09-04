@@ -149,6 +149,12 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
   gap:1rem 1.25rem; flex-wrap:wrap; margin-bottom:1.2rem; }
 .vfit-head .btn{ flex:0 0 auto; }
 
+/* Tier group headings — deliberately below .section-title in weight, so
+   "Individual & Family" and "Donor & Legacy" read as parts of Membership
+   levels rather than as chapters of their own. */
+.tier-group{ font-family:'Playfair Display',serif; font-size:1.3rem;
+  color:var(--green-deep); margin:2.25rem 0 0; }
+
 </style>
 </head>
 <body>
@@ -170,7 +176,6 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
 <!-- ══════════════════ WAYS IN ══════════════════ -->
 <section class="bg-white">
   <div class="section-inner">
-    <span class="label">Ways In</span>
     <h2 class="section-title">Ways to support the park</h2>
     <div class="door-grid">
 
@@ -237,10 +242,12 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
         <a href="#member" class="btn btn-green">See membership levels →</a>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ══════════════════ MEMBERSHIP ══════════════════ -->
+<!-- ─────────────── Membership — a subsection of Support, not a peer ───────────
+     Merged into this band 2026-09-04. It read as an equal-level chapter beside
+     "Support the Park" when membership is one of the two ways to support. The
+     #member id moves onto the sub-heading below: it is load-bearing, linked
+     from the desktop nav, the mobile nav and the members.html redirect. -->
 <!--
   ╔══════════════════════════════════════════════════════════════════════════╗
   ║  PAYPAL LINKS — set these once, in the PAYPAL config block in the script  ║
@@ -259,10 +266,7 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
   ║  was bought), then copy its share LINK into PAYPAL[...] below.             ║
   ╚══════════════════════════════════════════════════════════════════════════╝
 -->
-<section class="bg-white" id="member">
-  <div class="section-inner">
-    <span class="label">Membership</span>
-    <h2 class="section-title">Individual &amp; Family</h2>
+    <h3 class="section-title" id="member" style="font-size:1.75rem;margin:3.25rem 0 .75rem">Membership levels</h3>
     <p style="font-size:1.05rem;color:var(--text-soft);line-height:1.7;max-width:780px">
       Every level includes the Reciprocal Admissions Program — free or discounted entry at more than 380
       botanical gardens across the country, listed by the
@@ -271,6 +275,7 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
       allowed by law.
     </p>
 
+    <h4 class="tier-group">Individual &amp; Family</h4>
     <div class="tier-grid">
       <div class="tier-card">
         <div class="tier-name">Acorn</div>
@@ -322,7 +327,7 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
       </div>
     </div>
 
-    <h2 class="section-title" style="margin-top:3.5rem">Donor &amp; Legacy</h2>
+    <h4 class="tier-group" style="margin-top:3rem">Donor &amp; Legacy</h4>
     <p style="font-size:1.05rem;color:var(--text-soft);line-height:1.7;max-width:720px">
       For supporters and businesses who want to make a lasting mark on the park, with recognition and venue
       benefits. Both levels include 10% off venue rentals and your name or business logo on our website,
@@ -367,7 +372,7 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
 </section>
 
 <!-- ══════════════════ VOLUNTEER ══════════════════ -->
-<section class="bg-sunk" id="volunteer">
+<section class="bg-white" id="volunteer">
   <div class="section-inner">
     <span class="label">Volunteer</span>
     <h2 class="section-title" style="margin-bottom:1.2rem">There is plenty to do, and you don't need to be a horticulturist</h2>
@@ -408,7 +413,7 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
           <div class="info-card" style="border-top-color:var(--gold)">
             <h3>Events &amp; Community</h3>
             <p>Plant sales, holiday events, fundraisers, art exhibits, cornhole tournaments, and family fun
-               nights. If you like people more than plants, this is your lane.</p>
+               nights. If you enjoy working with people, this is a good place to start.</p>
           </div>
 
           <div class="info-card" style="border-top-color:#9b7ab8">
@@ -436,7 +441,7 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
 </section>
 
 <!-- ══════════════════ BRIGHT FUTURES ══════════════════ -->
-<section class="bg-white">
+<section class="bg-sunk">
   <div class="section-inner">
     <div class="grid-2" style="gap:3rem;align-items:center">
       <div>
@@ -482,7 +487,7 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
 </section>
 
 <!-- ══════════════════ CITIZEN SCIENCE ══════════════════ -->
-<section class="bg-sunk" id="citizen-science">
+<section class="bg-white" id="citizen-science">
   <div class="section-inner">
     <span class="label">Citizen Science</span>
     <h2 class="section-title" style="margin-bottom:1.2rem">You don't have to be a scientist</h2>
