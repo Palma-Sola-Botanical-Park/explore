@@ -14,46 +14,50 @@
      platforms and undercut the Playfair. The old grid existed only to seat them. */
   .info-card > h3 { margin: 0 0 .35rem !important; }
 
-  /* ─────────── TEAM + BOARD (about2) ───────────
-     Replaces the 11-card board grid. The old layout printed the word
-     "DIRECTOR" five times down the page, which is what made it read as a
-     spreadsheet export rather than a board. Here the officers get one
-     rule-topped band and the directors sit under a single group label.
-     Blurbs render automatically wherever the Sheet's blurb column is filled. */
+  /* ─────────── OUR PEOPLE ───────────
+     Replaces an 11-card board grid. The old layout printed the word "DIRECTOR"
+     five times down the page, which is what made it read as a spreadsheet
+     export. Names sit in --ink rather than --green-ink: a whole section of
+     dark-green serif on cream was too heavy. Green is reserved for the small
+     labels, so it marks structure instead of shouting. */
+  .group-label{text-align:center;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--green);font-weight:700;margin-bottom:1.15rem}
 
-  /* front office — warmer than a card, two people worth some air */
-  .office-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2.5rem}
-  .office-person{border-left:3px solid var(--gold-mark);padding-left:1.1rem}
-  .office-person .r{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green);font-weight:700}
-  .office-person .n{font-family:var(--serif);font-size:1.45rem;color:var(--green-ink);line-height:1.2;margin-top:.15rem}
-  .office-person .b{font-size:.9rem;color:var(--ink-soft);margin-top:.35rem;line-height:1.6}
+  /* staff — two people, centered to match the section */
+  .office-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:2rem;max-width:760px;margin:0 auto;text-align:center}
+  .office-person .r{font-size:.86rem;color:var(--ink-soft);letter-spacing:.01em}
+  .office-person .n{font-family:var(--serif);font-size:1.5rem;color:var(--ink);line-height:1.2;margin-top:.2rem}
+  .office-person .b{font-size:.88rem;color:var(--ink-soft);margin-top:.3rem;line-height:1.6}
 
-  /* A — masthead: no boxes at all */
+  /* board — officers band, then directors, then the quiet tail */
   .boardA .officers{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-    border-top:2px solid var(--green-ink);border-bottom:1px solid var(--rule)}
-  .boardA .off{padding:1.15rem 1.1rem 1.25rem;border-right:1px solid var(--rule)}
+    border-top:1px solid var(--rule-strong);border-bottom:1px solid var(--rule);text-align:center}
+  .boardA .off{padding:1.2rem .9rem 1.3rem;border-right:1px solid var(--rule)}
   .boardA .off:last-child{border-right:0}
-  .boardA .off .r{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--green);font-weight:700}
-  .boardA .off .n{font-family:var(--serif);font-size:1.22rem;color:var(--green-ink);margin-top:.3rem;line-height:1.2}
-  .boardA .dirwrap{margin-top:1.6rem}
-  .boardA .dirlabel{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:.6rem}
-  .boardA .dirs{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.55rem 1.5rem}
-  .boardA .dirs div{font-family:var(--serif);font-size:1.05rem;color:var(--green-ink)}
-  .boardA .dirs small{display:block;font-family:var(--sans);font-size:.8rem;color:var(--ink-soft);margin-top:.1rem}
-  .boardA .tail{margin-top:1.5rem;padding-top:.9rem;border-top:1px solid var(--rule);
-    font-size:.85rem;color:var(--ink-soft)}
-  .boardA .tail b{color:var(--green-ink);font-weight:600}
-
+  .boardA .off .r{font-size:.76rem;letter-spacing:.04em;color:var(--ink-soft)}
+  .boardA .off .n{font-family:var(--serif);font-size:1.28rem;color:var(--ink);margin-top:.25rem;line-height:1.2}
+  .boardA .dirwrap{margin-top:1.7rem;text-align:center}
+  .boardA .dirlabel{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink-faint);font-weight:700;margin-bottom:.85rem}
+  .boardA .dirs{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem 2.2rem}
+  .boardA .dirs div{font-family:var(--serif);font-size:1.12rem;color:var(--ink)}
+  .boardA .dirs small{display:block;font-family:var(--sans);font-size:.82rem;color:var(--ink-soft);margin-top:.05rem}
+  .boardA .tail{margin-top:1.7rem;padding-top:1rem;border-top:1px solid var(--rule);
+    text-align:center;font-size:.88rem;color:var(--ink-soft)}
+  .boardA .tail b{color:var(--ink);font-weight:600}
 
   /* ── STAT BAND — the story's spine, in numerals ── */
-  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-    gap:0;margin:2.75rem 0 0;border-top:2px solid var(--green-ink)}
-  .fact{padding:1.35rem 1.1rem 1.4rem;border-right:1px solid var(--rule)}
-  .fact:last-child{border-right:0}
-  .fact .big{font-family:var(--serif);font-size:2.5rem;line-height:1;color:var(--green-ink);letter-spacing:-.01em}
-  .fact .cap{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);
-    margin-top:.5rem;line-height:1.45}
-  @media(max-width:640px){.fact .big{font-size:2rem}}
+  /* NB: do NOT call this .facts — psbp.css already owns that class as a
+     two-column definition list, and it silently overrode this. */
+  .milestones{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:0;margin:2.75rem 0 0;border-top:1px solid var(--rule-strong)}
+  .ms{padding:1.4rem 1rem 1.5rem;border-right:1px solid var(--rule);text-align:center}
+  .ms:last-child{border-right:0}
+  .ms .big{font-family:var(--serif);font-size:2.6rem;line-height:1;color:var(--green-ink);letter-spacing:-.01em}
+  .ms .cap{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+    margin-top:.55rem;line-height:1.5}
+  @media(max-width:640px){.ms .big{font-size:2rem}.ms{border-right:0;border-bottom:1px solid var(--rule)}}
 
   /* ── PULL QUOTE — a second scale inside the prose ── */
   .pull{font-family:var(--serif);font-size:1.6rem;line-height:1.35;color:var(--green-ink);
@@ -83,10 +87,11 @@
   @media(max-width:620px){.aims div{grid-template-columns:1fr;gap:.35rem}}
 
   /* ── THE ASK — a moment, not a banner ── */
-  .ask{text-align:center;max-width:720px;margin:0 auto}
+  .ask{text-align:center;max-width:720px;margin:0 auto;padding:1.6rem 0 2.2rem}
   .ask p.big{font-family:var(--serif);font-size:clamp(1.45rem,3vw,2.05rem);line-height:1.35;
     color:var(--green-ink);margin:0 0 1.1rem}
-  .ask p.sub{color:var(--ink-soft);line-height:1.75;margin:0 0 1.9rem;font-size:1rem}
+  .ask p.sub{color:var(--ink-soft);line-height:1.75;margin:0 0 2.4rem;font-size:1rem}
+  .ask .btn{padding:.85rem 2.1rem;font-size:1.02rem}
 
   /* ── PARTNER LOGOS — present, not shouting ── */
   .plogo{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:10px;display:flex;
@@ -95,15 +100,40 @@
     filter:grayscale(1);opacity:.62;transition:filter .25s ease,opacity .25s ease}
   .plogo:hover img{filter:grayscale(0);opacity:1}
 
-  /* ── RECOGNITION — a list, matching the board and the aims ── */
+  /* ── RECOGNITION — lifted onto its own surface so it reads as an object
+     rather than more text on the cream. NOT zebra-striped: alternating row
+     shading is a data-table device and would push this back toward looking
+     like the spreadsheet output we just removed from the board. The variance
+     comes from hierarchy (one featured item) and from the panel, not stripes. */
+  .honors-panel{background:var(--surface);border:1px solid var(--rule);border-radius:14px;
+    padding:1.5rem 1.6rem 1.6rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
   .honors div{padding:.95rem 0;border-top:1px solid var(--rule)}
-  .honors div:last-child{border-bottom:1px solid var(--rule)}
-  .honors h3{font-size:1.02rem;margin:0 0 .25rem;line-height:1.25}
-  .honors .yr{font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.09em;
-    color:var(--gold);vertical-align:.18em;margin-left:.35rem}
+  .honors div:first-child{border-top:0;padding-top:.2rem}
+  .honors h3{font-size:1.02rem;margin:0 0 .28rem;line-height:1.3;color:var(--ink)}
   .honors p{margin:0;color:var(--ink-soft);font-size:.92rem;line-height:1.6}
-  .honors a{display:inline-block;margin-top:.4rem;color:var(--green);font-weight:600;font-size:.86rem;text-decoration:none}
+  .honors .yr{font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.12em;
+    color:var(--gold);margin-bottom:.2rem}
+  .honors a{display:inline-block;margin-top:.45rem;color:var(--green);font-weight:600;
+    font-size:.86rem;text-decoration:none}
   .honors a:hover{text-decoration:underline}
+
+  /* Optional recognition marks. onerror removes the <img>, so an item with no
+     logo file simply closes up — no hole, no broken-image icon. Drop files into
+     images/recognition/ and they appear. Grayscale at rest, same as the partner
+     wall, so four different brand palettes don't fight the page. */
+  .honors .hrow{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .honors .hrow h3{margin:0}
+  .honors .mark{flex:0 0 auto;max-height:34px;max-width:96px;object-fit:contain;
+    filter:grayscale(1);opacity:.55;transition:filter .25s,opacity .25s}
+  .honors div:hover .mark{filter:grayscale(0);opacity:1}
+  .honors .feat .mark{max-height:44px;max-width:120px;opacity:.75}
+
+  /* the newest and most meaningful one gets real prominence */
+  .honors .feat{background:var(--gold-tint);border-radius:10px;padding:1rem 1.1rem 1.05rem;
+    margin-bottom:.4rem}
+  .honors .feat h3{font-size:1.18rem;color:var(--green-ink)}
+  .honors .feat p{color:var(--ink)}
+
 </style>
 </head>
 <body>
@@ -157,36 +187,44 @@
       </div>
 
       <div>
-        <span class="label">Recognition</span>
-        <h2 class="section-title" style="font-size:1.4rem;margin-bottom:1.1rem">Proud of the park</h2>
-        <div class="honors">
-          <div>
-            <h3>Manatee Chamber of Commerce <span class="yr">2026</span></h3>
-            <p>Named one of five finalists for the county's top nonprofit.</p>
-          </div>
-          <div>
-            <h3>Bradenton's Best <span class="yr">2026</span></h3>
-            <p>Recognized by the community we serve — though we're proudest of being free and open every day.</p>
-          </div>
-          <div>
-            <h3>Bay News 9</h3>
-            <p>Featured on "Florida on a Tankful," thirty-three years after neighbors saved the site from development.</p>
-            <a href="news.html?Story=Bay">See the story →</a>
-          </div>
-          <div>
-            <h3>Horticulture Magazine</h3>
-            <p>Featured in the national publication for our collections and mission.</p>
-            <a href="news.html?Story=Horticulture">See the story →</a>
+        <div class="honors-panel">
+          <span class="label">Recognition</span>
+          <h2 class="section-title" style="font-size:1.32rem;margin-bottom:1.2rem">Proud of the park</h2>
+          <div class="honors">
+            <div class="feat">
+              <div class="yr">2026</div>
+              <div class="hrow"><h3>Manatee Chamber of Commerce</h3>
+                <img class="mark" src="images/partners/manatee-community.jpg" alt="" onerror="this.remove()"></div>
+              <p>Named one of five finalists for the county's top nonprofit.</p>
+            </div>
+            <div>
+              <div class="yr">2026</div>
+              <div class="hrow"><h3>Bradenton's Best</h3>
+                <img class="mark" src="images/recognition/bradentons-best.png" alt="" onerror="this.remove()"></div>
+              <p>Recognized by the community we serve — though we're proudest of being free and open every day.</p>
+            </div>
+            <div>
+              <div class="hrow"><h3>Bay News 9</h3>
+                <img class="mark" src="images/recognition/bay-news-9.png" alt="" onerror="this.remove()"></div>
+              <p>Featured on "Florida on a Tankful," thirty-three years after neighbors saved the site from development.</p>
+              <a href="news.html?Story=Bay">See the story →</a>
+            </div>
+            <div>
+              <div class="hrow"><h3>Horticulture Magazine</h3>
+                <img class="mark" src="images/recognition/horticulture-magazine.png" alt="" onerror="this.remove()"></div>
+              <p>Featured in the national publication for our collections and mission.</p>
+              <a href="news.html?Story=Horticulture">See the story →</a>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="facts">
-      <div class="fact"><div class="big">1990</div><div class="cap">Neighbors rallied<br>to save the site</div></div>
-      <div class="fact"><div class="big">1993</div><div class="cap">Incorporated as a<br>501(c)(3) nonprofit</div></div>
-      <div class="fact"><div class="big">Ten</div><div class="cap">Acres, in partnership<br>with Manatee County</div></div>
-      <div class="fact"><div class="big">365</div><div class="cap">Days a year,<br>no entrance fee</div></div>
+    <div class="milestones">
+      <div class="ms"><div class="big">1990</div><div class="cap">Neighbors rallied<br>to save the site</div></div>
+      <div class="ms"><div class="big">1993</div><div class="cap">Incorporated as a<br>501(c)(3) nonprofit</div></div>
+      <div class="ms"><div class="big">Ten</div><div class="cap">Acres, in partnership<br>with Manatee County</div></div>
+      <div class="ms"><div class="big">365</div><div class="cap">Days a year,<br>no entrance fee</div></div>
     </div>
   </div>
 </section>
@@ -236,25 +274,21 @@
   </div>
 </section>
 
-<!-- OUR TEAM + BOARD -->
+<!-- OUR PEOPLE -->
 <section class="bg-cream" id="organization">
   <div class="section-inner">
+    <div style="text-align:center;max-width:760px;margin:0 auto 2.4rem">
+      <span class="label">Our People</span>
+      <h2 class="section-title">Who keeps it running</h2>
+      <p class="section-sub" style="margin:0 auto">Two staff, a volunteer board, and the community that
+        turns up — the park runs on all three.</p>
+    </div>
 
-    <span class="label">Our Team</span>
-    <h2 class="section-title" style="font-size:1.5rem;margin-bottom:.4rem">The people who run the park</h2>
-    <p class="text-soft" style="margin:0 0 1.6rem;font-size:.95rem">The two people you'll actually meet.</p>
+    <div class="group-label">Staff</div>
     <div id="office-strip" class="office-strip"></div>
 
-    <span class="label" style="margin-top:2.8rem;display:inline-block">Board of Directors</span>
-    <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1.25rem">The board that guides it</h2>
+    <div class="group-label" style="margin-top:2.6rem">Board of Directors</div>
     <div id="boardA" class="boardA"></div>
-
-    <span class="label" style="margin-top:3rem;display:inline-block">Volunteers</span>
-    <h2 class="section-title" style="font-size:1.5rem;margin-bottom:.75rem">The volunteers who power it</h2>
-    <p style="color:var(--ink-soft);font-size:.95rem;margin-top:0;line-height:1.7">
-      The park runs on community volunteers — and there's room for you.
-      <a href="volunteer.html" style="color:var(--green);font-weight:600">Get involved →</a>
-    </p>
   </div>
 </section>
 
@@ -474,10 +508,11 @@ injectShared({ inatBar: false });
 
     /* front office */
     var office = org.filter(function(p){return p.type==='front office';});
+    var SHORT = {'Office Manager & Event Venue Rentals':'Office Manager & Venue Rentals'};
     var os = document.getElementById('office-strip');
     if (os) office.forEach(function(p){
       os.insertAdjacentHTML('beforeend',
-        '<div class="office-person"><div class="r">'+esc(p.role)+'</div>'+
+        '<div class="office-person"><div class="r">'+esc(SHORT[p.role]||p.role)+'</div>'+
         '<div class="n">'+esc(p.name)+'</div>'+
         (p.blurb?'<div class="b">'+esc(p.blurb)+'</div>':'')+'</div>');
     });
