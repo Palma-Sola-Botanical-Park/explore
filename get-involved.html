@@ -384,10 +384,20 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
     <div class="grid-2" style="gap:3rem;align-items:start;margin-top:2.5rem">
 
       <div>
-        <span class="label">From the Volunteer Desk</span>
-        <h3 class="section-title" style="font-size:1.5rem;margin-bottom:.4rem">What's happening</h3>
-        <!-- Rendered from the `volunteer` tab of the Sheet. Bev is the editor:
-             set display to web/both and the row appears here. -->
+        <span class="label">From the Desk</span>
+        <h3 class="section-title" style="font-size:1.5rem;margin-bottom:.4rem">Volunteer life</h3>
+        <!-- Rendered from the `volunteer` tab of the Sheet, any row NOT marked
+             `type: place`. Bev is the editor: set display to web (or both, which
+             also sends it to the lobby screen) and the row appears here.
+
+             THE HEADING IS DELIBERATELY BROAD. This was "What's happening", which
+             promised a calendar and made everything that wasn't an upcoming event
+             look out of place. The column is for whatever gives a sense of a
+             vibrant volunteer life: a person highlighted, a recap of a BioBlitz
+             day, a photo from the luncheon and awards, a plain thank-you, a
+             standing crew that needs people, a workday coming up. Not only
+             volunteer of the month, not only events, not only photos.
+             Renamed 2026-09-04. -->
         <div class="vdesk" id="volDesk"></div>
       </div>
 
@@ -402,7 +412,13 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
              target="_blank" rel="noopener" class="btn btn-gold">Sign up to volunteer →</a>
         </div>
 
-        <div style="display:flex;flex-direction:column;gap:.75rem">
+        <!-- The five cards below are the DEFAULT, not a placeholder. If the
+             volunteer tab carries rows marked `type: place`, they replace these
+             wholesale; with no such rows these stand. That ordering matters —
+             it means the code can ship before the column exists, and a Sheet
+             mistake that empties the feed leaves the section intact rather
+             than blank. See loadVolDesk() at the foot of this file. -->
+        <div id="volPlaces" style="display:flex;flex-direction:column;gap:.75rem">
 
           <div class="info-card" style="border-top-color:var(--green-mid)">
             <h3>Gardening &amp; Nursery</h3>
@@ -637,6 +653,23 @@ const PAYPAL = {
   });
 })();
 
+/* ── Find your place — replaces the five default cards ONLY if the Sheet has
+      rows marked `type: place`. No rows, no change: the markup's own cards
+      stand. That way this ships before the column exists, and a Sheet mistake
+      that empties the feed cannot empty the section.
+      Colours cycle by position so Bev never has to pick one. ── */
+const PLACE_COLORS = ['var(--green-mid)', 'var(--gold)', '#9b7ab8', '#c87a5a', '#7ab87a'];
+
+function renderVolPlaces(rows) {
+  const el = document.getElementById('volPlaces');
+  if (!el || !rows.length) return;
+  el.innerHTML = rows.map((r, i) =>
+    `<div class="info-card" style="border-top-color:${PLACE_COLORS[i % PLACE_COLORS.length]}">
+       <h3>${r.title || r.name || 'Volunteer'}</h3>
+       <p>${r.body || r.blurb || ''}</p>
+     </div>`).join('');
+}
+
 /* ── Volunteer desk — Sheet-driven notes, rendered as a stacked list.
       Every visible row shows; nothing hides behind a carousel. A row with no
       photo_url renders text-only rather than falling back to an icon. ── */
@@ -646,11 +679,23 @@ async function loadVolDesk() {
   try {
     const rows    = await fetchTab(TAB.volunteer);
     const visible = rows.filter(r => isWebVisible(r));
-    if (!visible.length) { wrap.style.display = 'none'; return; }
+
+    /* ONE TAB, TWO LISTS — split on the `type` column.
+       `place` builds the Find your place cards on the right; everything else is
+       a Volunteer Desk note. Blank counts as a note on purpose: a row Bev forgets
+       to tag lands in the news list, which is harmless, where an untagged row
+       appearing among the volunteer categories would look like a mistake.
+       Sheet row order is display order — no `order` column needed. */
+    const places = visible.filter(r => (r.type || '').trim().toLowerCase() === 'place');
+    const notes  = visible.filter(r => (r.type || '').trim().toLowerCase() !== 'place');
+
+    renderVolPlaces(places);
+
+    if (!notes.length) { wrap.style.display = 'none'; return; }
 
     const back = location.pathname.split('/').pop() || 'get-involved.html';
 
-    wrap.innerHTML = visible.map(v => {
+    wrap.innerHTML = notes.map(v => {
       const photo = (v.photo_url || '').trim()
         ? `<img class="vdesk-photo" src="${v.photo_url}" alt="" loading="lazy" onerror="this.remove()">`
         : '';
