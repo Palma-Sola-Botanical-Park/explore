@@ -106,8 +106,8 @@
     transition:border-color .2s ease,box-shadow .2s ease}
   .plogo:hover .stage{border-color:var(--rule-strong);box-shadow:0 2px 8px rgba(0,0,0,.06)}
   .plogo img{max-width:100%;max-height:62px;object-fit:contain}
-  .plogo .pname{font-size:.76rem;line-height:1.35;color:var(--ink-soft);text-align:center;
-    max-width:15ch}
+  .plogo .pname{font-size:.78rem;line-height:1.4;color:var(--ink-soft);text-align:center;
+    text-wrap:balance;hyphens:auto}
 
   /* ── RECOGNITION — lifted onto its own surface so it reads as an object
      rather than more text on the cream. NOT zebra-striped: alternating row
@@ -204,8 +204,21 @@
   .vfacts dd span{display:inline-block;margin-top:.15rem;font-size:.86rem;color:rgba(255,255,255,.6)}
   .vfacts dd a{color:#fff;border-bottom:1px solid rgba(255,255,255,.45);text-decoration:none}
   .vfacts dd a:hover{border-bottom-color:#fff}
-  .vmap{width:100%;min-height:340px;height:100%;border:none;border-radius:12px;
-    box-shadow:0 6px 22px rgba(0,0,0,.28)}
+  /* Was a Google Maps iframe — which loads the whole Maps application, tiles and
+     all, to show one pin. This is a static image built once from OpenStreetMap
+     tiles (data/scripts has no part in it; see images/park-location-map.png),
+     so it costs one 113 KB request and no third-party JavaScript. Tapping it
+     opens the visitor's own Maps app with turn-by-turn from wherever they are,
+     which is what someone wanting directions actually needs. */
+  .vmap{position:relative;display:block;border-radius:12px;overflow:hidden;
+    box-shadow:0 6px 22px rgba(0,0,0,.28);min-height:340px}
+  .vmap img{display:block;width:100%;height:100%;min-height:340px;object-fit:cover}
+  .vmap-cta{position:absolute;left:1rem;bottom:1rem;background:var(--green-ink);color:#fff;
+    font-weight:600;font-size:.94rem;padding:.6rem 1.1rem;border-radius:999px;
+    box-shadow:0 2px 10px rgba(0,0,0,.3)}
+  .vmap:hover .vmap-cta{background:var(--green)}
+  .vmap-cred{position:absolute;right:.55rem;bottom:.4rem;font-size:.62rem;
+    color:rgba(0,0,0,.5);background:rgba(255,255,255,.7);padding:.1rem .35rem;border-radius:3px}
   .vdrive{margin:2.2rem auto 0;max-width:60ch;text-align:center;
     color:rgba(255,255,255,.75);line-height:1.75;font-size:.97rem}
   .vtail{margin-top:2.2rem;padding-top:1.3rem;border-top:1px solid rgba(255,255,255,.16);
@@ -225,6 +238,14 @@
   .people-tail strong{color:var(--ink);font-weight:600}
   .people-tail a{color:var(--green);font-weight:600;text-decoration:none;white-space:nowrap}
   .people-tail a:hover{text-decoration:underline}
+
+  /* Grouped rather than one wall of sixteen. Chambers next to garden clubs
+     next to a licence plate reads as noise; labelled groups read as a list of
+     relationships. Check the assignments — some are a judgement call. */
+  .pgroup-label{margin:2.2rem 0 1rem;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
+    color:var(--green);font-weight:700;text-align:center}
+  .pgroup-label:first-of-type{margin-top:.5rem}
+  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:1.6rem 1.25rem;align-items:start}
 </style>
 </head>
 <body>
@@ -436,24 +457,31 @@
       and sponsors whose support keeps the gates open and the gardens growing.
     </p>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.6rem 1.25rem;align-items:start">
-      <div class="plogo"><div class="stage"><img src="images/partners/florida-federation-garden-clubs.png" alt="Florida Federation of Garden Clubs" loading="lazy"></div><div class="pname">Florida Federation of Garden Clubs</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/american-gardens.png" alt="American Public Gardens Association" loading="lazy"></div><div class="pname">American Public Gardens Association</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-02.png" alt="Manatee Rare Fruit Council" loading="lazy"></div><div class="pname">Manatee Rare Fruit Council</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-07.png" alt="UF/IFAS Extension" loading="lazy"></div><div class="pname">UF/IFAS Extension</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-08-banner.jpg" alt="American Horticultural Society Reciprocal Garden Network" loading="lazy"></div><div class="pname">American Horticultural Society Reciprocal Garden Network</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/manatee-community.jpg" alt="Manatee Chamber of Commerce" loading="lazy"></div><div class="pname">Manatee Chamber of Commerce</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/ami-chamber.png" alt="Anna Maria Island Chamber of Commerce" loading="lazy"></div><div class="pname">Anna Maria Island Chamber of Commerce</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-09.png" alt="Anna Maria Island Garden Club" loading="lazy"></div><div class="pname">Anna Maria Island Garden Club</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-06.png" alt="Manatee River Garden Club" loading="lazy"></div><div class="pname">Manatee River Garden Club</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-03.png" alt="Keep Manatee Beautiful" loading="lazy"></div><div class="pname">Keep Manatee Beautiful</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-05.png" alt="Manatee County Agricultural Museum" loading="lazy"></div><div class="pname">Manatee County Agricultural Museum</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-10.png" alt="Manatee Community Foundation" loading="lazy"></div><div class="pname">Manatee Community Foundation</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-04.png" alt="Drug Free Manatee" loading="lazy"></div><div class="pname">Drug Free Manatee</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/partner-01.png" alt="Defibrillate Manatee Foundation" loading="lazy"></div><div class="pname">Defibrillate Manatee Foundation</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/florida-license-plates.jpg" alt="Florida State Wildflower specialty license plate" loading="lazy"></div><div class="pname">Florida State Wildflower specialty license plate</div></div>
-      <div class="plogo"><div class="stage"><img src="images/partners/50-pops.png" alt="50 PoPS" loading="lazy"></div><div class="pname">50 PoPS</div></div>
-    </div>
+          <div class="pgroup-label">Gardens &amp; horticulture</div>
+      <div class="pgrid">
+        <div class="plogo"><div class="stage"><img src="images/partners/florida-federation-garden-clubs.png" alt="Florida Federation of Garden Clubs" loading="lazy"></div><div class="pname">Florida Federation of Garden Clubs</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/american-gardens.png" alt="American Public Gardens Association" loading="lazy"></div><div class="pname">American Public Gardens Association</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-08-banner.jpg" alt="American Horticultural Society Reciprocal Garden Network" loading="lazy"></div><div class="pname">American Horticultural Society Reciprocal Garden Network</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-02.png" alt="Manatee Rare Fruit Council" loading="lazy"></div><div class="pname">Manatee Rare Fruit Council</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-07.png" alt="UF/IFAS Extension" loading="lazy"></div><div class="pname">UF/IFAS Extension</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-09.png" alt="Anna Maria Island Garden Club" loading="lazy"></div><div class="pname">Anna Maria Island Garden Club</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-06.png" alt="Manatee River Garden Club" loading="lazy"></div><div class="pname">Manatee River Garden Club</div></div>
+      </div>
+      <div class="pgroup-label">Chambers &amp; community</div>
+      <div class="pgrid">
+        <div class="plogo"><div class="stage"><img src="images/partners/manatee-community.jpg" alt="Manatee Chamber of Commerce" loading="lazy"></div><div class="pname">Manatee Chamber of Commerce</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/ami-chamber.png" alt="Anna Maria Island Chamber of Commerce" loading="lazy"></div><div class="pname">Anna Maria Island Chamber of Commerce</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-10.png" alt="Manatee Community Foundation" loading="lazy"></div><div class="pname">Manatee Community Foundation</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-03.png" alt="Keep Manatee Beautiful" loading="lazy"></div><div class="pname">Keep Manatee Beautiful</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-05.png" alt="Manatee County Agricultural Museum" loading="lazy"></div><div class="pname">Manatee County Agricultural Museum</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-04.png" alt="Drug Free Manatee" loading="lazy"></div><div class="pname">Drug Free Manatee</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-01.png" alt="Defibrillate Manatee Foundation" loading="lazy"></div><div class="pname">Defibrillate Manatee Foundation</div></div>
+      </div>
+      <div class="pgroup-label">Supporters</div>
+      <div class="pgrid">
+        <div class="plogo"><div class="stage"><img src="images/partners/florida-license-plates.jpg" alt="Florida State Wildflower specialty license plate" loading="lazy"></div><div class="pname">Florida State Wildflower specialty license plate</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/50-pops.png" alt="50 PoPS" loading="lazy"></div><div class="pname">50 PoPS</div></div>
+      </div>
   </div>
 </section>
 
@@ -529,9 +557,12 @@
         </div>
       </dl>
 
-      <iframe class="vmap"
-        src="https://maps.google.com/maps?q=Palma%20Sola%20Botanical%20Park&t=m&z=14&output=embed&iwloc=near"
-        title="Map to Palma Sola Botanical Park" allowfullscreen loading="lazy"></iframe>
+      <a class="vmap" href="https://maps.google.com/maps?daddr=9800+17th+Ave+NW,+Bradenton,+FL+34209"
+         target="_blank" rel="noopener" aria-label="Open directions to Palma Sola Botanical Park">
+        <img src="images/park-location-map.png" alt="Map showing Palma Sola Botanical Park at 9800 17th Ave NW, Bradenton" loading="lazy">
+        <span class="vmap-cta">Get directions →</span>
+        <span class="vmap-cred">© OpenStreetMap contributors</span>
+      </a>
     </div>
 
     <p class="vdrive">From Manatee Ave W (SR&nbsp;64), turn north onto 75th St W, then left onto 17th Ave NW.
