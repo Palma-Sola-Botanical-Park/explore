@@ -140,10 +140,14 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
 .vdesk-meta{ font-size:.76rem; font-weight:700; letter-spacing:.08em;
   text-transform:uppercase; color:var(--gold); margin:0 0 .55rem; }
 .vdesk-body{ font-size:.97rem; color:var(--text-soft); line-height:1.68; margin:0; }
-.vdesk-more{ margin-top:.7rem; }
-.vdesk-link{ color:var(--green-mid); font-weight:700; font-size:.95rem;
-  text-decoration:none; }
-.vdesk-link:hover{ text-decoration:underline; }
+/* A linked title keeps the heading's colour and adds a quiet underline, so it
+   reads as a heading first and a link second — but is still distinguishable
+   from the unlinked titles above and below it WITHOUT hovering. */
+.vdesk-titlelink{ color:inherit; text-decoration:underline; text-decoration-thickness:1px;
+  text-underline-offset:4px; text-decoration-color:var(--rule-strong);
+  transition:color .15s, text-decoration-color .15s; }
+.vdesk-titlelink:hover{ color:var(--green-mid); text-decoration-color:var(--green-mid); }
+.vdesk-go{ font-size:.78em; color:var(--green-mid); }
 
 /* "Find your place" heading with the sign-up button on the same line.
    Wraps below the heading on narrow screens, where grid-2 has already
