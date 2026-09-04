@@ -215,11 +215,14 @@ def main():
         return 0
 
     # ── apply ────────────────────────────────────────────────────────────────
-    stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
+    # Backups go OUTSIDE the repo — see psbp_common.backup_file(). These used to
+    # be written beside the masters, inside a GitHub Pages repo, under a
+    # `.bak-<stamp>` name that .gitignore's `*.bak` does not match.
+    from psbp_common import backup_file, BACKUP_DIR
     for path in (PHOTO_CREDITS_JSON, PHOTO_WORKBENCH_JSON):
         if os.path.exists(path):
-            shutil.copy2(path, f"{path}.bak-{stamp}")
-    print(f"\nBacked up both files with suffix .bak-{stamp}")
+            backup_file(path)
+    print(f"\nBacked up both files to {BACKUP_DIR}")
 
     credits["photos"].extend(all_rows)
     credits["meta"]["photo_count"] = len(credits["photos"])

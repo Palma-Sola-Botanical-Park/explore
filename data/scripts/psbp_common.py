@@ -19,6 +19,8 @@ the repo, change REPO below. Those are the only two things to touch.
 
 import json
 import os
+import shutil
+from datetime import datetime
 from pathlib import Path
 
 # ===========================================================================
@@ -367,6 +369,37 @@ def write_json_atomic(path, data):
         json.dump(data, f, indent=2, ensure_ascii=False)
         f.write("\n")                    # trailing newline for clean git diffs
     os.replace(str(tmp), str(p))
+
+
+# Backups go OUTSIDE the repo. Override with PSBP_BACKUP_DIR.
+BACKUP_DIR = Path(os.environ.get("PSBP_BACKUP_DIR")
+                  or Path.home() / "Documents" / "PSBP" / "backups")
+
+
+def backup_file(path):
+    """Copy a file to the out-of-repo backup folder. Returns the new path.
+
+    This is the ONLY way a PSBP tool should back up a master before writing.
+
+    WHY NOT ALONGSIDE THE FILE (added 2026-09-03, after it bit):
+    a backup written next to a master lands inside a GitHub Pages repo. Four
+    scripts did this; three used a `.bak-<timestamp>` suffix, which `.gitignore`
+    (`*.bak`) does NOT match — so a 1.1 MB copy of photo_credits.json showed up
+    as a new file to stage and was only stopped by the pre-commit size guard.
+
+    It is also redundant. These files are tracked, so git already holds every
+    prior version: `git checkout <sha> -- <path>` is the real safety net, and
+    GitHub Desktop's Discard Changes does the same for uncommitted work. The
+    copy on disk protects against exactly one thing git doesn't — a bad write
+    that happens while other changes are already staged — which is worth
+    keeping, just not in here.
+    """
+    src = Path(path)
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    dest = BACKUP_DIR / f"{src.stem}.{stamp}{src.suffix}"
+    shutil.copy2(src, dest)
+    return dest
 
 
 # ===========================================================================

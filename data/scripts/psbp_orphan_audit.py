@@ -310,10 +310,14 @@ def report(r, verbose):
 # ═══════════════════════════════════════════════════════════════════════════
 
 def backup(path):
-    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    dest = path.with_suffix(path.suffix + f".bak-{stamp}")
-    shutil.copy2(path, dest)
-    return dest
+    """Copy to the out-of-repo backup folder. See psbp_common.backup_file().
+
+    This used to write `<file>.bak-<stamp>` next to the master — inside a
+    GitHub Pages repo, under a name `.gitignore`'s `*.bak` does not match.
+    Changed 2026-09-03 after a 1.1 MB copy reached the staging area.
+    """
+    from psbp_common import backup_file
+    return backup_file(path)
 
 
 def fix(r, credits_blob, assume_yes=False):

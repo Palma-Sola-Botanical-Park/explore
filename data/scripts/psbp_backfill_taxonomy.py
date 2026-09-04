@@ -171,9 +171,9 @@ def main():
                 grand_changed += 1
 
         if args.apply and changed_records:
-            stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-            bak = f"{path}.{stamp}.bak"
-            shutil.copy2(path, bak)
+            # Backup goes OUTSIDE the repo — see psbp_common.backup_file().
+            from psbp_common import backup_file
+            bak = backup_file(path)
             blob.setdefault("meta", {})["updated"] = \
                 datetime.datetime.now().isoformat(timespec="seconds")
             write_json_atomic(path, blob)

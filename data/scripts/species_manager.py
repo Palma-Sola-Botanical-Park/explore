@@ -9702,7 +9702,7 @@ _DRAFT_SPEC_PLANTS = {
     "form":               ("str",  "growth form — EXACTLY one of: Tree | Shrub & Vine | Palm & Cycad | Groundcover & Wildflower | Foliage & Accent | Aquatic & Wetland"),
     "alternate_names":    ("list", "common alternate names — list of short strings"),
     "butterfly":          ("dict", 'object {"larval_food":bool,"larval_species":[str],"adult_food":bool,"adult_species":[str],"notes":str|null} — larval_food + larval_species: documented larval HOST for named butterflies/moths as "Common (Scientific)"; adult_food: notable nectar source (keep adult_species [] unless ONE specific specialist); notes: brief caveat or null'),
-    "quick_hits":         ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings)."),
+    "quick_hits":         ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings). LEAN LOCAL where the species gives you something — Florida, the Gulf coast, Manatee County, or this park. A strong preference, not a quota and not a rule: if a local angle is there it usually beats the general fact, and park-level detail beats both. \"Florida's entire population traces back to eleven birds that wintered near Sarasota in 1981\" is the register. What you are avoiding is a set that reads like a Wikipedia summary. Never manufacture a local detail to satisfy this — a genuinely good general fact is better than a thin local one."),
     "origin":             ("list", "native range and how it came to Florida cultivation, as a list of one or two paragraph strings (never newlines inside a string)"),
     "more_information":   ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
     "wildlife_value":     ("list", "1-2 short paragraphs on the pollinators and wildlife it supports — this is where any real butterfly host / nectar value belongs, in prose (list of strings)."),
@@ -9721,7 +9721,8 @@ _DRAFT_SPEC_PLANTS = {
 _DRAFT_SPEC_WILDLIFE = {
     "native":           ("bool", "true if native to Florida; false if introduced"),
     "also_known_as":    ("list", "alternate common names — list of strings"),
-    "quick_hits":       ("list", "2-4 punchy one-to-two-sentence facts (list of strings)"),
+    "teaser":           ("str",  "ONE self-contained sentence or two, 120-175 characters, for the quick-view drawer on the wildlife index. It is the FIRST thing a visitor reads about this animal. It may be a shortened, reworded version of quick_hits[1], [2] or [3] — but NEVER of quick_hits[0], and never a near-copy of any hit verbatim. The reason: a reader taps the quick view, then opens the page, and the page OPENS with quick_hits[0]. If the teaser and that first hit say the same thing the same way, the click was wasted — and the photograph is already the same on both surfaces, so the words are the only thing that can differ. Write it to make somebody want the page, not to summarise it."),
+    "quick_hits":       ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings). LEAN LOCAL where the species gives you something — Florida, the Gulf coast, Manatee County, or this park. A strong preference, not a quota and not a rule: if a local angle is there it usually beats the general fact, and park-level detail beats both. \"Florida's entire population traces back to eleven birds that wintered near Sarasota in 1981\" is the register. What you are avoiding is a set that reads like a Wikipedia summary. Never manufacture a local detail to satisfy this — a genuinely good general fact is better than a thin local one."),
     "range_and_origin": ("str",  "short paragraph: native range and status in Florida"),
     "more_information": ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
     "identification":   ("dict", 'object {"blocks":[{"label":str,"text":str}], "what_to_look_for":str}'),
@@ -9732,9 +9733,9 @@ _DRAFT_SPEC_WILDLIFE = {
     "habitat":          ("str",  "preferred habitat"),
     "where_to_look":    ("str",  "where in a Florida park a visitor would spot it"),
     "when_to_see":      ("str",  "time of day / year it is active and visible"),
-    "size":             ("dict", 'object {"length":str,"lifespan":str}'),
-    "danger":           ("dict", 'object {"people_level":"Red|Yellow|Green","people":str,"pets_level":"Red|Yellow|Green","pets":str}'),
-    "interaction":      ("dict", 'object {"level":"Red|Yellow|Green","guidance":str}'),
+    "size":             ("dict", 'object {"length":str,"lifespan":str} — length in ROUNDED IMPERIAL, spelled out ("about six inches", "roughly two feet"), never metric. Where a scientific measure and a perceivable one differ, give the perceivable: a visitor can judge height standing at the animal and cannot judge beak-to-tail length. Say what they would actually see.'),
+    "danger":           ("dict", 'object {"people_level":"Red|Yellow|Green","people":str,"pets_level":"Red|Yellow|Green","pets":str} — LEAD with whatever matters most; if there is a genuine hazard (bite, sting, venom) open with THAT plainly. Do not march through people-then-pets in order and never repeat a point. If the animal is harmless say so once and stop — "Harmless to people. Does not bite or sting." Green is the DEFAULT.'),
+    "interaction":      ("dict", 'object {"level":"Red|Yellow|Green","guidance":str} — how to watch it respectfully. Give the visitor something to DO, not a warning to absorb ("a hand lens or phone macro reveals a surprisingly intricate insect; replace the leaf as you found it"). Green is the DEFAULT for anything that simply wants leaving alone.'),
     "invasive":         ("dict", 'object {"level":"Red|Yellow|Green","notes":str}'),
     "conservation":     ("dict", 'object {"level":"Red|Yellow|Green","status":str}'),
     "seasonality":      ("dict", 'object {"presence":str,"reliability":str,"months":[ints 1-12],"peak":str|null,"note":str}'),
@@ -9753,20 +9754,55 @@ def _draft_spec(kingdom):
     return _DRAFT_SPEC_PLANTS if kingdom == "plants" else _DRAFT_SPEC_WILDLIFE
 
 
+# Hand-picked tone exemplars, by PSBP id, best first.
+#
+# WHY PINNED (2026-09-03): this used to rank by FIELD COUNT, which finds the
+# fullest record, not the best-written one — and on wildlife that actively
+# rewarded bloat, since ten of those fields do not render on any page. The
+# fullest wildlife record calls the waggle dance "one of the animal kingdom's
+# most remarkable communication systems", which is exactly the over-writing
+# CONTENT_REVIEW_PROMPT.md tells reviewers to cut.
+#
+# PSBP-90028 Melon Aphid was drafted, then reviewed through that prompt by both
+# ChatGPT and Gemini, and shows the register we want: it never tells you
+# something is amazing, it shows you the thing ("Color tells you almost nothing
+# ... the one reliable mark is the pair of small black tubes"), and where_to_look
+# is written for somebody standing in front of it.
+#
+# Keep this SHORT. One or two records, re-picked when a better one is written —
+# not a list that grows. Falls back to the old richness ranking to top up.
+AI_EXEMPLARS = {
+    "plants":   ["PSBP-00753", "PSBP-00729"],   # Scaly Tree Fern, Black-Fruit Cluster Palm
+    "wildlife": ["PSBP-90028"],     # Melon Aphid
+}
+
+
 def _ai_exemplars(kingdom, n=2):
-    """Pick the most richly-filled published entries, trimmed to draftable keys,
-    as voice/structure references for the model."""
+    """Tone/structure references for the drafting call, trimmed to draftable keys.
+
+    Pinned ids in AI_EXEMPLARS come first, in order; richness ranking tops up.
+    """
     path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
     spec = _draft_spec(kingdom)
     species = [s for s in _get_species_list(_load(path)) if s.get("status") == "html"]
+    by_id = {s.get("id"): s for s in species}
 
-    def richness(e):
-        return sum(1 for k in spec if _is_filled(e.get(k)))
+    chosen, seen = [], set()
+    for pid in AI_EXEMPLARS.get(kingdom, []):
+        e = by_id.get(pid)
+        if e and pid not in seen:
+            chosen.append(e); seen.add(pid)
 
-    out = []
-    for e in sorted(species, key=richness, reverse=True)[:n]:
-        out.append({k: e[k] for k in spec if _is_filled(e.get(k))})
-    return out
+    if len(chosen) < n:
+        def richness(e):
+            return sum(1 for k in spec if _is_filled(e.get(k)))
+        for e in sorted(species, key=richness, reverse=True):
+            if len(chosen) >= n:
+                break
+            if e.get("id") not in seen:
+                chosen.append(e); seen.add(e.get("id"))
+
+    return [{k: e[k] for k in spec if _is_filled(e.get(k))} for e in chosen[:n]]
 
 
 def _ai_build_messages(species, kingdom):
@@ -9782,7 +9818,7 @@ def _ai_build_messages(species, kingdom):
         "VOICE: an upbeat naturalist who genuinely loves this stuff but never overdoes it. "
         "Warm and inviting — you want visitors to share the delight — yet never cloying, "
         "breathless, or showing off. Deliver solid, specific information plainly: no "
-        "theatrics, no purple prose, no exclamation-point energy. Light touch by default; "
+        "theatrics, no purple prose, no exclamation-point energy. Do NOT tell the reader something is remarkable, amazing, stunning or extraordinary — show them the thing and let them decide. Cut any phrase that is noticeably written. Light touch by default; "
         "go deeper only where something genuinely needs explaining. Your reader is a "
         "curious adult who is not a botanist — quietly relate to them, don't lecture, and "
         "don't come across as a know-it-all.\n\n"
@@ -9818,24 +9854,51 @@ def _ai_build_messages(species, kingdom):
         "category": species.get("category", ""),
     }
 
+    if kingdom == "plants":
+        kingdom_block = (
+            "COLOR LEVELS (edibility, toxicity): Green is the DEFAULT for anything harmless — "
+            "a plant nobody eats but that won't hurt you is Green, never a warning. Use Yellow "
+            "only for genuine caution (edible only if prepared right; a mild irritant) and Red "
+            "only for a real hazard (toxic, dangerous). A harmless, unremarkable plant should "
+            "never wear a warning color.\n\n"
+            "BUTTERFLY: the butterfly booleans (larval_food, adult_food) are structured flags "
+            "for indexing — set them accurately, but don't narrate them as data. When a plant "
+            "has real butterfly, pollinator, or nectar value, weave it into wildlife_value "
+            "prose naturally instead."
+        )
+    else:
+        # Wildlife carries FIVE colour fields and, until 2026-09-03, was sent the plant
+        # rules for edibility/toxicity — fields it does not have — and nothing about its own.
+        kingdom_block = (
+            "COLOR LEVELS: this record has five — danger.people_level, danger.pets_level, "
+            "interaction.level, invasive.level and conservation.level. GREEN IS THE DEFAULT "
+            "for every one of them. An animal that simply minds its own business is Green "
+            "across the board; it should never wear a warning colour. Use Yellow only for "
+            "genuine caution (will bite if cornered; a nest worth giving room to) and Red "
+            "only for a real hazard (venomous, genuinely dangerous). For conservation, Green "
+            "means no concern — say plainly when a species is unassessed rather than "
+            "inventing a status.\n\n"
+            "UNITS: rounded imperial, spelled out — feet and inches, never metric, no "
+            "abbreviations. \"Almost twenty feet\", not \"6 m\" or \"20 ft\"."
+        )
+
     user = (
         f"Draft first-cut signage content for this {noun}:\n"
         f"{json.dumps(target, indent=2, ensure_ascii=False)}\n\n"
         "FIELD SCHEMA — produce ONLY these fields, each in exactly the shape shown. "
         "Omit any field you cannot responsibly fill from solid sources:\n"
         f"{schema_lines}\n\n"
-        "COLOR LEVELS (edibility, toxicity): Green is the DEFAULT for anything harmless — "
-        "a plant nobody eats but that won't hurt you is Green, never a warning. Use Yellow "
-        "only for genuine caution (edible only if prepared right; a mild irritant) and Red "
-        "only for a real hazard (toxic, dangerous). A harmless, unremarkable plant should "
-        "never wear a warning color.\n\n"
-        "BUTTERFLY / WILDLIFE: the butterfly booleans (larval_food, adult_food) are "
-        "structured flags for indexing — set them accurately, but don't narrate them as "
-        "data. When a plant has real butterfly, pollinator, or nectar value, weave it into "
-        "wildlife_value prose naturally instead.\n\n"
+        f"{kingdom_block}\n\n"
         f"Here are {len(exemplars)} existing published entries from this park, for TONE, "
         "depth, and structure only — match this quality; do NOT reuse their facts:\n"
         f"{exemplar_json}\n\n"
+        "REPETITION: a fact belongs in exactly ONE place. Quick Hits exist to catch the "
+        "eye; a later section may revisit one only if it genuinely expands it. Restating a "
+        "Quick Hit elsewhere without adding anything is the most common fault in these "
+        "records.\n\n"
+        "SELECTIVITY: do NOT assume a field must be filled just because it exists. Some "
+        "fields should be quiet on a given species. Omit rather than pad — the database can "
+        "be comprehensive; the visitor page should be selective.\n\n"
         "Do a few targeted web searches, then write a concise first cut — solid and "
         "accurate, not exhaustive (I'll deepen it later). Keep the park's voice.\n\n"
         "OUTPUT CONTRACT: return a single JSON object whose keys are a subset of the "
@@ -10193,7 +10256,7 @@ def _ai_build_revise_messages(species, kingdom, feedback):
         "(a correction, a disputed claim, a request to verify), use the web_search tool "
         "to confirm against authoritative sources (UF/IFAS and other .edu, USDA, FNPS, "
         "ADW, IUCN) before changing it. If the feedback is purely tone, length, or "
-        "formatting, no search is needed. Never invent facts. Inside every string value "
+        "formatting, no search is needed. Never invent facts. THE CURRENT CONTENT MAY ALREADY REFLECT EARLIER DELIBERATE EDITS — material that looks missing was often removed on purpose. Do not restore or re-add anything unless this round's feedback actually asks for it. Inside every string value "
         "write plain prose only — no markdown, asterisk emphasis, or bullet characters. "
         "Never put a newline inside any string value; for multi-paragraph fields use one "
         "list item per paragraph. Keep every paragraph short — at most about three "
@@ -10217,7 +10280,10 @@ def _ai_build_revise_messages(species, kingdom, feedback):
         f"\"\"\"\n{feedback.strip()}\n\"\"\"\n\n"
         "OUTPUT CONTRACT: return a single JSON object containing ONLY the fields you are "
         "changing, each with its full new value in the schema shape. Do NOT include fields "
-        "you are leaving unchanged. Also include \"_changes\" (an object mapping each "
+        "you are leaving unchanged. IF THE FEEDBACK WARRANTS NO CHANGES AT ALL, still "
+        "return the JSON — an empty object for the fields, with _summary explaining why "
+        "nothing needed changing. Never reply in prose instead of the contract. "
+        "Also include \"_changes\" (an object mapping each "
         "changed field to a short reason) and \"_summary\" (1-2 sentences). Wrap the JSON "
         "exactly between a line <<<JSON>>> and a line <<<END>>>, nothing after <<<END>>>."
     )

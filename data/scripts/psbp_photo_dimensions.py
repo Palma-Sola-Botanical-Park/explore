@@ -198,9 +198,20 @@ def main():
         print("\n  Dry run — nothing written. Re-run with --write.\n")
         return 0
 
-    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    backup = path.with_suffix(path.suffix + f".bak-{stamp}")
-    shutil.copy2(path, backup)
+    # Backup goes OUTSIDE the repo — see psbp_common.backup_file(). Writing it
+    # alongside the master put a 1.1 MB copy in a GitHub Pages repo, where the
+    # `.bak-<stamp>` name escaped .gitignore's `*.bak` and only the pre-commit
+    # size guard stopped it. The fallback keeps that guarantee if psbp_common
+    # can't be imported — it must never land back beside the master.
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from psbp_common import backup_file
+        backup = backup_file(path)
+    except Exception:
+        out = Path.home() / "Documents" / "PSBP" / "backups"
+        out.mkdir(parents=True, exist_ok=True)
+        backup = out / f"{path.stem}.{datetime.now():%Y%m%d-%H%M%S}{path.suffix}"
+        shutil.copy2(path, backup)
     blob.setdefault("meta", {})["updated"] = datetime.now().isoformat(timespec="seconds")
     blob["meta"]["note"] = (blob["meta"].get("note", "") +
                             f" | {datetime.now():%Y-%m-%d}: added w/h/orient from the "
