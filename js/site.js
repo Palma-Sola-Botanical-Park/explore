@@ -228,10 +228,20 @@ async function fetchTab(gid) {
     try {
       const r = await fetch(`data/published/${name}.json`, { cache: 'no-store' });
       if (r.ok) return await r.json();   // the gate guarantees this is clean
-      console.warn(`published/${name}.json -> ${r.status}; falling back to live sheet`);
+      console.error(`published/${name}.json -> ${r.status}. Serving nothing for this feed.`);
     } catch (e) {
-      console.warn(`published/${name}.json fetch failed (${e}); falling back to live sheet`);
+      console.error(`published/${name}.json failed to parse (${e}). Serving nothing for this feed.`);
     }
+    // NO SILENT FALLBACK TO THE LIVE SHEET (changed 2026-09-03).
+    // This used to `return fetchTabLive(gid)` here, which meant one missing
+    // published file put every visitor back on the browser-side CSV parse —
+    // the exact architecture the 2026-06-14 blackout killed, running with
+    // nothing to announce it. The published files hold last-known-good and are
+    // never emptied by a bad sync, so a failure here is a DEPLOY problem, and
+    // masking it with stale sheet data is worse than showing nothing.
+    // Break-glass is still available and now has to be asked for: set
+    // DATA_SOURCE = 'live' at the top of this file.
+    return [];
   }
   return fetchTabLive(gid);
 }
