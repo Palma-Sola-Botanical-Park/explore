@@ -79,7 +79,7 @@
   --serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --sans:  'Source Sans 3', -apple-system, 'Segoe UI', sans-serif;
 
-  --t-cap:   .70rem;   /* eyebrows, labels */
+  --t-cap:   .78rem;   /* eyebrows, labels — was .70rem; 11px was too small to read */
   --t-xs:    .82rem;
   --t-sm:    .93rem;
   --t-base: 1.0625rem; /* 17px — body */
@@ -156,7 +156,7 @@ h4 { font-size: var(--t-md); }
 
 .label {
   display: inline-block; font-size: var(--t-cap); font-weight: 700;
-  letter-spacing: .14em; text-transform: uppercase;
+  letter-spacing: .11em; text-transform: uppercase;
   color: var(--green); margin-bottom: var(--s2);
 }
 .label-light { color: var(--gold-mark); }

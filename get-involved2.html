@@ -123,13 +123,6 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 .vdesk-body{ font-size:.97rem; color:var(--text-soft); line-height:1.68; margin:0; }
 .vdesk-more{ margin-top:.8rem; }
 
-/* ── Plain factual block (replaces the emoji quick-info list) ── */
-.vinfo{ margin-top:1.6rem; background:var(--sand); border-radius:10px; padding:1.5rem 1.6rem; }
-.vinfo-title{ font-size:.76rem; font-weight:700; letter-spacing:.1em;
-  text-transform:uppercase; color:var(--green-mid); margin-bottom:.9rem; }
-.vinfo div + div{ margin-top:.55rem; }
-.vinfo p{ margin:0; font-size:1rem; color:var(--text-soft); line-height:1.6; }
-.vinfo a{ color:var(--green-mid); font-weight:600; }
 </style>
 </head>
 <body>
@@ -188,7 +181,7 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 </section>
 
 <!-- ══════════════════ SUPPORT THE PARK ══════════════════ -->
-<section class="bg-cream" id="giving">
+<section class="bg-sunk" id="giving">
   <div class="section-inner">
     <span class="label">Support the Park</span>
     <h2 class="section-title" style="margin-bottom:1.2rem">The park is free because people support it</h2>
@@ -332,7 +325,7 @@ section[id], div[id]{ scroll-margin-top: 84px; }
           <li>Lifetime Reciprocal Admissions cards</li>
           <li>Unlimited admission to Members-Only Events</li>
         </ul>
-        <a class="tier-join" href="contact.html">Talk to us about Legacy →</a>
+        <a class="tier-join" href="contact.html#visit">Talk to us about Legacy →</a>
       </div>
     </div>
 
@@ -348,7 +341,7 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 </section>
 
 <!-- ══════════════════ VOLUNTEER ══════════════════ -->
-<section class="bg-cream" id="volunteer">
+<section class="bg-sunk" id="volunteer">
   <div class="section-inner">
     <span class="label">Volunteer</span>
     <h2 class="section-title" style="margin-bottom:1.2rem">There is plenty to do, and you don't need to be a horticulturist</h2>
@@ -369,14 +362,6 @@ section[id], div[id]{ scroll-margin-top: 84px; }
         <div style="margin-top:1.75rem">
           <a href="https://docs.google.com/forms/d/e/1FAIpQLSfesCyhXAVtjD9oQr36ayPjeFIh3Tm85B1xsYg5V9K7tYHFOg/viewform"
              target="_blank" rel="noopener" class="btn btn-gold">Sign up to volunteer →</a>
-        </div>
-
-        <div class="vinfo">
-          <div class="vinfo-title">Volunteer at the park</div>
-          <div><p>9800 17th Ave NW, Bradenton</p></div>
-          <div><p>8am–dusk, every day</p></div>
-          <div><p><a href="tel:9417612866">(941) 761-2866</a></p></div>
-          <div><p>No experience required</p></div>
         </div>
       </div>
 
@@ -446,7 +431,7 @@ section[id], div[id]{ scroll-margin-top: 84px; }
           The program also runs at the Patricia &amp; Dr. Carroll Geraldson Community Garden, a UF/IFAS Extension
           project in Palmetto.
         </p>
-        <a href="contact.html" class="btn btn-green">Ask About the Program →</a>
+        <a href="contact.html#visit" class="btn btn-green">Ask About the Program →</a>
       </div>
       <div style="display:flex;flex-direction:column;gap:1rem">
         <div class="info-card" style="border-top-color:var(--gold)">
@@ -469,7 +454,7 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 </section>
 
 <!-- ══════════════════ CITIZEN SCIENCE ══════════════════ -->
-<section class="bg-cream" id="citizen-science">
+<section class="bg-sunk" id="citizen-science">
   <div class="section-inner">
     <span class="label">Citizen Science</span>
     <h2 class="section-title" style="margin-bottom:1.2rem">You don't have to be a scientist</h2>
@@ -600,8 +585,10 @@ const PAYPAL = {
       btn.setAttribute('target', '_blank');
       btn.setAttribute('rel', 'noopener');
     } else {
-      // No link set yet — graceful fallback, never a dead end.
-      btn.setAttribute('href', 'contact.html');
+      // No link set yet — graceful fallback, never a dead end. Lands on the
+      // contact block itself, not the top of the page, so the phone number and
+      // email are the first thing they see.
+      btn.setAttribute('href', 'contact.html#visit');
       btn.classList.add('pending');
       btn.textContent = 'Call us to join →';
       btn.title = 'Online sign-up coming soon — call (941) 761-2866 or contact us to join.';
