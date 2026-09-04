@@ -265,10 +265,14 @@
   <div class="page-hero-content" style="text-align:center;margin:0 auto">
     <div class="label label-light">Who We Are</div>
     <h1>About Palma Sola</h1>
-    <p>A subtropical garden in northwest Bradenton — free and open to everyone, every day of the year.</p>
-    <p style="margin-top:1.35rem">
-      <a href="#visit" style="display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.55);color:#fff;font-weight:600;font-size:.95rem;padding:.55rem 1.15rem;border-radius:999px;text-decoration:none;backdrop-filter:blur(2px)">Hours, directions &amp; contact ↓</a>
-    </p>
+    <!-- The jump link is INLINE, not a pill in a second paragraph. As a block it
+         added ~60px (1.35rem margin + the pill's own padding + a line box), which
+         made this hero visibly taller than Events, Visit and Get Involved — all of
+         which are label / h1 / one paragraph. The link earns its place (About is
+         the page that holds the hours, and they are at the very bottom); the extra
+         block did not. Changed 2026-09-04. -->
+    <p>A subtropical garden in northwest Bradenton — free and open to everyone, every day of the year.
+       <a href="#visit" style="color:#fff;font-weight:600;text-decoration:underline;text-underline-offset:3px;white-space:nowrap">Hours, directions &amp; contact ↓</a></p>
   </div>
   <div class="page-hero-credit" style="position:absolute;right:.9rem;bottom:.7rem;z-index:3;font-size:.72rem;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.65);letter-spacing:.02em">© Franky McArthur · CC-BY-NC · iNaturalist</div>
 </div>
@@ -307,8 +311,10 @@
 
       <div>
         <div class="honors-panel">
-          <span class="label">Recognition</span>
-          <h2 class="section-title" style="font-size:1.32rem;margin-bottom:1.2rem">Proud of the park</h2>
+          <!-- No heading here on purpose. The "Recognition" eyebrow already names
+               the block; the h2 that used to sit under it read "Proud of the park",
+               which editorialised a list that speaks for itself. Removed 2026-09-04. -->
+          <span class="label" style="margin-bottom:1.1rem">Recognition</span>
           <div class="honors">
             <div class="feat">
               <div class="yr">2026</div>
