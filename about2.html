@@ -134,6 +134,28 @@
   .honors .feat h3{font-size:1.18rem;color:var(--green-ink)}
   .honors .feat p{color:var(--ink)}
 
+
+  /* ── CERTIFICATIONS — credentials, not coverage. These sit with the mission
+     because they are evidence for a claim it makes, rather than a list of who
+     noticed us. Images optional: onerror removes them. ── */
+  .certs{margin-top:2.6rem;padding-top:1.9rem;border-top:1px solid var(--rule)}
+  .certs-lead{font-size:.92rem;color:var(--ink-soft);margin:0 0 1.4rem;font-style:italic}
+  .certs-row{display:flex;flex-wrap:wrap;justify-content:center;gap:2.5rem}
+  .cert{max-width:230px}
+  .cert img{max-height:72px;max-width:130px;object-fit:contain;margin-bottom:.6rem}
+  .cert h4{font-size:1.02rem;margin:0 0 .15rem;color:var(--ink);font-family:var(--serif)}
+  .cert p{margin:0;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+
+  /* ── THE COLLECTION — a narrow green band, the page's one moment of colour
+     reversal. Deliberately short: it is a door to Nature, not a section. ── */
+  .collection{background:var(--green-ink);color:#fff;text-align:center}
+  .collection .section-inner{padding-top:2.6rem;padding-bottom:2.6rem}
+  .collection p{font-family:var(--serif);font-size:clamp(1.15rem,2.2vw,1.55rem);line-height:1.5;
+    margin:0 auto 1.1rem;max-width:34ch;color:#fff}
+  .collection strong{color:var(--gold-mark);font-weight:400}
+  .collection a{color:#fff;font-weight:600;font-size:.95rem;text-decoration:none;
+    border-bottom:1px solid rgba(255,255,255,.45);padding-bottom:.15rem}
+  .collection a:hover{border-bottom-color:#fff}
 </style>
 </head>
 <body>
@@ -259,8 +281,35 @@
         <p>Protecting this green space, its collections, and the habitat it provides for local wildlife.</p>
       </div>
     </div>
+
+    <div class="certs">
+      <p class="certs-lead">Two national bodies have certified that last one.</p>
+      <div class="certs-row">
+        <div class="cert">
+          <img src="images/recognition/certified-wildlife-habitat.png" alt="" onerror="this.remove()">
+          <h4>Certified Wildlife Habitat</h4>
+          <p>National Wildlife Federation</p>
+        </div>
+        <div class="cert">
+          <img src="images/recognition/monarch-waystation.png" alt="" onerror="this.remove()">
+          <h4>Monarch Waystation</h4>
+          <p>Monarch Watch</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
+<!-- THE COLLECTION — About never mentioned the catalogue, which is the park's
+     actual point of difference. Rounded per the house units rule so it cannot
+     go stale as species are added. -->
+<div class="collection">
+  <div class="section-inner">
+    <p>More than <strong>three hundred species</strong> of plant and animal have been documented growing
+       and living here — each one photographed in the park, by the people who walk it.</p>
+    <a href="nature.html">Explore what lives here →</a>
+  </div>
+</div>
 
 <!-- THE ASK — moved out of the gold banner and given room -->
 <section class="bg-sunk" id="support">
