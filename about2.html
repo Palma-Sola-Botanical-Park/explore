@@ -123,10 +123,14 @@
      wall, so four different brand palettes don't fight the page. */
   .honors .hrow{display:flex;align-items:center;justify-content:space-between;gap:1rem}
   .honors .hrow h3{margin:0}
-  .honors .mark{flex:0 0 auto;max-height:34px;max-width:96px;object-fit:contain;
-    filter:grayscale(1);opacity:.55;transition:filter .25s,opacity .25s}
-  .honors div:hover .mark{filter:grayscale(0);opacity:1}
-  .honors .feat .mark{max-height:44px;max-width:120px;opacity:.75}
+  /* These badges are PORTRAIT (ratios .76-1.08), not wide logos — capping on
+     height alone rendered them ~26px wide and illegible. Height leads, width
+     is the guard. Kept lightly desaturated at rest so four brand palettes
+     don't fight the panel, full colour on hover. */
+  .honors .mark{flex:0 0 auto;max-height:56px;max-width:66px;object-fit:contain;
+    filter:saturate(.55);opacity:.8;transition:filter .25s,opacity .25s}
+  .honors div:hover .mark{filter:saturate(1);opacity:1}
+  .honors .feat .mark{max-height:64px;max-width:76px;opacity:.9}
 
   /* the newest and most meaningful one gets real prominence */
   .honors .feat{background:var(--gold-tint);border-radius:10px;padding:1rem 1.1rem 1.05rem;
@@ -142,7 +146,9 @@
   .certs-lead{font-size:.92rem;color:var(--ink-soft);margin:0 0 1.4rem;font-style:italic}
   .certs-row{display:flex;flex-wrap:wrap;justify-content:center;gap:2.5rem}
   .cert{max-width:230px}
-  .cert img{max-height:72px;max-width:130px;object-fit:contain;margin-bottom:.6rem}
+  /* Certifications stay FULL COLOUR. These are credentials, not partner logos —
+     a greyed-out certification badge reads as expired. */
+  .cert img{max-height:104px;max-width:96px;object-fit:contain;margin-bottom:.7rem}
   .cert h4{font-size:1.02rem;margin:0 0 .15rem;color:var(--ink);font-family:var(--serif)}
   .cert p{margin:0;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
 
@@ -222,7 +228,7 @@
             <div>
               <div class="yr">2026</div>
               <div class="hrow"><h3>Bradenton's Best</h3>
-                <img class="mark" src="images/recognition/bradentons-best.png" alt="" onerror="this.remove()"></div>
+                <img class="mark" src="images/recognition/bradentons-best-2026.png" alt="" onerror="this.remove()"></div>
               <p>Recognized by the community we serve — though we're proudest of being free and open every day.</p>
             </div>
             <div>
@@ -233,7 +239,7 @@
             </div>
             <div>
               <div class="hrow"><h3>Horticulture Magazine</h3>
-                <img class="mark" src="images/recognition/horticulture-magazine.png" alt="" onerror="this.remove()"></div>
+                <img class="mark" src="images/recognition/horticulture-magazine.jpg" alt="" onerror="this.remove()"></div>
               <p>Featured in the national publication for our collections and mission.</p>
               <a href="news.html?Story=Horticulture">See the story →</a>
             </div>
