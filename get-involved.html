@@ -140,7 +140,10 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
 .vdesk-meta{ font-size:.76rem; font-weight:700; letter-spacing:.08em;
   text-transform:uppercase; color:var(--gold); margin:0 0 .55rem; }
 .vdesk-body{ font-size:.97rem; color:var(--text-soft); line-height:1.68; margin:0; }
-.vdesk-more{ margin-top:.8rem; }
+.vdesk-more{ margin-top:.7rem; }
+.vdesk-link{ color:var(--green-mid); font-weight:700; font-size:.95rem;
+  text-decoration:none; }
+.vdesk-link:hover{ text-decoration:underline; }
 
 /* "Find your place" heading with the sign-up button on the same line.
    Wraps below the heading on narrow screens, where grid-2 has already
@@ -548,7 +551,10 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
           in the park's catalog. You learn a species at a time, alongside people who enjoy it as much as you do.
           You don't have to be in Florida, or in the United States.
         </p>
-        <a href="get-started.html#identify" class="btn btn-gold">How identifying works &rarr;</a>
+        <!-- green, matching "How observing works" in the box beside it. Both are
+             navigation to get-started.html, not the ask. Gold is reserved for the
+             one real call to action in each section — here, the sign-up above. -->
+        <a href="get-started.html#identify" class="btn btn-green">How identifying works &rarr;</a>
       </div>
     </div>
 
@@ -688,6 +694,9 @@ async function loadVolDesk() {
        Sheet row order is display order — no `order` column needed. */
     const places = visible.filter(r => (r.type || '').trim().toLowerCase() === 'place');
     const notes  = visible.filter(r => (r.type || '').trim().toLowerCase() !== 'place');
+    /* `life` is the value in the Sheet for a desk note, but anything that is not
+       `place` counts — including blank — so a row Bev forgets to tag still lands
+       somewhere harmless instead of among the volunteer categories. */
 
     renderVolPlaces(places);
 
@@ -699,11 +708,24 @@ async function loadVolDesk() {
       const photo = (v.photo_url || '').trim()
         ? `<img class="vdesk-photo" src="${v.photo_url}" alt="" loading="lazy" onerror="this.remove()">`
         : '';
-      const meta = (v.role || '').trim();
+      /* Spreadsheets leak placeholder words into empty cells — the `place` rows
+         all arrived carrying the literal string "None" in `role`. Rendered as-is
+         that becomes a gold uppercase NONE above the text. Treat the usual
+         stand-ins as empty rather than trusting the cell to be blank. */
+      const rawMeta = (v.role || '').trim();
+      const meta = /^(none|n\/a|na|null|-|—)$/i.test(rawMeta) ? '' : rawMeta;
       const link = PSBP.rowLink(v);
+      /* A TEXT LINK, NOT A GOLD BUTTON. Bev controls how many rows exist, so this
+         has to scale: five desk entries each with a gold button would stack five
+         of them under "Sign up to volunteer" — the one thing on this screen that
+         is actually a call to action — and drown it. A desk note is editorial;
+         its link is a continuation, not an action.
+         The arrow is appended here rather than typed in the Sheet, and any arrow
+         Bev does type is stripped first, so two can never end up side by side. */
+      const label = (link.text || 'Learn more').replace(/\s*[→>»]+\s*$/, '');
       const more = link.url
-        ? `<div class="vdesk-more">${PSBP.linkTag(link.url, link.text || 'Read more',
-            { title: v.title || 'Document', back: back, className: 'btn btn-sm btn-gold' })}</div>`
+        ? `<div class="vdesk-more">${PSBP.linkTag(link.url, label + ' →',
+            { title: v.title || 'Document', back: back, className: 'vdesk-link' })}</div>`
         : '';
       return `<div class="vdesk-item">
         ${photo}
