@@ -188,6 +188,33 @@
   .collection a{color:#fff;font-weight:600;font-size:.95rem;text-decoration:none;
     border-bottom:1px solid rgba(255,255,255,.45);padding-bottom:.15rem}
   .collection a:hover{border-bottom-color:#fff}
+
+  /* ── VISIT — was seven cards on dark green, with the address in two places,
+     directions in two places, and the map wedged beside a stack. Now: the four
+     things people actually come here for, beside a map that gets real size. ── */
+  .visit-grid{display:grid;grid-template-columns:minmax(280px,1fr) 1.15fr;gap:2.5rem;align-items:stretch}
+  @media(max-width:820px){.visit-grid{grid-template-columns:1fr;gap:2rem}}
+  .vfacts{margin:0}
+  .vfacts > div{display:grid;grid-template-columns:6.5rem 1fr;gap:1.2rem;padding:1.1rem 0;
+    border-top:1px solid rgba(255,255,255,.16)}
+  .vfacts > div:last-child{border-bottom:1px solid rgba(255,255,255,.16)}
+  .vfacts dt{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold-mark);font-weight:700;padding-top:.2rem}
+  .vfacts dd{margin:0;color:#fff;line-height:1.6;font-size:1.02rem}
+  .vfacts dd span{display:inline-block;margin-top:.15rem;font-size:.86rem;color:rgba(255,255,255,.6)}
+  .vfacts dd a{color:#fff;border-bottom:1px solid rgba(255,255,255,.45);text-decoration:none}
+  .vfacts dd a:hover{border-bottom-color:#fff}
+  .vmap{width:100%;min-height:340px;height:100%;border:none;border-radius:12px;
+    box-shadow:0 6px 22px rgba(0,0,0,.28)}
+  .vdrive{margin:2.2rem auto 0;max-width:60ch;text-align:center;
+    color:rgba(255,255,255,.75);line-height:1.75;font-size:.97rem}
+  .vtail{margin-top:2.2rem;padding-top:1.3rem;border-top:1px solid rgba(255,255,255,.16);
+    display:flex;flex-wrap:wrap;gap:.8rem 2rem;align-items:center;justify-content:space-between}
+  .vtail a{color:#fff;font-weight:600;font-size:.94rem;text-decoration:none;margin-right:1.4rem;
+    border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:.1rem}
+  .vtail a:last-child{margin-right:0}
+  .vtail a:hover{border-bottom-color:#fff}
+  .vmail{font-size:.86rem;color:rgba(255,255,255,.58)}
 </style>
 </head>
 <body>
@@ -458,64 +485,51 @@
 <!-- CONTACT -->
 <section class="bg-deep" id="visit">
   <div class="section-inner">
-    <div style="text-align:center;max-width:680px;margin:0 auto 2rem">
+    <div style="text-align:center;max-width:680px;margin:0 auto 2.6rem">
       <span class="label label-light">Talk to Us</span>
-      <h2 class="section-title" style="color:var(--white)">Visit, call, or drop us a line</h2>
-      <p style="color:rgba(255,255,255,.72);line-height:1.7">
+      <h2 class="section-title" style="color:#fff">Visit, call, or drop us a line</h2>
+      <p style="color:rgba(255,255,255,.72);line-height:1.7;margin:0">
         We're a small team. Call, email, or just come by and find someone in the garden.
       </p>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem">
-      <div class="info-card">
-        <h3>Phone</h3>
-        <p><a href="tel:9417612866" style="font-size:1.1rem;font-weight:700">(941) 761-2866</a></p>
-      </div>
-      <div class="info-card">
-        <h3>Email</h3>
-        <p><a href="mailto:info@palmasolabp.org">info@palmasolabp.org</a><br>
-           <span style="font-size:.88rem;color:var(--text-soft)">General questions &amp; donations</span></p>
-      </div>
-      <div class="info-card">
-        <h3>Park Hours</h3>
-        <p>8am – Dusk, every day<br>
-           <span style="font-size:.88rem;color:var(--text-soft)">Free admission, 365 days a year</span></p>
-      </div>
-      <div class="info-card">
-        <h3>Social</h3>
-        <p>
-          <a href="https://www.facebook.com/people/Palma-Sola-Botanical-Park/100064517386906/" target="_blank" rel="noopener">Facebook</a> &nbsp;·&nbsp;
-          <a href="https://www.instagram.com/palmasolabotanical/" target="_blank" rel="noopener">Instagram</a> &nbsp;·&nbsp;
-          <a href="https://www.inaturalist.org/projects/palma-sola-botanical-park" target="_blank" rel="noopener">iNaturalist</a>
-        </p>
-      </div>
+    <div class="visit-grid">
+      <dl class="vfacts">
+        <div>
+          <dt>Open</dt>
+          <dd>8am – Dusk, every day<br><span>Free admission, 365 days a year</span></dd>
+        </div>
+        <div>
+          <dt>Find us</dt>
+          <dd>9800 17th Ave NW<br>Bradenton, FL 34209<br>
+            <a href="https://maps.google.com/maps?q=Palma+Sola+Botanical+Park" target="_blank" rel="noopener">Directions →</a></dd>
+        </div>
+        <div>
+          <dt>Call</dt>
+          <dd><a href="tel:9417612866">(941) 761-2866</a></dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd><a href="mailto:info@palmasolabp.org">info@palmasolabp.org</a><br>
+            <span>General questions &amp; donations</span></dd>
+        </div>
+      </dl>
+
+      <iframe class="vmap"
+        src="https://maps.google.com/maps?q=Palma%20Sola%20Botanical%20Park&t=m&z=14&output=embed&iwloc=near"
+        title="Map to Palma Sola Botanical Park" allowfullscreen loading="lazy"></iframe>
     </div>
 
-    <!-- Address cards paired with a height-matched map to fill the row. -->
-    <div class="grid-2" style="gap:1.25rem;align-items:stretch;margin-top:1.25rem">
-      <div style="display:flex;flex-direction:column;gap:1.25rem">
-        <div class="info-card">
-          <h3>Visit Us</h3>
-          <p>9800 17th Ave NW<br>Bradenton, FL 34209<br>
-             <a href="https://maps.google.com/maps?q=Palma+Sola+Botanical+Park" target="_blank" rel="noopener">Directions →</a></p>
-        </div>
-        <div class="info-card">
-          <h3>Mailing Address</h3>
-          <p>P.O. Box 14214<br>Bradenton, FL 34280<br>
-             <span style="font-size:.88rem;color:var(--text-soft)">For mail &amp; donations</span></p>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column">
-        <iframe src="https://maps.google.com/maps?q=Palma%20Sola%20Botanical%20Park&t=m&z=14&output=embed&iwloc=near"
-          title="Map to Palma Sola Botanical Park"
-          style="width:100%;flex:1 1 auto;min-height:300px;border-radius:12px;border:none;box-shadow:0 6px 22px rgba(0,0,0,.28)" allowfullscreen loading="lazy"></iframe>
-      </div>
-    </div>
+    <p class="vdrive">From Manatee Ave W (SR&nbsp;64), turn north onto 75th St W, then left onto 17th Ave NW.
+      The entrance is a mile and a half down on your left.</p>
 
-    <div class="info-card" style="margin-top:1.25rem">
-      <h3>How to find us</h3>
-      <p>From Manatee Ave W (SR 64), turn north onto 75th St W, then turn left onto 17th Ave NW.
-         The park entrance is 1.4 miles down on your left.</p>
+    <div class="vtail">
+      <div>
+        <a href="https://www.facebook.com/people/Palma-Sola-Botanical-Park/100064517386906/" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://www.instagram.com/palmasolabotanical/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.inaturalist.org/projects/palma-sola-botanical-park" target="_blank" rel="noopener">iNaturalist</a>
+      </div>
+      <div class="vmail">Mail &amp; donations · P.O. Box 14214, Bradenton, FL 34280</div>
     </div>
   </div>
 </section>
