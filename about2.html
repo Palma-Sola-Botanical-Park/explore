@@ -24,8 +24,8 @@
     color:var(--green);font-weight:700;margin-bottom:1.15rem}
 
   /* staff — two people, centered to match the section */
-  .office-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:2rem;max-width:760px;margin:0 auto;text-align:center}
+  .office-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:2rem 1.5rem;max-width:940px;margin:0 auto;text-align:center}
   .office-person .r{font-size:.86rem;color:var(--ink-soft);letter-spacing:.01em}
   .office-person .n{font-family:var(--serif);font-size:1.5rem;color:var(--ink);line-height:1.2;margin-top:.2rem}
   .office-person .b{font-size:.88rem;color:var(--ink-soft);margin-top:.3rem;line-height:1.6}
@@ -94,11 +94,20 @@
   .ask .btn{padding:.85rem 2.1rem;font-size:1.02rem}
 
   /* ── PARTNER LOGOS — present, not shouting ── */
-  .plogo{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:10px;display:flex;
-    align-items:center;justify-content:center;padding:1rem;min-height:104px}
-  .plogo img{max-width:100%;max-height:70px;object-fit:contain;
-    filter:grayscale(1);opacity:.62;transition:filter .25s ease,opacity .25s ease}
-  .plogo:hover img{filter:grayscale(0);opacity:1}
+  /* FULL COLOUR, and each partner is NAMED. An earlier pass greyed these out to
+     stop sixteen brand palettes fighting the page — which optimised the page at
+     the expense of the section's only job, which is to thank people. A partner
+     seeing their logo desaturated and unlabelled would rightly be annoyed.
+     The real problem was never colour; it was uneven optical weight and no air.
+     Fixed with a consistent stage, a bigger gap, and a caption. */
+  .plogo{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.7rem}
+  .plogo .stage{background:#fff;border:1px solid var(--rule);border-radius:10px;width:100%;
+    min-height:96px;display:flex;align-items:center;justify-content:center;padding:.9rem;
+    transition:border-color .2s ease,box-shadow .2s ease}
+  .plogo:hover .stage{border-color:var(--rule-strong);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .plogo img{max-width:100%;max-height:62px;object-fit:contain}
+  .plogo .pname{font-size:.76rem;line-height:1.35;color:var(--ink-soft);text-align:center;
+    max-width:15ch}
 
   /* ── RECOGNITION — lifted onto its own surface so it reads as an object
      rather than more text on the cream. NOT zebra-striped: alternating row
@@ -107,8 +116,10 @@
      comes from hierarchy (one featured item) and from the panel, not stripes. */
   .honors-panel{background:var(--surface);border:1px solid var(--rule);border-radius:14px;
     padding:1.5rem 1.6rem 1.6rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-  .honors div{padding:.95rem 0;border-top:1px solid var(--rule)}
-  .honors div:first-child{border-top:0;padding-top:.2rem}
+  /* DIRECT children only. `.honors div` also matched .yr and .hrow, which gave
+     the year its own divider and stranded it above the heading it belongs to. */
+  .honors > div{padding:.95rem 0;border-top:1px solid var(--rule)}
+  .honors > div:first-child{border-top:0;padding-top:.2rem}
   .honors h3{font-size:1.02rem;margin:0 0 .28rem;line-height:1.3;color:var(--ink)}
   .honors p{margin:0;color:var(--ink-soft);font-size:.92rem;line-height:1.6}
   .honors .yr{font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.12em;
@@ -129,7 +140,7 @@
      don't fight the panel, full colour on hover. */
   .honors .mark{flex:0 0 auto;max-height:56px;max-width:66px;object-fit:contain;
     filter:saturate(.55);opacity:.8;transition:filter .25s,opacity .25s}
-  .honors div:hover .mark{filter:saturate(1);opacity:1}
+  .honors > div:hover .mark{filter:saturate(1);opacity:1}
   .honors .feat .mark{max-height:64px;max-width:76px;opacity:.9}
 
   /* the newest and most meaningful one gets real prominence */
@@ -145,10 +156,10 @@
   .certs{margin-top:2.6rem;padding-top:1.9rem;border-top:1px solid var(--rule)}
   .certs-lead{font-size:.92rem;color:var(--ink-soft);margin:0 0 1.4rem;font-style:italic}
   .certs-row{display:flex;flex-wrap:wrap;justify-content:center;gap:2.5rem}
-  .cert{max-width:230px}
+  .cert{max-width:230px;text-align:center}
   /* Certifications stay FULL COLOUR. These are credentials, not partner logos —
      a greyed-out certification badge reads as expired. */
-  .cert img{max-height:104px;max-width:96px;object-fit:contain;margin-bottom:.7rem}
+  .cert img{display:block;margin:0 auto .75rem;max-height:104px;max-width:96px;object-fit:contain}
   .cert h4{font-size:1.02rem;margin:0 0 .15rem;color:var(--ink);font-family:var(--serif)}
   .cert p{margin:0;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
 
@@ -359,55 +370,23 @@
       and sponsors whose support keeps the gates open and the gardens growing.
     </p>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;align-items:stretch">
-      <div class="plogo">
-        <img src="images/partners/florida-federation-garden-clubs.png" alt="Florida Federation of Garden Clubs" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/american-gardens.png" alt="American Public Gardens Association" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-02.png" alt="Manatee Rare Fruit Council" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-07.png" alt="UF/IFAS Extension" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-08-banner.jpg" alt="American Horticultural Society Reciprocal Garden Network" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/manatee-community.jpg" alt="Manatee Chamber of Commerce" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/ami-chamber.png" alt="Anna Maria Island Chamber of Commerce" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-09.png" alt="Anna Maria Island Garden Club" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-06.png" alt="Manatee River Garden Club" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-03.png" alt="Keep Manatee Beautiful" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-05.png" alt="Manatee County Agricultural Museum" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-10.png" alt="Manatee Community Foundation" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-04.png" alt="Drug Free Manatee" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/partner-01.png" alt="Defibrillate Manatee Foundation" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/florida-license-plates.jpg" alt="Florida State Wildflower specialty license plate" loading="lazy">
-      </div>
-      <div class="plogo">
-        <img src="images/partners/50-pops.png" alt="50 PoPS" loading="lazy">
-      </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1.6rem 1.25rem;align-items:start">
+      <div class="plogo"><div class="stage"><img src="images/partners/florida-federation-garden-clubs.png" alt="Florida Federation of Garden Clubs" loading="lazy"></div><div class="pname">Florida Federation of Garden Clubs</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/american-gardens.png" alt="American Public Gardens Association" loading="lazy"></div><div class="pname">American Public Gardens Association</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-02.png" alt="Manatee Rare Fruit Council" loading="lazy"></div><div class="pname">Manatee Rare Fruit Council</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-07.png" alt="UF/IFAS Extension" loading="lazy"></div><div class="pname">UF/IFAS Extension</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-08-banner.jpg" alt="American Horticultural Society Reciprocal Garden Network" loading="lazy"></div><div class="pname">American Horticultural Society Reciprocal Garden Network</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/manatee-community.jpg" alt="Manatee Chamber of Commerce" loading="lazy"></div><div class="pname">Manatee Chamber of Commerce</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/ami-chamber.png" alt="Anna Maria Island Chamber of Commerce" loading="lazy"></div><div class="pname">Anna Maria Island Chamber of Commerce</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-09.png" alt="Anna Maria Island Garden Club" loading="lazy"></div><div class="pname">Anna Maria Island Garden Club</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-06.png" alt="Manatee River Garden Club" loading="lazy"></div><div class="pname">Manatee River Garden Club</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-03.png" alt="Keep Manatee Beautiful" loading="lazy"></div><div class="pname">Keep Manatee Beautiful</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-05.png" alt="Manatee County Agricultural Museum" loading="lazy"></div><div class="pname">Manatee County Agricultural Museum</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-10.png" alt="Manatee Community Foundation" loading="lazy"></div><div class="pname">Manatee Community Foundation</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-04.png" alt="Drug Free Manatee" loading="lazy"></div><div class="pname">Drug Free Manatee</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/partner-01.png" alt="Defibrillate Manatee Foundation" loading="lazy"></div><div class="pname">Defibrillate Manatee Foundation</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/florida-license-plates.jpg" alt="Florida State Wildflower specialty license plate" loading="lazy"></div><div class="pname">Florida State Wildflower specialty license plate</div></div>
+      <div class="plogo"><div class="stage"><img src="images/partners/50-pops.png" alt="50 PoPS" loading="lazy"></div><div class="pname">50 PoPS</div></div>
     </div>
   </div>
 </section>
@@ -563,6 +542,27 @@ injectShared({ inatBar: false });
 
     /* front office */
     var office = org.filter(function(p){return p.type==='front office';});
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       ⚠ TEMPORARY PREVIEW — DELETE BEFORE THIS PAGE GOES LIVE ⚠
+       Two roles are being hired (groundskeeper + a dedicated office manager,
+       per the job postings on the live site). This fakes them so we can see
+       how the staff block handles four people instead of two. The names are
+       deliberately silly so nobody mistakes them for real staff.
+       When the real hires land, Bev adds them to the Google Sheet and this
+       block comes out — the page needs no other change.
+       ═══════════════════════════════════════════════════════════════════════ */
+    var PREVIEW = true;
+    if (PREVIEW) {
+      office = office.map(function(p){
+        return p.name === 'Jennifer Gunter'
+          ? { type:'front office', role:'Event Venue Rentals', name:p.name, blurb:p.blurb }
+          : p;
+      });
+      office.push({ type:'front office', role:'Office Manager',  name:'Ivy Ledger', blurb:'' });
+      office.push({ type:'front office', role:'Groundskeeper',   name:'Pete Moss',  blurb:'' });
+    }
+    /* ═══════════════ END TEMPORARY PREVIEW ═══════════════ */
     var SHORT = {'Office Manager & Event Venue Rentals':'Office Manager & Venue Rentals'};
     var os = document.getElementById('office-strip');
     if (os) office.forEach(function(p){
