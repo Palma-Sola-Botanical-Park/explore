@@ -1,22 +1,22 @@
 {
   "tab": "classes",
   "human": "Standing weekly classes — one row per weekday+time slot.",
-  "generated_at": "2026-09-02T17:45:40+00:00",
-  "status": "amber",
+  "generated_at": "2026-09-04T23:42:57+00:00",
+  "status": "green",
   "published": true,
   "block_reason": null,
   "counts": {
     "staged": 5,
     "live": 5,
-    "published": 4,
+    "published": 5,
     "dropped_display": 0,
-    "quarantined": 1,
+    "quarantined": 0,
     "warned": 0
   },
   "volume_guard": {
     "min": 1,
     "live": 5,
-    "published": 4,
+    "published": 5,
     "blocked": false,
     "reason": null
   },
@@ -93,16 +93,11 @@
       "why": "If set, must be a real date (YYYY-MM-DD).",
       "severity": "error",
       "scope": "row",
-      "status": "amber",
+      "status": "green",
       "evaluated": 5,
-      "passed": 4,
-      "flagged": 1,
-      "examples": [
-        {
-          "row": "Zumba in the Park",
-          "reason": "'9/28/2026' is not a YYYY-MM-DD date"
-        }
-      ]
+      "passed": 5,
+      "flagged": 0,
+      "examples": []
     },
     {
       "id": "active_to:ge_field",
@@ -207,43 +202,8 @@
       "examples": []
     }
   ],
-  "dropped_rows": [
-    {
-      "label": "Zumba in the Park",
-      "reason": "active_to: '9/28/2026' is not a YYYY-MM-DD date"
-    }
-  ],
+  "dropped_rows": [],
   "timeline": [
-    {
-      "at": "2026-08-20T18:52:17+00:00",
-      "added": 0,
-      "changed": 3,
-      "removed": 0
-    },
-    {
-      "at": "2026-08-20T19:08:19+00:00",
-      "added": 1,
-      "changed": 0,
-      "removed": 0
-    },
-    {
-      "at": "2026-08-20T19:34:30+00:00",
-      "added": 0,
-      "changed": 5,
-      "removed": 0
-    },
-    {
-      "at": "2026-08-20T21:40:45+00:00",
-      "added": 0,
-      "changed": 5,
-      "removed": 0
-    },
-    {
-      "at": "2026-08-21T12:07:25+00:00",
-      "added": 0,
-      "changed": 1,
-      "removed": 0
-    },
     {
       "at": "2026-08-25T14:27:14+00:00",
       "added": 0,
@@ -264,6 +224,12 @@
     },
     {
       "at": "2026-09-02T17:45:40+00:00",
+      "added": 0,
+      "changed": 1,
+      "removed": 0
+    },
+    {
+      "at": "2026-09-04T23:18:12+00:00",
       "added": 0,
       "changed": 1,
       "removed": 0
