@@ -245,7 +245,11 @@
   .pgroup-label{margin:2.2rem 0 1rem;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
     color:var(--green);font-weight:700;text-align:center}
   .pgroup-label:first-of-type{margin-top:.5rem}
-  .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:1.6rem 1.25rem;align-items:start}
+  /* Flex, not grid: a group of six in a five-wide viewport leaves an orphan,
+     and grid strands it hard-left where it looks like a mistake. Flex centres
+     the last row, so it reads as deliberate at any width. */
+  .pgrid{display:flex;flex-wrap:wrap;justify-content:center;gap:1.7rem 1.4rem}
+  .pgrid .plogo{flex:0 1 170px}
 </style>
 </head>
 <body>
@@ -463,7 +467,6 @@
         <div class="plogo"><div class="stage"><img src="images/partners/american-gardens.png" alt="American Public Gardens Association" loading="lazy"></div><div class="pname">American Public Gardens Association</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/partner-08-banner.jpg" alt="American Horticultural Society Reciprocal Garden Network" loading="lazy"></div><div class="pname">American Horticultural Society Reciprocal Garden Network</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/partner-02.png" alt="Manatee Rare Fruit Council" loading="lazy"></div><div class="pname">Manatee Rare Fruit Council</div></div>
-        <div class="plogo"><div class="stage"><img src="images/partners/partner-07.png" alt="UF/IFAS Extension" loading="lazy"></div><div class="pname">UF/IFAS Extension</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/partner-09.png" alt="Anna Maria Island Garden Club" loading="lazy"></div><div class="pname">Anna Maria Island Garden Club</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/partner-06.png" alt="Manatee River Garden Club" loading="lazy"></div><div class="pname">Manatee River Garden Club</div></div>
       </div>
@@ -472,17 +475,18 @@
         <div class="plogo"><div class="stage"><img src="images/partners/manatee-community.jpg" alt="Manatee Chamber of Commerce" loading="lazy"></div><div class="pname">Manatee Chamber of Commerce</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/ami-chamber.png" alt="Anna Maria Island Chamber of Commerce" loading="lazy"></div><div class="pname">Anna Maria Island Chamber of Commerce</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/partner-10.png" alt="Manatee Community Foundation" loading="lazy"></div><div class="pname">Manatee Community Foundation</div></div>
-        <div class="plogo"><div class="stage"><img src="images/partners/partner-03.png" alt="Keep Manatee Beautiful" loading="lazy"></div><div class="pname">Keep Manatee Beautiful</div></div>
-        <div class="plogo"><div class="stage"><img src="images/partners/partner-05.png" alt="Manatee County Agricultural Museum" loading="lazy"></div><div class="pname">Manatee County Agricultural Museum</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/partner-04.png" alt="Drug Free Manatee" loading="lazy"></div><div class="pname">Drug Free Manatee</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/partner-01.png" alt="Defibrillate Manatee Foundation" loading="lazy"></div><div class="pname">Defibrillate Manatee Foundation</div></div>
       </div>
-      <div class="pgroup-label">Supporters</div>
+      <div class="pgroup-label">Other friends</div>
       <div class="pgrid">
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-07.png" alt="UF/IFAS Extension" loading="lazy"></div><div class="pname">UF/IFAS Extension</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-03.png" alt="Keep Manatee Beautiful" loading="lazy"></div><div class="pname">Keep Manatee Beautiful</div></div>
+        <div class="plogo"><div class="stage"><img src="images/partners/partner-05.png" alt="Manatee County Agricultural Museum" loading="lazy"></div><div class="pname">Manatee County Agricultural Museum</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/florida-license-plates.jpg" alt="Florida State Wildflower specialty license plate" loading="lazy"></div><div class="pname">Florida State Wildflower specialty license plate</div></div>
         <div class="plogo"><div class="stage"><img src="images/partners/50-pops.png" alt="50 PoPS" loading="lazy"></div><div class="pname">50 PoPS</div></div>
       </div>
-  </div>
+</div>
 </section>
 
 <!-- SEE THE PARK — embedded videos + community submission invite.
