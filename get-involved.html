@@ -715,25 +715,31 @@ async function loadVolDesk() {
       const rawMeta = (v.role || '').trim();
       const meta = /^(none|n\/a|na|null|-|—)$/i.test(rawMeta) ? '' : rawMeta;
       const link = PSBP.rowLink(v);
-      /* A TEXT LINK, NOT A GOLD BUTTON. Bev controls how many rows exist, so this
-         has to scale: five desk entries each with a gold button would stack five
-         of them under "Sign up to volunteer" — the one thing on this screen that
-         is actually a call to action — and drown it. A desk note is editorial;
-         its link is a continuation, not an action.
-         The arrow is appended here rather than typed in the Sheet, and any arrow
-         Bev does type is stripped first, so two can never end up side by side. */
-      const label = (link.text || 'Learn more').replace(/\s*[→>»]+\s*$/, '');
-      const more = link.url
-        ? `<div class="vdesk-more">${PSBP.linkTag(link.url, label + ' →',
-            { title: v.title || 'Document', back: back, className: 'vdesk-link' })}</div>`
-        : '';
+      /* THE TITLE IS THE LINK — no separate button, no "Learn more".
+         Three reasons. (1) "Learn more" is an accessibility failure: screen
+         readers can list a page's links, and five identical "Learn more" entries
+         are indistinguishable, where "Adult Workday" describes itself. (2) It
+         scales — Bev decides how many rows exist, and five gold buttons stacked
+         under "Sign up to volunteer" would drown the one real call to action in
+         this section. (3) A linked headline is the ordinary pattern for a list
+         of notes.
+         Only SOME rows carry a link, so a linked title has to be distinguishable
+         WITHOUT hovering — hence a persistent underline plus the arrow, not
+         underline-on-hover, which hides the affordance until it is too late.
+         NOTE: `link_text` is no longer used by this column. The title is the
+         label now. */
+      const heading = v.title || v.name || 'Volunteer note';
       return `<div class="vdesk-item">
         ${photo}
         <div class="vdesk-text">
-          <h3 class="vdesk-title">${v.title || v.name || 'Volunteer note'}</h3>
+          <h3 class="vdesk-title">${
+            link.url
+              ? PSBP.linkTag(link.url, heading + ' <span class="vdesk-go">→</span>',
+                  { title: heading, back: back, className: 'vdesk-titlelink' })
+              : heading
+          }</h3>
           ${meta ? `<div class="vdesk-meta">${meta}</div>` : ''}
           <p class="vdesk-body">${v.body || v.bio || ''}</p>
-          ${more}
         </div>
       </div>`;
     }).join('');
