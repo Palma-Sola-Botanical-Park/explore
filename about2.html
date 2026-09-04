@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>About (v2 — board layouts) · Palma Sola Botanical Park</title>
+<title>About · Palma Sola Botanical Park</title>
 <link rel="stylesheet" href="css/psbp.css">
 <style>
   html { scroll-behavior: smooth; }
   section[id] { scroll-margin-top: 78px; }
   #visit { scroll-margin-top: 90px; }
 
-  /* Card icon + heading on one line: icon left, heading to its right; everything else below. */
-  .info-card { display: grid; grid-template-columns: auto 1fr; column-gap: .65rem; }
-  .info-card > * { grid-column: 1 / -1; min-width: 0; }
-  .info-card > .info-card-icon { grid-column: 1; grid-row: 1; align-self: center; margin: 0 !important; }
-  .info-card > h3 { grid-column: 2; grid-row: 1; align-self: center; margin: 0 !important; }
+  /* Emoji icons removed on about2 — they rendered three different ways across
+     platforms and undercut the Playfair. The old grid existed only to seat them. */
+  .info-card > h3 { margin: 0 0 .35rem !important; }
 
-  /* ─────────── about2 experiments ─────────── */
-  .opt-flag{margin:3rem 0 1rem;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--ink-faint);border-top:1px dashed var(--rule-strong);padding-top:.7rem;font-weight:700}
-  .opt-flag em{text-transform:none;letter-spacing:0;font-weight:400}
+  /* ─────────── TEAM + BOARD (about2) ───────────
+     Replaces the 11-card board grid. The old layout printed the word
+     "DIRECTOR" five times down the page, which is what made it read as a
+     spreadsheet export rather than a board. Here the officers get one
+     rule-topped band and the directors sit under a single group label.
+     Blurbs render automatically wherever the Sheet's blurb column is filled. */
 
   /* front office — warmer than a card, two people worth some air */
   .office-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2.5rem}
@@ -44,28 +44,66 @@
     font-size:.85rem;color:var(--ink-soft)}
   .boardA .tail b{color:var(--green-ink);font-weight:600}
 
-  /* B — one running roster */
-  .boardB{border-left:3px solid var(--green-tint);padding:.2rem 0 .2rem 1.4rem;max-width:60ch}
-  .boardB p{margin:0 0 1rem;line-height:1.9;font-size:1.02rem;color:var(--ink)}
-  .boardB .r{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--green);
-    font-weight:700;display:block;margin-bottom:.15rem}
-  .boardB .n{font-family:var(--serif);color:var(--green-ink)}
-  .boardB .sep{color:var(--gold-mark);padding:0 .3rem}
 
-  /* C — officers carded, directors pooled into one */
-  .boardC .offrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
-  .boardC .card{background:var(--surface);border-radius:12px;padding:1.15rem 1.2rem;
-    box-shadow:0 1px 2px rgba(0,0,0,.05);border-top:3px solid var(--green)}
-  .boardC .card .r{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--green);font-weight:700}
-  .boardC .card .n{font-family:var(--serif);font-size:1.18rem;color:var(--green-ink);margin-top:.28rem;line-height:1.2}
-  .boardC .card .b{font-size:.83rem;color:var(--ink-soft);margin-top:.4rem;line-height:1.55}
-  .boardC .pool{margin-top:1rem;background:var(--surface);border-radius:12px;padding:1.15rem 1.3rem;
-    box-shadow:0 1px 2px rgba(0,0,0,.05);border-top:3px solid var(--gold-mark)}
-  .boardC .pool .r{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.7rem}
-  .boardC .pool .dirs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.8rem 1.6rem}
-  .boardC .pool .dirs .n{font-family:var(--serif);font-size:1.05rem;color:var(--green-ink)}
-  .boardC .pool .dirs .b{font-size:.8rem;color:var(--ink-soft);margin-top:.1rem;line-height:1.5}
-  .boardC .tail{margin-top:.9rem;font-size:.85rem;color:var(--ink-soft)}
+  /* ── STAT BAND — the story's spine, in numerals ── */
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:0;margin:2.75rem 0 0;border-top:2px solid var(--green-ink)}
+  .fact{padding:1.35rem 1.1rem 1.4rem;border-right:1px solid var(--rule)}
+  .fact:last-child{border-right:0}
+  .fact .big{font-family:var(--serif);font-size:2.5rem;line-height:1;color:var(--green-ink);letter-spacing:-.01em}
+  .fact .cap{font-size:.72rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);
+    margin-top:.5rem;line-height:1.45}
+  @media(max-width:640px){.fact .big{font-size:2rem}}
+
+  /* ── PULL QUOTE — a second scale inside the prose ── */
+  .pull{font-family:var(--serif);font-size:1.6rem;line-height:1.35;color:var(--green-ink);
+    border-left:3px solid var(--gold-mark);padding:.15rem 0 .15rem 1.25rem;margin:2rem 0 2.1rem}
+  .pull cite{display:block;font-family:var(--sans);font-style:normal;font-size:.76rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:.7rem;font-weight:700}
+
+  /* ── FULL-BLEED BREAK — the page's one quiet moment ── */
+  .bleed{position:relative;height:clamp(280px,42vh,460px);background-size:cover;
+    background-position:center 62%;display:flex;align-items:flex-end}
+  .bleed::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(0,0,0,.05) 40%,rgba(0,0,0,.55) 100%)}
+  .bleed .line{position:relative;z-index:2;width:100%;max-width:var(--wide);margin:0 auto;
+    padding:0 var(--s5) 2.2rem;color:#fff}
+  .bleed .line p{font-family:var(--serif);font-size:clamp(1.3rem,2.6vw,2rem);line-height:1.3;
+    margin:0;text-shadow:0 2px 12px rgba(0,0,0,.4);max-width:22ch}
+  .bleed .cred{position:absolute;right:.9rem;bottom:.6rem;z-index:3;font-size:.7rem;
+    color:rgba(255,255,255,.75);text-shadow:0 1px 3px rgba(0,0,0,.6)}
+
+  /* ── MISSION — prose, not cards ── */
+  .aims{max-width:760px;margin:2rem auto 0;text-align:left}
+  .aims div{padding:1.15rem 0;border-top:1px solid var(--rule);display:grid;
+    grid-template-columns:minmax(150px,.32fr) 1fr;gap:1.5rem;align-items:baseline}
+  .aims div:last-child{border-bottom:1px solid var(--rule)}
+  .aims h3{font-size:1.08rem;margin:0;line-height:1.25}
+  .aims p{margin:0;color:var(--ink-soft);line-height:1.7;font-size:.97rem}
+  @media(max-width:620px){.aims div{grid-template-columns:1fr;gap:.35rem}}
+
+  /* ── THE ASK — a moment, not a banner ── */
+  .ask{text-align:center;max-width:720px;margin:0 auto}
+  .ask p.big{font-family:var(--serif);font-size:clamp(1.45rem,3vw,2.05rem);line-height:1.35;
+    color:var(--green-ink);margin:0 0 1.1rem}
+  .ask p.sub{color:var(--ink-soft);line-height:1.75;margin:0 0 1.9rem;font-size:1rem}
+
+  /* ── PARTNER LOGOS — present, not shouting ── */
+  .plogo{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:10px;display:flex;
+    align-items:center;justify-content:center;padding:1rem;min-height:104px}
+  .plogo img{max-width:100%;max-height:70px;object-fit:contain;
+    filter:grayscale(1);opacity:.62;transition:filter .25s ease,opacity .25s ease}
+  .plogo:hover img{filter:grayscale(0);opacity:1}
+
+  /* ── RECOGNITION — a list, matching the board and the aims ── */
+  .honors div{padding:.95rem 0;border-top:1px solid var(--rule)}
+  .honors div:last-child{border-bottom:1px solid var(--rule)}
+  .honors h3{font-size:1.02rem;margin:0 0 .25rem;line-height:1.25}
+  .honors .yr{font-family:var(--sans);font-size:.7rem;font-weight:700;letter-spacing:.09em;
+    color:var(--gold);vertical-align:.18em;margin-left:.35rem}
+  .honors p{margin:0;color:var(--ink-soft);font-size:.92rem;line-height:1.6}
+  .honors a{display:inline-block;margin-top:.4rem;color:var(--green);font-weight:600;font-size:.86rem;text-decoration:none}
+  .honors a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -80,7 +118,7 @@
     <h1>About Palma Sola</h1>
     <p>A subtropical garden in northwest Bradenton — free and open to everyone, every day of the year.</p>
     <p style="margin-top:1.35rem">
-      <a href="#visit" style="display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.55);color:#fff;font-weight:600;font-size:.95rem;padding:.55rem 1.15rem;border-radius:999px;text-decoration:none;backdrop-filter:blur(2px)">📍 Hours, directions &amp; contact ↓</a>
+      <a href="#visit" style="display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.55);color:#fff;font-weight:600;font-size:.95rem;padding:.55rem 1.15rem;border-radius:999px;text-decoration:none;backdrop-filter:blur(2px)">Hours, directions &amp; contact ↓</a>
     </p>
   </div>
   <div class="page-hero-credit" style="position:absolute;right:.9rem;bottom:.7rem;z-index:3;font-size:.72rem;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.65);letter-spacing:.02em">© Franky McArthur · CC-BY-NC · iNaturalist</div>
@@ -106,6 +144,8 @@
           with Manatee County: the county owns the land, while the Foundation runs the collections, programming,
           events, and volunteers that make the park worth visiting.
         </p>
+        <blockquote class="pull">Once the Manatee County Nursery — nearly sold off as surplus land.<cite>1990</cite></blockquote>
+
         <p style="color:var(--text-soft);line-height:1.75;margin-bottom:1.25rem">
           Two buildings carry the story forward. The Galleria, added after 2000, hosts weddings, parties, and
           classes; the Baden building — now the office and Board/Bride's Room — began life as a florist shop that
@@ -118,74 +158,85 @@
 
       <div>
         <span class="label">Recognition</span>
-        <h2 class="section-title" style="font-size:1.4rem">Proud of the park</h2>
-        <div style="display:flex;flex-direction:column;gap:1rem;margin-top:.5rem">
-          <div class="info-card" style="border-top-color:var(--gold)">
-            <div class="info-card-icon">📺</div>
-            <h3>Bay News 9</h3>
-            <p>Featured on "Florida on a Tankful" — 33 years after neighbors saved it from development.</p>
-            <p style="margin-top:.5rem"><a href="news.html?Story=Bay" style="color:var(--green-mid);font-weight:600;font-size:.9rem">See the story →</a></p>
+        <h2 class="section-title" style="font-size:1.4rem;margin-bottom:1.1rem">Proud of the park</h2>
+        <div class="honors">
+          <div>
+            <h3>Manatee Chamber of Commerce <span class="yr">2026</span></h3>
+            <p>Named one of five finalists for the county's top nonprofit.</p>
           </div>
-          <div class="info-card">
-            <div class="info-card-icon">📰</div>
+          <div>
+            <h3>Bradenton's Best <span class="yr">2026</span></h3>
+            <p>Recognized by the community we serve — though we're proudest of being free and open every day.</p>
+          </div>
+          <div>
+            <h3>Bay News 9</h3>
+            <p>Featured on "Florida on a Tankful," thirty-three years after neighbors saved the site from development.</p>
+            <a href="news.html?Story=Bay">See the story →</a>
+          </div>
+          <div>
             <h3>Horticulture Magazine</h3>
             <p>Featured in the national publication for our collections and mission.</p>
-            <p style="margin-top:.5rem"><a href="news.html?Story=Horticulture" style="color:var(--green-mid);font-weight:600;font-size:.9rem">See the story →</a></p>
-          </div>
-          <div class="info-card">
-            <div class="info-card-icon">🏆</div>
-            <h3>Bradenton's Best</h3>
-            <p>Recognized by the community we serve — but we're proudest of being free and open 365 days a year.</p>
+            <a href="news.html?Story=Horticulture">See the story →</a>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Support strip — donation framing adapted from Beverly's email signature. -->
-    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.25rem;background:linear-gradient(120deg,#fbf3da 0%,#f6eac4 100%);border:1px solid var(--gold);border-radius:14px;padding:1.6rem 1.8rem;margin-top:2.5rem">
-      <p style="color:var(--text-soft);line-height:1.65;margin:0;flex:1 1 360px;min-width:260px">
-        The park charges <strong style="color:var(--green-deep)">no entrance fee</strong> and receives
-        <strong style="color:var(--green-deep)">no federal, state, or local government funding</strong>.
-        Donations are what keep our gates open to everyone, seven days a week, 365 days a year.
-      </p>
-      <a href="https://www.paypal.com/donate/?hosted_button_id=JS3RF9UEW5ZKL" target="_blank" rel="noopener" class="btn btn-gold" style="flex:0 0 auto">Support the Park →</a>
+    <div class="facts">
+      <div class="fact"><div class="big">1990</div><div class="cap">Neighbors rallied<br>to save the site</div></div>
+      <div class="fact"><div class="big">1993</div><div class="cap">Incorporated as a<br>501(c)(3) nonprofit</div></div>
+      <div class="fact"><div class="big">Ten</div><div class="cap">Acres, in partnership<br>with Manatee County</div></div>
+      <div class="fact"><div class="big">365</div><div class="cap">Days a year,<br>no entrance fee</div></div>
     </div>
   </div>
 </section>
 
+<!-- FULL-BLEED BREAK — one quiet moment between the history and the mission -->
+<div class="bleed" style="background-image:url('images/big-pond.jpg')">
+  <div class="line"><p>Ten acres of subtropical garden, kept open by the people who use it.</p></div>
+  <div class="cred">The Big Pond, looking toward the Galleria</div>
+</div>
+
 <!-- OUR MISSION -->
 <section class="bg-white" id="mission">
-  <div class="section-inner" style="text-align:center;max-width:860px;margin:0 auto">
+  <div class="section-inner" style="text-align:center;max-width:900px;margin:0 auto">
     <span class="label">Our Mission</span>
-    <h2 class="section-title" style="margin-bottom:1rem">A community resource for nature</h2>
-    <p style="color:var(--text-soft);line-height:1.8;font-size:1.08rem">
-      To serve as a unique community resource dedicated to providing an interactive learning environment that
-      fosters an appreciation of nature and landscaping, preserves our natural resources, and promotes
-      environmental education.
+    <h2 class="section-title">A community resource for nature</h2>
+    <p class="section-sub" style="margin:0 auto;max-width:680px">
+      To serve as a unique community resource dedicated to providing an interactive learning environment
+      that fosters an appreciation of nature and landscaping, preserves our natural resources, and
+      promotes environmental education.
     </p>
-  </div>
-  <div class="section-inner" style="padding-top:0">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:.5rem">
-      <div class="info-card" style="border-top-color:var(--green-mid)">
-        <div class="info-card-icon">📚</div>
-        <h3>Promote environmental education</h3>
+    <div class="aims">
+      <div>
+        <h3>Environmental education</h3>
         <p>Classes, tours, and programs that connect people of every age to the living world around them.</p>
       </div>
-      <div class="info-card" style="border-top-color:var(--gold)">
-        <div class="info-card-icon">🌿</div>
-        <h3>Foster appreciation of nature</h3>
+      <div>
+        <h3>Appreciation of nature</h3>
         <p>Acres of rare and beautiful plants, free to wander and discover any day of the year.</p>
       </div>
-      <div class="info-card" style="border-top-color:#5b8db8">
-        <div class="info-card-icon">💧</div>
-        <h3>Preserve natural resources</h3>
+      <div>
+        <h3>Preserving what's here</h3>
         <p>Protecting this green space, its collections, and the habitat it provides for local wildlife.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- OUR TEAM + BOARD — three arrangements to compare (about2 only) -->
+<!-- THE ASK — moved out of the gold banner and given room -->
+<section class="bg-sunk" id="support">
+  <div class="section-inner">
+    <div class="ask">
+      <span class="label">Support</span>
+      <p class="big">The park charges no entrance fee and receives no federal, state, or local government funding.</p>
+      <p class="sub">Donations are what keep the gates open to everyone, seven days a week, 365 days a year.</p>
+      <a href="https://www.paypal.com/donate/?hosted_button_id=JS3RF9UEW5ZKL" target="_blank" rel="noopener" class="btn btn-gold">Support the Park →</a>
+    </div>
+  </div>
+</section>
+
+<!-- OUR TEAM + BOARD -->
 <section class="bg-cream" id="organization">
   <div class="section-inner">
 
@@ -194,17 +245,9 @@
     <p class="text-soft" style="margin:0 0 1.6rem;font-size:.95rem">The two people you'll actually meet.</p>
     <div id="office-strip" class="office-strip"></div>
 
-    <!-- ══ OPTION A ══ -->
-    <div class="opt-flag">Option A — masthead</div>
+    <span class="label" style="margin-top:2.8rem;display:inline-block">Board of Directors</span>
+    <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1.25rem">The board that guides it</h2>
     <div id="boardA" class="boardA"></div>
-
-    <!-- ══ OPTION B ══ -->
-    <div class="opt-flag">Option B — one roster, running text</div>
-    <div id="boardB" class="boardB"></div>
-
-    <!-- ══ OPTION C ══ -->
-    <div class="opt-flag">Option C — officers carded, directors pooled <em>(fake blurbs, to show what filling that column buys)</em></div>
-    <div id="boardC" class="boardC"></div>
 
     <span class="label" style="margin-top:3rem;display:inline-block">Volunteers</span>
     <h2 class="section-title" style="font-size:1.5rem;margin-bottom:.75rem">The volunteers who power it</h2>
@@ -228,53 +271,53 @@
     </p>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;align-items:stretch">
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/florida-federation-garden-clubs.png" alt="Florida Federation of Garden Clubs" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/florida-federation-garden-clubs.png" alt="Florida Federation of Garden Clubs" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/american-gardens.png" alt="American Public Gardens Association" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/american-gardens.png" alt="American Public Gardens Association" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-02.png" alt="Manatee Rare Fruit Council" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-02.png" alt="Manatee Rare Fruit Council" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-07.png" alt="UF/IFAS Extension" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-07.png" alt="UF/IFAS Extension" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-08-banner.jpg" alt="American Horticultural Society Reciprocal Garden Network" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-08-banner.jpg" alt="American Horticultural Society Reciprocal Garden Network" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/manatee-community.jpg" alt="Manatee Chamber of Commerce" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/manatee-community.jpg" alt="Manatee Chamber of Commerce" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/ami-chamber.png" alt="Anna Maria Island Chamber of Commerce" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/ami-chamber.png" alt="Anna Maria Island Chamber of Commerce" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-09.png" alt="Anna Maria Island Garden Club" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-09.png" alt="Anna Maria Island Garden Club" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-06.png" alt="Manatee River Garden Club" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-06.png" alt="Manatee River Garden Club" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-03.png" alt="Keep Manatee Beautiful" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-03.png" alt="Keep Manatee Beautiful" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-05.png" alt="Manatee County Agricultural Museum" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-05.png" alt="Manatee County Agricultural Museum" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-10.png" alt="Manatee Community Foundation" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-10.png" alt="Manatee Community Foundation" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-04.png" alt="Drug Free Manatee" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-04.png" alt="Drug Free Manatee" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/partner-01.png" alt="Defibrillate Manatee Foundation" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/partner-01.png" alt="Defibrillate Manatee Foundation" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/florida-license-plates.jpg" alt="Florida State Wildflower specialty license plate" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/florida-license-plates.jpg" alt="Florida State Wildflower specialty license plate" loading="lazy">
       </div>
-      <div style="background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:1rem;min-height:110px">
-        <img src="images/partners/50-pops.png" alt="50 PoPS" style="max-width:100%;max-height:78px;object-fit:contain" loading="lazy">
+      <div class="plogo">
+        <img src="images/partners/50-pops.png" alt="50 PoPS" loading="lazy">
       </div>
     </div>
   </div>
@@ -332,24 +375,20 @@
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem">
       <div class="info-card">
-        <div class="info-card-icon">📞</div>
         <h3>Phone</h3>
         <p><a href="tel:9417612866" style="font-size:1.1rem;font-weight:700">(941) 761-2866</a></p>
       </div>
       <div class="info-card">
-        <div class="info-card-icon">✉️</div>
         <h3>Email</h3>
         <p><a href="mailto:info@palmasolabp.org">info@palmasolabp.org</a><br>
            <span style="font-size:.88rem;color:var(--text-soft)">General questions &amp; donations</span></p>
       </div>
       <div class="info-card">
-        <div class="info-card-icon">🕗</div>
         <h3>Park Hours</h3>
         <p>8am – Dusk, every day<br>
            <span style="font-size:.88rem;color:var(--text-soft)">Free admission, 365 days a year</span></p>
       </div>
       <div class="info-card">
-        <div class="info-card-icon">📱</div>
         <h3>Social</h3>
         <p>
           <a href="https://www.facebook.com/people/Palma-Sola-Botanical-Park/100064517386906/" target="_blank" rel="noopener">Facebook</a> &nbsp;·&nbsp;
@@ -363,13 +402,11 @@
     <div class="grid-2" style="gap:1.25rem;align-items:stretch;margin-top:1.25rem">
       <div style="display:flex;flex-direction:column;gap:1.25rem">
         <div class="info-card">
-          <div class="info-card-icon">📍</div>
           <h3>Visit Us</h3>
           <p>9800 17th Ave NW<br>Bradenton, FL 34209<br>
              <a href="https://maps.google.com/maps?q=Palma+Sola+Botanical+Park" target="_blank" rel="noopener">Directions →</a></p>
         </div>
         <div class="info-card">
-          <div class="info-card-icon">✉️</div>
           <h3>Mailing Address</h3>
           <p>P.O. Box 14214<br>Bradenton, FL 34280<br>
              <span style="font-size:.88rem;color:var(--text-soft)">For mail &amp; donations</span></p>
@@ -383,7 +420,6 @@
     </div>
 
     <div class="info-card" style="margin-top:1.25rem">
-      <div class="info-card-icon">🚗</div>
       <h3>How to find us</h3>
       <p>From Manatee Ave W (SR 64), turn north onto 75th St W, then turn left onto 17th Ave NW.
          The park entrance is 1.4 miles down on your left.</p>
@@ -412,7 +448,7 @@ injectShared({ inatBar: false });
   evs.forEach(e => window.addEventListener(e, stop, { passive: true }));
   const aim = () => { if (!done) target.scrollIntoView({ block: 'start' }); };
   const obs = new MutationObserver(aim);
-  ['office-strip','boardA','boardB','boardC'].forEach(id => {
+  ['office-strip','boardA'].forEach(id => {
     const n = document.getElementById(id);
     if (n) obs.observe(n, { childList: true, subtree: true });
   });
@@ -425,18 +461,6 @@ injectShared({ inatBar: false });
 (async function loadOrg() {
   function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
 
-  // Fake blurbs — Option C only, to show what filling that Sheet column buys.
-  var FAKE = {
-    'Kristin Mead':    'Runs the annual plant sale',
-    'Tyler Pullen':    'Landscape contractor, Bradenton',
-    'Michael Jaster':  'Retired CPA',
-    'Aedan Stockdale': 'Third-generation Manatee County',
-    'Josh Beyer':      'Rare fruit grower',
-    'Barney Haas':     'Volunteered here since 2011',
-    'Jack Hawkins':    'Retired attorney',
-    'Richard Larsen':  'Orchid specialist',
-    'John Lowenberg':  'Manages the pond restoration'
-  };
 
   try {
     var org = await (await fetch('data/published/organization.json')).json();
@@ -472,34 +496,7 @@ injectShared({ inatBar: false });
         spec.map(function(p){return esc(p.role)+' &nbsp;<b>'+esc(p.name)+'</b>'+(p.blurb?' <span style="color:var(--ink-faint)">· '+esc(p.blurb)+'</span>':'');}).join(' &nbsp;&nbsp;·&nbsp;&nbsp; ')+'</div>');
     }
 
-    /* ── B — running roster ── */
-    var b = document.getElementById('boardB');
-    if (b) {
-      b.insertAdjacentHTML('beforeend', offs.map(function(p){
-        return '<p><span class="r">'+esc(p.role)+'</span><span class="n" style="font-size:1.2rem">'+esc(p.name)+'</span></p>';
-      }).join(''));
-      b.insertAdjacentHTML('beforeend','<p><span class="r">Directors</span>'+
-        dirs.map(function(p){return '<span class="n">'+esc(p.name)+'</span>';}).join('<span class="sep">·</span>')+'</p>');
-      if (spec.length) b.insertAdjacentHTML('beforeend','<p style="font-size:.9rem;color:var(--ink-soft)">'+
-        spec.map(function(p){return '<span class="r" style="display:inline;margin-right:.4rem">'+esc(p.role)+'</span>'+esc(p.name);}).join('<span class="sep">·</span>')+'</p>');
-    }
 
-    /* ── C — officers carded, directors pooled, fake blurbs ── */
-    var c = document.getElementById('boardC');
-    if (c) {
-      c.insertAdjacentHTML('beforeend','<div class="offrow">'+offs.map(function(p){
-        var bl = p.blurb || FAKE[p.name] || '';
-        return '<div class="card"><div class="r">'+esc(p.role)+'</div><div class="n">'+esc(p.name)+'</div>'+
-               (bl?'<div class="b">'+esc(bl)+'</div>':'')+'</div>';
-      }).join('')+'</div>');
-      c.insertAdjacentHTML('beforeend','<div class="pool"><div class="r">Directors</div><div class="dirs">'+
-        dirs.map(function(p){
-          var bl = p.blurb || FAKE[p.name] || '';
-          return '<div><div class="n">'+esc(p.name)+'</div>'+(bl?'<div class="b">'+esc(bl)+'</div>':'')+'</div>';
-        }).join('')+'</div></div>');
-      if (spec.length) c.insertAdjacentHTML('beforeend','<div class="tail">'+
-        spec.map(function(p){return esc(p.role)+' — '+esc(p.name)+(p.blurb?' ('+esc(p.blurb)+')':'');}).join(' &nbsp;·&nbsp; ')+'</div>');
-    }
   } catch(e){ console.warn('Organization data unavailable:', e); }
 })();
 </script>
