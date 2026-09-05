@@ -82,7 +82,8 @@ DEFAULT_WHY = {
     "iso_date_or_blank": "If set, must be a real date (YYYY-MM-DD).",
     "ge_field":          "If set, can't be earlier than the compared date.",
     "in_vocab":          "Must be one of the allowed values.",
-    "url_or_blank":      "If set, must start with http:// or https://.",
+    "url_or_blank":      "If set, must be a link (http/https/mailto/tel) or a "
+                         "file path relative to the page, like images/events/x.jpg.",
     "fk":                "Must match a row in the referenced tab, or be blank.",
 }
 
@@ -196,11 +197,30 @@ def check_ge_field(val, row, arg, **_):
 def check_in_vocab(val, arg, **_):
     return None if (val or "").strip().lower() in [a.lower() for a in arg] else f"'{val}' is not an allowed value"
 
+# Assets that live in the repo are referenced by a path relative to the page
+# (images/events/x.jpg, docs/news/x.pdf) — that is the house pattern, not a
+# broken link. The http(s)-only version of this check flagged every one of them.
+# It never blocked anything (warn/field), but the amber was read as an error and
+# pushed a flyer onto Google Drive that belonged in the repo. Three schemas —
+# news, newsletters, volunteer — had already dropped the check on their asset
+# fields for exactly this reason rather than fix it here.
+_ASSET_EXT = re.compile(r"\.(jpe?g|png|webp|gif|svg|pdf|html?)$", re.I)
+
 def check_url_or_blank(val, **_):
     v = (val or "").strip()
     if not v:
         return None
-    return None if v.startswith(("http://", "https://")) else f"'{v[:30]}' doesn't look like a URL"
+    if v.startswith(("http://", "https://", "mailto:", "tel:")):
+        return None
+    # A leading slash resolves to the domain root, which drops the /explore/
+    # base on GitHub Pages and 404s. This is a real defect, and news.link_url
+    # ('/docs/news/Hort_Magazine.pdf') is live with it today.
+    if v.startswith("/"):
+        return (f"'{v[:30]}' starts with '/' — that drops the /explore/ base "
+                "and 404s; make it relative to the page")
+    if "/" in v and _ASSET_EXT.search(v):
+        return None
+    return f"'{v[:30]}' doesn't look like a URL or a file path"
 
 def check_fk(val, arg, refs, **_):
     v = (val or "").strip()
