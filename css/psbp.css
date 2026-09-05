@@ -847,8 +847,27 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
    a landscape flyer sits in a band across the middle, whole and readable, just
    small — which reads as "wrong shape" without anything looking broken.
    Portrait remains the standard; this is the safety net, not permission. */
-.feat-art { background: var(--sunk); line-height: 0; aspect-ratio: 5 / 7; }
-.feat-art img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.feat-art {
+  /* 5:7 is the default because the park's flyers are portrait. fitBandAspect()
+     in site.js overrides --feat-ar once the posters have loaded, so a band of
+     all-landscape artwork gets a wide, short window instead of three thin
+     strips floating in tall boxes. */
+  background: var(--sunk); line-height: 0; aspect-ratio: var(--feat-ar, 5 / 7);
+  position: relative; overflow: hidden;
+}
+/* Blurred, dimmed copy of the same flyer filling whatever the contained image
+   does not. A portrait poster fills the window, so the backdrop is invisible
+   and costs nothing — it only shows up where there would otherwise be a slab
+   of empty grey, which is the landscape case. Desaturated and held at low
+   opacity so three cards side by side do not turn into three light shows.
+   Same src as the foreground, so it is one network fetch, not two. */
+.feat-art-bg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; filter: blur(20px) saturate(.7);
+  transform: scale(1.2);          /* hides the soft edge the blur leaves */
+  opacity: .42;
+}
+.feat-art-fg { position: relative; width: 100%; height: 100%; display: block; object-fit: contain; }
 
 .feat-body { padding: .9rem 1.05rem 1.05rem; display: flex; flex-direction: column; flex: 1; }
 .feat-when {

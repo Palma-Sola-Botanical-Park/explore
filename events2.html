@@ -109,7 +109,8 @@
         <button class="demo-count" data-n="2">2 flyers</button>
         <button class="demo-count" data-n="1">1 flyer</button>
         <button class="demo-count" data-n="0">none</button>
-        <button class="demo-count" id="demoLandscape">landscape poster</button>
+        <button class="demo-count" data-ls="one">1 landscape</button>
+        <button class="demo-count" data-ls="all">3 landscape</button>
       </span>
       The posters stay the same size and the row stays centred; whatever drops out
       reappears in the rail.
@@ -119,6 +120,13 @@
       category rather than a date, because a series has no date. Dated events always
       win the slots; a series never pushes one out. At <em>none</em> the band hides
       completely and the page is exactly what it was before this was built.
+      <br><br>
+      <strong>Wrong-shaped artwork.</strong> <em>1 landscape</em> puts a wide banner in
+      the middle card — the window stays portrait, because squashing it would shrink the
+      two real flyers beside it, and the gap fills with a blurred copy of the banner
+      rather than grey. <em>3 landscape</em> makes every poster wide, and the band
+      re-sizes its own window to suit. The window always fits the <em>tallest</em>
+      poster present, so one portrait flyer can never be squashed by wide neighbours.
     </div>
   </div>
 </section>
@@ -264,9 +272,11 @@ const DEMO_SERIES = [
 // "landscape" button to show the fixed 5:7 window absorbing it.
 const LANDSCAPE_TEST = 'images/events/artinthepark.png';
 
+// landscape: '' | 'one' (middle card only) | 'all' (every card)
 function paintBand(howMany, landscape){
   const withArt  = DEMO_FEATURED.filter(i => i.poster).slice(0, Math.min(howMany, BAND_MAX))
-    .map((it, n) => (landscape && n === 1) ? Object.assign({}, it, { poster: LANDSCAPE_TEST }) : it);
+    .map((it, n) => (landscape === 'all' || (landscape === 'one' && n === 1))
+      ? Object.assign({}, it, { poster: LANDSCAPE_TEST }) : it);
   const inBand   = new Set(withArt);
   const overflow = DEMO_FEATURED.filter(i => !inBand.has(i));
 
@@ -277,24 +287,27 @@ function paintBand(howMany, landscape){
   }
 
   const wrap = document.getElementById('featured');
-  document.getElementById('featuredList').innerHTML = band.map(renderFeature).join('');
+  const list = document.getElementById('featuredList');
+  list.style.removeProperty('--feat-ar');   // recompute from scratch each repaint
+  list.innerHTML = band.map(renderFeature).join('');
   wrap.style.display = band.length ? '' : 'none';
+  fitBandAspect(list);
 
   document.getElementById('saveDate').innerHTML = overflow.map(renderSaveDate).join('');
   document.getElementById('saveDateWrap').style.display = overflow.length ? '' : 'none';
 
-  document.querySelectorAll('.demo-count').forEach(b =>
-    b.classList.toggle('on', b.dataset.n !== undefined && +b.dataset.n === howMany && !landscape));
-  var lb = document.getElementById('demoLandscape');
-  if (lb) lb.classList.toggle('on', !!landscape);
+  document.querySelectorAll('.demo-count[data-n]').forEach(b =>
+    b.classList.toggle('on', +b.dataset.n === howMany && !landscape));
+  document.querySelectorAll('.demo-count[data-ls]').forEach(b =>
+    b.classList.toggle('on', b.dataset.ls === landscape));
 }
 
 document.querySelectorAll('.demo-count[data-n]').forEach(b =>
-  b.addEventListener('click', () => paintBand(+b.dataset.n, false)));
-document.getElementById('demoLandscape')
-  .addEventListener('click', () => paintBand(3, true));
+  b.addEventListener('click', () => paintBand(+b.dataset.n, '')));
+document.querySelectorAll('.demo-count[data-ls]').forEach(b =>
+  b.addEventListener('click', () => paintBand(3, b.dataset.ls)));
 
-paintBand(3, false);
+paintBand(3, '');
 
 /* The rest of the page runs on the real feed, minus the featured band —
    loadEventsPage is given no `featured` target, so it leaves ours alone. */

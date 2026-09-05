@@ -989,8 +989,14 @@ function renderFeature(item){
     ? _evEsc(item.eyebrow)
     : _evEsc(_dateSpan(item.date, item.date_end)) + (item.time ? ` · ${_evEsc(item.time)}` : '');
 
+  // Two <img>s of the same file: a blurred cover behind, the whole flyer in
+  // front. Same src, so the browser fetches once. The backdrop is decorative —
+  // aria-hidden and empty alt so a screen reader hears the flyer once.
   const poster = item.poster
-    ? `<div class="feat-art"><img src="${item.poster}" alt="${_evEsc(item.title||'')} flyer" loading="lazy"></div>`
+    ? `<div class="feat-art">
+        <img class="feat-art-bg" src="${item.poster}" alt="" aria-hidden="true" loading="lazy">
+        <img class="feat-art-fg" src="${item.poster}" alt="${_evEsc(item.title||'')} flyer" loading="lazy">
+      </div>`
     : '';
 
   // Flyer link and ticket link are different things; show whichever exist.
@@ -1009,6 +1015,40 @@ function renderFeature(item){
       ${actions.length?`<div class="feat-actions">${actions.join('')}</div>`:''}
     </div>
   </article>`;
+}
+
+// Size the poster window to the artwork actually in the band.
+//
+// The window is shared by every card, so it has to suit the MOST PORTRAIT
+// poster present: pick anything wider and a tall flyer gets letterboxed down
+// to a stamp. Widest wins nothing, narrowest wins everything. So take the
+// smallest ratio and clamp it — .6 stops one freakishly tall image making a
+// column of cards nobody can see past, 16:9 stops a band of banners from
+// collapsing to a slit.
+//
+// Runs once after every poster has loaded, so the band settles in a single
+// step instead of twitching as each image arrives. Images that fail to load
+// are skipped rather than counted as zero.
+function fitBandAspect(container){
+  if (!container) return;
+  const imgs = [].slice.call(container.querySelectorAll('.feat-art-fg'));
+  if (!imgs.length) return;
+
+  const settled = imgs.map(img => img.complete
+    ? Promise.resolve(img)
+    : new Promise(res => {
+        img.addEventListener('load',  () => res(img), { once: true });
+        img.addEventListener('error', () => res(null), { once: true });
+      }));
+
+  Promise.all(settled).then(list => {
+    const ratios = list.filter(Boolean)
+      .filter(i => i.naturalWidth && i.naturalHeight)
+      .map(i => i.naturalWidth / i.naturalHeight);
+    if (!ratios.length) return;
+    const ar = Math.min(Math.max(Math.min.apply(null, ratios), 0.6), 16 / 9);
+    container.style.setProperty('--feat-ar', String(ar));
+  });
 }
 
 function renderSaveDate(item){
@@ -1261,6 +1301,7 @@ async function loadEventsPage(opts){
     if (featEl){
       featEl.innerHTML = band.map(renderFeature).join('');
       if (featWrap) featWrap.style.display = band.length ? '' : 'none';
+      fitBandAspect(featEl);
     }
     if (sdEl){
       sdEl.innerHTML = overflow.map(renderSaveDate).join('');
