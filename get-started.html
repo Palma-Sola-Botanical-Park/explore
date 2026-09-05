@@ -168,6 +168,12 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
    that used to sit here was cut for being the park's reason rather than the
    reader's — the SPOT was never the problem. It now holds a first-person tip
    that argues the page's central point: an observation is not a photo. */
+/* Floated photo, for a section laid out as prose rather than a grid. Same
+   .gs-shot/.photo-attr innards as the one up top. */
+.gs-float{ float:right; width:34%; margin:.4rem 0 1.3rem 1.8rem; }
+.gs-float figcaption{ font-size:1rem; color:var(--text-soft); line-height:1.6; margin-top:.8rem; }
+@media (max-width:760px){ .gs-float{ float:none; width:auto; margin:1.6rem 0 0; } }
+
 .tip-card{ float:right; width:34%; margin:.4rem 0 1.2rem 1.8rem;
   background:var(--cream); border-left:4px solid var(--gold);
   border-radius:0 10px 10px 0; padding:1.15rem 1.4rem; }
@@ -434,6 +440,30 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
          craft: default high, go down a level, learn who the experts are. And "do not
          take any tool as authoritative" is the house rule — iNat agreement is not
          evidence — said out loud to a beginner for the first time. -->
+<div class="obs-flow">
+    <figure class="gs-example gs-float">
+      <div class="gs-shot">
+        <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/723663536/large.jpg"
+             alt="Majesty Palm at Palma Sola Botanical Park" loading="lazy">
+        <div class="photo-attr">
+          <span class="attr-species">Majesty Palm &middot; <em>Ravenea rivularis</em></span>
+          <span class="attr-line">
+            <span class="attr-credit">
+              <span class="attr-by">&#128247; Randall Carter</span>
+              <span class="attr-date"><span class="attr-dot">&middot;</span> Aug 26, 2026</span>
+            </span>
+            <span class="cc-badge" title="Creative Commons BY-NC — some rights reserved, free to share with credit">
+              <span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span>
+            </span>
+            <span class="attr-src">via iNaturalist</span>
+          </span>
+        </div>
+      </div>
+      <figcaption>The first identification anyone offered on this one was simply <strong>&ldquo;palms&rdquo;</strong>.
+        A specialist on the other side of Florida named it; the park&rsquo;s own palm expert confirmed it
+        later. Some things do not yield to a search.</figcaption>
+    </figure>
+
     <p class="section-sub">Identifying is where the learning starts. You take observations — your own
        and other people's — and do detective work: where does this thing fit in the tree of life?
        The amount you absorb doing it is hard to overstate: families, look-alikes, the one small
@@ -460,7 +490,7 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
         <h4>If undecided, default high</h4>
         <p>Plenty of people identify something only as "plants." That is fine when you don't know —
            it gets the conversation going. Then try going down a level or two, to family. Watch who
-           turns up in the discussions, and you'll learn quickly who knows what.</p>
+           turns up in the discussions, and you will get a sense over time of who knows what.</p>
       </li>
     </ol>
 
@@ -474,6 +504,7 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
       photo taken and every ID settled builds the record, slowly. The catalog of what grows and lives
       at Palma Sola keeps growing because people like you keep adding to it.
       <a href="nature.html">See the collection you're helping build &rarr;</a></p>
+    </div>
   </div>
 </section>
 
