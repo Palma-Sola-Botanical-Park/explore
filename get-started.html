@@ -25,6 +25,36 @@
 .gs-hero h1 { color: var(--white); font-size: clamp(1.8rem,3.8vw,2.5rem); margin-bottom: .6rem; }
 .gs-hero p  { color: rgba(255,255,255,.78); font-size: 1.02rem; max-width: 620px; margin: 0 auto; line-height: 1.65; }
 
+/* SECTION PADDING — not inherited. psbp.css puts padding on `.section`, a CLASS,
+   and these sections are toned with bg-white / bg-sunk and never carry it, so
+   spacing was whatever the last child's margin left behind. */
+section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
+@media (max-width:700px){ section[class*="bg-"]{ padding: 2.4rem 1rem; } }
+
+/* Text left, a photograph right. Two columns of TEXT filled the width but the
+   block still read as a wall; an actual picture does the job the words were
+   being asked to do — it IS the elegant shot the page asks people to take, and
+   it is served from iNaturalist, which is the pipeline it describes. */
+.lede-split{ display:grid; grid-template-columns:1.15fr .85fr; gap:2.4rem;
+  align-items:start; margin-top:.4rem; }
+/* A LEDE, not body text. Once the duplication came out this block was down to
+   two short sentences, and at --t-base they read as a caption — small, skimmable,
+   easy to slide past. The whole point of trimming was to let what survives land,
+   so the first line gets deck size and the second is the quiet hand-off to the
+   three cards beneath it. */
+.lede-split .section-sub{ max-width:none; font-size:1.3rem; line-height:1.55;
+  color:var(--green-ink, #1a3a1f); }
+.lede-split .section-sub strong{ color:var(--green-deep); }
+.lede-split .section-sub + .section-sub{ margin-top:1.15rem; font-size:1.02rem;
+  line-height:1.7; color:var(--text-soft); }
+.gs-example{ margin:0; }
+.gs-example img{ width:100%; height:auto; border-radius:12px; display:block;
+  box-shadow:0 4px 18px rgba(0,0,0,.13); }
+.gs-example figcaption{ font-size:.84rem; color:var(--text-soft); line-height:1.55;
+  margin-top:.7rem; }
+.gs-example figcaption b{ color:var(--green-deep); font-weight:700; }
+@media (max-width:820px){ .lede-split{ grid-template-columns:1fr; gap:1.6rem; } }
+
 /* ---- setup steps ---- */
 .steps-big {
   display: grid;
@@ -127,9 +157,8 @@
 .find-project a { color: var(--green-mid, #3a6b4f); font-weight: 700; word-break: break-word; }
 
 /* ---- relocated download header icon ---- */
-.dl-inner { position:relative; }
-.dl-icon { position:absolute; top:.15rem; left:64%; transform:translateX(-50%);
-           width:80px; height:80px; border-radius:18px; box-shadow:0 6px 18px rgba(0,0,0,.18); }
+.dl-head { display:flex; align-items:center; gap:1.1rem; flex-wrap:wrap; margin-bottom:.75rem; }
+.dl-icon { width:60px; height:60px; border-radius:14px; box-shadow:0 4px 14px rgba(0,0,0,.16); }
 
 /* ---- right-floated callouts: quote / payoff sit ~1/3 right, content wraps left then below ---- */
 .obs-flow::after, .tips-flow::after { content:''; display:block; clear:both; }
@@ -143,7 +172,7 @@
 
 @media (max-width:760px){
   .obs-quote, .payoff-float { float:none; width:auto; margin:1.5rem 0 0; }
-  .dl-icon { position:static; transform:none; width:56px; height:56px; display:block; margin:.25rem 0 1rem; }
+  .dl-icon { width:52px; height:52px; }
 }
 </style>
 </head>
@@ -176,13 +205,26 @@
          Leads with the REASON, not with storage: a photograph posted to iNat is a
          dated, located record that this species was here. That is knowledge the
          park keeps, and it is true of the purely beautiful shots too. -->
+    <!-- Two columns, not one. The same words in a single --measure column ran
+         long and narrow with the right half of the page empty, which is what made
+         a short lede feel like a wall of text. -->
+    <div class="lede-split">
+      <div>
     <p class="section-sub"><strong>Every nature photo reaches the park through iNaturalist — the
-       beautiful ones too.</strong> Posting a photo there does two things at once: it is a picture,
-       and it is a record that this species was here, on this date. Both matter to us.</p>
-    <p class="section-sub">From there, the best images are cataloged with the photographer's name
-       and license, and they turn up on this website, on the screen in the lobby, and on the signs
-       along the trails. That phone in your hand does three things at once — and every one of them
-       matters to us.</p>
+       beautiful ones too.</strong> A photo posted there is both a picture and a record that this
+       species was here, on this date.</p>
+    <p class="section-sub">That phone does three things at once.</p>
+      </div>
+
+      <figure class="gs-example">
+        <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/703865180/large.jpg"
+             alt="Queen's Wreath in flower at Palma Sola Botanical Park, photographed by Rhonda Olschefskie"
+             loading="lazy">
+        <figcaption><b>Queen's Wreath</b>, by Rhonda Olschefskie. She posts to iNaturalist for the
+          pictures more than the science — and many of her photographs are now the lead image on a
+          species page here. © Rhonda Olschefskie (CC-BY-NC), via iNaturalist.</figcaption>
+      </figure>
+    </div>
 
     <div class="steps-big">
       <div class="step-big">
@@ -202,24 +244,27 @@
              photographer's NAME large with the license beneath it.
              Counts are deliberately rounded — a hard number here goes stale. -->
         <h3>Your photo can end up on a sign</h3>
-        <p>The park keeps a curated catalog of the best photograph of every species it
-           has published — more than 1,200 images from over 70 photographers so far.
-           Those get used: on this website, on the screen in the lobby, in the printed
-           tour guides, and on the QR signs going into the ground. <strong>Your name and
-           your license travel with the image every time</strong> — that is not a
-           courtesy, it is how the signs are built.</p>
+        <p>Every published species has one chosen lead photograph — more than 1,200
+           images from over 70 photographers so far. They run on this website, the lobby
+           screen, the tour guides and the QR signs. <strong>Your name and license travel
+           with the image</strong>; that is not a courtesy, it is how the signs are built.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- SETUP / DOWNLOAD -->
-<section class="bg-cream">
-  <div class="section-inner dl-inner">
+<section class="bg-sunk">
+  <div class="section-inner">
     <span class="label">First time only</span>
-    <h2 class="section-title">Download iNaturalist</h2>
+    <!-- The icon sits WITH the heading. It used to be absolutely positioned at
+         left:64%, which floated it into open space near the section boundary and
+         read as a stray graphic rather than the app being named. -->
+    <div class="dl-head">
+      <h2 class="section-title" style="margin:0">Download iNaturalist</h2>
+      <img class="dl-icon" src="images/logos/inaturalist-app-icon.png" alt="iNaturalist app icon">
+    </div>
     <p class="section-sub">Do this once. Grab the free app below — then there's nothing left to set up.</p>
-    <img class="dl-icon" src="images/logos/inaturalist-app-icon.png" alt="iNaturalist app icon">
 
     <div class="steps-big">
       <div class="step-big">
@@ -307,7 +352,7 @@
 </section>
 
 <!-- FIELD CRAFT: TIPS -->
-<section class="bg-cream">
+<section class="bg-wash">
   <div class="section-inner">
     <span class="label">Field craft</span>
     <h2 class="section-title">Tips for Great Observations</h2>
