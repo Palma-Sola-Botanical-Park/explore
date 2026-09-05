@@ -408,7 +408,6 @@ const NAV_HTML = `
         <li><a href="contact.html#organization">Organization</a></li>
         <li><a href="contact.html#community-links">Community Links</a></li>
         <li><a href="contact.html#youtube">YouTube videos</a></li>
-        <li><a href="contact.html">Forms</a></li>
         <li><a href="contact.html#visit">Contact</a></li>
       </ul>
     </li>
@@ -448,7 +447,6 @@ const NAV_HTML = `
   <a href="contact.html#organization" class="nm-sub">Organization</a>
   <a href="contact.html#community-links" class="nm-sub">Community Links</a>
   <a href="contact.html#youtube" class="nm-sub">YouTube videos</a>
-  <a href="contact.html" class="nm-sub">Forms</a>
   <a href="contact.html#visit" class="nm-sub">Contact</a>
 </div>`;
 
