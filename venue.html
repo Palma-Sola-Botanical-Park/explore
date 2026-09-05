@@ -72,7 +72,18 @@
 #venueMain .layout-link{display:inline-flex;align-items:center;gap:8px;margin-top:1.8rem;font-weight:600;font-size:.9rem;text-decoration:none;color:#3f7a52;border:1.5px solid #cdd7c8;padding:11px 20px;border-radius:40px;background:#fff}
 #venueMain .layout-link:hover{background:#f3f6f0}
 #venueMain .vclose{margin-top:2.4rem;background:#1f4733;color:#f6f2e8;border-radius:18px;padding:30px 34px;display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
-#venueMain .vclose h3{font-size:1.5rem;margin:0 0 6px;font-weight:700}#venueMain .vclose p{margin:0;color:#dfe2d2;font-size:.95rem}
+/* ⚠ DARK-ON-DARK FIX 2026-09-04. This panel is a dark green box sitting INSIDE a
+   bg-cream section, and two rules assumed otherwise:
+     • psbp.css styles bare `h3` with --green-ink. An element selector beats the
+       cream `color` inherited from .vclose, so the heading rendered dark green on
+       dark green — effectively invisible.
+     • .btn-outline is --green-ink by default; its white variant is scoped
+       `.bg-deep .btn-outline`, which never matched here. Same failure.
+   Both are stated explicitly rather than inherited. */
+#venueMain .vclose h3{font-size:1.5rem;margin:0 0 6px;font-weight:700;color:#f6f2e8}
+#venueMain .vclose p{margin:0;color:#dfe2d2;font-size:1rem}
+#venueMain .vclose .btn-outline{border-color:rgba(255,255,255,.5);color:#fff;background:transparent}
+#venueMain .vclose .btn-outline:hover{border-color:#fff;background:rgba(255,255,255,.1)}
 #venueMain .vcontact{display:flex;gap:12px;flex-wrap:wrap}
 #venueMain .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
 #venueMain .rcard{background:#fff;border:1px solid #d9ddcf;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
