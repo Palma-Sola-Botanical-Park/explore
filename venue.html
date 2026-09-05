@@ -7,6 +7,14 @@
 <link rel="stylesheet" href="css/psbp.css">
 <style>
 #venueMain{font-family:'Source Sans 3',system-ui,-apple-system,sans-serif;color:#2c2a22}
+/* SECTION PADDING — the fourth page tonight with this same gap. psbp.css puts
+   padding on `.section`, a CLASS; these sections carry only the tone classes
+   (bg-deep, bg-cream…) and `.section-inner`, so they had NO padding at all and
+   spacing was whatever the last child's margin happened to leave. It shows worst
+   under the two-paths cards, which are a grid with no bottom margin and so sat
+   flush on the "For couples" boundary. */
+#venueMain section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
+@media (max-width:700px){ #venueMain section[class*="bg-"]{ padding: 2.5rem 1rem; } }
 #venueMain h1,#venueMain h2,#venueMain h3,#venueMain h4,#venueMain .serif{font-family:'Playfair Display',Georgia,serif}
 #venueMain .includes{list-style:none;padding:0;margin:1.1rem 0 0;display:flex;flex-wrap:wrap;gap:8px 10px;max-width:720px}
 #venueMain .includes li{font-size:.84rem;background:#fff;border:1px solid #e7d49a;color:#5b4715;padding:6px 12px;border-radius:40px}
@@ -113,6 +121,26 @@
 @media(max-width:820px){#venueMain .vrow{grid-template-columns:1fr}}
 @media(max-width:680px){#venueMain .fork,#venueMain .gallery,#venueMain .cards{grid-template-columns:1fr}#venueMain .gallery{grid-template-columns:1fr 1fr}#venueMain .calmonth{flex:0 0 84%}}
 /* ── Click-to-background continuity: each door's color flows into its section ── */
+/* A ONE-OFF ON THIS PAGE — not a site convention. Checked 2026-09-04: venue is
+   the ONLY page that colours a section to match the card linking to it. The other
+   seven hand-written pages do nothing like it.
+
+   What it does: the Weddings door in Two Paths and this section share a warm
+   tone, so clicking the card lands you somewhere that looks like the card you
+   clicked; Rentals and its section pair the same way in green (#f2f4ef).
+
+   Randy, 2026-09-04, on the champagne: "deliberately a champagne color for
+   classiness… if it doesn't look good, change it. we just want it all to look
+   classy, not insist on that color." And on the device itself: "that's why it
+   might not be a standard. i think that was a one-off idea from a claude."
+
+   So: the hex is not precious and the device is not load-bearing. If you change
+   one end, change both, or the pairing breaks and the only reason for the colour
+   goes with it. If you drop the device entirely, that is a legitimate choice —
+   just do it on purpose rather than by tidying one section and not the other.
+
+   Note this page is deliberately NOT on the alternating light/tint rhythm used by
+   About, Get Involved and Get Started. */
 #venueMain #weddings{background:linear-gradient(180deg,#fffbf4,#f6edd7)}
 #venueMain #rentals{background:#f2f4ef}
 /* Legibility pass: raise the smallest type to comfortable reading sizes */
