@@ -801,10 +801,12 @@ function _eventItem(e){
     category: eventCategory(e), cost: e.cost, series: e.series,
     fundraiser: _isYes(e.fundraiser), kid_friendly: _isYes(e.kid_friendly),
     save_the_date: _isYes(e.save_the_date),
-    // The flyer/poster artwork. Named screen_poster because screen.html got
-    // here first, but it is the event's artwork wherever we show it — the
-    // featured band on events.html reads the same column.
-    poster: (e.screen_poster || '').trim(),
+    // The flyer artwork. `poster` is the name going forward: this column
+    // stopped being screen-only on 2026-09-05, when the featured band on
+    // events.html started showing it too, and `screen_poster` now misleads.
+    // Both spellings are read so the sheet header can be renamed whenever —
+    // nothing breaks in between, and nothing has to be renamed at once.
+    poster: (e.poster || e.screen_poster || '').trim(),
     registration_url: e.registration_url,
     instructor: '', _link: PSBP.rowLink(e)
   };
@@ -1243,14 +1245,14 @@ async function loadEventsPage(opts){
     if (band.length && band.length < bandMax){
       series.filter(isWebVisible)
         .filter(s => !s.active || _isYes(s.active))
-        .filter(s => (s.screen_poster || '').trim())
+        .filter(s => (s.poster || s.screen_poster || '').trim())
         .slice(0, bandMax - band.length)
         .forEach(s => band.push({
           kind: 'series',
           eyebrow: (s.category || 'Ongoing series').trim(),
           title: s.name,
           description: s.blurb,
-          poster: (s.screen_poster || '').trim(),
+          poster: (s.poster || s.screen_poster || '').trim(),
           registration_url: '',
           _link: { url: s.flyer_url || '', text: s.flyer_text || 'See the flyer' }
         }));

@@ -83,6 +83,10 @@ KNOWN_HEADERS = {
     # the detector. (It scores header rows; an unrecognised name still flows
     # through, it just contributes nothing to finding the header.)
     "screen_poster", "screen_image", "screen_qr", "screen_logo",
+    # `poster` is the name screen_poster is being renamed to — it stopped being
+    # screen-only when the events.html band started showing it. Both are listed
+    # so header detection works before, during and after the sheet is renamed.
+    "poster",
 }
 
 

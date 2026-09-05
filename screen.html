@@ -1460,7 +1460,7 @@ function logoBlock(row, defaultLabel){
 
 /* A flyer or poster: shown whole rather than cropped as a backdrop. */
 function posterImage(row){
-  var v = (row.screen_poster || row.poster_url || row.flyer_image || '').trim();
+  var v = (row.poster || row.screen_poster || row.poster_url || row.flyer_image || '').trim();
   if(!v) return null;
   return /^https?:/i.test(v) ? v : BASE + v.replace(/^\//,'');
 }
