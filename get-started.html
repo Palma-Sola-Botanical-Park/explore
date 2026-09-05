@@ -94,7 +94,7 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
   flex-shrink: 0;
 }
 .step-big h3 { font-size: 1.05rem; color: var(--green-deep); }
-.step-big p  { font-size: .92rem; color: var(--text-soft); line-height: 1.65; margin: 0; }
+.step-big p  { font-size: 1rem; color: var(--text-soft); line-height: 1.65; margin: 0; }
 
 /* store badges, placed inside step 1 */
 .store-badges { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: auto; padding-top: .4rem; }
@@ -133,12 +133,12 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
   font-weight: 800; font-size: 1rem;
 }
 .obs-list h4 { color: var(--green-deep); font-size: 1.1rem; margin: .35rem 0 .3rem; }
-.obs-list p  { color: var(--text-soft); font-size: 1rem; line-height: 1.68; margin: 0; }
+.obs-list p  { color: var(--text-soft); font-size: var(--t-base); line-height: 1.68; margin: 0; }
 .obs-list strong { color: var(--green-deep); }
 
 /* ---- field-craft tips ---- */
 .craft-list { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; gap: 1rem; }
-.craft-list li { position: relative; padding-left: 1.9rem; color: var(--text-soft); font-size: .96rem; line-height: 1.6; }
+.craft-list li { position: relative; padding-left: 1.9rem; color: var(--text-soft); font-size: var(--t-base); line-height: 1.65; }
 .craft-list li::before {
   content: ''; position: absolute; left: 0; top: .48em;
   width: 9px; height: 9px; border-radius: 50%; background: var(--gold);
@@ -152,10 +152,10 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
   padding: 1.2rem 1.4rem;
   margin: 1.25rem 0 0;
 }
-.tip-box p { font-size: .92rem; color: var(--text-soft); line-height: 1.65; margin: 0; }
+.tip-box p { font-size: var(--t-base); color: var(--text-soft); line-height: 1.68; margin: 0; }
 .tip-box strong { color: var(--green-deep); }
 
-.find-project { font-size: .9rem; color: var(--text-soft); margin: 0 0 1.25rem; }
+.find-project { font-size: 1rem; color: var(--text-soft); margin: 0 0 1.25rem; }
 .find-project a { color: var(--green-mid, #3a6b4f); font-weight: 700; word-break: break-word; }
 
 /* ---- relocated download header icon ---- */
@@ -173,7 +173,7 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
   border-radius:0 10px 10px 0; padding:1.15rem 1.4rem; }
 .tip-card .tc-label{ font-size:.82rem; font-weight:700; letter-spacing:.06em;
   text-transform:uppercase; color:var(--green-mid); margin-bottom:.6rem; }
-.tip-card p{ font-size:1.02rem; line-height:1.65; color:var(--text-soft); margin:0 0 .7rem; }
+.tip-card p{ font-size:var(--t-base); line-height:1.65; color:var(--text-soft); margin:0 0 .7rem; }
 .tip-card p:last-of-type{ margin-bottom:0; }
 .tip-card .tc-lead{ font-family:'Playfair Display',serif; font-size:1.2rem; line-height:1.4;
   color:var(--green-deep); }
@@ -427,37 +427,54 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
   <div class="section-inner">
     <span class="label">Level up</span>
     <h2 class="section-title">Now Be an Identifier</h2>
-    <p class="section-sub">So far, so easy — anyone can point a phone and shoot. But if you want to really learn your craft and start down the road to becoming a naturalist, this is the good part. Identifying is where snapshots turn into real botany: you confirm what you're sure of, puzzle through what you're not, and your eye gets sharper every single time. <strong>That's the reward</strong> — real skill, earned one observation at a time.</p>
+    <!-- Rewritten 2026-09-04 (Randy). The old version spent ~116 words telling the
+         reader that identifying is rewarding — "this is the good part", "that's the
+         reward" — and never said what it involves. This one opens with the actual
+         question the work asks. Step 3 replaced "Read the project journal" with real
+         craft: default high, go down a level, learn who the experts are. And "do not
+         take any tool as authoritative" is the house rule — iNat agreement is not
+         evidence — said out loud to a beginner for the first time. -->
+    <p class="section-sub">Identifying is where the learning starts. You take observations — your own
+       and other people's — and do detective work: where does this thing fit in the tree of life?
+       The amount you absorb doing it is hard to overstate: families, look-alikes, the one small
+       difference between two plants that looked identical to you a month ago.</p>
 
-    <p style="color:var(--text-soft);line-height:1.7;margin-top:1.25rem">It's easiest on a computer — a big screen and a real keyboard make it fly — but you can do it right from the app too. Here's how to go deeper:</p>
+    <p class="find-project">It's easiest on a computer — the app was built mainly for
+       <em>making</em> observations. Straightforward IDs are fine from a phone.</p>
 
     <ol class="obs-list">
       <li>
         <h4>Join the Palma Sola project</h4>
-        <p>Go to our project page at <a href="https://www.inaturalist.org/projects/palma-sola-botanical-park" target="_blank" rel="noopener">inaturalist.org/projects/palma-sola-botanical-park</a>. If you're signed in on the iNaturalist <strong>website</strong>, you'll see a <strong>Join</strong> button near the top — click it. Once you've joined, you can see <strong>every observation made in the park</strong> in one place, not just your own — including which ones <strong>still need an ID</strong>. That's exactly how we keep track of what's left to confirm.</p>
+        <p>Go to <a href="https://www.inaturalist.org/projects/palma-sola-botanical-park" target="_blank" rel="noopener">inaturalist.org/projects/palma-sola-botanical-park</a>.
+           Signed in on the iNaturalist <strong>website</strong>, you'll see a <strong>Join</strong>
+           button near the top.</p>
       </li>
       <li>
         <h4>Help confirm identifications</h4>
-        <p>Open the <strong>Identify</strong> tool, look at the photos, and agree with — or gently question — the IDs people proposed. Each confirmation nudges an observation toward a settled identification, and you'll pick up a startling amount of botany doing it.</p>
+        <p>Open the project and search for observations needing confirmation. Look at all the photos.
+           Download them and compare against whatever you can find. <strong>Do not treat any tool as
+           authoritative</strong> — not the app's suggestion, not a search result. Knowledge comes
+           with experience, so just start.</p>
       </li>
       <li>
-        <h4>Read the project journal</h4>
-        <p>The project's <strong>journal and blog</strong> is where the deeper conversation lives: what's newly in bloom, which IDs are contested, what we're trying to document next.</p>
+        <h4>If undecided, default high</h4>
+        <p>Plenty of people identify something only as "plants." That is fine when you don't know —
+           it gets the conversation going. Then try going down a level or two, to family. Watch who
+           turns up in the discussions, and you'll learn quickly who knows what.</p>
       </li>
     </ol>
 
     <div class="tip-box">
-      <p><strong>This is the scientific level — and honestly, the most rewarding part.</strong> There's a real satisfaction in settling an ID and watching it become part of the park's permanent record. Come be a detective with us — we'd love to have you.</p>
+      <p><strong>This is the scientific level — and honestly, the most rewarding part.</strong> There
+         is a real satisfaction in settling an ID and watching it become part of the park's permanent
+         record. Come be a detective with us.</p>
     </div>
 
-    <p style="color:var(--text-soft);line-height:1.7;margin-top:2rem">Every photo you take and every ID you help settle is what generates the record of our living collection — the plants and wildlife of Palma Sola, a catalog that keeps growing thanks to people like you. <a href="nature.html">See the collection you're helping build →</a></p>
-
-    <!-- Gold "View Our iNaturalist Project →" button removed 2026-09-04. The project
-         URL already appears twice above — spelled out in step 1 of Join the project,
-         and again as the "See the collection you're helping build" link — so the
-         button was a third ask for the same destination at the end of the page. -->
-  </div>
-</section>
+    <p style="color:var(--text-soft);line-height:1.7;margin-top:2rem;font-size:var(--t-base)">Every
+      photo taken and every ID settled builds the record, slowly. The catalog of what grows and lives
+      at Palma Sola keeps growing because people like you keep adding to it.
+      <a href="nature.html">See the collection you're helping build &rarr;</a></p>
+  </section>
 
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
