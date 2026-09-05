@@ -414,6 +414,63 @@ def enrich_right_now(rows):
 
 # ── the core: validate + promote one tab ──────────────────────────────────────
 
+# ── volunteer: a date typed into `role` becomes a calendar box ────────────────
+# `role` is freeform prose Bev writes ("Bright Futures High School Program,
+# Wednesdays", "Volunteer of the Month, May 2026"). It sometimes holds a date
+# instead, and the volunteer desk on get-involved.html renders those as the same
+# calendar square the Events page uses.
+#
+# THE RULE IS AN EXACT PREFIX MATCH, NOT A GUESS. If `role` starts with
+# YYYY-MM-DD it is a date; anything else is prose. No natural-language parsing —
+# that is what would eventually turn "May 2026" into MAY 1 and put a wrong date
+# on a public page. Bev already types ISO dates in the events, news and
+# newsletters tabs, so this is the format she uses everywhere else.
+#
+# Emits `role_date` and `role_time`, NEITHER OF WHICH IS A SHEET COLUMN — the
+# same shape as enrich_right_now() adding has_page/quick_hits. See appendix A5.
+ROLE_ISO_DATE = re.compile(r"^(\d{4}-\d{2}-\d{2})\b\s*(.*)$", re.S)
+
+# A near-miss: something date-shaped that ISN'T ISO, e.g. 10/21/2026 or Oct 21.
+# Left as prose (correct), but worth a warning — otherwise Bev gets no calendar
+# box, no error, and no way to know why.
+# Searched, not anchored: the real data reads "Wednesday, October 21 9-12AM",
+# where the date sits mid-string. A month name followed by a 1-2 digit day is
+# the signal; "May 2026" does not match (2026 is four digits), so a Volunteer of
+# the Month line stays quiet.
+ROLE_DATEISH = re.compile(
+    r"(\d{1,2}[/-]\d{1,2}[/-]\d{2,4}"
+    r"|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{1,2}(?!\d))",
+    re.I)
+
+
+def enrich_volunteer(rows):
+    """Split an ISO date out of `role` into role_date / role_time.
+
+    Returns (rows, warnings). Rows whose `role` is ordinary prose are untouched.
+    """
+    warnings = []
+    for row in rows:
+        role = (row.get("role") or "").strip()
+        if not role:
+            continue
+        m = ROLE_ISO_DATE.match(role)
+        if m and parse_date(m.group(1)):
+            row["role_date"] = m.group(1)
+            rest = m.group(2).strip().strip(",;–-").strip()
+            if rest:
+                row["role_time"] = rest
+        elif m:
+            # Right shape, impossible date — 2026-13-45. A typo, not prose.
+            warnings.append(
+                f"role is YYYY-MM-DD shaped but not a real date: "
+                f"{row.get('title', '?')!r} -> {m.group(1)!r}")
+        elif ROLE_DATEISH.search(role):
+            warnings.append(
+                f"role looks like a date but isn't YYYY-MM-DD, so no calendar "
+                f"box will show: {row.get('title', '?')!r} -> {role!r}")
+    return rows, warnings
+
+
 def process_tab(tab, refs, prev_health):
     schema = load_schema(tab)
     staging = load_json(os.path.join(STAGING, f"{tab}.json"), {"headers": [], "rows": []})
@@ -586,12 +643,16 @@ def process_tab(tab, refs, prev_health):
     # right_now denormalizes display fields (quick_hits, has_page) from the
     # signage masters here, at publish — see enrich_right_now(). Scoped to the
     # one tab; every other feed writes its validated rows untouched.
+    enrich_warnings = []
     if tab == "right_now":
         published_rows = enrich_right_now(published_rows)
+    elif tab == "volunteer":
+        published_rows, enrich_warnings = enrich_volunteer(published_rows)
     write_json(pub_path, published_rows)
 
     # ---- status + messages ---------------------------------------------------
     messages = []
+    messages.extend(enrich_warnings)
     for label, reason in quarantined:
         messages.append(f"quarantined: {label} ({reason})")
     if warned_rows:
