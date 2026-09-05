@@ -55,6 +55,13 @@
     font-size: var(--t-base); line-height: 1.6; color: var(--ink);
   }
   .demo-note code { background: rgba(0,0,0,.06); padding: .1rem .3rem; border-radius: 4px; }
+  .demo-counts { display: inline-flex; flex-wrap: wrap; gap: .4rem; margin: .2rem .5rem .4rem 0; vertical-align: middle; }
+  .demo-count {
+    font: inherit; font-size: var(--t-base); font-weight: 700; cursor: pointer;
+    border: 1px solid var(--gold-mark); background: var(--surface); color: var(--green-ink);
+    padding: .3rem .8rem; border-radius: var(--r-pill);
+  }
+  .demo-count.on { background: var(--green-ink); color: #fff; border-color: var(--green-ink); }
 </style>
 <style>section[id]{scroll-margin-top:78px}</style>
 </head>
@@ -92,10 +99,20 @@
       <em>and</em> a ticket link — two different destinations. Card 3 is a multi-day run
       (<code>date_end</code>), and stays featured through its last night.
       <br><br>
-      <strong>There is a fourth flagged event.</strong> Three posters is the ceiling, so
-      Garden Party is not up here — look for it as a compact <em>Save the Date</em> card
-      at the top right of the next block. That is the spillover: still flagged, still
-      dated, just without the artwork.
+      <strong>There is a fourth flagged event — Garden Party — and it has no poster.</strong>
+      The band only takes events with artwork, so it is not up here. Look for it as a
+      compact <em>Save the Date</em> card at the top right of the next block.
+      <br><br>
+      <strong>See how it holds at other counts:</strong>
+      <span class="demo-counts">
+        <button class="demo-count" data-n="3">3 flyers</button>
+        <button class="demo-count" data-n="2">2 flyers</button>
+        <button class="demo-count" data-n="1">1 flyer</button>
+        <button class="demo-count" data-n="0">none</button>
+      </span>
+      The posters stay the same size and the row stays centred; whatever drops out
+      reappears in the rail. At <em>none</em> the band hides itself completely and the
+      page is exactly what it was before this was built.
     </div>
   </div>
 </section>
@@ -217,18 +234,30 @@ const DEMO_FEATURED = [
   }
 ];
 
-// THREE posters max. A fourth flagged event does not vanish and does not wrap
-// onto a lonely second row — it spills into the compact "Save the Date" card
-// at the top of the rail, in the old form. Same rule as events.html.
+// Mirrors loadEventsPage exactly: three with artwork, in the band; everything
+// else — past the ceiling OR carrying no poster — into the compact rail.
 const BAND_MAX = 3;
-document.getElementById('featuredList').innerHTML =
-  DEMO_FEATURED.slice(0, BAND_MAX).map(renderFeature).join('');
 
-const _overflow = DEMO_FEATURED.slice(BAND_MAX);
-if (_overflow.length) {
-  document.getElementById('saveDate').innerHTML = _overflow.map(renderSaveDate).join('');
-  document.getElementById('saveDateWrap').style.display = '';
+function paintBand(howMany){
+  const withArt  = DEMO_FEATURED.filter(i => i.poster).slice(0, Math.min(howMany, BAND_MAX));
+  const inBand   = new Set(withArt);
+  const overflow = DEMO_FEATURED.filter(i => !inBand.has(i));
+
+  const wrap = document.getElementById('featured');
+  document.getElementById('featuredList').innerHTML = withArt.map(renderFeature).join('');
+  wrap.style.display = withArt.length ? '' : 'none';
+
+  document.getElementById('saveDate').innerHTML = overflow.map(renderSaveDate).join('');
+  document.getElementById('saveDateWrap').style.display = overflow.length ? '' : 'none';
+
+  document.querySelectorAll('.demo-count').forEach(b =>
+    b.classList.toggle('on', +b.dataset.n === howMany));
 }
+
+document.querySelectorAll('.demo-count').forEach(b =>
+  b.addEventListener('click', () => paintBand(+b.dataset.n)));
+
+paintBand(3);
 
 /* The rest of the page runs on the real feed, minus the featured band —
    loadEventsPage is given no `featured` target, so it leaves ours alone. */

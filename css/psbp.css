@@ -820,11 +820,16 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
    Nothing here is sized below --t-base except .feat-when, which is a short
    bold date, not reading text.
    ─────────────────────────────────────────────────────────────────────── */
+/* Centred flex, not a 3-column grid. The band holds one, two or three cards
+   depending on what is flagged, and a fixed grid left two cards hard against
+   the left edge with a column-shaped hole beside them. Flex with a capped
+   width keeps the poster the SAME SIZE at every count and centres the row, so
+   two reads as deliberate rather than as one that failed to load. */
 .feat-grid {
-  display: grid; gap: var(--s4); margin-top: var(--s4);
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: var(--s4); margin-top: var(--s4);
 }
-@media (min-width: 900px) { .feat-grid { grid-template-columns: repeat(3, 1fr); } }
+.feat-grid > .feat-card { flex: 1 1 240px; max-width: 340px; }
 
 .feat-card {
   display: flex; flex-direction: column;

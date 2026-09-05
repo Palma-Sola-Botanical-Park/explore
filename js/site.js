@@ -1219,9 +1219,17 @@ async function loadEventsPage(opts){
     // screen, and a fourth poster wraps onto a lonely second row. Anything
     // past three spills into the compact rail card instead of disappearing:
     // still flagged, still dated, just without the artwork.
-    const bandMax  = opts.featuredMax || 3;
-    const band     = flagged.slice(0, bandMax);
-    const overflow = flagged.slice(bandMax);
+    // THE BAND IS A POSTER BAND. A flagged event with no artwork does not get
+    // a slot — a text-only box beside two flyers is the one genuinely ugly
+    // state, and there is already a better home for it. No poster, or past the
+    // ceiling, and it goes to the compact rail instead. If NOTHING flagged has
+    // a poster the band hides itself and the page falls back to exactly the
+    // design that was here before.
+    const bandMax   = opts.featuredMax || 3;
+    const withArt   = flagged.filter(i => i.poster);
+    const band      = withArt.slice(0, bandMax);
+    const inBand    = new Set(band);
+    const overflow  = flagged.filter(i => !inBand.has(i));
 
     if (featEl){
       featEl.innerHTML = band.map(renderFeature).join('');
