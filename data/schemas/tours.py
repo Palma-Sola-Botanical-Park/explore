@@ -13,7 +13,7 @@ without showing them to visitors.
 Columns: tour_id | tour_name | blurb | estimated_minutes | difficulty | hero_image | status
 
 (`why` = the plain-language reason shown on the drill-down; see events.py header /
-SHEET_SYNC_ARCHITECTURE.md §3 "As-built schema contract".)
+PSBP_ARCHITECTURE_APPENDIX.md A6 "The schema contract".)
 """
 
 DIFFICULTY_VALUES = ["Easy", "Moderate", "Hard"]

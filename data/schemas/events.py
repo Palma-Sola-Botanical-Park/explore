@@ -3,7 +3,7 @@ data/schemas/events.py  —  the validation rules for the `events` tab.
 
 A schema is plain data. validate_promote.py's engine interprets it, so adding a
 new tab later = writing a new schema file like this one; the engine is shared.
-Full as-built contract: SHEET_SYNC_ARCHITECTURE.md §3 "As-built schema contract".
+Full as-built contract: PSBP_ARCHITECTURE_APPENDIX.md A6 "The schema contract".
 
 Rule anatomy:
     {"field", "check", "severity", "scope", optional "arg", optional "msg", optional "why"}
@@ -117,8 +117,8 @@ SCHEMA = {
 
         # --- format (warn) ----------------------------------------------------
         {"field": "registration_url", "check": "url_or_blank", "severity": "warn", "scope": "field",
-         "why": "If set, must start with http:// or https://."},
+         "why": "If set, must be a link or a file path in the repo like images/events/x.jpg."},
         {"field": "link_url",         "check": "url_or_blank", "severity": "warn", "scope": "field",
-         "why": "If set, must start with http:// or https://."},
+         "why": "If set, must be a link or a file path in the repo like images/events/x.jpg."},
     ],
 }

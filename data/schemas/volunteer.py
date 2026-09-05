@@ -52,6 +52,6 @@ SCHEMA = {
 
         # --- format (warn) — link only; see module docstring re: photo_url ----
         {"field": "link_url", "check": "url_or_blank", "severity": "warn", "scope": "field",
-         "why": "If set, must start with http:// or https://."},
+         "why": "If set, must be a link or a file path in the repo like images/events/x.jpg."},
     ],
 }

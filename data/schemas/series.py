@@ -10,7 +10,7 @@ Columns: display | active | name | category | blurb | flyer_url | flyer_text
 
 Same engine as events.py; only the rule list differs. (`why` = the plain-language
 reason shown on the drill-down; see events.py header /
-SHEET_SYNC_ARCHITECTURE.md §3 "As-built schema contract".)
+PSBP_ARCHITECTURE_APPENDIX.md A6 "The schema contract".)
 """
 
 CATEGORIES = [
@@ -57,6 +57,6 @@ SCHEMA = {
 
         # --- format (warn) — flyer_url rows are full https Google Doc URLs ----
         {"field": "flyer_url", "check": "url_or_blank", "severity": "warn", "scope": "field",
-         "why": "If set, must start with http:// or https://."},
+         "why": "If set, must be a link or a file path in the repo like images/events/x.jpg."},
     ],
 }

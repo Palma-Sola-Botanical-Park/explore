@@ -7,7 +7,7 @@ bottom of news.html. No foreign keys, no images — a flat, simple tab.
 
 Same engine as events.py; only the rule list differs. (`why` = the plain-language
 reason shown on the drill-down; gate semantics: see events.py's header or
-SHEET_SYNC_ARCHITECTURE.md §3 "As-built schema contract".)
+PSBP_ARCHITECTURE_APPENDIX.md A6 "The schema contract".)
 
 link_url is intentionally NOT URL-checked: newsletter links are local repo
 paths (/docs/news/...pdf), which url_or_blank (http[s]-only) would falsely flag.

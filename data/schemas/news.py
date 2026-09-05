@@ -9,7 +9,7 @@ only headline + date are load-bearing; everything else degrades gracefully.
 
 Same engine as events.py; only the rule list differs. (`why` = the plain-language
 reason shown on the drill-down; see events.py header or
-SHEET_SYNC_ARCHITECTURE.md §3 "As-built schema contract".)
+PSBP_ARCHITECTURE_APPENDIX.md A6 "The schema contract".)
 
 Image fields (hero_image, image1) and link_url are intentionally NOT URL-checked:
 they're local /ReworkDemo/... and /docs/... paths, which url_or_blank

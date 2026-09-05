@@ -11,7 +11,7 @@ volume_min is 1: an empty org list is almost certainly a broken fetch, not a
 real edit. The park always has at least an executive director.
 
 (`why` = the plain-language reason shown on the drill-down; see events.py header /
-SHEET_SYNC_ARCHITECTURE.md §3 "As-built schema contract".)
+PSBP_ARCHITECTURE_APPENDIX.md A6 "The schema contract".)
 """
 
 TYPE_VALUES = ["front office", "board"]

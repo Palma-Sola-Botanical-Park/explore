@@ -27,7 +27,7 @@ etc.) — unlike the news/volunteer image fields which are local paths. These AR
 url_or_blank checked because they're genuine https links.
 
 (`why` = the plain-language reason shown on the drill-down; see events.py header /
-SHEET_SYNC_ARCHITECTURE.md §3 "As-built schema contract".)
+PSBP_ARCHITECTURE_APPENDIX.md A6 "The schema contract".)
 """
 
 SCHEMA = {
@@ -63,8 +63,8 @@ SCHEMA = {
 
         # --- format (warn) — external profile links ---------------------------
         {"field": "inat", "check": "url_or_blank", "severity": "warn", "scope": "field",
-         "why": "If set, must start with http:// or https://."},
+         "why": "If set, must be a link or a file path in the repo like images/events/x.jpg."},
         {"field": "site", "check": "url_or_blank", "severity": "warn", "scope": "field",
-         "why": "If set, must start with http:// or https://."},
+         "why": "If set, must be a link or a file path in the repo like images/events/x.jpg."},
     ],
 }
