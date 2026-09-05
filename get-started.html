@@ -46,8 +46,11 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
 .lede-split .section-sub{ max-width:none; font-size:1.36rem; line-height:1.6;
   color:var(--green-ink, #1a3a1f); }
 .lede-split .section-sub strong{ color:var(--green-deep); }
-.lede-split .section-sub + .section-sub{ margin-top:1.2rem; font-size:1.1rem;
-  line-height:1.7; color:var(--text-soft); }
+/* Same size as the sentence above it. This slot used to hold a throwaway
+   transition line, so it was demoted to 1.1rem in soft grey — but it now carries
+   the reason the whole page exists, and shrinking it said the opposite. The only
+   difference kept is colour: the bolded opening still leads. */
+.lede-split .section-sub + .section-sub{ margin-top:1.2rem; }
 /* The credit rides ON the photograph, using the site's shared .photo-attr
    overlay (css/photo-credits.css) — the same component as the index hero, so
    attribution looks identical everywhere. It replaces a separate caption block:
@@ -129,8 +132,8 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
   display: flex; align-items: center; justify-content: center;
   font-weight: 800; font-size: 1rem;
 }
-.obs-list h4 { color: var(--green-deep); font-size: 1.04rem; margin: .35rem 0 .25rem; }
-.obs-list p  { color: var(--text-soft); font-size: .93rem; line-height: 1.65; margin: 0; }
+.obs-list h4 { color: var(--green-deep); font-size: 1.1rem; margin: .35rem 0 .3rem; }
+.obs-list p  { color: var(--text-soft); font-size: 1rem; line-height: 1.68; margin: 0; }
 .obs-list strong { color: var(--green-deep); }
 
 /* ---- field-craft tips ---- */
@@ -152,17 +155,6 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
 .tip-box p { font-size: .92rem; color: var(--text-soft); line-height: 1.65; margin: 0; }
 .tip-box strong { color: var(--green-deep); }
 
-/* ---- payoff callout ---- */
-.payoff {
-  background: var(--green-deep);
-  border-left: 5px solid var(--gold);
-  border-radius: 14px;
-  padding: 1.6rem 1.7rem;
-  margin-top: 1.85rem;
-}
-.payoff p { color: rgba(255,255,255,.85); line-height: 1.75; font-size: .98rem; margin: 0; }
-.payoff strong { color: var(--gold-light, #f3d89a); }
-
 .find-project { font-size: .9rem; color: var(--text-soft); margin: 0 0 1.25rem; }
 .find-project a { color: var(--green-mid, #3a6b4f); font-weight: 700; word-break: break-word; }
 
@@ -172,16 +164,30 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
 
 /* ---- right-floated callouts: quote / payoff sit ~1/3 right, content wraps left then below ---- */
 .obs-flow::after, .tips-flow::after { content:''; display:block; clear:both; }
+/* The right-floated callout slot, back in the Tips section. The phenology box
+   that used to sit here was cut for being the park's reason rather than the
+   reader's — the SPOT was never the problem. It now holds a first-person tip
+   that argues the page's central point: an observation is not a photo. */
+.tip-card{ float:right; width:34%; margin:.4rem 0 1.2rem 1.8rem;
+  background:var(--cream); border-left:4px solid var(--gold);
+  border-radius:0 10px 10px 0; padding:1.15rem 1.4rem; }
+.tip-card .tc-label{ font-size:.82rem; font-weight:700; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--green-mid); margin-bottom:.6rem; }
+.tip-card p{ font-size:1.02rem; line-height:1.65; color:var(--text-soft); margin:0 0 .7rem; }
+.tip-card p:last-of-type{ margin-bottom:0; }
+.tip-card .tc-lead{ font-family:'Playfair Display',serif; font-size:1.2rem; line-height:1.4;
+  color:var(--green-deep); }
+@media (max-width:760px){ .tip-card{ float:none; width:auto; margin:1.5rem 0 0; } }
+
 .obs-quote {
   float:right; width:34%;
   border-left:4px solid var(--gold);
   background:var(--cream); border-radius:0 8px 8px 0;
   margin:.4rem 0 1.1rem 1.6rem; padding:.75rem 1.5rem;
 }
-.payoff-float { float:right; width:34%; margin:.4rem 0 1.1rem 1.6rem; }
 
 @media (max-width:760px){
-  .obs-quote, .payoff-float { float:none; width:auto; margin:1.5rem 0 0; }
+  .obs-quote { float:none; width:auto; margin:1.5rem 0 0; }
   .dl-icon { width:52px; height:52px; }
 }
 </style>
@@ -254,7 +260,7 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
         </div>
         <figcaption>Photographers like Rhonda upload their best work to iNaturalist too — not for the
           science, for the pictures. <strong>We are very likely to use it</strong>: on the signs, on
-          this website, and on the screen in the lobby.</figcaption>
+          this website, and on screen at the park.</figcaption>
       </figure>
     </div>
   </div>
@@ -271,7 +277,14 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
       <h2 class="section-title" style="margin:0">Download iNaturalist</h2>
       <img class="dl-icon" src="images/logos/inaturalist-app-icon.png" alt="iNaturalist app icon">
     </div>
-    <p class="section-sub">Do this once. Grab the free app below — then there's nothing left to set up.</p>
+    <!-- "then there's nothing left to set up" contradicted the three cards directly
+         beneath it, which are three things left to set up. And there is genuinely no
+         fourth step: the Palma Sola project is a COLLECTION project, so membership is
+         computed from place, taxa and quality — an observation made in the park is
+         picked up automatically. Joining is optional and only lets you see everyone
+         else's — which is why Join lives down in the Identifier section, not up here. -->
+    <p class="section-sub">These three steps are one time only: download, log in, enable location.
+       After that, anything you photograph in the park is picked up automatically.</p>
 
     <div class="steps-big">
       <div class="step-big">
@@ -332,26 +345,34 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
 
     
 
+    <!-- Four steps, not five. "Tap the green checkmark" was the end of taking
+         photos, not a step of its own — it is now the last line of step 2.
+         Wording is Randy's: the button is a + or a camera (more use than "large
+         green button"), an observation is SEVERAL photos of different aspects,
+         and the Save-vs-Upload warning carries the weak-GPS case. -->
     <ol class="obs-list">
       <li>
-        <h4>Tap the observation button</h4>
-        <p>Open iNaturalist and tap the observation button — usually a large green button, though exactly where it sits depends on your platform and app version.</p>
+        <h4>Start an observation</h4>
+        <p>A large green button — a <strong>+</strong> or a camera, depending on your platform and
+           app version.</p>
       </li>
       <li>
         <h4>Take your photos</h4>
-        <p>Tap the shutter as many times as you want — whole plant, leaves, flowers, fruit, bark. More is better.</p>
-      </li>
-      <li>
-        <h4>Tap the green checkmark</h4>
-        <p>When you're done shooting, tap the green checkmark to finish adding photos.</p>
+        <p>An observation is usually <strong>several photos of the same organism</strong>, big and
+           small: the whole plant, close-ups of the flowers, the leaves, the bark — whatever helps
+           someone identify it. Tap the green checkmark when you're done.</p>
       </li>
       <li>
         <h4>Add an identification</h4>
-        <p>Accept iNaturalist's suggestion or search the species yourself — best guess is fine, the community will help. <strong>One exception:</strong> if the plant has one of our signs and it says something different, go with the sign.</p>
+        <p>Most of us accept iNaturalist's suggestion. Override it when you know better — for
+           instance, when one of our signs names the species.</p>
       </li>
       <li>
-        <h4>Verify location, then Upload</h4>
-        <p>Confirm the address sounds roughly right, then tap <strong>Upload</strong> — not Save. Save just keeps it on your phone; Upload sends it to the world.</p>
+        <h4>Upload — don't just Save</h4>
+        <p>Most of us tap <strong>Upload</strong> straight away. If GPS was weak, check the location
+           landed inside the park first; it usually has. <strong>Save</strong> keeps the observation
+           on your phone — if you use it, come back and upload when you have signal, or nobody ever
+           sees your work.</p>
       </li>
     </ol>
     </div>
@@ -363,29 +384,37 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
   <div class="section-inner">
     <span class="label">Field craft</span>
     <h2 class="section-title">Tips for Great Observations</h2>
+    <!-- Reordered and cut 2026-09-04 (Randy). "Capture what identifies it" leads
+         now — it is the one that actually decides whether an ID is possible.
+         "GPS on" is GONE: setup step 1 already says enable location, so the page
+         was asking twice. The green "quiet magic" payoff box is gone too — it was
+         the phenology story, which is the park's reason rather than the reader's,
+         the same test that removed the three cards above. -->
     <div class="tips-flow">
-    <div class="payoff payoff-float">
-      <p>Here's the quiet magic: our scripts read every photo for what the plant is <strong>doing</strong> — leaf, bud, flower, fruit — so over time the park learns exactly when each specimen does what. You just take the photo. The record builds itself, bit by bit, across everyone who walks through.</p>
-    </div>
-    <p class="section-sub">None of this is required — but a little care makes your photo far easier for the community to identify.</p>
+    <aside class="tip-card">
+      <div class="tc-label">Tip from the park's iNaturalist lead</div>
+      <p class="tc-lead">You are not submitting a photo. You are submitting an observation.</p>
+      <p>An observation is several looks at the same thing — from a distance, and up close. Do a few
+         and you'll see that one photo is never enough. Each one becomes a small puzzle: what would
+         an expert need to see to be sure?</p>
+    </aside>
 
+    <p class="section-sub">None of this is required, but a little care makes identification far
+       more likely.</p>
+
+    <!-- No bold lead-ins. They summarised the sentence that followed — "Show scale"
+         then "a finger next to a leaf gives a size reference" is the same nine words
+         twice. Emphasis is kept only on the last one, where it is an instruction in
+         its own right rather than a label. -->
     <ul class="craft-list">
-      <li><strong>Center your subject</strong> — keep the plant in the middle, with no other plants crowding the shot.</li>
-      <li><strong>Capture what identifies it</strong> — all the aspects of the organism you think will help with the ID: the whole plant or animal, plus close-ups of the telling details (leaves, flowers, buds, fruit, bark, markings).</li>
-      <li><strong>Show scale</strong> — a finger or hand next to a leaf or berry gives a size reference.</li>
-      <li><strong>GPS on</strong> — make sure location services are enabled before you shoot.</li>
-      <!-- Added 2026-09-04. Every tip above is about identification, because that is
-           what this page was written for. But the photo that ends up enlarged on a
-           sign is chosen for how it LOOKS, and a clinical ID shot — subject centered,
-           flat light, a hand in frame for scale — is rarely the one you would print.
-           The two goals genuinely conflict, and an observation holds as many photos
-           as you like, so ask for both rather than trading one against the other. -->
-      <li><strong>Then take one beautiful one</strong> — the shots above are for
-        identification, and they are rarely the ones worth printing. So after you have
-        them, take one more purely because it looks good: the light, the angle, the
-        whole plant standing where it stands. <strong>That is the photograph that ends
-        up enlarged on a sign or across the lobby screen</strong> — and an observation
-        holds as many photos as you want, so you never have to choose between the two.</li>
+      <li>Get every aspect that might help with the ID — the whole plant or animal, plus close-ups of
+        the telling details: leaves, flowers, buds, fruit, bark, markings.</li>
+      <li>A finger or hand next to a leaf or berry gives a size reference.</li>
+      <li>Keep the plant as the main focus, with as little else crowding the shot as possible.</li>
+      <li><strong>Then take one beautiful one.</strong> The shots above are for identification, and
+        they are rarely the ones worth printing. Take one more purely because it looks good: the
+        light, the angle, the whole plant standing where it stands. That is the photograph that ends
+        up enlarged on a sign or in the park's own materials, which we love to do.</li>
     </ul>
     </div>
 
