@@ -15,7 +15,7 @@
    ───────────────────────────────────────────────────────────────────────────
    Self-contained, the same way nature2.html was: tokens and the handful of
    psbp.css primitives this page needs are inlined so the file opens anywhere.
-   Nothing here is a new colour, a new radius, or a new type size — every value
+   Nothing here is a new color, a new radius, or a new type size — every value
    below is lifted from psbp.css. On the real page this <style> block collapses
    to one <link> plus a ~90-line MODULE: photographer section.
 
@@ -569,11 +569,11 @@ function render() {
     }).join('');
   }
 
-  /* ── licence footing ──────────────────────────────────────────────────── */
+  /* ── license footing ──────────────────────────────────────────────────── */
   el('phFoot').innerHTML = all.length
     ? 'All photographs &copy; ' + esc(person.name) + ', shared under Creative Commons via '
       + '<a href="https://www.inaturalist.org/" rel="noopener">iNaturalist</a> and used here with '
-      + 'attribution. Individual licence terms appear on each species page.'
+      + 'attribution. Individual license terms appear on each species page.'
     : '';
 }
 

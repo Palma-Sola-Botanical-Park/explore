@@ -332,12 +332,12 @@
 
 /* Rewritten 2026-08-25. Chips and cream fact-boxes replaced with plain text
    separated by hairline rules — a clean text look with subtle divisions,
-   rather than a wall of coloured pills. */
+   rather than a wall of colored pills. */
 .dw-rule { border: 0; border-top: 1px solid var(--border); margin: 1.15rem 0; }
 
 /* The teaser carries the visual weight: it is the hook, not the metadata.
-   Colour added 2026-08-25 — removing the chips left the panel very white, and
-   the chips had been carrying all the visual variety. This puts the colour on
+   Color added 2026-08-25 — removing the chips left the panel very white, and
+   the chips had been carrying all the visual variety. This puts the color on
    the one element that deserves emphasis instead of scattering it across
    badges: a cream panel with a gold rule, the same treatment the Content
    Guide tab uses for a lead paragraph. */
@@ -357,7 +357,7 @@
 .dw-lines { font-size: .92rem; line-height: 1.85; color: var(--text-soft); }
 .dw-lines a { color: var(--green-mid); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 
-/* Warnings get a warm band. They appear on ~25% of plants, so the colour shows
+/* Warnings get a warm band. They appear on ~25% of plants, so the color shows
    up variably as you arrow through — which is where the variety comes from,
    rather than every card looking identical. */
 .dw-warn {
@@ -785,7 +785,7 @@ loadINat();
 
 <!-- ══════════════════════════════════════════════════════════════════════
      QUICK VIEW DRAWER
-     Panel markup lives here; behaviour is in the IIFE below. Nothing in
+     Panel markup lives here; behavior is in the IIFE below. Nothing in
      site.js or site.css is modified — this file is self-contained.
      ══════════════════════════════════════════════════════════════════ -->
 <div class="dw-scrim" id="dwScrim"></div>
@@ -896,7 +896,7 @@ loadINat();
     // proper Toxicity section with the actual detail (species, symptoms, ASPCA sourcing),
     // which is more use than a two-word badge. Nothing safety-relevant was lost here.
     // 'Watch — invasive' chip removed 2026-09-01. watch_invasive is tripped by EITHER a
-    // formal listing OR observed behaviour on the grounds, and a reader cannot tell which —
+    // formal listing OR observed behavior on the grounds, and a reader cannot tell which —
     // it read as a state designation on plants Florida does not list, while missing listed
     // ones (Queen Palm is FISC Cat II for Central and never showed it). Invasive status is prose.
     if (p.larval_host && (p.larval_species || []).length) {
@@ -1447,7 +1447,7 @@ loadINat();
        230 plants"), and the badge only appears once something is on.
 
        Active state also has to be visible without opening the panel: the
-       button goes solid when a filter is set. Before this it coloured on
+       button goes solid when a filter is set. Before this it colored on
        EXPANDED, which is a different thing entirely. */
     var badge = btn.querySelector('.ft-count');
     var label = btn.querySelector('.ft-label');

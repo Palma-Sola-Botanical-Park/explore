@@ -214,7 +214,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 
 <section id="secNew">
   <h2>We recorded the first observations of these plants<span class="tag" id="tNew"></span></h2>
-  <p class="sub" id="newSub">Species with no record anywhere in the park&rsquo;s catalogue &mdash; not on a
+  <p class="sub" id="newSub">Species with no record anywhere in the park&rsquo;s catalog &mdash; not on a
     plant page, not in the research file, not among the wildlife. If one of these holds up, somebody
     found something the park has never documented.</p>
   <div class="chips" id="newList"></div>
@@ -241,8 +241,8 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
   <h2>Here are the locations we hit this walkabout</h2>
   <p class="sub">Every observation with a location, on the satellite view. <b>Look closely at the
     circle around each one</b> &mdash; that is how sure the phone was, and a wide ring means the
-    plant could be anywhere inside it. Under tree cover a phone can be fifty metres out, in a park
-    only a hundred and eighty metres across, which is why placing a pin by hand matters so much.
+    plant could be anywhere inside it. Under tree cover a phone can be fifty meters out, in a park
+    only a hundred and eighty meters across, which is why placing a pin by hand matters so much.
     Fuller numbers on that are in <b>For the record</b> at the foot of the page.</p>
   <div id="map"></div>
   <div class="legend">
@@ -516,7 +516,7 @@ function cacheSet(key,v){
 
 // What had the park EVER recorded before this day? Randy, 2026-08-30: "a first for the park
 // means nothing for old walkabouts, because by then it was found." Exactly right — comparing a
-// June walkabout against today's catalogue always yields zero. So ask the project's own history
+// June walkabout against today's catalog always yields zero. So ask the project's own history
 // instead: every taxon observed up to the day BEFORE. One call, and it makes old walkabouts
 // interesting rather than empty (3 June 2026: thirty species recorded in the park for the
 // first time that day).
@@ -621,11 +621,11 @@ function render(obs,priorTaxa){
       (DUPS[t.id]=DUPS[t.id]||[]).push(o);
       if(["species","subspecies","variety","hybrid"].includes(rank)){
         // "First for the park" is a HISTORICAL claim: nobody had recorded it here before
-        // this day. Falls back to the catalogue check if the history could not be fetched.
+        // this day. Falls back to the catalog check if the history could not be fetched.
         const isNew = priorTaxa ? !priorTaxa.has(t.id) : !KNOWN_TAXA.has(t.id);
         // MUTUALLY EXCLUSIVE, and the reason matters. Intake creates a research stub FROM a
         // new observation (research_source: "inat_observed"), so a first record acquires a
-        // catalogue entry a day or two later. Listing it under "the park already knew these"
+        // catalog entry a day or two later. Listing it under "the park already knew these"
         // then states the exact opposite of the truth: the park learned it FROM this walkabout.
         // Randy caught Pampas Grass in both lists on the 25 Aug report — PSBP-00759, created
         // 27 Aug, two days after the walkabout that found it.
@@ -695,13 +695,13 @@ function render(obs,priorTaxa){
     const p=people[whoOf(o)];
     if(p) (p.track=p.track||[]).push({t:t,lat:g[1],lng:g[0],a:o.positional_accuracy});
   });
-  const metres=(a,b)=>Math.hypot((a.lat-b.lat)*111320,(a.lng-b.lng)*98800);
+  const meters=(a,b)=>Math.hypot((a.lat-b.lat)*111320,(a.lng-b.lng)*98800);
   Object.values(people).forEach(p=>{
     const tr=(p.track||[]).sort((a,b)=>a.t-b.t);
     let d=0;
     for(let i=1;i<tr.length;i++){
       const x=tr[i-1], y=tr[i];
-      if(typeof x.a==="number"&&typeof y.a==="number"&&x.a<=30&&y.a<=30) d+=metres(x,y);
+      if(typeof x.a==="number"&&typeof y.a==="number"&&x.a<=30&&y.a<=30) d+=meters(x,y);
     }
     p.walked=d;
   });
@@ -727,8 +727,8 @@ function render(obs,priorTaxa){
     ? "Species nobody had ever recorded in the park before "+(isToday?"today":"this day")+
       ". Checked against every observation the park has ever collected, not against what "+
       "we know now &mdash; so this still means something for a walkabout months ago."
-    : "Species with no record in the park&rsquo;s catalogue. (The park&rsquo;s full history "+
-      "could not be checked just now, so this is the catalogue comparison instead.)";
+    : "Species with no record in the park&rsquo;s catalog. (The park&rsquo;s full history "+
+      "could not be checked just now, so this is the catalog comparison instead.)";
   $("newList").innerHTML=newSp.size?[...newSp.values()].map(r=>chip(r,true)).join("")
     :'<p class="empty">Nothing recorded here for the first time — which is completely normal. '+
      'Most walkabouts add depth rather than firsts.</p>';
@@ -875,7 +875,7 @@ async function update(){
     $("windowTxt").textContent = h>=24
       ? day+", the whole day"
       : day+", the "+h+" hours up to "+($("endt").value||"23:59");
-    render(shown,null);                  // draw now, with the catalogue as a stand-in
+    render(shown,null);                  // draw now, with the catalog as a stand-in
     priorP.then(p=>{ if(p) render(shown,p); });   // then correct it against park history
     const noTime=shown.filter(o=>!o.time_observed_at).length;
     $("status").textContent="Updated "+new Date().toLocaleTimeString([],

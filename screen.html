@@ -82,7 +82,7 @@
     wildlife.json              page, credit, family, form, native, and the
                                boolean flags the collection slides group by
     data/sources/
-      photo_credits.json       photographer, licence, observed_on, and (since
+      photo_credits.json       photographer, license, observed_on, and (since
                                08-21) w / h / orient
       plant_signage.json       the QUICK HITS come from here, not from the
       wildlife_signage.json    index — see the note at hitsOf()
@@ -182,7 +182,7 @@ body{
 .clock .day{opacity:.6;text-transform:uppercase;letter-spacing:.2em;font-size:.86em}
 .clock .sep{color:var(--gold);opacity:.55;margin:0 .7em}
 /* Attribution is solidarity — so it gets real size, a name in paper white, and
-   the licence and date underneath. Sits inside the frame rather than breaking
+   the license and date underneath. Sits inside the frame rather than breaking
    the rule, because it is now three lines rather than a caption. */
 .credit{
   position:fixed;right:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 3.2vmin);
@@ -399,7 +399,7 @@ body{
    can't: how soon it is, and something to scan. */
 /* Both halves are content, so lay them out as a pair rather than pinning one
    to each edge. Anchored to opposite margins, a short headline and a
-   height-limited poster left a hole down the middle; centred with a fixed gap,
+   height-limited poster left a hole down the middle; centered with a fixed gap,
    they close on each other symmetrically. */
 .slide.poster{
   display:flex;align-items:center;justify-content:center;gap:5.5vmin;
@@ -432,7 +432,7 @@ body{
 .slide.poster .qr{position:static;transform:none;margin-top:3vmin;align-items:flex-start}
 .slide.poster .qr .cap{text-align:left}
 
-/* ── ask slides: centred, quiet, no photograph competing ─────────────────
+/* ── ask slides: centered, quiet, no photograph competing ─────────────────
    An ask should read as a breath in the rotation, not a shout. */
 .slide.ask{align-items:center;justify-content:center}
 /* An ask is a moment, not a notice — the photograph is doing persuasive work
@@ -609,7 +609,7 @@ body{
 }
 .logo-plate img{display:block;width:auto;height:auto;max-width:26vmin;max-height:6.5vmin}
 
-/* On an ask it stands in for the emoji — bigger, centred, above the headline */
+/* On an ask it stands in for the emoji — bigger, centered, above the headline */
 .slide.ask .logo{align-items:center;margin:0 0 2.4vmin}
 .slide.ask .logo .lbl{margin-bottom:.4vmin}
 .slide.ask .logo-plate{align-self:center;padding:1.8vmin 2.6vmin}
@@ -619,16 +619,16 @@ body{
    A screen can't be clicked, so any slide whose value is a link needs a code
    or it shouldn't be there. The white card is not decoration — a QR needs a
    quiet zone and hard contrast to scan from across a room. */
-/* Bottom CENTRE, not the corner. The photographer credit already owns the
+/* Bottom CENTER, not the corner. The photographer credit already owns the
    bottom right, and stacking the two there made them read as one item — as
    though the code led to the photographer. Three zones now: words left,
-   code centre, credit right. */
+   code center, credit right. */
 .qr{
   position:absolute;left:50%;transform:translateX(-50%);
   bottom:calc(var(--frame) + 3.2vmin);
   z-index:5;display:flex;flex-direction:column;align-items:center;gap:1.1vmin;
 }
-/* keep the words clear of the centred code */
+/* keep the words clear of the centered code */
 .slide.has-qr .copy{max-width:52vw}
 .qr-card{
   background:var(--paper);padding:1.5vmin;border-radius:1vmin;
@@ -642,7 +642,7 @@ body{
 /* the printed URL, shown only if the code fails to load */
 .qr .raw{font-size:1.3vmin;color:var(--ink-quiet);word-break:break-all;max-width:24vmin;text-align:center}
 
-/* On an ask the QR belongs under the words, centred with them — the ask is the
+/* On an ask the QR belongs under the words, centered with them — the ask is the
    whole slide, so the code shouldn't hide in a corner. */
 .slide.ask .qr{position:static;transform:none;margin-top:3.4vmin}
 .slide.ask .qr-card img{width:17vmin;height:17vmin}
@@ -843,8 +843,8 @@ function indexHits(blob){
 }
 
 /* photo_id -> {observed_on, license, name}. The search index carries the
-   photographer and licence but not the date, so the credits master fills it in.
-   Optional: if the file can't be reached the credit falls back to name + licence. */
+   photographer and license but not the date, so the credits master fills it in.
+   Optional: if the file can't be reached the credit falls back to name + license. */
 var CREDITS = {}, BY_SHOOTER = {}, BY_SPECIES = {}, NAMES = {};
 function indexCredits(rows){
   var photos = (rows && rows.photos) || rows || [];
@@ -909,7 +909,7 @@ function withGallery(rows){
   return out;
 }
 
-/* Everyone whose registry note marks them as part of a named programme.
+/* Everyone whose registry note marks them as part of a named program.
    `photographer_names.json` already records this — the note field is doing
    real work, not just sitting there as a comment. */
 function cohort(match){
@@ -954,7 +954,7 @@ function fallbackPhoto(sp){
    the screen is 16:9 — so formats and library have to be matched up: wide
    slides want the 192 landscapes, vertical panels want the 846 portraits.
    With dimensions absent everything stays eligible, so this degrades to the
-   old behaviour rather than emptying out. */
+   old behavior rather than emptying out. */
 function orientOf(sp){
   var rec = sp && CREDITS[photoIdOf(sp.photo)];
   return (rec && rec.orient) || null;
@@ -1052,7 +1052,7 @@ function sentences(text){
    That was the cause of most of the non-standalone lines on screen; the
    writing was fine.
 
-   If the index supplies a delimiter, honour it. Sentence-splitting is only the
+   If the index supplies a delimiter, honor it. Sentence-splitting is only the
    fallback for the old format. See plant_publisher.py line ~184: joining with
    " || " instead of " " restores the boundaries and costs nothing. */
 function hitsOf(sp){
@@ -1090,7 +1090,7 @@ function oneHit(sp){
   var parts = hitsOf(sp);
   if(!parts.length) return '';
   var s = pick(parts);
-  /* a very short hit reads thin on a big screen — pair it with its neighbour */
+  /* a very short hit reads thin on a big screen — pair it with its neighbor */
   if(s.length < 90){
     var i = parts.indexOf(s);
     var joined = parts[i+1] ? s+' '+parts[i+1]
@@ -1351,7 +1351,7 @@ function slideVolunteer(v){
        general volunteer channel now (people, thank-yous, event recaps), so a link
        is no longer necessarily a signup: the first row to carry one pointed at an
        iNaturalist explainer under a QR reading "Scan to sign up". Blank link_text
-       keeps the previous behaviour. */
+       keeps the previous behavior. */
     + qrBlock(v, (v.link_text || '').trim() || 'Scan to sign up', v.link_url)
   });
 }
@@ -1592,7 +1592,7 @@ function qrBlock(row, caption, fallback){
    catalog. Individually that is a credit line under a photo somebody has to
    go looking for. Together it is a fact about the park worth putting on a wall.
 
-   This is also the RIGHT way to recognise students: a group, on a screen in
+   This is also the RIGHT way to recognize students: a group, on a screen in
    the park, transient and local — not a permanent indexed page per child.
    Their names already appear as photo credits, so nothing new is exposed. */
 function slideCohort(){
@@ -1851,7 +1851,7 @@ function slideCollection(){
   };
 }
 
-/* Asks get the centred treatment and a dimmed photograph behind. */
+/* Asks get the centered treatment and a dimmed photograph behind. */
 function slideAsk(a){
   var pool = D.plants.filter(function(s){ return s.photo; });
   return {
@@ -2104,7 +2104,7 @@ function render(s){
 
   /* .copy is position:relative, so a QR left inside it anchors to the text
      column and lands mid-paragraph. Lift it out to sit against the slide.
-     On an ask it belongs in the flow, centred under the words — leave it. */
+     On an ask it belongs in the flow, centered under the words — leave it. */
   var qrNode = el.querySelector('.qr');
   if(qrNode && !s.ask && !s.poster){ el.appendChild(qrNode); el.classList.add('has-qr'); }
   el.style.setProperty('--kb', (dur+3)+'s');

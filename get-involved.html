@@ -21,7 +21,7 @@ section[id], div[id]{ scroll-margin-top: 84px; }
    margin happens to leave behind. Headings and paragraphs have one, so most
    sections looked fine by accident — but `.give-paths` is a grid with no
    bottom margin, so the Give once / Become a member cards sat flush against
-   the next section with no band of colour under them at all.
+   the next section with no band of color under them at all.
    Padding the tone classes directly makes the spacing deliberate.
    (Same latent gap exists on contact.html; left alone there for now.) */
 section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
@@ -131,7 +131,7 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
    these are people, usually shot vertically. A landscape frame with object-fit
    cover crops a standing portrait through the chest and loses the face, which is
    the only part that matters. Square survives all three orientations, and the
-   25% vertical origin keeps heads in frame instead of centring on a torso. */
+   25% vertical origin keeps heads in frame instead of centering on a torso. */
 .vdesk-photo{ flex:0 0 100px; width:100px; height:100px; border-radius:9px;
   object-fit:cover; object-position:50% 25%; background:var(--sand); }
 .vdesk-text{ flex:1; min-width:0; }
@@ -141,13 +141,13 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
   text-transform:uppercase; color:var(--gold); margin:0 0 .55rem; }
 .vdesk-body{ font-size:.97rem; color:var(--text-soft); line-height:1.68; margin:0; }
 /* CALENDAR SQUARE — reuses .ev-date from the Events page (psbp.css) so the box
-   a visitor sees here is the one they already saw there, weekday colour and all.
+   a visitor sees here is the one they already saw there, weekday color and all.
    Only the SIZING is overridden: .ev-card sets 84px wide and free height inside
    a stretched flex row; here it has to be a 100x100 square matching the photo
    slot beside it, so the type has to come down to fit four lines in that box. */
 /* ⚠ THE LAYOUT IS DECLARED HERE IN FULL, ON PURPOSE.
    psbp.css scopes the box's layout to `.ev-card .ev-date` — a desk row is not an
-   .ev-card, so none of the flex-column stacking or centring reached it and the
+   .ev-card, so none of the flex-column stacking or centering reached it and the
    first build rendered "WED 21 OCT" as one ragged line. Only the unscoped child
    rules (.ev-date .ev-dow etc.) had applied. Do not assume this inherits. */
 .vdesk-item .ev-date{
@@ -180,7 +180,7 @@ section[class*="bg-"]{ padding: 3.75rem 1.5rem; }
 .vdesk-item .ev-date.long-time .ev-dnum { font-size:1.35rem; }
 .vdesk-item .ev-date.long-time .ev-dtime{ font-size:.62rem; line-height:1.1; }
 
-/* A linked title keeps the heading's colour and adds a quiet underline, so it
+/* A linked title keeps the heading's color and adds a quiet underline, so it
    reads as a heading first and a link second — but is still distinguishable
    from the unlinked titles above and below it WITHOUT hovering. */
 .vdesk-titlelink{ color:inherit; text-decoration:underline; text-decoration-thickness:1px;
@@ -717,7 +717,7 @@ const PAYPAL = {
       rows marked `type: place`. No rows, no change: the markup's own cards
       stand. That way this ships before the column exists, and a Sheet mistake
       that empties the feed cannot empty the section.
-      Colours cycle by position so Bev never has to pick one. ── */
+      Colors cycle by position so Bev never has to pick one. ── */
 const PLACE_COLORS = ['var(--green-mid)', 'var(--gold)', '#9b7ab8', '#c87a5a', '#7ab87a'];
 
 function renderVolPlaces(rows) {
@@ -731,7 +731,7 @@ function renderVolPlaces(rows) {
 }
 
 /* Calendar square for a dated desk note. Uses site.js's own DOW_ABBR and
-   dowColor so a Wednesday here is the same colour as a Wednesday on Events,
+   dowColor so a Wednesday here is the same color as a Wednesday on Events,
    and parseDateLocal so an ISO string is not read as UTC and shown a day off. */
 function dateBox(iso, time) {
   if (!iso) return '';
