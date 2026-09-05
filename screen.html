@@ -1345,7 +1345,14 @@ function slideVolunteer(v){
     + '<div class="headline">'+esc(v.title)+'</div>'
     + (v.body?'<div class="body">'+rich(v.body)+'</div>':'')
     + logoBlock(v, 'With')
-    + qrBlock(v, 'Scan to sign up', v.link_url)
+    /* Caption comes from the Sheet's link_text, falling back to the old wording.
+       "Scan to sign up" was hardcoded, and it was right while this tab held only
+       recruitment — orientations, workdays, "the nursery needs people". It is a
+       general volunteer channel now (people, thank-yous, event recaps), so a link
+       is no longer necessarily a signup: the first row to carry one pointed at an
+       iNaturalist explainer under a QR reading "Scan to sign up". Blank link_text
+       keeps the previous behaviour. */
+    + qrBlock(v, (v.link_text || '').trim() || 'Scan to sign up', v.link_url)
   });
 }
 
