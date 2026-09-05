@@ -981,7 +981,11 @@ function _dateSpan(a, b){
 function renderFeature(item){
   const href  = item._link && item._link.url;
   const label = (item._link && item._link.text) || 'See the flyer';
-  const dates = _dateSpan(item.date, item.date_end);
+  // Events lead with their date. A series has no date, so it supplies its own
+  // eyebrow (its category) — same card, honest top line.
+  const when  = item.eyebrow
+    ? _evEsc(item.eyebrow)
+    : _evEsc(_dateSpan(item.date, item.date_end)) + (item.time ? ` · ${_evEsc(item.time)}` : '');
 
   const poster = item.poster
     ? `<div class="feat-art"><img src="${item.poster}" alt="${_evEsc(item.title||'')} flyer" loading="lazy"></div>`
@@ -997,7 +1001,7 @@ function renderFeature(item){
   return `<article class="feat-card">
     ${poster}
     <div class="feat-body">
-      <div class="feat-when">${_evEsc(dates)}${item.time?` · ${_evEsc(item.time)}`:''}</div>
+      <div class="feat-when">${when}</div>
       <h3 class="feat-title">${_evEsc(item.title||'')}</h3>
       ${item.description?`<p class="feat-desc">${_evEsc(clip(item.description,150))}</p>`:''}
       ${actions.length?`<div class="feat-actions">${actions.join('')}</div>`:''}
@@ -1230,6 +1234,27 @@ async function loadEventsPage(opts){
     const band      = withArt.slice(0, bandMax);
     const inBand    = new Set(band);
     const overflow  = flagged.filter(i => !inBand.has(i));
+
+    // BACKFILL — in the quiet part of the year there may be only one or two
+    // events worth flagging, and a band of one looks like something failed to
+    // load. Active series with their own poster top it up: they are real,
+    // ongoing, and they already have artwork. Dated events always win the
+    // slots; a series never displaces one.
+    if (band.length && band.length < bandMax){
+      series.filter(isWebVisible)
+        .filter(s => !s.active || _isYes(s.active))
+        .filter(s => (s.screen_poster || '').trim())
+        .slice(0, bandMax - band.length)
+        .forEach(s => band.push({
+          kind: 'series',
+          eyebrow: (s.category || 'Ongoing series').trim(),
+          title: s.name,
+          description: s.blurb,
+          poster: (s.screen_poster || '').trim(),
+          registration_url: '',
+          _link: { url: s.flyer_url || '', text: s.flyer_text || 'See the flyer' }
+        }));
+    }
 
     if (featEl){
       featEl.innerHTML = band.map(renderFeature).join('');

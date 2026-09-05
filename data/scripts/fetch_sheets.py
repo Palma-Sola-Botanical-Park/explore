@@ -78,6 +78,11 @@ KNOWN_HEADERS = {
     "manager", "insurance", "caption", "image", "tour_id", "tour_name", "stop_number", "type", "psbp_id", "quick_hits",
     "directions_text", "estimated_minutes", "difficulty", "role", "specialty",
     "inat", "site", "site_label", "focus",
+    # The screen_* family. Added 2026-09-05: a JPG in screen_poster is now the
+    # standard artwork field for events, classes AND series, so these belong in
+    # the detector. (It scores header rows; an unrecognised name still flows
+    # through, it just contributes nothing to finding the header.)
+    "screen_poster", "screen_image", "screen_qr", "screen_logo",
 }
 
 

@@ -111,8 +111,13 @@
         <button class="demo-count" data-n="0">none</button>
       </span>
       The posters stay the same size and the row stays centred; whatever drops out
-      reappears in the rail. At <em>none</em> the band hides itself completely and the
-      page is exactly what it was before this was built.
+      reappears in the rail.
+      <br><br>
+      <strong>Watch the empty slots fill.</strong> Drop to 2 or 1 and an active
+      <em>series</em> with its own poster steps into the gap — its top line is its
+      category rather than a date, because a series has no date. Dated events always
+      win the slots; a series never pushes one out. At <em>none</em> the band hides
+      completely and the page is exactly what it was before this was built.
     </div>
   </div>
 </section>
@@ -238,14 +243,35 @@ const DEMO_FEATURED = [
 // else — past the ceiling OR carrying no poster — into the compact rail.
 const BAND_MAX = 3;
 
+// Active series carrying their own poster. These top up the band when there
+// are fewer than three flagged events — the quiet part of the year. Bright
+// Futures is real: that JPG is already in the repo. The second is invented to
+// show two slots filling.
+const DEMO_SERIES = [
+  { kind:'series', eyebrow:'Volunteer', title:'Bright Futures High School Volunteer Program',
+    description:'Work weekly with high school students earning community service hours as part of Florida’s Bright Futures Scholarship Program.',
+    poster:'images/events/Bright-Futures.jpg', registration_url:'',
+    _link:{ url:'images/events/Bright-Futures.jpg', text:'Details' } },
+  { kind:'series', eyebrow:'Talks & Learning', title:'UF/IFAS Horticultural Series',
+    description:'In partnership with UF-IFAS Manatee County Extension — expert horticulture classes at the park, a new topic and instructor each session.',
+    poster:'images/events/zumba.jpg', registration_url:'',
+    _link:{ url:'', text:'' } }
+];
+
 function paintBand(howMany){
   const withArt  = DEMO_FEATURED.filter(i => i.poster).slice(0, Math.min(howMany, BAND_MAX));
   const inBand   = new Set(withArt);
   const overflow = DEMO_FEATURED.filter(i => !inBand.has(i));
 
+  // Dated events always win the slots; series only fill what is left.
+  const band = withArt.slice();
+  if (band.length && band.length < BAND_MAX){
+    DEMO_SERIES.slice(0, BAND_MAX - band.length).forEach(s => band.push(s));
+  }
+
   const wrap = document.getElementById('featured');
-  document.getElementById('featuredList').innerHTML = withArt.map(renderFeature).join('');
-  wrap.style.display = withArt.length ? '' : 'none';
+  document.getElementById('featuredList').innerHTML = band.map(renderFeature).join('');
+  wrap.style.display = band.length ? '' : 'none';
 
   document.getElementById('saveDate').innerHTML = overflow.map(renderSaveDate).join('');
   document.getElementById('saveDateWrap').style.display = overflow.length ? '' : 'none';
