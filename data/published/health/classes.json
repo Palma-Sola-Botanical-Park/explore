@@ -1,7 +1,7 @@
 {
   "tab": "classes",
   "human": "Standing weekly classes — one row per weekday+time slot.",
-  "generated_at": "2026-09-05T15:09:51+00:00",
+  "generated_at": "2026-09-05T21:25:02+00:00",
   "status": "green",
   "published": true,
   "block_reason": null,
@@ -114,6 +114,23 @@
       "examples": []
     },
     {
+      "id": "series:fk",
+      "field": "series",
+      "check": "fk",
+      "arg": [
+        "series",
+        "name"
+      ],
+      "why": "Must match a name in the series tab, or be blank.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 5,
+      "passed": 5,
+      "flagged": 0,
+      "examples": []
+    },
+    {
       "id": "category:in_vocab",
       "field": "category",
       "check": "in_vocab",
@@ -178,7 +195,7 @@
       "field": "registration_url",
       "check": "url_or_blank",
       "arg": null,
-      "why": "If set, must start with http:// or https://.",
+      "why": "If set, must be a link or a file path in the repo like images/events/x.jpg.",
       "severity": "warn",
       "scope": "field",
       "status": "green",
@@ -192,7 +209,7 @@
       "field": "link_url",
       "check": "url_or_blank",
       "arg": null,
-      "why": "If set, must start with http:// or https://.",
+      "why": "If set, must be a link or a file path in the repo like images/events/x.jpg.",
       "severity": "warn",
       "scope": "field",
       "status": "green",
@@ -244,6 +261,12 @@
       "at": "2026-09-05T14:07:00+00:00",
       "added": 0,
       "changed": 1,
+      "removed": 0
+    },
+    {
+      "at": "2026-09-05T21:25:02+00:00",
+      "added": 0,
+      "changed": 5,
       "removed": 0
     }
   ],

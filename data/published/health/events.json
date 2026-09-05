@@ -1,7 +1,7 @@
 {
   "tab": "events",
   "human": "Dated park events — one row per event (multi-day events use date_end).",
-  "generated_at": "2026-09-05T15:09:51+00:00",
+  "generated_at": "2026-09-05T21:25:02+00:00",
   "status": "green",
   "published": true,
   "block_reason": null,
@@ -227,7 +227,7 @@
       "field": "registration_url",
       "check": "url_or_blank",
       "arg": null,
-      "why": "If set, must start with http:// or https://.",
+      "why": "If set, must be a link or a file path in the repo like images/events/x.jpg.",
       "severity": "warn",
       "scope": "field",
       "status": "green",
@@ -241,7 +241,7 @@
       "field": "link_url",
       "check": "url_or_blank",
       "arg": null,
-      "why": "If set, must start with http:// or https://.",
+      "why": "If set, must be a link or a file path in the repo like images/events/x.jpg.",
       "severity": "warn",
       "scope": "field",
       "status": "green",
@@ -281,6 +281,12 @@
       "at": "2026-09-05T13:54:06+00:00",
       "added": 0,
       "changed": 2,
+      "removed": 0
+    },
+    {
+      "at": "2026-09-05T21:25:02+00:00",
+      "added": 0,
+      "changed": 3,
       "removed": 0
     }
   ],
