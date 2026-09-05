@@ -109,6 +109,7 @@
         <button class="demo-count" data-n="2">2 flyers</button>
         <button class="demo-count" data-n="1">1 flyer</button>
         <button class="demo-count" data-n="0">none</button>
+        <button class="demo-count" id="demoLandscape">landscape poster</button>
       </span>
       The posters stay the same size and the row stays centred; whatever drops out
       reappears in the rail.
@@ -258,8 +259,14 @@ const DEMO_SERIES = [
     _link:{ url:'', text:'' } }
 ];
 
-function paintBand(howMany){
-  const withArt  = DEMO_FEATURED.filter(i => i.poster).slice(0, Math.min(howMany, BAND_MAX));
+// A deliberately wrong-shaped poster: artinthepark.png is 627 x 290 (ratio
+// 2.16) — a banner, not a flyer. Swapped into the middle card by the
+// "landscape" button to show the fixed 5:7 window absorbing it.
+const LANDSCAPE_TEST = 'images/events/artinthepark.png';
+
+function paintBand(howMany, landscape){
+  const withArt  = DEMO_FEATURED.filter(i => i.poster).slice(0, Math.min(howMany, BAND_MAX))
+    .map((it, n) => (landscape && n === 1) ? Object.assign({}, it, { poster: LANDSCAPE_TEST }) : it);
   const inBand   = new Set(withArt);
   const overflow = DEMO_FEATURED.filter(i => !inBand.has(i));
 
@@ -277,13 +284,17 @@ function paintBand(howMany){
   document.getElementById('saveDateWrap').style.display = overflow.length ? '' : 'none';
 
   document.querySelectorAll('.demo-count').forEach(b =>
-    b.classList.toggle('on', +b.dataset.n === howMany));
+    b.classList.toggle('on', b.dataset.n !== undefined && +b.dataset.n === howMany && !landscape));
+  var lb = document.getElementById('demoLandscape');
+  if (lb) lb.classList.toggle('on', !!landscape);
 }
 
-document.querySelectorAll('.demo-count').forEach(b =>
-  b.addEventListener('click', () => paintBand(+b.dataset.n)));
+document.querySelectorAll('.demo-count[data-n]').forEach(b =>
+  b.addEventListener('click', () => paintBand(+b.dataset.n, false)));
+document.getElementById('demoLandscape')
+  .addEventListener('click', () => paintBand(3, true));
 
-paintBand(3);
+paintBand(3, false);
 
 /* The rest of the page runs on the real feed, minus the featured band —
    loadEventsPage is given no `featured` target, so it leaves ours alone. */

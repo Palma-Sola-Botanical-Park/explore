@@ -837,8 +837,18 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
   border-top: 4px solid var(--gold-mark); border-radius: var(--r);
   overflow: hidden; box-shadow: 0 1px 4px rgba(40,50,30,.07);
 }
-.feat-art { background: var(--sunk); line-height: 0; }
-.feat-art img { width: 100%; height: auto; display: block; }
+/* A fixed portrait window, and the flyer is CONTAINED in it — never cropped.
+   5:7 (.714) sits in the middle of the real flyers, which run .66–.77, so a
+   normal portrait poster fills it with only a hair of letterboxing.
+
+   The point is what happens when one ISN'T portrait. Letting the image set its
+   own height means a single landscape poster among portraits makes that card
+   short and the whole row ragged. With a fixed window the layout cannot break:
+   a landscape flyer sits in a band across the middle, whole and readable, just
+   small — which reads as "wrong shape" without anything looking broken.
+   Portrait remains the standard; this is the safety net, not permission. */
+.feat-art { background: var(--sunk); line-height: 0; aspect-ratio: 5 / 7; }
+.feat-art img { width: 100%; height: 100%; display: block; object-fit: contain; }
 
 .feat-body { padding: .9rem 1.05rem 1.05rem; display: flex; flex-direction: column; flex: 1; }
 .feat-when {
