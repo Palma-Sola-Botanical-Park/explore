@@ -200,7 +200,12 @@ h4 { font-size: var(--t-md); }
 .bg-deep h1, .bg-deep h2, .bg-deep h3, .bg-deep .section-title { color: #fff; }
 .bg-deep .section-sub, .bg-deep p { color: rgba(255,255,255,.78); }
 .bg-deep .label { color: var(--gold-light); }
-.bg-deep a { color: var(--gold-light); }
+/* :not(.btn) matters. This rule is 0,1,1 and .btn-gold is 0,1,0, so without the
+   exclusion it repainted BUTTON text gold-light — gold on gold, inside any deep
+   section. Found on venue.html 2026-09-04, where the phone number in the "Ready
+   to book?" CTA was barely legible. Link colour has no business reaching into a
+   button component; buttons carry their own foreground. */
+.bg-deep a:not(.btn) { color: var(--gold-light); }
 
 .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--s6); }
 .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--s5); }
@@ -659,7 +664,10 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .page-hero h1 { color: #fff; font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: var(--s2); }
 .page-hero p  { color: rgba(255,255,255,.82); font-size: var(--t-base); line-height: 1.72; margin-bottom: var(--s5); }
 .page-hero .label, .page-hero .label-light { color: var(--gold-light); }
-.page-hero a { color: var(--gold-light); }
+/* :not(.btn) — same flaw as .bg-deep a below. At 0,1,1 this beat .btn-gold's
+   0,1,0 and repainted the hero's phone button gold-on-gold. A button inside a
+   hero is still a button. */
+.page-hero a:not(.btn) { color: var(--gold-light); }
 /* The photographer credit sits bottom-right over the photo; it is white, so it
    needs the dark hero to stay behind it. */
 .page-hero-credit {
