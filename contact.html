@@ -161,9 +161,15 @@
     .honors .mark{max-height:80px}}
   .honors .feat .mark{max-height:64px;max-width:76px;opacity:.9}
 
-  /* the newest and most meaningful one gets real prominence */
-  .honors .feat{background:var(--gold-tint);border-radius:10px;padding:1rem 1.1rem 1.05rem;
-    margin-bottom:.4rem}
+  /* The newest one gets prominence from a GOLD RULE, not a gold fill.
+     It was a --gold-tint block with a white stage nested inside it, holding
+     artwork that is bright blue and teal. Three backgrounds and two palettes
+     inside one small panel — the warm frame fought the cool graphic, and the
+     nested boxes read as a widget rather than a list item. A left rule is the
+     emphasis this page already uses for the pull quote and the "lasting" card,
+     and it costs nothing visually. */
+  .honors .feat{background:transparent;border-left:3px solid var(--gold-mark);
+    border-radius:0;padding:.2rem 0 .9rem 1.1rem;margin-bottom:.4rem}
   .honors .feat h3{font-size:1.18rem;color:var(--green-ink)}
   .honors .feat p{color:var(--ink)}
 
@@ -328,11 +334,19 @@
               <h3>Non-Profit of the Year finalist</h3>
               <p>Named by the Manatee Chamber of Commerce, in the 46th year of its Small Business
                  &amp; Non-Profit Awards.</p>
-              <div class="lockup">
-                <img src="images/recognition/chamber-nonprofit-awards-2026.png"
-                     alt="46th Annual Manatee Chamber of Commerce Small Business &amp; Non-Profit of the Year Awards"
-                     onerror="this.parentNode.remove()">
-              </div>
+              <!-- The Chamber finalist artwork was removed 2026-09-04. It is a
+                   PROMOTIONAL POSTER the Chamber supplies to finalists for social
+                   media — "So proud to share that we are a 2026 FINALIST" — not a
+                   credential mark like the Bradenton's Best seal or the Monarch
+                   Waystation badge. It carries the Chamber's own blue/teal palette,
+                   which fought the page, and it could not be reconciled: recoloring
+                   another organisation's award artwork breaks their brand terms and
+                   misrepresents the award. It also had to run full width, because at
+                   mark size its wording is unreadable — so a foreign palette ended up
+                   dominating the panel. The sentence above says it in the park's own
+                   voice. If a mark is ever wanted here, it should be the plain
+                   Manatee Chamber of Commerce wordmark, not the finalist poster.
+                   File kept at images/recognition/chamber-nonprofit-awards-2026.png. -->
             </div>
             <div>
               <div class="htext">
