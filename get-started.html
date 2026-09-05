@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>iNaturalist Observation Guide · Palma Sola Botanical Park</title>
 <link rel="stylesheet" href="css/psbp.css">
+<link rel="stylesheet" href="css/photo-credits.css">
 <style>
 /* Padding and type reduced 2026-09-04 — this hero stood noticeably taller than
    Events, Visit, Get Involved and About, which are all label / h1 / one line. */
@@ -47,15 +48,21 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
 .lede-split .section-sub strong{ color:var(--green-deep); }
 .lede-split .section-sub + .section-sub{ margin-top:1.2rem; font-size:1.1rem;
   line-height:1.7; color:var(--text-soft); }
+/* The credit rides ON the photograph, using the site's shared .photo-attr
+   overlay (css/photo-credits.css) — the same component as the index hero, so
+   attribution looks identical everywhere. It replaces a separate caption block:
+   same information, none of the vertical space, and the dark scrim gives the
+   image a base to sit on. */
 .gs-example{ margin:0; }
-.gs-example img{ width:100%; height:auto; border-radius:12px; display:block;
+.gs-shot{ position:relative; border-radius:12px; overflow:hidden;
   box-shadow:0 4px 18px rgba(0,0,0,.13); }
+.gs-shot img{ width:100%; height:auto; display:block; }
 /* 1rem, not .84. This caption does three jobs — credit, example, proof — and it
    was the smallest type in the block. Small type reads as a footnote, and a
    footnote is exactly what this is not. */
-.gs-example figcaption{ font-size:1rem; color:var(--text-soft); line-height:1.62;
-  margin-top:.85rem; }
-.gs-example figcaption b{ color:var(--green-deep); font-weight:700; }
+.gs-example figcaption{ font-size:1.05rem; color:var(--text-soft); line-height:1.65;
+  margin-top:.9rem; }
+.gs-example figcaption strong{ color:var(--green-deep); font-weight:700; }
 @media (max-width:820px){ .lede-split{ grid-template-columns:1fr; gap:1.6rem; } }
 
 /* ---- setup steps ---- */
@@ -220,12 +227,27 @@ section[class*="bg-"]{ padding: 3.5rem 1.5rem; }
       </div>
 
       <figure class="gs-example">
-        <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/703865180/large.jpg"
-             alt="Queen's Wreath in flower at Palma Sola Botanical Park, photographed by Rhonda Olschefskie"
-             loading="lazy">
-        <figcaption><b>Queen's Wreath</b>, by Rhonda Olschefskie. She posts to iNaturalist for the
-          pictures more than the science — and many of her photographs are now the lead image on a
-          species page here. © Rhonda Olschefskie (CC-BY-NC), via iNaturalist.</figcaption>
+        <div class="gs-shot">
+          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/703865180/large.jpg"
+               alt="Queen's Wreath in flower at Palma Sola Botanical Park, photographed by Rhonda Olschefskie"
+               loading="lazy">
+          <div class="photo-attr">
+            <span class="attr-species">Queen&#39;s Wreath &middot; <em>Petrea volubilis</em></span>
+            <span class="attr-line">
+              <span class="attr-credit">
+                <span class="attr-by">&#128247; Rhonda Olschefskie</span>
+                <span class="attr-date"><span class="attr-dot">&middot;</span> Mar 9, 2026</span>
+              </span>
+              <span class="cc-badge" title="Creative Commons BY-NC — some rights reserved, free to share with credit">
+                <span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span>
+              </span>
+              <span class="attr-src">via iNaturalist</span>
+            </span>
+          </div>
+        </div>
+        <figcaption>Photographers like Rhonda upload their best work to iNaturalist too — not for the
+          science, for the pictures. <strong>We are very likely to use it</strong>: on the signs, on
+          this website, and on the screen in the lobby.</figcaption>
       </figure>
     </div>
   </div>
