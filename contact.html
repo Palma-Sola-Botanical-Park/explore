@@ -8,6 +8,13 @@
 <style>
   html { scroll-behavior: smooth; }
   section[id] { scroll-margin-top: 78px; }
+
+  /* BAND TONES, re-toned 2026-09-04. This page alternated bg-cream against
+     bg-white — #fdfcf8 vs #ffffff, a luminance difference of 3.1, which is
+     invisible: three of the six section changes could not be seen at all.
+     Now light / tint / light, every transition Δ11 or better.
+     ⚠ --wash (#f2f5ee, green) and --sunk (#f6f3ea, sand) differ by Δ0.9 and
+     must NEVER be adjacent — always put a light band between them. */
   #visit { scroll-margin-top: 90px; }
 
   /* Emoji icons removed — they rendered three different ways across
@@ -67,7 +74,7 @@
 
   /* ── FULL-BLEED BREAK — the page's one quiet moment ── */
   /* Position 38%, not 62%: the far shore — poinciana, the palms, the Galleria's
-     green roof, the crape myrtle — sits at 30-48% of this image. Centring lower
+     green roof, the crape myrtle — sits at 30-48% of this image. Centering lower
      framed open water. Taller too, so more of that band survives the crop. */
   .bleed{position:relative;height:clamp(320px,52vh,580px);background-size:cover;
     background-position:center 38%;display:flex;align-items:flex-end}
@@ -97,11 +104,11 @@
   .ask .btn{padding:.85rem 2.1rem;font-size:1.02rem}
 
   /* ── PARTNER LOGOS — present, not shouting ── */
-  /* FULL COLOUR, and each partner is NAMED. An earlier pass greyed these out to
-     stop sixteen brand palettes fighting the page — which optimised the page at
+  /* FULL COLOR, and each partner is NAMED. An earlier pass greyed these out to
+     stop sixteen brand palettes fighting the page — which optimized the page at
      the expense of the section's only job, which is to thank people. A partner
      seeing their logo desaturated and unlabelled would rightly be annoyed.
-     The real problem was never colour; it was uneven optical weight and no air.
+     The real problem was never color; it was uneven optical weight and no air.
      Fixed with a consistent stage, a bigger gap, and a caption. */
   .plogo{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.7rem}
   .plogo .stage{background:#fff;border:1px solid var(--rule);border-radius:10px;width:100%;
@@ -143,7 +150,7 @@
   /* These badges are PORTRAIT (ratios .76-1.08), not wide logos — capping on
      height alone rendered them ~26px wide and illegible. Height leads, width
      is the guard. Kept lightly desaturated at rest so four brand palettes
-     don't fight the panel, full colour on hover. */
+     don't fight the panel, full color on hover. */
   /* The badge uses the full height of its row rather than sitting beside the
      heading. At mark size a detailed seal like Bradenton's Best was an
      illegible grey blob — these need to be READ, not decorated with. */
@@ -175,13 +182,13 @@
   .certs-lead{font-size:.92rem;color:var(--ink-soft);margin:0 0 1.4rem;font-style:italic}
   .certs-row{display:flex;flex-wrap:wrap;justify-content:center;gap:2.5rem}
   .cert{max-width:230px;text-align:center}
-  /* Certifications stay FULL COLOUR. These are credentials, not partner logos —
+  /* Certifications stay FULL COLOR. These are credentials, not partner logos —
      a greyed-out certification badge reads as expired. */
   .cert img{display:block;margin:0 auto .75rem;max-height:104px;max-width:96px;object-fit:contain}
   .cert h4{font-size:1.02rem;margin:0 0 .15rem;color:var(--ink);font-family:var(--serif)}
   .cert p{margin:0;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
 
-  /* ── THE COLLECTION — a narrow green band, the page's one moment of colour
+  /* ── THE COLLECTION — a narrow green band, the page's one moment of color
      reversal. Deliberately short: it is a door to Nature, not a section. ── */
   .collection{background:var(--green-ink);color:#fff;text-align:center}
   .collection .section-inner{padding-top:2.6rem;padding-bottom:2.6rem}
@@ -243,7 +250,7 @@
   .people-tail a:hover{text-decoration:underline}
 
   /* Grouped rather than one wall of sixteen. Chambers next to garden clubs
-     next to a licence plate reads as noise; labelled groups read as a list of
+     next to a license plate reads as noise; labeled groups read as a list of
      relationships. Check the assignments — some are a judgement call. */
   .pgroup-label{margin:2.2rem 0 1rem;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
     color:var(--green);font-weight:700;text-align:center}
@@ -278,7 +285,7 @@
 </div>
 
 <!-- OUR STORY -->
-<section class="bg-cream">
+<section class="bg-wash">
   <div class="section-inner">
     <div class="grid-2" style="gap:3rem;align-items:start">
       <div>
@@ -414,7 +421,7 @@
   </div>
 </section>
 
-<!-- THE COLLECTION — About never mentioned the catalogue, which is the park's
+<!-- THE COLLECTION — About never mentioned the catalog, which is the park's
      actual point of difference. Rounded per the house units rule so it cannot
      go stale as species are added. -->
 <div class="collection">
@@ -438,7 +445,7 @@
 </section>
 
 <!-- OUR PEOPLE -->
-<section class="bg-cream" id="organization">
+<section class="bg-white" id="organization">
   <div class="section-inner">
     <div style="text-align:center;max-width:760px;margin:0 auto 2.4rem">
       <span class="label">Our People</span>
@@ -470,7 +477,7 @@
 <!-- OUR PARTNERS — logo grid. Files live in images/partners/ (fetched from the WordPress media library).
      TODO (Randy): add Bishop Parker Foundation + Selby Foundation logos (and any others) to images/partners/,
      then drop matching <div class="partner-logo"> tiles below. -->
-<section class="bg-white" id="community-links">
+<section class="bg-wash" id="community-links">
   <div class="section-inner" style="text-align:center">
     <span class="label">Our Partners</span>
     <h2 class="section-title" style="margin-bottom:1rem">Supported by our community</h2>
@@ -510,7 +517,7 @@
 <!-- SEE THE PARK — embedded videos + community submission invite.
      Boehmig video = f3zfcUHm0k4 (from the live About page). Second view = dNZpiz7--V0.
      Using youtube-nocookie embeds. Titles are placeholders — swap if you have the real ones. -->
-<section class="bg-cream" id="youtube">
+<section class="bg-white" id="youtube">
   <div class="section-inner">
     <div style="text-align:center;max-width:680px;margin:0 auto 2rem">
       <span class="label">See the Park</span>
