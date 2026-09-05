@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>DEMO · Save the Date band · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="css/psbp.css">
+<style>
+  /* Same layout rules as events.html — this page only demos the top band. */
+  .events-layout { display: grid; grid-template-columns: 1fr; gap: 2.25rem; align-items: start; }
+  @media (min-width: 880px) {
+    .events-layout { grid-template-columns: 1fr 360px; gap: 3rem; }
+  }
+  .agenda-list { display: flex; flex-direction: column; }
+
+  .event-filters { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 1.25rem; }
+  .ev-filter-btn {
+    border: 1px solid rgba(45,106,53,.3); background: #fff; color: var(--green-deep, #1e3a24);
+    font: inherit; font-size: .82rem; font-weight: 600; padding: .35rem .8rem;
+    border-radius: 999px; cursor: pointer; transition: background .15s, color .15s, border-color .15s;
+  }
+  .ev-filter-btn:hover { border-color: var(--green-mid, #2d6a35); }
+  .ev-filter-btn.active { background: var(--green-mid, #2d6a35); color: #fff; border-color: var(--green-mid, #2d6a35); }
+
+  .sched-list { display: flex; flex-direction: column; gap: .6rem; }
+  .sched-row {
+    background: #fff; border-left: 3px solid var(--green-mid, #2d6a35);
+    border-radius: 8px; padding: .7rem .9rem; box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  }
+  .sched-day { font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--green-mid, #2d6a35); }
+  .sched-day span { color: #888; margin-left: .4rem; }
+  .sched-body { font-size: .92rem; margin-top: .15rem; line-height: 1.4; }
+  .sched-cost { color: #7a5a12; }
+  .sched-link, .series-link { color: var(--green-mid, #2d6a35); font-weight: 600; font-size: .85rem; }
+
+  .series-list { display: flex; flex-direction: column; gap: .8rem; }
+  .series-card {
+    background: #fff; border-top: 3px solid var(--gold, #c79a3a); border-radius: 10px;
+    padding: 1rem 1.1rem; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .series-card h4 { margin: 0 0 .4rem; font-size: 1.02rem; color: var(--green-deep, #1e3a24); }
+  .series-card p { font-size: .88rem; color: var(--text-soft, #5a5a4f); line-height: 1.55; margin: .5rem 0 .4rem; }
+  .series-actions { margin-top: .3rem; }
+
+  /* Demo-only chrome. Loud on purpose — this page is not the real events page. */
+  .demo-bar {
+    background: #5d4a8a; color: #fff; padding: .7rem 1.5rem;
+    font-size: var(--t-base); line-height: 1.5; text-align: center;
+  }
+  .demo-bar strong { color: #fff; }
+  .demo-note {
+    background: var(--gold-tint); border-left: 4px solid var(--gold-mark);
+    padding: .9rem 1.1rem; margin: 0 0 1.5rem; border-radius: var(--r);
+    font-size: var(--t-base); line-height: 1.6; color: var(--ink);
+  }
+  .demo-note code { background: rgba(0,0,0,.06); padding: .1rem .3rem; border-radius: 4px; }
+</style>
+<style>section[id]{scroll-margin-top:78px}</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="demo-bar">
+  <strong>DEMO PAGE — not live.</strong>
+  The four cards below use made-up field values to show the band with every field filled in.
+  The real page is <a href="events.html" style="color:#fff;text-decoration:underline">events.html</a>.
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-bg" style="background-image:url('photos/PSBP-00035/626742537.jpg')"></div>
+  <div class="page-hero-content" style="text-align:center;margin:0 auto">
+    <div class="label label-light">What's On</div>
+    <h1>Events &amp; Classes</h1>
+    <p>Learning events, community gatherings, weddings, art shows, and regular classes. Always check before a weekend — we sometimes close for private events.</p>
+  </div>
+  <div class="page-hero-credit" style="position:absolute;right:.9rem;bottom:.7rem;z-index:3;font-size:.72rem;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.65);letter-spacing:.02em">© jsea · CC-BY-NC · iNaturalist</div>
+</div>
+
+<!-- SAVE THE DATE — the band being demoed. Same markup and same renderer as
+     events.html; only the data is faked, and it is faked to show the band with
+     nothing missing. -->
+<section class="bg-wash" id="featured" style="padding:2.75rem 1.5rem 3rem">
+  <div class="section-inner">
+    <span class="label">Save the Date</span>
+    <h2 class="section-title" style="margin:.1rem 0 0">Mark your calendar</h2>
+    <div id="featuredList" class="feat-grid"></div>
+
+    <div class="demo-note" style="margin:1.75rem 0 0">
+      <strong>What each card is showing.</strong>
+      Card 1 has the flyer link Fall Plant is missing today. Card 2 carries a flyer
+      <em>and</em> a ticket link — two different destinations. Card 3 is a multi-day run
+      (<code>date_end</code>), and stays featured through its last night. Card 4 has
+      <strong>no poster at all</strong> — that is what a flagged event looks like before
+      anyone makes artwork, and it is the case worth checking, because it will happen.
+    </div>
+  </div>
+</section>
+
+<section class="bg-cream" id="whatson">
+  <div class="section-inner">
+
+    <div class="demo-note">
+      Everything below this line is the <strong>real</strong> page pulling <strong>real</strong>
+      Sheet data — left in so you can judge the band against its actual surroundings.
+    </div>
+
+    <div class="events-layout">
+
+      <!-- MAIN — toggle between the 2-week agenda and the full calendar -->
+      <div>
+        <div class="ev-viewbar">
+          <div>
+            <span class="label">What's On</span>
+            <h2 class="section-title" id="viewTitle" style="margin:0">The next two weeks</h2>
+          </div>
+          <div class="ev-viewtoggle">
+            <button class="ev-vbtn active" data-view="weeks">Next 2 weeks</button>
+            <button class="ev-vbtn" data-view="calendar">Full calendar</button>
+          </div>
+        </div>
+
+        <div id="view-weeks">
+          <div id="eventFilters" class="event-filters"></div>
+          <div id="agenda" class="agenda-list">
+            <p class="text-soft">Loading events…</p>
+          </div>
+        </div>
+
+        <div id="view-calendar" style="display:none">
+          <div id="calFilters" class="event-filters"></div>
+          <div id="monthList" class="month-list"></div>
+        </div>
+      </div>
+
+      <!-- RAIL — weekly rhythm, series index -->
+      <div>
+        <span class="label">Every Week</span>
+        <h2 class="section-title" style="font-size:1.3rem;margin-bottom:.9rem">Weekly schedule</h2>
+        <div id="weeklySchedule" class="sched-list">
+          <p class="text-soft" style="font-size:.9rem">Loading classes…</p>
+        </div>
+
+        <span class="label" style="margin-top:1.9rem;display:inline-block">Series &amp; Programs</span>
+        <h2 class="section-title" style="font-size:1.3rem;margin-bottom:.9rem">Ongoing series</h2>
+        <div id="seriesIndex" class="series-list"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+<script src="js/site.js"></script>
+<script>
+injectShared({ inatBar: false });
+
+/* ────────────────────────────────────────────────────────────────────────
+   DEMO DATA — hand-built items in the exact shape _eventItem() produces,
+   so renderFeature() runs unmodified. Dates are pinned to 2026 rather than
+   generated, so the page looks the same every time you open it.
+
+   The JPGs are the real ones already in images/events/. Everything else
+   (the link URLs especially) is placeholder — see the Sheet column named
+   in each comment for where the real value would come from.
+   ──────────────────────────────────────────────────────────────────────── */
+const DEMO_FEATURED = [
+  {
+    // Real row today, except link_url/link_text are empty in the Sheet.
+    date: new Date(2026, 9, 4), date_end: null,
+    title: 'Fall Plant & Garden Festival',
+    time: '10AM - 3PM',
+    description: 'Huge variety of plants for sale. Artisans, music, food, and fun!',
+    poster: 'images/events/fallplant.jpg',
+    registration_url: '',
+    _link: { url: 'images/events/fallplant.jpg', text: 'See the flyer' }
+  },
+  {
+    // Real row today, plus the flyer link it does not have. The ticket link
+    // IS real — registration_url, currently with nowhere to appear.
+    date: new Date(2026, 9, 18), date_end: null,
+    title: "Groovin' in the Gardens",
+    time: '4PM - 6PM',
+    description: 'An afternoon of live jazz in the gardens with The Pops Orchestra Jazz Combo. Wine, beer, soda and food available.',
+    poster: 'images/events/groovin-2026.jpg',
+    registration_url: 'https://thepopsorchestra.app.getcuebox.com/o/21NL0B8D/shows/QLF5LXY1',
+    _link: { url: 'images/events/groovin-2026.jpg', text: 'See the flyer' }
+  },
+  {
+    // Multi-day: date + date_end. Stays featured through the 20th.
+    date: new Date(2026, 11, 17), date_end: new Date(2026, 11, 20),
+    title: 'Winter Nights under the Lights',
+    time: '6PM - 9:30PM',
+    description: 'Acres of Lights, Santa & Mrs. Claus, Food Trucks, Gift Market, Hot Cider, Live Holiday Music, Decorated Trees, Crafts, Toys for Tots.',
+    poster: 'images/events/winternights.jpg',
+    registration_url: '',
+    _link: { url: 'images/events/winternights.jpg', text: 'See the flyer' }
+  },
+  {
+    // FLAGGED BUT NO ARTWORK — screen_poster empty. Shown deliberately: this
+    // is what the band does when Bev marks an event before a flyer exists.
+    date: new Date(2027, 3, 11), date_end: null,
+    title: 'Garden Party',
+    time: '5PM - 8PM',
+    description: 'Supper by Innovative Dining, the Manatee River Bluegrass Band, a silent auction and a full bar, under the stars in the gardens.',
+    poster: '',
+    registration_url: '',
+    _link: { url: 'contact.html', text: 'Ask about tickets' }
+  }
+];
+
+document.getElementById('featuredList').innerHTML =
+  DEMO_FEATURED.map(renderFeature).join('');
+
+/* The rest of the page runs on the real feed, minus the featured band —
+   loadEventsPage is given no `featured` target, so it leaves ours alone. */
+loadEventsPage({
+  agenda:     'agenda',
+  filters:    'eventFilters',
+  calFilters: 'calFilters',
+  monthList:  'monthList',
+  viewTitle:  'viewTitle',
+  schedule:   'weeklySchedule',
+  series:     'seriesIndex'
+});
+</script>
+</body>
+</html>

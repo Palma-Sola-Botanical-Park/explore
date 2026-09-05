@@ -792,10 +792,15 @@ function _eventItem(e){
   if (!date) return null;
   return {
     kind: _isYes(e.closes_park) ? 'closure' : 'event',
-    date, title: e.title, time: e.time, description: e.description,
+    date, date_end: parseDateLocal(e.date_end),
+    title: e.title, time: e.time, description: e.description,
     category: eventCategory(e), cost: e.cost, series: e.series,
     fundraiser: _isYes(e.fundraiser), kid_friendly: _isYes(e.kid_friendly),
     save_the_date: _isYes(e.save_the_date),
+    // The flyer/poster artwork. Named screen_poster because screen.html got
+    // here first, but it is the event's artwork wherever we show it — the
+    // featured band on events.html reads the same column.
+    poster: (e.screen_poster || '').trim(),
     registration_url: e.registration_url,
     instructor: '', _link: PSBP.rowLink(e)
   };
@@ -819,7 +824,9 @@ function expandClasses(classes, start, end){
       out.push({
         kind: 'class', date: new Date(cur), title: c.title, time: c.time,
         instructor: c.instructor, description: c.description,
-        category: eventCategory(c), cost: c.cost, series: '',
+        // A class may belong to a series (Bright Futures is a weekly class AND
+        // a program with a flyer). Blank for most classes, which is the norm.
+        category: eventCategory(c), cost: c.cost, series: c.series || '',
         fundraiser: false, kid_friendly: _isYes(c.kid_friendly),
         registration_url: c.registration_url, _link: PSBP.rowLink(c)
       });
@@ -845,6 +852,9 @@ function _inlineLink(item){
 function _seriesLine(item, seriesMap){
   if (!item.series) return '';
   const label = item.series.trim();
+  // A class can share its series' name (Bright Futures is both). Printing
+  // "Bright Futures — Part of the Bright Futures" helps nobody.
+  if (label.toLowerCase() === (item.title || '').trim().toLowerCase()) return '';
   const s = _seriesOf(item, seriesMap);
   if (s && s.flyer_url)
     return `<div class="ev-series">Part of the ${PSBP.linkTag(s.flyer_url, _evEsc(label)+' →',
@@ -950,6 +960,47 @@ function renderSeriesCard(s){
 
 // One "Save the Date" rail card — a marquee event (Holiday Nights, the gala),
 // pinned regardless of how far out it is. Title + date + flyer link, nothing more.
+// "Oct 4"  ·  "Dec 17–20"  ·  "Dec 30 – Jan 2"
+function _dateSpan(a, b){
+  const MO = { month:'short', day:'numeric' };
+  const start = a.toLocaleDateString('en-US', MO);
+  if (!b || b <= a) return start;
+  return (b.getMonth() === a.getMonth())
+    ? start + '–' + b.getDate()
+    : start + ' – ' + b.toLocaleDateString('en-US', MO);
+}
+
+// One featured card for the "Save the Date" band at the top of events.html.
+// The flyer IS the card — Bev makes artwork for every big event, and that
+// artwork carries the times, prices and address. Shown whole, never cropped,
+// because on our flyers that detail sits along the bottom edge.
+function renderFeature(item){
+  const href  = item._link && item._link.url;
+  const label = (item._link && item._link.text) || 'See the flyer';
+  const dates = _dateSpan(item.date, item.date_end);
+
+  const poster = item.poster
+    ? `<div class="feat-art"><img src="${item.poster}" alt="${_evEsc(item.title||'')} flyer" loading="lazy"></div>`
+    : '';
+
+  // Flyer link and ticket link are different things; show whichever exist.
+  const actions = [];
+  if (href) actions.push(PSBP.linkTag(href, _evEsc(label) + ' →',
+    { title:item.title||'', back:_BACK(), className:'feat-link' }));
+  if (item.registration_url) actions.push(PSBP.linkTag(item.registration_url, 'Tickets →',
+    { title:item.title||'Tickets', back:_BACK(), className:'feat-link feat-link-tickets' }));
+
+  return `<article class="feat-card">
+    ${poster}
+    <div class="feat-body">
+      <div class="feat-when">${_evEsc(dates)}${item.time?` · ${_evEsc(item.time)}`:''}</div>
+      <h3 class="feat-title">${_evEsc(item.title||'')}</h3>
+      ${item.description?`<p class="feat-desc">${_evEsc(clip(item.description,150))}</p>`:''}
+      ${actions.length?`<div class="feat-actions">${actions.join('')}</div>`:''}
+    </div>
+  </article>`;
+}
+
 function renderSaveDate(item){
   const href = item._link && item._link.url;
   const dateStr = item.date.toLocaleDateString('en-US',{month:'short',day:'numeric'});
@@ -1072,14 +1123,16 @@ function buildEventFilters(container, cardContainers, opts){
 
 // ── ORCHESTRATOR for events.html ──────────────────────────────
 // opts: { agenda, filters, schedule, series, monthList,
-//         saveDate, saveDateWrap, viewTitle, windowDays }
+//         featured, featuredWrap, featuredMax (default 4),
+//         saveDate, saveDateWrap (legacy compact rail), viewTitle, windowDays }
 async function loadEventsPage(opts){
   opts = opts || {};
   const $ = id => id ? document.getElementById(id) : null;
   const agendaEl = $(opts.agenda), filtersEl = $(opts.filters),
         schedEl = $(opts.schedule), seriesEl = $(opts.series),
         listEl = $(opts.monthList), calFiltersEl = $(opts.calFilters),
-        sdEl = $(opts.saveDate), sdWrap = $(opts.saveDateWrap), titleEl = $(opts.viewTitle);
+        sdEl = $(opts.saveDate), sdWrap = $(opts.saveDateWrap), titleEl = $(opts.viewTitle),
+        featEl = $(opts.featured), featWrap = $(opts.featuredWrap);
   try {
     const [events, classes, series, weddingCal] = await Promise.all([
       fetchTab(TAB.events).catch(()=>[]),
@@ -1144,15 +1197,29 @@ async function loadEventsPage(opts){
     buildEventFilters(calFiltersEl, [listEl],
       { itemSelector: '.ml-rowwrap', groupSelector: '.ml-month' });
 
-    // SAVE THE DATE — flagged marquee events, deduped by title, soonest 2, pinned.
+    // SAVE THE DATE — the events Bev flags as the year's big ones.
+    //
+    // save_the_date WINS over closes_park. Winter Nights is a free public event
+    // that also shuts the park to normal daytime use, so it carries both flags;
+    // the old filter dropped every closure and the park's biggest event of the
+    // year never appeared here at all. A flagged event is featured, full stop.
+    //
+    // A multi-day event stays featured until its LAST day, not its first.
+    const seenStd = new Set();
+    const featured = evItems
+      .filter(i => i.save_the_date && (i.date_end || i.date) >= today)
+      .sort(_byDateThenTime)
+      .filter(i => { const k=(i.title||'').trim().toLowerCase(); if(seenStd.has(k)) return false; seenStd.add(k); return true; })
+      .slice(0, opts.featuredMax || 4);
+
+    if (featEl){
+      featEl.innerHTML = featured.map(renderFeature).join('');
+      if (featWrap) featWrap.style.display = featured.length ? '' : 'none';
+    }
+    // Legacy compact rail version, still supported for any page that wants it.
     if (sdEl){
-      const seen = new Set();
-      const sd = evItems.filter(i => i.kind !== 'closure' && i.save_the_date && i.date >= today)
-        .sort(_byDateThenTime)
-        .filter(i => { const k=(i.title||'').trim().toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true; })
-        .slice(0, 2);
-      sdEl.innerHTML = sd.map(renderSaveDate).join('');
-      if (sdWrap) sdWrap.style.display = sd.length ? '' : 'none';
+      sdEl.innerHTML = featured.map(renderSaveDate).join('');
+      if (sdWrap) sdWrap.style.display = featured.length ? '' : 'none';
     }
 
     if (schedEl){

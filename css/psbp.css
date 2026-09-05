@@ -810,6 +810,45 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .std-linkrow { margin-top: .3rem; }
 .std-link { font-weight: 600; font-size: .88rem; color: var(--green); }
 
+/* ── Featured band: "Save the Date" across the top of events.html ─────────
+   The flyer is the card. Bev makes artwork for every big event and that
+   artwork carries the times, prices and address — so the poster is shown
+   WHOLE, never cropped to a uniform tile: on our flyers the detail runs
+   along the bottom edge and a crop would eat it. Our three current posters
+   are all portrait within 0.69–0.77, so they line up without help.
+
+   Nothing here is sized below --t-base except .feat-when, which is a short
+   bold date, not reading text.
+   ─────────────────────────────────────────────────────────────────────── */
+.feat-grid {
+  display: grid; gap: var(--s4); margin-top: var(--s4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+@media (min-width: 900px) { .feat-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.feat-card {
+  display: flex; flex-direction: column;
+  background: var(--surface); border: 1px solid var(--rule);
+  border-top: 4px solid var(--gold-mark); border-radius: var(--r);
+  overflow: hidden; box-shadow: 0 1px 4px rgba(40,50,30,.07);
+}
+.feat-art { background: var(--sunk); line-height: 0; }
+.feat-art img { width: 100%; height: auto; display: block; }
+
+.feat-body { padding: .9rem 1.05rem 1.05rem; display: flex; flex-direction: column; flex: 1; }
+.feat-when {
+  font-size: .95rem; font-weight: 800; letter-spacing: .03em;
+  text-transform: uppercase; color: var(--gold);
+}
+.feat-title { margin: .25rem 0 0; font-size: 1.3rem; line-height: 1.25; color: var(--green-ink); }
+.feat-desc  { margin: .5rem 0 0; font-size: var(--t-base); line-height: 1.55; color: var(--ink-soft); }
+.feat-actions {
+  margin-top: auto; padding-top: .8rem;
+  display: flex; flex-wrap: wrap; gap: .4rem 1.1rem;
+}
+.feat-link { font-size: var(--t-base); font-weight: 700; color: var(--green); white-space: nowrap; }
+.feat-link-tickets { color: var(--warn); }
+
 /* ── Full calendar: grouped scrolling list, all screen sizes ────────────── */
 .ml-month { margin-bottom: var(--s2); padding: 0; }
 .ml-title-h {

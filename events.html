@@ -65,6 +65,18 @@
   <div class="page-hero-credit" style="position:absolute;right:.9rem;bottom:.7rem;z-index:3;font-size:.72rem;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.65);letter-spacing:.02em">© jsea · CC-BY-NC · iNaturalist</div>
 </div>
 
+<!-- SAVE THE DATE — the year's big events, poster-led. Sits on --wash so it
+     reads as its own band against the near-white #whatson section below;
+     white-on-cream here would be a 2-point change nobody can see. Hidden
+     entirely when nothing upcoming is flagged. -->
+<section class="bg-wash" id="featured" style="display:none;padding:2.75rem 1.5rem 3rem">
+  <div class="section-inner">
+    <span class="label">Save the Date</span>
+    <h2 class="section-title" style="margin:.1rem 0 0">Mark your calendar</h2>
+    <div id="featuredList" class="feat-grid"></div>
+  </div>
+</section>
+
 <section class="bg-cream" id="whatson">
   <div class="section-inner">
     <div class="events-layout">
@@ -99,11 +111,6 @@
 
       <!-- RAIL — save the date, weekly rhythm, series index -->
       <div>
-        <div id="saveDateWrap" style="display:none;margin-bottom:1.9rem">
-          <span class="label">Save the Date</span>
-          <div id="saveDate" class="std-list" style="margin-top:.5rem"></div>
-        </div>
-
         <span class="label">Every Week</span>
         <h2 class="section-title" style="font-size:1.3rem;margin-bottom:.9rem">Weekly schedule</h2>
         <div id="weeklySchedule" class="sched-list">
@@ -151,8 +158,8 @@ const _eventsOpts = {
   filters:      'eventFilters',
   calFilters:   'calFilters',
   monthList:    'monthList',
-  saveDate:     'saveDate',
-  saveDateWrap: 'saveDateWrap',
+  featured:     'featuredList',
+  featuredWrap: 'featured',
   viewTitle:    'viewTitle',
   schedule:     'weeklySchedule',
   series:       'seriesIndex'

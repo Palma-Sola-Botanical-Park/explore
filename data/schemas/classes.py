@@ -2,9 +2,17 @@
 data/schemas/classes.py  —  validation rules for the `classes` tab.
 
 Classes are standing weekly rules (same weekday + time + instructor), NOT dated
-events. So: no date/date_end, no series foreign key, no closes_park. The one
-field that drives everything is `weekday` — the expander turns it into dated
-instances inside the 2-week window — so a blank/bad weekday is a row-fatal error.
+events. So: no date/date_end, no closes_park. The one field that drives
+everything is `weekday` — the expander turns it into dated instances inside the
+2-week window — so a blank/bad weekday is a row-fatal error.
+
+SERIES: classes DO carry a series foreign key (added 2026-09-05). This tab
+originally had none, on the reasoning that a series is a run of dated events and
+a class is a standing rule. Bright Futures disproved it: it is a weekly class
+that is also a program with its own flyer, and it was living as two unconnected
+rows — one here, one in `series`. A class may now name a series exactly as an
+event does, so the flyer lives in ONE place. Blank stays the norm; most classes
+belong to no series.
 
 Same engine as events.py; only the rule list differs. For the rule anatomy and
 the gate's exact semantics — quarantine fires ONLY on severity:"error" +
@@ -61,6 +69,14 @@ SCHEMA = {
          "severity": "error", "scope": "row",
          "msg": "active_to is before active_from",
          "why": "If set, can't be earlier than active_from."},
+
+        # --- series link (optional; same FK + severity as events.series) -----
+        # Orphan = warn, scope field: a mistyped series name loses the "Part of
+        # …" link but must never quarantine a class that is otherwise fine.
+        {"field": "series", "check": "fk", "arg": ["series", "name"],
+         "severity": "warn", "scope": "field",
+         "msg": "series name doesn't match any row in the series tab",
+         "why": "Must match a name in the series tab, or be blank."},
 
         # --- controlled vocab (warn) -----------------------------------------
         {"field": "category", "check": "in_vocab", "arg": CATEGORIES,    "severity": "warn", "scope": "field",
