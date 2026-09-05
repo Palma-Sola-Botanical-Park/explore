@@ -111,6 +111,13 @@
 
       <!-- RAIL — save the date, weekly rhythm, series index -->
       <div>
+        <!-- Overflow from the poster band above: the 4th flagged event onward,
+             in the old compact form. Hidden whenever three or fewer are flagged. -->
+        <div id="saveDateWrap" style="display:none;margin-bottom:1.9rem">
+          <span class="label">Save the Date</span>
+          <div id="saveDate" class="std-list" style="margin-top:.5rem"></div>
+        </div>
+
         <span class="label">Every Week</span>
         <h2 class="section-title" style="font-size:1.3rem;margin-bottom:.9rem">Weekly schedule</h2>
         <div id="weeklySchedule" class="sched-list">
@@ -160,6 +167,8 @@ const _eventsOpts = {
   monthList:    'monthList',
   featured:     'featuredList',
   featuredWrap: 'featured',
+  saveDate:     'saveDate',
+  saveDateWrap: 'saveDateWrap',
   viewTitle:    'viewTitle',
   schedule:     'weeklySchedule',
   series:       'seriesIndex'

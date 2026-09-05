@@ -21,6 +21,10 @@ window.PSBP = window.PSBP || {};
     if (!u) return 'internal';
     if (/^(mailto:|tel:)/i.test(u)) return 'direct';
     if (/\.pdf($|[?#])/i.test(u)) return 'document';
+    // Flyers are JPGs in the repo. Treated as documents so they open inside
+    // viewer.html — banner, title, Back — instead of dumping the visitor on a
+    // bare full-screen image with nothing but the browser Back button.
+    if (/\.(jpe?g|png|webp|gif)($|[?#])/i.test(u)) return 'document';
     if (/docs\.google\.com\/.+\/pub(html)?($|[?#])/i.test(u)) return 'document';
     if (/^https?:\/\//i.test(u)) {
       try { if (new URL(u).host === location.host) return 'internal'; } catch (e) {}
@@ -1206,20 +1210,26 @@ async function loadEventsPage(opts){
     //
     // A multi-day event stays featured until its LAST day, not its first.
     const seenStd = new Set();
-    const featured = evItems
+    const flagged = evItems
       .filter(i => i.save_the_date && (i.date_end || i.date) >= today)
       .sort(_byDateThenTime)
-      .filter(i => { const k=(i.title||'').trim().toLowerCase(); if(seenStd.has(k)) return false; seenStd.add(k); return true; })
-      .slice(0, opts.featuredMax || 4);
+      .filter(i => { const k=(i.title||'').trim().toLowerCase(); if(seenStd.has(k)) return false; seenStd.add(k); return true; });
+
+    // THREE is the ceiling for the poster band — the grid is 3-up on a wide
+    // screen, and a fourth poster wraps onto a lonely second row. Anything
+    // past three spills into the compact rail card instead of disappearing:
+    // still flagged, still dated, just without the artwork.
+    const bandMax  = opts.featuredMax || 3;
+    const band     = flagged.slice(0, bandMax);
+    const overflow = flagged.slice(bandMax);
 
     if (featEl){
-      featEl.innerHTML = featured.map(renderFeature).join('');
-      if (featWrap) featWrap.style.display = featured.length ? '' : 'none';
+      featEl.innerHTML = band.map(renderFeature).join('');
+      if (featWrap) featWrap.style.display = band.length ? '' : 'none';
     }
-    // Legacy compact rail version, still supported for any page that wants it.
     if (sdEl){
-      sdEl.innerHTML = featured.map(renderSaveDate).join('');
-      if (sdWrap) sdWrap.style.display = featured.length ? '' : 'none';
+      sdEl.innerHTML = overflow.map(renderSaveDate).join('');
+      if (sdWrap) sdWrap.style.display = overflow.length ? '' : 'none';
     }
 
     if (schedEl){

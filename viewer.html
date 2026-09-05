@@ -152,6 +152,36 @@ injectShared({ inatBar: false });
     return;
   }
 
+  // ── Image path ─────────────────────────────────────────────────
+  // Added 2026-09-05. Event flyers are JPGs in the repo (images/events/*.jpg)
+  // and they are documents in every sense that matters here — a visitor opens
+  // one to read the times and the price off it.
+  //
+  // Without this branch a flyer fell through to the iframe below, which shows
+  // the picture at native size in a scroll box; and before routing changed in
+  // site.js it did not reach this page at all — a bare full-screen JPG with the
+  // browser Back button as the only way out. Rendering it as an <img> inside
+  // the same white page card the PDF pages use makes a flyer behave like every
+  // other document in this viewer: banner, title, Back, Open/Download.
+  var isImage = /\.(jpe?g|png|webp|gif)($|[?#])/i.test(fileUrl);
+  if (isImage){
+    statusEl.style.display = 'none';
+    var page = document.createElement('div');
+    page.className = 'pdf-page';
+    var img = document.createElement('img');
+    img.alt = title;
+    img.style.cssText = 'display:block;max-width:100%;height:auto';
+    img.addEventListener('error', function(){
+      statusEl.style.display = '';
+      statusEl.textContent = 'Could not load that image.';
+      page.remove();
+    });
+    img.src = fileUrl;
+    page.appendChild(img);
+    pagesEl.appendChild(page);
+    return;
+  }
+
   // ── Route by type ──────────────────────────────────────────────
   // PDFs go through PDF.js (below). Anything else (a published Google
   // Doc, or another embeddable web page) renders in an iframe so it
