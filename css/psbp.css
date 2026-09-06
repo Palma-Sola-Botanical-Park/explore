@@ -1028,7 +1028,11 @@ a.ml-row:hover { background: var(--sunk); }
   margin-top: var(--s7);
   background: var(--surface); border: 1px solid var(--rule);
   border-left: 4px solid var(--gold-mark); border-radius: var(--r);
-  padding: 1.5rem 1.7rem;
+  padding: 1.6rem 1.8rem;
+  /* Capped, not full-bleed. The body is set to a readable measure, so a
+     full-width card left half of itself empty — it read as a broken layout
+     rather than a letter. A letter is narrow; that is what makes it a letter. */
+  max-width: 46rem;
 }
 .dnote-lab{
   font-size: var(--t-cap); font-weight: 800; letter-spacing: .11em;
@@ -1037,11 +1041,13 @@ a.ml-row:hover { background: var(--sunk); }
 .dnote-title{ margin: .3rem 0 0; font-size: 1.4rem; line-height: 1.25; color: var(--green-ink); }
 .dnote-body{
   margin: .6rem 0 0; font-size: var(--t-base); line-height: 1.75;
-  color: var(--ink); max-width: 62ch;
+  color: var(--ink);
 }
 .dnote-sign{ display: flex; align-items: center; gap: .8rem; margin-top: 1.1rem; }
 .dnote-face{
-  width: 46px; height: 46px; border-radius: 50%; object-fit: cover;
+  /* 46px was too small to read as a face. At 64 a headshot is recognisable and
+     anything else is obviously wrong, which is the useful failure. */
+  width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
   flex: 0 0 auto; border: 2px solid var(--gold-mark);
 }
 .dnote-by{ font-size: var(--t-base); font-style: italic; color: var(--ink-soft); }

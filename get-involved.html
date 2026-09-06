@@ -634,7 +634,15 @@ section[id], div[id]{ scroll-margin-top: 84px; }
   .nl-form button:hover{background:var(--gold-light);transform:translateY(-1px)}
   .nl-form .nl-fine{margin:.9rem 0 0;font-size:.82rem;color:rgba(255,255,255,.55)}
   .nl-form .nl-fields + .nl-fields{margin-top:.75rem}
-  @media(max-width:520px){.nl-form .nl-fields{flex-direction:column}}
+  /* flex-basis is 200px. In a ROW that is a 200px width; the moment the
+     container flips to a column it becomes a 200px HEIGHT, which is what put
+     a screenful of dark green between each field on a phone. Reset the basis
+     when the direction changes. */
+  @media(max-width:520px){
+    .nl-form .nl-fields{flex-direction:column;gap:.9rem}
+    .nl-form .nl-field{flex:0 0 auto}
+    .nl-form .nl-fields + .nl-fields{margin-top:.9rem}
+  }
 </style>
 <section class="bg-deep" style="text-align:center">
   <div class="section-inner" style="max-width:600px;margin:0 auto">
