@@ -1629,10 +1629,14 @@ async function loadHomeHappening(opts){
         .sort((a,b) => a.date - b.date)[0];
 
       if (next){
+        // DAY FIRST, then the time. Leading with "Closing 3:00 PM" read as
+        // "closing at 3 today" — alarming, and wrong. "3:00 PM" also carries a
+        // formality the rest of the site does not; 3PM is how anyone says it.
         const when = next.date.toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short'});
-        const at = (next.close_time || '').trim();
-        closEl.textContent = at ? `🔒 Closing ${at} ${when} for a private event`
-                                : `🔒 Park closed ${when} for a private event`;
+        const at = (next.close_time || '').trim()
+          .replace(/:00/, '').replace(/\s*([AP])\.?M\.?/i, (m,p) => p.toUpperCase()+'M');
+        closEl.textContent = at ? `${when} — park closes ${at} for a private event`
+                                : `${when} — park closed for a private event`;
         closEl.style.display = '';
       } else {
         closEl.style.display = 'none';

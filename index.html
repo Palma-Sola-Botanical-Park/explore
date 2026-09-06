@@ -54,8 +54,10 @@
 .cx-h1 em{display:block;font-style:italic;color:var(--gold)}
 .cx-lede{font-size:1.2rem;line-height:1.6;color:var(--ink);margin:1.1rem 0 0;max-width:34em}
 .cx-hero-img{min-height:340px;background:center/cover no-repeat}
-.cx-closenote{margin-top:.55rem;display:inline-block;font-size:var(--t-base);font-weight:700;
-  color:var(--warn);background:var(--gold-tint);border-radius:var(--r-pill);padding:.25rem .8rem}
+/* Parenthetical, not a warning. It used to be a gold pill directly under the
+   eyebrow, which gave one closed afternoon the weight of a site-wide alert. */
+.cx-closenote{margin:.8rem 0 0;font-size:var(--t-base);color:var(--ink-soft)}
+.cx-closenote::before{content:"🔒";margin-right:.4rem;opacity:.65}
 
 /* three ways in */
 .cx-ways{display:grid;gap:.9rem;margin:1.9rem 0 0;grid-template-columns:1fr}
@@ -189,16 +191,16 @@
 <div class="cx-hero">
   <div class="cx-hero-txt">
     <div class="cx-eyebrow">Bradenton, Florida · Free · 8am–dusk daily</div>
-    <!-- The closure notice appears ONLY when one is coming up in the window.
-         "Can I come Saturday?" was previously answerable only by a grey row
-         far down the page. Hard-coded here; wired it would read close_time
-         from the wedding calendar. -->
-    <div class="cx-closenote" id="homeClosure" style="display:none"></div>
     <h1 class="cx-h1">Nature is here.<em>Come be part of it.</em></h1>
     <p class="cx-lede">
       On the shore of Palma Sola Bay — ten acres of gardens, a pond full of birds, and a
       community that has kept it free and open since 1993.
     </p>
+
+    <!-- Below the lede, not above the headline. Sitting at the very top it read
+         as "the park is closing" rather than "one afternoon, three weeks out".
+         Appears only when a closure falls inside the window. -->
+    <p class="cx-closenote" id="homeClosure" style="display:none"></p>
 
     <!-- Three ways in, replacing the old wall of prose. Support is deliberately
          NOT here: nobody donates before they know what the place is. -->
