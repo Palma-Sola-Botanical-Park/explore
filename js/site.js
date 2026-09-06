@@ -1151,10 +1151,15 @@ function renderMonthList(groups, seriesMap){
       // start time only, shown inline as "9AM: Event name" (drop any end time)
       const start = (!closed && it.time) ? _startTime(it.time) : '';
       const timePre = start ? `<span class="ml-time">${_evEsc(start)}:</span> ` : '';
-      // closures show a reason: public_note if set, otherwise "Private event"
-      const reason = (it.title || '').trim() || 'Private event';
+      // Closures lead with WHEN the park shuts, because that is the only thing
+      // a visitor can act on. "— Private event" said nothing they needed: it is
+      // always a private event, and naming it is not allowed anyway. A public
+      // label (public_note, e.g. "Thanksgiving") still shows when there is one.
+      const shutAt = (it.close_time || '').trim();
+      const pub    = (it.title || '').trim();
       const label = closed
-        ? `🔒 Park closed<span class="ml-closure-reason"> — ${_evEsc(reason)}</span>`
+        ? `🔒 Park closed${shutAt ? ` at ${_evEsc(shutAt)}` : ''}` +
+          (pub ? `<span class="ml-closure-reason"> — ${_evEsc(pub)}</span>` : '')
         : `${timePre}${_evEsc(it.title || '')}`;
       const title = `<span class="ml-title">${label}</span>`;
       const inner = `${dot}${date}${title}<span class="ml-chev">›</span>`;
