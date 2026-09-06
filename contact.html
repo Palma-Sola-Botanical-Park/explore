@@ -194,17 +194,6 @@
   .cert h4{font-size:1.02rem;margin:0 0 .15rem;color:var(--ink);font-family:var(--serif)}
   .cert p{margin:0;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
 
-  /* ── THE COLLECTION — a narrow green band, the page's one moment of color
-     reversal. Deliberately short: it is a door to Nature, not a section. ── */
-  .collection{background:var(--green-ink);color:#fff;text-align:center}
-  .collection .section-inner{padding-top:2.6rem;padding-bottom:2.6rem}
-  .collection p{font-family:var(--serif);font-size:clamp(1.15rem,2.2vw,1.55rem);line-height:1.5;
-    margin:0 auto 1.1rem;max-width:34ch;color:#fff}
-  .collection strong{color:var(--gold-mark);font-weight:400}
-  .collection a{color:#fff;font-weight:600;font-size:.95rem;text-decoration:none;
-    border-bottom:1px solid rgba(255,255,255,.45);padding-bottom:.15rem}
-  .collection a:hover{border-bottom-color:#fff}
-
   /* The visit block (.visit-grid / .vfacts / .vmap / .vdrive / .vtail) moved to
      css/psbp.css on 2026-09-05 so visit.html can use the same one instead of a
      second copy. Randy on seeing it: "This one is CLEAN." */
@@ -399,11 +388,6 @@
   </div>
 </section>
 
-<!-- REMOVED 2026-09-06: the "more than three hundred species" collection
-     block. The homepage now closes on the same idea with the real numbers
-     behind it (137 people · 1,815 observations · 568 species · 1,205
-     photographs), so this was a vaguer second telling on a page about the
-     organization. Nature is still reachable from the nav and the footer. -->
 
 <!-- OUR PEOPLE -->
 <section class="bg-sunk" id="organization">
@@ -411,8 +395,19 @@
     <div style="text-align:center;max-width:760px;margin:0 auto 2.4rem">
       <span class="label">Our People</span>
       <h2 class="section-title">Who keeps it running</h2>
-      <p class="section-sub" style="margin:0 auto"><strong>Two staff. Eleven volunteer board members.</strong>
-        Ten acres, open every day of the year.</p>
+      <!-- The ratio IS the story here: two paid people against ten acres, open every
+           day of the year. It used to be a sentence inside the sub-head, where it
+           read as background detail and got skimmed. As figures it lands first and
+           the tail paragraph below explains it, so nothing is said twice.
+           Reuses the .stats component in psbp.css that was written for the
+           iNaturalist counts and had no page using it. The board is deliberately
+           NOT a numeral — it has eleven real names directly below, which carries
+           more than a digit does. Changed 2026-09-06. -->
+      <div class="stats stats--center">
+        <div class="stat"><strong>2</strong><span>Staff</span></div>
+        <div class="stat"><strong>10</strong><span>Acres</span></div>
+        <div class="stat"><strong>365</strong><span>Days open a year</span></div>
+      </div>
     </div>
 
     <div class="group-label">Staff</div>

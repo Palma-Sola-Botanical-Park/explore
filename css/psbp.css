@@ -488,6 +488,8 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 
 /* Stat row — the iNaturalist counts. */
 .stats { display: flex; gap: var(--s6); flex-wrap: wrap; }
+/* Centred variant — for a stat row under a centred section heading. */
+.stats--center { justify-content: center; }
 .stat { min-width: 6rem; }
 .stat strong { display: block; font-family: var(--serif); font-size: var(--t-xl); color: var(--green-ink); line-height: 1; }
 .stat span { font-size: var(--t-cap); text-transform: uppercase; letter-spacing: .1em; color: var(--ink-soft); }
