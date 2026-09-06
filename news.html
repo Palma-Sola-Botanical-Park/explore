@@ -232,7 +232,19 @@ function fmtDate(raw, opts){ const d = raw ? new Date(raw+'T12:00') : null; retu
 
 function articleHTML(n){
   const dateLabel = fmtDate(n.date, { month:'long', day:'numeric', year:'numeric' });
-  const heroBg = n.hero_image ? `<div class="bg" style="background-image:url('${n.hero_image}')"></div>` : '';
+  // ONE PHOTOGRAPH, ONCE. All three illustrated stories use the same file for
+  // hero_image and image1, so every one of them showed its picture twice — as a
+  // dim backdrop behind the headline, then again a paragraph later.
+  //
+  // When they match, the BODY copy wins and the hero is dropped: the inline
+  // figure carries a caption, and a caption is information where a backdrop is
+  // decoration. The story then gets the light header, which is the better look
+  // anyway. Different files, and both are kept — that is a story with two real
+  // photographs and it should show both.
+  const _base = p => (p || '').trim().split('/').pop().toLowerCase();
+  const dupPhoto = n.hero_image && n.image1 && _base(n.hero_image) === _base(n.image1);
+  const useHero  = n.hero_image && !dupPhoto;
+  const heroBg = useHero ? `<div class="bg" style="background-image:url('${n.hero_image}')"></div>` : '';
   let body = '';
   if (n.intro)  body += paras(n.intro);
   if (n.image1) body += `<figure><img src="${n.image1}" alt="" onerror="this.closest('figure').style.display='none'">${n.image1_caption?`<figcaption>${n.image1_caption}</figcaption>`:''}</figure>`;
@@ -240,7 +252,7 @@ function articleHTML(n){
   if (n.body2)  body += paras(n.body2);
   const cta = newsCTA(n);
   if (!body && !cta) body = `<p class="text-soft">${n.blurb||''}</p>`;
-  return `<div class="news-reader-hero${n.hero_image ? '' : ' no-art'}">${heroBg}<div class="inner">
+  return `<div class="news-reader-hero${useHero ? '' : ' no-art'}">${heroBg}<div class="inner">
       ${dateLabel?`<div class="date">${dateLabel}</div>`:''}
       <h2>${n.headline||'Park News'}</h2>
       ${n.subhead?`<div class="subhead">${n.subhead}</div>`:''}
