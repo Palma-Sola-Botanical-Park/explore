@@ -1025,25 +1025,31 @@ a.ml-row:hover { background: var(--sunk); }
    you what she's pleased about. Absent entirely when she hasn't written one.
    ─────────────────────────────────────────────────────────────────────── */
 .dnote{
-  margin-top: var(--s7);
-  background: var(--surface); border: 1px solid var(--rule);
-  border-left: 4px solid var(--gold-mark); border-radius: var(--r);
-  padding: 1.6rem 1.8rem;
-  /* Capped, not full-bleed. The body is set to a readable measure, so a
-     full-width card left half of itself empty — it read as a broken layout
-     rather than a letter. A letter is narrow; that is what makes it a letter. */
-  max-width: 46rem;
+  /* NO CARD. A border and a white fill were chrome doing a job the content
+     already does — the gold rule, the serif and the portrait say "a person
+     wrote this" on their own. Removing the box let the note sit in the page
+     like a passage pulled aside, which is what an editor's letter is.
+     (White-on-wash was also the only workable fill: sand on wash is a 4-point
+     change, i.e. the invisible-transition trap from elsewhere on this site.) */
+  margin: var(--s7) auto 0;
+  max-width: 44rem;
+  border-left: 3px solid var(--gold-mark);
+  padding: .3rem 0 .3rem 1.9rem;
 }
+@media (max-width: 640px){ .dnote{ padding-left: 1.2rem; } }
 .dnote-lab{
   font-size: var(--t-cap); font-weight: 800; letter-spacing: .11em;
   text-transform: uppercase; color: var(--green);
 }
-.dnote-title{ margin: .3rem 0 0; font-size: 1.4rem; line-height: 1.25; color: var(--green-ink); }
+.dnote-title{ margin: .35rem 0 0; font-size: 1.5rem; line-height: 1.25; color: var(--green-ink); }
+/* The serif is the whole trick. Every other word in this section is the sans;
+   setting her note in Playfair says "a person wrote this" before anyone reads
+   the byline — the oldest move in an editor's letter, and the quietest. */
 .dnote-body{
-  margin: .6rem 0 0; font-size: var(--t-base); line-height: 1.75;
-  color: var(--ink);
+  margin: .7rem 0 0; font-family: var(--serif); font-size: 1.14rem;
+  line-height: 1.7; color: var(--ink);
 }
-.dnote-sign{ display: flex; align-items: center; gap: .8rem; margin-top: 1.1rem; }
+.dnote-sign{ display: flex; align-items: center; gap: .9rem; margin-top: 1.4rem; }
 .dnote-face{
   /* 46px was too small to read as a face. At 64 a headshot is recognisable and
      anything else is obviously wrong, which is the useful failure. */
@@ -1051,5 +1057,5 @@ a.ml-row:hover { background: var(--sunk); }
   flex: 0 0 auto; border: 2px solid var(--gold-mark);
 }
 .dnote-by{ font-size: var(--t-base); font-style: italic; color: var(--ink-soft); }
-.dnote-more{ margin: .9rem 0 0; }
+.dnote-more{ margin: 1.1rem 0 0; }
 .dnote-link{ font-size: var(--t-base); font-weight: 700; color: var(--green); }
