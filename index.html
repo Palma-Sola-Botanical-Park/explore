@@ -183,6 +183,10 @@ section[id]{scroll-margin-top:78px}
 /* Numbers set in the serif, slightly larger and in gold, so they carry inside
    a sentence without the sentence turning into a scoreboard. */
 .cx-tally{margin:1.2rem 0 .9rem !important;font-size:1.22rem;line-height:1.75}
+.cx-keepgoing{margin-top:1.6rem !important;font-size:1.32rem}
+.cx-keepgoing a{color:var(--gold-light);font-weight:700;
+  border-bottom:2px solid rgba(234,188,90,.55);padding-bottom:.1rem;text-decoration:none}
+.cx-keepgoing a:hover{border-bottom-color:var(--gold-light);text-decoration:none}
 .cx-close p b{font-family:var(--serif);font-size:1.32em;color:var(--gold-light);font-weight:700}
 /* The credit plate here sits beneath a paragraph of copy rather than over a
    bare photograph, so it is dialled back — the full-strength version competes
@@ -414,10 +418,12 @@ section[id]{scroll-margin-top:78px}
     <p>And the best part: <b>1,205</b> of those photographs are the images on this site —
       including the one behind these words — and on the signs in the garden.
       We swap them out all the time.</p>
-    <p style="margin-top:1rem">Let's keep it going — together.</p>
-    <p style="margin-top:1.6rem">
-      <a href="visit.html" class="btn btn-gold">Plan your visit →</a>
-    </p>
+    <!-- The sentence IS the call to action. A gold button here said "Plan your
+         visit", which answers a different question than the paragraph asks —
+         the block is about contributing photographs, so the next step is making
+         an observation, not planning a trip. And "Plan your visit" was already
+         the hero's first card and a footer link; this was the third. -->
+    <p class="cx-keepgoing">Let's <a href="get-started.html">keep it going</a> — together.</p>
   </div>
 </div>
 
