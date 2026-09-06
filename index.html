@@ -12,6 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/psbp.css">
 <style>
+section[id]{scroll-margin-top:78px}
+
 /* ═══════════════════════════════════════════════════════════════════════
    index.html — rebuilt 2026-09-05 from the index2 concept.
 
@@ -392,6 +394,24 @@ loadDirectorNote({ into:'dnote', wrap:'dnoteWrap' });
 // Right now in the park — rotates 3 at a time; hides itself if the feed is empty.
 loadRightNow('rightNowStrip', { limit: 24, perPage: 3, rotateSeconds: 9,
                                 sectionId: 'rightNowSection' });
+
+/* Arriving at index.html#rightNowSection from another page, the browser jumps to
+   the anchor immediately — then the posters, the director's note and the Right
+   Now cards inject ABOVE it and push the target down. You land wherever the
+   slowest fetch left you, which is why it was intermittent.
+   So: if we arrived with a hash, scroll again once the feeds have settled. Two
+   passes because images resize the page after their JSON does. Only ever runs
+   when there IS a hash, so a normal visit is untouched. */
+(function reaimHash(){
+  const id = (location.hash || '').slice(1);
+  if (!id) return;
+  const go = () => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ block: 'start' });
+  };
+  window.addEventListener('load', () => { go(); setTimeout(go, 350); });
+  setTimeout(go, 1200);
+})();
 </script>
 </body>
 </html>

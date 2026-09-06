@@ -10,7 +10,8 @@
 .news-hero-bg {
   background-image: url('photos/PSBP-00052-Mexican-Flame-Vine.jpg');
   background-size: cover; background-position: center;
-  opacity: .5;
+  /* was a hardcoded .5, which ignored --hero-veil and made this the heaviest
+     hero on the site. It now follows the same dial as every other page. */
 }
 /* Compact hero — keep the big headline, just tighten the spacing around it */
 .page-hero { min-height: 150px; }
@@ -24,6 +25,15 @@
 
 .news-reader { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 3px 18px rgba(0,0,0,.09); }
 .news-reader-hero { position: relative; min-height: 165px; background: var(--green-deep); display: flex; align-items: flex-end; }
+/* NO PHOTOGRAPH, NO GREEN SLAB. With a hero image the dark ground is what makes
+   white type readable over it. Without one it was just a block of green under a
+   green page hero — two dark bands stacked, and the article looked like chrome
+   rather than writing. An image-less story now gets a light header: sand, park
+   ink, gold rule. Same shape, opposite weight. */
+.news-reader-hero.no-art { background: var(--sunk); border-bottom: 3px solid var(--gold-mark); min-height: 0; }
+.news-reader-hero.no-art .date { color: var(--gold); text-shadow: none; }
+.news-reader-hero.no-art h2 { color: var(--green-ink); }
+.news-reader-hero.no-art .subhead { color: var(--ink-soft); }
 .news-reader-hero .bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: .5; }
 .news-reader-hero .inner { position: relative; z-index: 1; padding: 1.85rem; }
 .news-reader-hero .date { color: #ffb02e; font-size: .92rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
@@ -80,7 +90,7 @@
   <div class="page-hero-bg news-hero-bg"></div>
   <div class="page-hero-content" style="text-align:center;margin:0 auto">
     <div class="label label-light">Park News</div>
-    <h1>What's happening at the park</h1>
+    <h1>Latest news</h1>
     <p>Stories, milestones, and happy little surprises from Palma Sola — with every past newsletter gathered at the bottom.</p>
   </div>
 </div>
@@ -230,7 +240,7 @@ function articleHTML(n){
   if (n.body2)  body += paras(n.body2);
   const cta = newsCTA(n);
   if (!body && !cta) body = `<p class="text-soft">${n.blurb||''}</p>`;
-  return `<div class="news-reader-hero">${heroBg}<div class="inner">
+  return `<div class="news-reader-hero${n.hero_image ? '' : ' no-art'}">${heroBg}<div class="inner">
       ${dateLabel?`<div class="date">${dateLabel}</div>`:''}
       <h2>${n.headline||'Park News'}</h2>
       ${n.subhead?`<div class="subhead">${n.subhead}</div>`:''}
