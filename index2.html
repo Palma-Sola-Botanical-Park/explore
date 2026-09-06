@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>CONCEPT · Homepage · Palma Sola Botanical Park</title>
+<link rel="stylesheet" href="css/psbp.css">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   index2.html — CONCEPT ONLY, nothing is wired to a feed.
+
+   Every event, count and photo below is HARD-CODED from the real data as of
+   2026-09-05 so the page can be judged as a page. Wiring it up is a separate
+   job; the question this file asks is only "is this the right order?"
+
+   The order comes from merging two reviews:
+     1  Hero — what this place is, and three ways in
+     2  What's happening — moved from position 7 to position 1½
+     3  What's here — a mental map of the experience (new)
+     4  Plan your visit — moved up from the bottom, with the park map
+     5  Right now — "Right now" and "Seen lately" merged into one
+     6  The collection — real numbers, demoted below orientation
+     7  Help document the park — iNaturalist as participation, not identity
+     8  Be part of it — visit / attend / volunteer / support
+     9  Built by community — cut hard, links About
+    10  Come visit — ends on the place, not a feed
+
+   Deliberately REMOVED from today's homepage: "Your phone is a scientific
+   instrument" as a headline, the long "Every acre. Yours to use." block, and
+   the separate "Seen lately" section. The page was trying to be nine things.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.cx-note{background:#5d4a8a;color:#fff;padding:.7rem 1.5rem;font-size:var(--t-base);text-align:center;line-height:1.5}
+.cx-note a{color:#fff;text-decoration:underline}
+
+/* ── hero ─────────────────────────────────────────────────────────────── */
+.cx-hero{display:grid;grid-template-columns:1fr;background:var(--paper)}
+@media(min-width:900px){.cx-hero{grid-template-columns:1.05fr 1fr}}
+.cx-hero-txt{padding:3.5rem 1.75rem 3rem;max-width:640px;margin-left:auto}
+.cx-eyebrow{font-size:var(--t-cap);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+.cx-h1{font-family:var(--serif);font-size:clamp(2.6rem,6vw,3.9rem);line-height:1.03;color:var(--green-ink);margin:.5rem 0 0}
+.cx-h1 em{display:block;font-style:italic;color:var(--gold)}
+.cx-lede{font-size:1.2rem;line-height:1.6;color:var(--ink);margin:1.1rem 0 0;max-width:34em}
+.cx-hero-img{min-height:340px;background:center/cover no-repeat}
+
+/* three ways in */
+.cx-ways{display:grid;gap:.9rem;margin:1.9rem 0 0;grid-template-columns:1fr}
+@media(min-width:560px){.cx-ways{grid-template-columns:repeat(3,1fr)}}
+.cx-way{display:block;background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--green);
+  border-radius:var(--r);padding:.95rem 1rem;text-decoration:none}
+.cx-way:hover{border-top-color:var(--gold-mark)}
+.cx-way b{display:block;font-family:var(--serif);font-size:1.14rem;color:var(--green-ink);margin-bottom:.2rem}
+.cx-way span{font-size:var(--t-base);color:var(--ink-soft);line-height:1.45}
+
+/* ── shared section furniture ─────────────────────────────────────────── */
+.cx-sec{padding:3.4rem 1.5rem}
+.cx-in{max-width:1160px;margin:0 auto}
+.cx-title{font-family:var(--serif);font-size:2rem;color:var(--green-ink);margin:.15rem 0 .3rem;line-height:1.15}
+.cx-sub{font-size:var(--t-base);color:var(--ink-soft);margin:0 0 1.6rem;line-height:1.6;max-width:56em}
+.cx-more{display:inline-block;margin-top:1.2rem;font-size:var(--t-base);font-weight:700;color:var(--green)}
+
+/* ── what's happening ─────────────────────────────────────────────────── */
+.cx-bill{display:grid;gap:1.4rem;grid-template-columns:1fr}
+@media(min-width:820px){.cx-bill{grid-template-columns:repeat(3,1fr)}}
+.cx-post{background:var(--surface);border:1px solid var(--rule);border-top:4px solid var(--gold-mark);
+  border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.cx-post-art{aspect-ratio:5/7;background:var(--sunk);overflow:hidden}
+.cx-post-art img{width:100%;height:100%;object-fit:contain;display:block}
+.cx-post-b{padding:.9rem 1.05rem 1.1rem;display:flex;flex-direction:column;flex:1}
+.cx-when{font-size:.95rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--gold)}
+.cx-post h3{margin:.25rem 0 0;font-size:1.28rem;line-height:1.25;color:var(--green-ink)}
+.cx-post p{margin:.5rem 0 0;font-size:var(--t-base);line-height:1.55;color:var(--ink-soft)}
+.cx-post a.go{margin-top:auto;padding-top:.8rem;font-size:var(--t-base);font-weight:700;color:var(--green)}
+
+.cx-next{margin-top:2rem;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
+.cx-row{display:flex;gap:1rem;align-items:baseline;padding:.85rem 1.1rem;border-bottom:1px solid var(--rule)}
+.cx-row:last-child{border-bottom:0}
+.cx-row .d{flex:0 0 8.5rem;font-size:var(--t-base);font-weight:800;color:var(--green)}
+.cx-row .t{font-size:var(--t-base);color:var(--ink)}
+.cx-row .t b{color:var(--green-ink)}
+.cx-row.closed{background:var(--sunk)}
+.cx-row.closed .d,.cx-row.closed .t{color:var(--ink-soft)}
+
+/* ── what's here ──────────────────────────────────────────────────────── */
+.cx-tiles{display:grid;gap:1.1rem;grid-template-columns:1fr}
+@media(min-width:640px){.cx-tiles{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:980px){.cx-tiles{grid-template-columns:repeat(3,1fr)}}
+.cx-tile{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:1.15rem 1.25rem}
+.cx-tile b{display:block;font-family:var(--serif);font-size:1.22rem;color:var(--green-ink);margin-bottom:.35rem}
+.cx-tile span{font-size:var(--t-base);line-height:1.6;color:var(--ink-soft)}
+
+/* ── plan your visit ──────────────────────────────────────────────────── */
+.cx-plan{display:grid;gap:2rem;grid-template-columns:1fr;align-items:start}
+@media(min-width:880px){.cx-plan{grid-template-columns:1fr 1fr}}
+.cx-facts{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr);margin-bottom:1.4rem}
+.cx-fact b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--green-ink);line-height:1.1}
+.cx-fact span{font-size:var(--t-base);color:var(--ink-soft)}
+.cx-map{border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.cx-map img{width:100%;display:block}
+.cx-maplab{padding:.7rem .9rem;font-size:var(--t-base);color:var(--ink-soft);border-top:1px solid var(--rule)}
+
+/* ── right now ────────────────────────────────────────────────────────── */
+.cx-rn{display:grid;gap:1.1rem;grid-template-columns:1fr}
+@media(min-width:700px){.cx-rn{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.cx-rn{grid-template-columns:repeat(4,1fr)}}
+.cx-rncard{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
+.cx-rnart{height:150px;background:var(--sunk);position:relative}
+.cx-chip{position:absolute;top:.6rem;left:.6rem;font-size:.72rem;font-weight:800;letter-spacing:.05em;
+  text-transform:uppercase;padding:.24rem .62rem;border-radius:20px;box-shadow:0 1px 5px rgba(0,0,0,.25)}
+.cx-rnb{padding:.85rem 1rem 1rem}
+.cx-rnb b{display:block;font-size:1.05rem;color:var(--green-ink)}
+.cx-rnb i{display:block;font-size:var(--t-base);color:var(--ink-soft);font-style:italic;margin-top:.1rem}
+.cx-rnb span{display:block;font-size:var(--t-base);color:var(--green);font-weight:600;margin-top:.5rem}
+
+/* ── collection / participate ─────────────────────────────────────────── */
+.cx-stats{display:flex;flex-wrap:wrap;gap:2.4rem;margin:.4rem 0 1.4rem}
+.cx-stat b{display:block;font-family:var(--serif);font-size:2.4rem;color:var(--green-ink);line-height:1}
+.cx-stat span{font-size:var(--t-base);color:var(--ink-soft)}
+
+/* ── be part of it ────────────────────────────────────────────────────── */
+.cx-ways2{display:grid;gap:1rem;grid-template-columns:1fr}
+@media(min-width:640px){.cx-ways2{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.cx-ways2{grid-template-columns:repeat(5,1fr)}}
+.cx-w2{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:var(--r);padding:1rem 1.1rem}
+.cx-w2 b{display:block;font-family:var(--serif);font-size:1.16rem;color:#fff;margin-bottom:.25rem}
+.cx-w2 span{font-size:var(--t-base);line-height:1.5;color:rgba(255,255,255,.8)}
+
+/* ── closing ──────────────────────────────────────────────────────────── */
+.cx-close{position:relative;min-height:440px;display:flex;align-items:center;justify-content:center;
+  text-align:center;background:center/cover no-repeat;color:#fff;padding:3rem 1.5rem}
+.cx-close::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,26,14,.35),rgba(12,26,14,.78))}
+.cx-close > div{position:relative;z-index:2;max-width:40em}
+.cx-close h2{font-family:var(--serif);font-size:clamp(2.2rem,5vw,3rem);color:#fff;line-height:1.1;margin:0 0 .8rem}
+.cx-close p{font-size:1.15rem;line-height:1.7;color:rgba(255,255,255,.9);margin:0 0 .4rem}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="cx-note">
+  <strong>CONCEPT — not wired to any feed.</strong>
+  Every event, number and photo is hard-coded from the real data as of 5 Sept 2026, so the
+  <em>order</em> can be judged. Live page is <a href="index.html">index.html</a>.
+</div>
+
+<!-- ══ 1 · HERO — what this place is, and three ways in ═══════════════════ -->
+<div class="cx-hero">
+  <div class="cx-hero-txt">
+    <div class="cx-eyebrow">Bradenton, Florida · Free · 8am–dusk daily</div>
+    <h1 class="cx-h1">Nature is here.<em>Come be part of it.</em></h1>
+    <p class="cx-lede">
+      On the shore of Palma Sola Bay — ten acres of gardens, a pond full of birds, and a
+      community that has kept it free and open since 1993.
+    </p>
+
+    <!-- Three ways in, replacing the old wall of prose. Support is deliberately
+         NOT here: nobody donates before they know what the place is. -->
+    <div class="cx-ways">
+      <a class="cx-way" href="visit.html"><b>Visit the park</b><span>Hours, directions, the map, what you'll find</span></a>
+      <a class="cx-way" href="events.html"><b>What's happening</b><span>Events, classes, music, workdays</span></a>
+      <a class="cx-way" href="nature.html"><b>Explore</b><span>Plants, birds, wildlife, the collection</span></a>
+    </div>
+  </div>
+  <div class="cx-hero-img" style="background-image:url('photos/PSBP-00004/703963637.jpg')"></div>
+</div>
+
+<!-- ══ 2 · WHAT'S HAPPENING — was position 7 of 9 ════════════════════════ -->
+<section class="cx-sec bg-wash">
+  <div class="cx-in">
+    <span class="label">What's on</span>
+    <h2 class="cx-title">Coming up at the park</h2>
+    <p class="cx-sub">Three big days this season — and something most weeks in between.</p>
+
+    <div class="cx-bill">
+      <article class="cx-post">
+        <div class="cx-post-art"><img src="images/events/fallplant-3.jpg" alt="Fall Plant &amp; Garden Festival flyer"></div>
+        <div class="cx-post-b">
+          <div class="cx-when">Sun 4 October · 10am–3pm</div>
+          <h3>Fall Plant &amp; Garden Festival</h3>
+          <p>A huge variety of plants for sale, plus artisans, music and food.</p>
+          <a class="go" href="#">See the flyer →</a>
+        </div>
+      </article>
+      <article class="cx-post">
+        <div class="cx-post-art"><img src="images/events/groovin-2026.jpg" alt="Groovin' in the Gardens flyer"></div>
+        <div class="cx-post-b">
+          <div class="cx-when">Sun 18 October · 4–6pm</div>
+          <h3>Groovin' in the Gardens</h3>
+          <p>An afternoon of live jazz with The Pops Orchestra Jazz Combo.</p>
+          <a class="go" href="#">Tickets from $30 →</a>
+        </div>
+      </article>
+      <article class="cx-post">
+        <div class="cx-post-art"><img src="images/events/winternights-3.jpg" alt="Winter Nights under the Lights flyer"></div>
+        <div class="cx-post-b">
+          <div class="cx-when">Thu 17 – Sun 20 December · 6–9:30pm</div>
+          <h3>Winter Nights under the Lights</h3>
+          <p>Acres of lights, Santa &amp; Mrs. Claus, food trucks, hot cider and a gift market.</p>
+          <a class="go" href="#">See the flyer →</a>
+        </div>
+      </article>
+    </div>
+
+    <!-- The next few dates, including a closure — because "can I come on
+         Saturday?" is the question the old homepage never answered. -->
+    <div class="cx-next">
+      <div class="cx-row"><span class="d">Mon 8 Sep</span><span class="t"><b>Zumba in the Park</b> · 9:30am · Gina Rogers</span></div>
+      <div class="cx-row"><span class="d">Wed 16 Sep</span><span class="t"><b>Bright Futures</b> · 3pm · high-school volunteers</span></div>
+      <div class="cx-row"><span class="d">Thu 24 Sep</span><span class="t"><b>Salt Tolerant Plants for Coastal Landscapes</b> · 11am · UF/IFAS</span></div>
+      <div class="cx-row closed"><span class="d">Sat 12 Sep</span><span class="t">🔒 Park closed at 3:00 PM — private event</span></div>
+    </div>
+    <a class="cx-more" href="events.html">See the full calendar →</a>
+  </div>
+</section>
+
+<!-- ══ 3 · WHAT'S HERE — new. A mental map, not a gallery. ═══════════════ -->
+<section class="cx-sec bg-paper">
+  <div class="cx-in">
+    <span class="label">The place itself</span>
+    <h2 class="cx-title">What's here</h2>
+    <p class="cx-sub">Ten acres, and six places worth walking to. Full descriptions on Visit.</p>
+
+    <!-- These are the park's REAL named places, lifted from visit.html rather
+         than invented. An earlier draft of this section had "The pond" and
+         "Paths & shade" — categories written by someone who has never walked
+         the park. These six answer the actual question: why would I go over
+         there? -->
+    <div class="cx-tiles">
+      <div class="cx-tile"><b>Rare Fruit Trail</b><span>A frost-free pocket growing things that shouldn't survive in Manatee County — star fruit, dragon fruit, jackfruit, lychee.</span></div>
+      <div class="cx-tile"><b>Butterfly Garden</b><span>Nectar and host plants chosen to pull butterflies through the season. Best on a warm, still morning.</span></div>
+      <div class="cx-tile"><b>Serenity Garden</b><span>Benches, soft planting and a pond just beyond. The place to slow down mid-walk.</span></div>
+      <div class="cx-tile"><b>Rare Palms &amp; Plumeria</b><span>Specimen palms you won't find in a typical yard, and plumeria that perfume the path in summer.</span></div>
+      <div class="cx-tile"><b>Art in the Park</b><span>The indoor gallery at the Galleria — rotating shows from local artists, and a cool place to pause.</span></div>
+      <div class="cx-tile"><b>Hidden Garden Nursery</b><span>Volunteer-run, near the west entrance. Plants propagated from the collection. Oct–May, Tue &amp; Sat, 9am–noon.</span></div>
+    </div>
+    <a class="cx-more" href="visit.html">More about each →</a>
+  </div>
+</section>
+
+<!-- ══ 4 · PLAN YOUR VISIT — moved up, with the map that already exists ═══ -->
+<section class="cx-sec bg-sunk">
+  <div class="cx-in">
+    <span class="label">Before you come</span>
+    <h2 class="cx-title">Plan your visit</h2>
+    <div class="cx-plan">
+      <div>
+        <div class="cx-facts">
+          <div class="cx-fact"><b>Free</b><span>No admission charge</span></div>
+          <div class="cx-fact"><b>8am–dusk</b><span>Every day of the year</span></div>
+          <div class="cx-fact"><b>9800 17th Ave NW</b><span>Bradenton, Florida</span></div>
+          <div class="cx-fact"><b>(941) 761-2866</b><span>Office hours vary</span></div>
+        </div>
+        <p class="cx-sub" style="margin-bottom:.8rem">
+          You don't need a reservation, a tour or any botanical knowledge. Walk the paths at
+          your own pace. The park closes occasionally for private events — worth checking the
+          calendar before a weekend visit.
+        </p>
+        <a class="cx-more" href="visit.html">Directions, accessibility and what to expect →</a>
+      </div>
+      <div class="cx-map">
+        <img src="images/ParkMap.png" alt="Map of Palma Sola Botanical Park">
+        <div class="cx-maplab">Parking is off 17th Ave NW, by the Galleria.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 5 · RIGHT NOW — "Right now" + "Seen lately" merged into one ═══════ -->
+<section class="cx-sec bg-paper">
+  <div class="cx-in">
+    <span class="label">This week</span>
+    <h2 class="cx-title">Right now in the park</h2>
+    <p class="cx-sub">What's blooming, what's fruiting, what's flying — and what somebody just planted.</p>
+    <div class="cx-rn">
+      <div class="cx-rncard">
+        <div class="cx-rnart"><span class="cx-chip" style="background:var(--gold);color:var(--green-ink)">In bloom</span></div>
+        <div class="cx-rnb"><b>Queen's Wreath</b><i>Petrea volubilis</i><span>📍 By the Galleria</span></div>
+      </div>
+      <div class="cx-rncard">
+        <div class="cx-rnart"><span class="cx-chip" style="background:var(--green-ink);color:#fff">Spotted</span></div>
+        <div class="cx-rnb"><b>Common Gallinule</b><i>Gallinula galeata</i><span>📍 The pond</span></div>
+      </div>
+      <div class="cx-rncard">
+        <div class="cx-rnart"><span class="cx-chip" style="background:var(--green);color:#fff">Newly planted</span></div>
+        <div class="cx-rnb"><b>Rainbow Eucalyptus</b><i>Eucalyptus deglupta</i><span>📍 North lawn</span></div>
+      </div>
+      <div class="cx-rncard">
+        <div class="cx-rnart"><span class="cx-chip" style="background:var(--gold);color:var(--green-ink)">Fruiting</span></div>
+        <div class="cx-rnb"><b>Canistel</b><i>Pouteria campechiana</i><span>📍 Rare fruit trail</span></div>
+      </div>
+    </div>
+    <a class="cx-more" href="nature.html">Everything seen lately →</a>
+  </div>
+</section>
+
+<!-- ══ 6 · THE COLLECTION — real numbers, and DEMOTED below orientation ══ -->
+<section class="cx-sec bg-wash">
+  <div class="cx-in">
+    <span class="label">Go deeper</span>
+    <h2 class="cx-title">Explore the living collection</h2>
+    <div class="cx-stats">
+      <div class="cx-stat"><b>237</b><span>plants documented</span></div>
+      <div class="cx-stat"><b>92</b><span>animals recorded</span></div>
+      <div class="cx-stat"><b>73</b><span>photographers</span></div>
+    </div>
+    <p class="cx-sub">
+      Every species in the park has a page: what it is, where it stands, who photographed it
+      and when. Point your phone at a sign and it opens.
+    </p>
+    <a class="cx-more" href="nature.html">Browse the collection →</a>
+  </div>
+</section>
+
+<!-- ══ 7 · PARTICIPATE — iNat reframed from identity to invitation ═══════ -->
+<section class="cx-sec bg-paper">
+  <div class="cx-in" style="max-width:760px">
+    <span class="label">Join in</span>
+    <h2 class="cx-title">Help document the park</h2>
+    <p class="cx-sub">
+      See something interesting? Photograph it and add the observation to the park's
+      iNaturalist project. Naturalists around the world help put a name to it, and your
+      photograph — with your credit on it — may end up on a sign, on this website, or on
+      the screen in the Galleria.
+    </p>
+    <a class="cx-more" href="get-started.html">How to get started →</a>
+  </div>
+</section>
+
+<!-- ══ 8 · BE PART OF IT — support arrives AFTER understanding ═══════════ -->
+<section class="cx-sec bg-deep">
+  <div class="cx-in">
+    <span class="label">Five ways</span>
+    <h2 class="cx-title" style="color:#fff">Be part of the park</h2>
+    <div class="cx-ways2">
+      <div class="cx-w2"><b>Visit</b><span>Walk the gardens. No charge, no booking.</span></div>
+      <div class="cx-w2"><b>Attend</b><span>A class, live music, an art show.</span></div>
+      <div class="cx-w2"><b>Volunteer</b><span>Gardening, the nursery, events, the office.</span></div>
+      <div class="cx-w2"><b>Share what you see</b><span>Add observations through iNaturalist.</span></div>
+      <div class="cx-w2"><b>Support</b><span>Membership and donations keep it free.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 9 · COMMUNITY — cut from a full section to three sentences ════════ -->
+<section class="cx-sec bg-sunk">
+  <div class="cx-in" style="max-width:720px;text-align:center">
+    <h2 class="cx-title">A park built by its community</h2>
+    <p class="cx-sub" style="margin:0 auto">
+      Palma Sola Botanical Park exists because local people decided a former county nursery
+      was worth saving. It has run as a non-profit since 1993 with no federal, state or local
+      government subsidy — volunteers do nearly everything else.
+    </p>
+    <a class="cx-more" href="contact.html">About the park →</a>
+  </div>
+</section>
+
+<!-- ══ 10 · COME VISIT — ends on the place, not on a feed ════════════════ -->
+<div class="cx-close" style="background-image:url('photos/PSBP-00005/662740624.jpg')">
+  <div>
+    <h2>Come see what's here.</h2>
+    <p>9800 17th Ave NW, Bradenton, Florida</p>
+    <p>Open 8am – dusk · Every day · Free</p>
+    <p style="margin-top:1.4rem">
+      <a href="visit.html" class="btn btn-gold">Plan your visit →</a>
+    </p>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="js/site.js"></script>
+<script>injectShared({ inatBar: false });</script>
+</body>
+</html>

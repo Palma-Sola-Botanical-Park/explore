@@ -1511,7 +1511,16 @@ async function loadAnnouncements(containerId) {
   if (!el) return;
   try {
     const rows = await fetchTab(TAB.announcements);
-    const visible = rows.filter(r => isWebVisible(r));
+    // show_until: the web bar carries NEWS, and news goes stale silently.
+    // Anything past its date drops out on its own. Blank never expires, and a
+    // date we cannot parse is treated as no date — failing toward "still show
+    // it" rather than silently swallowing a message.
+    const _today = new Date(); _today.setHours(0,0,0,0);
+    const visible = rows.filter(r => {
+      if (!isWebVisible(r)) return false;
+      const until = parseDateLocal((r.show_until || '').trim());
+      return !until || until >= _today;
+    });
     if (!visible.length) { el.style.display='none'; return; }
 
     // Show the bar

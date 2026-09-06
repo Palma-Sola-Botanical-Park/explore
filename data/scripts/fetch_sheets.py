@@ -87,6 +87,8 @@ KNOWN_HEADERS = {
     # screen-only when the events.html band started showing it. Both are listed
     # so header detection works before, during and after the sheet is renamed.
     "poster",
+    # Expiry date on an announcement — the web bar hides anything past it.
+    "show_until",
 }
 
 

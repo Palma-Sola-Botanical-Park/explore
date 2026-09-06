@@ -5,7 +5,13 @@ Homepage + in-park-screen messages. Structural columns are display + title (the
 headline a card can't render without). body/link are content: a rename degrades
 to a thinner card, never blocks the feed.
 
-Columns: emoji | title | body | link_text | link_url | display
+Columns: emoji | title | body | link_text | link_url | display | show_until
+
+show_until (added 2026-09-05) is the expiry date. The web bar is for NEWS —
+"the nursery is closed Monday", "new signs are going up this month" — and news
+goes stale silently. The tab had no date field at all, which is how it filled up
+with evergreen copy instead ("You could get married here"), which is really
+screen content. Blank = never expires, which stays right for the screen loop.
 
 NOTE: link_url is intentionally NOT format-checked. Bev's links are often
 in-site relative paths ("news.html?story=Bishop", "/docs/news/...pdf"), which a
@@ -47,5 +53,12 @@ SCHEMA = {
          "severity": "warn", "scope": "field",
          "msg": "unknown display value — a typo here hides the row from everyone",
          "why": "Must be web, both, screen, or off — a typo hides the row from everyone."},
+
+        # --- expiry (optional) ------------------------------------------------
+        # Warn, not error: a garbled date should never quarantine the message.
+        # It just stops expiring, which is the safe direction to fail.
+        {"field": "show_until", "check": "iso_date_or_blank",
+         "severity": "warn", "scope": "field",
+         "why": "If set, must be a real date (YYYY-MM-DD). Blank never expires."},
     ],
 }
