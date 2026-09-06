@@ -1,7 +1,7 @@
 {
   "tab": "announcements",
   "human": "Homepage + in-park-screen announcements — one row per message.",
-  "generated_at": "2026-09-06T01:41:43+00:00",
+  "generated_at": "2026-09-06T02:37:47+00:00",
   "status": "green",
   "published": true,
   "block_reason": null,
@@ -53,6 +53,20 @@
       "passed": 8,
       "flagged": 0,
       "examples": []
+    },
+    {
+      "id": "show_until:iso_date_or_blank",
+      "field": "show_until",
+      "check": "iso_date_or_blank",
+      "arg": null,
+      "why": "If set, must be a real date (YYYY-MM-DD). Blank never expires.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 8,
+      "passed": 8,
+      "flagged": 0,
+      "examples": []
     }
   ],
   "dropped_rows": [],
@@ -73,6 +87,12 @@
       "at": "2026-09-06T01:41:43+00:00",
       "added": 0,
       "changed": 1,
+      "removed": 0
+    },
+    {
+      "at": "2026-09-06T02:37:47+00:00",
+      "added": 0,
+      "changed": 16,
       "removed": 0
     }
   ],
