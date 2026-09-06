@@ -27,32 +27,51 @@
      export. Names sit in --ink rather than --green-ink: a whole section of
      dark-green serif on cream was too heavy. Green is reserved for the small
      labels, so it marks structure instead of shouting. */
-  .group-label{text-align:center;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--green);font-weight:700;margin-bottom:1.15rem}
+  /* ── OUR PEOPLE — the roster ────────────────────────────────────────────
+     Replaced 2026-09-06 (was .office-strip + .boardA, a centred stack whose
+     officers sat in a bordered grid that read as a spreadsheet).
 
-  /* staff — two people, centered to match the section */
-  .office-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:2rem 1.5rem;max-width:940px;margin:0 auto;text-align:center}
-  .office-person .r{font-size:.86rem;color:var(--ink-soft);letter-spacing:.01em}
-  .office-person .n{font-family:var(--serif);font-size:1.5rem;color:var(--ink);line-height:1.2;margin-top:.2rem}
-  .office-person .b{font-size:.88rem;color:var(--ink-soft);margin-top:.3rem;line-height:1.6}
+     Randy's structure: the four group names run down a hard LEFT edge and the
+     people stay centred in the space beside them. The old version centred
+     everything, which left the eye no anchor — that was the actual complaint,
+     not a shortage of colour.
 
-  /* board — officers band, then directors, then the quiet tail */
-  .boardA .officers{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-    border-top:1px solid var(--rule-strong);border-bottom:1px solid var(--rule);text-align:center}
-  .boardA .off{padding:1.2rem .9rem 1.3rem;border-right:1px solid var(--rule)}
-  .boardA .off:last-child{border-right:0}
-  .boardA .off .r{font-size:.76rem;letter-spacing:.04em;color:var(--ink-soft)}
-  .boardA .off .n{font-family:var(--serif);font-size:1.28rem;color:var(--ink);margin-top:.25rem;line-height:1.2}
-  .boardA .dirwrap{margin-top:1.7rem;text-align:center}
-  .boardA .dirlabel{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--ink-faint);font-weight:700;margin-bottom:.85rem}
-  .boardA .dirs{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem 2.2rem}
-  .boardA .dirs div{font-family:var(--serif);font-size:1.12rem;color:var(--ink)}
-  .boardA .dirs small{display:block;font-family:var(--sans);font-size:.82rem;color:var(--ink-soft);margin-top:.05rem}
-  .boardA .tail{margin-top:1.7rem;padding-top:1rem;border-top:1px solid var(--rule);
-    text-align:center;font-size:.88rem;color:var(--ink-soft)}
-  .boardA .tail b{color:var(--ink);font-weight:600}
+     Volunteers is now a fourth labelled row instead of a paragraph trailing
+     underneath. They are a peer of the other three groups; setting them below
+     the roster quietly ranked them last, which is backwards for a park two
+     staff cannot run alone.
+
+     Chosen from orgdemo.html: staff carry more type than the board (they are
+     here daily), and the row rules are gold — the one use the token permits,
+     since --gold-mark is "decorative only — rules, dots, never text". ── */
+  .org2{max-width:1040px;margin:0 auto}
+  .orow{display:grid;grid-template-columns:minmax(8rem,13rem) 1fr;gap:.9rem 2.5rem;
+    padding:2.1rem 0;align-items:start;border-top:1px solid rgba(197,146,42,.42)}
+  .orow:first-child{border-top:0;padding-top:.6rem}
+  .olabel{text-align:left;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;
+    font-weight:700;color:var(--green-ink);padding-top:.45rem;line-height:1.5}
+  .obody{text-align:center}
+
+  .plist{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem 2.6rem}
+  .person .r{font-size:.78rem;letter-spacing:.03em;color:var(--ink-soft)}
+  .person .n{font-family:var(--serif);font-size:1.3rem;color:var(--ink);margin-top:.2rem;line-height:1.25}
+  .person .b{font-family:var(--sans);font-size:.84rem;color:var(--ink-soft);margin-top:.15rem}
+
+  /* Staff read larger, and their role becomes a small green cap rather than
+     grey body text — the two people you would actually phone. */
+  #rowStaff .person .n{font-size:1.72rem}
+  #rowStaff .person .r{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--green-ink);font-weight:700}
+  #rowDirs .person .n{font-size:1.14rem}
+
+  /* Emeritus / Ex-Officio — present, but not competing with the roster. */
+  .spec{margin-top:1.3rem;font-size:.86rem;color:var(--ink-soft)}
+  .spec b{color:var(--ink);font-weight:600}
+
+  @media (max-width:680px){
+    .orow{grid-template-columns:1fr;gap:.5rem;padding:1.7rem 0}
+    .olabel{padding-top:0}
+  }
 
   /* ── STAT BAND — the story's spine, in numerals ── */
   /* NB: do NOT call this .facts — psbp.css already owns that class as a
@@ -410,23 +429,44 @@
       </div>
     </div>
 
-    <div class="group-label">Staff</div>
-    <div id="office-strip" class="office-strip"></div>
+    <div class="org2">
+      <div class="orow" id="rowStaff">
+        <div class="olabel">Staff</div>
+        <div class="obody"><div class="plist" id="staffList"></div></div>
+      </div>
 
-    <div class="group-label" style="margin-top:2.6rem">Board of Directors</div>
-    <div id="boardA" class="boardA"></div>
+      <div class="orow" id="rowBoard">
+        <div class="olabel">Board of Directors</div>
+        <div class="obody"><div class="plist" id="offList"></div></div>
+      </div>
 
-    <!-- This used to lead on photo-contributor counts — 74 people, 20 of them Bright
-         Futures students. Wrong on two counts: it measured only the citizen-science
-         slice, which is the newest and by far the smallest part of volunteering here,
-         and it carried an invented clause about field guides that came from nowhere.
-         Two staff for ten acres means volunteers do nearly all of it, and the work is
-         overwhelmingly gardening, nursery, events and the jobs around them. Rewritten
-         2026-09-04 from Randy's own account of who actually turns up. -->
-    <p class="people-tail">And everyone who turns up. <strong>Volunteers do nearly everything else</strong> —
-      the gardening and the nursery, the plant sales and holiday events, the parking at those events, the
-      repairs and the office work. Bright Futures students come every week.
-      <a href="get-involved.html">There's room for you →</a></p>
+      <div class="orow" id="rowDirs">
+        <div class="olabel">Directors</div>
+        <div class="obody">
+          <div class="plist" id="dirList"></div>
+          <div class="spec" id="specList"></div>
+        </div>
+      </div>
+
+      <!-- The volunteer copy used to lead on photo-contributor counts — 74 people,
+           20 of them Bright Futures students. Wrong on two counts: it measured only
+           the citizen-science slice, which is the newest and by far the smallest
+           part of volunteering here, and it carried an invented clause about field
+           guides that came from nowhere. Two staff for ten acres means volunteers do
+           nearly all of it, and the work is overwhelmingly gardening, nursery,
+           events and the jobs around them. Rewritten 2026-09-04 from Randy's own
+           account of who actually turns up; promoted from a trailing paragraph to a
+           labelled row 2026-09-06. -->
+      <div class="orow" id="rowVol">
+        <div class="olabel">Volunteers</div>
+        <div class="obody">
+          <p class="people-tail">And everyone who turns up. <strong>Volunteers do nearly everything else</strong> —
+            the gardening and the nursery, the plant sales and holiday events, the parking at those events, the
+            repairs and the office work. Bright Futures students come every week.
+            <a href="get-involved.html">There's room for you →</a></p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
