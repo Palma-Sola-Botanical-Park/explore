@@ -205,45 +205,9 @@
     border-bottom:1px solid rgba(255,255,255,.45);padding-bottom:.15rem}
   .collection a:hover{border-bottom-color:#fff}
 
-  /* ── VISIT — was seven cards on dark green, with the address in two places,
-     directions in two places, and the map wedged beside a stack. Now: the four
-     things people actually come here for, beside a map that gets real size. ── */
-  .visit-grid{display:grid;grid-template-columns:minmax(280px,1fr) 1.15fr;gap:2.5rem;align-items:stretch}
-  @media(max-width:820px){.visit-grid{grid-template-columns:1fr;gap:2rem}}
-  .vfacts{margin:0}
-  .vfacts > div{display:grid;grid-template-columns:6.5rem 1fr;gap:1.2rem;padding:1.1rem 0;
-    border-top:1px solid rgba(255,255,255,.16)}
-  .vfacts > div:last-child{border-bottom:1px solid rgba(255,255,255,.16)}
-  .vfacts dt{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--gold-mark);font-weight:700;padding-top:.2rem}
-  .vfacts dd{margin:0;color:#fff;line-height:1.6;font-size:1.02rem}
-  .vfacts dd span{display:inline-block;margin-top:.15rem;font-size:.86rem;color:rgba(255,255,255,.6)}
-  .vfacts dd a{color:#fff;border-bottom:1px solid rgba(255,255,255,.45);text-decoration:none}
-  .vfacts dd a:hover{border-bottom-color:#fff}
-  /* Was a Google Maps iframe — which loads the whole Maps application, tiles and
-     all, to show one pin. This is a static image built once from OpenStreetMap
-     tiles (data/scripts has no part in it; see images/park-location-map.png),
-     so it costs one 113 KB request and no third-party JavaScript. Tapping it
-     opens the visitor's own Maps app with turn-by-turn from wherever they are,
-     which is what someone wanting directions actually needs. */
-  .vmap{position:relative;display:block;border-radius:12px;overflow:hidden;
-    box-shadow:0 6px 22px rgba(0,0,0,.28);min-height:340px}
-  .vmap img{display:block;width:100%;height:100%;min-height:340px;object-fit:cover}
-  .vmap-cta{position:absolute;left:1rem;bottom:1rem;background:var(--green-ink);color:#fff;
-    font-weight:600;font-size:.94rem;padding:.6rem 1.1rem;border-radius:999px;
-    box-shadow:0 2px 10px rgba(0,0,0,.3)}
-  .vmap:hover .vmap-cta{background:var(--green)}
-  .vmap-cred{position:absolute;right:.55rem;bottom:.4rem;font-size:.62rem;
-    color:rgba(0,0,0,.5);background:rgba(255,255,255,.7);padding:.1rem .35rem;border-radius:3px}
-  .vdrive{margin:2.2rem auto 0;max-width:60ch;text-align:center;
-    color:rgba(255,255,255,.75);line-height:1.75;font-size:.97rem}
-  .vtail{margin-top:2.2rem;padding-top:1.3rem;border-top:1px solid rgba(255,255,255,.16);
-    display:flex;flex-wrap:wrap;gap:.8rem 2rem;align-items:center;justify-content:space-between}
-  .vtail a{color:#fff;font-weight:600;font-size:.94rem;text-decoration:none;margin-right:1.4rem;
-    border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:.1rem}
-  .vtail a:last-child{margin-right:0}
-  .vtail a:hover{border-bottom-color:#fff}
-  .vmail{font-size:.86rem;color:rgba(255,255,255,.58)}
+  /* The visit block (.visit-grid / .vfacts / .vmap / .vdrive / .vtail) moved to
+     css/psbp.css on 2026-09-05 so visit.html can use the same one instead of a
+     second copy. Randy on seeing it: "This one is CLEAN." */
 
   /* Closes the roster with the people who are not on it. A list of fourteen
      names is a list; the same list next to "and seventy-four others" is a

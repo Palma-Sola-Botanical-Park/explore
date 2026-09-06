@@ -1508,25 +1508,33 @@ async function loadHomeHappening(opts){
       const rows = dated.map(i => {
         const when = i.date.toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short'});
         const t = i.time ? `${_evEsc(_startTime(i.time))} · ` : '';
+        // Naming the series gives a one-off talk some context — it is not a
+        // stray event, it is the third of four in a partnership.
+        const ser = (i.series||'').trim()
+          ? ` <span class="cx-ser">(part of ${_evEsc(i.series.trim())})</span>` : '';
         return `<div class="cx-row"><span class="d">${_evEsc(when)}</span>
-          <span class="t">${t}<b>${_evEsc(i.title||'')}</b></span></div>`;
+          <span class="t">${t}<b>${_evEsc(i.title||'')}</b>${ser}</span></div>`;
       }).join('');
 
-      // One line for the standing classes: title + the days it runs, deduped
-      // (Basic Hatha Yoga is Monday AND Wednesday — one entry, two days).
-      const byTitle = new Map();
-      classes.filter(isWebVisible).forEach(c => {
-        const t = (c.title||'').trim(); if (!t) return;
-        const day = formatWeekday(c.weekday) || (c.weekday||'').trim();
-        if (!byTitle.has(t)) byTitle.set(t, []);
-        if (day && !byTitle.get(t).includes(day)) byTitle.get(t).push(day);
-      });
-      const weekly = [...byTitle.entries()].map(([t, days]) =>
-        `<b>${_evEsc(t)}</b>${days.length ? ' ' + _evEsc(days.join(' &amp; ')) : ''}`
-      ).join('<span class="cx-dot">·</span>');
+      // Standing classes — ONE ENTRY PER SHEET ROW, not per title. Basic Hatha
+      // Yoga runs Monday 4pm and Wednesday 9am; collapsing it to "Mondays &
+      // Wednesdays" was tidy until the times went in, at which point it hid the
+      // difference. Five rows in the sheet, five entries here.
+      const DAY_ORDER = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      const weeklyItems = classes.filter(isWebVisible)
+        .filter(c => (c.title||'').trim())
+        .sort((a,b) => (DAY_ORDER.indexOf((a.weekday||'').trim()) - DAY_ORDER.indexOf((b.weekday||'').trim()))
+                    || (_timeKey(a.time) - _timeKey(b.time)))
+        .map(c => {
+          const day = (c.weekday||'').trim();
+          const t   = _startTime(c.time||'');
+          return `<div class="cx-wk"><span class="cx-wkwhen">${_evEsc(day)}${t?' '+_evEsc(t):''}</span>
+            <span class="cx-wkwhat">${_evEsc((c.title||'').trim())}</span></div>`;
+        }).join('');
 
-      const weeklyLine = weekly
-        ? `<div class="cx-weekly"><span class="cx-weeklab">Every week</span>${weekly}</div>` : '';
+      const weeklyLine = weeklyItems
+        ? `<div class="cx-weekly"><span class="cx-weeklab">Every week</span>
+             <div class="cx-wkgrid">${weeklyItems}</div></div>` : '';
 
       upEl.innerHTML = (rows || weeklyLine)
         ? rows + weeklyLine

@@ -93,14 +93,21 @@
 .cx-row .t{font-size:var(--t-base);color:var(--ink)}
 .cx-row .t b{color:var(--green-ink)}
 .cx-row.closed{background:var(--sunk)}
-/* The standing classes, as one line rather than four near-identical rows. */
-.cx-weekly{display:flex;flex-wrap:wrap;align-items:baseline;gap:.35rem .55rem;
-  padding:.85rem 1.1rem;background:var(--sunk);font-size:var(--t-base);
-  line-height:1.6;color:var(--ink-soft)}
-.cx-weekly b{color:var(--green-ink);font-weight:700}
-.cx-weeklab{font-size:var(--t-cap);font-weight:800;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--green);margin-right:.4rem}
-.cx-dot{color:var(--rule-strong);margin:0 .1rem}
+/* The standing classes. One entry per sheet row, in a compact grid so each is
+   delineated instead of running into the next — five items, two or three
+   columns, rather than five sparse dated rows. */
+.cx-weekly{padding:.9rem 1.1rem;background:var(--sunk)}
+.cx-weeklab{display:block;font-size:var(--t-cap);font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--green);margin-bottom:.55rem}
+.cx-wkgrid{display:grid;gap:.4rem 1.6rem;grid-template-columns:1fr}
+@media(min-width:560px){.cx-wkgrid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:980px){.cx-wkgrid{grid-template-columns:repeat(3,1fr)}}
+.cx-wk{display:flex;gap:.6rem;align-items:baseline;font-size:var(--t-base);line-height:1.5;
+  padding:.2rem 0;border-bottom:1px solid var(--rule)}
+.cx-wkwhen{flex:0 0 5.6rem;font-weight:800;color:var(--green);white-space:nowrap}
+.cx-wkwhat{color:var(--ink)}
+/* Series attribution on a dated row — present, not shouting. */
+.cx-ser{color:var(--ink-soft)}
 .cx-row.closed .d,.cx-row.closed .t{color:var(--ink-soft)}
 
 /* ── what's here ──────────────────────────────────────────────────────── */
@@ -121,7 +128,10 @@
 @media(min-width:880px){
   .cx-plan{grid-template-columns:1fr 1fr}
   .cx-plan > *{order:0}
-  .cx-plan > .cx-map{grid-column:2;grid-row:1}
+  /* Pull the map up level with "Before you come" rather than with the first
+     fact. The heading only spans the left column, so a top-aligned map started
+     roughly 5rem lower than the section did and read as sunk. */
+  .cx-plan > .cx-map{grid-column:2;grid-row:1;margin-top:-4.9rem}
 }
 .cx-facts{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr);margin-bottom:1.4rem}
 .cx-fact b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--green-ink);line-height:1.1}
@@ -285,10 +295,10 @@
 
 <!-- ══ 7 · PARTICIPATE — iNat reframed from identity to invitation ═══════ -->
 <section class="cx-sec bg-paper">
-  <div class="cx-in" style="max-width:760px">
+  <div class="cx-in">
     <span class="label">Join in</span>
     <h2 class="cx-title">Help document the park</h2>
-    <p class="cx-sub">
+    <p class="cx-sub" style="max-width:44em">
       See something interesting? Photograph it and add the observation to the park's
       iNaturalist project. Your photograph — with your name and licence on it — may end
       up on a sign in the garden, on this website, or on the screen in the Galleria.

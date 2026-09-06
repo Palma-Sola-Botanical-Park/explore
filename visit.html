@@ -6,6 +6,7 @@
 <title>Visit · Palma Sola Botanical Park</title>
 <link rel="stylesheet" href="css/psbp.css">
 <style>
+
 /* ── Card icon + heading on one line (matches the About/Contact page); only cards that have an icon ── */
 .info-card:has(> .info-card-icon) { display: grid; grid-template-columns: auto 1fr; column-gap: .65rem; }
 .info-card:has(> .info-card-icon) > * { grid-column: 1 / -1; min-width: 0; }
@@ -166,65 +167,79 @@
 </div>
 
 <!-- ============================================================
-     QUICK INFO CARDS  (unchanged — Admission / Hours / Address / Contact)
+     PARK FACTS + GETTING HERE
+     Rewritten 2026-09-05. Was four boxed cards each led by an emoji
+     (🆓 🌅 📍 📞) — four different visual languages, and all four weighted
+     equally when only two answer the question a visitor is actually asking
+     ("can I come, and when?"). Now plain typography, matching the homepage's
+     Plan-your-visit block so the two pages read as one site.
+
+     THE GOOGLE MAP EMBED IS GONE. Three maps on the site was two too many,
+     and this was the least useful: nobody pinches around an embed on a phone,
+     they tap "Open in Maps" and use their own app — which is still here. The
+     illustrated park map below answers a different and better question, what
+     is IN the park, and nothing else on the site does that.
 ============================================================ -->
-<section class="bg-cream">
+<section class="bg-deep">
   <div class="section-inner">
-    <div class="grid-4">
-      <div class="info-card" style="border-top-color:var(--gold)">
-        <div class="info-card-icon">🆓</div>
-        <h3>Admission</h3>
-        <p><span style="font-size:1.4rem;font-weight:800;color:var(--gold)">FREE</span><br>No government funding. Three donation boxes on-site. <a href="https://www.paypal.com/donate/?hosted_button_id=JS3RF9UEW5ZKL" target="_blank" rel="noopener">Donate online →</a></p>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">🌅</div>
-        <h3>Hours</h3>
-        <p><strong>8am – Dusk<br>Every day of the year</strong><br><span style="font-size:.82rem">We sometimes close for private events. Check the <a href="events.html">calendar</a> before weekend visits.</span></p>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">📍</div>
-        <h3>Address</h3>
-        <p>9800 17th Ave NW<br>Bradenton, FL 34209<br><a href="https://maps.google.com/maps?q=Palma+Sola+Botanical+Park" target="_blank" rel="noopener">Open in Maps →</a></p>
-      </div>
-      <div class="info-card">
-        <div class="info-card-icon">📞</div>
-        <h3>Contact</h3>
-        <p><a href="tel:9417612866">(941) 761-2866</a><br><a href="mailto:info@palmasolabp.org">info@palmasolabp.org</a><br>
-          <a href="https://www.facebook.com/people/Palma-Sola-Botanical-Park/100064517386906/" target="_blank" rel="noopener">Facebook</a> &nbsp;·&nbsp;
-          <a href="https://www.instagram.com/palmasolabotanical/" target="_blank" rel="noopener">Instagram</a></p>
-      </div>
+    <div class="visit-grid">
+      <dl class="vfacts">
+        <div>
+          <dt>Open</dt>
+          <dd>8am – Dusk, every day<br><span>Free admission, 365 days a year</span></dd>
+        </div>
+        <div>
+          <dt>Find us</dt>
+          <dd>9800 17th Ave NW<br>Bradenton, FL 34209<br>
+            <a href="https://maps.google.com/maps?q=Palma+Sola+Botanical+Park" target="_blank" rel="noopener">Directions →</a></dd>
+        </div>
+        <div>
+          <dt>Call</dt>
+          <dd><a href="tel:9417612866">(941) 761-2866</a><br><span>Office hours vary</span></dd>
+        </div>
+        <div>
+          <dt>Admission</dt>
+          <dd>Free<br><span>No government funding — three donation boxes on site.
+            <a href="https://www.paypal.com/donate/?hosted_button_id=JS3RF9UEW5ZKL" target="_blank" rel="noopener">Donate online →</a></span></dd>
+        </div>
+      </dl>
+
+      <a class="vmap" href="https://maps.google.com/maps?daddr=9800+17th+Ave+NW,+Bradenton,+FL+34209"
+         target="_blank" rel="noopener" aria-label="Open directions to Palma Sola Botanical Park">
+        <img src="images/park-location-map.png" alt="Map showing Palma Sola Botanical Park at 9800 17th Ave NW, Bradenton" loading="lazy">
+        <span class="vmap-cta">Get directions →</span>
+        <span class="vmap-cred">© OpenStreetMap contributors</span>
+      </a>
     </div>
+
+    <p class="vdrive">From Manatee Ave W (SR&nbsp;64), turn north onto 75th St W, then left onto
+      17th Ave NW. The entrance is a mile and a half down on your left.
+      We close occasionally for private events — check the <a href="events.html" style="color:#fff;border-bottom:1px solid rgba(255,255,255,.45)">calendar</a> before a weekend visit.</p>
   </div>
 </section>
 
-<!-- ============================================================
-     GETTING HERE  (unchanged — map embed + accessibility + pets)
-============================================================ -->
 <section class="bg-white" id="getting-here">
   <div class="section-inner">
-    <div class="grid-2" style="gap:3rem;align-items:stretch">
-      <div>
-        <span class="label">Find Us</span>
-        <h2 class="section-title">Getting here</h2>
-        <p style="color:var(--text-soft);line-height:1.75;margin-bottom:1.25rem">
-          We're tucked into the northwest corner of Bradenton, in good company — between Robinson Preserve and De Soto National Memorial, just off Palma Sola Bay. Free parking on-site.
-          Paved and natural paths, suitable for most visitors.
-        </p>
-        <div class="info-card" style="margin-bottom:1rem;border-top-color:#5b8db8">
-          <div class="info-card-icon">♿</div>
-          <h3>Accessibility</h3>
-          <p>Main paths are paved or packed gravel. Some garden areas have natural ground cover. Wheelchairs and strollers can navigate most of the park. Call ahead if you have specific questions.</p>
-        </div>
-        <div class="info-card" style="border-top-color:var(--gold)">
-          <div class="info-card-icon">🐾</div>
-          <h3>Pets Welcome</h3>
-          <p>Well-behaved pets on leash are welcome — please clean up after them. A botanical park is full of plants your dog won't find at home, so keep an eye on what they sniff and nibble; a few can upset a curious pet's stomach. Help us keep the plantings and wildlife undisturbed, and everyone has a good walk.</p>
-        </div>
+    <span class="label">Find Us</span>
+    <h2 class="section-title">Getting here</h2>
+    <p style="color:var(--text-soft);line-height:1.75;margin-bottom:1.5rem;max-width:46em">
+      We're tucked into the northwest corner of Bradenton, in good company — between
+      Robinson Preserve and De Soto National Memorial, just off Palma Sola Bay. Free
+      parking on site. Paved and natural paths, suitable for most visitors.
+    </p>
+    <div class="grid-2" style="gap:2rem;align-items:start">
+      <div class="info-card" style="border-top-color:#5b8db8">
+        <h3>Accessibility</h3>
+        <p>Main paths are paved or packed gravel. Some garden areas have natural ground cover.
+          Wheelchairs and strollers can navigate most of the park. Call ahead if you have
+          specific questions.</p>
       </div>
-      <div style="display:flex;flex-direction:column">
-        <iframe src="https://maps.google.com/maps?q=Palma%20Sola%20Botanical%20Park&t=m&z=14&output=embed&iwloc=near"
-          title="Map to Palma Sola Botanical Park"
-          style="width:100%;flex:1 1 auto;min-height:440px;border-radius:12px;border:none;box-shadow:0 4px 18px rgba(0,0,0,.1)" allowfullscreen loading="lazy"></iframe>
+      <div class="info-card" style="border-top-color:var(--gold)">
+        <h3>Pets Welcome</h3>
+        <p>Well-behaved pets on leash are welcome — please clean up after them. A botanical
+          park is full of plants your dog won't find at home, so keep an eye on what they
+          sniff and nibble; a few can upset a curious pet's stomach. Help us keep the
+          plantings and wildlife undisturbed, and everyone has a good walk.</p>
       </div>
     </div>
   </div>
