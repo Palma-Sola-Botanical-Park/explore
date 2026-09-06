@@ -861,6 +861,9 @@ function expandClasses(classes, start, end){
         // A class may belong to a series (Bright Futures is a weekly class AND
         // a program with a flyer). Blank for most classes, which is the norm.
         category: eventCategory(c), cost: c.cost, series: c.series || '',
+        // Carried so a class with a poster and no link_url still opens its
+        // flyer — same self-linking rule events get.
+        poster: (c.poster || c.screen_poster || '').trim(),
         fundraiser: false, kid_friendly: _isYes(c.kid_friendly),
         registration_url: c.registration_url, _link: PSBP.rowLink(c)
       });
@@ -983,6 +986,10 @@ function renderScheduleRow(c, seriesMap){
   // link_url — which is exactly what the model asks you to do — silently
   // dropped the "more" link from this rail.
   let link = PSBP.rowLink(c);
+  if (!link.url){
+    const p = (c.poster || c.screen_poster || '').trim();
+    if (p) link = { url: p, text: 'See the flyer' };
+  }
   if (!link.url && c.series && seriesMap){
     const s = seriesMap[c.series.trim().toLowerCase()];
     if (s){ const sl = PSBP.rowLink(s); if (sl.url) link = { url: sl.url, text: sl.text || 'Details' }; }
