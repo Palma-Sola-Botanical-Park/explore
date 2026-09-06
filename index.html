@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Palma Sola Botanical Park · Bradenton, FL</title>
+<title>Palma Sola Botanical Park · Bradenton, Florida</title>
 <meta name="description" content="A subtropical garden on Palma Sola Bay in Bradenton, Florida. Free every day, 8am to dusk, run by the community that loves it.">
 <link rel="icon" type="image/png" href="images/favicon.png">
 <link rel="apple-touch-icon" href="images/favicon.png">
@@ -12,632 +12,344 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/psbp.css">
 <style>
-/* ── HOME-ONLY LAYOUT ────────────────────────────────────────────────────
-   Page-specific layout stays with the page; everything visual comes from
-   psbp.css. This block is 60 lines. The old index.html carried 278.
-   ──────────────────────────────────────────────────────────────────────── */
-section[id] { scroll-margin-top: calc(var(--nav-h) + 14px); }
+/* ═══════════════════════════════════════════════════════════════════════
+   index.html — rebuilt 2026-09-05 from the index2 concept.
 
-/* The hero was a dark green slab beside a photo — the single biggest reason
-   the site read heavy. Now it's paper with green ink, and the photograph does
-   the color work. */
-.hero { display: grid; grid-template-columns: 1.05fr 1fr; align-items: stretch;
-        background: var(--paper); border-bottom: 1px solid var(--rule); }
-.hero-left { display: flex; flex-direction: column; justify-content: center;
-             padding: var(--s9) var(--s7) var(--s9) var(--s8); max-width: 44rem; }
-.hero-kicker { font-size: var(--t-cap); font-weight: 700; letter-spacing: .14em;
-               text-transform: uppercase; color: var(--green); margin-bottom: var(--s4); }
-.hero-title { font-size: clamp(2.3rem, 4.6vw, 3.6rem); line-height: 1.08; margin-bottom: var(--s4); }
-.hero-title em { color: var(--gold); font-style: italic; }
-.hero-body { color: var(--ink-soft); line-height: 1.75; margin-bottom: var(--s3); max-width: 34rem; }
-.hero-right { position: relative; overflow: hidden; min-height: 30rem; background: var(--sunk); }
-.hero-slideshow { position: absolute; inset: 0; }
-.hero-slide { position: absolute; inset: 0; background-size: cover; background-position: center;
-              opacity: 0; transition: opacity 1.6s ease; }
-.hero-slide.on { opacity: 1; }
-.hero-photo-note { position: absolute; top: 0; left: 0; right: 0; z-index: 3;
-  padding: var(--s4) var(--s4) var(--s7);
-  background: linear-gradient(rgba(8,18,9,.62), rgba(8,18,9,.22) 60%, transparent);
-  color: rgba(255,255,255,.9); font-size: var(--t-xs); line-height: 1.5; pointer-events: none; }
-.hero-photo-note strong { display: block; color: #fff; font-size: var(--t-sm); margin-bottom: .2rem; }
-@media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; }
-  .hero-left { padding: var(--s7) var(--s5); }
-  .hero-right { min-height: 17rem; order: -1; }
-}
+   The order answers a visitor's first five minutes, not a site map:
+     what is this place → what's on → what's here + how to come →
+     what's interesting today → how to take part → who's behind it → come
 
-/* Announcements cycle */
-.ann-cycle-wrap { position: relative; min-height: 30px; }
-.ann-cycle-item { position: absolute; inset: 0; display: flex; align-items: center; gap: var(--s4);
-                  opacity: 0; transition: opacity 1.2s ease; }
-.ann-cycle-item.active { opacity: 1; position: relative; }
+   REMOVED in this rebuild, deliberately:
+     · the "Seen lately" iNaturalist mosaic and its stats block — the page was
+       becoming a nature-data site rather than a park's front door
+     · the "Every acre. Yours to use." essay — cut to three sentences
+     · "Your phone is a scientific instrument" as a headline — iNaturalist is
+       now framed as participation, near the bottom
+   All of that still exists on its own pages. Git has the old homepage.
 
-/* Live mosaic — the flip cards built by the script below. */
-/* Three wide beats four narrow (2026-08-27). At four columns each card was
-   about 270px, and the flip side — two paragraphs of "did you know" — ran to a
-   tall thin ribbon of text. Wider cards fit more words per line, so the same
-   copy takes fewer lines and the card gets shorter. PER below must match. */
-.live-mosaic { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4); }
-.live-mosaic.cycling { position: relative; display: block; }
-.mosaic-page { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s4);
-               position: absolute; inset: 0; opacity: 0; transition: opacity .8s ease; pointer-events: none; }
-.mosaic-page.on { opacity: 1; pointer-events: auto; position: relative; }
-.mosaic-card { position: relative; cursor: pointer; perspective: 1400px; }
-/* min-height:100% makes each card fill its grid row, so a row of cards ends
-   level. .rn-flip-inner has always had this; the mosaic did not, which is why
-   Right Now cards lined up and these ones did not. (2026-08-27) */
-.mosaic-flip-inner { position: relative; display: grid; min-height: 100%;
-                     transition: transform .6s cubic-bezier(.2,.7,.2,1);
-                     transform-style: preserve-3d; }
-.mosaic-card.is-flipped .mosaic-flip-inner { transform: rotateY(180deg); }
-.mosaic-face { grid-area: 1/1; backface-visibility: hidden; border-radius: var(--r); overflow: hidden;
-               background: var(--surface); border: 1px solid var(--rule); display: flex; flex-direction: column; }
-.mosaic-card:hover .mosaic-face { border-color: var(--green); }
-/* THE FRONT SIZES THE CARD, NOT THE BACK. (2026-08-27)
+   Kept: the hero slideshow, because the community-photo credit chain is the
+   thing the park is proudest of and it belongs above the fold.
+   ═══════════════════════════════════════════════════════════════════════ */
 
-   Both faces used to sit in the same grid cell (grid-area: 1/1), so the cell
-   took the height of the TALLER one — and that was almost always the back. Its
-   content varies: the species name wraps or does not, and the "where it fits"
-   ladder runs one to three lines depending on how long class/order/family/
-   genus/species happen to be. So the front inherited a height set by somebody
-   else's taxonomy, and no two cards agreed.
+/* hero slideshow, carried over from the previous homepage */
+.hero-slideshow{position:absolute;inset:0}
+.hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:0;transition:opacity 1.6s ease}
+.hero-slide.on{opacity:1}
+.hero-photo-note{position:absolute;top:0;left:0;right:0;z-index:3;
+  padding:var(--s4) var(--s4) var(--s7);
+  background:linear-gradient(rgba(8,18,9,.62),rgba(8,18,9,.22) 60%,transparent);
+  color:rgba(255,255,255,.9);font-size:var(--t-xs);line-height:1.5;pointer-events:none}
+.hero-photo-note strong{display:block;color:#fff;font-size:var(--t-sm);margin-bottom:.2rem}
 
-   Taking the back out of flow leaves the front — a fixed 4:3.4 photo plus a
-   caption — as the only thing with a say. overflow:auto is the safety valve:
-   if a back ever exceeds the front, it scrolls rather than being silently
-   clipped. */
-.mosaic-face-back { transform: rotateY(180deg); padding: var(--s4);
-                    position: absolute; inset: 0; overflow: auto; }
+.cx-note{background:#5d4a8a;color:#fff;padding:.7rem 1.5rem;font-size:var(--t-base);text-align:center;line-height:1.5}
+.cx-note a{color:#fff;text-decoration:underline}
 
-/* And trim the two parts that vary most, so the back rarely needs to scroll. */
-.mosaic-face-back .obs-back-name { display: -webkit-box; -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical; overflow: hidden; }
-.mosaic-face-back .obs-ladder-path { display: -webkit-box; -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical; overflow: hidden; }
-.mosaic-face-back.flora { background: var(--gold-tint); }
-.mosaic-face-back.fauna { background: var(--green-tint); }
-.mosaic-img { position: relative; aspect-ratio: 4/3.4; background: var(--sunk); overflow: hidden; }
-.mosaic-photo { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .5s; }
-.mosaic-card:hover .mosaic-photo { transform: scale(1.04); }
-.mosaic-wm { position: absolute; right: -10px; bottom: -12px; width: 92px; height: 92px; color: var(--green); opacity: .12; }
-.mosaic-face-back > :not(.mosaic-wm) { position: relative; z-index: 1; }
-.mosaic-flip-hint { position: absolute; top: var(--s2); right: var(--s2); z-index: 2;
-  background: rgba(8,18,9,.6); color: #fff; font-size: var(--t-cap); font-weight: 600;
-  padding: .2rem .5rem; border-radius: var(--r-pill); opacity: 0; transition: opacity .25s; pointer-events: none; }
-.mosaic-card:hover .mosaic-flip-hint { opacity: 1; }
-.mosaic-card.is-flipped .mosaic-flip-hint { display: none; }
-.mback-rule { display: block; width: 34px; height: 3px; background: var(--gold-mark); border-radius: 2px; margin: .1rem 0 var(--s3); }
-.obs-back-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); margin-bottom: var(--s2); }
-.obs-back-name { font-family: var(--sans); font-weight: 700; font-size: var(--t-sm); color: var(--green-ink); line-height: 1.2; }
-.obs-status { display: inline-flex; align-items: center; gap: .3rem; font-size: var(--t-cap); font-weight: 600;
-              padding: .2rem .55rem; border-radius: var(--r-pill); white-space: nowrap; }
-.obs-status.working { background: var(--warn-tint); color: var(--warn); }
-.obs-status.confirmed { background: var(--ok-tint); color: var(--ok); }
-.obs-rows { width: 100%; font-size: var(--t-xs); border-collapse: collapse; }
-.obs-rows td { padding: .3rem 0; vertical-align: top; }
-.obs-rows td.k { color: var(--ink-soft); padding-right: var(--s3); white-space: nowrap; }
-.obs-rows td.v { text-align: right; font-weight: 600; }
-.obs-ladder { border-top: 1px solid var(--rule); margin-top: var(--s2); padding-top: var(--s2); }
-.obs-ladder-label { font-size: var(--t-cap); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
-.obs-ladder-path { font-size: var(--t-xs); color: var(--ink-soft); line-height: 1.5; }
-.obs-next { margin-top: auto; padding-top: var(--s2); font-size: var(--t-cap); color: var(--ink-soft); line-height: 1.5; }
-.obs-back-foot { margin-top: var(--s2); font-size: var(--t-cap); color: var(--ink-soft); display: flex; gap: .3rem; }
-@media (max-width: 980px) { .mosaic-page, .live-mosaic { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 440px) { .mosaic-page, .live-mosaic { grid-template-columns: 1fr; } }
+/* ── hero ─────────────────────────────────────────────────────────────── */
+.cx-hero{display:grid;grid-template-columns:1fr;background:var(--paper)}
+@media(min-width:900px){.cx-hero{grid-template-columns:1.05fr 1fr}}
+.cx-hero-txt{padding:3.5rem 1.75rem 3rem;max-width:640px;margin-left:auto}
+.cx-eyebrow{font-size:var(--t-cap);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+.cx-h1{font-family:var(--serif);font-size:clamp(2.6rem,6vw,3.9rem);line-height:1.03;color:var(--green-ink);margin:.5rem 0 0}
+.cx-h1 em{display:block;font-style:italic;color:var(--gold)}
+.cx-lede{font-size:1.2rem;line-height:1.6;color:var(--ink);margin:1.1rem 0 0;max-width:34em}
+.cx-hero-img{min-height:340px;background:center/cover no-repeat}
+.cx-closenote{margin-top:.55rem;display:inline-block;font-size:var(--t-base);font-weight:700;
+  color:var(--warn);background:var(--gold-tint);border-radius:var(--r-pill);padding:.25rem .8rem}
+
+/* three ways in */
+.cx-ways{display:grid;gap:.9rem;margin:1.9rem 0 0;grid-template-columns:1fr}
+@media(min-width:560px){.cx-ways{grid-template-columns:repeat(3,1fr)}}
+.cx-way{display:block;background:var(--surface);border:1px solid var(--rule);border-top:3px solid var(--green);
+  border-radius:var(--r);padding:.95rem 1rem;text-decoration:none}
+.cx-way:hover{border-top-color:var(--gold-mark)}
+.cx-way b{display:block;font-family:var(--serif);font-size:1.14rem;color:var(--green-ink);margin-bottom:.2rem}
+.cx-way span{font-size:var(--t-base);color:var(--ink-soft);line-height:1.45}
+
+/* ── shared section furniture ─────────────────────────────────────────── */
+.cx-sec{padding:3.4rem 1.5rem}
+.cx-in{max-width:1160px;margin:0 auto}
+.cx-title{font-family:var(--serif);font-size:2rem;color:var(--green-ink);margin:.15rem 0 .3rem;line-height:1.15}
+.cx-sub{font-size:var(--t-base);color:var(--ink-soft);margin:0 0 1.6rem;line-height:1.6;max-width:56em}
+.cx-more{display:inline-block;margin-top:1.2rem;font-size:var(--t-base);font-weight:700;color:var(--green)}
+
+/* ── what's happening ─────────────────────────────────────────────────── */
+.cx-bill{display:grid;gap:1.4rem;grid-template-columns:1fr}
+@media(min-width:820px){.cx-bill{grid-template-columns:repeat(3,1fr)}}
+.cx-post{background:var(--surface);border:1px solid var(--rule);border-top:4px solid var(--gold-mark);
+  border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.cx-post-art{aspect-ratio:5/7;background:var(--sunk);overflow:hidden}
+.cx-post-art img{width:100%;height:100%;object-fit:contain;display:block}
+.cx-post-b{padding:.9rem 1.05rem 1.1rem;display:flex;flex-direction:column;flex:1}
+.cx-when{font-size:.95rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--gold)}
+.cx-post h3{margin:.25rem 0 0;font-size:1.28rem;line-height:1.25;color:var(--green-ink)}
+.cx-post p{margin:.5rem 0 0;font-size:var(--t-base);line-height:1.55;color:var(--ink-soft)}
+.cx-post a.go{margin-top:auto;padding-top:.8rem;font-size:var(--t-base);font-weight:700;color:var(--green)}
+
+.cx-next{margin-top:2rem;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
+.cx-row{display:flex;gap:1rem;align-items:baseline;padding:.85rem 1.1rem;border-bottom:1px solid var(--rule)}
+.cx-row:last-child{border-bottom:0}
+.cx-row .d{flex:0 0 8.5rem;font-size:var(--t-base);font-weight:800;color:var(--green)}
+.cx-row .t{font-size:var(--t-base);color:var(--ink)}
+.cx-row .t b{color:var(--green-ink)}
+.cx-row.closed{background:var(--sunk)}
+.cx-row.closed .d,.cx-row.closed .t{color:var(--ink-soft)}
+
+/* ── what's here ──────────────────────────────────────────────────────── */
+.cx-tiles{display:grid;gap:1.1rem;grid-template-columns:1fr}
+@media(min-width:640px){.cx-tiles{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:980px){.cx-tiles{grid-template-columns:repeat(3,1fr)}}
+.cx-tile{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:1.15rem 1.25rem}
+.cx-tile b{display:block;font-family:var(--serif);font-size:1.22rem;color:var(--green-ink);margin-bottom:.35rem}
+.cx-tile span{font-size:var(--t-base);line-height:1.6;color:var(--ink-soft)}
+
+/* ── plan your visit ──────────────────────────────────────────────────── */
+.cx-plan{display:grid;gap:2rem;grid-template-columns:1fr;align-items:start}
+@media(min-width:880px){.cx-plan{grid-template-columns:1fr 1fr}}
+.cx-facts{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr);margin-bottom:1.4rem}
+.cx-fact b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--green-ink);line-height:1.1}
+.cx-fact span{font-size:var(--t-base);color:var(--ink-soft)}
+.cx-map{border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.cx-map img{width:100%;display:block}
+.cx-maplab{padding:.7rem .9rem;font-size:var(--t-base);color:var(--ink-soft);border-top:1px solid var(--rule)}
+
+/* ── right now ────────────────────────────────────────────────────────── */
+.cx-rn{display:grid;gap:1.1rem;grid-template-columns:1fr}
+@media(min-width:700px){.cx-rn{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.cx-rn{grid-template-columns:repeat(4,1fr)}}
+.cx-rncard{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
+.cx-rnart{height:150px;background:var(--sunk);position:relative}
+.cx-chip{position:absolute;top:.6rem;left:.6rem;font-size:.72rem;font-weight:800;letter-spacing:.05em;
+  text-transform:uppercase;padding:.24rem .62rem;border-radius:20px;box-shadow:0 1px 5px rgba(0,0,0,.25)}
+.cx-rnb{padding:.85rem 1rem 1rem}
+.cx-rnb b{display:block;font-size:1.05rem;color:var(--green-ink)}
+.cx-rnb i{display:block;font-size:var(--t-base);color:var(--ink-soft);font-style:italic;margin-top:.1rem}
+.cx-rnb span{display:block;font-size:var(--t-base);color:var(--green);font-weight:600;margin-top:.5rem}
+
+/* ── collection / participate ─────────────────────────────────────────── */
+.cx-stats{display:flex;flex-wrap:wrap;gap:2.4rem;margin:.4rem 0 1.4rem}
+.cx-stat b{display:block;font-family:var(--serif);font-size:2.4rem;color:var(--green-ink);line-height:1}
+.cx-stat span{font-size:var(--t-base);color:var(--ink-soft)}
+
+/* ── be part of it ────────────────────────────────────────────────────── */
+.cx-ways2{display:grid;gap:1rem;grid-template-columns:1fr}
+@media(min-width:640px){.cx-ways2{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.cx-ways2{grid-template-columns:repeat(5,1fr)}}
+.cx-w2{display:block;text-decoration:none;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.16);border-radius:var(--r);padding:1rem 1.1rem;
+  transition:background .15s,border-color .15s}
+.cx-w2:hover{background:rgba(255,255,255,.13);border-color:var(--gold-light)}
+.cx-w2 b{display:block;font-family:var(--serif);font-size:1.16rem;color:#fff;margin-bottom:.25rem}
+.cx-w2 span{font-size:var(--t-base);line-height:1.5;color:rgba(255,255,255,.8)}
+
+/* ── closing ──────────────────────────────────────────────────────────── */
+.cx-close{position:relative;min-height:440px;display:flex;align-items:center;justify-content:center;
+  text-align:center;background:center/cover no-repeat;color:#fff;padding:3rem 1.5rem}
+.cx-close::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,26,14,.35),rgba(12,26,14,.78))}
+.cx-close > div{position:relative;z-index:2;max-width:40em}
+.cx-close h2{font-family:var(--serif);font-size:clamp(2.2rem,5vw,3rem);color:#fff;line-height:1.1;margin:0 0 .8rem}
+.cx-close p{font-size:1.15rem;line-height:1.7;color:rgba(255,255,255,.9);margin:0 0 .4rem}
 </style>
 </head>
 <body>
-
 <div id="nav-placeholder"></div>
 
 <div id="announcements-bar" style="display:none">
   <div class="section-inner"><div class="ann-cycle-wrap" id="annCycleWrap"></div></div>
 </div>
 
-<!-- ══ HERO — light. The photograph carries the color. ══ -->
-<section class="hero">
-  <div class="hero-left">
-    <div class="hero-kicker">Bradenton, Florida · Free · 8am–Dusk daily</div>
-    <h1 class="hero-title">Nature is here.<br><em>Come be part of it.</em></h1>
-    <p class="hero-body">On the shore of Palma Sola Bay — open every day, free to visit, run by the community that loves it.</p>
-    <p class="hero-body">Come for a walk and stay for a class. Spot a gallinule on the pond or an anhinga drying its wings in the sun. Lend a hand for a morning, catch a live music night, or browse the art gallery. The plants have names and stories. The birds have been coming for decades.</p>
-    <p class="hero-body">You don't have to be a botanist or a birder. You just have to show up.</p>
-    <div class="row" style="margin-top:var(--s3)">
-      <a href="visit.html" class="btn btn-green">Plan your visit →</a>
-      <a href="nature.html" class="btn btn-outline">Explore the collection</a>
-      <!-- Third door, gold: the park runs on money and hours, and the hero asked for
-           neither until now. get-involved.html opens on "Pick your door" and holds
-           #donate, #member and #volunteer, so it answers both halves of the ask
-           without picking one for the visitor. Gold is the existing accent (.btn-gold
-           was already defined) — a third tier, not a third palette. (2026-08-27) -->
-      <a href="get-involved.html" class="btn btn-gold">Support the park</a>
+<!-- ══ 1 · HERO — what this place is, and three ways in ═══════════════════ -->
+<div class="cx-hero">
+  <div class="cx-hero-txt">
+    <div class="cx-eyebrow">Bradenton, Florida · Free · 8am–dusk daily</div>
+    <!-- The closure notice appears ONLY when one is coming up in the window.
+         "Can I come Saturday?" was previously answerable only by a grey row
+         far down the page. Hard-coded here; wired it would read close_time
+         from the wedding calendar. -->
+    <div class="cx-closenote" id="homeClosure" style="display:none"></div>
+    <h1 class="cx-h1">Nature is here.<em>Come be part of it.</em></h1>
+    <p class="cx-lede">
+      On the shore of Palma Sola Bay — ten acres of gardens, a pond full of birds, and a
+      community that has kept it free and open since 1993.
+    </p>
+
+    <!-- Three ways in, replacing the old wall of prose. Support is deliberately
+         NOT here: nobody donates before they know what the place is. -->
+    <div class="cx-ways">
+      <a class="cx-way" href="visit.html"><b>Visit the park</b><span>Hours, directions, the map, what you'll find</span></a>
+      <a class="cx-way" href="events.html"><b>What's happening</b><span>Events, classes, music, workdays</span></a>
+      <a class="cx-way" href="nature.html"><b>Explore</b><span>Plants, birds, wildlife, the collection</span></a>
     </div>
   </div>
-  <div class="hero-right">
+  <div class="cx-hero-img" style="position:relative;overflow:hidden">
     <div class="hero-photo-note">
       <strong>Every nature photo here was taken by our community.</strong>
       Mostly phones. A few serious cameras.
     </div>
-    <div class="hero-slideshow" id="heroSlides">
-      <div class="hero-slide on" style="background-image:url('photos/PSBP-00004/703963637.jpg')">
-        <div class="photo-attr">
-          <span class="attr-species">Silk Floss Tree · <em>Ceiba speciosa</em></span>
-          <span class="attr-line"><span class="attr-by">Randall Carter</span><span class="attr-dot">·</span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span></span><span class="attr-dot">·</span><span class="attr-src">via iNaturalist</span></span>
-        </div>
-      </div>
-      <div class="hero-slide" style="background-image:url('photos/PSBP-00005/662740624.jpg')">
-        <div class="photo-attr">
-          <span class="attr-species">Queen's Crepe Myrtle · <em>Lagerstroemia speciosa</em></span>
-          <span class="attr-line"><span class="attr-by">Franky McArthur</span><span class="attr-dot">·</span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY</span><span class="cc-term">NC</span></span><span class="attr-dot">·</span><span class="attr-src">via iNaturalist</span></span>
-        </div>
-      </div>
-    </div>
+    <div class="hero-slideshow" id="heroSlides"></div>
+  </div>
+</div>
+
+<!-- ══ 2 · WHAT'S HAPPENING — was position 7 of 9 ════════════════════════ -->
+<section class="cx-sec bg-wash">
+  <div class="cx-in">
+    <span class="label">What's on</span>
+    <h2 class="cx-title">Coming up at the park</h2>
+    <p class="cx-sub">Three big days this season — and something most weeks in between.</p>
+
+    <div class="cx-bill" id="homePosters"></div>
+
+    <!-- Hierarchy matters here. Three seasonal posters given full width could
+         read as "this park is mainly about festivals" — they are things that
+         happen AT the park, not what it is. So the ordinary week gets its own
+         quiet heading underneath rather than sharing the billing. -->
+    <h3 style="font-family:var(--serif);font-size:1.3rem;color:var(--green-ink);margin:2.2rem 0 .2rem">Also happening</h3>
+    <div class="cx-next" id="homeUpcoming" style="margin-top:.7rem"></div>
+    <a class="cx-more" href="events.html">See the full calendar →</a>
   </div>
 </section>
 
-<!-- ══ THREE DECLARATIONS — was a full dark-green band; now three cards on wash ══ -->
-<section class="section section--tight bg-wash">
-  <div class="section-inner">
-    <div class="grid-3">
-      <div class="card card--top">
-        <h3 class="card__title">Funded by you.</h3>
-        <p>No entrance fee. No government funding. Three donation boxes on-site. Every dollar you leave goes straight back into the park.</p>
-      </div>
-      <div class="card card--top-gold">
-        <h3 class="card__title">Something's always happening.</h3>
-        <p>Classes, live music, art openings, guided walks, workshops — the calendar keeps growing.</p>
-        <a class="card__go" href="events.html">See what's coming up →</a>
-      </div>
-      <div class="card card--top">
-        <h3 class="card__title">Your phone is a scientific instrument.</h3>
-        <p>Record what you find — plant, bird, insect, lizard. The best shots get featured right here, always with full credit to you.</p>
-        <a class="card__go" href="get-started.html">Here's how →</a>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- ══ 3 · THE PARK ITSELF — "What's here" and "Plan your visit" merged.
+        They were back-to-back and doing one job: six named places, then a map
+        of those same six places, then how to reach them. Splitting it made a
+        visitor scroll past an orientation section to reach an orientation
+        section. ═══════════════════════════════════════════════════════════ -->
+<section class="cx-sec bg-paper">
+  <div class="cx-in">
+    <span class="label">The place itself</span>
+    <h2 class="cx-title">What's here</h2>
+    <p class="cx-sub">Ten acres, and six places worth walking to.</p>
 
-<!-- ══ RIGHT NOW ══ -->
-<section class="section bg-paper" id="rightNowSection">
-  <div class="section-inner">
-    <div class="section-head">
-      <span class="label">Right now in the park</span>
-      <h2 class="section-title rule-mark">What nature is offering right now</h2>
-      <p class="section-sub">What's worth a look this week — what's blooming, fruiting, or just passing through. Kept current by the people who walk this park. <a href="nature.html#plants">Explore the collection so far →</a></p>
-    </div>
-    <div id="rightNowStrip" class="rn-strip">
-      <div style="grid-column:1/-1;text-align:center;padding:var(--s7);color:var(--ink-soft)">Loading…</div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ SEEN LATELY ══ -->
-<section class="section bg-sunk" id="seenLately">
-  <div class="section-inner">
-    <div class="section-head">
-      <span class="label">Live from the park</span>
-      <h2 class="section-title rule-mark">What's been seen lately</h2>
-      <p class="section-sub">Every photo below was taken here by a community member and submitted to our iNaturalist project. Plants and animals together — because that's how a living park works.</p>
-    </div>
-    <div class="live-mosaic" id="mosaicGrid">
-      <div style="grid-column:1/-1;text-align:center;padding:var(--s7);color:var(--ink-soft)">Loading recent observations…</div>
+    <div class="cx-tiles">
+      <div class="cx-tile"><b>Rare Fruit Trail</b><span>A frost-free pocket growing things that shouldn't survive in Manatee County — star fruit, dragon fruit, jackfruit, lychee.</span></div>
+      <div class="cx-tile"><b>Butterfly Garden</b><span>Nectar and host plants chosen to pull butterflies through the season. Best on a warm, still morning.</span></div>
+      <div class="cx-tile"><b>Serenity Garden</b><span>Benches, soft planting and a pond just beyond. The place to slow down mid-walk.</span></div>
+      <div class="cx-tile"><b>Rare Palms &amp; Plumeria</b><span>Specimen palms you won't find in a typical yard, and plumeria that perfume the path in summer.</span></div>
+      <div class="cx-tile"><b>Art in the Park</b><span>The indoor gallery at the Galleria — rotating shows from local artists, and a cool place to pause.</span></div>
+      <div class="cx-tile"><b>Hidden Garden Nursery</b><span>Volunteer-run, near the west entrance. Plants propagated from the collection. Oct–May, Tue &amp; Sat, 9am–noon.</span></div>
     </div>
 
-    <div class="card card--pad" style="margin-top:var(--s6)">
-      <span class="label">Built by our community</span>
-      <div class="row" style="gap:var(--s6);align-items:center;margin-top:var(--s3)">
-        <div class="stats">
-          <div class="stat"><strong id="statSpecies" class="pulse">—</strong><span>Species documented</span></div>
-          <div class="stat"><strong id="statObservers" class="pulse">—</strong><span>People who showed up</span></div>
-          <div class="stat"><strong id="statTotal" class="pulse">—</strong><span>Observations made</span></div>
+    <hr style="border:0;border-top:1px solid var(--rule);margin:2.6rem 0 2.2rem">
+
+    <span class="label">Before you come</span>
+    <h2 class="cx-title" style="font-size:1.7rem">Plan your visit</h2>
+    <div class="cx-plan" style="margin-top:1.2rem">
+      <div>
+        <div class="cx-facts">
+          <div class="cx-fact"><b>Free</b><span>No admission charge</span></div>
+          <div class="cx-fact"><b>8am–dusk</b><span>Every day of the year</span></div>
+          <div class="cx-fact"><b>9800 17th Ave NW</b><span>Bradenton, Florida</span></div>
+          <div class="cx-fact"><b>(941) 761-2866</b><span>Office hours vary</span></div>
         </div>
-        <p style="flex:1;min-width:16rem;font-size:var(--t-sm);color:var(--ink-soft);line-height:1.65;margin:0">
-          We need people making detailed observations on iNaturalist — and helping identify what you see.
-          <a href="get-started.html">Get started →</a>
+        <p class="cx-sub" style="margin-bottom:.8rem">
+          You don't need a reservation, a tour or any botanical knowledge. Walk the paths at
+          your own pace. The park closes occasionally for private events — worth checking the
+          calendar before a weekend visit.
         </p>
+        <a class="cx-more" href="visit.html">Directions, accessibility and more about each place →</a>
       </div>
-      <p class="text-fine italic" style="margin-top:var(--s3)">Every number above is a person who came out here and did something.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ══ EVERY ACRE ══ -->
-<!-- id kept as #tenAcres on purpose: the heading changed, but external
-     links (emails, social posts, print) may point at this anchor. Renaming
-     it would break them for no visitor-visible gain. -->
-<section class="section bg-paper" id="tenAcres">
-  <div class="section-inner">
-    <div class="grid-2" style="gap:var(--s8);align-items:center">
-      <div class="prose">
-        <span class="label">The park, plainly</span>
-        <h2 class="section-title rule-mark">Every acre.<br>Yours to use.</h2>
-        <p>A place to walk slowly and notice things — with your dog, your kids, your camera, or on your own. Most of what happens here is quiet, and that is deliberate.</p>
-        <p>The people who look after it are volunteers who live nearby. They know which trees are struggling and which corner floods.</p>
-        <p>We want more than an open gate. Self-guided tours you can follow on your phone. More on the calendar for families. And a real record of what lives here, built from the photos and sightings of the people who walk the paths. Some of that runs today. Most of it is early, and there is room in it for you.</p>
-        <p>Come in the morning, when the birds are busiest. Come in summer, when the pond is loudest. The gate is open every day.</p>
-        <div class="row" style="margin-top:var(--s5)">
-          <a href="get-involved.html" class="btn btn-gold">Join us →</a>
-          <a href="visit.html" class="btn btn-outline">Hours &amp; directions</a>
-        </div>
-      </div>
-      <figure style="margin:0">
-        <img src="images/big-pond.jpg" alt="Looking back across the Big Pond toward the Galleria" style="width:100%;border-radius:var(--r)">
-        <figcaption class="text-fine italic" style="margin-top:var(--s3);line-height:1.55">Looking back toward the Galleria from the far end of the Big Pond, where the shoreline restoration is taking shape.</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-
-<!-- ══ EVENTS + QUICK INFO ══ -->
-<section class="section bg-wash">
-  <div class="section-inner">
-    <div class="grid-2" style="gap:var(--s8);align-items:start">
-      <div>
-        <span class="label">Coming up</span>
-        <h2 class="section-title rule-mark" style="margin-bottom:var(--s5)">Events</h2>
-        <div id="homeEvents" class="stack"><p class="text-soft">Loading…</p></div>
-        <a href="events.html" class="btn btn-green mt-1">Full calendar →</a>
-      </div>
-      <div>
-        <span class="label">Quick info</span>
-        <h2 class="section-title rule-mark" style="margin-bottom:var(--s5)">Find us</h2>
-        <div class="stack">
-          <div class="card">
-            <h3 class="card__title">Hours</h3>
-            <p><strong>8am – dusk, every day of the year.</strong> Closed occasionally for private events — check the calendar before a weekend visit.</p>
-          </div>
-          <div class="card card--top-gold">
-            <h3 class="card__title">Admission</h3>
-            <p><span class="free-tag">FREE</span><br>No federal, state, or local government subsidies. Donations keep the lights on.</p>
-          </div>
-          <div class="card">
-            <h3 class="card__title">Address</h3>
-            <p>9800 17th Ave NW, Bradenton, FL 34209<br>
-              <a href="https://maps.google.com/maps?q=Palma+Sola+Botanical+Park" target="_blank" rel="noopener">Open in Maps →</a></p>
-          </div>
-        </div>
+      <div class="cx-map">
+        <img src="images/ParkMap.png" alt="Map of Palma Sola Botanical Park">
+        <div class="cx-maplab">Parking is off 17th Ave NW, by the Galleria.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══ CLOSING — the page's one dark moment ══ -->
-<section class="section bg-deep center">
-  <div class="section-inner" style="max-width:44rem;margin:0 auto">
-    <span class="label">There's always something happening</span>
-    <h2 class="section-title">Come for a class. Stay for the park.</h2>
-    <p style="line-height:1.78;margin-bottom:var(--s5)">
-      Guided plant walks, Zumba under the palms, native gardening workshops, art openings in the Galleria, and
-      gatherings that have nothing to do with plants except the backdrop. And if you want to do more than attend —
-      pull a weed, water something, give a tour, or just show up and ask what needs doing — this
-      place runs on people exactly like you.
+<!-- ══ 4 · RIGHT NOW — "Right now" + "Seen lately" merged into one ═══════ -->
+<section class="cx-sec bg-sunk" id="rightNowSection">
+  <div class="cx-in">
+    <span class="label">This week</span>
+    <h2 class="cx-title">Right now in the park</h2>
+    <p class="cx-sub">What's blooming, what's fruiting, what's flying — and what somebody just planted.</p>
+    <div class="rn-strip" id="rightNowStrip"></div>
+    <a class="cx-more" href="nature.html">Browse the collection →</a>
+  </div>
+</section>
+
+<!-- ══ 7 · PARTICIPATE — iNat reframed from identity to invitation ═══════ -->
+<section class="cx-sec bg-paper">
+  <div class="cx-in" style="max-width:760px">
+    <span class="label">Join in</span>
+    <h2 class="cx-title">Help document the park</h2>
+    <p class="cx-sub">
+      See something interesting? Photograph it and add the observation to the park's
+      iNaturalist project. Your photograph — with your name and licence on it — may end
+      up on a sign in the garden, on this website, or on the screen in the Galleria.
     </p>
-    <div class="row row--center">
-      <a href="events.html" class="btn btn-gold">See what's coming up →</a>
-      <a href="venue.html" class="btn btn-outline">Venue rental →</a>
+    <a class="cx-more" href="get-started.html">How to get started →</a>
+  </div>
+</section>
+
+<!-- ══ 5 · BE PART OF IT — five cards, restored 2026-09-05.
+        Briefly replaced by a compact link strip on the grounds that all five
+        are mentioned elsewhere on the page. They are — but a summary of the
+        ways in is the job of a homepage, not a repetition of it, and the strip
+        read as navigation rather than an invitation. Randy: "I really liked
+        your prior draft of ways to take part." ═════════════════════════════ -->
+<section class="cx-sec bg-deep">
+  <div class="cx-in">
+    <span class="label">Five ways</span>
+    <h2 class="cx-title" style="color:#fff">Be part of the park</h2>
+    <div class="cx-ways2">
+      <a class="cx-w2" href="visit.html"><b>Walk the park</b><span>Ten acres, open every day. No charge, no booking.</span></a>
+      <a class="cx-w2" href="events.html"><b>Attend</b><span>A class, live music, an art show.</span></a>
+      <a class="cx-w2" href="get-involved.html"><b>Volunteer</b><span>Gardening, the nursery, events, the office.</span></a>
+      <a class="cx-w2" href="get-started.html"><b>Share what you see</b><span>Add observations through iNaturalist.</span></a>
+      <a class="cx-w2" href="get-involved.html#donate"><b>Support</b><span>Membership and donations keep it free.</span></a>
     </div>
   </div>
 </section>
+
+<!-- ══ 9 · COMMUNITY — cut from a full section to three sentences ════════ -->
+<section class="cx-sec bg-sunk">
+  <div class="cx-in" style="max-width:720px;text-align:center">
+    <h2 class="cx-title">A park built by its community</h2>
+    <p class="cx-sub" style="margin:0 auto">
+      Palma Sola Botanical Park exists because local people decided a former county nursery
+      was worth saving. It has run as a non-profit since 1993 with no federal, state or local
+      government subsidy — volunteers do nearly everything else.
+    </p>
+    <!-- Outside validation, which the homepage had nowhere. One line, not a
+         section — a news feed at the front is the old site's architecture. -->
+    <p class="cx-sub" style="margin:.9rem auto 0">
+      Recently: featured in <a href="news.html" style="color:var(--green);font-weight:700">Horticulture Magazine</a>
+      and on <a href="news.html" style="color:var(--green);font-weight:700">Bay News 9</a>.
+    </p>
+    <a class="cx-more" href="contact.html">About the park →</a>
+  </div>
+</section>
+
+<!-- ══ 10 · COME VISIT — ends on the place, not on a feed ════════════════ -->
+<div class="cx-close" style="background-image:url('photos/PSBP-00005/662740624.jpg')">
+  <div>
+    <h2>Come see what's here.</h2>
+    <p>9800 17th Ave NW, Bradenton, Florida</p>
+    <p>Open 8am – dusk · Every day · Free</p>
+    <p style="margin-top:1.4rem">
+      <a href="visit.html" class="btn btn-gold">Plan your visit →</a>
+    </p>
+  </div>
+</div>
 
 <div id="footer-placeholder"></div>
-
 <script src="js/site.js"></script>
 <script src="js/photo-credits.js"></script>
 <script>
-injectShared({ inatBar: false, inatFooter: true });
+injectShared({ inatBar: false });
 
-// Cross-page anchor fix. Arriving at e.g. index.html#seenLately from another
-// page, the browser scrolls to the hash at load — but the Right Now strip and
-// the Seen Lately mosaic above it are still "Loading…" (short), so the target
-// sits too high and you land above it. Re-aim at the hash whenever those async
-// containers change height, and back off the instant the user scrolls.
-(function reaimHash(){
-  if (!location.hash) return;
-  let target;
-  try { target = document.querySelector(location.hash); } catch (e) { return; }
-  if (!target) return;
-  let done = false;
-  const evs = ['wheel','touchmove','keydown','mousedown'];
-  const finish = () => { if (done) return; done = true; obs.disconnect(); evs.forEach(e => window.removeEventListener(e, stop)); };
-  const stop = () => finish();
-  evs.forEach(e => window.addEventListener(e, stop, { passive: true }));
-  const aim = () => { if (!done) target.scrollIntoView({ block: 'start' }); };  // honors scroll-margin-top
-  const obs = new MutationObserver(aim);
-  ['rightNowStrip','mosaicGrid'].forEach(id => {
-    const n = document.getElementById(id);
-    if (n) obs.observe(n, { childList: true, subtree: true });
-  });
-  aim();
-  window.addEventListener('load', () => setTimeout(aim, 80));
-  setTimeout(finish, 6000);   // content has surely settled by now
-})();
-
-// Hero slideshow is driven by photo_credits.json (random attributed heroes).
-// See js/photo-credits.js. (The old hero grid was removed.)
+// Attributed hero slideshow — the community-photo credit chain, above the fold.
 PSBPPhotos.mountHeroSlideshow('heroSlides');
 
-// Right Now in the Park — home strip (top 4); hides its section if the feed is empty
+// The news bar. Empty unless something is display web/both and unexpired.
+loadAnnouncements('annCycleWrap');
+
+// Posters, the ordinary week, and the next closure — one fetch, three slots.
+loadHomeHappening({ posters:'homePosters', upcoming:'homeUpcoming', closure:'homeClosure' });
+
+// Right now in the park — rotates 3 at a time; hides itself if the feed is empty.
 loadRightNow('rightNowStrip', { limit: 24, perPage: 3, rotateSeconds: 9,
                                 sectionId: 'rightNowSection' });
-
-// Announcements now use the shared loadAnnouncements() from site.js (see call below)
-
-// iNat mosaic — attribution shown, no outbound links
-// Kick the observations fetch off in parallel with stats + the name map, so they
-// overlap instead of running back-to-back.
-const _seenPromise = loadSeenLately(16);
-Promise.all([loadINat(), PSBPPhotos.loadPool()]).then(async ([data]) => {
-  // Populate inline stats
-  if (data.total)     { const el=document.getElementById('statTotal');     if(el){el.textContent=data.total.toLocaleString();el.classList.remove('pulse');} }
-  if (data.species)   { const el=document.getElementById('statSpecies');   if(el){el.textContent=data.species.toLocaleString();el.classList.remove('pulse');} }
-  if (data.observers) { const el=document.getElementById('statObservers'); if(el){el.textContent=data.observers.toLocaleString();el.classList.remove('pulse');} }
-  if (data.week)      { const el=document.getElementById('statWeek');      if(el){el.textContent=data.week.toLocaleString();el.classList.remove('pulse');} }
-
-  const grid = document.getElementById('mosaicGrid');
-  const pool = (await _seenPromise).filter(o => o.photos?.[0]?.url);
-  if (!pool.length) {
-    grid.innerHTML = '<p class="text-soft" style="grid-column:1/-1;text-align:center;padding:2rem">No recent observations found.</p>';
-    return;
-  }
-  // Paint NOW. The "Where it fits" lineage lives on the flip-back (invisible
-  // until a card is flipped), so we must not make the visible fronts wait on a
-  // second iNat round-trip. Resolve ancestors in the background, then quietly
-  // swap the resolved lineage onto the (hidden) backs -- no front re-render.
-  mountSeenLately(grid, pool);
-  resolveAncestors(pool).then(() => refreshLineages(grid, pool));
-});
-
-// Swap only the back face of each rendered card once ancestor names resolve.
-// Replacing the hidden back leaves the front (and its fade-in) untouched.
-function refreshLineages(grid, pool) {
-  grid.querySelectorAll('.mosaic-card[data-oid]').forEach(card => {
-    const o = pool.find(p => String(p.id) === card.dataset.oid);
-    if (!o) return;
-    const tmp = document.createElement('div');
-    tmp.innerHTML = buildFlipCard(o);
-    const fresh = tmp.querySelector('.mosaic-face-back');
-    const live  = card.querySelector('.mosaic-face-back');
-    if (fresh && live) live.replaceWith(fresh);
-  });
-}
-
-// Show 4 cards, crossfade a fresh 4 in every ~8s. Pauses while the visitor is
-// hovering or has any card flipped, so it never pulls a card mid-read.
-function mountSeenLately(grid, pool) {
-  const PER = 3, INTERVAL = 8000;   // must match the column count in .mosaic-page
-  grid.classList.add('cycling');
-
-  // Build a page (PER cards) starting at index `start`, wrapping the pool.
-  function pageHtml(start) {
-    let html = '';
-    for (let i = 0; i < PER; i++) html += buildFlipCard(pool[(start + i) % pool.length]);
-    return html;
-  }
-
-  // Two stacked pages we crossfade between.
-  grid.innerHTML =
-    '<div class="mosaic-page on" data-start="0">' + pageHtml(0) + '</div>' +
-    '<div class="mosaic-page" data-start="0"></div>';
-  let pages = grid.querySelectorAll('.mosaic-page');
-  let active = 0, start = 0;
-
-  // Flip on click / tap / keyboard (delegated to the whole grid).
-  function flipFrom(e) {
-    const card = e.target.closest('.mosaic-card.flip');
-    if (!card) return false;
-    if (e.type === 'keydown') {
-      if (e.key !== 'Enter' && e.key !== ' ') return false;
-      e.preventDefault();
-    }
-    card.classList.toggle('is-flipped');
-    return true;
-  }
-  grid.addEventListener('click', flipFrom);
-  grid.addEventListener('keydown', flipFrom);
-
-  // Pause logic: don't rotate while hovering or while anything is flipped.
-  let hovering = false;
-  grid.addEventListener('mouseenter', () => { hovering = true; });
-  grid.addEventListener('mouseleave', () => { hovering = false; });
-  const anyFlipped = () => !!grid.querySelector('.mosaic-card.is-flipped');
-
-  if (pool.length <= PER) return;   // nothing to rotate to
-
-  setInterval(() => {
-    if (hovering || anyFlipped()) return;     // wait for a calm moment
-    start = (start + PER) % pool.length;
-    const incoming = 1 - active;
-    pages[incoming].innerHTML = pageHtml(start);
-    pages[incoming].classList.add('on');
-    pages[active].classList.remove('on');
-    active = incoming;
-  }, INTERVAL);
-}
-
-// ── "What's been seen lately": the /v1/observations list endpoint returns each
-// taxon with its lineage as ID NUMBERS (taxon.ancestor_ids) but NOT as named
-// objects — there is no taxon.ancestors array here (an earlier comment wrongly
-// assumed there was, which collapsed "Where it fits" to just the species). The
-// names live behind those ids; resolveAncestors() fetches them once via /v1/taxa
-// so lineage() can render Family/Genus. quality_grade + identifications come back
-// in this default response as before.
-async function loadSeenLately(count) {
-  const url = `https://api.inaturalist.org/v1/observations`
-    + `?project_id=${INAT_PROJECT}&per_page=${count||8}`
-    + `&order=desc&order_by=created_at&photos=true`;
-  try {
-    const r = await fetch(url).then(r => r.json());
-    if (r.results && r.results.length) return r.results;
-  } catch (e) { /* fall through to the simpler loader */ }
-  // last-known-good: the original loader
-  return loadRecentObs({ count });
-}
-
-// ── ancestor id -> {name, rank, common} cache, filled once per page load. The
-// observations endpoint gives us only ancestor_ids (numbers); the NAMES come
-// from /v1/taxa, which takes up to 30 ids per call. We dedupe every id across
-// the whole pool and resolve in 30-id batches, so the genus/family names are in
-// hand before any card renders. Fail-soft: an unresolved id just drops out of
-// the ladder (lineage() hides a ladder that has nothing above the species).
-const _taxaById = {};
-async function resolveAncestors(pool) {
-  const want = [];
-  pool.forEach(o => (o.taxon?.ancestor_ids || []).forEach(id => {
-    if (id && !(id in _taxaById) && !want.includes(id)) want.push(id);
-  }));
-  if (!want.length) return;
-  const batches = [];
-  for (let i = 0; i < want.length; i += 30) batches.push(want.slice(i, i + 30));
-  await Promise.all(batches.map(batch =>
-    fetch(`https://api.inaturalist.org/v1/taxa/${batch.join(',')}`)
-      .then(res => res.json())
-      .then(r => (r.results || []).forEach(t => {
-        _taxaById[t.id] = {
-          name: t.name,
-          rank: t.rank,
-          preferred_common_name: t.preferred_common_name
-        };
-      }))
-      .catch(e => { /* leave these ids unresolved; ladder degrades gracefully */ })
-  ));
-}
-
-// ── lay-language helpers (no iNat jargon on the card) ──
-// Rank -> a plain word a visitor understands.
-function rankWord(rank) {
-  const map = {
-    kingdom:'Kingdom', phylum:'Major group', subphylum:'Major group',
-    class:'Class', subclass:'Class', order:'Order', suborder:'Order',
-    superfamily:'Family group', family:'Family', subfamily:'Family',
-    tribe:'Group', genus:'Genus', subgenus:'Genus',
-    species:'Species', subspecies:'Type', variety:'Type', hybrid:'Hybrid'
-  };
-  return map[String(rank||'').toLowerCase()] || 'Group';
-}
-
-// How far along the ID is, in friendly terms — never "Research Grade"/"Casual".
-function idStatus(o) {
-  const rank = String(o.taxon?.rank || '').toLowerCase();
-  const settled = (rank === 'species' || rank === 'subspecies');
-  if (o.quality_grade === 'research' && settled) {
-    return { cls:'confirmed', icon:'\u2713', label:'Confirmed by the community' };
-  }
-  if (settled) {
-    return { cls:'working', icon:'\u2026', label:'Narrowed to a species' };
-  }
-  return { cls:'working', icon:'\u2026', label:'Still being identified' };
-}
-
-// Count of people who've weighed in (deduped by identifier is overkill here;
-// the raw count communicates "people are looking at this").
-function idCount(o) {
-  const n = Array.isArray(o.identifications) ? o.identifications.length
-          : (o.identifications_count || 0);
-  if (!n) return 'Just posted';
-  return n === 1 ? '1 person so far' : `${n} people so far`;
-}
-
-// Build the lineage line from the resolved ancestor names + the leaf taxon.
-// Reads ancestor_ids (not the absent ancestors array) through the _taxaById map
-// that resolveAncestors() filled. keepRanks is trimmed to the visitor-meaningful
-// span (kingdom/phylum are too abstract to bother a guest with) -- widen or
-// narrow this one list to taste. The >=2 guard hides a ladder that would only
-// contain the species, which is what produced the old "duplicated species" look.
-function lineage(o) {
-  const ids = o.taxon?.ancestor_ids || [];
-  const anc = ids.map(id => _taxaById[id]).filter(Boolean);
-  // Append the leaf taxon as the final rung UNLESS ancestor_ids already ends
-  // with it -- iNat includes the taxon as its own last ancestor for some
-  // records, and appending again is what doubled the species. Either path
-  // yields the leaf exactly once.
-  const lastId = ids.length ? ids[ids.length - 1] : null;
-  if (o.taxon && lastId !== o.taxon.id) {
-    anc.push({
-      name: o.taxon.name,
-      rank: o.taxon.rank,
-      preferred_common_name: o.taxon.preferred_common_name
-    });
-  }
-  const keepRanks = ['class','order','family','genus','species'];
-  const rungs = anc.filter(a => keepRanks.includes(String(a.rank||'').toLowerCase()));
-  if (rungs.length < 2) return '';   // nothing above the species -> no fake ladder
-  // Unbolded context trail: the "Identified to" row owns the identity, so the
-  // ladder is pure context. Common name plain; a bare scientific name italic.
-  return rungs.map(a => {
-    const common = a.preferred_common_name;
-    const raw = common || a.name || '';
-    const safe = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    return common ? safe : `<em>${safe}</em>`;
-  }).join(' &rsaquo; ');
-}
-
-function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function buildFlipCard(o) {
-  const photo = o.photos?.[0] || {};
-  const url   = photo.url?.replace('square','medium');
-  if (!url) return '';
-  const common = o.species_guess || o.taxon?.preferred_common_name || o.taxon?.name || 'Unknown';
-  const sci    = o.taxon?.name && o.taxon.name !== common ? o.taxon.name : null;
-  const by     = PSBPPhotos.displayName(o.user?.login) || o.user?.name || 'community member';
-  const license = photo.license_code || o.license_code || null;
-  const submitted = o.created_at_details?.date || o.created_at || null;
-
-  // back-side fields
-  const status = idStatus(o);
-  const identifiedTo = o.taxon
-    ? `${rankWord(o.taxon.rank)} \u00b7 ${o.taxon.preferred_common_name
-        ? esc(o.taxon.preferred_common_name)
-        : '<em>'+esc(o.taxon.name)+'</em>'}`
-    : 'Not yet placed';
-  const observedDate = o.observed_on
-    ? new Date(o.observed_on+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
-    : '\u2014';
-  const ladder = lineage(o);
-  const obsUrl = `https://www.inaturalist.org/observations/${o.id}`;
-  // Bloom-wash key, matching the Right Now back: plant -> gold + leaf, anything
-  // else -> green + feather. iconic_taxon_name rides along on the observation.
-  const isPlant = (o.taxon && o.taxon.iconic_taxon_name) === 'Plantae';
-  const obsWm = isPlant
-    ? '<svg class="mosaic-wm" viewBox="0 0 100 100" aria-hidden="true"><path d="M18 84 C18 42 50 18 88 18 C88 58 56 84 18 84 Z M30 72 C46 56 62 46 80 34" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>'
-    : '<svg class="mosaic-wm" viewBox="0 0 100 100" aria-hidden="true"><path d="M78 20 L30 84 M78 20 C60 28 48 44 42 64 M78 20 C66 26 56 36 50 50 M78 20 C70 24 62 30 58 40" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-
-  const front = `<div class="mosaic-face mosaic-face-front">
-      <div class="mosaic-img">
-        <div class="mosaic-photo" style="background-image:url('${url}')"></div>
-        ${PSBPPhotos.speciesTag({ species: common, scientific: sci })}
-      </div>
-      ${PSBPPhotos.creditPlate({ by, license, date: submitted, dateLabel: 'Shared' })}
-    </div>`;
-
-  const back = `<div class="mosaic-face mosaic-face-back ${isPlant ? 'flora' : 'fauna'}">
-      ${obsWm}
-      <div class="obs-back-head">
-        <span class="obs-back-name">${esc(common)}</span>
-        <span class="obs-status ${status.cls}">${status.icon} ${esc(status.label)}</span>
-      </div>
-      <span class="mback-rule"></span>
-      <table class="obs-rows"><tbody>
-        <tr><td class="k">Identified to</td><td class="v">${identifiedTo}</td></tr>
-        <tr><td class="k">Who's looking</td><td class="v">${esc(idCount(o))}</td></tr>
-        <tr><td class="k">Spotted on</td><td class="v">${esc(observedDate)}</td></tr>
-      </tbody></table>
-      ${ladder ? `<div class="obs-ladder">
-        <div class="obs-ladder-label">Where it fits</div>
-        <div class="obs-ladder-path">${ladder}</div>
-      </div>` : ''}
-      <div class="obs-next">An expert will confirm or refine this ID. Strong photos &mdash; or species new to the park &mdash; earn a permanent spot here.</div>
-      <div class="obs-back-foot"><span aria-hidden="true">\u21BA</span> tap to flip back &nbsp;\u00b7&nbsp; <a href="${obsUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">see on iNaturalist</a></div>
-    </div>`;
-
-  return `<div class="mosaic-card flip" data-oid="${esc(o.id)}" tabindex="0" role="button" aria-label="${esc(common)} — tap to see observation details">
-      <span class="mosaic-flip-hint"><span aria-hidden="true">\u21BA</span> tap</span>
-      <div class="mosaic-flip-inner">${front}${back}</div>
-    </div>`;
-}
-
-loadAnnouncements('annCycleWrap');
-loadEvents('homeEvents', 4);
 </script>
 </body>
 </html>

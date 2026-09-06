@@ -124,7 +124,10 @@
 .cx-ways2{display:grid;gap:1rem;grid-template-columns:1fr}
 @media(min-width:640px){.cx-ways2{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1000px){.cx-ways2{grid-template-columns:repeat(5,1fr)}}
-.cx-w2{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:var(--r);padding:1rem 1.1rem}
+.cx-w2{display:block;text-decoration:none;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.16);border-radius:var(--r);padding:1rem 1.1rem;
+  transition:background .15s,border-color .15s}
+.cx-w2:hover{background:rgba(255,255,255,.13);border-color:var(--gold-light)}
 .cx-w2 b{display:block;font-family:var(--serif);font-size:1.16rem;color:#fff;margin-bottom:.25rem}
 .cx-w2 span{font-size:var(--t-base);line-height:1.5;color:rgba(255,255,255,.8)}
 
@@ -313,19 +316,22 @@
   </div>
 </section>
 
-<!-- ══ 8 · GET INVOLVED — was a full dark section with five cards. Four of
-        the five were already said elsewhere on the page (visit in the hero,
-        attend in What's happening, share in Help document). Volunteer was the
-        only one that appeared nowhere else. So: one compact strip, not a
-        destination. The real page is Get Involved in the nav. ═══════════════ -->
-<section class="cx-sec bg-deep" style="padding:2.4rem 1.5rem">
-  <div class="cx-in" style="display:flex;flex-wrap:wrap;align-items:center;gap:1rem 2.2rem">
-    <h2 class="cx-title" style="color:#fff;font-size:1.55rem;margin:0">Get involved</h2>
-    <div style="display:flex;flex-wrap:wrap;gap:.6rem 1.6rem;font-size:var(--t-base);font-weight:700">
-      <a href="get-involved.html" style="color:var(--gold-light)">Volunteer →</a>
-      <a href="events.html" style="color:var(--gold-light)">Take a class →</a>
-      <a href="get-started.html" style="color:var(--gold-light)">Share what you see →</a>
-      <a href="get-involved.html#donate" style="color:var(--gold-light)">Support the park →</a>
+<!-- ══ 5 · BE PART OF IT — five cards, restored 2026-09-05.
+        Briefly replaced by a compact link strip on the grounds that all five
+        are mentioned elsewhere on the page. They are — but a summary of the
+        ways in is the job of a homepage, not a repetition of it, and the strip
+        read as navigation rather than an invitation. Randy: "I really liked
+        your prior draft of ways to take part." ═════════════════════════════ -->
+<section class="cx-sec bg-deep">
+  <div class="cx-in">
+    <span class="label">Five ways</span>
+    <h2 class="cx-title" style="color:#fff">Be part of the park</h2>
+    <div class="cx-ways2">
+      <a class="cx-w2" href="visit.html"><b>Walk the park</b><span>Ten acres, open every day. No charge, no booking.</span></a>
+      <a class="cx-w2" href="events.html"><b>Attend</b><span>A class, live music, an art show.</span></a>
+      <a class="cx-w2" href="get-involved.html"><b>Volunteer</b><span>Gardening, the nursery, events, the office.</span></a>
+      <a class="cx-w2" href="get-started.html"><b>Share what you see</b><span>Add observations through iNaturalist.</span></a>
+      <a class="cx-w2" href="get-involved.html#donate"><b>Support</b><span>Membership and donations keep it free.</span></a>
     </div>
   </div>
 </section>

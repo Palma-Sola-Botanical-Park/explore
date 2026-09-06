@@ -1446,6 +1446,104 @@ async function loadEventsPage(opts){
 
 // ── Simpler single-list renderers (homepage teasers, other pages) ─────
 // loadEvents: upcoming dated events only (no class expansion), same card style.
+// ── Homepage "what's happening" ───────────────────────────────────────────
+// Fills three slots from one fetch:
+//   posters  — up to 3 flagged events that HAVE artwork, as poster cards
+//   upcoming — the ordinary next few days, events + class instances
+//   closure  — the next park closure, for the hero (answers "can I come
+//              Saturday?", which the homepage never used to answer)
+//
+// Deliberately mirrors events.html rather than inventing a second set of
+// rules: same save_the_date flag, same 3-poster ceiling, same "no poster, no
+// band slot". An event in the posters does not repeat in the list below.
+async function loadHomeHappening(opts){
+  opts = opts || {};
+  const $ = id => id ? document.getElementById(id) : null;
+  const postersEl = $(opts.posters), upEl = $(opts.upcoming), closEl = $(opts.closure);
+  if (!postersEl && !upEl && !closEl) return;
+
+  try {
+    const [events, classes, weddingCal] = await Promise.all([
+      fetchTab(TAB.events).catch(()=>[]),
+      fetchTab(TAB.classes).catch(()=>[]),
+      fetchTab(TAB.wedding_calendar).catch(()=>[]),
+    ]);
+
+    const today = new Date(); today.setHours(12,0,0,0);
+    const evItems = events.filter(isWebVisible).map(_eventItem).filter(Boolean);
+
+    // POSTERS — flagged, has artwork, still to come (a run stays until its last day)
+    const seen = new Set();
+    const posters = evItems
+      .filter(i => i.save_the_date && i.poster && (i.date_end || i.date) >= today)
+      .sort(_byDateThenTime)
+      .filter(i => { const k=(i.title||'').trim().toLowerCase();
+                     if (seen.has(k)) return false; seen.add(k); return true; })
+      .slice(0, opts.posterMax || 3);
+
+    if (postersEl){
+      postersEl.innerHTML = posters.map(renderFeature).join('');
+      const wrap = opts.postersWrap && $(opts.postersWrap);
+      if (wrap) wrap.style.display = posters.length ? '' : 'none';
+      if (typeof fitBandAspect === 'function') fitBandAspect(postersEl);
+    }
+
+    // UPCOMING — the ordinary week. Excludes anything already shown as a poster
+    // and excludes closures, which have their own place in the hero.
+    if (upEl){
+      const shown = new Set(posters.map(i => (i.title||'').trim().toLowerCase()));
+      const end = new Date(today); end.setDate(end.getDate() + (opts.windowDays || 21));
+      const inst = expandClasses(classes.filter(isWebVisible), today, end);
+      const rows = _expandMultiDay(evItems)
+        .filter(i => i.kind !== 'closure')
+        .concat(inst)
+        .filter(i => i.date >= today && i.date <= end)
+        .filter(i => !shown.has((i.title||'').trim().toLowerCase()))
+        .sort(_byDateThenTime)
+        .slice(0, opts.upcomingMax || 4);
+
+      upEl.innerHTML = rows.length ? rows.map(i => {
+        const when = i.date.toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short'});
+        const t = i.time ? `${_evEsc(_startTime(i.time))} · ` : '';
+        const who = i.instructor ? ` · ${_evEsc(i.instructor)}` : '';
+        return `<div class="cx-row"><span class="d">${_evEsc(when)}</span>
+          <span class="t">${t}<b>${_evEsc(i.title||'')}</b>${who}</span></div>`;
+      }).join('')
+      : `<div class="cx-row"><span class="t">Nothing scheduled this week — the park is
+         still open every day.</span></div>`;
+    }
+
+    // CLOSURE — the soonest one inside the window, from either source.
+    if (closEl){
+      const evClose = evItems.filter(i => i.kind === 'closure');
+      const wedClose = (weddingCal || []).filter(r => _isYes(r.closes_park)).map(r => {
+        const date = parseDateLocal(r.date);
+        return date ? { date, close_time:(r.close_time||'').trim() } : null;
+      }).filter(Boolean);
+      const soon = new Date(today); soon.setDate(soon.getDate() + (opts.closureDays || 21));
+      const next = evClose.concat(wedClose)
+        .filter(c => c.date >= today && c.date <= soon)
+        .sort((a,b) => a.date - b.date)[0];
+
+      if (next){
+        const when = next.date.toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short'});
+        const at = (next.close_time || '').trim();
+        closEl.textContent = at ? `🔒 Closing ${at} ${when} for a private event`
+                                : `🔒 Park closed ${when} for a private event`;
+        closEl.style.display = '';
+      } else {
+        closEl.style.display = 'none';
+      }
+    }
+  } catch(err){
+    if (postersEl) postersEl.innerHTML = '';
+    if (closEl) closEl.style.display = 'none';
+    if (upEl) upEl.innerHTML =
+      '<div class="cx-row"><span class="t">Could not load events. ' +
+      '<a href="events.html">See the calendar →</a></span></div>';
+  }
+}
+
 async function loadEvents(containerId, maxItems=8){
   const el = document.getElementById(containerId);
   if (!el) return [];
