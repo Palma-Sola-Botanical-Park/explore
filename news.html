@@ -23,7 +23,12 @@
 .news-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 2.5rem; align-items: start; }
 @media (max-width: 880px) { .news-layout { grid-template-columns: 1fr; gap: 1.75rem; } }
 
-.news-reader { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 3px 18px rgba(0,0,0,.09); }
+.news-reader { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 3px 18px rgba(0,0,0,.09);
+  /* scrollIntoView aims at the element's top edge, which the fixed nav then
+     covers — you landed with the date and part of the headline hidden. The nav
+     is 64px; the rest is breathing room so the story starts, rather than
+     resumes. */
+  scroll-margin-top: 104px; }
 .news-reader-hero { position: relative; min-height: 165px; background: var(--green-deep); display: flex; align-items: flex-end; }
 /* NO PHOTOGRAPH, NO GREEN SLAB. With a hero image the dark ground is what makes
    white type readable over it. Without one it was just a block of green under a
