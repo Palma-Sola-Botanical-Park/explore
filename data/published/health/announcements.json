@@ -1,22 +1,22 @@
 {
   "tab": "announcements",
   "human": "Homepage + in-park-screen announcements — one row per message.",
-  "generated_at": "2026-09-06T02:37:47+00:00",
+  "generated_at": "2026-09-06T16:06:46+00:00",
   "status": "green",
   "published": true,
   "block_reason": null,
   "counts": {
-    "staged": 16,
-    "live": 8,
-    "published": 8,
+    "staged": 17,
+    "live": 9,
+    "published": 9,
     "dropped_display": 8,
     "quarantined": 0,
     "warned": 0
   },
   "volume_guard": {
     "min": 0,
-    "live": 8,
-    "published": 8,
+    "live": 9,
+    "published": 9,
     "blocked": false,
     "reason": null
   },
@@ -30,8 +30,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -49,8 +49,22 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "show_from:iso_date_or_blank",
+      "field": "show_from",
+      "check": "iso_date_or_blank",
+      "arg": null,
+      "why": "If set, must be a real date (YYYY-MM-DD). Blank means show it now.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     },
@@ -63,8 +77,40 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 8,
-      "passed": 8,
+      "evaluated": 9,
+      "passed": 9,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "show_until:ge_field",
+      "field": "show_until",
+      "check": "ge_field",
+      "arg": "show_from",
+      "why": "Can't be earlier than show_from, or the row never shows.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 9,
+      "passed": 9,
+      "flagged": 0,
+      "examples": []
+    },
+    {
+      "id": "director_note:in_vocab",
+      "field": "director_note",
+      "check": "in_vocab",
+      "arg": [
+        "yes",
+        "no",
+        ""
+      ],
+      "why": "yes moves this row to the Director's note on the home page.",
+      "severity": "warn",
+      "scope": "field",
+      "status": "green",
+      "evaluated": 9,
+      "passed": 9,
       "flagged": 0,
       "examples": []
     }
@@ -92,6 +138,12 @@
     {
       "at": "2026-09-06T02:37:47+00:00",
       "added": 0,
+      "changed": 16,
+      "removed": 0
+    },
+    {
+      "at": "2026-09-06T16:06:46+00:00",
+      "added": 1,
       "changed": 16,
       "removed": 0
     }
