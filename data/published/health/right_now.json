@@ -1,22 +1,22 @@
 {
   "tab": "right_now",
   "human": "What's worth noticing in the park right now -- blooms and sightings.",
-  "generated_at": "2026-09-06T00:42:33+00:00",
-  "status": "green",
+  "generated_at": "2026-09-06T01:25:49+00:00",
+  "status": "amber",
   "published": true,
   "block_reason": null,
   "counts": {
-    "staged": 6,
-    "live": 6,
-    "published": 6,
+    "staged": 7,
+    "live": 7,
+    "published": 7,
     "dropped_display": 0,
     "quarantined": 0,
-    "warned": 0
+    "warned": 1
   },
   "volume_guard": {
     "min": 0,
-    "live": 6,
-    "published": 6,
+    "live": 7,
+    "published": 7,
     "blocked": false,
     "reason": null
   },
@@ -30,8 +30,8 @@
       "severity": "error",
       "scope": "row",
       "status": "green",
-      "evaluated": 6,
-      "passed": 6,
+      "evaluated": 7,
+      "passed": 7,
       "flagged": 0,
       "examples": []
     },
@@ -49,11 +49,16 @@
       "why": "Must be one of: blooming, budding, fruiting, fading, sighting.",
       "severity": "warn",
       "scope": "field",
-      "status": "green",
-      "evaluated": 6,
+      "status": "amber",
+      "evaluated": 7,
       "passed": 6,
-      "flagged": 0,
-      "examples": []
+      "flagged": 1,
+      "examples": [
+        {
+          "row": "row",
+          "reason": "'Planted' is not an allowed value"
+        }
+      ]
     },
     {
       "id": "display:in_vocab",
@@ -69,8 +74,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 6,
-      "passed": 6,
+      "evaluated": 7,
+      "passed": 7,
       "flagged": 0,
       "examples": []
     },
@@ -83,8 +88,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 6,
-      "passed": 6,
+      "evaluated": 7,
+      "passed": 7,
       "flagged": 0,
       "examples": []
     },
@@ -97,8 +102,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 6,
-      "passed": 6,
+      "evaluated": 7,
+      "passed": 7,
       "flagged": 0,
       "examples": []
     },
@@ -111,8 +116,8 @@
       "severity": "warn",
       "scope": "field",
       "status": "green",
-      "evaluated": 6,
-      "passed": 6,
+      "evaluated": 7,
+      "passed": 7,
       "flagged": 0,
       "examples": []
     }
@@ -130,6 +135,12 @@
       "added": 1,
       "changed": 2,
       "removed": 1
+    },
+    {
+      "at": "2026-09-06T01:25:49+00:00",
+      "added": 1,
+      "changed": 0,
+      "removed": 0
     }
   ],
   "schema": {
