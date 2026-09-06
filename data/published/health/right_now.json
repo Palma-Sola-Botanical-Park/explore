@@ -1,8 +1,8 @@
 {
   "tab": "right_now",
   "human": "What's worth noticing in the park right now -- blooms and sightings.",
-  "generated_at": "2026-09-06T01:25:49+00:00",
-  "status": "amber",
+  "generated_at": "2026-09-06T01:41:43+00:00",
+  "status": "green",
   "published": true,
   "block_reason": null,
   "counts": {
@@ -11,7 +11,7 @@
     "published": 7,
     "dropped_display": 0,
     "quarantined": 0,
-    "warned": 1
+    "warned": 0
   },
   "volume_guard": {
     "min": 0,
@@ -44,21 +44,17 @@
         "budding",
         "fruiting",
         "fading",
-        "sighting"
+        "sighting",
+        "planted"
       ],
-      "why": "Must be one of: blooming, budding, fruiting, fading, sighting.",
+      "why": "Must be one of: blooming, budding, fruiting, fading, sighting, planted.",
       "severity": "warn",
       "scope": "field",
-      "status": "amber",
+      "status": "green",
       "evaluated": 7,
-      "passed": 6,
-      "flagged": 1,
-      "examples": [
-        {
-          "row": "row",
-          "reason": "'Planted' is not an allowed value"
-        }
-      ]
+      "passed": 7,
+      "flagged": 0,
+      "examples": []
     },
     {
       "id": "display:in_vocab",
