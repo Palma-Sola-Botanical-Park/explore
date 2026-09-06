@@ -892,11 +892,20 @@ function _inlineLink(item){
 function _seriesLine(item, seriesMap){
   if (!item.series) return '';
   const label = item.series.trim();
-  // A class can share its series' name (Bright Futures is both). Printing
-  // "Bright Futures — Part of the Bright Futures" helps nobody.
-  if (label.toLowerCase() === (item.title || '').trim().toLowerCase()) return '';
   const s = _seriesOf(item, seriesMap);
   const sLink = s ? PSBP.rowLink(s) : { url:'' };
+
+  // A class can share its series' name — Bright Futures is both a weekly class
+  // and the program. "Bright Futures — Part of the Bright Futures" helps
+  // nobody, but returning nothing left the card with NO link at all, because
+  // the inline link deliberately does not reach the series. So: drop the
+  // sentence, keep the link.
+  if (label.toLowerCase() === (item.title || '').trim().toLowerCase()){
+    if (!sLink.url) return '';
+    return `<div class="ev-series">${PSBP.linkTag(sLink.url, (sLink.text || 'See the flyer') + ' →',
+      { title: label, back: _BACK(), className:'ev-series-link' })}</div>`;
+  }
+
   if (s && sLink.url)
     return `<div class="ev-series">Part of the ${PSBP.linkTag(sLink.url, _evEsc(label)+' →',
       { title: label, back: _BACK(), className:'ev-series-link' })}</div>`;
