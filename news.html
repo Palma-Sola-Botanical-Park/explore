@@ -8,7 +8,7 @@
 <style>
 /* ── Hero ── */
 .news-hero-bg {
-  background-image: url('photos/PSBP-00052-Mexican-Flame-Vine.jpg');
+  background-image: url('photos/PSBP-00052/689688845.jpg');
   background-size: cover; background-position: center;
   /* was a hardcoded .5, which ignored --hero-veil and made this the heaviest
      hero on the site. It now follows the same dial as every other page. */
@@ -93,6 +93,13 @@
 
 <div class="page-hero">
   <div class="page-hero-bg news-hero-bg"></div>
+  <!-- Every other hero on the site credits its photographer; this one credited
+       nobody, and it is a community photograph. Shown only for the DEFAULT
+       image, whose credit we hold in plants.json — a story's own hero_image is
+       usually a park or press photo with no iNaturalist record behind it, and
+       inventing a credit line for it would be worse than none. -->
+  <div class="page-hero-credit" id="newsHeroCredit"
+       style="position:absolute;right:.9rem;bottom:.7rem;z-index:3;font-size:.72rem;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.65);letter-spacing:.02em"></div>
   <div class="page-hero-content" style="text-align:center;margin:0 auto">
     <div class="label label-light">Park News</div>
     <h1>Latest news</h1>
@@ -262,7 +269,12 @@ function articleHTML(n){
 
 // The page hero when a story has no picture of its own. Any plant photo in the
 // repo works; this one is the Mexican Flame Vine.
-const NEWS_HERO_DEFAULT = 'photos/PSBP-00052-Mexican-Flame-Vine.jpg';
+// Mexican Flame Vine. NOTE: this was 'photos/PSBP-00052-Mexican-Flame-Vine.jpg'
+// in both the CSS and here — a path that has 404'd all along, which is why a
+// story with no picture of its own showed a blank hero.
+const NEWS_HERO_DEFAULT = 'photos/PSBP-00052/689688845.jpg';
+// From plants.json PSBP-00052 — the chosen lead photo for that species.
+const NEWS_HERO_DEFAULT_CREDIT = '© Aiden Gitt · CC-BY-NC · iNaturalist';
 
 function selectNews(i){
   newsActive = i;
@@ -273,14 +285,18 @@ function selectNews(i){
   // the top instead of a small dark band inside the article.
   const bg = document.querySelector('.news-hero-bg');
   if (bg){
-    const img = (newsItems[i].hero_image || '').trim() || NEWS_HERO_DEFAULT;
-    bg.style.backgroundImage = `url('${img}')`;
+    const own = (newsItems[i].hero_image || '').trim();
+    bg.style.backgroundImage = `url('${own || NEWS_HERO_DEFAULT}')`;
+    const cr = document.getElementById('newsHeroCredit');
+    if (cr) cr.textContent = own ? '' : NEWS_HERO_DEFAULT_CREDIT;
   }
 
-  // Always scroll to the top of the story. This was gated to max-width:880px,
-  // so picking a story from the sidebar on a desktop left you halfway down the
-  // NEW article, at whatever depth you had reached in the old one.
-  readerEl.scrollIntoView({ behavior:'smooth', block:'start' });
+  // TOP OF THE PAGE, not top of the article. The hero at the top has just
+  // changed to this story's photograph — scrolling to the article header sails
+  // straight past it, so the one thing that visibly responded to the click was
+  // the one thing you never saw. The article header sits just under the hero
+  // anyway, so this costs a few hundred pixels of scroll and shows the change.
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function renderSquares(){
