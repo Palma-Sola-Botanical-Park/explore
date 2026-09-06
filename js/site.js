@@ -1446,6 +1446,19 @@ async function loadEventsPage(opts){
 
 // ── Simpler single-list renderers (homepage teasers, other pages) ─────
 // loadEvents: upcoming dated events only (no class expansion), same card style.
+// Is an announcement inside its display window today?
+// show_from blank = already showing. show_until blank = never expires. Together
+// they let the director pre-stage: write three monthly notes in one sitting,
+// date each one, and the right one appears and retires without anyone touching
+// the sheet again.
+function _inWindow(row, today){
+  const from  = parseDateLocal((row.show_from  || '').trim());
+  const until = parseDateLocal((row.show_until || '').trim());
+  if (from  && from  > today) return false;
+  if (until && until < today) return false;
+  return true;
+}
+
 // ── Director's note ───────────────────────────────────────────────────────
 // An announcement flagged director_note renders here instead of in the top bar:
 // a magazine editor's welcome, in her own voice, under her name. Randy's idea,
@@ -1464,18 +1477,23 @@ async function loadDirectorNote(opts){
   try {
     const rows = await fetchTab(TAB.announcements);
     const today = new Date(); today.setHours(0,0,0,0);
-    const notes = (rows || []).filter(r => {
-      if (!isWebVisible(r) || !_isYes(r.director_note)) return false;
-      const until = parseDateLocal((r.show_until || '').trim());
-      return !until || until >= today;
-    });
+    const notes = (rows || []).filter(r =>
+      isWebVisible(r) && _isYes(r.director_note) && _inWindow(r, today));
     if (!notes.length) return hide();
 
-    // If she flags more than one, the newest wins and the rest stay quiet —
-    // a homepage with two editor's letters is a mistake, not a feature.
+    // With several staged, the one whose window opened MOST RECENTLY wins —
+    // so September's note gives way to October's on the day it starts, without
+    // anyone editing the sheet. Undated rows sort last, which keeps a
+    // never-expiring note from outranking a deliberately dated one.
+    notes.sort((a, b) => {
+      const fa = parseDateLocal((a.show_from || '').trim());
+      const fb = parseDateLocal((b.show_from || '').trim());
+      return (fa ? fa.getTime() : -Infinity) - (fb ? fb.getTime() : -Infinity);
+    });
     const n = notes[notes.length - 1];
     const by   = opts.byline || 'Beverly Zoller Burdette, Executive Director';
-    const when = parseDateLocal((n.show_until || '').trim());
+    const when = parseDateLocal((n.show_from || '').trim())
+              || parseDateLocal((n.show_until || '').trim());
     const dateLine = when
       ? when.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '';
     const link = (n.link_url || '').trim()
@@ -1704,8 +1722,7 @@ async function loadAnnouncements(containerId) {
       // A director's note is not a notice — it renders as her welcome on the
       // home page (loadDirectorNote), never as a strip at the top of every page.
       if (_isYes(r.director_note)) return false;
-      const until = parseDateLocal((r.show_until || '').trim());
-      return !until || until >= _today;
+      return _inWindow(r, _today);
     });
     if (!visible.length) { el.style.display='none'; return; }
 
