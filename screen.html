@@ -1331,7 +1331,11 @@ function slideSeries(s){
     + '<div class="headline">'+esc(s.name)+'</div>'
     + (s.blurb?'<div class="body">'+rich(s.blurb)+'</div>':'')
     + logoBlock(s, 'In partnership with')
-    + qrBlock(s, 'Scan for the schedule', s.flyer_url)
+    /* link_url is the name going forward; flyer_url is the series tab's old
+       spelling for the same thing. Read both so renaming the column cannot
+       silently kill this QR — no series is screen-bound today, so a break
+       here would go unnoticed until one was. */
+    + qrBlock(s, 'Scan for the schedule', s.link_url || s.flyer_url)
   });
 }
 

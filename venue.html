@@ -323,16 +323,43 @@ function vmatrix(v){return '<div class="matrix">'+
 function vfees(v){const p=['Deposit <b>'+money(v.deposit)+'</b>'];
  if(v.manager&&v.manager!=='—')p.push('On-site manager <b>'+money(v.manager)+'</b>');
  if(v.insurance&&v.insurance!=='—')p.push('Insurance <b>'+v.insurance+'</b>');return p.join('  ·  ');}
+// close_time is free text from the sheet and lands in a title="" attribute.
+const esc=s=>(s==null?'':(''+s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
 function vcalendar(cal){
- const st={};cal.forEach(d=>{if(d.date)st[d.date]=d;});
+ // MERGE rows per date, do not overwrite. Seven dates carry two rows, and
+ // `st[d.date]=d` kept only the last one in sheet order — so a day holding a
+ // booked wedding that closes the park at 4pm AND a pencilled-in 9am class
+ // could show YELLOW, and a family would ring up to ask about a date that is
+ // already gone. Worst case wins: booked beats possible, and the day is closed
+ // if ANY row on it closes the park.
+ const RANK={open:0,possible:1,booked:2};
+ const st={};
+ cal.forEach(d=>{
+  if(!d.date) return;
+  const cur=st[d.date];
+  const s=(d.status||'open').toLowerCase();
+  const closes=/^(yes|y|true)$/i.test((d.closes_park||'').trim());
+  if(!cur){ st[d.date]={status:s,closes,close_time:(d.close_time||'').trim()}; return; }
+  if((RANK[s]||0)>(RANK[cur.status]||0)) cur.status=s;
+  if(closes){ cur.closes=true; if(!cur.close_time) cur.close_time=(d.close_time||'').trim(); }
+ });
  const pad=n=>String(n).padStart(2,'0'),track=$('calTrack');
  const today=new Date(),start={y:today.getFullYear(),m:today.getMonth()},MONTHS=12,VISIBLE=3;
  function mhtml(y,m){const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate();
   const title=new Date(y,m,1).toLocaleString('en-US',{month:'long',year:'numeric'});
   let g=['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>'<div class="mdow">'+d+'</div>').join('');
   for(let i=0;i<first;i++)g+='<div class="mday blank"></div>';
-  for(let d=1;d<=days;d++){const k=y+'-'+pad(m+1)+'-'+pad(d),r=st[k],s=r?(r.status||'open').toLowerCase():'open';
-   g+='<div class="mday '+s+'"'+(r&&r.note?' title="'+r.note+'"':'')+'>'+d+'</div>';}
+  for(let d=1;d<=days;d++){const k=y+'-'+pad(m+1)+'-'+pad(d),r=st[k],s=r?r.status:'open';
+   // The tooltip describes AVAILABILITY, never the booking. It used to print
+   // the sheet's `note` column verbatim — Jennie's internal label — which put
+   // couples' names, baby showers and two Celebrations of Life on a public
+   // page. Merging rows made that unanswerable anyway (whose note?), and the
+   // honest answer is none of them: a family needs to know whether the date is
+   // free, not who has it.
+   const tip=(s==='booked'?'Booked':s==='possible'?'Pencilled in':'Available')
+     +(r&&r.closes?(r.close_time?' · park closes '+r.close_time:' · park closed all day'):'');
+   g+='<div class="mday '+s+'" title="'+esc(tip)+'">'+d+'</div>';}
   return '<div class="calmonth"><h4>'+title+'</h4><div class="mgrid">'+g+'</div></div>';}
  let h='';for(let i=0;i<MONTHS;i++){const dt=new Date(start.y,start.m+i,1);h+=mhtml(dt.getFullYear(),dt.getMonth());}
  track.innerHTML=h;

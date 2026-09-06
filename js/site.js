@@ -64,8 +64,16 @@ window.PSBP = window.PSBP || {};
   P.rowLink = function (row) {
     row = row || {};
     return {
-      url:  ((row.link_url || row.pdf_url || row.link || '') + '').trim(),
-      text: row.link_text || row.pdf_link_text || ''
+      // flyer_url/flyer_text are the series tab's names for the same thing
+      // events and classes call link_url/link_text. Accepting both means
+      // nobody has to remember which tab uses which word.
+      url:  ((row.link_url || row.flyer_url || row.pdf_url || row.link || '') + '').trim(),
+      // Strip a trailing arrow. Every renderer appends " →" itself, and the
+      // sheet's link_text often already ends in one ("See what's coming →"),
+      // which rendered as a double arrow on all four series cards. Cheaper to
+      // tolerate here than to police what Bev types.
+      text: (row.link_text || row.flyer_text || row.pdf_link_text || '')
+              .replace(/\s*(?:→|->|»)\s*$/, '').trim()
     };
   };
 
@@ -721,10 +729,15 @@ const EVENT_CATEGORIES = [
   { key:'Arts & Music',       emoji:'🎵', color:'#8a5a9b' },
   { key:'Community',          emoji:'🎉', color:'#d29a1f' },
   { key:'Volunteer',          emoji:'🌱', color:'#4a8b3b' },
-  { key:'Private',            emoji:'🔒', color:'#8a8a8a' },
+  // `key` must stay 'Private' — it is one of the eight values the schemas
+  // accept in the sheet's category column. `label` is what a visitor reads:
+  // "Private" describes the booking, "Park Closures" describes the thing they
+  // actually care about, which is whether they can come that day.
+  { key:'Private',            emoji:'🔒', color:'#8a8a8a', label:'Park Closures' },
 ];
 const catMeta = key => EVENT_CATEGORIES.find(c => c.key === (key||'').trim())
   || { key:(key||'').trim(), emoji:'📅', color:'#8a8a8a' };
+const catLabel = key => { const m = catMeta(key); return m.label || m.key || key; };
 
 // Map a row's category, tolerating the legacy `type` values during migration.
 function eventCategory(row){
@@ -762,12 +775,27 @@ const DOW_ABBR  = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 const dowColor  = d => DOW_COLOR[d.getDay()];
 const _dowNice  = d => { const a = DOW_ABBR[d.getDay()]; return a[0] + a.slice(1).toLowerCase(); };
 
-// A link target for an item: its own link, else its series flyer, else ''.
-function _itemHref(item, seriesMap){
-  let url = item._link && item._link.url;
-  if (!url && seriesMap){ const s = _seriesOf(item, seriesMap); if (s) url = s.flyer_url || ''; }
-  return url || '';
+// Where clicking an item goes, most specific first:
+//   1. its own link_url        — an override: tickets, a Doc, another site
+//   2. its own poster          — the flyer links ITSELF, so a normal row needs
+//                                only one cell filled in, not two
+//   3. its series' link_url    — several classes sharing one flyer
+//   4. its series' poster      — same, when the series links nothing else
+// Returns { url, text } so the caller can label a poster link sensibly.
+function _itemLink(item, seriesMap){
+  const own = item._link || {};
+  if (own.url)     return { url: own.url, text: own.text || '' };
+  if (item.poster) return { url: item.poster, text: own.text || 'See the flyer' };
+  const s = seriesMap ? _seriesOf(item, seriesMap) : null;
+  if (s){
+    const sl = PSBP.rowLink(s);
+    if (sl.url) return { url: sl.url, text: sl.text || '' };
+    const sp = (s.poster || s.screen_poster || '').trim();
+    if (sp) return { url: sp, text: 'See the flyer' };
+  }
+  return { url: '', text: '' };
 }
+function _itemHref(item, seriesMap){ return _itemLink(item, seriesMap).url; }
 
 // Sort by date, then by start time (best-effort time parse).
 function _timeKey(t){
@@ -846,10 +874,13 @@ const _seriesOf = (item, map) => item.series ? map[item.series.trim().toLowerCas
 
 // Inline prose link tacked onto the end of a description — the words ARE the
 // link, no button. Uses link_text, or a quiet "more" default when blank.
+// NOTE: deliberately NOT given seriesMap. On an agenda card the series already
+// has its own line ("Part of the … →"), so resolving the series flyer here too
+// would print two links to the same file, one above the other.
 function _inlineLink(item){
-  const url  = item._link && item._link.url;
+  const { url, text: t } = _itemLink(item);
   if (!url) return '';
-  const text = (item._link && item._link.text) || 'more';
+  const text = t || 'more';
   return ' ' + PSBP.linkTag(url, _evEsc(text) + ' →',
     { title: item.title || '', back: _BACK(), className: 'ev-inline-link' });
 }
@@ -862,8 +893,9 @@ function _seriesLine(item, seriesMap){
   // "Bright Futures — Part of the Bright Futures" helps nobody.
   if (label.toLowerCase() === (item.title || '').trim().toLowerCase()) return '';
   const s = _seriesOf(item, seriesMap);
-  if (s && s.flyer_url)
-    return `<div class="ev-series">Part of the ${PSBP.linkTag(s.flyer_url, _evEsc(label)+' →',
+  const sLink = s ? PSBP.rowLink(s) : { url:'' };
+  if (s && sLink.url)
+    return `<div class="ev-series">Part of the ${PSBP.linkTag(sLink.url, _evEsc(label)+' →',
       { title: label, back: _BACK(), className:'ev-series-link' })}</div>`;
   return `<div class="ev-series">Part of the ${_evEsc(label)}</div>`;
 }
@@ -872,7 +904,7 @@ function _badges(item){
   const out = [];
   const cm = catMeta(item.category);
   if (item.category)
-    out.push(`<span class="ev-badge" style="background:${cm.color}1a;color:${cm.color}">${cm.emoji} ${_evEsc(item.category)}</span>`);
+    out.push(`<span class="ev-badge" style="background:${cm.color}1a;color:${cm.color}">${cm.emoji} ${_evEsc(catLabel(item.category))}</span>`);
   if (item.kid_friendly)
     out.push(`<span class="ev-badge ev-badge-kid">👪 Kid-friendly</span>`);
   if (/^free$/i.test((item.cost||'').trim()))
@@ -899,11 +931,21 @@ function renderAgendaCard(item, seriesMap){
     </div>`;
 
   if (isClosure){
+    // A wedding shuts the park for the afternoon, not the whole day — so say
+    // which. Blank close_time keeps the old all-day wording, which is the safe
+    // reading and what the schema documents.
+    const shutAt = (item.close_time || '').trim();
+    const head   = shutAt ? `🔒 Park closes ${_evEsc(shutAt)}` : '🔒 Park closed';
+    const label  = (item.title || '').trim();
+    const body   = item.description ? clip(item.description,160)
+      : shutAt
+        ? `The park is open as usual that morning and closes to the public at ${_evEsc(shutAt)} for a private event — please plan your visit around it.`
+        : 'The park is closed to the public this day for a private event — please plan your visit around it.';
     return `<div class="event-card ev-card agenda-closure" data-category="Private" data-always="1">
       ${dateBox}
       <div class="event-info">
-        <div class="ev-titlerow"><h4 class="ev-title">🔒 Park closed — ${_evEsc((item.title||'').trim() || 'Private event')}</h4></div>
-        <p>${item.description ? clip(item.description,160) : 'The park is closed to the public this day for a private event — please plan your visit around it.'}</p>
+        <div class="ev-titlerow"><h4 class="ev-title">${head}${label ? ` — ${_evEsc(label)}` : ''}</h4></div>
+        <p>${body}</p>
       </div>
     </div>`;
   }
@@ -933,9 +975,18 @@ function renderAgendaCard(item, seriesMap){
 }
 
 // One weekly-schedule row (a class shown ONCE, as a rule not an instance).
-function renderScheduleRow(c){
+function renderScheduleRow(c, seriesMap){
   const dayLabel = c.day || formatWeekday(c.weekday) || '';
-  const link = PSBP.rowLink(c);
+  // A class reaches its flyer through its SERIES when it has no link of its
+  // own. That is the whole point of pointing several classes at one series:
+  // the flyer lives in one row. Without this fallback, clearing a class's
+  // link_url — which is exactly what the model asks you to do — silently
+  // dropped the "more" link from this rail.
+  let link = PSBP.rowLink(c);
+  if (!link.url && c.series && seriesMap){
+    const s = seriesMap[c.series.trim().toLowerCase()];
+    if (s){ const sl = PSBP.rowLink(s); if (sl.url) link = { url: sl.url, text: sl.text || 'Details' }; }
+  }
   const more = link.url
     ? ' <span class="text-soft">·</span> ' + PSBP.linkTag(link.url, (link.text||'more')+' →',
         { title:c.title||'', back:_BACK(), className:'sched-link' })
@@ -952,13 +1003,14 @@ function renderScheduleRow(c){
 // One series-index card (a series shown ONCE, with its flyer link).
 function renderSeriesCard(s){
   const cm = catMeta(s.category);
-  const link = s.flyer_url
-    ? PSBP.linkTag(s.flyer_url, (s.flyer_text||'Learn more')+' →',
+  const sl = PSBP.rowLink(s);
+  const link = sl.url
+    ? PSBP.linkTag(sl.url, (sl.text||'Learn more')+' →',
         { title:s.name||'', back:_BACK(), className:'series-link' })
     : '';
   return `<div class="series-card">
     <h4>${_evEsc(s.name||'')}</h4>
-    ${s.category?`<span class="ev-badge" style="background:${cm.color}1a;color:${cm.color}">${cm.emoji} ${_evEsc(s.category)}</span>`:''}
+    ${s.category?`<span class="ev-badge" style="background:${cm.color}1a;color:${cm.color}">${cm.emoji} ${_evEsc(catLabel(s.category))}</span>`:''}
     ${s.blurb?`<p>${_evEsc(s.blurb)}</p>`:''}
     ${link?`<div class="series-actions">${link}</div>`:''}
   </div>`;
@@ -981,8 +1033,9 @@ function _dateSpan(a, b){
 // artwork carries the times, prices and address. Shown whole, never cropped,
 // because on our flyers that detail sits along the bottom edge.
 function renderFeature(item){
-  const href  = item._link && item._link.url;
-  const label = (item._link && item._link.text) || 'See the flyer';
+  const _l    = _itemLink(item);          // falls back to the poster itself
+  const href  = _l.url;
+  const label = _l.text || 'See the flyer';
   // Events lead with their date. A series has no date, so it supplies its own
   // eyebrow (its category) — same card, honest top line.
   const when  = item.eyebrow
@@ -1134,7 +1187,7 @@ function buildEventFilters(container, cardContainers, opts){
   const btn = (cat,label,active) =>
     `<button class="ev-filter-btn${active?' active':''}" data-cat="${_evEsc(cat)}">${label}</button>`;
   container.innerHTML = btn('__all','All',true) +
-    order.map(k => { const m = catMeta(k); return btn(k, `${m.emoji} ${k}`, false); }).join('') +
+    order.map(k => { const m = catMeta(k); return btn(k, `${m.emoji} ${catLabel(k)}`, false); }).join('') +
     (hasKid ? btn('__kid','👪 Kid-friendly',false) : '');
   container.querySelectorAll('.ev-filter-btn').forEach(b => {
     b.addEventListener('click', () => {
@@ -1211,6 +1264,10 @@ async function loadEventsPage(opts){
         const date = parseDateLocal(r.date);
         if (!date) return null;
         return { kind:'closure', date, title:(r.public_note||'').trim(),
+                 // Partial closures: the park shuts at close_time, not all day.
+                 // Jennie has been filling this in for months and nothing read
+                 // it. Blank still means closed all day — the safe reading.
+                 close_time:(r.close_time||'').trim(),
                  description:'', category:'Private', _link:{} };
       })
       .filter(Boolean)
@@ -1294,7 +1351,7 @@ async function loadEventsPage(opts){
           description: s.blurb,
           poster: (s.poster || s.screen_poster || '').trim(),
           registration_url: '',
-          _link: { url: s.flyer_url || '', text: s.flyer_text || 'See the flyer' }
+          _link: { url: PSBP.rowLink(s).url, text: PSBP.rowLink(s).text || 'See the flyer' }
         }));
     }
 
@@ -1311,7 +1368,7 @@ async function loadEventsPage(opts){
     if (schedEl){
       const cls = classes.filter(isWebVisible);
       schedEl.innerHTML = cls.length
-        ? cls.map(renderScheduleRow).join('')
+        ? cls.map(c => renderScheduleRow(c, seriesMap)).join('')
         : '<p class="text-soft" style="font-size:.9rem">No weekly classes scheduled right now.</p>';
     }
 
@@ -1366,9 +1423,16 @@ async function loadClasses(containerId){
   const el = document.getElementById(containerId);
   if (!el) return;
   try {
-    const rows = (await fetchTab(TAB.classes)).filter(isWebVisible);
+    // series comes along so a class with no link of its own can still reach
+    // its series' flyer — same fallback as the events page.
+    const [rows, series] = await Promise.all([
+      fetchTab(TAB.classes).then(r => r.filter(isWebVisible)),
+      fetchTab(TAB.series).catch(() => [])
+    ]);
+    const seriesMap = {};
+    series.filter(isWebVisible).forEach(s => { if (s.name) seriesMap[s.name.trim().toLowerCase()] = s; });
     el.innerHTML = rows.length
-      ? rows.map(renderScheduleRow).join('')
+      ? rows.map(c => renderScheduleRow(c, seriesMap)).join('')
       : '<p class="text-soft">No classes currently scheduled.</p>';
   } catch(e){
     el.innerHTML = '<p class="text-soft">Could not load classes.</p>';
