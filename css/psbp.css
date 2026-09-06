@@ -106,6 +106,9 @@
 
   --nav-h: 64px;
 
+  /* How much of the hero photograph shows through the green. See .page-hero-bg. */
+  --hero-veil: .28;
+
   /* ── LEGACY ALIASES — see MIGRATION NOTE. Safe to keep indefinitely. ── */
   --green-deep: var(--green-ink);
   --green-mid:  var(--green);
@@ -655,7 +658,12 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .page-hero-bg {
   position: absolute; inset: 0;
   background-size: cover; background-position: center;
-  opacity: .35;
+  /* The photo lies over --green-ink at this opacity — that is the "fading into
+     green" the heroes have always done. It is ONE DIAL, --hero-veil, because
+     the right level is a judgement that changes with the photograph: a dark
+     canopy shot can carry .38, a bright high-key one washes out the type at
+     the same value. Lower = greener and quieter. Set it here, not per page. */
+  opacity: var(--hero-veil);
 }
 .page-hero-content {
   position: relative; z-index: 1;
@@ -970,3 +978,16 @@ a.ml-row:hover { background: var(--sunk); }
 .vtail a:last-child{margin-right:0}
 .vtail a:hover{border-bottom-color:#fff}
 .vmail{font-size:.86rem;color:rgba(255,255,255,.58)}
+
+/* Light variant. The block is written for a dark ground, which is right at the
+   BOTTOM of contact.html — but on visit.html it sits directly under a green
+   photo hero, and two greens stacked read as a clash rather than a rhythm.
+   Same structure, same rules, park ink instead of white. */
+.vlight .vfacts > div{border-top-color:var(--rule)}
+.vlight .vfacts > div:last-child{border-bottom-color:var(--rule)}
+.vlight .vfacts dt{color:var(--gold)}
+.vlight .vfacts dd{color:var(--ink)}
+.vlight .vfacts dd span{color:var(--ink-soft)}
+.vlight .vfacts dd a{color:var(--green);border-bottom-color:rgba(45,106,53,.4)}
+.vlight .vfacts dd a:hover{border-bottom-color:var(--green)}
+.vlight .vmap{box-shadow:0 4px 18px rgba(40,50,30,.14)}
