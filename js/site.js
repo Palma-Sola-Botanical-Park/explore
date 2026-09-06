@@ -374,9 +374,9 @@ const NAV_HTML = `
     <li class="has-sub">
       <a href="index.html">Home</a>
       <ul class="subnav">
+        <li><a href="index.html#happening">What's On</a></li>
+        <li><a href="index.html#whatsHere">What's Here</a></li>
         <li><a href="index.html#rightNowSection">Right Now</a></li>
-        <li><a href="index.html#seenLately">Seen Lately</a></li>
-        <li><a href="index.html#tenAcres">Your Park</a></li>
         <li><a href="news.html">News</a></li>
       </ul>
     </li>
@@ -433,9 +433,9 @@ const NAV_HTML = `
 </nav>
 <div class="nav-mobile" id="navMobile">
   <a href="index.html" class="nm-top">Home</a>
+  <a href="index.html#happening" class="nm-sub">What's On</a>
+  <a href="index.html#whatsHere" class="nm-sub">What's Here</a>
   <a href="index.html#rightNowSection" class="nm-sub">Right Now</a>
-  <a href="index.html#seenLately" class="nm-sub">Seen Lately</a>
-  <a href="index.html#tenAcres" class="nm-sub">Your Park</a>
   <a href="news.html" class="nm-sub">News</a>
   <a href="visit.html" class="nm-top">Visit</a>
   <a href="visit.html#getting-here" class="nm-sub">Getting here</a>
@@ -1488,29 +1488,50 @@ async function loadHomeHappening(opts){
       if (typeof fitBandAspect === 'function') fitBandAspect(postersEl);
     }
 
-    // UPCOMING — the ordinary week. Excludes anything already shown as a poster
-    // and excludes closures, which have their own place in the hero.
+    // UPCOMING — two different things, shown differently.
+    //
+    // A one-off talk on the 24th is NEWS and earns a dated row. Zumba every
+    // Monday is a RHYTHM, and expanding it into dated rows produced four
+    // near-identical lines that said the same thing four times. So: dated
+    // events as rows, standing classes as a single line underneath.
     if (upEl){
       const shown = new Set(posters.map(i => (i.title||'').trim().toLowerCase()));
       const end = new Date(today); end.setDate(end.getDate() + (opts.windowDays || 21));
-      const inst = expandClasses(classes.filter(isWebVisible), today, end);
-      const rows = _expandMultiDay(evItems)
+
+      const dated = _expandMultiDay(evItems)
         .filter(i => i.kind !== 'closure')
-        .concat(inst)
         .filter(i => i.date >= today && i.date <= end)
         .filter(i => !shown.has((i.title||'').trim().toLowerCase()))
         .sort(_byDateThenTime)
-        .slice(0, opts.upcomingMax || 4);
+        .slice(0, opts.upcomingMax || 3);
 
-      upEl.innerHTML = rows.length ? rows.map(i => {
+      const rows = dated.map(i => {
         const when = i.date.toLocaleDateString('en-US',{weekday:'short',day:'numeric',month:'short'});
         const t = i.time ? `${_evEsc(_startTime(i.time))} · ` : '';
-        const who = i.instructor ? ` · ${_evEsc(i.instructor)}` : '';
         return `<div class="cx-row"><span class="d">${_evEsc(when)}</span>
-          <span class="t">${t}<b>${_evEsc(i.title||'')}</b>${who}</span></div>`;
-      }).join('')
-      : `<div class="cx-row"><span class="t">Nothing scheduled this week — the park is
-         still open every day.</span></div>`;
+          <span class="t">${t}<b>${_evEsc(i.title||'')}</b></span></div>`;
+      }).join('');
+
+      // One line for the standing classes: title + the days it runs, deduped
+      // (Basic Hatha Yoga is Monday AND Wednesday — one entry, two days).
+      const byTitle = new Map();
+      classes.filter(isWebVisible).forEach(c => {
+        const t = (c.title||'').trim(); if (!t) return;
+        const day = formatWeekday(c.weekday) || (c.weekday||'').trim();
+        if (!byTitle.has(t)) byTitle.set(t, []);
+        if (day && !byTitle.get(t).includes(day)) byTitle.get(t).push(day);
+      });
+      const weekly = [...byTitle.entries()].map(([t, days]) =>
+        `<b>${_evEsc(t)}</b>${days.length ? ' ' + _evEsc(days.join(' &amp; ')) : ''}`
+      ).join('<span class="cx-dot">·</span>');
+
+      const weeklyLine = weekly
+        ? `<div class="cx-weekly"><span class="cx-weeklab">Every week</span>${weekly}</div>` : '';
+
+      upEl.innerHTML = (rows || weeklyLine)
+        ? rows + weeklyLine
+        : `<div class="cx-row"><span class="t">Nothing scheduled this week — the park is
+           still open every day.</span></div>`;
     }
 
     // CLOSURE — the soonest one inside the window, from either source.

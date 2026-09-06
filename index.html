@@ -93,6 +93,14 @@
 .cx-row .t{font-size:var(--t-base);color:var(--ink)}
 .cx-row .t b{color:var(--green-ink)}
 .cx-row.closed{background:var(--sunk)}
+/* The standing classes, as one line rather than four near-identical rows. */
+.cx-weekly{display:flex;flex-wrap:wrap;align-items:baseline;gap:.35rem .55rem;
+  padding:.85rem 1.1rem;background:var(--sunk);font-size:var(--t-base);
+  line-height:1.6;color:var(--ink-soft)}
+.cx-weekly b{color:var(--green-ink);font-weight:700}
+.cx-weeklab{font-size:var(--t-cap);font-weight:800;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--green);margin-right:.4rem}
+.cx-dot{color:var(--rule-strong);margin:0 .1rem}
 .cx-row.closed .d,.cx-row.closed .t{color:var(--ink-soft)}
 
 /* ── what's here ──────────────────────────────────────────────────────── */
@@ -105,7 +113,16 @@
 
 /* ── plan your visit ──────────────────────────────────────────────────── */
 .cx-plan{display:grid;gap:2rem;grid-template-columns:1fr;align-items:start}
-@media(min-width:880px){.cx-plan{grid-template-columns:1fr 1fr}}
+/* On a phone the map used to sit below the facts, the paragraph and a link —
+   so the one thing that actually orients you was last. It now leads, and the
+   desktop composition is unchanged (text left, map right) via explicit
+   column placement rather than source order. */
+.cx-plan > .cx-map{order:-1}
+@media(min-width:880px){
+  .cx-plan{grid-template-columns:1fr 1fr}
+  .cx-plan > *{order:0}
+  .cx-plan > .cx-map{grid-column:2;grid-row:1}
+}
 .cx-facts{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr);margin-bottom:1.4rem}
 .cx-fact b{display:block;font-family:var(--serif);font-size:1.5rem;color:var(--green-ink);line-height:1.1}
 .cx-fact span{font-size:var(--t-base);color:var(--ink-soft)}
@@ -191,7 +208,7 @@
 </div>
 
 <!-- ══ 2 · WHAT'S HAPPENING — was position 7 of 9 ════════════════════════ -->
-<section class="cx-sec bg-wash">
+<section class="cx-sec bg-wash" id="happening">
   <div class="cx-in">
     <span class="label">What's on</span>
     <h2 class="cx-title">Coming up at the park</h2>
@@ -214,7 +231,7 @@
         of those same six places, then how to reach them. Splitting it made a
         visitor scroll past an orientation section to reach an orientation
         section. ═══════════════════════════════════════════════════════════ -->
-<section class="cx-sec bg-paper">
+<section class="cx-sec bg-paper" id="whatsHere">
   <div class="cx-in">
     <span class="label">The place itself</span>
     <h2 class="cx-title">What's here</h2>
@@ -250,7 +267,6 @@
       </div>
       <div class="cx-map">
         <img src="images/ParkMap.png" alt="Map of Palma Sola Botanical Park">
-        <div class="cx-maplab">Parking is off 17th Ave NW, by the Galleria.</div>
       </div>
     </div>
   </div>

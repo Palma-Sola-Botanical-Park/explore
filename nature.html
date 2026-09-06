@@ -464,7 +464,12 @@
     <div class="two-tabs two-tabs--card">
       <button class="tab-btn active" id="tab-plants"   onclick="showTab('plants')">🌿 Plants</button>
       <button class="tab-btn"        id="tab-wildlife" onclick="showTab('wildlife')">🦜 Wildlife</button>
-      <a class="tab-aside" href="index.html#seenLately">📷 Seen lately &rarr;</a>
+      <!-- Restored 2026-09-05. This tab was switched off on 08-26 because the
+           HOME PAGE rendered the same feed at #seenLately. The homepage rebuild
+           removed that section — it was turning the front door into a nature-data
+           site — so the reason for hiding this is gone, and the aside link that
+           used to sit here pointed at an anchor that no longer exists. -->
+      <button class="tab-btn"        id="tab-recent"   onclick="showTab('recent')">📷 Seen lately</button>
     </div>
 
     <!-- ── PLANTS TAB ── -->
@@ -521,12 +526,10 @@
     </div>
 
     <!-- ── RECENT OBSERVATIONS TAB ── -->
-    <!-- UNREACHABLE BY DESIGN (2026-08-26). Its tab button was removed: the
-         home page already renders this feed at #seenLately, and a third tab
-         diluted the one real choice on this page. Kept rather than deleted
-         because it costs nothing — showTab() only fetches when the tab is
-         clicked, and nothing clicks it — and restoring the tab is one button.
-         Delete it if it is still here in six months. -->
+    <!-- LIVE AGAIN 2026-09-05. Hidden on 08-26 while the homepage carried this
+         feed; the homepage rebuild dropped that section, so this is now the only
+         place the recent-observations mosaic lives. Still lazy: showTab() fetches
+         only when the tab is clicked. -->
     <div class="tab-panel" id="panel-recent">
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start;margin-bottom:2rem">
