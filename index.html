@@ -180,6 +180,13 @@ section[id]{scroll-margin-top:78px}
 .cx-close > div{position:relative;z-index:2;max-width:40em}
 .cx-close h2{font-family:var(--serif);font-size:clamp(2.2rem,5vw,3rem);color:#fff;line-height:1.1;margin:0 0 .8rem}
 .cx-close p{font-size:1.15rem;line-height:1.7;color:rgba(255,255,255,.9);margin:0 0 .4rem}
+.cx-tally{display:flex;flex-wrap:wrap;justify-content:center;gap:1.2rem 2.8rem;margin:1.4rem 0 1.5rem}
+.cx-tally > div{text-align:center}
+.cx-tally b{display:block;font-family:var(--serif);font-size:clamp(2.1rem,5vw,2.9rem);
+  line-height:1;color:var(--gold-light);font-weight:700}
+.cx-tally span{display:block;margin-top:.25rem;font-size:var(--t-cap);font-weight:700;
+  letter-spacing:.11em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.cx-close p strong{color:var(--gold-light);font-weight:700}
 </style>
 </head>
 <body>
@@ -366,10 +373,25 @@ section[id]{scroll-margin-top:78px}
 <!-- ══ 10 · COME VISIT — ends on the place, not on a feed ════════════════ -->
 <div class="cx-close" style="background-image:url('photos/PSBP-00005/662740624.jpg')">
   <div>
+    <!-- Was the address and the hours — for the THIRD time on this page, with
+         the footer making a fourth. Replaced with the one thing a visitor has
+         not been told, and the thing no other garden this size can say. The
+         page now opens on "every nature photo here was taken by our community"
+         and closes on the count of it. Randy's words. -->
     <h2>Come see what's here.</h2>
-    <p>9800 17th Ave NW, Bradenton, Florida</p>
-    <p>Open 8am – dusk · Every day · Free</p>
-    <p style="margin-top:1.4rem">
+
+    <!-- Three live figures from the iNaturalist project, then the one that
+         connects them to what you have just been looking at. The escalation is
+         the point: a whole community records this place, and 1,205 of their
+         photographs are the images on this site and on the signs. -->
+    <div class="cx-tally">
+      <div><b id="closeObs">1,815</b><span>observations</span></div>
+      <div><b id="closeSpecies">568</b><span>species</span></div>
+      <div><b id="closeObservers">137</b><span>people</span></div>
+    </div>
+    <p><strong>1,205</strong> of their photographs are on this site and on the signs
+      in the garden. Let's keep it going — together.</p>
+    <p style="margin-top:1.6rem">
       <a href="visit.html" class="btn btn-gold">Plan your visit →</a>
     </p>
   </div>
@@ -396,6 +418,21 @@ loadDirectorNote({ into:'dnote', wrap:'dnoteWrap' });
 // Right now in the park — rotates 3 at a time; hides itself if the feed is empty.
 loadRightNow('rightNowStrip', { limit: 24, perPage: 3, rotateSeconds: 9,
                                 sectionId: 'rightNowSection' });
+
+/* The observation count is the one number in the closing tally that grows by
+   itself, so it is read live from the iNaturalist project rather than frozen
+   into the page. Photographers and photographs come from photo_credits.json
+   and change only when we pull new images — those stay hardcoded, and want
+   updating when the collection grows. Falls back to the printed "1,800+" if
+   iNat is unreachable, which is why the markup ships with a real number. */
+loadINat().then(d => {
+  if (!d) return;
+  const put = (id, n) => { const el = document.getElementById(id);
+                           if (el && n) el.textContent = n.toLocaleString(); };
+  put('closeObs',       d.total);
+  put('closeSpecies',   d.species);
+  put('closeObservers', d.observers);
+}).catch(() => {});
 
 /* Arriving at index.html#rightNowSection from another page, the browser jumps to
    the anchor immediately — then the posters, the director's note and the Right
