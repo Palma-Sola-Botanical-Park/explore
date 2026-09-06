@@ -1137,6 +1137,25 @@ function renderSaveDate(item){
   </div>`;
 }
 
+// Expand a multi-day event into one entry per day, for the full calendar.
+// Winter Nights runs 17–20 December; listed only on the 17th, somebody
+// scanning for "is the park doing anything on the 19th?" sees nothing.
+// Capped at 31 days so a typo in date_end cannot generate a thousand rows.
+function _expandMultiDay(items){
+  const out = [];
+  items.forEach(it => {
+    const end = it.date_end;
+    if (!end || end <= it.date) { out.push(it); return; }
+    const cur = new Date(it.date);
+    let guard = 0;
+    while (cur <= end && guard++ < 31){
+      out.push(Object.assign({}, it, { date: new Date(cur) }));
+      cur.setDate(cur.getDate() + 1);
+    }
+  });
+  return out;
+}
+
 // Group dated items (events + closures, NO classes) into chronological months.
 function _groupByMonth(items){
   const map = new Map();
@@ -1307,7 +1326,11 @@ async function loadEventsPage(opts){
 
     // AGENDA — within window: events + sessions + class instances (closures preempt)
     const classInst = expandClasses(classes.filter(isWebVisible), today, windowEnd).filter(notSuppressed);
-    const agenda = allItems.filter(i => i.date >= today && i.date <= windowEnd)
+    // Multi-day events get a card per day here too — this is a day-by-day
+    // list, so a four-night run listed only on its first night leaves the
+    // other three looking empty.
+    const agenda = _expandMultiDay(allItems)
+      .filter(i => i.date >= today && i.date <= windowEnd)
       .filter(notSuppressed).concat(classInst).sort(_byDateThenTime);
 
     if (agendaEl) agendaEl.innerHTML = agenda.length
@@ -1320,7 +1343,8 @@ async function loadEventsPage(opts){
     // NO weekly class instances (those live in the schedule rail). Grouped
     // scrolling list, with its own category / kid-friendly filter.
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-    const monthItems = allItems.filter(i => i.date >= monthStart)
+    const monthItems = _expandMultiDay(allItems)
+      .filter(i => i.date >= monthStart)
       .filter(notSuppressed).sort(_byDateThenTime);
     const groups = _groupByMonth(monthItems);
     if (listEl) listEl.innerHTML = groups.length

@@ -104,6 +104,13 @@
 
         <!-- FULL CALENDAR: grouped scrolling list (all screen sizes) -->
         <div id="view-calendar" style="display:none">
+          <!-- Weekly classes are deliberately kept out of this list — they
+               repeat every week and would bury the one-off events. This line
+               says so, so their absence reads as a choice, not a gap. -->
+          <p class="cal-note">
+            Classes that run every week — yoga, Zumba, Bright Futures — aren't listed here,
+            so the dates below stay readable. <a href="#weekly">See the weekly schedule →</a>
+          </p>
           <div id="calFilters" class="event-filters"></div>
           <div id="monthList" class="month-list"></div>
         </div>
@@ -118,7 +125,7 @@
           <div id="saveDate" class="std-list" style="margin-top:.5rem"></div>
         </div>
 
-        <span class="label">Every Week</span>
+        <span class="label" id="weekly">Every Week</span>
         <h2 class="section-title" style="font-size:1.3rem;margin-bottom:.9rem">Weekly schedule</h2>
         <div id="weeklySchedule" class="sched-list">
           <p class="text-soft" style="font-size:.9rem">Loading classes…</p>

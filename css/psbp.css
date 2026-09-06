@@ -883,6 +883,15 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .feat-link { font-size: var(--t-base); font-weight: 700; color: var(--green); white-space: nowrap; }
 .feat-link-tickets { color: var(--warn); }
 
+/* Standing note above the full calendar, explaining what is deliberately
+   NOT in it. Gold left rule so it reads as guidance, not as a listing. */
+.cal-note {
+  font-size: var(--t-base); line-height: 1.55; color: var(--ink-soft);
+  background: var(--sunk); border-left: 3px solid var(--gold-mark);
+  border-radius: var(--r); padding: .7rem .9rem; margin: 0 0 1.1rem;
+}
+.cal-note a { font-weight: 700; color: var(--green); white-space: nowrap; }
+
 /* ── Full calendar: grouped scrolling list, all screen sizes ────────────── */
 .ml-month { margin-bottom: var(--s2); padding: 0; }
 .ml-title-h {
