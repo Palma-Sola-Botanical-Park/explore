@@ -184,6 +184,12 @@ section[id]{scroll-margin-top:78px}
    a sentence without the sentence turning into a scoreboard. */
 .cx-tally{margin:1.2rem 0 .9rem !important;font-size:1.22rem;line-height:1.75}
 .cx-close p b{font-family:var(--serif);font-size:1.32em;color:var(--gold-light);font-weight:700}
+/* The credit plate here sits beneath a paragraph of copy rather than over a
+   bare photograph, so it is dialled back — the full-strength version competes
+   with the text it is under. */
+.photo-attr--muted{position:absolute;left:1rem;bottom:.9rem;right:auto;z-index:3;opacity:.72;transform:scale(.92);transform-origin:left bottom}
+.photo-attr--muted .attr-by{color:rgba(234,188,90,.85)}
+@media(max-width:640px){.photo-attr--muted{position:static;transform:none;opacity:.8;margin-top:1.4rem}}
 </style>
 </head>
 <body>
@@ -368,7 +374,13 @@ section[id]{scroll-margin-top:78px}
 </section>
 
 <!-- ══ 10 · COME VISIT — ends on the place, not on a feed ════════════════ -->
-<div class="cx-close" style="background-image:url('photos/PSBP-00005/662740624.jpg')">
+<!-- The photograph rotates on every load, drawn from the same credited pool
+     the hero slideshow uses — which makes "we swap them out all the time" in
+     the copy below literally true of the image it sits on. Credit comes from
+     photo_credits.json via PSBPPhotos.attribution, so it can never be wrong or
+     missing. Ships with a hardcoded photo as the fallback if the pool fails. -->
+<div class="cx-close" id="closePhoto" style="background-image:url('photos/PSBP-00005/662740624.jpg')">
+  <div class="photo-attr photo-attr--muted" id="closeCredit"></div>
   <div>
     <!-- Was the address and the hours — for the THIRD time on this page, with
          the footer making a fourth. Replaced with the one thing a visitor has
@@ -384,8 +396,9 @@ section[id]{scroll-margin-top:78px}
     <p class="cx-tally">How cool is this? So far, <b id="closeObservers">137</b> of you have
       recorded <b id="closeObs">1,815</b> observations of <b id="closeSpecies">568</b>
       species in this park on iNaturalist.</p>
-    <p>And the best part: <b>1,205</b> of those photographs are the images on this site
-      and on the signs in the garden. We swap them out all the time.</p>
+    <p>And the best part: <b>1,205</b> of those photographs are the images on this site —
+      including the one right behind these words — and on the signs in the garden.
+      We swap them out all the time.</p>
     <p style="margin-top:1rem">Let's keep it going — together.</p>
     <p style="margin-top:1.6rem">
       <a href="visit.html" class="btn btn-gold">Plan your visit →</a>
@@ -421,6 +434,29 @@ loadRightNow('rightNowStrip', { limit: 24, perPage: 3, rotateSeconds: 9,
    and change only when we pull new images — those stay hardcoded, and want
    updating when the collection grows. Falls back to the printed "1,800+" if
    iNat is unreachable, which is why the markup ships with a real number. */
+/* Random credited photograph for the closing block, from the shared pool. */
+if (window.PSBPPhotos && PSBPPhotos.loadPool) {
+  PSBPPhotos.loadPool().then(pool => {
+    if (!pool || !pool.length) return;
+    const p = pool[Math.floor(Math.random() * pool.length)];
+    const src = p.local || p.photo_url;
+    if (!src) return;
+    const box = document.getElementById('closePhoto');
+    const cr  = document.getElementById('closeCredit');
+    const img = new Image();
+    img.onload = () => {
+      box.style.backgroundImage = `url('${src}')`;
+      if (p.focus) box.style.backgroundPosition = p.focus;
+      if (cr) cr.innerHTML = PSBPPhotos.attribution({
+        species: p.common_name, scientific: p.scientific_name,
+        by: PSBPPhotos.displayName ? PSBPPhotos.displayName(p.photographer) || p.photographer_name : p.photographer_name,
+        license: p.license, date: p.observed_on || p.date || null
+      });
+    };
+    img.src = src;
+  }).catch(() => {});
+}
+
 loadINat().then(d => {
   if (!d) return;
   const put = (id, n) => { const el = document.getElementById(id);
