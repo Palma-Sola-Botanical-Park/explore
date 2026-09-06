@@ -187,18 +187,22 @@ section[id]{scroll-margin-top:78px}
 /* The credit plate here sits beneath a paragraph of copy rather than over a
    bare photograph, so it is dialled back — the full-strength version competes
    with the text it is under. */
-.photo-attr--muted{
+/* Selector is .cx-close > .photo-attr--muted (0,2,0) on purpose: the sibling
+   rule `.cx-close > div` is 0,1,1 and beat a bare .photo-attr--muted, forcing
+   position:relative back on and turning the credit into a flex item squeezed
+   into a narrow column over the copy. Two classes outrank one class + a type. */
+.cx-close > .photo-attr--muted{
   position:absolute; left:1rem; right:1rem; bottom:.9rem; z-index:3;
   opacity:.72; max-width:32rem;
   transform:scale(.92); transform-origin:left bottom;
 }
-.photo-attr--muted .attr-by{color:rgba(234,188,90,.85)}
+.cx-close > .photo-attr--muted .attr-by{color:rgba(234,188,90,.85)}
 /* STAYS ABSOLUTE AT EVERY WIDTH. It was switched to position:static on phones,
    which made it a flex item inside .cx-close — a centring flex container — so
    it collapsed into a narrow column stacked on top of the copy. The section
    reserves room for it below instead. */
 @media(max-width:640px){
-  .photo-attr--muted{transform:scale(.86);opacity:.8;left:.9rem;right:.9rem;bottom:.7rem}
+  .cx-close > .photo-attr--muted{transform:scale(.86);opacity:.8;left:.9rem;right:.9rem;bottom:.7rem}
   .cx-close{padding-bottom:6rem}
 }
 </style>
