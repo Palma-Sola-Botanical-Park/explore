@@ -43,6 +43,8 @@
 .cx-h1 em{display:block;font-style:italic;color:var(--gold)}
 .cx-lede{font-size:1.2rem;line-height:1.6;color:var(--ink);margin:1.1rem 0 0;max-width:34em}
 .cx-hero-img{min-height:340px;background:center/cover no-repeat}
+.cx-closenote{margin-top:.55rem;display:inline-block;font-size:var(--t-base);font-weight:700;
+  color:var(--warn);background:var(--gold-tint);border-radius:var(--r-pill);padding:.25rem .8rem}
 
 /* three ways in */
 .cx-ways{display:grid;gap:.9rem;margin:1.9rem 0 0;grid-template-columns:1fr}
@@ -148,6 +150,11 @@
 <div class="cx-hero">
   <div class="cx-hero-txt">
     <div class="cx-eyebrow">Bradenton, Florida · Free · 8am–dusk daily</div>
+    <!-- The closure notice appears ONLY when one is coming up in the window.
+         "Can I come Saturday?" was previously answerable only by a grey row
+         far down the page. Hard-coded here; wired it would read close_time
+         from the wedding calendar. -->
+    <div class="cx-closenote">🔒 Closing 3pm Sat 12 Sep for a private event</div>
     <h1 class="cx-h1">Nature is here.<em>Come be part of it.</em></h1>
     <p class="cx-lede">
       On the shore of Palma Sola Bay — ten acres of gardens, a pond full of birds, and a
@@ -336,6 +343,12 @@
       Palma Sola Botanical Park exists because local people decided a former county nursery
       was worth saving. It has run as a non-profit since 1993 with no federal, state or local
       government subsidy — volunteers do nearly everything else.
+    </p>
+    <!-- Outside validation, which the homepage had nowhere. One line, not a
+         section — a news feed at the front is the old site's architecture. -->
+    <p class="cx-sub" style="margin:.9rem auto 0">
+      Recently: featured in <a href="news.html" style="color:var(--green);font-weight:700">Horticulture Magazine</a>
+      and on <a href="news.html" style="color:var(--green);font-weight:700">Bay News 9</a>.
     </p>
     <a class="cx-more" href="contact.html">About the park →</a>
   </div>
