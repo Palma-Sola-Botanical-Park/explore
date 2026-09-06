@@ -8,8 +8,12 @@
 <style>
 /* ── Hero ── */
 .news-hero-bg {
-  background-image: url('photos/PSBP-00052/689688845.jpg');
-  background-size: cover; background-position: center;
+  background-image: url('photos/PSBP-99987/681681193.jpg');
+  background-size: cover;
+  /* focus 41% 43%, straight from photo_credits.json — the bird sits left of
+     centre, so a plain "center" crop would push it off the edge on a wide
+     screen and put the headline over the subject instead of over open water. */
+  background-position: 41% 43%;
   /* was a hardcoded .5, which ignored --hero-veil and made this the heaviest
      hero on the site. It now follows the same dial as every other page. */
 }
@@ -269,12 +273,15 @@ function articleHTML(n){
 
 // The page hero when a story has no picture of its own. Any plant photo in the
 // repo works; this one is the Mexican Flame Vine.
-// Mexican Flame Vine. NOTE: this was 'photos/PSBP-00052-Mexican-Flame-Vine.jpg'
-// in both the CSS and here — a path that has 404'd all along, which is why a
-// story with no picture of its own showed a blank hero.
-const NEWS_HERO_DEFAULT = 'photos/PSBP-00052/689688845.jpg';
-// From plants.json PSBP-00052 — the chosen lead photo for that species.
-const NEWS_HERO_DEFAULT_CREDIT = '© Aiden Gitt · CC-BY-NC · iNaturalist';
+// Roseate Spoonbill, PSBP-99987 — Rob Carr. Found the honest way: the record
+// in photo_credits.json with hero:true and orient:landscape. Wildlife rather
+// than a plant, wide rather than portrait, and dark water behind the headline.
+//
+// (The previous default was 'photos/PSBP-00052-Mexican-Flame-Vine.jpg', a path
+// that had 404'd all along — which is why a story with no picture of its own
+// showed a blank hero.)
+const NEWS_HERO_DEFAULT        = 'photos/PSBP-99987/681681193.jpg';
+const NEWS_HERO_DEFAULT_CREDIT = '© Rob Carr · CC-BY-NC · iNaturalist';
 
 function selectNews(i){
   newsActive = i;
