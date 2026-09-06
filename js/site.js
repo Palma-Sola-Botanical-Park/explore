@@ -1173,7 +1173,7 @@ function renderMonthList(groups, seriesMap){
 }
 
 // Build the category (+ kid-friendly) filter from what's actually present, and
-// wire show/hide. Closure items (data-always="1") stay visible under every filter.
+// wire show/hide. Closures filter like anything else — see the note below.
 // opts.itemSelector picks which elements to toggle (default agenda cards);
 // opts.groupSelector, when set, hides group wrappers left with no visible items
 // (used to drop empty month headers in the calendar list).
