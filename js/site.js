@@ -2009,6 +2009,10 @@ function clearWildFilters() {
 const RN_PILL = {
   blooming: 'In bloom', budding: 'Budding', fruiting: 'Fruiting',
   fading: 'Fading', sighting: 'Spotted',
+  // Added 2026-09-05. The tab could say a plant was flowering or an animal was
+  // seen, but not that something NEW went in the ground — which is the park's
+  // own news, and the one kind of entry nobody else could post.
+  planted: 'Newly planted',
 };
 let _rnSpeciesById = null;
 
@@ -2040,9 +2044,13 @@ function _rnCard(e, rec, cr) {
   const page  = (rec && rec.page)  || '';
   const focus = (rec && rec.focus) || (cr && cr.focus) || 'center';
   const isSighting = kind === 'sighting';
-  const glyph  = isSighting ? '🦜' : '🌿';
-  const pillBg = isSighting ? 'var(--green-deep)' : 'var(--gold)';
-  const pillFg = isSighting ? '#fff' : 'var(--green-deep)';
+  const isPlanted  = kind === 'planted';
+  // Three states, three looks: a sighting is deep green, a bloom is gold, and
+  // something newly planted gets the mid green so it reads as park news rather
+  // than as another flower.
+  const glyph  = isSighting ? '🦜' : isPlanted ? '🌱' : '🌿';
+  const pillBg = isSighting ? 'var(--green-deep)' : isPlanted ? 'var(--green)' : 'var(--gold)';
+  const pillFg = (isSighting || isPlanted) ? '#fff' : 'var(--green-deep)';
   const wash   = isSighting ? 'rn-back--fauna' : 'rn-back--flora';
 
   // Attribution through the shared PSBPPhotos layer — the SAME plate the plant

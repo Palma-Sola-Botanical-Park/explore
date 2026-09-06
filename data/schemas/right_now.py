@@ -46,9 +46,11 @@ SCHEMA = {
          "why": "Can't be blank -- it's the card label."},
 
         {"field": "kind", "check": "in_vocab",
-         "arg": ["blooming", "budding", "fruiting", "fading", "sighting"],
+         # `planted` added 2026-09-05: the tab could say a plant was flowering
+         # or an animal was seen, but not that something new went in the ground.
+         "arg": ["blooming", "budding", "fruiting", "fading", "sighting", "planted"],
          "severity": "warn", "scope": "field",
-         "why": "Must be one of: blooming, budding, fruiting, fading, sighting."},
+         "why": "Must be one of: blooming, budding, fruiting, fading, sighting, planted."},
 
         {"field": "display", "check": "in_vocab",
          "arg": ["web", "both", "screen", "off"],
