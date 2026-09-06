@@ -1204,8 +1204,13 @@ function buildEventFilters(container, cardContainers, opts){
       cardContainers.forEach(c => {
         if (!c) return;
         c.querySelectorAll(itemSel).forEach(el => {
-          const always = el.getAttribute('data-always') === '1';
-          const show = always || cat === '__all'
+          // Closures used to carry data-always="1" and survive every filter.
+          // That drowned the results: somebody who clicks "Kid-friendly" is
+          // asking what they can bring a child to, not which days the park
+          // shuts. Closures still appear under All, and they have their own
+          // "Park Closures" button, so nothing is hidden — it is just answering
+          // the question that was asked.
+          const show = cat === '__all'
                     || (cat === '__kid' ? el.getAttribute('data-kid') === '1'
                                         : el.getAttribute('data-category') === cat);
           el.style.display = show ? '' : 'none';
