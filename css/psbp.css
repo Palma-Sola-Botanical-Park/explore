@@ -183,6 +183,22 @@ h4 { font-size: var(--t-md); }
 /* ────────────────────────────────────────────────────────────── LAYOUT ── */
 .section { padding: var(--s9) var(--s5); }
 .section--tight { padding: var(--s7) var(--s5); }
+
+/* A <section> that carries only a tone class — <section class="bg-cream"> —
+   used to get NO padding at all: the tone classes paint a background and
+   nothing else. Three pages hit this and two of them grew their own local
+   patch; visit.html never did, so its sections ran edge to edge.
+   The :not() list matters. This selector is 0,1,1 and would otherwise beat a
+   page's own 0,1,0 class rule from a later stylesheet — the same specificity
+   trap that had .page-hero repainting gold buttons gold-on-gold. */
+section[class*="bg-"]:not(.section):not(.section--tight):not(.cx-sec) {
+  padding: var(--s9) var(--s5);
+}
+@media (max-width: 700px) {
+  section[class*="bg-"]:not(.section):not(.section--tight):not(.cx-sec) {
+    padding: var(--s7) var(--s4);
+  }
+}
 .section-inner, .container { max-width: var(--wide); margin: 0 auto; }
 .section-head { max-width: var(--measure); margin-bottom: var(--s6); }
 .section-title { font-size: var(--t-2xl); color: var(--green-ink); margin-bottom: var(--s3); }
