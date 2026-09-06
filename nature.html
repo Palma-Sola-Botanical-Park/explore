@@ -96,6 +96,17 @@
   font-size: 1rem; cursor: pointer; margin-bottom: -1px;
   transition: background .15s, color .15s;
 }
+/* THREE tabs, not two. "Seen lately" was restored on 2026-09-05 and the strip
+   was built when there were only two — the third wrapped to its own row and
+   overlapped the panel beneath. Below 560px they share the row as equal thirds
+   and the padding gives way, since the labels are short. */
+@media (max-width: 560px) {
+  .two-tabs--card { flex-wrap: nowrap; }
+  .two-tabs--card .tab-btn {
+    flex: 1 1 0; min-width: 0; padding: .5rem .35rem;
+    font-size: .95rem; text-align: center; white-space: nowrap;
+  }
+}
 .two-tabs--card .tab-btn:hover { color: var(--green-deep); background: #fff; }
 .two-tabs--card .tab-btn.active {
   background: var(--white); color: var(--green-deep); font-weight: 700;
@@ -353,7 +364,7 @@
 .dw-more:hover { text-decoration: underline; }
 
 /* Facts: quiet rows, no labels where the value speaks for itself. The family
-   link carries the green so the block is not a flat grey wall. */
+   link carries the green so the block is not a flat gray wall. */
 .dw-lines { font-size: .92rem; line-height: 1.85; color: var(--text-soft); }
 .dw-lines a { color: var(--green-mid); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 
@@ -1454,8 +1465,17 @@ loadINat();
        EXPANDED, which is a different thing entirely. */
     var badge = btn.querySelector('.ft-count');
     var label = btn.querySelector('.ft-label');
+    /* Falls back to the FULL list. _filteredPlants is only populated once
+       somebody actually filters, so on first paint it is legitimately empty and
+       the button read "Filter 0 plants" beside "Showing 237 plants" — Randy,
+       2026-09-06: "I panicked first time and thought all species gone!" With no
+       filter set, the number of plants you can filter IS all of them. */
     var shown = 0;
-    try { shown = (typeof _filteredPlants !== 'undefined' && _filteredPlants.length) || 0; } catch (e) {}
+    try {
+      shown = (typeof _filteredPlants !== 'undefined' && _filteredPlants.length)
+           || (typeof PLANTS !== 'undefined' && PLANTS.length)
+           || 0;
+    } catch (e) {}
     if (label) label.textContent = n ? 'Filters' : ('Filter ' + shown + ' plants');
     if (badge) { badge.textContent = n; badge.style.display = n ? '' : 'none'; }
     btn.classList.toggle('has-filters', n > 0);

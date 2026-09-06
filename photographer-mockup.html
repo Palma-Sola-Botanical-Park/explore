@@ -478,7 +478,7 @@ function render() {
   /* ── hero ─────────────────────────────────────────────────────────────
      Uses the person's own hero-flagged frame; falls back to their first.
      With no photos at all, the hero band is dropped entirely rather than
-     shown empty — a grey box would be worse than no box. */
+     shown empty — a gray box would be worse than no box. */
   var lead = all.filter(function (p) { return p.id === person.lead; })[0] || all[0];
   if (lead) {
     el('hero').style.display = '';

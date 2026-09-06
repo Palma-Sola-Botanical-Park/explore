@@ -718,7 +718,7 @@ function clip(s, n = 140) {
    renderers for other pages (e.g. a homepage teaser).
    ============================================================ */
 
-// Controlled category vocabulary → badge emoji + accent colour.
+// Controlled category vocabulary → badge emoji + accent color.
 // Order here is also the filter-button order. Keep in sync with the
 // sheet's `category` dropdown (the 8 terms in EVENTS_DATA_MODEL.md §2).
 const EVENT_CATEGORIES = [

@@ -44,7 +44,7 @@
 
 /* ───────────────────────────────────────────────────────────── TOKENS ──── */
 :root {
-  /* Surfaces — three, and only three. Warm, paper-like, never grey. */
+  /* Surfaces — three, and only three. Warm, paper-like, never gray. */
   --paper:        #fdfcf8;   /* the page itself */
   --surface:      #ffffff;   /* anything raised off the page */
   --wash:         #f2f5ee;   /* pale green band, replaces dark section slabs */
@@ -227,7 +227,7 @@ section[class*="bg-"]:not(.section):not(.section--tight):not(.cx-sec) {
 /* :not(.btn) matters. This rule is 0,1,1 and .btn-gold is 0,1,0, so without the
    exclusion it repainted BUTTON text gold-light — gold on gold, inside any deep
    section. Found on venue.html 2026-09-04, where the phone number in the "Ready
-   to book?" CTA was barely legible. Link colour has no business reaching into a
+   to book?" CTA was barely legible. Link color has no business reaching into a
    button component; buttons carry their own foreground. */
 .bg-deep a:not(.btn) { color: var(--gold-light); }
 
@@ -746,12 +746,12 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
    hex digit away from --rule (#e7e2d6 vs #e6e2d6).
 
    THE 7 THAT STAYED, AND WHY
-   The event badges are a five-colour semantic code: free / cost / register /
+   The event badges are a five-color semantic code: free / cost / register /
    fundraiser / kids. Green and gold exist in this palette; blue, orange and
    purple do not. Folding those three onto the nearest token would have made
-   three of the five badges look alike, which defeats the point of colour-coding
+   three of the five badges look alike, which defeats the point of color-coding
    them. They keep their own values, marked below. Same for the calendar
-   chevron grey, which has no equivalent here either.
+   chevron gray, which has no equivalent here either.
 
    ONE BUG FIXED IN PASSING
    .std-date asked for var(--gold-deep), which this file has never defined, so
@@ -760,7 +760,7 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 
    COLOURS STILL SET BY JAVASCRIPT
    .ev-date has no background here on purpose — site.js sets it inline, per
-   weekday, so each day of the week gets its own colour. Same for .ml-dot.
+   weekday, so each day of the week gets its own color. Same for .ml-dot.
    Those are data-driven, not design, and belong in the JS.
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -794,7 +794,7 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .ev-titlerow .ev-badges { margin: .1rem 0 0; justify-content: flex-end; }
 .ev-card .event-info > p { margin: .45rem 0 0; color: var(--ink-soft); line-height: 1.5; }
 
-/* ── Badges. Five-colour semantic code — see header note. ───────────────── */
+/* ── Badges. Five-color semantic code — see header note. ───────────────── */
 .ev-badges { display: flex; flex-wrap: wrap; gap: .4rem; margin: .55rem 0 0; }
 .ev-badge {
   display: inline-block; font-size: .74rem; font-weight: 700;
@@ -887,7 +887,7 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 /* Blurred, dimmed copy of the same flyer filling whatever the contained image
    does not. A portrait poster fills the window, so the backdrop is invisible
    and costs nothing — it only shows up where there would otherwise be a slab
-   of empty grey, which is the landscape case. Desaturated and held at low
+   of empty gray, which is the landscape case. Desaturated and held at low
    opacity so three cards side by side do not turn into three light shows.
    Same src as the foreground, so it is one network fetch, not two. */
 .feat-art-bg {
@@ -945,7 +945,7 @@ a.ml-row:hover { background: var(--sunk); }
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .ml-closure-reason { font-weight: 500; color: var(--ink-faint); }
-.ml-chev { flex: 0 0 auto; color: #b3b1a4; font-size: 1.2rem; }  /* grey — no token */
+.ml-chev { flex: 0 0 auto; color: #b3b1a4; font-size: 1.2rem; }  /* gray — no token */
 
 @media (max-width: 760px) {
   .ev-card .ev-date { width: 72px; }
