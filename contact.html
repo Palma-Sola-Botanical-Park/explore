@@ -665,27 +665,27 @@ injectShared({ inatBar: false });
     var office = org.filter(function(p){return p.type==='front office';});
 
     var SHORT = {'Office Manager & Event Venue Rentals':'Office Manager & Venue Rentals'};
-    var os = document.getElementById('office-strip');
-    if (os) office.forEach(function(p){
-      os.insertAdjacentHTML('beforeend',
-        '<div class="office-person"><div class="r">'+esc(SHORT[p.role]||p.role)+'</div>'+
-        '<div class="n">'+esc(p.name)+'</div>'+
-        (p.blurb?'<div class="b">'+esc(p.blurb)+'</div>':'')+'</div>');
-    });
 
-    /* ── A — masthead ── */
-    var a = document.getElementById('boardA');
-    if (a) {
-      a.insertAdjacentHTML('beforeend','<div class="officers">'+offs.map(function(p){
-        return '<div class="off"><div class="r">'+esc(p.role)+'</div><div class="n">'+esc(p.name)+'</div></div>';
-      }).join('')+'</div>');
-      a.insertAdjacentHTML('beforeend','<div class="dirwrap"><div class="dirlabel">Directors</div><div class="dirs">'+
-        dirs.map(function(p){
-          return '<div>'+esc(p.name)+(p.blurb?'<small>'+esc(p.blurb)+'</small>':'')+'</div>';
-        }).join('')+'</div></div>');
-      if (spec.length) a.insertAdjacentHTML('beforeend','<div class="tail">'+
-        spec.map(function(p){return esc(p.role)+' &nbsp;<b>'+esc(p.name)+'</b>'+(p.blurb?' <span style="color:var(--ink-faint)">· '+esc(p.blurb)+'</span>':'');}).join(' &nbsp;&nbsp;·&nbsp;&nbsp; ')+'</div>');
+    /* One card shape for every person, so Staff, Officers and Directors can
+       never drift apart again. showRole is off for Directors — they all hold
+       the same office, so printing "Member" five times says nothing. */
+    function card(p, showRole){
+      return '<div class="person">' +
+        (showRole ? '<div class="r">'+esc(SHORT[p.role]||p.role)+'</div>' : '') +
+        '<div class="n">'+esc(p.name)+'</div>' +
+        (p.blurb ? '<div class="b">'+esc(p.blurb)+'</div>' : '') + '</div>';
     }
+    function fill(id, html){
+      var n = document.getElementById(id);
+      if (n) n.innerHTML = html;
+    }
+
+    fill('staffList', office.map(function(p){return card(p,true);}).join(''));
+    fill('offList',   offs.map(function(p){return card(p,true);}).join(''));
+    fill('dirList',   dirs.map(function(p){return card(p,false);}).join(''));
+    fill('specList',  spec.map(function(p){
+      return esc(p.role)+' <b>'+esc(p.name)+'</b>';
+    }).join(' &nbsp;·&nbsp; '));
 
 
   } catch(e){ console.warn('Organization data unavailable:', e); }
