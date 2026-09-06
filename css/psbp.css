@@ -109,6 +109,11 @@
   /* How much of the hero photograph shows through the green. See .page-hero-bg. */
   --hero-veil: .28;
 
+  /* Vertical air on a tone-only section. One dial: 6rem (the .section standard)
+     reads generous on a content-heavy page and cavernous on a light one; 3.75rem
+     — what two pages patched in locally — was tight. Raise or lower here. */
+  --section-pad: 4.5rem;
+
   /* ── LEGACY ALIASES — see MIGRATION NOTE. Safe to keep indefinitely. ── */
   --green-deep: var(--green-ink);
   --green-mid:  var(--green);
@@ -192,7 +197,7 @@ h4 { font-size: var(--t-md); }
    page's own 0,1,0 class rule from a later stylesheet — the same specificity
    trap that had .page-hero repainting gold buttons gold-on-gold. */
 section[class*="bg-"]:not(.section):not(.section--tight):not(.cx-sec) {
-  padding: var(--s9) var(--s5);
+  padding: var(--section-pad) var(--s5);
 }
 @media (max-width: 700px) {
   section[class*="bg-"]:not(.section):not(.section--tight):not(.cx-sec) {
@@ -1007,3 +1012,8 @@ a.ml-row:hover { background: var(--sunk); }
 .vlight .vfacts dd a{color:var(--green);border-bottom-color:rgba(45,106,53,.4)}
 .vlight .vfacts dd a:hover{border-bottom-color:var(--green)}
 .vlight .vmap{box-shadow:0 4px 18px rgba(40,50,30,.14)}
+
+/* A quiet practical line under the visit block — parking, paths, access, dogs.
+   Was a whole "Getting here" section with two boxed cards, for content that had
+   moved into the block above it. Randy: "Seems like wasted real estate." */
+.vnote{margin:1.6rem 0 0;max-width:62ch;font-size:var(--t-base);line-height:1.7;color:var(--ink-soft)}
