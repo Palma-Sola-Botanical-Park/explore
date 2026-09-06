@@ -73,7 +73,7 @@
 .cx-in{max-width:1160px;margin:0 auto}
 .cx-title{font-family:var(--serif);font-size:2rem;color:var(--green-ink);margin:.15rem 0 .3rem;line-height:1.15}
 .cx-sub{font-size:var(--t-base);color:var(--ink-soft);margin:0 0 1.6rem;line-height:1.6;max-width:56em}
-.cx-more{display:inline-block;margin-top:1.2rem;font-size:var(--t-base);font-weight:700;color:var(--green)}
+.cx-more{display:inline-block;margin-top:1.8rem;font-size:var(--t-base);font-weight:700;color:var(--green)}
 
 /* ── what's happening ─────────────────────────────────────────────────── */
 .cx-bill{display:grid;gap:1.4rem;grid-template-columns:1fr}
@@ -89,7 +89,7 @@
 .cx-post a.go{margin-top:auto;padding-top:.8rem;font-size:var(--t-base);font-weight:700;color:var(--green)}
 
 .cx-next{margin-top:2rem;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
-.cx-row{display:flex;gap:1rem;align-items:baseline;padding:.85rem 1.1rem;border-bottom:1px solid var(--rule)}
+.cx-row{display:flex;gap:1rem;align-items:baseline;padding:1.05rem 1.2rem;border-bottom:1px solid var(--rule)}
 .cx-row:last-child{border-bottom:0}
 .cx-row .d{flex:0 0 8.5rem;font-size:var(--t-base);font-weight:800;color:var(--green)}
 .cx-row .t{font-size:var(--t-base);color:var(--ink)}
@@ -98,14 +98,14 @@
 /* The standing classes. One entry per sheet row, in a compact grid so each is
    delineated instead of running into the next — five items, two or three
    columns, rather than five sparse dated rows. */
-.cx-weekly{padding:.9rem 1.1rem;background:var(--sunk)}
+.cx-weekly{padding:1.3rem 1.2rem;background:var(--sunk);border-top:1px solid var(--rule)}
 .cx-weeklab{display:block;font-size:var(--t-cap);font-weight:800;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--green);margin-bottom:.55rem}
-.cx-wkgrid{display:grid;gap:.4rem 1.6rem;grid-template-columns:1fr}
+  text-transform:uppercase;color:var(--green);margin-bottom:.9rem}
+.cx-wkgrid{display:grid;gap:.75rem 2.2rem;grid-template-columns:1fr}
 @media(min-width:560px){.cx-wkgrid{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:980px){.cx-wkgrid{grid-template-columns:repeat(3,1fr)}}
-.cx-wk{display:flex;gap:.6rem;align-items:baseline;font-size:var(--t-base);line-height:1.5;
-  padding:.2rem 0;border-bottom:1px solid var(--rule)}
+.cx-wk{display:flex;gap:.7rem;align-items:baseline;font-size:var(--t-base);line-height:1.55;
+  padding:.35rem 0;border-bottom:1px solid var(--rule)}
 .cx-wkwhen{flex:0 0 5.6rem;font-weight:800;color:var(--green);white-space:nowrap}
 .cx-wkwhat{color:var(--ink)}
 /* Series attribution on a dated row — present, not shouting. */
@@ -232,7 +232,7 @@
          read as "this park is mainly about festivals" — they are things that
          happen AT the park, not what it is. So the ordinary week gets its own
          quiet heading underneath rather than sharing the billing. -->
-    <h3 style="font-family:var(--serif);font-size:1.3rem;color:var(--green-ink);margin:2.2rem 0 .2rem">Also happening</h3>
+    <h3 style="font-family:var(--serif);font-size:1.3rem;color:var(--green-ink);margin:3.4rem 0 .2rem">Also happening</h3>
     <div class="cx-next" id="homeUpcoming" style="margin-top:.7rem"></div>
     <a class="cx-more" href="events.html">See the full calendar →</a>
 
