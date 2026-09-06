@@ -1476,7 +1476,10 @@ async function loadDirectorNote(opts){
   const hide = () => { if (wrap) wrap.style.display = 'none'; };
   try {
     const rows = await fetchTab(TAB.announcements);
-    const today = new Date(); today.setHours(0,0,0,0);
+    // NOON, not midnight — parseDateLocal builds its dates at T12:00, so a
+    // midnight 'today' sits BEFORE a show_from of the same day and hid a note
+    // that was meant to start today. The rest of the site already uses noon.
+    const today = new Date(); today.setHours(12,0,0,0);
     const notes = (rows || []).filter(r =>
       isWebVisible(r) && _isYes(r.director_note) && _inWindow(r, today));
     if (!notes.length) return hide();
@@ -1720,7 +1723,7 @@ async function loadAnnouncements(containerId) {
     // Anything past its date drops out on its own. Blank never expires, and a
     // date we cannot parse is treated as no date — failing toward "still show
     // it" rather than silently swallowing a message.
-    const _today = new Date(); _today.setHours(0,0,0,0);
+    const _today = new Date(); _today.setHours(12,0,0,0);   // noon — see _inWindow
     const visible = rows.filter(r => {
       if (!isWebVisible(r)) return false;
       // A director's note is not a notice — it renders as her welcome on the
