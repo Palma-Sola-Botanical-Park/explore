@@ -6,6 +6,13 @@ headline a card can't render without). body/link are content: a rename degrades
 to a thinner card, never blocks the feed.
 
 Columns: emoji | title | body | link_text | link_url | display | show_until
+         | director_note
+
+director_note (added 2026-09-06) routes a row AWAY from the top bar and into a
+block on the homepage, under her name — an editor's welcome rather than a
+notice. The bar is for operational facts ("closing 3pm Saturday"); this is the
+Executive Director in her own voice, saying what she is pleased about this
+month. One flag decides which of the two a row is. Blank = a normal notice.
 
 show_until (added 2026-09-05) is the expiry date. The web bar is for NEWS —
 "the nursery is closed Monday", "new signs are going up this month" — and news
@@ -60,5 +67,9 @@ SCHEMA = {
         {"field": "show_until", "check": "iso_date_or_blank",
          "severity": "warn", "scope": "field",
          "why": "If set, must be a real date (YYYY-MM-DD). Blank never expires."},
+
+        {"field": "director_note", "check": "in_vocab", "arg": ["yes", "no", ""],
+         "severity": "warn", "scope": "field",
+         "why": "yes moves this row to the Director's note on the home page."},
     ],
 }

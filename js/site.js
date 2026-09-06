@@ -1446,6 +1446,62 @@ async function loadEventsPage(opts){
 
 // ── Simpler single-list renderers (homepage teasers, other pages) ─────
 // loadEvents: upcoming dated events only (no class expansion), same card style.
+// ── Director's note ───────────────────────────────────────────────────────
+// An announcement flagged director_note renders here instead of in the top bar:
+// a magazine editor's welcome, in her own voice, under her name. Randy's idea,
+// 2026-09-06 — "she can welcome you in and discuss what she wants."
+//
+// Silent when she hasn't written one, which is the point: the default page has
+// no empty slot waiting to be filled, and no stale note sitting in it.
+// show_until applies here too, because a welcome dated March, read in
+// September, is worse than no welcome at all.
+async function loadDirectorNote(opts){
+  opts = opts || {};
+  const el = document.getElementById(opts.into);
+  const wrap = opts.wrap ? document.getElementById(opts.wrap) : null;
+  if (!el) return;
+  const hide = () => { if (wrap) wrap.style.display = 'none'; };
+  try {
+    const rows = await fetchTab(TAB.announcements);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const notes = (rows || []).filter(r => {
+      if (!isWebVisible(r) || !_isYes(r.director_note)) return false;
+      const until = parseDateLocal((r.show_until || '').trim());
+      return !until || until >= today;
+    });
+    if (!notes.length) return hide();
+
+    // If she flags more than one, the newest wins and the rest stay quiet —
+    // a homepage with two editor's letters is a mistake, not a feature.
+    const n = notes[notes.length - 1];
+    const by   = opts.byline || 'Beverly Zoller Burdette, Executive Director';
+    const when = parseDateLocal((n.show_until || '').trim());
+    const dateLine = when
+      ? when.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '';
+    const link = (n.link_url || '').trim()
+      ? PSBP.linkTag(n.link_url, _evEsc((n.link_text || '').trim() || 'More park news') + ' →',
+          { title: n.title || '', back: _BACK(), className: 'dnote-link' })
+      : '<a class="dnote-link" href="news.html">More park news →</a>';
+
+    // The portrait is a fixed path, not a sheet column — it is always the same
+    // person, and a column she fills in once is a column she has to remember
+    // forever. If the file is not there, onerror drops it and the note reads
+    // exactly as it would have without it.
+    const photo = opts.photo || 'images/staff/director.jpg';
+    el.innerHTML =
+      `<div class="dnote-lab">From the Director${dateLine ? ` · ${_evEsc(dateLine)}` : ''}</div>` +
+      (n.title ? `<h3 class="dnote-title">${_evEsc(n.title)}</h3>` : '') +
+      (n.body  ? `<p class="dnote-body">${_evEsc(n.body)}</p>` : '') +
+      `<div class="dnote-sign">` +
+        `<img class="dnote-face" src="${photo}" alt="" aria-hidden="true" loading="lazy"` +
+        ` onerror="this.remove()">` +
+        `<span class="dnote-by">— ${_evEsc(by)}</span>` +
+      `</div>` +
+      `<p class="dnote-more">${link}</p>`;
+    if (wrap) wrap.style.display = '';
+  } catch(err){ hide(); }
+}
+
 // ── Homepage "what's happening" ───────────────────────────────────────────
 // Fills three slots from one fetch:
 //   posters  — up to 3 flagged events that HAVE artwork, as poster cards
@@ -1645,6 +1701,9 @@ async function loadAnnouncements(containerId) {
     const _today = new Date(); _today.setHours(0,0,0,0);
     const visible = rows.filter(r => {
       if (!isWebVisible(r)) return false;
+      // A director's note is not a notice — it renders as her welcome on the
+      // home page (loadDirectorNote), never as a strip at the top of every page.
+      if (_isYes(r.director_note)) return false;
       const until = parseDateLocal((r.show_until || '').trim());
       return !until || until >= _today;
     });

@@ -196,12 +196,12 @@
         </div>
         <div>
           <dt>Find us</dt>
-          <dd>9800 17th Ave NW<br>Bradenton, FL 34209<br>
-            <a href="https://maps.google.com/maps?q=Palma+Sola+Botanical+Park" target="_blank" rel="noopener">Directions →</a></dd>
-        </div>
-        <div>
-          <dt>Call</dt>
-          <dd><a href="tel:9417612866">(941) 761-2866</a><br><span>Office hours vary</span></dd>
+          <!-- The address IS the directions link — a separate "Directions →" line
+               underneath was a second thing to read that went to the same place.
+               Phone folded in here too: "Find us" and "Call" were one thought
+               split across two rows. -->
+          <dd><a href="https://maps.google.com/maps?q=Palma+Sola+Botanical+Park" target="_blank" rel="noopener">9800 17th Ave NW<br>Bradenton, FL 34209</a><br>
+            <a href="tel:9417612866">(941) 761-2866</a></dd>
         </div>
         <div>
           <dt>Admission</dt>
@@ -235,7 +235,7 @@
      PARK MAP — illustrated orientation graphic + surrounding words
      (placeholder art; drop the real illustrated/aerial map into .parkmap-art)
 ============================================================ -->
-<section class="bg-pale" id="the-layout">
+<section class="bg-white" id="the-layout">
   <div class="section-inner">
     <div style="text-align:center;margin-bottom:2.5rem">
       <span class="label">Once You're Inside</span>
@@ -271,22 +271,25 @@
 <!-- ============================================================
      TWO DIRECTIONS — toggle between "Where to wander" and "How to tour"
 ============================================================ -->
-<section class="bg-cream" id="wander">
+<section class="bg-wash" id="wander">
   <div class="section-inner">
 
     <div class="dir-toggle">
       <button class="dir-btn on" id="tgl-areas" onclick="showView('areas')">
-        🗺️ Where to wander <span class="sub">· places worth seeing</span>
+        Where to wander <span class="sub">· places worth seeing</span>
       </button>
       <button class="dir-btn" id="tgl-tours" onclick="showView('tours')">
-        🥾 How to tour the park <span class="sub">· guided routes</span>
+        How to tour the park <span class="sub">· guided routes</span>
       </button>
     </div>
 
     <!-- ── DIRECTION 1: AREAS ─────────────────────────────── -->
     <div id="panel-areas">
       <div style="text-align:center;max-width:640px;margin:0 auto 2.25rem">
-        <p style="color:var(--text-soft);line-height:1.75">Six corners of the park that reward stopping. Tap any one to read more. <em>(Descriptions below are drafts — confirm details with Bev before publishing.)</em></p>
+        <!-- NOTE TO SELF, not to visitors: the six descriptions below are drafts —
+             confirm the details with Bev before this is considered final. This used
+             to be printed on the page in italics, where every visitor could read it. -->
+        <p style="color:var(--text-soft);line-height:1.75">Six corners of the park that reward stopping. Tap any one to read more.</p>
       </div>
       <div class="area-grid">
 
@@ -541,7 +544,7 @@
 <!-- ============================================================
      NURSERY DETAIL  (kept — the Areas card #1 anchors here)
 ============================================================ -->
-<section class="bg-cream" id="nursery">
+<section class="bg-sunk" id="nursery">
   <div class="section-inner">
     <div class="grid-2" style="gap:3rem;align-items:center">
       <div style="border-radius:12px;overflow:hidden;height:340px;background-image:url('images/photo-coming-soon-hero.jpg');background-size:cover;background-position:center;position:relative">

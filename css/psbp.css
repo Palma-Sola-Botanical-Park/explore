@@ -1017,3 +1017,33 @@ a.ml-row:hover { background: var(--sunk); }
    Was a whole "Getting here" section with two boxed cards, for content that had
    moved into the block above it. Randy: "Seems like wasted real estate." */
 .vnote{margin:1.6rem 0 0;max-width:62ch;font-size:var(--t-base);line-height:1.7;color:var(--ink-soft)}
+
+/* ── Director's note ─────────────────────────────────────────────────────
+   An announcement flagged director_note, rendered as a magazine editor's
+   welcome rather than a strip: her voice, her name, optionally her face.
+   Sits after the events on the home page — you see what's on, then she tells
+   you what she's pleased about. Absent entirely when she hasn't written one.
+   ─────────────────────────────────────────────────────────────────────── */
+.dnote{
+  margin-top: var(--s6);
+  background: var(--surface); border: 1px solid var(--rule);
+  border-left: 4px solid var(--gold-mark); border-radius: var(--r);
+  padding: 1.5rem 1.7rem;
+}
+.dnote-lab{
+  font-size: var(--t-cap); font-weight: 800; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--green);
+}
+.dnote-title{ margin: .3rem 0 0; font-size: 1.4rem; line-height: 1.25; color: var(--green-ink); }
+.dnote-body{
+  margin: .6rem 0 0; font-size: var(--t-base); line-height: 1.75;
+  color: var(--ink); max-width: 62ch;
+}
+.dnote-sign{ display: flex; align-items: center; gap: .8rem; margin-top: 1.1rem; }
+.dnote-face{
+  width: 46px; height: 46px; border-radius: 50%; object-fit: cover;
+  flex: 0 0 auto; border: 2px solid var(--gold-mark);
+}
+.dnote-by{ font-size: var(--t-base); font-style: italic; color: var(--ink-soft); }
+.dnote-more{ margin: .9rem 0 0; }
+.dnote-link{ font-size: var(--t-base); font-weight: 700; color: var(--green); }

@@ -89,6 +89,8 @@ KNOWN_HEADERS = {
     "poster",
     # Expiry date on an announcement — the web bar hides anything past it.
     "show_until",
+    # Routes an announcement to the homepage Director's note instead of the bar.
+    "director_note",
 }
 
 

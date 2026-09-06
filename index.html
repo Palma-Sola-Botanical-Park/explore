@@ -233,6 +233,14 @@
     <h3 style="font-family:var(--serif);font-size:1.3rem;color:var(--green-ink);margin:2.2rem 0 .2rem">Also happening</h3>
     <div class="cx-next" id="homeUpcoming" style="margin-top:.7rem"></div>
     <a class="cx-more" href="events.html">See the full calendar →</a>
+
+    <!-- Director's note. After the events on purpose: a magazine's editor letter
+         comes after the contents, not before it — you see what's in the issue,
+         then she tells you what she's pleased about. Hidden unless a row on the
+         announcements tab is flagged director_note. -->
+    <div id="dnoteWrap" style="display:none">
+      <div class="dnote" id="dnote"></div>
+    </div>
   </div>
 </section>
 
@@ -375,6 +383,9 @@ loadAnnouncements('annCycleWrap');
 
 // Posters, the ordinary week, and the next closure — one fetch, three slots.
 loadHomeHappening({ posters:'homePosters', upcoming:'homeUpcoming', closure:'homeClosure' });
+
+// Her welcome, if she wrote one this month. Silent if she didn't.
+loadDirectorNote({ into:'dnote', wrap:'dnoteWrap' });
 
 // Right now in the park — rotates 3 at a time; hides itself if the feed is empty.
 loadRightNow('rightNowStrip', { limit: 24, perPage: 3, rotateSeconds: 9,
