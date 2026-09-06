@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organization layout — demo</title>
+<link rel="stylesheet" href="css/psbp.css">
+<style>
+/* ── DEMO CONTROL BAR — not for production. Lets Randy click between the
+     choices instead of reading me describe them. ───────────────────────── */
+.dbar{position:sticky;top:0;z-index:50;background:#1d2b22;color:#fff;
+      padding:.7rem 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;align-items:center;
+      font-family:var(--sans);font-size:.8rem}
+.dbar b{letter-spacing:.12em;text-transform:uppercase;font-size:.68rem;opacity:.65;font-weight:700}
+.dbar button{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.28);
+      border-radius:2rem;padding:.32rem .85rem;font:inherit;cursor:pointer}
+.dbar button[aria-pressed="true"]{background:#fff;color:#1d2b22;border-color:#fff;font-weight:600}
+.dnote{max-width:760px;margin:2.5rem auto 0;padding:0 1.2rem;font-family:var(--sans);
+      font-size:.88rem;line-height:1.7;color:var(--ink-soft)}
+
+/* ── THE LAYOUT UNDER TEST ────────────────────────────────────────────────
+   Randy's idea: the group names run down a hard left edge — that is the
+   anchor the centred version never had — and each group's people stay
+   centred in the space that is left. Volunteers becomes a fourth row rather
+   than a paragraph trailing underneath, because they are a peer of the other
+   three, not a footnote. ──────────────────────────────────────────────── */
+.org2{max-width:1040px;margin:0 auto}
+.orow{display:grid;grid-template-columns:minmax(8rem,13rem) 1fr;gap:.9rem 2.5rem;
+      padding:2.1rem 0;align-items:start;border-top:1px solid var(--rule)}
+.orow:first-child{border-top:0;padding-top:.6rem}
+.olabel{text-align:left;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;
+        font-weight:700;color:var(--green-ink);padding-top:.45rem;line-height:1.5}
+.obody{text-align:center}
+
+/* Gold hairline variant — gold is decorative-only per the token comment
+   (rules and dots, never text), so a rule is exactly what it is for. */
+body[data-rule="gold"] .orow{border-top-color:rgba(197,146,42,.42)}
+body[data-rule="none"] .orow{border-top-color:transparent}
+
+/* People */
+.plist{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem 2.6rem}
+.person .r{font-size:.78rem;letter-spacing:.03em;color:var(--ink-soft)}
+.person .n{font-family:var(--serif);font-size:1.3rem;color:var(--ink);margin-top:.2rem;line-height:1.25}
+.person .b{font-family:var(--sans);font-size:.84rem;color:var(--ink-soft);margin-top:.15rem}
+
+/* Variant A — the two staff carry more weight than eleven volunteer
+   governors, because they are the ones here every day. Off by default so the
+   difference is visible when toggled. */
+body[data-weight="a"] #rowStaff .person .n{font-size:1.72rem}
+body[data-weight="a"] #rowStaff .person .r{font-size:.72rem;letter-spacing:.13em;
+      text-transform:uppercase;color:var(--green-ink);font-weight:700}
+body[data-weight="a"] #rowDirs .person .n{font-size:1.14rem}
+
+/* Blurbs — the "Retired attorney" edge case. One person in a row of five
+   having a blurb is what makes that row look broken. */
+body[data-blurb="off"] .person .b{display:none}
+
+/* Volunteers row */
+.vol{font-size:var(--t-base);line-height:1.75;color:var(--ink-soft);max-width:60ch;margin:0 auto}
+.vol b{color:var(--ink);font-weight:600}
+.vol a{color:var(--green-ink);font-weight:600}
+
+/* The special roles — Emeritus / Ex-Officio */
+.spec{margin-top:1.3rem;font-size:.86rem;color:var(--ink-soft)}
+.spec b{color:var(--ink);font-weight:600}
+
+/* Stat row keeps its centring above the whole block */
+.stats--center{justify-content:center}
+
+@media (max-width:680px){
+  .orow{grid-template-columns:1fr;gap:.5rem;padding:1.7rem 0}
+  .olabel{padding-top:0}
+  .obody{text-align:center}
+}
+</style>
+</head>
+<body data-weight="a" data-rule="gold" data-blurb="on" data-dupe="off">
+
+<div class="dbar">
+  <b>Demo</b>
+  <span><b>Staff weight</b>
+    <button data-k="weight" data-v="a">A · staff larger</button>
+    <button data-k="weight" data-v="flat">Flat</button>
+  </span>
+  <span><b>Rule</b>
+    <button data-k="rule" data-v="gold">Gold</button>
+    <button data-k="rule" data-v="plain">Plain</button>
+    <button data-k="rule" data-v="none">None</button>
+  </span>
+  <span><b>Blurbs</b>
+    <button data-k="blurb" data-v="on">Show</button>
+    <button data-k="blurb" data-v="off">Hide</button>
+  </span>
+  <span><b>Bev twice</b>
+    <button data-k="dupe" data-v="on">Show</button>
+    <button data-k="dupe" data-v="off">Suppress</button>
+  </span>
+</div>
+
+<section class="bg-sunk">
+  <div class="section-inner">
+
+    <div style="text-align:center;max-width:760px;margin:0 auto 2.6rem">
+      <span class="label">Our People</span>
+      <h2 class="section-title">Who keeps it running</h2>
+      <div class="stats stats--center">
+        <div class="stat"><strong>2</strong><span>Staff</span></div>
+        <div class="stat"><strong>10</strong><span>Acres</span></div>
+        <div class="stat"><strong>365</strong><span>Days open a year</span></div>
+      </div>
+    </div>
+
+    <div class="org2">
+      <div class="orow" id="rowStaff">
+        <div class="olabel">Staff</div>
+        <div class="obody"><div class="plist" id="staffList"></div></div>
+      </div>
+
+      <div class="orow" id="rowBoard">
+        <div class="olabel">Board of Directors</div>
+        <div class="obody"><div class="plist" id="offList"></div></div>
+      </div>
+
+      <div class="orow" id="rowDirs">
+        <div class="olabel">Directors</div>
+        <div class="obody">
+          <div class="plist" id="dirList"></div>
+          <div class="spec" id="specList"></div>
+        </div>
+      </div>
+
+      <div class="orow" id="rowVol">
+        <div class="olabel">Volunteers</div>
+        <div class="obody">
+          <p class="vol">And everyone who turns up. <b>Volunteers do nearly everything else</b> —
+            the gardening and the nursery, the plant sales and holiday events, the parking at
+            those events, the repairs and the office work. Bright Futures students come every week.
+            <a href="get-involved.html">There's room for you &rarr;</a></p>
+        </div>
+      </div>
+    </div>
+
+    <p class="dnote"><b>What to look at:</b> the left edge. Every group name starts at the same
+      x-position, which is the anchor the centred version never had. Try <b>Rule: none</b> to see
+      how much of the structure comes from the labels alone rather than the lines.
+      <b>Blurbs: hide</b> shows the row without the lone "Retired attorney".
+      <b>Bev twice: show</b> restores the Ex-Officio duplicate that is on the live page now.</p>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  document.querySelectorAll('.dbar button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.body.dataset[b.dataset.k] = b.dataset.v;
+      sync();
+    });
+  });
+  function sync(){
+    document.querySelectorAll('.dbar button').forEach(function(b){
+      b.setAttribute('aria-pressed', document.body.dataset[b.dataset.k] === b.dataset.v);
+    });
+    render();
+  }
+
+  var org = null;
+  function esc(s){var d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
+
+  var OFFICERS = ['President','Vice President','Treasurer','Secretary'];
+  var SPECIAL  = ['Emeritus','Ex-Officio'];
+  var SHORT = {'Office Manager & Event Venue Rentals':'Office Manager & Venue Rentals'};
+
+  function card(p, showRole){
+    return '<div class="person">' +
+      (showRole ? '<div class="r">'+esc(SHORT[p.role]||p.role)+'</div>' : '') +
+      '<div class="n">'+esc(p.name)+'</div>' +
+      (p.blurb ? '<div class="b">'+esc(p.blurb)+'</div>' : '') + '</div>';
+  }
+
+  function render(){
+    if (!org) return;
+    var board  = org.filter(function(p){return p.type==='board';});
+    var office = org.filter(function(p){return p.type==='front office';});
+    var offs = board.filter(function(p){return OFFICERS.indexOf(p.role)!==-1;})
+                    .sort(function(a,b){return OFFICERS.indexOf(a.role)-OFFICERS.indexOf(b.role);});
+    var dirs = board.filter(function(p){return OFFICERS.indexOf(p.role)===-1 && SPECIAL.indexOf(p.role)===-1;});
+    var spec = board.filter(function(p){return SPECIAL.indexOf(p.role)!==-1;});
+
+    // The duplicate: Beverly is Executive Director AND sits on the board
+    // ex-officio. Both true; on the page it reads as an error.
+    if (document.body.dataset.dupe === 'off') {
+      var staffNames = office.map(function(p){return p.name;});
+      spec = spec.filter(function(p){return staffNames.indexOf(p.name) === -1;});
+    }
+
+    document.getElementById('staffList').innerHTML = office.map(function(p){return card(p,true);}).join('');
+    document.getElementById('offList').innerHTML   = offs.map(function(p){return card(p,true);}).join('');
+    document.getElementById('dirList').innerHTML   = dirs.map(function(p){return card(p,false);}).join('');
+    document.getElementById('specList').innerHTML  = spec.length
+      ? spec.map(function(p){return esc(p.role)+' <b>'+esc(p.name)+'</b>';}).join(' &nbsp;·&nbsp; ')
+      : '';
+  }
+
+  fetch('data/published/organization.json')
+    .then(function(r){return r.json();})
+    .then(function(j){ org = j; sync(); })
+    .catch(function(e){ console.warn('org feed unavailable', e); });
+})();
+</script>
+</body>
+</html>
