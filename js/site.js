@@ -2536,13 +2536,21 @@ async function loadRightNow(targetId, opts) {
   }
 
   function captureFilters() {
-    var f = { form: '', flags: [], q: '', wq: '', scroll: 0, page: 0 };
+    /* wflags / wpage added 2026-09-07. Only the PLANT rail was captured, so
+       returning from a wildlife species page reinstated the search text and
+       nothing else — no theme filters, page one. Harmless while wildlife cards
+       navigated straight out; not once the drawer and the sequence nav made
+       "back to the list" a real round trip. */
+    var f = { form: '', flags: [], q: '', wq: '', scroll: 0, page: 0,
+              wflags: [], wpage: 0 };
     try {
       if (typeof _activeForm !== 'undefined') f.form = _activeForm || '';
       if (typeof _activeFilters !== 'undefined') _activeFilters.forEach(function (x) { f.flags.push(x); });
+      if (typeof _wildFilters !== 'undefined') _wildFilters.forEach(function (x) { f.wflags.push(x); });
       var q = document.getElementById('plantSearch'); if (q) f.q = q.value || '';
       var w = document.getElementById('wildSearch');  if (w) f.wq = w.value || '';
       if (typeof _plantPage !== 'undefined') f.page = _plantPage;
+      if (typeof _wildPage !== 'undefined') f.wpage = _wildPage;
       f.scroll = window.scrollY || 0;
     } catch (e) {}
     return f;
@@ -2601,6 +2609,24 @@ async function loadRightNow(targetId, opts) {
       var q = document.getElementById('plantSearch'); if (q) q.value = f.q || '';
       var w = document.getElementById('wildSearch');  if (w) w.value = f.wq || '';
       if (typeof filterPlants === 'function') filterPlants();
+
+      /* Wildlife half, added 2026-09-07. filterWildlife() rebuilds _filteredWild
+         and resets _wildPage, so the page is set AFTER it, same order as plants.
+         Restoring both rails is deliberate: the two tabs keep independent state
+         and a visitor may have set up either one before leaving. */
+      if (typeof _wildFilters !== 'undefined' && f.wflags) {
+        _wildFilters.clear();
+        f.wflags.forEach(function (x) { _wildFilters.add(x); });
+        document.querySelectorAll('[data-wfilter]').forEach(function (b) {
+          b.classList.toggle('on', _wildFilters.has(b.dataset.wfilter));
+        });
+      }
+      if (typeof filterWildlife === 'function') filterWildlife();
+      if (typeof _wildPage !== 'undefined' && f.wpage) {
+        _wildPage = f.wpage;
+        if (typeof renderWildPage === 'function') renderWildPage();
+      }
+
       /* renderPlantPage() takes NO argument — it reads the _plantPage global.
          Passing f.page therefore did nothing, and filterPlants() above has just
          reset _plantPage to 0, so returning from a species page always landed
