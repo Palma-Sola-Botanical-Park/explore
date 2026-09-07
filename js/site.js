@@ -1887,7 +1887,7 @@ function plantCard(p) {
   const photoUrl = p.photo || ('plants/' + p.id + '_' + p.common.replace(/[^a-zA-Z0-9]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '') + '.jpg');
   const pageUrl  = p.page  || ('plants/' + slug + '.html');
 
-  return `<a class="card plant-card" href="${pageUrl}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">
+  return `<a class="card plant-card" data-kind="plant" href="${pageUrl}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">
     <div style="height:160px;overflow:hidden;position:relative;background:var(--sand)">
       <img src="${photoUrl}" alt="${p.common}"
         style="width:100%;height:100%;object-fit:cover;object-position:${p.focus || 'center'};display:block;transition:transform .4s ease"
@@ -2094,7 +2094,11 @@ function renderWildFilterButtons() {
 // Standardized to match plantCard: photo, name, scientific, credit block. No
 // chips — theme + native are selectable from the filter bar above the grid.
 function wildCard(w) {
-  return `<a class="card plant-card" href="${w.page}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">
+  /* data-kind, 2026-09-07: this card carries `plant-card` because it reuses the
+     plant card's styling, and that lie cost two bugs — remember() filed animals
+     under kind 'plant', and the drawer had to work out the kind from which grid
+     the card happened to sit in. The card now says what it is. */
+  return `<a class="card plant-card" data-kind="wild" href="${w.page}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">
     <div style="height:160px;overflow:hidden;position:relative;background:var(--sand)">
       <img src="${w.photo}" alt="${w.common}"
         style="width:100%;height:100%;object-fit:cover;object-position:${w.focus || 'center'};display:block;transition:transform .4s ease"
@@ -2611,8 +2615,7 @@ async function loadRightNow(targetId, opts) {
         isWild = h[1] === 'wildlife';
         id     = h[2];
       } else {
-        var host = card.parentElement;
-        isWild = !!(host && host.id === 'wildGrid') || card.classList.contains('obs-card');
+        isWild = card.dataset.kind === 'wild' || card.classList.contains('obs-card');
         var m  = /(PSBP-\d{5})/.exec(card.getAttribute('href') || '');
         id     = m ? m[1] : null;
       }
@@ -2629,27 +2632,9 @@ async function loadRightNow(targetId, opts) {
      which is correct — the species page WAS the quick view there. */
   function reopenPanel(s) {
     if (!s.current) return;
-    /* restore() fires 120ms after load; the species list may not have landed,
-       and the drawer's IIFE may not have run. Retry briefly rather than give up
-       silently — openById returns false until both are ready. */
-    whenReady(
-      function () { return window.PSBPDrawer && PSBPDrawer.openById; },
-      function () {
-        var tries = 20;
-        (function attempt() {
-          try { if (PSBPDrawer.openById(s.kind, s.current)) return; } catch (e) { return; }
-          if (--tries > 0) setTimeout(attempt, 75);
-        })();
-      });
-  }
-
-  /* Poll for a condition, then run. Used because loadWildlife() fetches without
-     exposing a promise; 40 x 75ms = 3s, then give up quietly. */
-  function whenReady(test, run, tries) {
-    tries = tries == null ? 40 : tries;
-    if (test()) { run(); return; }
-    if (tries <= 0) return;
-    setTimeout(function () { whenReady(test, run, tries - 1); }, 75);
+    try {
+      if (window.PSBPDrawer && PSBPDrawer.openById) PSBPDrawer.openById(s.kind, s.current);
+    } catch (e) {}
   }
 
   /* ── RESTORE SIDE — nature.html?#restore ──────────────────────────────── */
@@ -2685,23 +2670,25 @@ async function loadRightNow(targetId, opts) {
             the tab, then wait for the data, then apply. */
       if (s.kind === 'wild') {
         if (typeof showTab === 'function') showTab('wildlife');
-        whenReady(function () { return typeof WILDLIFE !== 'undefined' && WILDLIFE.length; },
-          function () {
-            if (typeof _wildFilters !== 'undefined' && f.wflags) {
-              _wildFilters.clear();
-              f.wflags.forEach(function (x) { _wildFilters.add(x); });
-              document.querySelectorAll('[data-wfilter]').forEach(function (b) {
-                b.classList.toggle('on', _wildFilters.has(b.dataset.wfilter));
-              });
-            }
-            if (typeof filterWildlife === 'function') filterWildlife();
-            if (typeof _wildPage !== 'undefined' && f.wpage) {
-              _wildPage = f.wpage;
-              if (typeof renderWildPage === 'function') renderWildPage();
-            }
-            reopenPanel(s);
-            setTimeout(function () { window.scrollTo(0, f.scroll || 0); }, 60);
+        /* showTab() kicks off (or has already finished) the wildlife fetch and
+           parks the promise on window._wildlifeReady. Awaiting it is exact —
+           the old version polled every 75ms and guessed. */
+        Promise.resolve(window._wildlifeReady).then(function () {
+        if (typeof _wildFilters !== 'undefined' && f.wflags) {
+          _wildFilters.clear();
+          f.wflags.forEach(function (x) { _wildFilters.add(x); });
+          document.querySelectorAll('[data-wfilter]').forEach(function (b) {
+            b.classList.toggle('on', _wildFilters.has(b.dataset.wfilter));
           });
+        }
+        if (typeof filterWildlife === 'function') filterWildlife();
+        if (typeof _wildPage !== 'undefined' && f.wpage) {
+          _wildPage = f.wpage;
+          if (typeof renderWildPage === 'function') renderWildPage();
+        }
+        reopenPanel(s);
+        setTimeout(function () { window.scrollTo(0, f.scroll || 0); }, 60);
+        });
         return;                       // plant half below would fight the tab
       }
 

@@ -708,7 +708,10 @@ function showTab(name) {
 
   if (name === 'wildlife' && !window._wildlifeLoaded) {
     window._wildlifeLoaded = true;
-    loadWildlife(); // fetches wildlife.json, renders grid + category buttons
+    /* Keep the promise. loadWildlife() is async and always was; throwing the
+       promise away meant anything needing the data had to poll for it.
+       site.js restore() awaits this when returning from a wildlife page. */
+    window._wildlifeReady = loadWildlife();
   }
   if (name === 'recent' && !window._recentLoaded) {
     window._recentLoaded = true;
@@ -1151,7 +1154,7 @@ loadINat();
 
   /* ── open / close / step ────────────────────────────────────────────── */
 
-  function openPlant(p, opts) {
+  function openRecord(p, opts) {
     opts = opts || {};
     var fresh = !cur;
     cur = p;
@@ -1164,8 +1167,8 @@ loadINat();
     body.scrollTop = 0;
 
     var h = '#' + kind.hash + '/' + p.id;
-    if (opts.history === 'push')         { history.pushState({ dwPlant: p.id }, '', h); pushed = true; }
-    else if (opts.history === 'replace') { history.replaceState({ dwPlant: p.id }, '', h); }
+    if (opts.history === 'push')         { history.pushState({ dwId: p.id }, '', h); pushed = true; }
+    else if (opts.history === 'replace') { history.replaceState({ dwId: p.id }, '', h); }
 
     if (fresh) document.getElementById('dwClose').focus({ preventScroll: true });
   }
@@ -1180,7 +1183,7 @@ loadINat();
     document.body.classList.remove('dw-open');
     clearRing();
 
-    if (wasPushed && history.state && history.state.dwPlant) {
+    if (wasPushed && history.state && history.state.dwId) {
       history.back();                                  // Back also closes
     } else if (/^#(plant|wildlife)\//.test(location.hash)) {
       history.replaceState(null, '', location.pathname + location.search);
@@ -1198,7 +1201,7 @@ loadINat();
     syncGrid();
     body.scrollTop = 0;
     // replace, not push: Back returns to the grid, not through every record
-    history.replaceState({ dwPlant: cur.id }, '', '#' + kind.hash + '/' + cur.id);
+    history.replaceState({ dwId: cur.id }, '', '#' + kind.hash + '/' + cur.id);
   }
 
   /* ── wiring ─────────────────────────────────────────────────────────── */
@@ -1245,20 +1248,18 @@ loadINat();
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     if (!drawerAllowed()) return;              // hand the click back to the browser
 
-    var host = card.parentElement;
-    var k = host && host.id === 'wildGrid' ? KIND.wild
-          : host && host.id === 'plantGrid' ? KIND.plant
-          : null;
-    if (!k) return;                            // a card somewhere else entirely
+    var k = KIND[card.dataset.kind === 'wild' ? 'wild' : 'plant'];
+    var host = document.getElementById(k.grid);
+    if (!host || !host.contains(card)) return;  // a card somewhere else entirely
 
     var pos = Array.prototype.indexOf.call(host.children, card);
     var rec = k.list()[k.page() * k.perPage() + pos];
     if (!rec) return;
 
     e.preventDefault();
-    kind = k;                                  // set BEFORE openPlant paints
+    kind = k;                                  // set BEFORE openRecord paints
     lastCard = card;
-    openPlant(rec, { history: 'push' });
+    openRecord(rec, { history: 'push' });
   });
 
   // "Family: Amaryllidaceae" filters the grid in place rather than navigating.
@@ -1312,7 +1313,7 @@ loadINat();
       if (p && !drawerAllowed() && p.page) { location.replace(p.page); return; }
       if (p) {
         kind = k;
-        if (!cur) { openPlant(p, {}); }
+        if (!cur) { openRecord(p, {}); }
         else if (p !== cur) { cur = p; paint(); syncGrid(); body.scrollTop = 0; }
         return;
       }
@@ -1340,7 +1341,7 @@ loadINat();
         if (m) {
           var wantK = m[1] === 'wildlife' ? KIND.wild : KIND.plant;
           var rec = wantK.all().filter(function (x) { return x.id === m[2]; })[0];
-          if (rec) { kind = wantK; openPlant(rec, { history: 'replace' }); return; }
+          if (rec) { kind = wantK; openRecord(rec, { history: 'replace' }); return; }
         }
       }
       if (cur && kind === k) {
@@ -1358,7 +1359,7 @@ loadINat();
      shipped and nothing ever read it, so returning from a species page put you
      back on the grid with no card open.
 
-     It also fixes the page: openPlant() calls syncGrid(), which walks the grid
+     It also fixes the page: openRecord() calls syncGrid(), which walks the grid
      to whichever page that record sits on. Restoring the panel restores the
      position as a consequence, rather than as a second thing to get right.
 
@@ -1370,11 +1371,11 @@ loadINat();
     var rec = (kk.all() || []).filter(function (x) { return x.id === id; })[0];
     if (!rec) return false;
     kind = kk;
-    openPlant(rec, { history: 'replace' });
+    openRecord(rec, { history: 'replace' });
     return true;
   }
 
-  window.PSBPDrawer = { open: openPlant, close: close, step: step, openById: openById };
+  window.PSBPDrawer = { open: openRecord, close: close, step: step, openById: openById };
 })();
 </script>
 
