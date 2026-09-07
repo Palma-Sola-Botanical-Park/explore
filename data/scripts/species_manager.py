@@ -9851,6 +9851,65 @@ _HOUSE_RULES = (
     )
 
 
+# ── KINGDOM RULES + CRAFT RULES ───────────────────────────────────────────
+# Hoisted out of _ai_build_messages on 2026-09-06. These three blocks lived in
+# DRAFT's user message and were never given to Revise, so an edit pass was free
+# to undo what a draft pass got right — most sharply the UNITS rule, which meant
+# revising `size` could put metric back with nothing downstream to catch it.
+#
+# This is the SAME BUG as the 2026-09-03 merge of the two system prompts, one
+# layer down: that fix moved the shared voice/shelf-life/accuracy rules into
+# _HOUSE_RULES and stopped there, because the user-message blocks were not
+# looked at. High #23 (Revise reinstating removed material) was the first time
+# this class of drift bit; this is the second.
+#
+# Both builders now read these. One constant, one place to edit, no drift.
+
+def _kingdom_block(kingdom):
+    """Colour-level defaults, plus the rules unique to each kingdom."""
+    if kingdom == "plants":
+        return (
+            "COLOR LEVELS (edibility, toxicity): Green is the DEFAULT for anything harmless — "
+            "a plant nobody eats but that won't hurt you is Green, never a warning. Use Yellow "
+            "only for genuine caution (edible only if prepared right; a mild irritant) and Red "
+            "only for a real hazard (toxic, dangerous). A harmless, unremarkable plant should "
+            "never wear a warning color.\n\n"
+            "BUTTERFLY: the butterfly booleans (larval_food, adult_food) are structured flags "
+            "for indexing — set them accurately, but don't narrate them as data. When a plant "
+            "has real butterfly, pollinator, or nectar value, weave it into wildlife_value "
+            "prose naturally instead."
+        )
+    # Wildlife carries FIVE colour fields and, until 2026-09-03, was sent the plant
+    # rules for edibility/toxicity — fields it does not have — and nothing about its own.
+    return (
+        "COLOR LEVELS: this record has five — danger.people_level, danger.pets_level, "
+        "interaction.level, invasive.level and conservation.level. GREEN IS THE DEFAULT "
+        "for every one of them. An animal that simply minds its own business is Green "
+        "across the board; it should never wear a warning colour. Use Yellow only for "
+        "genuine caution (will bite if cornered; a nest worth giving room to) and Red "
+        "only for a real hazard (venomous, genuinely dangerous). For conservation, Green "
+        "means no concern — say plainly when a species is unassessed rather than "
+        "inventing a status.\n\n"
+        "UNITS: rounded imperial, spelled out — feet and inches, never metric, no "
+        "abbreviations. \"Almost twenty feet\", not \"6 m\" or \"20 ft\"."
+    )
+
+
+# Craft rules that apply whether the model is writing a field or editing one.
+# REPETITION is the rule against exactly the redundancy the section redesign is
+# meant to prevent — an editing pass that has never been told it is the likeliest
+# place for duplication to creep back in.
+_CRAFT_RULES = (
+    "REPETITION: a fact belongs in exactly ONE place. Quick Hits exist to catch the "
+    "eye; a later section may revisit one only if it genuinely expands it. Restating a "
+    "Quick Hit elsewhere without adding anything is the most common fault in these "
+    "records.\n\n"
+    "SELECTIVITY: do NOT assume a field must be filled just because it exists. Some "
+    "fields should be quiet on a given species. Omit rather than pad — the database can "
+    "be comprehensive; the visitor page should be selective."
+)
+
+
 def _ai_build_messages(species, kingdom):
     """Return (system, user_text) for the drafting call."""
     spec = _draft_spec(kingdom)
@@ -9873,33 +9932,7 @@ def _ai_build_messages(species, kingdom):
         "category": species.get("category", ""),
     }
 
-    if kingdom == "plants":
-        kingdom_block = (
-            "COLOR LEVELS (edibility, toxicity): Green is the DEFAULT for anything harmless — "
-            "a plant nobody eats but that won't hurt you is Green, never a warning. Use Yellow "
-            "only for genuine caution (edible only if prepared right; a mild irritant) and Red "
-            "only for a real hazard (toxic, dangerous). A harmless, unremarkable plant should "
-            "never wear a warning color.\n\n"
-            "BUTTERFLY: the butterfly booleans (larval_food, adult_food) are structured flags "
-            "for indexing — set them accurately, but don't narrate them as data. When a plant "
-            "has real butterfly, pollinator, or nectar value, weave it into wildlife_value "
-            "prose naturally instead."
-        )
-    else:
-        # Wildlife carries FIVE colour fields and, until 2026-09-03, was sent the plant
-        # rules for edibility/toxicity — fields it does not have — and nothing about its own.
-        kingdom_block = (
-            "COLOR LEVELS: this record has five — danger.people_level, danger.pets_level, "
-            "interaction.level, invasive.level and conservation.level. GREEN IS THE DEFAULT "
-            "for every one of them. An animal that simply minds its own business is Green "
-            "across the board; it should never wear a warning colour. Use Yellow only for "
-            "genuine caution (will bite if cornered; a nest worth giving room to) and Red "
-            "only for a real hazard (venomous, genuinely dangerous). For conservation, Green "
-            "means no concern — say plainly when a species is unassessed rather than "
-            "inventing a status.\n\n"
-            "UNITS: rounded imperial, spelled out — feet and inches, never metric, no "
-            "abbreviations. \"Almost twenty feet\", not \"6 m\" or \"20 ft\"."
-        )
+    kingdom_block = _kingdom_block(kingdom)
 
     user = (
         f"Draft first-cut signage content for this {noun}:\n"
@@ -9911,13 +9944,7 @@ def _ai_build_messages(species, kingdom):
         f"Here are {len(exemplars)} existing published entries from this park, for TONE, "
         "depth, and structure only — match this quality; do NOT reuse their facts:\n"
         f"{exemplar_json}\n\n"
-        "REPETITION: a fact belongs in exactly ONE place. Quick Hits exist to catch the "
-        "eye; a later section may revisit one only if it genuinely expands it. Restating a "
-        "Quick Hit elsewhere without adding anything is the most common fault in these "
-        "records.\n\n"
-        "SELECTIVITY: do NOT assume a field must be filled just because it exists. Some "
-        "fields should be quiet on a given species. Omit rather than pad — the database can "
-        "be comprehensive; the visitor page should be selective.\n\n"
+        f"{_CRAFT_RULES}\n\n"
         "Do a few targeted web searches, then write a concise first cut — solid and "
         "accurate, not exhaustive (I'll deepen it later). Keep the park's voice.\n\n"
         "OUTPUT CONTRACT: return a single JSON object whose keys are a subset of the "
@@ -10292,6 +10319,12 @@ def _ai_build_revise_messages(species, kingdom, feedback):
         f"{json.dumps(current, indent=2, ensure_ascii=False)}\n\n"
         "FIELD SCHEMA (shapes you must keep):\n"
         f"{schema_lines}\n\n"
+        # Added 2026-09-06. Revise had never been sent either block, so it could
+        # undo a rule Draft had followed — reintroducing metric into `size`, or
+        # restating a Quick Hit in a later field. Same drift class as the 09-03
+        # system-prompt merge; see the note above _kingdom_block.
+        f"{_kingdom_block(kingdom)}\n\n"
+        f"{_CRAFT_RULES}\n\n"
         "REVIEWER FEEDBACK — apply this:\n"
         f"\"\"\"\n{feedback.strip()}\n\"\"\"\n\n"
         "OUTPUT CONTRACT: return a single JSON object containing ONLY the fields you are "
