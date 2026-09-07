@@ -854,9 +854,42 @@ loadINat();
   var elCount = document.getElementById('dwCount');
   var elPage  = document.getElementById('dwPage');
   var elLive  = document.getElementById('dwLive');
-  var grid    = document.getElementById('plantGrid');
+  /* ── TWO GRIDS, ONE DRAWER (2026-09-07) ───────────────────────────────
+     The panel was hardcoded to plants: PLANTS / _filteredPlants / plantGrid /
+     #plant/. Wildlife has exact counterparts already — same names, same
+     shapes, all defined in site.js — and wildCard() even emits the same
+     `plant-card` class, so the click handler was already firing on animal
+     cards and then silently bailing because the card is not inside plantGrid.
 
-  var cur      = null;   // the plant object currently shown
+     So this is a lookup, not a rewrite. Everything below asks KIND for its
+     list, grid, page and hash instead of naming plants directly. The paint
+     step needed no changes at all: every field it renders — common, sci,
+     aliases, page, photo, focus, credit*, teaser, quick_hits — exists on
+     wildlife entries too. */
+  var KIND = {
+    plant: {
+      grid:    'plantGrid',
+      hash:    'plant',
+      list:    function () { return _filteredPlants; },
+      all:     function () { return PLANTS; },
+      perPage: function () { return PLANTS_PER_PAGE; },
+      page:    function () { return _plantPage; },
+      render:  function (n) { _plantPage = n; renderPlantPage(); }
+    },
+    wild: {
+      grid:    'wildGrid',
+      hash:    'wildlife',
+      list:    function () { return _filteredWild; },
+      all:     function () { return WILDLIFE; },
+      perPage: function () { return WILD_PER_PAGE; },
+      page:    function () { return _wildPage; },
+      render:  function (n) { _wildPage = n; renderWildPage(); }
+    }
+  };
+  var kind = KIND.plant;                        // whichever was opened last
+  function gridEl() { return document.getElementById(kind.grid); }
+
+  var cur      = null;   // the record currently shown
   var pushed   = false;  // did opening push a history entry?
   var lastCard = null;   // card that opened the panel (focus returns here)
   var booted   = false;
@@ -867,7 +900,7 @@ loadINat();
     });
   }
   var isPhone = function () { return window.matchMedia('(max-width: 700px)').matches; };
-  var idx     = function () { return cur ? _filteredPlants.indexOf(cur) : -1; };
+  var idx     = function () { return cur ? kind.list().indexOf(cur) : -1; };
 
   /* ── content ───────────────────────────────────────────────────────── */
 
@@ -1038,7 +1071,7 @@ loadINat();
 
   function paint() {
     var p = cur; if (!p) return;
-    var i = idx(), n = _filteredPlants.length;
+    var i = idx(), n = kind.list().length;
 
     elPrev.disabled = i <= 0;
     elNext.disabled = i < 0 || i >= n - 1;
@@ -1071,7 +1104,7 @@ loadINat();
 
   function preload(i) {
     [i - 1, i + 1].forEach(function (j) {
-      var p = _filteredPlants[j];
+      var p = kind.list()[j];
       if (p && p.photo) { var im = new Image(); im.src = p.photo; }
     });
   }
@@ -1087,23 +1120,27 @@ loadINat();
     var ts = document.getElementById('tabSection');
     var orig = ts && ts.scrollIntoView;
     if (ts) ts.scrollIntoView = function () {};
-    _plantPage = page;
-    renderPlantPage();
+    kind.render(page);
     if (ts) ts.scrollIntoView = orig;
   }
 
   function clearRing() {
-    var old = grid.querySelector('.dw-active');
-    if (old) old.classList.remove('dw-active');
+    /* Clear on BOTH grids: switching kinds with a panel open would otherwise
+       leave a highlight ring stranded on the other tab. */
+    document.querySelectorAll('.dw-active').forEach(function (el) {
+      el.classList.remove('dw-active');
+    });
   }
 
   function syncGrid() {
     var i = idx();
     clearRing();
     if (i < 0) return;
-    var want = Math.floor(i / PLANTS_PER_PAGE);
-    if (want !== _plantPage) renderPageQuietly(want);
-    var card = grid.children[i % PLANTS_PER_PAGE];
+    var per = kind.perPage();
+    var want = Math.floor(i / per);
+    if (want !== kind.page()) renderPageQuietly(want);
+    var g = gridEl(); if (!g) return;
+    var card = g.children[i % per];
     if (!card || !card.classList) return;
     card.classList.add('dw-active');
     if (!isPhone()) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -1123,8 +1160,9 @@ loadINat();
     syncGrid();
     body.scrollTop = 0;
 
-    if (opts.history === 'push')         { history.pushState({ dwPlant: p.id }, '', '#plant/' + p.id); pushed = true; }
-    else if (opts.history === 'replace') { history.replaceState({ dwPlant: p.id }, '', '#plant/' + p.id); }
+    var h = '#' + kind.hash + '/' + p.id;
+    if (opts.history === 'push')         { history.pushState({ dwPlant: p.id }, '', h); pushed = true; }
+    else if (opts.history === 'replace') { history.replaceState({ dwPlant: p.id }, '', h); }
 
     if (fresh) document.getElementById('dwClose').focus({ preventScroll: true });
   }
@@ -1141,7 +1179,7 @@ loadINat();
 
     if (wasPushed && history.state && history.state.dwPlant) {
       history.back();                                  // Back also closes
-    } else if (location.hash.indexOf('#plant/') === 0) {
+    } else if (/^#(plant|wildlife)\//.test(location.hash)) {
       history.replaceState(null, '', location.pathname + location.search);
     }
     if (lastCard && document.contains(lastCard)) lastCard.focus({ preventScroll: true });
@@ -1149,14 +1187,15 @@ loadINat();
 
   function step(dir) {
     var i = idx(); if (i < 0) return;
+    var list = kind.list();
     var j = i + dir;
-    if (j < 0 || j >= _filteredPlants.length) return;
-    cur = _filteredPlants[j];
+    if (j < 0 || j >= list.length) return;
+    cur = list[j];
     paint();
     syncGrid();
     body.scrollTop = 0;
-    // replace, not push: Back returns to the grid, not through every plant
-    history.replaceState({ dwPlant: cur.id }, '', '#plant/' + cur.id);
+    // replace, not push: Back returns to the grid, not through every record
+    history.replaceState({ dwPlant: cur.id }, '', '#' + kind.hash + '/' + cur.id);
   }
 
   /* ── wiring ─────────────────────────────────────────────────────────── */
@@ -1188,17 +1227,35 @@ loadINat();
      at 1000px that leaves roughly two cards beside it. */
   function drawerAllowed() { return window.innerWidth >= 1000; }
 
-  grid.addEventListener('click', function (e) {
+  /* One delegated handler for BOTH grids. Bound on document rather than on a
+     grid element because each grid re-renders its innerHTML on every page and
+     filter change; a listener bound to the container survives that, and the
+     wildlife grid did not exist when this file was written.
+
+     wildCard() emits the same `plant-card` class as plantCard(), so the
+     selector already matched animal cards — the old handler then looked the
+     index up in _filteredPlants, found nothing, and bailed. Which is exactly
+     why clicking a wildlife card just navigated. */
+  document.addEventListener('click', function (e) {
     var card = e.target.closest && e.target.closest('a.plant-card');
     if (!card) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     if (!drawerAllowed()) return;              // hand the click back to the browser
+
+    var host = card.parentElement;
+    var k = host && host.id === 'wildGrid' ? KIND.wild
+          : host && host.id === 'plantGrid' ? KIND.plant
+          : null;
+    if (!k) return;                            // a card somewhere else entirely
+
+    var pos = Array.prototype.indexOf.call(host.children, card);
+    var rec = k.list()[k.page() * k.perPage() + pos];
+    if (!rec) return;
+
     e.preventDefault();
-    var pos = Array.prototype.indexOf.call(grid.children, card);
-    var p = _filteredPlants[_plantPage * PLANTS_PER_PAGE + pos];
-    if (!p) return;
+    kind = k;                                  // set BEFORE openPlant paints
     lastCard = card;
-    openPlant(p, { history: 'push' });
+    openPlant(rec, { history: 'push' });
   });
 
   // "Family: Amaryllidaceae" filters the grid in place rather than navigating.
@@ -1243,13 +1300,15 @@ loadINat();
   // every hash link. Reading the hash covers both events with one code path.
   // pushState/replaceState fire neither event, so our own writes can't loop.
   function syncFromUrl() {
-    var m = /^#plant\/(PSBP-\d+)/.exec(location.hash);
+    var m = /^#(plant|wildlife)\/(PSBP-\d+)/.exec(location.hash);
     if (m) {
-      var p = PLANTS.filter(function (x) { return x.id === m[1]; })[0];
-      /* A #plant/ link shared and opened on a phone should land on the real
-         page, not on a bottom sheet the visitor cannot browse. */
+      var k = m[1] === 'wildlife' ? KIND.wild : KIND.plant;
+      var p = k.all().filter(function (x) { return x.id === m[2]; })[0];
+      /* A shared link opened on a phone should land on the real page, not on a
+         bottom sheet the visitor cannot browse. Same rule for both kinds. */
       if (p && !drawerAllowed() && p.page) { location.replace(p.page); return; }
       if (p) {
+        kind = k;
         if (!cur) { openPlant(p, {}); }
         else if (p !== cur) { cur = p; paint(); syncGrid(); body.scrollTop = 0; }
         return;
@@ -1263,22 +1322,33 @@ loadINat();
   // site.js calls renderPlants() on load and on every filter change. Wrapping
   // it keeps an open panel honest: follow the plant if it survived the new
   // filter, close if it didn't.
-  var origRenderPlants = window.renderPlants;
-  window.renderPlants = function (list) {
-    origRenderPlants(list);
-    if (!booted) {                                     // first paint = data is in
-      booted = true;
-      var m = /^#plant\/(PSBP-\d+)/.exec(location.hash);
-      if (m) {
-        var p = PLANTS.filter(function (x) { return x.id === m[1]; })[0];
-        if (p) { openPlant(p, { history: 'replace' }); return; }
+  /* site.js re-renders a grid on load and on every filter change. Wrapping
+     both keeps an open panel honest: follow the record if it survived the new
+     filter, close if it did not. Each wrapper only reacts when the panel is
+     showing ITS kind, so filtering plants cannot close an open animal. */
+  function wrapRender(name, k) {
+    var orig = window[name];
+    if (typeof orig !== 'function') return;
+    window[name] = function (list) {
+      orig.apply(this, arguments);
+      if (!booted) {                                   // first paint = data is in
+        booted = true;
+        var m = /^#(plant|wildlife)\/(PSBP-\d+)/.exec(location.hash);
+        if (m) {
+          var wantK = m[1] === 'wildlife' ? KIND.wild : KIND.plant;
+          var rec = wantK.all().filter(function (x) { return x.id === m[2]; })[0];
+          if (rec) { kind = wantK; openPlant(rec, { history: 'replace' }); return; }
+        }
       }
-    }
-    if (cur) {
-      if (list.indexOf(cur) < 0) close();
-      else { paint(); syncGrid(); }
-    }
-  };
+      if (cur && kind === k) {
+        var l = list || k.list();
+        if (l.indexOf(cur) < 0) close();
+        else { paint(); syncGrid(); }
+      }
+    };
+  }
+  wrapRender('renderPlants', KIND.plant);
+  wrapRender('renderWildlife', KIND.wild);
 
   window.PSBPDrawer = { open: openPlant, close: close, step: step };
 })();

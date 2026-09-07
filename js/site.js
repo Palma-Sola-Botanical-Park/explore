@@ -2601,7 +2601,13 @@ async function loadRightNow(targetId, opts) {
       var q = document.getElementById('plantSearch'); if (q) q.value = f.q || '';
       var w = document.getElementById('wildSearch');  if (w) w.value = f.wq || '';
       if (typeof filterPlants === 'function') filterPlants();
-      if (typeof renderPlantPage === 'function' && f.page) renderPlantPage(f.page);
+      /* renderPlantPage() takes NO argument — it reads the _plantPage global.
+         Passing f.page therefore did nothing, and filterPlants() above has just
+         reset _plantPage to 0, so returning from a species page always landed
+         on page one however deep you had browsed. Set the global, then render.
+         Found 2026-09-07 while wiring the wildlife drawer. */
+      if (typeof _plantPage !== 'undefined' && f.page) _plantPage = f.page;
+      if (typeof renderPlantPage === 'function' && f.page) renderPlantPage();
       // after the grid has re-rendered
       setTimeout(function () { window.scrollTo(0, f.scroll || 0); }, 60);
     } catch (e) {}
