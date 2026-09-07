@@ -1350,7 +1350,28 @@ loadINat();
   wrapRender('renderPlants', KIND.plant);
   wrapRender('renderWildlife', KIND.wild);
 
-  window.PSBPDrawer = { open: openPlant, close: close, step: step };
+  /* openById — reopen the panel on a record the visitor was looking at before
+     they left. Added 2026-09-07: remember() has stored `current` since it
+     shipped and nothing ever read it, so returning from a species page put you
+     back on the grid with no card open.
+
+     It also fixes the page: openPlant() calls syncGrid(), which walks the grid
+     to whichever page that record sits on. Restoring the panel restores the
+     position as a consequence, rather than as a second thing to get right.
+
+     Honours the desktop-only rule — below 1000px there is no drawer to return
+     to, and the caller gets false so it can leave the grid alone. */
+  function openById(k, id) {
+    if (!drawerAllowed()) return false;
+    var kk = (k === 'wild' || k === 'wildlife') ? KIND.wild : KIND.plant;
+    var rec = (kk.all() || []).filter(function (x) { return x.id === id; })[0];
+    if (!rec) return false;
+    kind = kk;
+    openPlant(rec, { history: 'replace' });
+    return true;
+  }
+
+  window.PSBPDrawer = { open: openPlant, close: close, step: step, openById: openById };
 })();
 </script>
 

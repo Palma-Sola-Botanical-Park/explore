@@ -2619,6 +2619,26 @@ async function loadRightNow(targetId, opts) {
     } catch (err) {}
   }, true);
 
+  /* Put the visitor back in front of the record they were reading. `current`
+     has been stored since this shipped and was never used, so a return landed
+     on the bare grid. On a phone the drawer does not exist and this no-ops,
+     which is correct — the species page WAS the quick view there. */
+  function reopenPanel(s) {
+    if (!s.current) return;
+    /* restore() fires 120ms after load; the species list may not have landed,
+       and the drawer's IIFE may not have run. Retry briefly rather than give up
+       silently — openById returns false until both are ready. */
+    whenReady(
+      function () { return window.PSBPDrawer && PSBPDrawer.openById; },
+      function () {
+        var tries = 20;
+        (function attempt() {
+          try { if (PSBPDrawer.openById(s.kind, s.current)) return; } catch (e) { return; }
+          if (--tries > 0) setTimeout(attempt, 75);
+        })();
+      });
+  }
+
   /* Poll for a condition, then run. Used because loadWildlife() fetches without
      exposing a promise; 40 x 75ms = 3s, then give up quietly. */
   function whenReady(test, run, tries) {
@@ -2675,6 +2695,7 @@ async function loadRightNow(targetId, opts) {
               _wildPage = f.wpage;
               if (typeof renderWildPage === 'function') renderWildPage();
             }
+            reopenPanel(s);
             setTimeout(function () { window.scrollTo(0, f.scroll || 0); }, 60);
           });
         return;                       // plant half below would fight the tab
@@ -2687,6 +2708,7 @@ async function loadRightNow(targetId, opts) {
          Found 2026-09-07 while wiring the wildlife drawer. */
       if (typeof _plantPage !== 'undefined' && f.page) _plantPage = f.page;
       if (typeof renderPlantPage === 'function' && f.page) renderPlantPage();
+      reopenPanel(s);
       // after the grid has re-rendered
       setTimeout(function () { window.scrollTo(0, f.scroll || 0); }, 60);
     } catch (e) {}
