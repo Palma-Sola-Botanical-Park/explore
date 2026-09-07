@@ -2596,12 +2596,16 @@ async function loadRightNow(targetId, opts) {
         exit, and while the panel is open the URL says which record and which
         kind, so that is what it reads. */
   document.addEventListener('click', function (e) {
-    var card = e.target.closest && e.target.closest('a.plant-card, a.obs-card, a.dw-more');
+    var card = e.target.closest && e.target.closest('a.plant-card, a.obs-card, a.dw-more, #dwPage');
     if (!card) return;
     try {
       var isWild, list, id;
 
-      if (card.classList.contains('dw-more')) {
+      /* BOTH drawer exits. There are two: #dwPage ("Full plant page") in the
+         panel footer, and a.dw-more ("Read the full story") inside the teaser.
+         Matching only one meant arrowing to another species and leaving by the
+         other button recorded the species you STARTED on. */
+      if (card.id === 'dwPage' || card.classList.contains('dw-more')) {
         var h = /^#(plant|wildlife)\/(PSBP-\d{5})/.exec(location.hash || '');
         if (!h) return;                     // panel not open — nothing to record
         isWild = h[1] === 'wildlife';

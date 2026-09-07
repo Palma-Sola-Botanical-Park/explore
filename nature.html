@@ -1077,6 +1077,9 @@ loadINat();
     elNext.disabled = i < 0 || i >= n - 1;
     elCount.textContent = i >= 0 ? (i + 1) + ' of ' + n : 'Outside current filter';
     elPage.setAttribute('href', p.page || '#');
+    /* The button was hardcoded "Full plant page" and the drawer now opens
+       animals too. Label follows the kind. */
+    elPage.textContent = (kind === KIND.wild ? 'Full species page' : 'Full plant page') + ' \u2192';
 
     // Cap the alias list — a few plants carry six, which pushes the name block
     // and the badges below the fold on a phone.
