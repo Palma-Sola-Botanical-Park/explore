@@ -464,7 +464,58 @@ def _v2_section(anchor_id, title, inner, band=False):
             f'<h2>{h(title)}</h2><div class="sp-sec-rule"></div>{inner}</section>')
 
 
+
+# ── POLISHED SECTIONS ─────────────────────────────────────────────────────
+# A species record may carry a `page` object holding SYNTHESISED sections —
+# prose someone wrote, rather than fields the template assembled. When a
+# section is present there, it WINS, and the old fields it maps to are not
+# read for that section.
+#
+# The point is that this works PER SECTION, PER SPECIES. Polish `how_it_lives`
+# on twenty species and leave everything else assembled; those twenty pages take
+# the good version for that one section and stay assembled for the rest. Nothing
+# has to be finished before it is useful, and no page is ever frozen or
+# hand-built to get the benefit.
+#
+#   "page": {
+#     "how_it_lives": [
+#       {"label": "Voice", "text": "…"},          prose; label optional
+#       {"photo": "711514366", "caption": "…"},   a photograph, placed here
+#       {"similar": "PSBP-99962"}                 a look-alike callout
+#     ]
+#   }
+
+def _v2_polished(species, key):
+    return (species.get("page") or {}).get(key) or None
+
+
+def _v2_render_blocks(species, blocks, pid=None, photo_index=None):
+    """Render synthesised blocks. Position in the array IS position on the page."""
+    out = []
+    for b in blocks:
+        if not isinstance(b, dict):
+            out.append(f"<p>{_allow_bold(str(b))}</p>"); continue
+        if b.get("photo"):
+            rec = (photo_index or {}).get(str(b["photo"]))
+            if rec:
+                r = dict(rec)
+                if b.get("caption"):     r["note"] = b["caption"]
+                if b.get("links"):       r["note_species"] = b["links"][0]
+                out.append(v2_inflow_figure(pid, r))
+        elif b.get("similar"):
+            out.append(v2_similar(species))
+        else:
+            out.append(_v2_block(b.get("label", ""), b.get("text", "")))
+    return "".join(out)
+
+
 def v2_at_a_glance(species):
+    pol = _v2_polished(species, "at_a_glance")
+    if pol:
+        return _v2_section("glance", "At a glance",
+                           '<div class="sp-quick"><ul>'
+                           + "".join(f"<li>{_allow_bold(str(b.get('text', b) if isinstance(b, dict) else b))}</li>" for b in pol)
+                           + "</ul></div>")
     hits = species.get("quick_hits") or []
     if not hits:
         return ""
@@ -498,6 +549,10 @@ def v2_how_to_know_it(species, notes_by_id=None):
     `sounds` gets its own labelled block: whether an animal makes noise is an
     identification fact, and on the anole "you will never hear one" is one of
     the most useful lines on the page. v1 buried it inside the same list."""
+    pol = _v2_polished(species, "how_to_know_it")
+    if pol:
+        return _v2_section("know", "How to know it",
+                           _v2_render_blocks(species, pol, species.get("id"), notes_by_id))
     ident = species.get("identification") or {}
     parts = [v2_similar(species)]
     for b in (ident.get("blocks") or []):
@@ -517,6 +572,10 @@ def v2_where_to_find_it(species):
     """The section only this park can write. Place, then time of day, then time
     of year. Empty is a legitimate outcome — better a missing section than
     'found throughout Florida'."""
+    pol = _v2_polished(species, "where_to_find_it_here")
+    if pol:
+        return _v2_section("find", "Where to find it here",
+                           _v2_render_blocks(species, pol, species.get("id")))
     seas = species.get("seasonality") or {}
     inner = _v2_paras(species.get("where_to_look"), species.get("when_to_see"))
     inner += _v2_block("When", seas.get("note") if seas.get("note") != species.get("when_to_see") else "")
@@ -525,6 +584,10 @@ def v2_where_to_find_it(species):
 
 def v2_how_it_lives(species):
     """Behaviour first, then diet as behaviour rather than a list."""
+    pol = _v2_polished(species, "how_it_lives")
+    if pol:
+        return _v2_section("lives", "How it lives",
+                           _v2_render_blocks(species, pol, species.get("id")), band=True)
     return _v2_section("lives", "How it lives",
                        _v2_paras(species.get("behavior"), species.get("diet")),
                        band=True)
@@ -534,6 +597,10 @@ def v2_what_it_does_here(species):
     """The animal's effect on the place. Origin leads ONLY when the species is
     introduced — for a native, 'it is from here' is not a story, and opening
     with range would bury the ecology behind a non-fact."""
+    pol = _v2_polished(species, "what_it_does_here")
+    if pol:
+        return _v2_section("does", "What it does here",
+                           _v2_render_blocks(species, pol, species.get("id")))
     inv = species.get("invasive") or {}
     origin = species.get("range_and_origin")
     parts = []
@@ -558,6 +625,10 @@ def v2_take_care(species):
     leaving alone gets no section — one that says 'nothing will happen' is
     worse than none. Safety is the exception to brevity, so where the hazard is
     real it is stated plainly and not trimmed."""
+    pol = _v2_polished(species, "take_care")
+    if pol:
+        return _v2_section("care", "Take care",
+                           _v2_render_blocks(species, pol, species.get("id")))
     dang = species.get("danger") or {}
     inter = species.get("interaction") or {}
     cons = species.get("conservation") or {}
