@@ -406,6 +406,368 @@ def render_tags(species):
     return f'<div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div>{inner}</div>'
 
 
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  V2 RENDERERS — the layout proven on the hand-built Brown Anole page.    ║
+# ║                                                                          ║
+# ║  Added alongside the v1 renderers rather than replacing them, so the old ║
+# ║  path keeps working until this one is proven on a dry run.               ║
+# ║                                                                          ║
+# ║  Design lives in css/species-v2.css and js/species-v2.js. A generated    ║
+# ║  page is content plus two link tags — never a copy of the design.        ║
+# ║                                                                          ║
+# ║  ASSEMBLY, NOT SYNTHESIS. These build sections from fields that already  ║
+# ║  exist. Four of six read as well as the hand-written page because the    ║
+# ║  source prose is already paragraph-shaped; "What it does here" will read ║
+# ║  as stacked paragraphs rather than one argument. That gap is what a      ║
+# ║  later synthesis pass closes, per species, on top of this.               ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+
+V2_SECTIONS = [
+    ("glance", "At a glance"),
+    ("know",   "How to know it"),
+    ("find",   "Where to find it here"),
+    ("lives",  "How it lives"),
+    ("does",   "What it does here"),
+    ("care",   "Take care"),
+    ("photos", "Photographs"),
+]
+
+
+def _v2_paras(*texts):
+    """Prose blocks. Skips empties, so a thin species yields a short section
+    rather than a heading over nothing."""
+    out = []
+    for t in texts:
+        if isinstance(t, list):
+            out.extend(x for x in t if x and str(x).strip())
+        elif t and str(t).strip():
+            out.append(t)
+    return "".join(f"<p>{_allow_bold(str(t))}</p>" for t in out)
+
+
+def _v2_block(label, text):
+    if not text or not str(text).strip():
+        return ""
+    lab = f'<div class="sp-block-label">{h(label)}</div>' if label else ""
+    return f'<div class="sp-block">{lab}<p>{_allow_bold(str(text))}</p></div>'
+
+
+def _v2_section(anchor_id, title, inner):
+    if not inner:
+        return ""
+    return (f'<section class="sp-sec" id="{anchor_id}">'
+            f'<h2>{h(title)}</h2><div class="sp-sec-rule"></div>{inner}</section>')
+
+
+def v2_at_a_glance(species):
+    hits = species.get("quick_hits") or []
+    if not hits:
+        return ""
+    li = "".join(f"<li>{_allow_bold(q)}</li>" for q in hits)
+    return _v2_section("glance", "At a glance",
+                       f'<div class="sp-quick"><ul>{li}</ul></div>')
+
+
+def v2_similar(species):
+    """Look-alike callout. `similar_species` is on 23 records and renders
+    nowhere in v1 — for a park where telling two anoles apart is the whole
+    game, this is high-value and belongs at the top of identification."""
+    sims = species.get("similar_species") or []
+    if not sims:
+        return ""
+    rows = []
+    for sp in sims:
+        name = h(sp.get("common_name", ""))
+        pid  = sp.get("psbp_id")
+        how  = h(sp.get("how_to_tell_apart", ""))
+        link = f'<a href="{page_filename(pid, sp.get("common_name",""))}">{name}</a>' if pid else name
+        rows.append(f"<p>{link} — {how}</p>")
+    return ('<div class="sp-similar"><div class="sp-similar-h">Easily confused with</div>'
+            + "".join(rows) + "</div>")
+
+
+
+def v2_how_to_know_it(species, notes_by_id=None):
+    """identification blocks + sounds + size, with the look-alike callout on top.
+
+    `sounds` gets its own labelled block: whether an animal makes noise is an
+    identification fact, and on the anole "you will never hear one" is one of
+    the most useful lines on the page. v1 buried it inside the same list."""
+    ident = species.get("identification") or {}
+    parts = [v2_similar(species)]
+    for b in (ident.get("blocks") or []):
+        parts.append(_v2_block(b.get("label", ""), b.get("text", "")))
+    parts.append(_v2_block("Voice", species.get("sounds")))
+
+    size = species.get("size") or {}
+    bits = [size.get("length"), size.get("wingspan"), size.get("height")]
+    bits = [b for b in bits if b]
+    if bits:
+        parts.append(_v2_block("Size", "; ".join(str(b) for b in bits)))
+    parts.append(_v2_block("What to look for", ident.get("what_to_look_for")))
+    return _v2_section("know", "How to know it", "".join(parts))
+
+
+def v2_where_to_find_it(species):
+    """The section only this park can write. Place, then time of day, then time
+    of year. Empty is a legitimate outcome — better a missing section than
+    'found throughout Florida'."""
+    seas = species.get("seasonality") or {}
+    inner = _v2_paras(species.get("where_to_look"), species.get("when_to_see"))
+    inner += _v2_block("When", seas.get("note") if seas.get("note") != species.get("when_to_see") else "")
+    return _v2_section("find", "Where to find it here", inner)
+
+
+def v2_how_it_lives(species):
+    """Behaviour first, then diet as behaviour rather than a list."""
+    return _v2_section("lives", "How it lives",
+                       _v2_paras(species.get("behavior"), species.get("diet")))
+
+
+def v2_what_it_does_here(species):
+    """The animal's effect on the place. Origin leads ONLY when the species is
+    introduced — for a native, 'it is from here' is not a story, and opening
+    with range would bury the ecology behind a non-fact."""
+    inv = species.get("invasive") or {}
+    origin = species.get("range_and_origin")
+    parts = []
+    if species.get("native") is False and origin:
+        parts.append(origin)
+    parts.append(species.get("ecological_role"))
+    parts.append(species.get("plant_connections"))
+    if str(inv.get("level", "")).lower() in ("red", "yellow"):
+        parts.append(inv.get("notes"))
+    if species.get("native") is not False and origin:
+        parts.append(origin)
+    return _v2_section("does", "What it does here", _v2_paras(*parts))
+
+
+def v2_take_care(species):
+    """OMITTED unless there is something to say. An animal that simply wants
+    leaving alone gets no section — one that says 'nothing will happen' is
+    worse than none. Safety is the exception to brevity, so where the hazard is
+    real it is stated plainly and not trimmed."""
+    dang = species.get("danger") or {}
+    inter = species.get("interaction") or {}
+    cons = species.get("conservation") or {}
+    lvl = lambda d, k="level": str(d.get(k, "") or "").lower()
+
+    real_hazard = lvl(dang, "people_level") in ("red", "yellow")
+    real_care   = lvl(inter) in ("red", "yellow")
+    real_cons   = lvl(cons) in ("red", "yellow")
+    if not (real_hazard or real_care or real_cons):
+        return ""
+
+    parts = []
+    if real_hazard:
+        parts.append(_v2_block("The risk", dang.get("people")))
+    if real_care or real_hazard:
+        parts.append(_v2_block("What to do", inter.get("guidance")))
+    if real_cons:
+        parts.append(_v2_block("Conservation", cons.get("status")))
+    return _v2_section("care", "Take care", "".join(parts))
+
+
+
+def _v2_credit_plate(rec):
+    """The site's standard credit, emitted server-side. Mirrors
+    PSBPPhotos.creditPlate() in js/photo-credits.js — same classes, so one
+    stylesheet serves both. NEVER hand-write a credit: on the first page I
+    typed six and got five wrong, inventing dates and shuffling photographers."""
+    hc = resolve_hero_credit(rec)
+    date = _fmt_observed(rec.get("observed_on", ""))
+    return ('<div class="credit-plate">'
+            '<span class="credit-eyebrow">Photograph by</span>'
+            f'<span class="credit-name">{h(hc["credit_name"])}</span>'
+            '<span class="credit-meta">'
+            '<span class="cc-badge"><span class="cc-mark">cc</span>'
+            f'<span class="cc-term">{h((hc["credit_license"] or "CC").replace("CC-",""))}</span></span>'
+            + (f'<span>{h(date)}</span><span class="sep">&middot;</span>' if date else '')
+            + '<span>iNaturalist</span></span></div>')
+
+
+def _v2_photo_url(pid, rec):
+    return f"../photos/{pid}/{rec['filename']}" if rec.get("filename") else rec.get("photo_url", "")
+
+
+def v2_inflow_figure(pid, rec):
+    """A photograph placed IN the prose, captioned from the `note` field on its
+    photo_credits row. No note, no figure — a forced caption is worse than none.
+
+    This is what turns the best writing on the anole page into something the
+    template can produce: the captions came from LOOKING at the images, and
+    `note` is where that looking is recorded so it happens once."""
+    note = (rec.get("note") or "").strip()
+    if not note:
+        return ""
+    link = rec.get("note_species")
+    cap = h(note)
+    if link:
+        cap += f' <a href="../plants/{h(link)}.html">See the plant</a>'
+    return (f'<figure class="sp-figure"><img src="{h(_v2_photo_url(pid, rec))}" '
+            f'alt="{h(rec.get("alt") or "")}" loading="lazy">'
+            f'<figcaption>{cap}</figcaption>{_v2_credit_plate(rec)}</figure>')
+
+
+def v2_photographs(pid, photos):
+    """The credits roll — not a second gallery. Its job is to make every
+    photographer legible WITHOUT anyone having to tap: thumbnail beside the
+    standard plate, two or three per row."""
+    if not photos:
+        return ""
+    figs = []
+    for i, r in enumerate(photos):
+        figs.append(f'<figure data-i="{i}"><div class="shot">'
+                    f'<img src="{h(_v2_photo_url(pid, r))}" alt="" loading="lazy"></div>'
+                    f'<figcaption>{_v2_credit_plate(r)}</figcaption></figure>')
+    inner = ('<p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">'
+             'Every one taken in this park, by the people who walk it.</p>'
+             f'<div class="sp-gal" id="gal">{"".join(figs)}</div>')
+    return _v2_section("photos", "Photographs", inner)
+
+
+def v2_also_known_as(species):
+    names = species.get("also_known_as") or []
+    if not names:
+        return ""
+    return ('<div class="sp-aka"><div class="sp-block-label">Also known as</div>'
+            f'<p>{h(" · ".join(names))}</p></div>')
+
+
+def v2_eyebrow(species):
+    """LIZARD · INTRODUCED · SEEN YEAR-ROUND — derived, never authored."""
+    bits = [species.get("animal_group") or species.get("category") or ""]
+    if species.get("native") is False:
+        bits.append("Introduced")
+    pres = ((species.get("seasonality") or {}).get("presence") or "").strip()
+    if pres:
+        bits.append("Seen " + pres)
+    return " &middot; ".join(h(b) for b in bits if b)
+
+
+
+def generate_html_v2(species, hero, gallery_photos, published_on=""):
+    """The v2 page. Content plus two link tags — the design lives in
+    css/species-v2.css and js/species-v2.js, never inlined.
+
+    THE SKELETON IS NOT OPTIONAL. site.js does not mount the nav on load;
+    injectShared() does, replacing #nav-placeholder and #footer-placeholder by
+    outerHTML. Omit any of the four lines and the page renders with no nav, no
+    footer and no error."""
+    import json as _json
+    pid    = species["id"]
+    common = species["common_name"]
+    sci    = species.get("scientific_name", "")
+
+    photos = list(gallery_photos or [])
+    if hero and hero not in photos:
+        photos.insert(0, hero)
+
+    # in-flow figures: any photo carrying a `note`, placed where its section is
+    noted = [r for r in photos if (r.get("note") or "").strip()]
+    fig_know = v2_inflow_figure(pid, noted[0]) if len(noted) > 0 else ""
+    fig_does = v2_inflow_figure(pid, noted[1]) if len(noted) > 1 else ""
+
+    know = v2_how_to_know_it(species)
+    does = v2_what_it_does_here(species)
+    # drop the figure in after the first block of its section
+    if fig_know and know:
+        know = know.replace('</div>', '</div>' + fig_know, 1) if '<div class="sp-block"' in know else know
+    if fig_does and does:
+        does = does.replace('</p>', '</p>' + fig_does, 1)
+
+    body = "".join([v2_at_a_glance(species), know, v2_where_to_find_it(species),
+                    v2_how_it_lives(species), does, v2_take_care(species),
+                    v2_photographs(pid, photos), v2_also_known_as(species)])
+
+    rail = "".join(
+        f'<a href="#{a}"{" class=\"on\"" if i == 0 else ""}>{h(t)}</a>'
+        for i, (a, t) in enumerate(V2_SECTIONS) if f'id="{a}"' in body)
+
+    hero_src   = _v2_photo_url(pid, hero) if hero else ""
+    hero_focus = (hero.get("focus") if hero else None) or "50% 50%"
+    hero_note  = (hero.get("note") or "").strip() if hero else ""
+    hero_cred  = _v2_credit_plate(hero) if hero else ""
+
+    strip = ""
+    others = [r for r in photos if r is not hero][:3]
+    if len(photos) > 1:
+        cells = "".join(
+            f'<button type="button" data-i="{photos.index(r)}" aria-label="Photograph">'
+            f'<img src="{h(_v2_photo_url(pid, r))}" alt="">'
+            + (f'<span class="more">+{len(photos)-4}</span>' if i == 2 and len(photos) > 4 else '')
+            + '</button>' for i, r in enumerate(others))
+        strip = f'<div class="sp-strip" id="heroStrip">{cells}</div>'
+
+    photos_js = _json.dumps([{ "src": _v2_photo_url(pid, r), "alt": "",
+                               "by": resolve_hero_credit(r)["credit_name"],
+                               "date": _fmt_observed(r.get("observed_on", "")) } for r in photos],
+                            ensure_ascii=False)
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{h(common)} ({h(sci)}) — Palma Sola Botanical Park</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="sp-hero">
+  <img src="{h(hero_src)}" alt="{h(common)} at Palma Sola Botanical Park" data-focus="{h(hero_focus)}">
+  <div class="sp-hero-scrim"></div>
+  {strip}
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">{v2_eyebrow(species)}</div>
+    <h1 class="sp-name">{h(common)}</h1>
+    <div class="sp-sci">{h(sci)}</div>
+  </div>
+</div>
+
+<div class="sp-herocap">
+  <span class="cap">{h(hero_note)}</span>
+  <span class="seqt" id="seq-top"></span>
+</div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div>{rail}</aside>
+    <main>{body}</main>
+  </div>
+</div>
+
+<a class="wild-float-back" href="../nature.html#wildlife">All wildlife</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot">
+    <div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+    <div class="lb-ctrls">
+      <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button>
+    </div>
+    <div class="lb-hint">Swipe to move between photographs</div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+<script>window.PHOTOS={photos_js};</script>
+<script src="../js/species-v2.js"></script>
+<script src="../js/site.js"></script>
+<script>if (typeof injectShared === 'function') {{ injectShared({{ inatBar: false }}); }}</script>
+</body>
+</html>
+"""
+
+
 def generate_html(species, hero, gallery_photos, published_on=""):
     """Render the page.
 
