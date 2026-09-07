@@ -43,7 +43,7 @@
    nav crops the top of the photograph — which on this species is the animal's
    head. Height is measured from the nav, not the viewport. */
 .sp-hero{position:relative;margin-top:var(--nav-h);
-  height:clamp(400px,66vh,660px);overflow:hidden;background:var(--green-ink)}
+  height:clamp(340px,50vh,520px);overflow:hidden;background:var(--green-ink)}
 .sp-hero img{width:100%;height:100%;object-fit:cover;display:block}
 .sp-hero-scrim{position:absolute;inset:0;
   background:linear-gradient(to top,rgba(15,25,17,.88) 0%,rgba(15,25,17,.35) 45%,rgba(15,25,17,.05) 100%)}
@@ -55,53 +55,6 @@
   line-height:1.05;margin:0}
 .sp-sci{font-family:var(--serif);font-style:italic;font-size:clamp(1rem,2.2vw,1.3rem);
   color:rgba(255,255,255,.82);margin-top:.3rem}
-
-
-/* ── HERO GALLERY CUE — "there are more pictures, here" ──────────────────
-   The universal pattern: stacked-photo icon + a count, bottom corner of the
-   hero, opening the lightbox at the first image. A visitor who only wants
-   pictures should not have to scroll past four sections of prose to find
-   them.
-
-   Solid dark chip rather than a translucent overlay, for the same reason the
-   lightbox controls are: this gets used on a phone in full sun. */
-.sp-herogal{position:absolute;right:1.1rem;bottom:1.2rem;z-index:3;
-  display:inline-flex;align-items:center;gap:.6rem;
-  background:rgba(12,20,13,.82);border:1px solid rgba(255,255,255,.35);
-  color:#fff;font-family:var(--sans);font-size:.88rem;font-weight:600;
-  padding:.55rem .95rem .55rem .6rem;border-radius:2rem;cursor:pointer;
-  backdrop-filter:blur(3px);transition:background .2s,transform .2s}
-.sp-herogal:hover{background:rgba(12,20,13,.95);transform:translateY(-1px)}
-.sp-herogal svg{flex:none;opacity:.92}
-.sp-herogal .n{color:var(--gold-mark)}
-@media (max-width:600px){
-  .sp-herogal{right:.8rem;bottom:.8rem;font-size:.82rem;padding:.5rem .8rem .5rem .55rem}
-}
-
-
-/* ── HERO FILMSTRIP — the alternative to the chip. Three thumbnails down the
-     right edge, the last carrying the remaining count. Shows what is in the
-     gallery rather than just announcing that one exists.
-     Below 700px it is suppressed and the chip takes over: three thumbs on a
-     phone hero are too small to read and eat the photograph. */
-.sp-strip{position:absolute;right:1rem;top:50%;transform:translateY(-50%);z-index:3;
-  display:none;flex-direction:column;gap:.5rem}
-body[data-hero="strip"] .sp-strip{display:flex}
-body[data-hero="strip"] .sp-herogal{display:none}
-.sp-strip button{width:78px;height:78px;padding:0;border:2px solid rgba(255,255,255,.75);
-  border-radius:3px;overflow:hidden;cursor:pointer;background:none;position:relative;
-  transition:transform .18s,border-color .18s}
-.sp-strip button:hover{transform:scale(1.05);border-color:#fff}
-.sp-strip img{width:100%;height:100%;object-fit:cover;display:block}
-.sp-strip .more{position:absolute;inset:0;background:rgba(12,20,13,.72);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-family:var(--sans);
-  font-size:.95rem;font-weight:700}
-@media (max-width:760px){
-  body[data-hero="strip"] .sp-strip{display:none}
-  body[data-hero="strip"] .sp-herogal{display:inline-flex}
-}
-
-
 /* Hero credit sits inside the picture, bottom right — the site-standard
    .photo-attr bar, contents right-aligned. */
 .sp-heroattr{align-items:flex-end;text-align:right;padding:var(--s3) var(--s4)}
@@ -111,7 +64,6 @@ body[data-hero="strip"] .sp-herogal{display:none}
   color:#fff}
 .sp-heroattr .cc-badge .cc-mark{font-family:Georgia,serif;text-transform:lowercase;padding:.24em .34em}
 .sp-heroattr .cc-badge .cc-term{padding:.24em .34em;border-left:1px solid rgba(255,255,255,.3)}
-
 /* ── HERO CAPTION ───────────────────────────────────────────────────────
    The hero's caption was buried in the gallery at the foot of the page, where
    the one line that makes the image worth looking at arrived long after the
@@ -127,7 +79,6 @@ body[data-hero="strip"] .sp-herogal{display:none}
 .sp-herocap .by{font-family:var(--sans);font-size:.8rem;color:var(--ink-faint);
   white-space:nowrap}
 .sp-herocap .by b{color:var(--green-ink);font-weight:600}
-
 /* ── THE TWO WIDTHS ─────────────────────────────────────────────────────
    The page had five different right edges and no rule saying which applied,
    so it read as accidental. There are now exactly two:
@@ -142,82 +93,10 @@ body[data-hero="strip"] .sp-herogal{display:none}
    dominance: at full width they out-shouted the prose they were meant to
    punctuate. ── */
 :root{ --col: 66ch; }
-
-/* ── LAYOUT ─────────────────────────────────────────────────────────── */
-.sp-wrap{max-width:1100px;margin:0 auto;padding:0 1.4rem}
-.sp-cols{display:grid;grid-template-columns:200px 1fr;gap:3rem;align-items:start;
-  padding:2.6rem 0 3rem}
-
-/* Rail — DESKTOP ONLY. On a phone it is removed entirely rather than turned
-   into a horizontally scrolling chip strip: that strip hid "Conservation
-   notes" past the right edge on a 390px screen with no sign it existed.
-   A species page is short enough to scroll. */
-.sp-rail{position:sticky;top:1.5rem;font-family:var(--sans)}
-.sp-rail-title{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--ink-faint);font-weight:700;margin-bottom:.8rem}
-.sp-rail a{display:block;padding:.42rem 0;font-size:.95rem;color:var(--ink-soft);
-  text-decoration:none;border-left:2px solid transparent;padding-left:.8rem;
-  transition:color .15s,border-color .15s}
-.sp-rail a:hover{color:var(--green)}
-.sp-rail a.on{color:var(--green-ink);font-weight:600;border-left-color:var(--gold-mark)}
-
-/* ── QUICK HITS — the top of the page, not a section among sections ──────
-   These are the best material on the page, so they get the first screen and
-   a treatment nothing else competes with. */
-.sp-quick{border-top:3px solid var(--gold-mark);background:var(--sunk);
-  padding:1.8rem 1.6rem;margin-bottom:2.6rem;max-width:var(--col)}
-.sp-quick ul{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
-.sp-quick li{font-size:1.13rem;line-height:1.62;color:var(--ink);
-  padding-left:1.4rem;position:relative}
-.sp-quick li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;
-  border-radius:50%;background:var(--gold-mark)}
-
-/* ── SECTIONS ───────────────────────────────────────────────────────── */
-.sp-sec{margin-bottom:2.8rem;scroll-margin-top:1.5rem}
-.sp-sec h2{font-family:var(--serif);font-size:clamp(1.4rem,3vw,1.85rem);
-  color:var(--green-ink);margin:0 0 .2rem;line-height:1.2}
-.sp-sec-rule{height:1px;background:var(--rule);margin:0 0 1.3rem}
-.sp-sec p{font-size:var(--t-base);line-height:1.78;color:var(--ink);margin:0 0 1.1rem;
-  max-width:var(--col)}
-
-/* A labelled block. label is optional: it means "this block is a distinct
-   thing worth signposting", null means "just the next paragraph". */
-.sp-block{margin-bottom:1.25rem;max-width:var(--col)}
-.sp-block-label{font-family:var(--sans);font-size:.74rem;letter-spacing:.13em;
-  text-transform:uppercase;font-weight:700;color:var(--green);margin-bottom:.3rem}
-.sp-block p{margin:0}
-
-/* ── SIMILAR SPECIES — the look-alike callout. `similar_species` is on 23
-   records and renders nowhere today. For a park where telling two anoles
-   apart is the whole game, this is high-value and belongs near the top. */
-.sp-similar{border:1px solid var(--rule-strong);border-left:4px solid var(--gold-mark);
-  background:var(--paper);padding:1.1rem 1.3rem;margin:0 0 1.4rem;max-width:var(--col)}
-.sp-similar-h{font-family:var(--sans);font-size:.72rem;letter-spacing:.13em;
-  text-transform:uppercase;font-weight:700;color:var(--ink-faint);margin-bottom:.45rem}
-.sp-similar p{margin:0;font-size:var(--t-base);line-height:1.7}
-.sp-similar a{color:var(--green);font-weight:600}
-
-/* ── IN-FLOW PHOTOGRAPH — the main answer to "it's a wall of text".
-     A species page had six photographs sitting in a pile at the end. Moving
-     three of them INTO the prose breaks the column and puts the park's one
-     irreplaceable asset where it does work. Placement is editorial, not
-     decorative: the ID shot sits with identification, the sign shot sits with
-     the introduced-species story. */
-.sp-figure{margin:1.8rem 0 2rem;max-width:var(--col)}
-.sp-figure img{width:100%;max-height:330px;object-fit:cover;display:block;border-radius:2px;cursor:zoom-in}
-.sp-figure figcaption{font-family:var(--sans);font-size:.86rem;line-height:1.6;
-  color:var(--ink-soft);margin-top:.6rem;padding-left:.9rem;
-  border-left:2px solid var(--gold-mark)}
-.sp-figure figcaption a{color:var(--green);font-weight:600}
-.sp-figure .cr{display:block;color:var(--ink-faint);font-size:.76rem;margin-top:.2rem}
-
 /* ── SECTION BANDS — the alternation the rest of the site already uses
      (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
      section so the eye gets a boundary without any new component. */
 body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
-body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
-  top:0;bottom:0;left:-50vw;right:-50vw;background:var(--wash);z-index:-1}
-
 /* ── GALLERY ────────────────────────────────────────────────────────────
    Every photo taken by a named person. The credit is part of the picture,
    not a footnote at the bottom of the page — that is the whole point of
@@ -244,7 +123,6 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
   transition:transform .35s ease}
 .sp-gal .shot:hover img{transform:scale(1.07)}
 .sp-gal figcaption{min-width:0}
-
 /* The standard plate, unboxed — the tile is already the box. */
 /* The plate, unboxed — the tile is already the box.
    Everything that qualifies the photograph (date, licence, source) sits on ONE
@@ -270,15 +148,6 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 .sp-gal .cc-badge .cc-mark{font-family:Georgia,serif;text-transform:lowercase;
   padding:.22em .34em}
 .sp-gal .cc-badge .cc-term{padding:.22em .34em;border-left:1px solid var(--rule)}
-
-/* ── ALSO KNOWN AS/* ── ALSO KNOWN AS — was a grey footnote nobody could see. It is a real
-     answer to a real question ("I know this as a Cuban anole"), so it gets
-     a labelled block like everything else that matters. */
-.sp-aka{border-top:1px solid var(--rule);margin-top:2.4rem;padding-top:1.2rem;max-width:var(--col)}
-.sp-aka .sp-block-label{margin-bottom:.35rem}
-.sp-aka p{margin:0;font-size:var(--t-base);color:var(--ink)}
-.sp-aka em{color:var(--ink-soft);font-style:normal}
-
 /* ── HERO GALLERY CUE — "there are more pictures, here" ──────────────────
    The universal pattern: stacked-photo icon + a count, bottom corner of the
    hero, opening the lightbox at the first image. A visitor who only wants
@@ -299,8 +168,6 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 @media (max-width:600px){
   .sp-herogal{right:.8rem;bottom:.8rem;font-size:.82rem;padding:.5rem .8rem .5rem .55rem}
 }
-
-
 /* ── HERO FILMSTRIP — the alternative to the chip. Three thumbnails down the
      right edge, the last carrying the remaining count. Shows what is in the
      gallery rather than just announcing that one exists.
@@ -322,54 +189,10 @@ body[data-hero="strip"] .sp-herogal{display:none}
   body[data-hero="strip"] .sp-strip{display:none}
   body[data-hero="strip"] .sp-herogal{display:inline-flex}
 }
-
-
-/* Hero credit sits inside the picture, bottom right — the site-standard
-   .photo-attr bar, contents right-aligned. */
-.sp-heroattr{align-items:flex-end;text-align:right;padding:var(--s3) var(--s4)}
-.sp-heroattr .attr-line{justify-content:flex-end}
-.sp-heroattr .cc-badge{display:inline-flex;border:1px solid rgba(255,255,255,.4);
-  border-radius:2px;overflow:hidden;font-size:.6rem;font-weight:700;line-height:1;
-  color:#fff}
-.sp-heroattr .cc-badge .cc-mark{font-family:Georgia,serif;text-transform:lowercase;padding:.24em .34em}
-.sp-heroattr .cc-badge .cc-term{padding:.24em .34em;border-left:1px solid rgba(255,255,255,.3)}
-
-/* ── HERO CAPTION ───────────────────────────────────────────────────────
-   The hero's caption was buried in the gallery at the foot of the page, where
-   the one line that makes the image worth looking at arrived long after the
-   image. It belongs directly under the photograph, where it lands on arrival.
-
-   It also carries the photographer, which replaces the translucent chip that
-   used to float in the top corner of the hero — unreadable over a bright
-   photo, and a worse place for a person's name than a caption line. */
-.sp-herocap{max-width:1100px;margin:0 auto;padding:.9rem 1.4rem 0;
-  display:flex;flex-wrap:wrap;align-items:baseline;gap:.3rem 1rem}
-.sp-herocap .cap{font-family:var(--sans);font-size:var(--t-base);
-  color:var(--ink-soft);line-height:1.65;max-width:60ch}
-.sp-herocap .by{font-family:var(--sans);font-size:.8rem;color:var(--ink-faint);
-  white-space:nowrap}
-.sp-herocap .by b{color:var(--green-ink);font-weight:600}
-
-/* ── THE TWO WIDTHS ─────────────────────────────────────────────────────
-   The page had five different right edges and no rule saying which applied,
-   so it read as accidental. There are now exactly two:
-
-     --col   the reading column (66ch). EVERYTHING in the flow sits here —
-             paragraphs, labelled blocks, the look-alike callout, in-flow
-             photographs, the pull quote, "Also known as".
-     full    deliberate breakouts, and only two of them: the photograph grid
-             and the sequence bar that ends the page.
-
-   Putting the in-flow photographs in the reading column also fixes their
-   dominance: at full width they out-shouted the prose they were meant to
-   punctuate. ── */
-:root{ --col: 66ch; }
-
 /* ── LAYOUT ─────────────────────────────────────────────────────────── */
 .sp-wrap{max-width:1100px;margin:0 auto;padding:0 1.4rem}
 .sp-cols{display:grid;grid-template-columns:200px 1fr;gap:3rem;align-items:start;
   padding:2.6rem 0 3rem}
-
 /* Rail — DESKTOP ONLY. On a phone it is removed entirely rather than turned
    into a horizontally scrolling chip strip: that strip hid "Conservation
    notes" past the right edge on a 390px screen with no sign it existed.
@@ -382,18 +205,16 @@ body[data-hero="strip"] .sp-herogal{display:none}
   transition:color .15s,border-color .15s}
 .sp-rail a:hover{color:var(--green)}
 .sp-rail a.on{color:var(--green-ink);font-weight:600;border-left-color:var(--gold-mark)}
-
 /* ── QUICK HITS — the top of the page, not a section among sections ──────
    These are the best material on the page, so they get the first screen and
    a treatment nothing else competes with. */
-.sp-quick{border-top:3px solid var(--gold-mark);background:var(--sunk);
+.sp-quick{background:var(--sunk);border-left:3px solid var(--gold-mark);
   padding:1.8rem 1.6rem;margin-bottom:2.6rem;max-width:var(--col)}
 .sp-quick ul{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
 .sp-quick li{font-size:1.13rem;line-height:1.62;color:var(--ink);
   padding-left:1.4rem;position:relative}
 .sp-quick li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;
   border-radius:50%;background:var(--gold-mark)}
-
 /* ── SECTIONS ───────────────────────────────────────────────────────── */
 .sp-sec{margin-bottom:2.8rem;scroll-margin-top:1.5rem}
 .sp-sec h2{font-family:var(--serif);font-size:clamp(1.4rem,3vw,1.85rem);
@@ -401,14 +222,12 @@ body[data-hero="strip"] .sp-herogal{display:none}
 .sp-sec-rule{height:1px;background:var(--rule);margin:0 0 1.3rem}
 .sp-sec p{font-size:var(--t-base);line-height:1.78;color:var(--ink);margin:0 0 1.1rem;
   max-width:var(--col)}
-
 /* A labelled block. label is optional: it means "this block is a distinct
    thing worth signposting", null means "just the next paragraph". */
 .sp-block{margin-bottom:1.25rem;max-width:var(--col)}
 .sp-block-label{font-family:var(--sans);font-size:.74rem;letter-spacing:.13em;
   text-transform:uppercase;font-weight:700;color:var(--green);margin-bottom:.3rem}
 .sp-block p{margin:0}
-
 /* ── SIMILAR SPECIES — the look-alike callout. `similar_species` is on 23
    records and renders nowhere today. For a park where telling two anoles
    apart is the whole game, this is high-value and belongs near the top. */
@@ -418,7 +237,6 @@ body[data-hero="strip"] .sp-herogal{display:none}
   text-transform:uppercase;font-weight:700;color:var(--ink-faint);margin-bottom:.45rem}
 .sp-similar p{margin:0;font-size:var(--t-base);line-height:1.7}
 .sp-similar a{color:var(--green);font-weight:600}
-
 /* ── IN-FLOW PHOTOGRAPH — the main answer to "it's a wall of text".
      A species page had six photographs sitting in a pile at the end. Moving
      three of them INTO the prose breaks the column and puts the park's one
@@ -432,188 +250,6 @@ body[data-hero="strip"] .sp-herogal{display:none}
   border-left:2px solid var(--gold-mark)}
 .sp-figure figcaption a{color:var(--green);font-weight:600}
 .sp-figure .cr{display:block;color:var(--ink-faint);font-size:.76rem;margin-top:.2rem}
-
-/* ── SECTION BANDS — the alternation the rest of the site already uses
-     (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
-     section so the eye gets a boundary without any new component. */
-body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
-body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
-  top:0;bottom:0;left:-50vw;right:-50vw;background:var(--wash);z-index:-1}
-
-/* ── GALLERY ────────────────────────────────────────────────────────────
-   Every photo taken by a named person. The credit is part of the picture,
-   not a footnote at the bottom of the page — that is the whole point of
-   this catalogue. */
-/* ── THE CREDITS ROLL ───────────────────────────────────────────────────
-   This section is NOT the gallery — the lightbox is. Its job is to make every
-   photographer legible without anyone having to tap: five names visible at a
-   glance is the community fact stated by showing rather than claiming.
-
-   So it stops pretending to be a gallery. Small square thumbnail, the site's
-   standard .credit-plate beside it (psbp.css / PSBPPhotos.creditPlate), two or
-   three per row. Denser, much shorter, and not one credit lost. Clicking any
-   of them opens the lightbox at that photograph, where the picture is actually
-   meant to be looked at. */
-.sp-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:.7rem 1.1rem}
-.sp-gal figure{margin:0;display:grid;grid-template-columns:68px 1fr;gap:.8rem;
-  align-items:center;padding:.5rem;border:1px solid var(--rule);border-radius:3px;
-  background:var(--surface);transition:border-color .15s,background .15s}
-.sp-gal figure:hover{border-color:var(--rule-strong);background:var(--paper)}
-.sp-gal .shot{width:68px;height:68px;overflow:hidden;border-radius:2px;
-  background:var(--wash);cursor:zoom-in}
-.sp-gal img{width:100%;height:100%;object-fit:cover;display:block;
-  transition:transform .35s ease}
-.sp-gal .shot:hover img{transform:scale(1.07)}
-.sp-gal figcaption{min-width:0}
-
-/* The standard plate, unboxed — the tile is already the box. */
-/* The plate, unboxed — the tile is already the box.
-   Everything that qualifies the photograph (date, licence, source) sits on ONE
-   line directly beneath the name, so the credit reads as a single unit instead
-   of a name with loose metadata drifting away from it. The CC mark uses the
-   site's .cc-badge component rather than the words "CC-BY-NC", which carries
-   the same information with far more presence at a smaller size. */
-.sp-gal .credit-plate{display:block;padding:0;border:0;background:none;min-width:0}
-.sp-gal .credit-eyebrow{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--ink-faint);font-weight:700;display:block}
-/* Names WRAP. nowrap + ellipsis guaranteed truncation — "David Vanderbilt"
-   was chopped at sixteen characters, so anything longer had no chance. A name
-   is the one thing on this tile that must never be abbreviated. */
-.sp-gal .credit-name{font-family:var(--serif);font-size:1.08rem;font-weight:400;
-  color:var(--green-ink);line-height:1.25;display:block;margin-top:.12rem;
-  overflow-wrap:break-word}
-.sp-gal .credit-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.34rem .5rem;
-  margin-top:.34rem;font-family:var(--sans);font-size:.72rem;color:var(--ink-faint)}
-.sp-gal .credit-meta .sep{opacity:.5}
-.sp-gal .cc-badge{display:inline-flex;border:1px solid var(--rule-strong);
-  border-radius:2px;overflow:hidden;font-size:.62rem;font-weight:700;
-  letter-spacing:.03em;color:var(--green-ink);background:var(--paper);line-height:1}
-.sp-gal .cc-badge .cc-mark{font-family:Georgia,serif;text-transform:lowercase;
-  padding:.22em .34em}
-.sp-gal .cc-badge .cc-term{padding:.22em .34em;border-left:1px solid var(--rule)}
-
-/* ── ALSO KNOWN AS/* ── ALSO KNOWN AS — was a grey footnote nobody could see. It is a real
-     answer to a real question ("I know this as a Cuban anole"), so it gets
-     a labelled block like everything else that matters. */
-.sp-aka{border-top:1px solid var(--rule);margin-top:2.4rem;padding-top:1.2rem;max-width:var(--col)}
-.sp-aka .sp-block-label{margin-bottom:.35rem}
-.sp-aka p{margin:0;font-size:var(--t-base);color:var(--ink)}
-.sp-aka em{color:var(--ink-soft);font-style:normal}
-
-
-/* ── HERO GALLERY CUE — "there are more pictures, here" ──────────────────
-   The universal pattern: stacked-photo icon + a count, bottom corner of the
-   hero, opening the lightbox at the first image. A visitor who only wants
-   pictures should not have to scroll past four sections of prose to find
-   them.
-
-   Solid dark chip rather than a translucent overlay, for the same reason the
-   lightbox controls are: this gets used on a phone in full sun. */
-.sp-herogal{position:absolute;right:1.1rem;bottom:1.2rem;z-index:3;
-  display:inline-flex;align-items:center;gap:.6rem;
-  background:rgba(12,20,13,.82);border:1px solid rgba(255,255,255,.35);
-  color:#fff;font-family:var(--sans);font-size:.88rem;font-weight:600;
-  padding:.55rem .95rem .55rem .6rem;border-radius:2rem;cursor:pointer;
-  backdrop-filter:blur(3px);transition:background .2s,transform .2s}
-.sp-herogal:hover{background:rgba(12,20,13,.95);transform:translateY(-1px)}
-.sp-herogal svg{flex:none;opacity:.92}
-.sp-herogal .n{color:var(--gold-mark)}
-@media (max-width:600px){
-  .sp-herogal{right:.8rem;bottom:.8rem;font-size:.82rem;padding:.5rem .8rem .5rem .55rem}
-}
-
-
-/* ── HERO FILMSTRIP — the alternative to the chip. Three thumbnails down the
-     right edge, the last carrying the remaining count. Shows what is in the
-     gallery rather than just announcing that one exists.
-     Below 700px it is suppressed and the chip takes over: three thumbs on a
-     phone hero are too small to read and eat the photograph. */
-.sp-strip{position:absolute;right:1rem;top:50%;transform:translateY(-50%);z-index:3;
-  display:none;flex-direction:column;gap:.5rem}
-body[data-hero="strip"] .sp-strip{display:flex}
-body[data-hero="strip"] .sp-herogal{display:none}
-.sp-strip button{width:78px;height:78px;padding:0;border:2px solid rgba(255,255,255,.75);
-  border-radius:3px;overflow:hidden;cursor:pointer;background:none;position:relative;
-  transition:transform .18s,border-color .18s}
-.sp-strip button:hover{transform:scale(1.05);border-color:#fff}
-.sp-strip img{width:100%;height:100%;object-fit:cover;display:block}
-.sp-strip .more{position:absolute;inset:0;background:rgba(12,20,13,.72);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-family:var(--sans);
-  font-size:.95rem;font-weight:700}
-@media (max-width:760px){
-  body[data-hero="strip"] .sp-strip{display:none}
-  body[data-hero="strip"] .sp-herogal{display:inline-flex}
-}
-
-/* ── LAYOUT ─────────────────────────────────────────────────────────── */
-.sp-wrap{max-width:1100px;margin:0 auto;padding:0 1.4rem}
-.sp-cols{display:grid;grid-template-columns:200px 1fr;gap:3rem;align-items:start;
-  padding:2.6rem 0 3rem}
-
-/* Rail — DESKTOP ONLY. On a phone it is removed entirely rather than turned
-   into a horizontally scrolling chip strip: that strip hid "Conservation
-   notes" past the right edge on a 390px screen with no sign it existed.
-   A species page is short enough to scroll. */
-.sp-rail{position:sticky;top:1.5rem;font-family:var(--sans)}
-.sp-rail-title{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--ink-faint);font-weight:700;margin-bottom:.8rem}
-.sp-rail a{display:block;padding:.42rem 0;font-size:.95rem;color:var(--ink-soft);
-  text-decoration:none;border-left:2px solid transparent;padding-left:.8rem;
-  transition:color .15s,border-color .15s}
-.sp-rail a:hover{color:var(--green)}
-.sp-rail a.on{color:var(--green-ink);font-weight:600;border-left-color:var(--gold-mark)}
-
-/* ── QUICK HITS — the top of the page, not a section among sections ──────
-   These are the best material on the page, so they get the first screen and
-   a treatment nothing else competes with. */
-.sp-quick{border-top:3px solid var(--gold-mark);background:var(--sunk);
-  padding:1.8rem 1.6rem;margin-bottom:2.6rem;max-width:var(--col)}
-.sp-quick ul{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
-.sp-quick li{font-size:1.13rem;line-height:1.62;color:var(--ink);
-  padding-left:1.4rem;position:relative}
-.sp-quick li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;
-  border-radius:50%;background:var(--gold-mark)}
-
-/* ── SECTIONS ───────────────────────────────────────────────────────── */
-.sp-sec{margin-bottom:2.8rem;scroll-margin-top:1.5rem}
-.sp-sec h2{font-family:var(--serif);font-size:clamp(1.4rem,3vw,1.85rem);
-  color:var(--green-ink);margin:0 0 .2rem;line-height:1.2}
-.sp-sec-rule{height:1px;background:var(--rule);margin:0 0 1.3rem}
-.sp-sec p{font-size:var(--t-base);line-height:1.78;color:var(--ink);margin:0 0 1.1rem;
-  max-width:var(--col)}
-
-/* A labelled block. label is optional: it means "this block is a distinct
-   thing worth signposting", null means "just the next paragraph". */
-.sp-block{margin-bottom:1.25rem;max-width:var(--col)}
-.sp-block-label{font-family:var(--sans);font-size:.74rem;letter-spacing:.13em;
-  text-transform:uppercase;font-weight:700;color:var(--green);margin-bottom:.3rem}
-.sp-block p{margin:0}
-
-/* ── SIMILAR SPECIES — the look-alike callout. `similar_species` is on 23
-   records and renders nowhere today. For a park where telling two anoles
-   apart is the whole game, this is high-value and belongs near the top. */
-.sp-similar{border:1px solid var(--rule-strong);border-left:4px solid var(--gold-mark);
-  background:var(--paper);padding:1.1rem 1.3rem;margin:0 0 1.4rem;max-width:var(--col)}
-.sp-similar-h{font-family:var(--sans);font-size:.72rem;letter-spacing:.13em;
-  text-transform:uppercase;font-weight:700;color:var(--ink-faint);margin-bottom:.45rem}
-.sp-similar p{margin:0;font-size:var(--t-base);line-height:1.7}
-.sp-similar a{color:var(--green);font-weight:600}
-
-/* ── IN-FLOW PHOTOGRAPH — the main answer to "it's a wall of text".
-     A species page had six photographs sitting in a pile at the end. Moving
-     three of them INTO the prose breaks the column and puts the park's one
-     irreplaceable asset where it does work. Placement is editorial, not
-     decorative: the ID shot sits with identification, the sign shot sits with
-     the introduced-species story. */
-.sp-figure{margin:1.8rem 0 2rem;max-width:var(--col)}
-.sp-figure img{width:100%;max-height:330px;object-fit:cover;display:block;border-radius:2px;cursor:zoom-in}
-.sp-figure figcaption{font-family:var(--sans);font-size:.86rem;line-height:1.6;
-  color:var(--ink-soft);margin-top:.6rem;padding-left:.9rem;
-  border-left:2px solid var(--gold-mark)}
-.sp-figure figcaption a{color:var(--green);font-weight:600}
-.sp-figure .cr{display:block;color:var(--ink-faint);font-size:.76rem;margin-top:.2rem}
-
 /* ── PULL QUOTE — one per page, the single best line, set large. Breaks the
      column and gives a skimmer something to catch on. */
 
@@ -623,7 +259,6 @@ body[data-hero="strip"] .sp-herogal{display:none}
 body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
 body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
   top:0;bottom:0;left:-50vw;right:-50vw;background:var(--wash);z-index:-1}
-
 /* ── GALLERY ────────────────────────────────────────────────────────────
    Every photo taken by a named person. The credit is part of the picture,
    not a footnote at the bottom of the page — that is the whole point of
@@ -653,7 +288,6 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 .sp-gal .by{display:block;font-family:var(--serif);font-size:1.02rem;
   color:var(--green-ink);line-height:1.25}
 .sp-gal .note{display:block;color:var(--ink-soft);font-size:.83rem;margin-top:.3rem}
-
 /* ── ALSO KNOWN AS/* ── ALSO KNOWN AS — was a grey footnote nobody could see. It is a real
      answer to a real question ("I know this as a Cuban anole"), so it gets
      a labelled block like everything else that matters. */
@@ -661,9 +295,6 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 .sp-aka .sp-block-label{margin-bottom:.35rem}
 .sp-aka p{margin:0;font-size:var(--t-base);color:var(--ink)}
 .sp-aka em{color:var(--ink-soft);font-style:normal}
-
-
-
 /* ── LIGHTBOX ───────────────────────────────────────────────────────────
    Built for a phone held in bright sun in the middle of the park, which is
    where this actually gets used:
@@ -703,7 +334,6 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 .lb-hint{width:100%;font-family:var(--sans);font-size:.75rem;
   color:rgba(255,255,255,.45);text-align:center}
 @media (min-width:700px){.lb-hint{display:none}}
-
 @media (max-width:900px){
   .sp-cols{grid-template-columns:1fr;gap:0;padding-top:2rem}
   .sp-rail{display:none}           /* removed on mobile, not made scrollable */
@@ -711,11 +341,15 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 </style>
 </head>
 <body data-bands="on" data-hero="strip">
+<!-- site.js replaces these by id, using outerHTML — it does not append. Without
+     them the page renders with no nav and no footer, which is exactly what
+     happened on the first push of this page. -->
+<div id="nav-placeholder"></div>
 
 
 <div class="sp-hero">
   <img src="../photos/PSBP-99999/635346033.jpg" alt="Brown anole displaying its orange throat fan"
-       data-focus="65% 52%">
+       data-focus="65% 60%">
   <div class="sp-hero-scrim"></div>
   <!-- Site-standard credit: the same .photo-attr / .attr-line / .attr-by /
        .cc-badge structure PSBPPhotos.attribution() emits on index.html, so a
@@ -762,7 +396,8 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 
     <aside class="sp-rail">
       <div class="sp-rail-title">On this page</div>
-      <a href="#know" class="on">How to know it</a>
+      <a href="#glance" class="on">At a glance</a>
+      <a href="#know">How to know it</a>
       <a href="#find">Where to find it here</a>
       <a href="#lives">How it lives</a>
       <a href="#does">What it does here</a>
@@ -770,14 +405,17 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
     </aside>
 
     <main>
-      <div class="sp-quick">
+      <section class="sp-sec" id="glance">
+        <h2>At a glance</h2><div class="sp-sec-rule"></div>
+        <div class="sp-quick">
         <ul>
           <li>A small brown lizard doing push-ups on a fence post, flashing a reddish-orange throat fan, is the most common lizard you will meet anywhere in Florida.</li>
           <li>It is not from here. Brown anoles arrived from Cuba and the Bahamas around 1887 and now live in nearly every county in the state.</li>
           <li>Florida's native green anoles responded by moving up. Where brown anoles are common, greens spend their time higher in the shrubs and trees.</li>
           <li>And they are still changing. Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads in only a few generations — evolution fast enough to watch.</li>
         </ul>
-      </div>
+        </div>
+      </section>
 
       <section class="sp-sec" id="know">
         <h2>How to know it</h2><div class="sp-sec-rule"></div>
@@ -997,6 +635,7 @@ document.querySelectorAll('.sp-sec').forEach(function(s){ io.observe(s); });
 </script>
 <!-- site.js injects the site nav, the footer and the photo-credit layer. The
      demo had no nav because this was missing — nothing to do with the CSS. -->
+<div id="footer-placeholder"></div>
 <script src="../js/site.js"></script>
 </body>
 </html>
