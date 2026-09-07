@@ -1,5 +1,5 @@
 {
-  "_note": "PILOT — one species in the proposed v2 shape. 2026-09-06. Nothing reads this file. Built by hand from PSBP-99999 in wildlife_signage.json to test the four-block structure, the vignette voice, and how long a species page should be.",
+  "_note": "PILOT — one species in the proposed v2 shape, kept in sync with wildlife/PSBP-99999-Brown-Anole.html. Nothing reads this file yet.\n\nTHE RULE: everything that appears inside a vignette is a BLOCK in that section's array, and its POSITION IN THE ARRAY IS ITS PLACE ON THE PAGE. There are three kinds of block, and each names things by id rather than repeating them, so a credit or a link can never drift from its source:\n  {label?, text}            prose. label optional — a label means 'a distinct thing worth signposting', absent means 'the next paragraph'.\n  {photo, caption?, links?} a photograph. `photo` is a photo_id in photo_credits.json, which supplies file, photographer, date, licence and focus.\n  {similar}                 a look-alike callout. Names a PSBP id; the distinguishing text comes from machinery.similar_species.\n\nEverything else on the page is a TEMPLATE RULE, not data: section headings and order, the eyebrow line, the credits roll (every photo for this id), the hero filmstrip (first three non-hero), and the sequence nav (site.js at runtime).",
   "species": [
     {
       "id": "PSBP-99999",
@@ -81,7 +81,8 @@
             "how_to_tell_apart": "The green anole turns bright green, flashes a pink throat fan, and climbs high. The brown anole never turns green, flashes reddish-orange, and stays low."
           }
         ],
-        "_observation_note": "Live counts are fetched at render time, never stored. observation_stats is an unmaintained snapshot (species_manager _RESEARCH_ONLY_FIELDS) and was 23 when iNat said 35."
+        "_observation_note": "Live counts are fetched at render time, never stored. observation_stats is an unmaintained snapshot (species_manager _RESEARCH_ONLY_FIELDS) and was 23 when iNat said 35.",
+        "hero_caption": "This one is sitting on a hand-painted sign for the native plant garden."
       },
       "quick_hits": [
         "A small brown lizard doing push-ups on a fence post, flashing a reddish-orange throat fan, is the most common lizard you will meet anywhere in Florida.",
@@ -92,8 +93,18 @@
       "page": {
         "how_to_know_it": [
           {
+            "similar": "PSBP-99962"
+          },
+          {
             "label": "Color",
             "text": "Brown, tan, or gray, usually patterned with triangles, diamonds, or a pale stripe down the back. The one thing it will never do is turn bright green."
+          },
+          {
+            "photo": "711514366",
+            "caption": "There is an anole in this photograph, on a mottled spurge in this park. The markings that look arbitrary on a fence rail are doing something else here.",
+            "links": [
+              "PSBP-00303"
+            ]
           },
           {
             "label": "Throat fan",
@@ -102,6 +113,10 @@
           {
             "label": "Body",
             "text": "Stocky, short-snouted, with ridged scales that give the back a slightly rough look."
+          },
+          {
+            "label": "Voice",
+            "text": "Essentially silent. Anoles talk with their bodies — push-ups and the dewlap — not with sound. You will never hear one."
           },
           {
             "label": "Where it sits",
@@ -142,12 +157,16 @@
             "text": "That arrival reshaped life for the green anole, Florida's only native anole. The two want the same things — the same insects, the same sunny perches — and where browns move in, greens move up, shifting into the shrubs and higher trunks. Brown anoles also eat green anole eggs and hatchlings, which adds to the pressure."
           },
           {
+            "photo": "702794508",
+            "caption": "Photographed in this park, on a label reading NOT NATIVE (S America). The sign means the philodendron. It applies to the lizard too."
+          },
+          {
             "label": "Evolution you can watch",
-            "text": "Here is the part worth knowing. Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads — measurably, in only a few generations. It is one of the clearest real-world examples of rapid evolution anywhere, and it is happening in ordinary Florida gardens."
+            "text": "Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads — measurably, in only a few generations. Biologists point to it as one of the clearest cases of evolution moving fast enough to observe, and it is happening in ordinary Florida gardens."
           },
           {
             "label": null,
-            "text": "None of this is the brown anole doing anything wrong; it is simply very good at being a lizard in Florida. It is also food for a great many things — birds, snakes, larger lizards, cats — so its abundance feeds the park as much as it crowds it."
+            "text": "None of this is the brown anole doing anything wrong; it is simply very good at being a lizard in Florida. It is also food for a great many things here — birds, snakes, larger lizards, cats."
           }
         ]
       },

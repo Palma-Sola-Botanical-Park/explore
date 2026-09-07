@@ -98,7 +98,7 @@
    is real overflow: on a phone the page slid sideways about an inch. `clip`
    rather than `hidden` — hidden on html/body silently breaks position:sticky
    on descendants, and the rail depends on it. */
-html{overflow-x:clip}
+html,body{overflow-x:clip}
 /* ── SECTION BANDS — the alternation the rest of the site already uses
      (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
      section so the eye gets a boundary without any new component. */
@@ -117,7 +117,7 @@ body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
    three per row. Denser, much shorter, and not one credit lost. Clicking any
    of them opens the lightbox at that photograph, where the picture is actually
    meant to be looked at. */
-.sp-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+.sp-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
   gap:.7rem 1.1rem}
 .sp-gal figure{margin:0;display:grid;grid-template-columns:68px 1fr;gap:.8rem;
   align-items:center;padding:.5rem;border:1px solid var(--rule);border-radius:3px;
