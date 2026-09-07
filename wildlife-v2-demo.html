@@ -108,22 +108,22 @@
   background:linear-gradient(transparent,rgba(0,0,0,.72));
   color:#fff;font-size:.68rem;padding:1.4rem .55rem .45rem;line-height:1.35}
 
-/* ── PREV / NEXT — missing from every live species page today. The only
-     navigation there is "All Wildlife", which sends you back to the grid. */
-.sp-pn{display:grid;grid-template-columns:1fr 1fr;gap:1rem;
-  border-top:1px solid var(--rule);padding:1.6rem 0 3rem;margin-top:1rem}
-.sp-pn a{display:flex;gap:.9rem;align-items:center;text-decoration:none;color:var(--ink);
-  padding:.7rem;border-radius:3px;transition:background .15s}
-.sp-pn a:hover{background:var(--wash)}
-.sp-pn a.next{justify-content:flex-end;text-align:right}
-.sp-pn img{width:56px;height:56px;object-fit:cover;border-radius:2px;flex:none}
-.sp-pn .dir{font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;
+/* ── SEQUENCE NAV — mirrors site.js buildNav(), which already ships. Styled
+     here to sit inside the v2 page; the live rules live in site.js itself. */
+.seq-demo{display:grid;grid-template-columns:1fr auto 1fr;gap:.75rem;align-items:stretch;
+  border-top:1px solid var(--rule);padding:1.6rem 0 3rem;margin-top:1.5rem;
+  font-family:var(--sans)}
+.seq-demo a{text-decoration:none;color:var(--ink);padding:.8rem .9rem;border-radius:3px;
+  display:flex;flex-direction:column;gap:.2rem;transition:background .15s}
+.seq-demo a:hover{background:var(--wash)}
+.seq-r{align-items:flex-end;text-align:right}
+.seq-dir{font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;
   color:var(--ink-faint);font-weight:700}
-.sp-pn .nm{font-family:var(--serif);font-size:1.1rem;color:var(--green-ink);line-height:1.2}
-
-.sp-back{text-align:center;padding:0 0 3rem}
-.sp-back a{font-family:var(--sans);font-size:.9rem;color:var(--green);font-weight:600;
-  text-decoration:none;border-bottom:1px solid var(--rule-strong);padding-bottom:.2rem}
+.seq-name{font-family:var(--serif);font-size:1.1rem;color:var(--green-ink);line-height:1.2}
+.seq-back{align-items:center;text-align:center;border:1px solid var(--rule-strong);
+  min-width:11rem;justify-content:center}
+.seq-ctx{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.seq-back-label{font-size:.95rem;color:var(--green);font-weight:600}
 
 /* ── LIGHTBOX ───────────────────────────────────────────────────────── */
 .lb{position:fixed;inset:0;background:rgba(12,16,12,.94);z-index:100;
@@ -137,8 +137,8 @@
 @media (max-width:900px){
   .sp-cols{grid-template-columns:1fr;gap:0;padding-top:2rem}
   .sp-rail{display:none}           /* removed on mobile, not made scrollable */
-  .sp-pn{grid-template-columns:1fr}
-  .sp-pn a.next{justify-content:flex-start;text-align:left;flex-direction:row-reverse}
+  .seq-demo{grid-template-columns:1fr 1fr;gap:.5rem}
+  .seq-back{grid-column:1/-1;order:3;min-width:0}
 }
 </style>
 </head>
@@ -240,18 +240,27 @@
         <p style="color:var(--ink-faint);font-size:var(--t-xs);margin-top:1rem">Also known as Cuban Anole, Cuban Brown Anole.</p>
       </section>
 
-      <nav class="sp-pn">
-        <a class="prev" href="wildlife/PSBP-99962-Green-Anole.html">
-          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt="">
-          <span><span class="dir">&larr; Previous</span><br><span class="nm">Green Anole</span></span>
-        </a>
-        <a class="next" href="#">
-          <span><span class="dir">Next &rarr;</span><br><span class="nm">Florida Softshell Turtle</span></span>
-          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg" alt="">
-        </a>
-      </nav>
+      <!-- SEQUENCE NAV — this is site.js buildNav(), NOT new work. It is
+           injected at runtime on every species page from a sessionStorage
+           record written when you click a card on nature.html, so it knows the
+           FILTERED sequence you actually came from. Reproduced statically here
+           because a demo opened directly has no stored sequence.
 
-      <div class="sp-back"><a href="nature.html">All wildlife &amp; plants</a></div>
+           Note what the middle does: "3 of 11 · Lizards" is the context, and
+           "Back to the list" routes through #restore, which reinstates the
+           filters, the page and the scroll position. On a QR-code arrival
+           there is no stored list and the whole nav stays hidden. -->
+      <nav class="seq-demo" aria-label="Species sequence">
+        <a class="seq-btn" href="wildlife/PSBP-99962-Green-Anole.html">
+          <span class="seq-dir">&larr; Previous</span>
+          <span class="seq-name">Green Anole</span></a>
+        <a class="seq-back" href="nature.html#restore">
+          <span class="seq-ctx">3 of 11 · Lizards</span>
+          <span class="seq-back-label">Back to the list</span></a>
+        <a class="seq-btn seq-r" href="#">
+          <span class="seq-dir">Next &rarr;</span>
+          <span class="seq-name">Florida Softshell Turtle</span></a>
+      </nav>
     </main>
   </div>
 </div>
