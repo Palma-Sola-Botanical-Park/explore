@@ -133,6 +133,23 @@ def build_wildlife_json_entry(species, hero):
         # w.quick, but nothing ever emitted it, so that branch compared against
         # an empty string. quick_hits is populated on all 90.
         "quick":  " ".join(species.get("quick_hits") or []),
+
+        # ── Added 2026-09-07 — the real array, and the curated teaser. ──
+        # `quick` above is the flattened SEARCH string; it has no hit
+        # boundaries, so every consumer that wanted whole hits had to guess
+        # where one ended. screen.html gave up and downloads the 2.8 MB
+        # signage masters for this one field ("If the publisher ever emits a
+        # real quick_hits array in the index, that is preferred automatically
+        # and these two fetches can be deleted" — screen.html). Emitting it
+        # here retires that download.
+        #
+        # `teaser` was on the plant index and not this one, which is why Quick
+        # View reads properly for a plant and fell back to slicing prose for an
+        # animal. Only 21/96 wildlife records have one written; the drawer now
+        # falls back to the shortest whole quick hit rather than a truncated
+        # sentence, so the gap degrades gracefully.
+        "quick_hits": species.get("quick_hits") or [],
+        "teaser":     (species.get("teaser") or "").strip(),
         # facet: safe around a dog?  mirrors "dogs" on the plant cards
         "pets":   _safety_word((species.get("danger") or {}).get("pets_level")),
         # facet: which months is it here? already a real int array, 90/90

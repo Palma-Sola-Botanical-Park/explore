@@ -172,6 +172,10 @@ def build_plants_json_entry(species, hero):
         # prose and just uses the curated line.
         "origin_short": (species.get("origin_short") or "").strip(),
         "teaser":       (species.get("teaser") or "").strip(),
+        # The real array alongside the flattened `quick` search string — see the
+        # note in wildlife_publisher.build_wildlife_json_entry. Retires
+        # screen.html's fetch of plant_signage.json. Added 2026-09-07.
+        "quick_hits":   species.get("quick_hits") or [],
         "native": native,
         "butterfly": butterfly,             # larval OR nectar (rollup + back-compat)
         "larval_host": larval_host,         # filter: larval host plant

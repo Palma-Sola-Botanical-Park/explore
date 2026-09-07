@@ -948,6 +948,35 @@ loadINat();
            + '</div>';
     }
 
+    /* SECOND CHOICE (2026-09-07): the shortest WHOLE quick hit. The index now
+       carries the real quick_hits array, not just the flattened `quick` search
+       string, so a complete hit can be picked instead of guessing where one
+       ends. A short hit is already a whole thought at roughly teaser length,
+       which is exactly what this slot wants.
+
+       Only 21 of 96 wildlife records have a curated teaser, so on the animal
+       side this branch does most of the work. Hits under MIN_HIT are skipped:
+       66 of 230 plant hits open with a deliberate short hook — "Not a moss.",
+       "Not related to orchids." — and the payoff is in the sentence after. If
+       every hit is short, take the longest of them rather than return nothing. */
+    var hits = (p.quick_hits || []).map(function (h) {
+      return String(h || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    }).filter(Boolean);
+    if (hits.length) {
+      var MIN_HIT = 70;
+      var ok = hits.filter(function (h) { return h.length >= MIN_HIT; });
+      var pick = ok.length
+        ? ok.reduce(function (a, b) { return b.length < a.length ? b : a; })
+        : hits.reduce(function (a, b) { return b.length > a.length ? b : a; });
+      if (pick) {
+        return '<hr class="dw-rule">'
+             + '<div class="dw-teaser-wrap">'
+             +   '<p class="dw-teaser">' + esc(pick) + '</p>'
+             +   '<a class="dw-more" href="' + esc(p.page || '#') + '">Read the full story &rarr;</a>'
+             + '</div>';
+      }
+    }
+
     var t = (p.quick || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
     if (!t) return '';
 

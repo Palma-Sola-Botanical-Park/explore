@@ -167,11 +167,16 @@ TABS = [
 # in make_signs.py, capped at 175 characters — and later took a second job in the
 # quick-view drawer on nature.html. A plant published without one ships a
 # hookless sign and an empty drawer.
-# ⚠ Not in WILDLIFE_REQUIRED — YET. Wildlife is never signed, so the field was
-#   never built for it: wildlife_publisher.py has no teaser and wildlife.json has
-#   no teaser key. But the wildlife rework (Low #6) brings a new page and a new
-#   index with a quick view, and that quick view needs a short blurb. Add it here
-#   when the publisher and the index can actually produce one — not before.
+# ⚠ Not in WILDLIFE_REQUIRED — STILL, but the reason has changed (2026-09-07).
+#   The original blocker is gone: wildlife_publisher.py now emits `teaser` AND
+#   `quick_hits` into wildlife.json, so the publisher and the index can produce
+#   one. What stops it now is data — 73 of 96 wildlife records have no teaser
+#   written, so requiring it today fails three-quarters of the catalogue.
+#   The quick-view drawer degrades gracefully in the meantime: with no curated
+#   teaser it picks the shortest WHOLE quick hit (>= 70 chars) rather than
+#   slicing prose mid-sentence — median 114 chars across those 73, against the
+#   120-175 the curated spec asks for.
+#   Add it here when the synthesis pass has written the teasers, not before.
 PLANT_REQUIRED = ["common_name", "botanical_name", "more_information", "teaser"]
 WILDLIFE_REQUIRED = ["common_name", "scientific_name", "animal_group"]
 
