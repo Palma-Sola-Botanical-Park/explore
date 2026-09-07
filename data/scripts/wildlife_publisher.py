@@ -601,6 +601,24 @@ def _v2_photo_url(pid, rec):
     return f"../photos/{pid}/{rec['filename']}" if rec.get("filename") else rec.get("photo_url", "")
 
 
+
+def _v2_credit_plate_wide(rec):
+    """The plate used under an IN-FLOW photograph: byline stacked over the
+    licence, which reads better at full column width. The credits roll uses the
+    compact `_v2_credit_plate` instead. Both are the site's classes; the anole
+    carries both, and the generator was emitting the compact one everywhere."""
+    hc = resolve_hero_credit(rec)
+    date = _fmt_observed(rec.get("observed_on", ""))
+    lic = (hc.get("credit_license") or "").replace("CC-", "") or "BY-NC"
+    src = f"{h(date)} &middot; via iNaturalist" if date else "via iNaturalist"
+    return ('<div class="credit-plate"><div class="credit-byline">'
+            '<span class="credit-eyebrow">Photograph by</span>'
+            f'<span class="credit-name">{h(hc["credit_name"])}</span></div>'
+            '<div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span>'
+            f'<span class="cc-term">{h(lic)}</span></span>'
+            f'<span class="credit-src">{src}</span></div></div>')
+
+
 def v2_inflow_figure(pid, rec):
     """A photograph placed IN the prose, captioned from the `note` field on its
     photo_credits row. No note, no figure — a forced caption is worse than none.
@@ -617,7 +635,7 @@ def v2_inflow_figure(pid, rec):
         cap += f' <a href="../plants/{h(link)}.html">See the plant</a>'
     return (f'<figure class="sp-figure"><img src="{h(_v2_photo_url(pid, rec))}" '
             f'alt="{h(rec.get("alt") or "")}" loading="lazy">'
-            f'<figcaption>{cap}</figcaption>{_v2_credit_plate(rec)}</figure>')
+            f'<figcaption>{cap}</figcaption>{_v2_credit_plate_wide(rec)}</figure>')
 
 
 def v2_photographs(pid, photos):
@@ -665,6 +683,49 @@ def v2_eyebrow(species):
 
 
 
+
+def _v2_hero_attr(rec):
+    """The hero's credit bar — the site-standard .photo-attr / .attr-line
+    structure that PSBPPhotos.attribution() emits on index.html, so a
+    photographer is credited identically everywhere.
+
+    I built this string in the first cut and never put it in the template, so
+    91 pages shipped with an uncredited hero. Randy caught it on sight."""
+    if not rec:
+        return ""
+    hc = resolve_hero_credit(rec)
+    date = _fmt_observed(rec.get("observed_on", ""))
+    lic = (hc.get("credit_license") or "").replace("CC-", "") or "BY-NC"
+    datespan = (f'<span class="attr-date"><span class="attr-dot">&middot;</span> {h(date)}</span>'
+                if date else "")
+    return ('<div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line">'
+            f'<span class="attr-credit"><span class="attr-by">{h(hc["credit_name"])}</span>'
+            f'{datespan}</span>'
+            '<span class="cc-badge"><span class="cc-mark">cc</span>'
+            f'<span class="cc-term">{h(lic)}</span></span>'
+            '<span class="attr-src">via iNaturalist</span></span></div>')
+
+
+_V2_GAL_SVG = ('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+               'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+               '<rect x="7" y="3" width="14" height="14" rx="2"></rect>'
+               '<path d="M3 7v12a2 2 0 0 0 2 2h12"></path>'
+               '<circle cx="11.5" cy="7.5" r="1.4"></circle>'
+               '<path d="M21 13l-4.2-4.2a1.5 1.5 0 0 0-2.1 0L7 16"></path></svg>')
+
+
+def _v2_hero_gallery_cue(n):
+    """The "N photographs" chip. NOT optional, and not a duplicate of the
+    filmstrip: the strip is hidden below 760px and the chip takes over, so
+    without it a phone gets no way into the gallery at all. That is what 91
+    pages shipped with."""
+    if n < 2:
+        return ""
+    return ('<button class="sp-herogal" id="heroGal" type="button" '
+            'aria-label="Open the photograph gallery">' + _V2_GAL_SVG +
+            f'<span><span class="n">{n}</span> photographs</span></button>')
+
+
 def generate_html_v2(species, hero, gallery_photos, published_on=""):
     """The v2 page. Content plus two link tags — the design lives in
     css/species-v2.css and js/species-v2.js, never inlined.
@@ -706,7 +767,8 @@ def generate_html_v2(species, hero, gallery_photos, published_on=""):
     hero_src   = _v2_photo_url(pid, hero) if hero else ""
     hero_focus = (hero.get("focus") if hero else None) or "50% 50%"
     hero_note  = (hero.get("note") or "").strip() if hero else ""
-    hero_cred  = _v2_credit_plate(hero) if hero else ""
+    hero_attr  = _v2_hero_attr(hero)
+    gal_cue    = _v2_hero_gallery_cue(len(photos))
 
     strip = ""
     others = [r for r in photos if r is not hero][:3]
@@ -740,7 +802,9 @@ def generate_html_v2(species, hero, gallery_photos, published_on=""):
 <div class="sp-hero">
   <img src="{h(hero_src)}" alt="{h(common)} at Palma Sola Botanical Park" data-focus="{h(hero_focus)}">
   <div class="sp-hero-scrim"></div>
+  {hero_attr}
   {strip}
+  {gal_cue}
   <div class="sp-hero-inner">
     <div class="sp-eyebrow">{v2_eyebrow(species)}</div>
     <h1 class="sp-name">{h(common)}</h1>
