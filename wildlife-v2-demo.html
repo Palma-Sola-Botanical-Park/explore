@@ -62,7 +62,7 @@
    used to float in the top corner of the hero — unreadable over a bright
    photo, and a worse place for a person's name than a caption line. */
 .sp-herocap{max-width:1100px;margin:0 auto;padding:.9rem 1.4rem 0;
-  display:flex;flex-wrap:wrap;align-items:baseline;gap:.3rem 1rem}
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1.5rem}
 .sp-herocap .cap{font-family:var(--sans);font-size:var(--t-base);
   color:var(--ink-soft);line-height:1.65;max-width:60ch}
 .sp-herocap .by{font-family:var(--sans);font-size:.8rem;color:var(--ink-faint);
@@ -321,6 +321,15 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
   min-width:11rem;justify-content:center}
 .seq-ctx{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
 .seq-back-label{font-size:.95rem;color:var(--green);font-weight:600}
+/* Floating route back — always visible, thumb-reachable, out of the reading
+   column. Styled here because wildlife-page.css is not loaded by this page. */
+.wild-float-back{position:fixed;left:50%;transform:translateX(-50%);bottom:1.1rem;z-index:80;
+  display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;border-radius:2rem;
+  background:var(--green-ink);color:#fff;font-family:var(--sans);font-size:.88rem;
+  font-weight:600;text-decoration:none;box-shadow:0 3px 14px rgba(20,30,20,.28)}
+.wild-float-back:hover{background:var(--green)}
+@media (min-width:900px){.wild-float-back{left:auto;right:1.4rem;transform:none}}
+
 /* ── LIGHTBOX ───────────────────────────────────────────────────────────
    Built for a phone held in bright sun in the middle of the park, which is
    where this actually gets used:
@@ -418,6 +427,9 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 
 <div class="sp-herocap">
   <span class="cap">This one is sitting on a hand-painted sign for the native plant garden.</span>
+  <!-- site.js buildNav() fills this with a compact prev / position / next when
+       you arrived from the grid. Empty and invisible on a QR-code arrival. -->
+  <span class="seqt" id="seq-top"></span>
 </div>
 
 <div class="sp-wrap">
@@ -576,6 +588,14 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
   </div>
 </div>
 
+<!-- Always-present route back. buildNav() rewrites this href to
+     "nature.html#restore" when you arrived from the grid, so it returns you to
+     your filters and page; on a QR-code arrival it stays a plain link to the
+     list. The class is what buildNav looks for — see the floater rewrite in
+     site.js. Removing this left the page with no way back at all when there was
+     no stored sequence, which is most direct arrivals. -->
+<a class="wild-float-back" href="nature.html#wildlife">All wildlife</a>
+
 <div class="lb" id="lb" aria-hidden="true">
   <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
   <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
@@ -683,5 +703,10 @@ document.querySelectorAll('.sp-sec').forEach(function(s){ io.observe(s); });
      demo had no nav because this was missing — nothing to do with the CSS. -->
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
+<!-- site.js does NOT mount the nav on load: injectShared() does, and every page
+     calls it. The placeholders above are necessary but not sufficient — without
+     this line the page renders with a 64px gap where the nav should be, and no
+     error to explain it. -->
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

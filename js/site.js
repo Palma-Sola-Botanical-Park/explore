@@ -2758,6 +2758,22 @@ async function loadRightNow(targetId, opts) {
     var floater = document.querySelector('.plant-float-back, .wild-float-back');
     if (floater) floater.setAttribute('href', '../' + s.from + '#restore');
 
+    /* COMPACT TOP NAV (2026-09-07). The full bar ends the page; this is for a
+       visitor who wants to keep moving through a filtered list without reading
+       to the bottom. Rendered only if the page offers a mount point, so the 329
+       existing pages are unaffected until their template carries one. */
+    var top = document.getElementById('seq-top');
+    if (top) {
+      top.innerHTML =
+        (prev >= 0 ? '<a class="seqt-btn" href="' + href(prev) + '" title="' +
+                     String(s.names[prev]) + '">&#8249;<span>Prev</span></a>'
+                   : '<span class="seqt-btn seqt-off">&#8249;<span>Prev</span></span>') +
+        '<a class="seqt-ctx" href="../' + s.from + '#restore">' + ctx + '</a>' +
+        (next >= 0 ? '<a class="seqt-btn" href="' + href(next) + '" title="' +
+                     String(s.names[next]) + '"><span>Next</span>&#8250;</a>'
+                   : '<span class="seqt-btn seqt-off"><span>Next</span>&#8250;</span>');
+    }
+
     var anchor = document.querySelector('.all-plants-link, .all-wild-link');
     if (anchor && anchor.parentNode) {
       anchor.insertAdjacentHTML('beforebegin', html);
@@ -2793,6 +2809,16 @@ async function loadRightNow(targetId, opts) {
       '.seq-ctx{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;' +
         'color:var(--ink-faint,#8a8d82);font-weight:700}' +
       '.seq-back-label{font-size:.98rem;color:var(--green,#2d6a35);font-weight:600}' +
+      '.seqt{display:inline-flex;align-items:center;gap:.15rem;font-family:var(--sans,system-ui)}' +
+      '.seqt-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.34rem .6rem;' +
+        'font-size:.82rem;font-weight:600;color:var(--green,#2d6a35);text-decoration:none;' +
+        'border:1px solid var(--rule,#e6e2d6);border-radius:2rem;background:var(--paper,#fdfcf8)}' +
+      '.seqt-btn:hover{border-color:var(--rule-strong,#d3cebd);background:#fff}' +
+      '.seqt-off{opacity:.32}' +
+      '.seqt-ctx{padding:0 .6rem;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;' +
+        'color:var(--ink-faint,#8a8d82);font-weight:700;text-decoration:none;white-space:nowrap}' +
+      '.seqt-ctx:hover{color:var(--green,#2d6a35)}' +
+      '@media(max-width:640px){.seqt-ctx{display:none}}' +
       '@media(max-width:640px){.seq-nav{grid-template-columns:1fr 1fr}' +
         '.seq-back{grid-column:1/-1;order:3;min-width:0;border-left:0;' +
         'border-top:1px solid var(--rule-strong,#d3cebd)}' +
