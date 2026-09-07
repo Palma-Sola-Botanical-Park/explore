@@ -1,64 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atlantic Blue Crab · Palma Sola Botanical Park</title>
-<link rel="stylesheet" href="../css/site.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlantic Blue Crab (Callinectes sapidus) — Palma Sola Botanical Park</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/wildlife-page.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-other">
-  <div class="wild-hero">
-    <img style="cursor:pointer;object-position:47% 49%" src="../photos/PSBP-99955/518341400.jpg" alt="Atlantic Blue Crab at Palma Sola Botanical Park" onclick="openLB(0)">
-    <div class="wild-hero-overlay">
-      <div class="wild-hero-category">Other Invertebrates</div>
-      <div class="wild-hero-name">Atlantic Blue Crab</div>
-    </div>
-  </div>
-  <div class="wild-sci-band">
-    <span class="wild-sci-name">Callinectes sapidus</span>
-    <a class="wild-family-tag" href="../nature.html?wfamily=Portunidae">Portunidae</a>
-  </div>
-  <div class="wild-credit">📷 Photo by <strong data-login="brice_c">Brice C.</strong> · CC-BY-NC · via iNaturalist · 📅 May 22, 2025</div>
-  <div class="wild-content">
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A swimming crab with sapphire-blue claws turning up in a park pond is the Atlantic blue crab — and its presence is a clue that the water is brackish, not pure fresh.</li><li>Its scientific name, Callinectes sapidus, means &quot;savory beautiful swimmer,&quot; and it lives up to all three words.</li><li>The back pair of legs are flattened into paddles, letting it swim sideways through the water rather than only crawl.</li><li>Tip for telling males from females: females have red-tipped claws, often described as wearing &quot;painted fingernails.&quot;</li></ul></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Color</div><p>Olive to grayish body with bright blue legs and claws; mature females have red-tipped claws.</p></div><div class="spot-item"><div class="spot-label">Claws</div><p>Strong pincers, blue in males, red-tipped in females.</p></div><div class="spot-item"><div class="spot-label">Back legs</div><p>Flattened into swimming paddles.</p></div><div class="spot-item"><div class="spot-label">Shell</div><p>Broad, with a sharp spine on each side.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Silent.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A broad crab with blue-tinged claws and paddle-shaped back legs in or near the water. Red-tipped &quot;painted&quot; claws mark a female; all-blue claws mark a male.</p></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>An omnivore — clams, snails, small fish, plants, detritus, and dead animals — scavenged and hunted along the bottom.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>In and around the ponds if the water carries any brackish influence. Scan the shallows and edges for a crab with blue claws.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Possible whenever conditions suit; most active in warm water.</p></div></div></div>
-    <div class="wild-caution-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Look, do not touch. Give it room at the water&#x27;s edge and do not handle it; those claws mean business.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Blue Crab</span><span class="alias-tag">Chesapeake Blue Crab</span></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Brice C. (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <img class="lb-img" id="lbImg">
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-99955/518341400.jpg", "credit": "Brice C.", "license": "CC-BY-NC", "observed": "May 22, 2025"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
+<div class="sp-hero">
+  <img src="../photos/PSBP-99955/518341400.jpg" alt="Atlantic Blue Crab at Palma Sola Botanical Park" data-focus="47% 49%">
+  <div class="sp-hero-scrim"></div>
+  
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Crustacean &middot; Seen year-round</div>
+    <h1 class="sp-name">Atlantic Blue Crab</h1>
+    <div class="sp-sci">Callinectes sapidus</div>
   </div>
 </div>
 
-<a class="wild-float-back theme-other" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<div class="sp-herocap">
+  <span class="cap"></span>
+  <span class="seqt" id="seq-top"></span>
+</div>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#know">How to know it</a><a href="#find">Where to find it here</a><a href="#lives">How it lives</a><a href="#does">What it does here</a><a href="#care">Take care</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>A swimming crab with sapphire-blue claws turning up in a park pond is the Atlantic blue crab — and its presence is a clue that the water is brackish, not pure fresh.</li><li>Its scientific name, Callinectes sapidus, means &quot;savory beautiful swimmer,&quot; and it lives up to all three words.</li><li>The back pair of legs are flattened into paddles, letting it swim sideways through the water rather than only crawl.</li><li>Tip for telling males from females: females have red-tipped claws, often described as wearing &quot;painted fingernails.&quot;</li></ul></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Color</div><p>Olive to grayish body with bright blue legs and claws; mature females have red-tipped claws.</p></div><div class="sp-block"><div class="sp-block-label">Claws</div><p>Strong pincers, blue in males, red-tipped in females.</p></div><div class="sp-block"><div class="sp-block-label">Back legs</div><p>Flattened into swimming paddles.</p></div><div class="sp-block"><div class="sp-block-label">Shell</div><p>Broad, with a sharp spine on each side.</p></div><div class="sp-block"><div class="sp-block-label">Voice</div><p>Silent.</p></div><div class="sp-block"><div class="sp-block-label">What to look for</div><p>A broad crab with blue-tinged claws and paddle-shaped back legs in or near the water. Red-tipped &quot;painted&quot; claws mark a female; all-blue claws mark a male.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><p>In and around the ponds if the water carries any brackish influence. Scan the shallows and edges for a crab with blue claws.</p><p>Possible whenever conditions suit; most active in warm water.</p></section><section class="sp-sec sp-sec--band" id="lives"><h2>How it lives</h2><div class="sp-sec-rule"></div><p>Active in and around the water, swimming with its paddle legs and foraging on the bottom. Defends itself readily with strong pincers when cornered. Burrows into mud to overwinter and to molt.</p><p>An omnivore — clams, snails, small fish, plants, detritus, and dead animals — scavenged and hunted along the bottom.</p></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><p>A wide-ranging omnivore and scavenger that helps clean and recycle material in estuarine and brackish waters, and an important link in coastal food webs.</p><p>Forages among submerged and shoreline vegetation, eating plant material and detritus along with animal prey.</p><p>Native to the western Atlantic, from the U.S. East Coast through the Gulf of Mexico. It lives in estuaries and coastal waters and ranges into brackish and even fresh water, which is how it reaches inland ponds with a tidal or saltwater connection.</p><p>The blue crab is an estuary animal, built for the in-between waters where rivers meet the sea. Its Latin name, Callinectes sapidus, translates neatly as &quot;savory beautiful swimmer&quot; — a nod to its blue-tinged beauty, its swimming ability, and its long history as prized seafood along the Atlantic and Gulf coasts.</p><p>What sets it apart from a typical crab is the back pair of legs, flattened into broad paddles. With them the blue crab can truly swim, sculling sideways through open water rather than only scuttling along the bottom.</p><p>That tolerance for a wide range of saltiness is why it shows up where you might not expect a crab. Finding one in a park pond usually means the water is brackish or connected to tidal flow — the crab itself reading as a living water-quality clue. Sex is easy once you know the trick: mature females have red-tipped claws, like painted nails, while males&#x27; claws stay all blue.</p></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>Harmless at a distance, but the pincers are strong and a cornered or handled crab can deliver a hard pinch. Do not try to pick one up.</p></div><div class="sp-block"><div class="sp-block-label">What to do</div><p>Look, do not touch. Give it room at the water&#x27;s edge and do not handle it; those claws mean business.</p></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Blue Crab · Chesapeake Blue Crab</p></div></main>
+  </div>
+</div>
+
+<a class="wild-float-back" href="../nature.html#wildlife">All wildlife</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot">
+    <div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+    <div class="lb-ctrls">
+      <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button>
+    </div>
+    <div class="lb-hint">Swipe to move between photographs</div>
+  </div>
+</div>
+
 <div id="footer-placeholder"></div>
+<script>window.PHOTOS=[{"src": "../photos/PSBP-99955/518341400.jpg", "alt": "", "by": "Brice C.", "date": "May 22, 2025"}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>

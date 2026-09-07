@@ -1,64 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cloudless Sulphur · Palma Sola Botanical Park</title>
-<link rel="stylesheet" href="../css/site.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cloudless Sulphur (Phoebis sennae) — Palma Sola Botanical Park</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/wildlife-page.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-butterfly">
-  <div class="wild-hero">
-    <img style="cursor:pointer;object-position:30% 57%" src="../photos/PSBP-99973/635346355.jpg" alt="Cloudless Sulphur at Palma Sola Botanical Park" onclick="openLB(0)">
-    <div class="wild-hero-overlay">
-      <div class="wild-hero-category">Butterflies &amp; Moths</div>
-      <div class="wild-hero-name">Cloudless Sulphur</div>
-    </div>
-  </div>
-  <div class="wild-sci-band">
-    <span class="wild-sci-name">Phoebis sennae</span>
-    <a class="wild-family-tag" href="../nature.html?wfamily=Pieridae">Pieridae</a>
-  </div>
-  <div class="wild-credit">📷 Photo by <strong data-login="coleguyton">Cole Guyton</strong> · CC-BY-NC · via iNaturalist · 📅 Apr 8, 2026</div>
-  <div class="wild-content">
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>The cloudless sulphur is a large, clear lemon-yellow butterfly that crosses gardens and open spaces with a quick, restless flight.</li><li>Its very name points to its plant partner: the species name &#x27;sennae&#x27; comes from Senna, the group of plants its caterpillars eat.</li><li>It carries an unusually long tongue, letting it sip nectar from deep, tubular flowers — often red ones — that many other butterflies cannot reach.</li><li>Each fall, cloudless sulphurs from farther north stream southward into and through Florida, a quieter migration than the monarch&#x27;s but a real one.</li></ul></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Color</div><p>Large and lemon-yellow; males clear yellow, females yellow to whitish with a dark wing border and a small dark spot.</p></div><div class="spot-item"><div class="spot-label">Size</div><p>Among the larger common yellow butterflies.</p></div><div class="spot-item"><div class="spot-label">Flight</div><p>Fast and somewhat erratic.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A big, bright yellow butterfly moving quickly across open ground or nectaring at tubular flowers. The clear, unmarked yellow of the male is the easiest clue; females are paler with darker edges.</p></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Caterpillars feed on Senna and Cassia plants. Adults nectar at many flowers, favoring long, tubular blooms — especially red ones — that suit their long tongue.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Flitting across open, sunny areas and visiting nectar flowers, especially anywhere Senna or Cassia plants are growing. Most numerous in late summer and fall.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Year-round resident, with a noticeable increase during the fall southward migration.</p></div></div></div>
-    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Just watch and enjoy. Planting native Senna (such as privet senna or partridge pea) gives the caterpillars a home.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Cloudless Giant Sulphur</span></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Cole Guyton (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <img class="lb-img" id="lbImg">
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-99973/635346355.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC", "observed": "Apr 8, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
+<div class="sp-hero">
+  <img src="../photos/PSBP-99973/635346355.jpg" alt="Cloudless Sulphur at Palma Sola Botanical Park" data-focus="30% 57%">
+  <div class="sp-hero-scrim"></div>
+  
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Butterfly &middot; Seen year-round</div>
+    <h1 class="sp-name">Cloudless Sulphur</h1>
+    <div class="sp-sci">Phoebis sennae</div>
   </div>
 </div>
 
-<a class="wild-float-back theme-butterfly" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<div class="sp-herocap">
+  <span class="cap"></span>
+  <span class="seqt" id="seq-top"></span>
+</div>
 
-<div class="page-stamp">Page updated <strong>August 28, 2026</strong></div>
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#know">How to know it</a><a href="#find">Where to find it here</a><a href="#lives">How it lives</a><a href="#does">What it does here</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>The cloudless sulphur is a large, clear lemon-yellow butterfly that crosses gardens and open spaces with a quick, restless flight.</li><li>Its very name points to its plant partner: the species name &#x27;sennae&#x27; comes from Senna, the group of plants its caterpillars eat.</li><li>It carries an unusually long tongue, letting it sip nectar from deep, tubular flowers — often red ones — that many other butterflies cannot reach.</li><li>Each fall, cloudless sulphurs from farther north stream southward into and through Florida, a quieter migration than the monarch&#x27;s but a real one.</li></ul></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Color</div><p>Large and lemon-yellow; males clear yellow, females yellow to whitish with a dark wing border and a small dark spot.</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>Among the larger common yellow butterflies.</p></div><div class="sp-block"><div class="sp-block-label">Flight</div><p>Fast and somewhat erratic.</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>2.25 to 3 inches</p></div><div class="sp-block"><div class="sp-block-label">What to look for</div><p>A big, bright yellow butterfly moving quickly across open ground or nectaring at tubular flowers. The clear, unmarked yellow of the male is the easiest clue; females are paler with darker edges.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><p>Flitting across open, sunny areas and visiting nectar flowers, especially anywhere Senna or Cassia plants are growing. Most numerous in late summer and fall.</p><p>Year-round resident, with a noticeable increase during the fall southward migration.</p></section><section class="sp-sec sp-sec--band" id="lives"><h2>How it lives</h2><div class="sp-sec-rule"></div><p>Active by day with a fast, restless flight. Breeds through several generations a year and joins a southward migration in fall. Males often gather at damp ground to &#x27;puddle,&#x27; sipping water and minerals.</p><p>Caterpillars feed on Senna and Cassia plants. Adults nectar at many flowers, favoring long, tubular blooms — especially red ones — that suit their long tongue.</p></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><p>A wide-ranging pollinator that reaches deep flowers other insects cannot, and a specialist on Senna plants that ties it to the pea family.</p><p>Caterpillar host plants are Senna and Cassia (pea family) — including native privet senna (Senna ligustrina) and partridge pea — the very plants the butterfly is named for.</p><p>Native to the Americas and common across the southern United States, ranging north in summer. In Florida it is a year-round resident and breeder, with numbers swelling in fall as northern butterflies move south.</p><p>The cloudless sulphur is one of Florida&#x27;s most familiar butterflies — those flickering patches of pure yellow crossing a lawn or garden are usually this species.</p><p>Its life is tied to plants in the genus Senna (and the closely related Cassia), members of the pea family. The caterpillars feed on their leaves and flowers, and a caterpillar munching yellow blossoms often turns yellow itself, blending neatly into its meal. The butterfly&#x27;s scientific name, Phoebis sennae, even records the connection.</p><p>In autumn, cloudless sulphurs join a broad southward movement of butterflies down the peninsula. With an extra-long proboscis, the adults can drink from long, tubular flowers — they are especially fond of red ones — that shorter-tongued butterflies cannot use.</p></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Cloudless Giant Sulphur</p></div></main>
+  </div>
+</div>
+
+<a class="wild-float-back" href="../nature.html#wildlife">All wildlife</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot">
+    <div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+    <div class="lb-ctrls">
+      <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button>
+    </div>
+    <div class="lb-hint">Swipe to move between photographs</div>
+  </div>
+</div>
+
 <div id="footer-placeholder"></div>
+<script>window.PHOTOS=[{"src": "../photos/PSBP-99973/635346355.jpg", "alt": "", "by": "Cole Guyton", "date": "Apr 8, 2026"}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>

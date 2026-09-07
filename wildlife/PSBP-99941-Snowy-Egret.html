@@ -1,63 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snowy Egret · Palma Sola Botanical Park</title>
-<link rel="stylesheet" href="../css/site.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snowy Egret (Egretta thula) — Palma Sola Botanical Park</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/wildlife-page.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-bird">
-  <div class="wild-hero">
-    <img style="cursor:pointer;object-position:55% 50%" src="../photos/PSBP-99941/681680583.jpg" alt="Snowy Egret at Palma Sola Botanical Park" onclick="openLB(0)">
-    <div class="wild-hero-overlay">
-      <div class="wild-hero-category">Waterbirds &amp; Waterfowl</div>
-      <div class="wild-hero-name">Snowy Egret</div>
-    </div>
-  </div>
-  <div class="wild-sci-band">
-    <span class="wild-sci-name">Egretta thula</span>
-    <a class="wild-family-tag" href="../nature.html?wfamily=Ardeidae">Ardeidae</a>
-  </div>
-  <div class="wild-credit">📷 Photo by <strong data-login="robcarr52">Rob Carr</strong> · CC-BY-NC · via iNaturalist · 📅 Mar 22, 2025</div>
-  <div class="wild-content">
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A medium white egret with a black bill, black legs, and bright yellow feet — as if it is wearing golden slippers.</li><li>The bright yellow feet are a feeding tool: it shuffles them through the water to stir up small fish and shrimp, then strikes.</li><li>A century ago it was nearly wiped out for its lacy breeding plumes, just like the great egret — and its recovery helped fuel the early Audubon movement.</li><li>Smaller and more active than the great egret, it dashes and darts through the shallows rather than standing still.</li></ul></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Feet</div><p>Bright yellow — the &#x27;golden slippers.&#x27; The single best field mark.</p></div><div class="spot-item"><div class="spot-label">Bill</div><p>Black and slender.</p></div><div class="spot-item"><div class="spot-label">Legs</div><p>Black.</p></div><div class="spot-item"><div class="spot-label">Size</div><p>Medium — about 24 inches, smaller than the great egret.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Generally quiet; some harsh squawks at the colony.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A medium white egret actively running through shallows. Check the feet: if they are yellow, it is a snowy egret.</p></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Small fish, shrimp, crabs, insects, and aquatic invertebrates — often flushed with foot-shuffling.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Pond edges and shallows, often actively running and shuffling. Look for the yellow feet.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Year-round resident.</p></div></div></div>
-    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Observe and enjoy.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rob Carr (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <img class="lb-img" id="lbImg">
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-99941/681680583.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Mar 22, 2025"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
+<div class="sp-hero">
+  <img src="../photos/PSBP-99941/681680583.jpg" alt="Snowy Egret at Palma Sola Botanical Park" data-focus="55% 50%">
+  <div class="sp-hero-scrim"></div>
+  
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Bird &middot; Seen year-round</div>
+    <h1 class="sp-name">Snowy Egret</h1>
+    <div class="sp-sci">Egretta thula</div>
   </div>
 </div>
 
-<a class="wild-float-back theme-bird" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<div class="sp-herocap">
+  <span class="cap"></span>
+  <span class="seqt" id="seq-top"></span>
+</div>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#know">How to know it</a><a href="#find">Where to find it here</a><a href="#lives">How it lives</a><a href="#does">What it does here</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>A medium white egret with a black bill, black legs, and bright yellow feet — as if it is wearing golden slippers.</li><li>The bright yellow feet are a feeding tool: it shuffles them through the water to stir up small fish and shrimp, then strikes.</li><li>A century ago it was nearly wiped out for its lacy breeding plumes, just like the great egret — and its recovery helped fuel the early Audubon movement.</li><li>Smaller and more active than the great egret, it dashes and darts through the shallows rather than standing still.</li></ul></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Feet</div><p>Bright yellow — the &#x27;golden slippers.&#x27; The single best field mark.</p></div><div class="sp-block"><div class="sp-block-label">Bill</div><p>Black and slender.</p></div><div class="sp-block"><div class="sp-block-label">Legs</div><p>Black.</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>Medium — about 24 inches, smaller than the great egret.</p></div><div class="sp-block"><div class="sp-block-label">Voice</div><p>Generally quiet; some harsh squawks at the colony.</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>22 to 26 inches; about 3.3 feet (39 inches)</p></div><div class="sp-block"><div class="sp-block-label">What to look for</div><p>A medium white egret actively running through shallows. Check the feet: if they are yellow, it is a snowy egret.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><p>Pond edges and shallows, often actively running and shuffling. Look for the yellow feet.</p><p>Year-round resident.</p></section><section class="sp-sec sp-sec--band" id="lives"><h2>How it lives</h2><div class="sp-sec-rule"></div><p>Active, energetic hunter — runs, shuffles feet, and strikes rapidly. More animated than other egrets.</p><p>Small fish, shrimp, crabs, insects, and aquatic invertebrates — often flushed with foot-shuffling.</p></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><p>Predator of small aquatic animals; historically a flagship for the conservation movement.</p><p>Forages in wetland vegetation; nests colonially in trees near water.</p><p>Native to the Americas. Year-round resident in Florida.</p><p>The snowy egret is the energetic counterpart to the patient great egret. Where the great egret stands motionless and waits, the snowy runs, hops, and shuffles its feet to flush prey — a distinctly different hunting style.</p><p>The golden-yellow feet are the single best field mark. In breeding plumage, it also grows delicate, recurved plumes on its back, head, and chest — the same plumes that made it a target for the millinery trade in the late 1800s.</p><p>Its recovery is one of the early triumphs of the conservation movement, though more recently its numbers in some areas have declined again with wetland loss.</p></section></main>
+  </div>
+</div>
+
+<a class="wild-float-back" href="../nature.html#wildlife">All wildlife</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot">
+    <div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+    <div class="lb-ctrls">
+      <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button>
+    </div>
+    <div class="lb-hint">Swipe to move between photographs</div>
+  </div>
+</div>
+
 <div id="footer-placeholder"></div>
+<script>window.PHOTOS=[{"src": "../photos/PSBP-99941/681680583.jpg", "alt": "", "by": "Rob Carr", "date": "Mar 22, 2025"}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>

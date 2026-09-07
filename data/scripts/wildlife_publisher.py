@@ -452,10 +452,15 @@ def _v2_block(label, text):
     return f'<div class="sp-block">{lab}<p>{_allow_bold(str(text))}</p></div>'
 
 
-def _v2_section(anchor_id, title, inner):
+def _v2_section(anchor_id, title, inner, band=False):
+    """band=True paints a full-bleed wash behind the section — the alternation
+    the rest of the site uses, and what stops a species page reading as one
+    long column. Exactly ONE section is banded: more than one and it stops
+    being a break, none and the page has no rhythm."""
     if not inner:
         return ""
-    return (f'<section class="sp-sec" id="{anchor_id}">'
+    cls = "sp-sec sp-sec--band" if band else "sp-sec"
+    return (f'<section class="{cls}" id="{anchor_id}">'
             f'<h2>{h(title)}</h2><div class="sp-sec-rule"></div>{inner}</section>')
 
 
@@ -521,7 +526,8 @@ def v2_where_to_find_it(species):
 def v2_how_it_lives(species):
     """Behaviour first, then diet as behaviour rather than a list."""
     return _v2_section("lives", "How it lives",
-                       _v2_paras(species.get("behavior"), species.get("diet")))
+                       _v2_paras(species.get("behavior"), species.get("diet")),
+                       band=True)
 
 
 def v2_what_it_does_here(species):
@@ -617,8 +623,16 @@ def v2_inflow_figure(pid, rec):
 def v2_photographs(pid, photos):
     """The credits roll — not a second gallery. Its job is to make every
     photographer legible WITHOUT anyone having to tap: thumbnail beside the
-    standard plate, two or three per row."""
-    if not photos:
+    standard plate, two or three per row.
+
+    THE HERO IS INCLUDED when there are other photographs, because the roll is
+    the list of everyone who contributed to this species and leaving the hero's
+    photographer out of it is the one omission that would matter.
+
+    But when the hero is the ONLY photograph — 20-odd species — the section is
+    the same image twice with the same name twice, since the hero already
+    carries its credit bar. Omitted entirely in that case."""
+    if not photos or len(photos) < 2:
         return ""
     figs = []
     for i, r in enumerate(photos):
@@ -720,7 +734,7 @@ def generate_html_v2(species, hero, gallery_photos, published_on=""):
 <link rel="stylesheet" href="../css/psbp.css">
 <link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
 <div class="sp-hero">
@@ -940,7 +954,11 @@ def write_html(species, hero, gallery_photos=None, dry_run=False):
 
     # Render first with the date already on file, so the comparison below is
     # about content and nothing else.
-    html_content = generate_html(species, hero, gallery_photos, published_on=prev)
+    # v2 layout, switched 2026-09-07 after a 92-page dry run: 0 failures,
+    # 321-1834 words, all six core sections everywhere, Take care correctly on
+    # only the 38 species with a real hazard. The v1 renderers stay in this file
+    # as dead code until the new pages have lived a while.
+    html_content = generate_html_v2(species, hero, gallery_photos, published_on=prev)
     if dry_run:
         return path, html_content
 
@@ -965,13 +983,13 @@ def write_html(species, hero, gallery_photos=None, dry_run=False):
     if page_content_changed(path, html_content):
         stamp = today_iso()
         if stamp != prev:
-            html_content = generate_html(species, hero, gallery_photos,
-                                         published_on=stamp)
+            html_content = generate_html_v2(species, hero, gallery_photos,
+                                            published_on=stamp)
     else:
         stamp = prev or today_iso()
         if stamp != prev:
-            html_content = generate_html(species, hero, gallery_photos,
-                                         published_on=stamp)
+            html_content = generate_html_v2(species, hero, gallery_photos,
+                                            published_on=stamp)
 
     WILDLIFE_DIR.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")

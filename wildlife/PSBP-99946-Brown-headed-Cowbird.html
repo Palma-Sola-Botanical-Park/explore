@@ -1,63 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brown-headed Cowbird · Palma Sola Botanical Park</title>
-<link rel="stylesheet" href="../css/site.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brown-headed Cowbird (Molothrus ater) — Palma Sola Botanical Park</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/wildlife-page.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-bird">
-  <div class="wild-hero">
-    <img style="cursor:pointer;object-position:31% 73%" src="../photos/PSBP-99946/681680478.jpg" alt="Brown-headed Cowbird at Palma Sola Botanical Park" onclick="openLB(0)">
-    <div class="wild-hero-overlay">
-      <div class="wild-hero-category">Songbirds &amp; Perching Birds</div>
-      <div class="wild-hero-name">Brown-headed Cowbird</div>
-    </div>
-  </div>
-  <div class="wild-sci-band">
-    <span class="wild-sci-name">Molothrus ater</span>
-    <a class="wild-family-tag" href="../nature.html?wfamily=Icteridae">Icteridae</a>
-  </div>
-  <div class="wild-credit">📷 Photo by <strong data-login="robcarr52">Rob Carr</strong> · CC-BY-NC · via iNaturalist · 📅 Apr 21, 2024</div>
-  <div class="wild-content">
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A stocky blackbird with a glossy brown head (male) and a drab gray-brown body (female) — smaller and chunkier than a grackle.</li><li>It is North America&#x27;s most notorious brood parasite: it lays its eggs in the nests of other birds and leaves them to do all the work.</li><li>Over 200 species have been documented raising cowbird young, often at the expense of their own chicks.</li><li>The strategy evolved on the Great Plains, where cowbirds followed bison herds and could not stay in one place long enough to raise their own young.</li></ul></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Male</div><p>Glossy black body with a rich chocolate-brown head.</p></div><div class="spot-item"><div class="spot-label">Female</div><p>Plain gray-brown all over — easy to overlook.</p></div><div class="spot-item"><div class="spot-label">Shape</div><p>Stocky, short-tailed, with a thick conical bill.</p></div><div class="spot-item"><div class="spot-label">Behavior</div><p>Often on the ground near livestock or in mixed blackbird flocks.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Male gives a liquid, gurgling &#x27;glug-glug-gleee.&#x27; Female makes a dry chatter.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A stocky blackbird with a brown head (male) or a plain gray-brown bird (female), often feeding on the ground in open areas.</p></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Seeds, grain, and insects — forages on the ground, often near livestock.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Open lawns and ground near the park edges; sometimes in mixed flocks with grackles.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Year-round in Florida, though numbers may fluctuate seasonally.</p></div></div></div>
-    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Observe and enjoy.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rob Carr (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <img class="lb-img" id="lbImg">
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-99946/681680478.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Apr 21, 2024"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
+<div class="sp-hero">
+  <img src="../photos/PSBP-99946/681680478.jpg" alt="Brown-headed Cowbird at Palma Sola Botanical Park" data-focus="31% 73%">
+  <div class="sp-hero-scrim"></div>
+  
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Bird &middot; Seen year-round</div>
+    <h1 class="sp-name">Brown-headed Cowbird</h1>
+    <div class="sp-sci">Molothrus ater</div>
   </div>
 </div>
 
-<a class="wild-float-back theme-bird" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<div class="sp-herocap">
+  <span class="cap"></span>
+  <span class="seqt" id="seq-top"></span>
+</div>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#know">How to know it</a><a href="#find">Where to find it here</a><a href="#lives">How it lives</a><a href="#does">What it does here</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>A stocky blackbird with a glossy brown head (male) and a drab gray-brown body (female) — smaller and chunkier than a grackle.</li><li>It is North America&#x27;s most notorious brood parasite: it lays its eggs in the nests of other birds and leaves them to do all the work.</li><li>Over 200 species have been documented raising cowbird young, often at the expense of their own chicks.</li><li>The strategy evolved on the Great Plains, where cowbirds followed bison herds and could not stay in one place long enough to raise their own young.</li></ul></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Male</div><p>Glossy black body with a rich chocolate-brown head.</p></div><div class="sp-block"><div class="sp-block-label">Female</div><p>Plain gray-brown all over — easy to overlook.</p></div><div class="sp-block"><div class="sp-block-label">Shape</div><p>Stocky, short-tailed, with a thick conical bill.</p></div><div class="sp-block"><div class="sp-block-label">Behavior</div><p>Often on the ground near livestock or in mixed blackbird flocks.</p></div><div class="sp-block"><div class="sp-block-label">Voice</div><p>Male gives a liquid, gurgling &#x27;glug-glug-gleee.&#x27; Female makes a dry chatter.</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>7 to 8 inches; about 12 inches</p></div><div class="sp-block"><div class="sp-block-label">What to look for</div><p>A stocky blackbird with a brown head (male) or a plain gray-brown bird (female), often feeding on the ground in open areas.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><p>Open lawns and ground near the park edges; sometimes in mixed flocks with grackles.</p><p>Year-round in Florida, though numbers may fluctuate seasonally.</p></section><section class="sp-sec sp-sec--band" id="lives"><h2>How it lives</h2><div class="sp-sec-rule"></div><p>Feeds on the ground. Males display with a gurgling song and a bow. Females scout nests of other species.</p><p>Seeds, grain, and insects — forages on the ground, often near livestock.</p></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><p>Brood parasite — a significant pressure on small songbird nesting success. Also an insect and seed consumer.</p><p>Forages on seeds from grasses and weeds.</p><p>Native to North America. Year-round resident in much of the southeastern U.S. including Florida.</p><p>The brown-headed cowbird is native, but it is one of the most controversial native birds in conservation. By parasitizing the nests of smaller songbirds, it can depress breeding success for species already under pressure.</p><p>The female is a stealth operator — she watches other birds build nests, slips in to lay an egg when the owner is away, and moves on. The cowbird chick often hatches first and grows faster, outcompeting the host&#x27;s own young.</p><p>Despite its reputation, the cowbird is doing what it evolved to do. The real problem is that habitat fragmentation puts more songbird nests within reach of cowbirds than ever before.</p></section></main>
+  </div>
+</div>
+
+<a class="wild-float-back" href="../nature.html#wildlife">All wildlife</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot">
+    <div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+    <div class="lb-ctrls">
+      <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button>
+    </div>
+    <div class="lb-hint">Swipe to move between photographs</div>
+  </div>
+</div>
+
 <div id="footer-placeholder"></div>
+<script>window.PHOTOS=[{"src": "../photos/PSBP-99946/681680478.jpg", "alt": "", "by": "Rob Carr", "date": "Apr 21, 2024"}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>

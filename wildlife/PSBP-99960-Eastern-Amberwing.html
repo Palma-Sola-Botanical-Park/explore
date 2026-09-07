@@ -1,64 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eastern Amberwing · Palma Sola Botanical Park</title>
-<link rel="stylesheet" href="../css/site.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eastern Amberwing (Perithemis tenera) — Palma Sola Botanical Park</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/wildlife-page.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-other">
-  <div class="wild-hero">
-    <img style="cursor:pointer;object-position:64% 42%" src="../photos/PSBP-99960/532393529.jpg" alt="Eastern Amberwing at Palma Sola Botanical Park" onclick="openLB(0)">
-    <div class="wild-hero-overlay">
-      <div class="wild-hero-category">Dragonflies &amp; Damselflies</div>
-      <div class="wild-hero-name">Eastern Amberwing</div>
-    </div>
-  </div>
-  <div class="wild-sci-band">
-    <span class="wild-sci-name">Perithemis tenera</span>
-    <a class="wild-family-tag" href="../nature.html?wfamily=Libellulidae">Libellulidae</a>
-  </div>
-  <div class="wild-credit">📷 Photo by <strong data-login="catalaniclaire">catalaniclaire</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 6, 2025</div>
-  <div class="wild-content">
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A tiny dragonfly with glowing amber-orange wings, hovering low over the pond, is an eastern amberwing — one of the smallest dragonflies in North America.</li><li>At barely an inch long, it is easy to mistake for a wasp, and that is the point: it bluffs.</li><li>When perched, it wags its abdomen up and down and twitches its wings in a fair imitation of a stinging wasp, discouraging predators that would not bother a harmless dragonfly.</li><li>Like all dragonflies, it is a precise aerial hunter, snatching small insects out of the air on the wing.</li></ul></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Size</div><p>Very small for a dragonfly, about 1 inches long.</p></div><div class="spot-item"><div class="spot-label">Wings</div><p>Males have entirely amber-orange wings; females have patchy brown-and-clear wings.</p></div><div class="spot-item"><div class="spot-label">Body</div><p>Reddish-amber in males.</p></div><div class="spot-item"><div class="spot-label">Behavior cue</div><p>Wags its abdomen and twitches its wings while perched, wasp-style.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Silent.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A very small dragonfly with glowing orange wings, perched on pondside vegetation or hovering low over the water. The wasp-like abdomen-wagging while perched is a giveaway.</p></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Small flying insects — midges, mosquitoes, gnats, and the like — caught in flight. Aquatic young eat mosquito larvae and other small water creatures.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Low over the ponds and along their planted edges on warm, sunny days. Look for a tiny dragonfly with orange wings perched on a reed or stem.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>A warm-season flier, most numerous from late spring through early fall.</p></div></div></div>
-    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Just watch and enjoy. Dragonflies are best appreciated on the wing — no need to catch or handle them.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Amberwing</span></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© catalaniclaire (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <img class="lb-img" id="lbImg">
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-99960/532393529.jpg", "credit": "catalaniclaire", "license": "CC-BY-NC", "observed": "Jul 6, 2025"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
+<div class="sp-hero">
+  <img src="../photos/PSBP-99960/532393529.jpg" alt="Eastern Amberwing at Palma Sola Botanical Park" data-focus="64% 42%">
+  <div class="sp-hero-scrim"></div>
+  
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Dragonfly &middot; Seen seasonal</div>
+    <h1 class="sp-name">Eastern Amberwing</h1>
+    <div class="sp-sci">Perithemis tenera</div>
   </div>
 </div>
 
-<a class="wild-float-back theme-other" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<div class="sp-herocap">
+  <span class="cap"></span>
+  <span class="seqt" id="seq-top"></span>
+</div>
 
-<div class="page-stamp">Page updated <strong>September 1, 2026</strong></div>
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#know">How to know it</a><a href="#find">Where to find it here</a><a href="#lives">How it lives</a><a href="#does">What it does here</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>A tiny dragonfly with glowing amber-orange wings, hovering low over the pond, is an eastern amberwing — one of the smallest dragonflies in North America.</li><li>At barely an inch long, it is easy to mistake for a wasp, and that is the point: it bluffs.</li><li>When perched, it wags its abdomen up and down and twitches its wings in a fair imitation of a stinging wasp, discouraging predators that would not bother a harmless dragonfly.</li><li>Like all dragonflies, it is a precise aerial hunter, snatching small insects out of the air on the wing.</li></ul></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Size</div><p>Very small for a dragonfly, about 1 inches long.</p></div><div class="sp-block"><div class="sp-block-label">Wings</div><p>Males have entirely amber-orange wings; females have patchy brown-and-clear wings.</p></div><div class="sp-block"><div class="sp-block-label">Body</div><p>Reddish-amber in males.</p></div><div class="sp-block"><div class="sp-block-label">Behavior cue</div><p>Wags its abdomen and twitches its wings while perched, wasp-style.</p></div><div class="sp-block"><div class="sp-block-label">Voice</div><p>Silent.</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>about 1 inches; roughly 1.5 inches</p></div><div class="sp-block"><div class="sp-block-label">What to look for</div><p>A very small dragonfly with glowing orange wings, perched on pondside vegetation or hovering low over the water. The wasp-like abdomen-wagging while perched is a giveaway.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><p>Low over the ponds and along their planted edges on warm, sunny days. Look for a tiny dragonfly with orange wings perched on a reed or stem.</p><p>A warm-season flier, most numerous from late spring through early fall.</p></section><section class="sp-sec sp-sec--band" id="lives"><h2>How it lives</h2><div class="sp-sec-rule"></div><p>Active by day in warm, sunny weather, patrolling and perching low around still water. Males defend small territories over the surface. Frequently perches, unlike some dragonflies that stay airborne.</p><p>Small flying insects — midges, mosquitoes, gnats, and the like — caught in flight. Aquatic young eat mosquito larvae and other small water creatures.</p></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><p>A small predator at both stages of life — adults thin out flying insects, naiads eat mosquito larvae — making it a natural check on biting-insect numbers around the pond.</p><p>Breeds in ponds with submerged and emergent plants, perching on pondside stems and reeds.</p><p>Native and widespread across the eastern and central United States. In Florida it is common near still and slow waters through the warm months.</p><p>The eastern amberwing is a study in small-package boldness. Males have wings washed a warm amber-orange, unusual among local dragonflies, and a body not much over an inch long.</p><p>That small size and orange-banded look pay off as mimicry. Perched amberwings bob the abdomen and flick the wings in a way that resembles a wasp tidying itself, and the resemblance is thought to make birds and other predators think twice — a harmless dragonfly borrowing a wasp&#x27;s reputation.</p><p>For all the bluff, it earns its keep as a predator. Adults hawk tiny flying insects over the water, and the aquatic young (naiads) hunt mosquito larvae and other small prey beneath the surface, making amberwings quiet allies against biting insects.</p></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Amberwing</p></div></main>
+  </div>
+</div>
+
+<a class="wild-float-back" href="../nature.html#wildlife">All wildlife</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot">
+    <div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+    <div class="lb-ctrls">
+      <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button>
+    </div>
+    <div class="lb-hint">Swipe to move between photographs</div>
+  </div>
+</div>
+
 <div id="footer-placeholder"></div>
+<script>window.PHOTOS=[{"src": "../photos/PSBP-99960/532393529.jpg", "alt": "", "by": "catalaniclaire", "date": "Jul 6, 2025"}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>

@@ -1,63 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gray Catbird · Palma Sola Botanical Park</title>
-<link rel="stylesheet" href="../css/site.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gray Catbird (Dumetella carolinensis) — Palma Sola Botanical Park</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/wildlife-page.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-bird">
-  <div class="wild-hero">
-    <img style="cursor:pointer;object-position:40% 55%" src="../photos/PSBP-99950/681678467.jpg" alt="Gray Catbird at Palma Sola Botanical Park" onclick="openLB(0)">
-    <div class="wild-hero-overlay">
-      <div class="wild-hero-category">Songbirds &amp; Perching Birds</div>
-      <div class="wild-hero-name">Gray Catbird</div>
-    </div>
-  </div>
-  <div class="wild-sci-band">
-    <span class="wild-sci-name">Dumetella carolinensis</span>
-    <a class="wild-family-tag" href="../nature.html?wfamily=Mimidae">Mimidae</a>
-  </div>
-  <div class="wild-credit">📷 Photo by <strong data-login="robcarr52">Rob Carr</strong> · CC-BY-NC · via iNaturalist · 📅 Mar 31, 2023</div>
-  <div class="wild-content">
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>A sleek, slate-gray bird with a black cap and a rusty patch hidden under the tail — listen for the cat-like mewing call that gives it its name.</li><li>Like its cousin the mockingbird, it is a mimic, stringing together borrowed phrases — but it rarely repeats them, giving its song a rambling, unrepeated quality.</li><li>It skulks in dense shrubs and tangles, more often heard than seen.</li><li>A winter visitor and passage migrant in our area, most likely from fall through spring.</li></ul></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Color</div><p>Uniform slate gray with a black cap and a rusty-red undertail patch.</p></div><div class="spot-item"><div class="spot-label">Shape</div><p>Sleek, medium-sized, long-tailed.</p></div><div class="spot-item"><div class="spot-label">Sound</div><p>A distinctive cat-like mewing; also a rambling, non-repeating song.</p></div><div class="spot-item"><div class="spot-label">Behavior</div><p>Skulks in dense vegetation; flicks tail to reveal rusty patch.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>A nasal, cat-like &#x27;mew&#x27; and a long, rambling song of unrepeated phrases.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A plain gray bird skulking in dense shrubs, mewing like a cat. Look for the black cap and, if it flicks its tail, the hidden rusty patch underneath.</p></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Insects and fruit — a mixed diet that shifts toward berries in fall and winter.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Listen for the mewing call in dense shrubbery along garden edges and near the ponds.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Mainly a winter visitor and migrant in this area, most likely October through April.</p></div></div></div>
-    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Observe and enjoy.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rob Carr (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <img class="lb-img" id="lbImg">
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-99950/681678467.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Mar 31, 2023"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
+<div class="sp-hero">
+  <img src="../photos/PSBP-99950/681678467.jpg" alt="Gray Catbird at Palma Sola Botanical Park" data-focus="40% 55%">
+  <div class="sp-hero-scrim"></div>
+  
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Bird &middot; Seen seasonal</div>
+    <h1 class="sp-name">Gray Catbird</h1>
+    <div class="sp-sci">Dumetella carolinensis</div>
   </div>
 </div>
 
-<a class="wild-float-back theme-bird" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<div class="sp-herocap">
+  <span class="cap"></span>
+  <span class="seqt" id="seq-top"></span>
+</div>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#know">How to know it</a><a href="#find">Where to find it here</a><a href="#lives">How it lives</a><a href="#does">What it does here</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>A sleek, slate-gray bird with a black cap and a rusty patch hidden under the tail — listen for the cat-like mewing call that gives it its name.</li><li>Like its cousin the mockingbird, it is a mimic, stringing together borrowed phrases — but it rarely repeats them, giving its song a rambling, unrepeated quality.</li><li>It skulks in dense shrubs and tangles, more often heard than seen.</li><li>A winter visitor and passage migrant in our area, most likely from fall through spring.</li></ul></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Color</div><p>Uniform slate gray with a black cap and a rusty-red undertail patch.</p></div><div class="sp-block"><div class="sp-block-label">Shape</div><p>Sleek, medium-sized, long-tailed.</p></div><div class="sp-block"><div class="sp-block-label">Sound</div><p>A distinctive cat-like mewing; also a rambling, non-repeating song.</p></div><div class="sp-block"><div class="sp-block-label">Behavior</div><p>Skulks in dense vegetation; flicks tail to reveal rusty patch.</p></div><div class="sp-block"><div class="sp-block-label">Voice</div><p>A nasal, cat-like &#x27;mew&#x27; and a long, rambling song of unrepeated phrases.</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>8 to 9 inches; about 11 inches</p></div><div class="sp-block"><div class="sp-block-label">What to look for</div><p>A plain gray bird skulking in dense shrubs, mewing like a cat. Look for the black cap and, if it flicks its tail, the hidden rusty patch underneath.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><p>Listen for the mewing call in dense shrubbery along garden edges and near the ponds.</p><p>Mainly a winter visitor and migrant in this area, most likely October through April.</p><div class="sp-block"><div class="sp-block-label">When</div><p>Breeds farther north; present here mainly fall through spring.</p></div></section><section class="sp-sec sp-sec--band" id="lives"><h2>How it lives</h2><div class="sp-sec-rule"></div><p>Skulks in dense cover, foraging low. Sings from concealed perches. Flicks tail frequently.</p><p>Insects and fruit — a mixed diet that shifts toward berries in fall and winter.</p></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><p>Berry disperser and insect consumer in shrubby habitats.</p><p>Eats many native berries; forages in dense plantings and hedgerows.</p><p>Native to North America. Breeds across the eastern and central U.S. and southern Canada; winters in the southeastern U.S., Caribbean, and Central America. Present in the Bradenton area mainly as a winter visitor.</p><p>The gray catbird is a member of the Mimidae — the same mimic family as the mockingbird and brown thrasher. Its song is a long, wandering string of notes and phrases, many borrowed from other birds, but unlike the mockingbird it rarely repeats a phrase, so the song sounds more improvised.</p><p>The cat-like mewing call is distinctive and often the first clue that a catbird is hiding in the bushes nearby.</p><p>Despite its drab color, the rusty undertail coverts are a reliable field mark if you catch the bird flicking its tail.</p></section></main>
+  </div>
+</div>
+
+<a class="wild-float-back" href="../nature.html#wildlife">All wildlife</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot">
+    <div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+    <div class="lb-ctrls">
+      <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button>
+    </div>
+    <div class="lb-hint">Swipe to move between photographs</div>
+  </div>
+</div>
+
 <div id="footer-placeholder"></div>
+<script>window.PHOTOS=[{"src": "../photos/PSBP-99950/681678467.jpg", "alt": "", "by": "Rob Carr", "date": "Mar 31, 2023"}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>

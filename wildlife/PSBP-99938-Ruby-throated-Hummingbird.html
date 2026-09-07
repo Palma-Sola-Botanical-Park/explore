@@ -1,64 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ruby-throated Hummingbird · Palma Sola Botanical Park</title>
-<link rel="stylesheet" href="../css/site.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ruby-throated Hummingbird (Archilochus colubris) — Palma Sola Botanical Park</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/wildlife-page.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="wild-wrap theme-bird">
-  <div class="wild-hero">
-    <img style="cursor:pointer;object-position:52% 44%" src="../photos/PSBP-99938/681678940.jpg" alt="Ruby-throated Hummingbird at Palma Sola Botanical Park" onclick="openLB(0)">
-    <div class="wild-hero-overlay">
-      <div class="wild-hero-category">Songbirds &amp; Perching Birds</div>
-      <div class="wild-hero-name">Ruby-throated Hummingbird</div>
-    </div>
-  </div>
-  <div class="wild-sci-band">
-    <span class="wild-sci-name">Archilochus colubris</span>
-    <a class="wild-family-tag" href="../nature.html?wfamily=Trochilidae">Trochilidae</a>
-  </div>
-  <div class="wild-credit">📷 Photo by <strong data-login="robcarr52">Rob Carr</strong> · CC-BY-NC · via iNaturalist · 📅 Nov 14, 2025</div>
-  <div class="wild-content">
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>The only breeding hummingbird in the eastern United States — a tiny, jewel-green bird that hovers at flowers and feeders, beating its wings about 53 times per second.</li><li>The male&#x27;s throat blazes iridescent ruby-red in the right light — turn your head and it looks black. The color is structural, not pigmented, created by microscopic platelets in the feathers.</li><li>Every fall, many cross the Gulf of Mexico nonstop — roughly 500 miles of open water with nowhere to land.</li><li>It weighs about as much as a penny, yet it is fiercely territorial and will chase birds many times its size away from a flower patch.</li></ul></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Size</div><p>Tiny — about 3 inches long, weighing roughly a tenth of an ounce.</p></div><div class="spot-item"><div class="spot-label">Male</div><p>Iridescent green above, white below, with a brilliant ruby-red throat (gorget) that can look black.</p></div><div class="spot-item"><div class="spot-label">Female</div><p>Green above, white below, no red throat.</p></div><div class="spot-item"><div class="spot-label">Flight</div><p>Hovers in place, wings beating so fast they blur.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>A rapid, chittering series of notes; the hum of the wings is often the first clue.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A tiny hovering bird at flowers or feeders. Males flash a ruby-red throat in the right light. Listen for the humming of the wings.</p></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Nectar from flowers and feeders; tiny insects and spiders for protein.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Around the flower beds, especially tubular blooms. Listen for the wing hum.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Most likely during fall and spring migration; some winter here. A seasonal visitor.</p></div></div></div>
-    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Observe and enjoy.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Ruby-throat</span><span class="alias-tag">Ruby-throated Hummer</span></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Rob Carr (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <img class="lb-img" id="lbImg">
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-99938/681678940.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "Nov 14, 2025"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
+<div class="sp-hero">
+  <img src="../photos/PSBP-99938/681678940.jpg" alt="Ruby-throated Hummingbird at Palma Sola Botanical Park" data-focus="52% 44%">
+  <div class="sp-hero-scrim"></div>
+  
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Bird &middot; Seen seasonal</div>
+    <h1 class="sp-name">Ruby-throated Hummingbird</h1>
+    <div class="sp-sci">Archilochus colubris</div>
   </div>
 </div>
 
-<a class="wild-float-back theme-bird" href="../nature.html#wildlife">🦜 All Wildlife</a>
+<div class="sp-herocap">
+  <span class="cap"></span>
+  <span class="seqt" id="seq-top"></span>
+</div>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#know">How to know it</a><a href="#find">Where to find it here</a><a href="#lives">How it lives</a><a href="#does">What it does here</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>The only breeding hummingbird in the eastern United States — a tiny, jewel-green bird that hovers at flowers and feeders, beating its wings about 53 times per second.</li><li>The male&#x27;s throat blazes iridescent ruby-red in the right light — turn your head and it looks black. The color is structural, not pigmented, created by microscopic platelets in the feathers.</li><li>Every fall, many cross the Gulf of Mexico nonstop — roughly 500 miles of open water with nowhere to land.</li><li>It weighs about as much as a penny, yet it is fiercely territorial and will chase birds many times its size away from a flower patch.</li></ul></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Size</div><p>Tiny — about 3 inches long, weighing roughly a tenth of an ounce.</p></div><div class="sp-block"><div class="sp-block-label">Male</div><p>Iridescent green above, white below, with a brilliant ruby-red throat (gorget) that can look black.</p></div><div class="sp-block"><div class="sp-block-label">Female</div><p>Green above, white below, no red throat.</p></div><div class="sp-block"><div class="sp-block-label">Flight</div><p>Hovers in place, wings beating so fast they blur.</p></div><div class="sp-block"><div class="sp-block-label">Voice</div><p>A rapid, chittering series of notes; the hum of the wings is often the first clue.</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>3 to 3.5 inches; about 4.5 inches</p></div><div class="sp-block"><div class="sp-block-label">What to look for</div><p>A tiny hovering bird at flowers or feeders. Males flash a ruby-red throat in the right light. Listen for the humming of the wings.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><p>Around the flower beds, especially tubular blooms. Listen for the wing hum.</p><p>Most likely during fall and spring migration; some winter here. A seasonal visitor.</p><div class="sp-block"><div class="sp-block-label">When</div><p>Arrives in March as spring migration moves north; passes through again August through October heading south. A small number may linger into winter in sheltered coastal spots, but reliable presence for Manatee County is March through October.</p></div></section><section class="sp-sec sp-sec--band" id="lives"><h2>How it lives</h2><div class="sp-sec-rule"></div><p>Hovers to feed. Fiercely territorial — chases other hummingbirds and larger birds from flower patches. Incredibly fast and agile.</p><p>Nectar from flowers and feeders; tiny insects and spiders for protein.</p></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><p>Pollinator of tubular flowers; insect predator. A key player in the pollination of many native wildflowers.</p><p>Visits many native and garden flowers, especially tubular red, orange, and pink blooms.</p><p>Native to eastern North America. Breeds across the eastern U.S. and southern Canada; winters in Central America. Present in Florida mainly during migration and winter, though some breed in the northern part of the state.</p><p>The ruby-throated hummingbird is the default hummingbird of the eastern United States — the only species that regularly breeds east of the Mississippi. Its tiny size, hovering flight, and iridescent plumage make it one of the most charismatic visitors to any garden.</p><p>To fuel its metabolism, it visits hundreds of flowers per day and also eats tiny insects and spiders for protein. Its heart beats over 1,200 times per minute in flight, and it enters a torpor-like state overnight to conserve energy.</p><p>In the Bradenton area it is most likely during fall and spring migration, with some wintering birds.</p></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Ruby-throat · Ruby-throated Hummer</p></div></main>
+  </div>
+</div>
+
+<a class="wild-float-back" href="../nature.html#wildlife">All wildlife</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot">
+    <div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+    <div class="lb-ctrls">
+      <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button>
+    </div>
+    <div class="lb-hint">Swipe to move between photographs</div>
+  </div>
+</div>
+
 <div id="footer-placeholder"></div>
+<script>window.PHOTOS=[{"src": "../photos/PSBP-99938/681678940.jpg", "alt": "", "by": "Rob Carr", "date": "Nov 14, 2025"}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
