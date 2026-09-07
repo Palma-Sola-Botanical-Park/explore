@@ -357,11 +357,6 @@
   border-radius: 0 8px 8px 0; padding: .85rem 1rem .9rem;
 }
 .dw-teaser { font-size: 1.02rem; line-height: 1.62; color: var(--text); margin: 0; }
-.dw-more {
-  display: block; margin-top: .55rem; text-align: right;
-  font-size: .88rem; font-weight: 700; color: var(--green-mid); text-decoration: none;
-}
-.dw-more:hover { text-decoration: underline; }
 
 /* Facts: quiet rows, no labels where the value speaks for itself. The family
    link carries the green so the block is not a flat gray wall. */
@@ -807,11 +802,11 @@ loadINat();
      ══════════════════════════════════════════════════════════════════ -->
 <div class="dw-scrim" id="dwScrim"></div>
 
-<aside class="dw" id="dw" role="complementary" aria-label="Plant quick view" aria-hidden="true">
+<aside class="dw" id="dw" role="complementary" aria-label="Species quick view" aria-hidden="true">
   <div class="dw-head">
-    <button class="dw-nav" id="dwPrev" type="button" aria-label="Previous plant">&#8592;</button>
+    <button class="dw-nav" id="dwPrev" type="button" aria-label="Previous species">&#8592;</button>
     <span class="dw-count" id="dwCount"></span>
-    <button class="dw-nav" id="dwNext" type="button" aria-label="Next plant">&#8594;</button>
+    <button class="dw-nav" id="dwNext" type="button" aria-label="Next species">&#8594;</button>
     <button class="dw-close" id="dwClose" type="button" aria-label="Close quick view">&times;</button>
   </div>
 
@@ -980,7 +975,6 @@ loadINat();
       return '<hr class="dw-rule">'
            + '<div class="dw-teaser-wrap">'
            +   '<p class="dw-teaser">' + esc(curated) + '</p>'
-           +   '<a class="dw-more" href="' + esc(p.page || '#') + '">Read the full story &rarr;</a>'
            + '</div>';
     }
 
@@ -1008,7 +1002,6 @@ loadINat();
         return '<hr class="dw-rule">'
              + '<div class="dw-teaser-wrap">'
              +   '<p class="dw-teaser">' + esc(pick) + '</p>'
-             +   '<a class="dw-more" href="' + esc(p.page || '#') + '">Read the full story &rarr;</a>'
              + '</div>';
       }
     }
@@ -1041,7 +1034,6 @@ loadINat();
     return '<hr class="dw-rule">'
          + '<div class="dw-teaser-wrap">'
          +   '<p class="dw-teaser">' + esc(out) + '</p>'
-         +   '<a class="dw-more" href="' + esc(p.page || '#') + '">Read the full story &rarr;</a>'
          + '</div>';
   }
 

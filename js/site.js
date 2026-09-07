@@ -2596,20 +2596,21 @@ async function loadRightNow(targetId, opts) {
      2. RE-CAPTURE ON THE WAY OUT OF THE DRAWER. This fires on card clicks only,
         so arrowing through thirty species inside the panel never updated the
         stored state — leaving the page and filters as they were at the FIRST
-        card. The drawer's "Read the full story" link (a.dw-more) is the real
-        exit, and while the panel is open the URL says which record and which
-        kind, so that is what it reads. */
+        card. The drawer's footer button (#dwPage) is the exit, and while the
+        panel is open the URL says which record and which kind, so that is what
+        it reads. */
   document.addEventListener('click', function (e) {
-    var card = e.target.closest && e.target.closest('a.plant-card, a.obs-card, a.dw-more, #dwPage');
+    var card = e.target.closest && e.target.closest('a.plant-card, a.obs-card, #dwPage');
     if (!card) return;
     try {
       var isWild, list, id;
 
-      /* BOTH drawer exits. There are two: #dwPage ("Full plant page") in the
-         panel footer, and a.dw-more ("Read the full story") inside the teaser.
-         Matching only one meant arrowing to another species and leaving by the
-         other button recorded the species you STARTED on. */
-      if (card.id === 'dwPage' || card.classList.contains('dw-more')) {
+      /* The drawer's exit. There used to be two — this footer button and a
+         "Read the full story" link inside the teaser — going to the same place;
+         matching only one meant arrowing to another species and leaving by the
+         other recorded the species you STARTED on. The duplicate link is gone,
+         so there is one way out and one thing to keep in step. */
+      if (card.id === 'dwPage') {
         var h = /^#(plant|wildlife)\/(PSBP-\d{5})/.exec(location.hash || '');
         if (!h) return;                     // panel not open — nothing to record
         isWild = h[1] === 'wildlife';
