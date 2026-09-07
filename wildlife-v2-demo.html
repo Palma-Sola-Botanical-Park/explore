@@ -16,19 +16,20 @@
    Continues the pp-* language from plantpagev2-3.html so plants and wildlife
    converge instead of forking a third time. ══════════════════════════════ */
 
-.sp-demo-bar{position:sticky;top:0;z-index:60;background:#1d2b22;color:#fff;
-  padding:.6rem 1rem;font-family:var(--sans);font-size:.8rem;display:flex;
-  flex-wrap:wrap;gap:.6rem 1.2rem;align-items:center}
-.sp-demo-bar b{letter-spacing:.11em;text-transform:uppercase;font-size:.67rem;opacity:.6}
-.sp-demo-bar a{color:#fff;text-decoration:underline;text-underline-offset:3px}
-.sp-demo-bar button{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.28);padding:.22rem .6rem;font:inherit;cursor:pointer;margin-left:.25rem;border-radius:2rem}
-.sp-demo-bar button[aria-pressed="true"]{background:#fff;color:#1d2b22;font-weight:600}
-
 /* ── HERO ───────────────────────────────────────────────────────────────
-   Portrait source (1152×2048), so the hero is capped and object-position
-   uses the stored focus point rather than centring on the lizard's tail. */
+   Portrait source (1152x2048) in a wide, short box, so object-fit:cover crops
+   hard top and bottom and the focus point decides everything.
+
+   FOCUS COMES FROM THE DATA, not from this stylesheet. photo_credits.json
+   stores `focus` per photo ("65% 66%" for this hero); the publisher writes it
+   into the element's object-position. Hardcoding it here meant editing the
+   JSON changed nothing — which is exactly the bug that hid this.
+
+   NOTE THE AXIS: the second value is which part of the SOURCE lands in view,
+   so a HIGHER percentage shows more of the BOTTOM. To see more of an animal
+   sitting high in the frame, the number goes DOWN, not up. */
 .sp-hero{position:relative;height:min(56vh,460px);overflow:hidden;background:var(--green-ink)}
-.sp-hero img{width:100%;height:100%;object-fit:cover;object-position:65% 66%;display:block}
+.sp-hero img{width:100%;height:100%;object-fit:cover;display:block}
 .sp-hero-scrim{position:absolute;inset:0;
   background:linear-gradient(to top,rgba(15,25,17,.88) 0%,rgba(15,25,17,.35) 45%,rgba(15,25,17,.05) 100%)}
 .sp-hero-inner{position:absolute;left:0;right:0;bottom:0;padding:2rem 1.4rem 1.6rem;
@@ -86,6 +87,16 @@ body[data-hero="strip"] .sp-herogal{display:none}
 }
 
 
+/* Hero credit sits inside the picture, bottom right — the site-standard
+   .photo-attr bar, contents right-aligned. */
+.sp-heroattr{align-items:flex-end;text-align:right;padding:var(--s3) var(--s4)}
+.sp-heroattr .attr-line{justify-content:flex-end}
+.sp-heroattr .cc-badge{display:inline-flex;border:1px solid rgba(255,255,255,.4);
+  border-radius:2px;overflow:hidden;font-size:.6rem;font-weight:700;line-height:1;
+  color:#fff}
+.sp-heroattr .cc-badge .cc-mark{font-family:Georgia,serif;text-transform:lowercase;padding:.24em .34em}
+.sp-heroattr .cc-badge .cc-term{padding:.24em .34em;border-left:1px solid rgba(255,255,255,.3)}
+
 /* ── HERO CAPTION ───────────────────────────────────────────────────────
    The hero's caption was buried in the gallery at the foot of the page, where
    the one line that makes the image worth looking at arrived long after the
@@ -96,9 +107,8 @@ body[data-hero="strip"] .sp-herogal{display:none}
    photo, and a worse place for a person's name than a caption line. */
 .sp-herocap{max-width:1100px;margin:0 auto;padding:.9rem 1.4rem 0;
   display:flex;flex-wrap:wrap;align-items:baseline;gap:.3rem 1rem}
-.sp-herocap .cap{font-family:var(--serif);font-style:italic;
-  font-size:clamp(1.02rem,2vw,1.18rem);color:var(--ink);line-height:1.5;
-  max-width:52ch}
+.sp-herocap .cap{font-family:var(--sans);font-size:var(--t-base);
+  color:var(--ink-soft);line-height:1.65;max-width:60ch}
 .sp-herocap .by{font-family:var(--sans);font-size:.8rem;color:var(--ink-faint);
   white-space:nowrap}
 .sp-herocap .by b{color:var(--green-ink);font-weight:600}
@@ -184,15 +194,6 @@ body[data-hero="strip"] .sp-herogal{display:none}
   color:var(--ink-soft);margin-top:.6rem;padding-left:.9rem;
   border-left:2px solid var(--gold-mark)}
 .sp-figure .cr{display:block;color:var(--ink-faint);font-size:.76rem;margin-top:.2rem}
-body[data-figs="off"] .sp-figure{display:none}
-
-/* ── PULL QUOTE — one per page, the single best line, set large. Breaks the
-     column and gives a skimmer something to catch on. */
-.sp-pull{font-family:var(--serif);font-size:clamp(1.3rem,3vw,1.7rem);
-  line-height:1.4;color:var(--green-ink);max-width:var(--col);
-  margin:2.2rem 0;padding-left:1.3rem;
-  border-left:3px solid var(--gold-mark);font-style:italic}
-body[data-pull="off"] .sp-pull{display:none}
 
 /* ── SECTION BANDS — the alternation the rest of the site already uses
      (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
@@ -215,13 +216,13 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
    three per row. Denser, much shorter, and not one credit lost. Clicking any
    of them opens the lightbox at that photograph, where the picture is actually
    meant to be looked at. */
-.sp-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+.sp-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
   gap:.7rem 1.1rem}
-.sp-gal figure{margin:0;display:grid;grid-template-columns:74px 1fr;gap:.85rem;
+.sp-gal figure{margin:0;display:grid;grid-template-columns:68px 1fr;gap:.8rem;
   align-items:center;padding:.5rem;border:1px solid var(--rule);border-radius:3px;
   background:var(--surface);transition:border-color .15s,background .15s}
 .sp-gal figure:hover{border-color:var(--rule-strong);background:var(--paper)}
-.sp-gal .shot{width:74px;height:74px;overflow:hidden;border-radius:2px;
+.sp-gal .shot{width:68px;height:68px;overflow:hidden;border-radius:2px;
   background:var(--wash);cursor:zoom-in}
 .sp-gal img{width:100%;height:100%;object-fit:cover;display:block;
   transition:transform .35s ease}
@@ -238,9 +239,12 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 .sp-gal .credit-plate{display:block;padding:0;border:0;background:none;min-width:0}
 .sp-gal .credit-eyebrow{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
   color:var(--ink-faint);font-weight:700;display:block}
-.sp-gal .credit-name{font-family:var(--serif);font-size:1.16rem;font-weight:400;
-  color:var(--green-ink);line-height:1.2;display:block;margin-top:.12rem;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Names WRAP. nowrap + ellipsis guaranteed truncation — "David Vanderbilt"
+   was chopped at sixteen characters, so anything longer had no chance. A name
+   is the one thing on this tile that must never be abbreviated. */
+.sp-gal .credit-name{font-family:var(--serif);font-size:1.08rem;font-weight:400;
+  color:var(--green-ink);line-height:1.25;display:block;margin-top:.12rem;
+  overflow-wrap:break-word}
 .sp-gal .credit-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.34rem .5rem;
   margin-top:.34rem;font-family:var(--sans);font-size:.72rem;color:var(--ink-faint)}
 .sp-gal .credit-meta .sep{opacity:.5}
@@ -394,15 +398,9 @@ body[data-hero="strip"] .sp-herogal{display:none}
   color:var(--ink-soft);margin-top:.6rem;padding-left:.9rem;
   border-left:2px solid var(--gold-mark)}
 .sp-figure .cr{display:block;color:var(--ink-faint);font-size:.76rem;margin-top:.2rem}
-body[data-figs="off"] .sp-figure{display:none}
 
 /* ── PULL QUOTE — one per page, the single best line, set large. Breaks the
      column and gives a skimmer something to catch on. */
-.sp-pull{font-family:var(--serif);font-size:clamp(1.3rem,3vw,1.7rem);
-  line-height:1.4;color:var(--green-ink);max-width:var(--col);
-  margin:2.2rem 0;padding-left:1.3rem;
-  border-left:3px solid var(--gold-mark);font-style:italic}
-body[data-pull="off"] .sp-pull{display:none}
 
 /* ── SECTION BANDS — the alternation the rest of the site already uses
      (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
@@ -516,21 +514,26 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 }
 </style>
 </head>
-<body data-figs="on" data-pull="off" data-bands="on" data-hero="strip">
+<body data-bands="on" data-hero="strip">
 
-<div class="sp-demo-bar">
-  <b>Demo</b>
-  <span>Brown Anole — proposed v2 layout</span>
-  <a href="wildlife/PSBP-99999-Brown-Anole.html" target="_blank">Open today's live page &rarr;</a>
-  <span><b>Photos in text</b> <button data-k="figs" data-v="on">On</button><button data-k="figs" data-v="off">Off</button></span>
-  <span><b>Pull quote</b> <button data-k="pull" data-v="on">On</button><button data-k="pull" data-v="off">Off</button></span>
-  <span><b>Section band</b> <button data-k="bands" data-v="on">On</button><button data-k="bands" data-v="off">Off</button></span>
-  <span><b>Hero photos</b> <button data-k="hero" data-v="chip">Chip</button><button data-k="hero" data-v="strip">Strip</button></span>
-</div>
 
 <div class="sp-hero">
-  <img src="photos/PSBP-99999/635346033.jpg" alt="Brown anole displaying its orange throat fan">
+  <img src="photos/PSBP-99999/635346033.jpg" alt="Brown anole displaying its orange throat fan"
+       data-focus="65% 66%">
   <div class="sp-hero-scrim"></div>
+  <!-- Site-standard credit: the same .photo-attr / .attr-line / .attr-by /
+       .cc-badge structure PSBPPhotos.attribution() emits on index.html, so a
+       photographer is credited identically everywhere. Right-aligned per
+       Randy; the standard spans full width, only the content shifts.
+       The camera emoji the live helper prepends is dropped, for the same
+       reason emoji came out of visit.html and the lightbox. -->
+  <div class="photo-attr photo-attr--muted sp-heroattr">
+    <span class="attr-line">
+      <span class="attr-credit"><span class="attr-by">Cole Guyton</span><span class="attr-date"><span class="attr-dot">&middot;</span> 5 June 2024</span></span>
+      <span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span>
+      <span class="attr-src">via iNaturalist</span>
+    </span>
+  </div>
   <div class="sp-strip" id="heroStrip" aria-label="Photographs of this species">
     <button type="button" data-i="1" aria-label="Photograph 2"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt=""></button>
     <button type="button" data-i="2" aria-label="Photograph 3"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg" alt=""></button>
@@ -555,8 +558,7 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 
 
 <div class="sp-herocap">
-  <span class="cap">On the native-plant sign, which it is not.</span>
-  <span class="by">Photograph by <b>Cole Guyton</b> &middot; CC-BY-NC, via iNaturalist</span>
+  <span class="cap">This one is sitting on a hand-painted sign for the native plant garden. Brown anoles are from Cuba.</span>
 </div>
 
 <div class="sp-wrap">
@@ -634,11 +636,10 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
         </figure>
 
         <div class="sp-block"><div class="sp-block-label">Evolution you can watch</div>
-          <p>Here is the part worth knowing. Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads — measurably, in only a few generations. It is one of the clearest real-world examples of rapid evolution anywhere, and it is happening in ordinary Florida gardens.</p></div>
+          <p>Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads — measurably, in only a few generations. Biologists point to it as one of the clearest cases of evolution moving fast enough to observe, and it is happening in ordinary Florida gardens.</p></div>
 
-        <p class="sp-pull">Evolution fast enough to watch, in a garden bed.</p>
 
-        <p>None of this is the brown anole doing anything wrong; it is simply very good at being a lizard in Florida. It is also food for a great many things — birds, snakes, larger lizards, cats — so its abundance feeds the park as much as it crowds it.</p>
+        <p>None of this is the brown anole doing anything wrong; it is simply very good at being a lizard in Florida. It is also food for a great many things here — birds, snakes, larger lizards, cats.</p>
       </section>
 
       <section class="sp-sec" id="photos">
@@ -724,19 +725,6 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 <script>
 var PHOTOS=[{"src": "photos/PSBP-99999/635346033.jpg", "alt": "Brown anole on a hand-painted Native Plants sign", "note": "On the native-plant sign, which it is not.", "by": "Cole Guyton", "n": 13, "date": "5 June 2024", "lead": true}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg", "alt": "Brown anole head-down on a tree trunk", "note": "", "by": "David Vanderbilt", "n": 9, "date": "18 March 2024"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg", "alt": "Brown anole on the rim of a planter", "note": "", "by": "Yavid Justiniano", "n": 14, "date": "18 March 2024"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg", "alt": "Brown anole among broad green leaves", "note": "", "by": "Denise Sosa", "n": 46, "date": "2 February 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg", "alt": "Brown anole on a park plant label reading NOT NATIVE", "note": "On a park label reading NOT NATIVE (S America) \u2014 about the philodendron, but it fits.", "by": "celestes", "n": 7, "date": "8 February 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg", "alt": "Well-camouflaged brown anole among lichen", "note": "", "by": "celestes", "n": 7, "date": "12 May 2024"}];
 
-/* Demo toggles */
-document.querySelectorAll('.sp-demo-bar button').forEach(function(b){
-  b.addEventListener('click',function(){
-    document.body.dataset[b.dataset.k]=b.dataset.v; syncBar();
-  });
-});
-function syncBar(){
-  document.querySelectorAll('.sp-demo-bar button').forEach(function(b){
-    b.setAttribute('aria-pressed', document.body.dataset[b.dataset.k]===b.dataset.v);
-  });
-}
-syncBar();
-
 /* ── GALLERY LIGHTBOX ─────────────────────────────────────────────────
    Swipe is the primary control. The threshold (60px horizontal, and at least
    1.6x the vertical movement) is lifted from the nature.html drawer so the two
@@ -760,6 +748,16 @@ function openLb(i){ cur=i; paintLb(); lb.classList.add('on'); lb.setAttribute('a
 function closeLb(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
   document.body.style.overflow=''; cur=-1; }
 function stepLb(d){ var j=cur+d; if(j<0||j>=PHOTOS.length) return; cur=j; paintLb(); }
+
+/* Apply the stored focus point to every photograph that has one. In the real
+   publisher this is written server-side from photo_credits.json; done here at
+   runtime so the demo reads the same field rather than a hardcoded value.
+   Photos with no focus fall back to centre, which is what five of these six
+   currently do — worth setting for tall portraits, where centre-cropping a
+   4:5 thumbnail can lose the animal entirely. */
+document.querySelectorAll('img[data-focus]').forEach(function(im){
+  im.style.objectPosition = im.dataset.focus;
+});
 
 var heroGal=document.getElementById('heroGal');
 if(heroGal) heroGal.addEventListener('click',function(){ openLb(0); });
