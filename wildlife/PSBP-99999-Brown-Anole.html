@@ -93,6 +93,12 @@
    dominance: at full width they out-shouted the prose they were meant to
    punctuate. ── */
 :root{ --col: 66ch; }
+
+/* The section band's ::before reaches -50vw each side to go full-bleed, which
+   is real overflow: on a phone the page slid sideways about an inch. `clip`
+   rather than `hidden` — hidden on html/body silently breaks position:sticky
+   on descendants, and the rail depends on it. */
+html{overflow-x:clip}
 /* ── SECTION BANDS — the alternation the rest of the site already uses
      (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
      section so the eye gets a boundary without any new component. */
@@ -156,7 +162,7 @@ body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
 
    Solid dark chip rather than a translucent overlay, for the same reason the
    lightbox controls are: this gets used on a phone in full sun. */
-.sp-herogal{position:absolute;right:1.1rem;bottom:1.2rem;z-index:3;
+.sp-herogal{position:absolute;right:1.1rem;bottom:4.2rem;z-index:3;
   display:inline-flex;align-items:center;gap:.6rem;
   background:rgba(12,20,13,.82);border:1px solid rgba(255,255,255,.35);
   color:#fff;font-family:var(--sans);font-size:.88rem;font-weight:600;
@@ -166,7 +172,9 @@ body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
 .sp-herogal svg{flex:none;opacity:.92}
 .sp-herogal .n{color:var(--gold-mark)}
 @media (max-width:600px){
-  .sp-herogal{right:.8rem;bottom:.8rem;font-size:.82rem;padding:.5rem .8rem .5rem .55rem}
+  /* Above the credit bar, not on it. The bar sits at the bottom of the hero
+     and the chip was landing on the photographer's name. */
+  .sp-herogal{right:.8rem;bottom:auto;top:.8rem;font-size:.82rem;padding:.5rem .8rem .5rem .55rem}
 }
 /* ── HERO FILMSTRIP — the alternative to the chip. Three thumbnails down the
      right edge, the last carrying the remaining count. Shows what is in the
@@ -435,6 +443,8 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 
         <div class="sp-block"><div class="sp-block-label">Throat fan</div>
           <p>Males flash a reddish-orange dewlap edged in yellow. The native green anole's is pink — that single detail settles most identifications.</p></div>
+        <div class="sp-block"><div class="sp-block-label">Voice</div>
+          <p>Essentially silent. Anoles talk with their bodies — push-ups and the dewlap — not with sound. You will never hear one.</p></div>
         <div class="sp-block"><div class="sp-block-label">Body</div>
           <p>Stocky, short-snouted, with ridged scales that give the back a slightly rough look. Five to eight inches long, tail included; males run larger.</p></div>
         <div class="sp-block"><div class="sp-block-label">Where it sits</div>
