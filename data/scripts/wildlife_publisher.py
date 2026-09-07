@@ -539,6 +539,11 @@ def v2_what_it_does_here(species):
         parts.append(inv.get("notes"))
     if species.get("native") is not False and origin:
         parts.append(origin)
+    # more_information last: it is the "in depth" catch-all and on most records
+    # it expands what the fields above state. On the anole it holds the toepad
+    # evolution story — the single best fact in the file, and unmapped until
+    # the first template diff showed 44 words missing here.
+    parts.append(species.get("more_information"))
     return _v2_section("does", "What it does here", _v2_paras(*parts))
 
 
