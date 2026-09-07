@@ -2580,17 +2580,53 @@ async function loadRightNow(targetId, opts) {
   /* Delegated, so it survives every re-render of the grid. Fires alongside the
      drawer's own handler on desktop — storing costs nothing there, and it is
      what makes the drawer's "Full plant page" button land with a sequence. */
+  /* Two fixes, 2026-09-07.
+
+     1. KIND BY GRID, NOT BY CLASS. wildCard() emits `class="card plant-card"`
+        — the same class plantCard() uses — so classList.contains('plant-card')
+        was true for ANIMALS. Every wildlife card stored the PLANT list under
+        kind 'plant', which is why the sequence nav walked the wrong species and
+        "back to the list" restored the wrong rail. The grid the card sits in is
+        the only reliable signal.
+
+     2. RE-CAPTURE ON THE WAY OUT OF THE DRAWER. This fires on card clicks only,
+        so arrowing through thirty species inside the panel never updated the
+        stored state — leaving the page and filters as they were at the FIRST
+        card. The drawer's "Read the full story" link (a.dw-more) is the real
+        exit, and while the panel is open the URL says which record and which
+        kind, so that is what it reads. */
   document.addEventListener('click', function (e) {
-    var card = e.target.closest && e.target.closest('a.plant-card, a.obs-card');
+    var card = e.target.closest && e.target.closest('a.plant-card, a.obs-card, a.dw-more');
     if (!card) return;
     try {
-      var plant = card.classList.contains('plant-card');
-      var list  = plant ? (typeof _filteredPlants !== 'undefined' ? _filteredPlants : null)
-                        : (typeof _filteredWild   !== 'undefined' ? _filteredWild   : null);
-      var m = /(PSBP-\d{5})/.exec(card.getAttribute('href') || '');
-      remember(list, m ? m[1] : null, plant ? 'plant' : 'wild');
+      var isWild, list, id;
+
+      if (card.classList.contains('dw-more')) {
+        var h = /^#(plant|wildlife)\/(PSBP-\d{5})/.exec(location.hash || '');
+        if (!h) return;                     // panel not open — nothing to record
+        isWild = h[1] === 'wildlife';
+        id     = h[2];
+      } else {
+        var host = card.parentElement;
+        isWild = !!(host && host.id === 'wildGrid') || card.classList.contains('obs-card');
+        var m  = /(PSBP-\d{5})/.exec(card.getAttribute('href') || '');
+        id     = m ? m[1] : null;
+      }
+
+      list = isWild ? (typeof _filteredWild   !== 'undefined' ? _filteredWild   : null)
+                    : (typeof _filteredPlants !== 'undefined' ? _filteredPlants : null);
+      remember(list, id, isWild ? 'wild' : 'plant');
     } catch (err) {}
   }, true);
+
+  /* Poll for a condition, then run. Used because loadWildlife() fetches without
+     exposing a promise; 40 x 75ms = 3s, then give up quietly. */
+  function whenReady(test, run, tries) {
+    tries = tries == null ? 40 : tries;
+    if (test()) { run(); return; }
+    if (tries <= 0) return;
+    setTimeout(function () { whenReady(test, run, tries - 1); }, 75);
+  }
 
   /* ── RESTORE SIDE — nature.html?#restore ──────────────────────────────── */
 
@@ -2610,21 +2646,38 @@ async function loadRightNow(targetId, opts) {
       var w = document.getElementById('wildSearch');  if (w) w.value = f.wq || '';
       if (typeof filterPlants === 'function') filterPlants();
 
-      /* Wildlife half, added 2026-09-07. filterWildlife() rebuilds _filteredWild
-         and resets _wildPage, so the page is set AFTER it, same order as plants.
-         Restoring both rails is deliberate: the two tabs keep independent state
-         and a visitor may have set up either one before leaving. */
-      if (typeof _wildFilters !== 'undefined' && f.wflags) {
-        _wildFilters.clear();
-        f.wflags.forEach(function (x) { _wildFilters.add(x); });
-        document.querySelectorAll('[data-wfilter]').forEach(function (b) {
-          b.classList.toggle('on', _wildFilters.has(b.dataset.wfilter));
-        });
-      }
-      if (typeof filterWildlife === 'function') filterWildlife();
-      if (typeof _wildPage !== 'undefined' && f.wpage) {
-        _wildPage = f.wpage;
-        if (typeof renderWildPage === 'function') renderWildPage();
+      /* ── WILDLIFE HALF (2026-09-07) ────────────────────────────────────
+         Two things make this different from the plant half:
+
+         1. THE TAB. `s.hash` ('#plants' / '#wildlife') has been stored since
+            this shipped and was never read, so returning from an animal page
+            always landed on the plants tab — with the animal's filters applied
+            to a grid nobody was looking at.
+
+         2. LAZY LOADING. wildlife.json is fetched by showTab('wildlife') the
+            first time that tab opens, so on a cold #restore WILDLIFE is empty
+            and filtering it does nothing. The 120ms delay before restore()
+            covers the feeds, not a fetch that has not started yet. So: switch
+            the tab, then wait for the data, then apply. */
+      if (s.kind === 'wild') {
+        if (typeof showTab === 'function') showTab('wildlife');
+        whenReady(function () { return typeof WILDLIFE !== 'undefined' && WILDLIFE.length; },
+          function () {
+            if (typeof _wildFilters !== 'undefined' && f.wflags) {
+              _wildFilters.clear();
+              f.wflags.forEach(function (x) { _wildFilters.add(x); });
+              document.querySelectorAll('[data-wfilter]').forEach(function (b) {
+                b.classList.toggle('on', _wildFilters.has(b.dataset.wfilter));
+              });
+            }
+            if (typeof filterWildlife === 'function') filterWildlife();
+            if (typeof _wildPage !== 'undefined' && f.wpage) {
+              _wildPage = f.wpage;
+              if (typeof renderWildPage === 'function') renderWildPage();
+            }
+            setTimeout(function () { window.scrollTo(0, f.scroll || 0); }, 60);
+          });
+        return;                       // plant half below would fight the tab
       }
 
       /* renderPlantPage() takes NO argument — it reads the _plantPage global.
