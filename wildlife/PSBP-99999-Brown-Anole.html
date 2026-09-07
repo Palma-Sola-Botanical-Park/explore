@@ -39,11 +39,11 @@
    NOTE THE AXIS: the second value is which part of the SOURCE lands in view,
    so a HIGHER percentage shows more of the BOTTOM. To see more of an animal
    sitting high in the frame, the number goes DOWN, not up. */
-/* The site nav is position:fixed, so the hero has to start below it or the
-   nav crops the top of the photograph — which on this species is the animal's
-   head. Height is measured from the nav, not the viewport. */
-.sp-hero{position:relative;margin-top:var(--nav-h);
-  height:clamp(340px,50vh,520px);overflow:hidden;background:var(--green-ink)}
+/* No nav offset here: psbp.css already puts padding-top:var(--nav-h) on body
+   for the fixed nav. Adding a margin as well produced a 64px white band between
+   the nav and the hero. */
+.sp-hero{position:relative;height:clamp(340px,50vh,520px);
+  overflow:hidden;background:var(--green-ink)}
 .sp-hero img{width:100%;height:100%;object-fit:cover;display:block}
 .sp-hero-scrim{position:absolute;inset:0;
   background:linear-gradient(to top,rgba(15,25,17,.88) 0%,rgba(15,25,17,.35) 45%,rgba(15,25,17,.05) 100%)}
@@ -197,7 +197,7 @@ body[data-hero="strip"] .sp-herogal{display:none}
    into a horizontally scrolling chip strip: that strip hid "Conservation
    notes" past the right edge on a 390px screen with no sign it existed.
    A species page is short enough to scroll. */
-.sp-rail{position:sticky;top:1.5rem;font-family:var(--sans)}
+.sp-rail{position:sticky;top:calc(var(--nav-h) + 1.5rem);font-family:var(--sans)}
 .sp-rail-title{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;
   color:var(--ink-faint);font-weight:700;margin-bottom:.8rem}
 .sp-rail a{display:block;padding:.42rem 0;font-size:.95rem;color:var(--ink-soft);
@@ -216,7 +216,10 @@ body[data-hero="strip"] .sp-herogal{display:none}
 .sp-quick li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;
   border-radius:50%;background:var(--gold-mark)}
 /* ── SECTIONS ───────────────────────────────────────────────────────── */
-.sp-sec{margin-bottom:2.8rem;scroll-margin-top:1.5rem}
+/* Clear the fixed nav. At 1.5rem a jump from the rail put the heading
+   underneath the nav bar — the section looked like it started at its first
+   paragraph. */
+.sp-sec{margin-bottom:2.8rem;scroll-margin-top:calc(var(--nav-h) + 1.5rem)}
 .sp-sec h2{font-family:var(--serif);font-size:clamp(1.4rem,3vw,1.85rem);
   color:var(--green-ink);margin:0 0 .2rem;line-height:1.2}
 .sp-sec-rule{height:1px;background:var(--rule);margin:0 0 1.3rem}
@@ -263,32 +266,7 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
    Every photo taken by a named person. The credit is part of the picture,
    not a footnote at the bottom of the page — that is the whole point of
    this catalogue. */
-/* Grid with a lead image. Uniform tiles of portrait photos plus a boxed plate
-   under each read as a form, not a gallery — that was the "not pretty".
-   The first photograph runs wide, the rest fill in, and the credit is ONE
-   elegant line with the person's name in the serif, not a bordered plate.
-
-   Credits stay visible (they are the point) but stop competing with the
-   photographs for weight. The rich version — name, contribution count, link
-   to their other work — lives in the lightbox, where there is room for it. */
-.sp-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-  gap:1.5rem 1.1rem}
-.sp-gal figure{margin:0}
-.sp-gal figure.lead{grid-column:span 2}
-.sp-gal .shot{overflow:hidden;background:var(--wash);border-radius:3px;cursor:zoom-in;
-  aspect-ratio:4/5;position:relative}
-.sp-gal figure.lead .shot{aspect-ratio:16/10}
-.sp-gal img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
-.sp-gal .shot:hover img{transform:scale(1.04)}
-.sp-gal .shot::after{content:"";position:absolute;inset:0;background:rgba(20,30,20,0);
-  transition:background .25s}
-.sp-gal .shot:hover::after{background:rgba(20,30,20,.12)}
-.sp-gal figcaption{margin-top:.55rem;font-family:var(--sans);font-size:.8rem;
-  color:var(--ink-faint);line-height:1.45}
-.sp-gal .by{display:block;font-family:var(--serif);font-size:1.02rem;
-  color:var(--green-ink);line-height:1.25}
-.sp-gal .note{display:block;color:var(--ink-soft);font-size:.83rem;margin-top:.3rem}
-/* ── ALSO KNOWN AS/* ── ALSO KNOWN AS — was a grey footnote nobody could see. It is a real
+/* ── ALSO KNOWN ASLSO KNOWN AS — was a grey footnote nobody could see. It is a real
      answer to a real question ("I know this as a Cuban anole"), so it gets
      a labelled block like everything else that matters. */
 .sp-aka{border-top:1px solid var(--rule);margin-top:2.4rem;padding-top:1.2rem;max-width:var(--col)}
@@ -315,7 +293,10 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
      · The credit is the interesting part, not a metadata string: the person's
        name, and how much of this park they have photographed.
    No emoji — the same reason they came out of visit.html. */
-.lb{position:fixed;inset:0;background:rgba(10,14,10,.97);z-index:100;
+/* Above #site-nav, which is z-index 900. At 100 the fixed nav sat on top of
+   the lightbox: it cropped the photograph AND hid the close button, so there
+   was no visible way out. */
+.lb{position:fixed;inset:0;background:rgba(10,14,10,.97);z-index:1000;
   display:none;flex-direction:column}
 .lb.on{display:flex}
 .lb-stage{flex:1;display:flex;align-items:center;justify-content:center;
@@ -337,9 +318,11 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 .lb-btn:disabled{opacity:.28;cursor:default}
 .lb-count{font-family:var(--sans);font-size:.85rem;color:rgba(255,255,255,.7);
   min-width:3.4rem;text-align:center}
-.lb-close{position:absolute;top:.7rem;right:.9rem;background:rgba(0,0,0,.5);
-  border:1px solid rgba(255,255,255,.25);color:#fff;width:44px;height:44px;
-  border-radius:50%;font-size:1.5rem;cursor:pointer;line-height:1;z-index:2}
+.lb-close{position:absolute;top:1rem;right:1.2rem;background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.5);color:#fff;width:48px;height:48px;
+  border-radius:50%;font-size:1.7rem;cursor:pointer;line-height:1;z-index:2;
+  display:flex;align-items:center;justify-content:center}
+.lb-close:hover{background:rgba(255,255,255,.3)}
 .lb-hint{width:100%;font-family:var(--sans);font-size:.75rem;
   color:rgba(255,255,255,.45);text-align:center}
 @media (min-width:700px){.lb-hint{display:none}}
@@ -617,6 +600,10 @@ document.querySelectorAll('#gal figure').forEach(function(f){
 lbPrev.addEventListener('click',function(){stepLb(-1);});
 lbNext.addEventListener('click',function(){stepLb(1);});
 document.getElementById('lbClose').addEventListener('click',closeLb);
+/* Tapping the dark area around the photograph closes it — the first thing most
+   people try. Guarded on e.target so a tap ON the image does not close, and so
+   a swipe that ends on the backdrop is not read as a click. */
+lbStage.addEventListener('click',function(e){ if(e.target===lbStage) closeLb(); });
 document.addEventListener('keydown',function(e){
   if(!lb.classList.contains('on')) return;
   if(e.key==='Escape') closeLb();
