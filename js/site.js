@@ -2769,24 +2769,34 @@ async function loadRightNow(targetId, opts) {
 
     var css = document.createElement('style');
     css.textContent =
-      '.seq-nav{display:grid;grid-template-columns:1fr auto 1fr;gap:.75rem;align-items:stretch;' +
-        'max-width:1100px;margin:2.5rem auto 1.5rem;padding:0 1rem}' +
-      '.seq-btn{display:flex;flex-direction:column;justify-content:center;gap:.15rem;' +
-        'padding:.7rem .9rem;border:1px solid var(--border,#dde4e0);border-radius:10px;' +
-        'background:var(--cream,#faf8f3);text-decoration:none;min-height:3.4rem}' +
-      '.seq-btn:hover{border-color:var(--green-mid,#2d6a35)}' +
-      '.seq-empty{border:0;background:none}' +
-      '.seq-next{text-align:right}' +
-      '.seq-dir{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;' +
-        'color:var(--green-mid,#2d6a35)}' +
-      '.seq-name{font-size:.95rem;font-weight:700;color:var(--text,#1e1e1e);line-height:1.25}' +
-      '.seq-back{display:flex;flex-direction:column;align-items:center;justify-content:center;' +
-        'gap:.15rem;padding:.7rem 1.1rem;border-radius:10px;text-decoration:none;' +
-        'background:var(--green-deep,#1a3a1f);color:#fff;white-space:nowrap}' +
-      '.seq-ctx{font-size:.7rem;opacity:.85;letter-spacing:.03em}' +
-      '.seq-back-label{font-size:.9rem;font-weight:700}' +
-      '@media(max-width:640px){.seq-nav{grid-template-columns:1fr 1fr;gap:.5rem}' +
-        '.seq-back{grid-column:1/-1;order:3}.seq-empty{display:none}}';
+      /* One continuous bar (2026-09-07). It was three separate rounded boxes
+         with gaps between them, which read as loose fragments rather than the
+         end of the page. Now a single bordered object, three zones divided by
+         hairlines, each a large hit target. */
+      '.seq-nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;' +
+        'max-width:1100px;margin:2.5rem auto 2rem;border:1px solid var(--rule-strong,#d3cebd);' +
+        'border-radius:3px;background:var(--sunk,#f6f3ea);overflow:hidden;' +
+        'font-family:var(--sans,system-ui)}' +
+      '.seq-nav > *{padding:1.15rem 1.3rem;display:flex;flex-direction:column;' +
+        'justify-content:center;gap:.2rem;text-decoration:none;color:var(--ink,#23241f);' +
+        'transition:background .15s}' +
+      '.seq-nav > * + *{border-left:1px solid var(--rule-strong,#d3cebd)}' +
+      '.seq-nav a:hover{background:var(--surface,#fff)}' +
+      '.seq-empty{background:none}' +
+      '.seq-next{align-items:flex-end;text-align:right}' +
+      '.seq-dir{font-size:.68rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;' +
+        'color:var(--ink-faint,#8a8d82)}' +
+      '.seq-name{font-family:var(--serif,Georgia,serif);font-size:1.12rem;' +
+        'color:var(--green-ink,#1a3a1f);line-height:1.25}' +
+      '.seq-back{align-items:center;text-align:center;min-width:12rem;' +
+        'background:var(--paper,#fdfcf8)}' +
+      '.seq-ctx{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;' +
+        'color:var(--ink-faint,#8a8d82);font-weight:700}' +
+      '.seq-back-label{font-size:.98rem;color:var(--green,#2d6a35);font-weight:600}' +
+      '@media(max-width:640px){.seq-nav{grid-template-columns:1fr 1fr}' +
+        '.seq-back{grid-column:1/-1;order:3;min-width:0;border-left:0;' +
+        'border-top:1px solid var(--rule-strong,#d3cebd)}' +
+        '.seq-empty{display:none}}';
     document.head.appendChild(css);
   }
 

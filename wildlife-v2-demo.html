@@ -28,7 +28,11 @@
    NOTE THE AXIS: the second value is which part of the SOURCE lands in view,
    so a HIGHER percentage shows more of the BOTTOM. To see more of an animal
    sitting high in the frame, the number goes DOWN, not up. */
-.sp-hero{position:relative;height:min(56vh,460px);overflow:hidden;background:var(--green-ink)}
+/* The site nav is position:fixed, so the hero has to start below it or the
+   nav crops the top of the photograph — which on this species is the animal's
+   head. Height is measured from the nav, not the viewport. */
+.sp-hero{position:relative;margin-top:var(--nav-h);
+  height:clamp(400px,66vh,660px);overflow:hidden;background:var(--green-ink)}
 .sp-hero img{width:100%;height:100%;object-fit:cover;display:block}
 .sp-hero-scrim{position:absolute;inset:0;
   background:linear-gradient(to top,rgba(15,25,17,.88) 0%,rgba(15,25,17,.35) 45%,rgba(15,25,17,.05) 100%)}
@@ -560,7 +564,7 @@ body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
 
 
 <div class="sp-herocap">
-  <span class="cap">This one is sitting on a hand-painted sign for the native plant garden. Brown anoles are from Cuba.</span>
+  <span class="cap">This one is sitting on a hand-painted sign for the native plant garden.</span>
 </div>
 
 <div class="sp-wrap">
@@ -818,5 +822,8 @@ var io = new IntersectionObserver(function(entries){
 }, { rootMargin: '-10% 0px -70% 0px' });
 document.querySelectorAll('.sp-sec').forEach(function(s){ io.observe(s); });
 </script>
+<!-- site.js injects the site nav, the footer and the photo-credit layer. The
+     demo had no nav because this was missing — nothing to do with the CSS. -->
+<script src="js/site.js"></script>
 </body>
 </html>

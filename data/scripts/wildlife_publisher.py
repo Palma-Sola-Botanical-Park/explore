@@ -553,6 +553,11 @@ def _record_publish(corpus, species_id, input_hash, generator, filename, stamp):
         print(f"  ⚠ publish_state not updated for {species_id}: {e}")
 
 
+# Marker that says "a human wrote this page; do not regenerate it". Kept as a
+# constant so the guard and the pages that carry it can never drift apart.
+HANDBUILT_SENTINEL = "PSBP-HANDBUILT-V2"
+
+
 def write_html(species, hero, gallery_photos=None, dry_run=False):
     """Write the page. Sole write path for wildlife pages — every caller
     (dashboard, CLI publish, --generate-all) routes through here, which is why
@@ -571,6 +576,24 @@ def write_html(species, hero, gallery_photos=None, dry_run=False):
     html_content = generate_html(species, hero, gallery_photos, published_on=prev)
     if dry_run:
         return path, html_content
+
+    # ── HAND-BUILT PAGE GUARD (2026-09-07) ────────────────────────────────
+    # During the v2 rework, species pages are being written by hand one at a
+    # time while the publisher still emits the old template. A hand-built page
+    # carries the sentinel below; regenerating would silently replace hours of
+    # work with the layout it was meant to retire — and nothing would look
+    # wrong, because the output is a perfectly valid old-style page.
+    #
+    # Refuse, loudly. Set PSBP_OVERWRITE_HANDBUILT=1 to publish over it once the
+    # generator can actually produce the new layout.
+    if path.exists() and not os.environ.get("PSBP_OVERWRITE_HANDBUILT"):
+        try:
+            if HANDBUILT_SENTINEL in path.read_text(encoding="utf-8"):
+                print(f"  ⛔ {path.name} is hand-built (v2) — NOT overwriting.")
+                print("     Set PSBP_OVERWRITE_HANDBUILT=1 to replace it.")
+                return path, None
+        except OSError:
+            pass
 
     if page_content_changed(path, html_content):
         stamp = today_iso()

@@ -1,68 +1,1002 @@
 <!DOCTYPE html>
+<!-- PSBP-HANDBUILT-V2 ═══════════════════════════════════════════════════════
+     Written by hand, 2026-09-07, as the first page in the v2 layout. The
+     generator still emits the OLD template, so wildlife_publisher.write_html()
+     refuses to overwrite any page carrying this marker — regenerating would
+     replace this with the layout it exists to retire, and the result would look
+     perfectly valid, which is what makes it dangerous.
+
+     Content comes from data/sources/wildlife_v2_sample.json (nothing reads that
+     file yet) and the captions from the `note` fields on photo_credits.json.
+     When the publisher can produce this layout, delete the marker and generate.
+     ══════════════════════════════════════════════════════════════════════ -->
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brown Anole · Palma Sola Botanical Park</title>
-<link rel="stylesheet" href="../css/site.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brown Anole (Anolis sagrei) — Palma Sola Botanical Park</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/wildlife-page.css">
-</head>
-<body>
-<div id="nav-placeholder"></div>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<style>
+/* ══ SPECIES PAGE v2 — DEMO ═══════════════════════════════════════════════
+   Deliberately linked to psbp.css, NOT the wildlife-page.css fork the live
+   species pages use. Those pages were built on site.css + wildlife-page.css
+   and never got the tokens the rest of the site runs on, so they look like a
+   different website. Same fonts, same greens, same rules here.
+   Continues the pp-* language from plantpagev2-3.html so plants and wildlife
+   converge instead of forking a third time. ══════════════════════════════ */
 
-<div class="wild-wrap theme-other">
-  <div class="wild-hero">
-    <img style="cursor:pointer;object-position:65% 66%" src="../photos/PSBP-99999/635346033.jpg" alt="Brown Anole at Palma Sola Botanical Park" onclick="openLB(0)">
-    <div class="wild-hero-overlay">
-      <div class="wild-hero-category">Lizards</div>
-      <div class="wild-hero-name">Brown Anole</div>
-    </div>
+/* ── HERO ───────────────────────────────────────────────────────────────
+   Portrait source (1152x2048) in a wide, short box, so object-fit:cover crops
+   hard top and bottom and the focus point decides everything.
+
+   FOCUS COMES FROM THE DATA, not from this stylesheet. photo_credits.json
+   stores `focus` per photo ("65% 66%" for this hero); the publisher writes it
+   into the element's object-position. Hardcoding it here meant editing the
+   JSON changed nothing — which is exactly the bug that hid this.
+
+   NOTE THE AXIS: the second value is which part of the SOURCE lands in view,
+   so a HIGHER percentage shows more of the BOTTOM. To see more of an animal
+   sitting high in the frame, the number goes DOWN, not up. */
+/* The site nav is position:fixed, so the hero has to start below it or the
+   nav crops the top of the photograph — which on this species is the animal's
+   head. Height is measured from the nav, not the viewport. */
+.sp-hero{position:relative;margin-top:var(--nav-h);
+  height:clamp(400px,66vh,660px);overflow:hidden;background:var(--green-ink)}
+.sp-hero img{width:100%;height:100%;object-fit:cover;display:block}
+.sp-hero-scrim{position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(15,25,17,.88) 0%,rgba(15,25,17,.35) 45%,rgba(15,25,17,.05) 100%)}
+.sp-hero-inner{position:absolute;left:0;right:0;bottom:0;padding:2rem 1.4rem 1.6rem;
+  max-width:1100px;margin:0 auto}
+.sp-eyebrow{font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--gold-mark);font-weight:700;margin-bottom:.5rem}
+.sp-name{font-family:var(--serif);font-size:clamp(2rem,5.5vw,3.2rem);color:#fff;
+  line-height:1.05;margin:0}
+.sp-sci{font-family:var(--serif);font-style:italic;font-size:clamp(1rem,2.2vw,1.3rem);
+  color:rgba(255,255,255,.82);margin-top:.3rem}
+
+
+/* ── HERO GALLERY CUE — "there are more pictures, here" ──────────────────
+   The universal pattern: stacked-photo icon + a count, bottom corner of the
+   hero, opening the lightbox at the first image. A visitor who only wants
+   pictures should not have to scroll past four sections of prose to find
+   them.
+
+   Solid dark chip rather than a translucent overlay, for the same reason the
+   lightbox controls are: this gets used on a phone in full sun. */
+.sp-herogal{position:absolute;right:1.1rem;bottom:1.2rem;z-index:3;
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:rgba(12,20,13,.82);border:1px solid rgba(255,255,255,.35);
+  color:#fff;font-family:var(--sans);font-size:.88rem;font-weight:600;
+  padding:.55rem .95rem .55rem .6rem;border-radius:2rem;cursor:pointer;
+  backdrop-filter:blur(3px);transition:background .2s,transform .2s}
+.sp-herogal:hover{background:rgba(12,20,13,.95);transform:translateY(-1px)}
+.sp-herogal svg{flex:none;opacity:.92}
+.sp-herogal .n{color:var(--gold-mark)}
+@media (max-width:600px){
+  .sp-herogal{right:.8rem;bottom:.8rem;font-size:.82rem;padding:.5rem .8rem .5rem .55rem}
+}
+
+
+/* ── HERO FILMSTRIP — the alternative to the chip. Three thumbnails down the
+     right edge, the last carrying the remaining count. Shows what is in the
+     gallery rather than just announcing that one exists.
+     Below 700px it is suppressed and the chip takes over: three thumbs on a
+     phone hero are too small to read and eat the photograph. */
+.sp-strip{position:absolute;right:1rem;top:50%;transform:translateY(-50%);z-index:3;
+  display:none;flex-direction:column;gap:.5rem}
+body[data-hero="strip"] .sp-strip{display:flex}
+body[data-hero="strip"] .sp-herogal{display:none}
+.sp-strip button{width:78px;height:78px;padding:0;border:2px solid rgba(255,255,255,.75);
+  border-radius:3px;overflow:hidden;cursor:pointer;background:none;position:relative;
+  transition:transform .18s,border-color .18s}
+.sp-strip button:hover{transform:scale(1.05);border-color:#fff}
+.sp-strip img{width:100%;height:100%;object-fit:cover;display:block}
+.sp-strip .more{position:absolute;inset:0;background:rgba(12,20,13,.72);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-family:var(--sans);
+  font-size:.95rem;font-weight:700}
+@media (max-width:760px){
+  body[data-hero="strip"] .sp-strip{display:none}
+  body[data-hero="strip"] .sp-herogal{display:inline-flex}
+}
+
+
+/* Hero credit sits inside the picture, bottom right — the site-standard
+   .photo-attr bar, contents right-aligned. */
+.sp-heroattr{align-items:flex-end;text-align:right;padding:var(--s3) var(--s4)}
+.sp-heroattr .attr-line{justify-content:flex-end}
+.sp-heroattr .cc-badge{display:inline-flex;border:1px solid rgba(255,255,255,.4);
+  border-radius:2px;overflow:hidden;font-size:.6rem;font-weight:700;line-height:1;
+  color:#fff}
+.sp-heroattr .cc-badge .cc-mark{font-family:Georgia,serif;text-transform:lowercase;padding:.24em .34em}
+.sp-heroattr .cc-badge .cc-term{padding:.24em .34em;border-left:1px solid rgba(255,255,255,.3)}
+
+/* ── HERO CAPTION ───────────────────────────────────────────────────────
+   The hero's caption was buried in the gallery at the foot of the page, where
+   the one line that makes the image worth looking at arrived long after the
+   image. It belongs directly under the photograph, where it lands on arrival.
+
+   It also carries the photographer, which replaces the translucent chip that
+   used to float in the top corner of the hero — unreadable over a bright
+   photo, and a worse place for a person's name than a caption line. */
+.sp-herocap{max-width:1100px;margin:0 auto;padding:.9rem 1.4rem 0;
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:.3rem 1rem}
+.sp-herocap .cap{font-family:var(--sans);font-size:var(--t-base);
+  color:var(--ink-soft);line-height:1.65;max-width:60ch}
+.sp-herocap .by{font-family:var(--sans);font-size:.8rem;color:var(--ink-faint);
+  white-space:nowrap}
+.sp-herocap .by b{color:var(--green-ink);font-weight:600}
+
+/* ── THE TWO WIDTHS ─────────────────────────────────────────────────────
+   The page had five different right edges and no rule saying which applied,
+   so it read as accidental. There are now exactly two:
+
+     --col   the reading column (66ch). EVERYTHING in the flow sits here —
+             paragraphs, labelled blocks, the look-alike callout, in-flow
+             photographs, the pull quote, "Also known as".
+     full    deliberate breakouts, and only two of them: the photograph grid
+             and the sequence bar that ends the page.
+
+   Putting the in-flow photographs in the reading column also fixes their
+   dominance: at full width they out-shouted the prose they were meant to
+   punctuate. ── */
+:root{ --col: 66ch; }
+
+/* ── LAYOUT ─────────────────────────────────────────────────────────── */
+.sp-wrap{max-width:1100px;margin:0 auto;padding:0 1.4rem}
+.sp-cols{display:grid;grid-template-columns:200px 1fr;gap:3rem;align-items:start;
+  padding:2.6rem 0 3rem}
+
+/* Rail — DESKTOP ONLY. On a phone it is removed entirely rather than turned
+   into a horizontally scrolling chip strip: that strip hid "Conservation
+   notes" past the right edge on a 390px screen with no sign it existed.
+   A species page is short enough to scroll. */
+.sp-rail{position:sticky;top:1.5rem;font-family:var(--sans)}
+.sp-rail-title{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-faint);font-weight:700;margin-bottom:.8rem}
+.sp-rail a{display:block;padding:.42rem 0;font-size:.95rem;color:var(--ink-soft);
+  text-decoration:none;border-left:2px solid transparent;padding-left:.8rem;
+  transition:color .15s,border-color .15s}
+.sp-rail a:hover{color:var(--green)}
+.sp-rail a.on{color:var(--green-ink);font-weight:600;border-left-color:var(--gold-mark)}
+
+/* ── QUICK HITS — the top of the page, not a section among sections ──────
+   These are the best material on the page, so they get the first screen and
+   a treatment nothing else competes with. */
+.sp-quick{border-top:3px solid var(--gold-mark);background:var(--sunk);
+  padding:1.8rem 1.6rem;margin-bottom:2.6rem;max-width:var(--col)}
+.sp-quick ul{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
+.sp-quick li{font-size:1.13rem;line-height:1.62;color:var(--ink);
+  padding-left:1.4rem;position:relative}
+.sp-quick li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;
+  border-radius:50%;background:var(--gold-mark)}
+
+/* ── SECTIONS ───────────────────────────────────────────────────────── */
+.sp-sec{margin-bottom:2.8rem;scroll-margin-top:1.5rem}
+.sp-sec h2{font-family:var(--serif);font-size:clamp(1.4rem,3vw,1.85rem);
+  color:var(--green-ink);margin:0 0 .2rem;line-height:1.2}
+.sp-sec-rule{height:1px;background:var(--rule);margin:0 0 1.3rem}
+.sp-sec p{font-size:var(--t-base);line-height:1.78;color:var(--ink);margin:0 0 1.1rem;
+  max-width:var(--col)}
+
+/* A labelled block. label is optional: it means "this block is a distinct
+   thing worth signposting", null means "just the next paragraph". */
+.sp-block{margin-bottom:1.25rem;max-width:var(--col)}
+.sp-block-label{font-family:var(--sans);font-size:.74rem;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:700;color:var(--green);margin-bottom:.3rem}
+.sp-block p{margin:0}
+
+/* ── SIMILAR SPECIES — the look-alike callout. `similar_species` is on 23
+   records and renders nowhere today. For a park where telling two anoles
+   apart is the whole game, this is high-value and belongs near the top. */
+.sp-similar{border:1px solid var(--rule-strong);border-left:4px solid var(--gold-mark);
+  background:var(--paper);padding:1.1rem 1.3rem;margin:0 0 1.4rem;max-width:var(--col)}
+.sp-similar-h{font-family:var(--sans);font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-faint);margin-bottom:.45rem}
+.sp-similar p{margin:0;font-size:var(--t-base);line-height:1.7}
+.sp-similar a{color:var(--green);font-weight:600}
+
+/* ── IN-FLOW PHOTOGRAPH — the main answer to "it's a wall of text".
+     A species page had six photographs sitting in a pile at the end. Moving
+     three of them INTO the prose breaks the column and puts the park's one
+     irreplaceable asset where it does work. Placement is editorial, not
+     decorative: the ID shot sits with identification, the sign shot sits with
+     the introduced-species story. */
+.sp-figure{margin:1.8rem 0 2rem;max-width:var(--col)}
+.sp-figure img{width:100%;max-height:330px;object-fit:cover;display:block;border-radius:2px;cursor:zoom-in}
+.sp-figure figcaption{font-family:var(--sans);font-size:.86rem;line-height:1.6;
+  color:var(--ink-soft);margin-top:.6rem;padding-left:.9rem;
+  border-left:2px solid var(--gold-mark)}
+.sp-figure figcaption a{color:var(--green);font-weight:600}
+.sp-figure .cr{display:block;color:var(--ink-faint);font-size:.76rem;margin-top:.2rem}
+
+/* ── SECTION BANDS — the alternation the rest of the site already uses
+     (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
+     section so the eye gets a boundary without any new component. */
+body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
+body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
+  top:0;bottom:0;left:-50vw;right:-50vw;background:var(--wash);z-index:-1}
+
+/* ── GALLERY ────────────────────────────────────────────────────────────
+   Every photo taken by a named person. The credit is part of the picture,
+   not a footnote at the bottom of the page — that is the whole point of
+   this catalogue. */
+/* ── THE CREDITS ROLL ───────────────────────────────────────────────────
+   This section is NOT the gallery — the lightbox is. Its job is to make every
+   photographer legible without anyone having to tap: five names visible at a
+   glance is the community fact stated by showing rather than claiming.
+
+   So it stops pretending to be a gallery. Small square thumbnail, the site's
+   standard .credit-plate beside it (psbp.css / PSBPPhotos.creditPlate), two or
+   three per row. Denser, much shorter, and not one credit lost. Clicking any
+   of them opens the lightbox at that photograph, where the picture is actually
+   meant to be looked at. */
+.sp-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:.7rem 1.1rem}
+.sp-gal figure{margin:0;display:grid;grid-template-columns:68px 1fr;gap:.8rem;
+  align-items:center;padding:.5rem;border:1px solid var(--rule);border-radius:3px;
+  background:var(--surface);transition:border-color .15s,background .15s}
+.sp-gal figure:hover{border-color:var(--rule-strong);background:var(--paper)}
+.sp-gal .shot{width:68px;height:68px;overflow:hidden;border-radius:2px;
+  background:var(--wash);cursor:zoom-in}
+.sp-gal img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .35s ease}
+.sp-gal .shot:hover img{transform:scale(1.07)}
+.sp-gal figcaption{min-width:0}
+
+/* The standard plate, unboxed — the tile is already the box. */
+/* The plate, unboxed — the tile is already the box.
+   Everything that qualifies the photograph (date, licence, source) sits on ONE
+   line directly beneath the name, so the credit reads as a single unit instead
+   of a name with loose metadata drifting away from it. The CC mark uses the
+   site's .cc-badge component rather than the words "CC-BY-NC", which carries
+   the same information with far more presence at a smaller size. */
+.sp-gal .credit-plate{display:block;padding:0;border:0;background:none;min-width:0}
+.sp-gal .credit-eyebrow{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);font-weight:700;display:block}
+/* Names WRAP. nowrap + ellipsis guaranteed truncation — "David Vanderbilt"
+   was chopped at sixteen characters, so anything longer had no chance. A name
+   is the one thing on this tile that must never be abbreviated. */
+.sp-gal .credit-name{font-family:var(--serif);font-size:1.08rem;font-weight:400;
+  color:var(--green-ink);line-height:1.25;display:block;margin-top:.12rem;
+  overflow-wrap:break-word}
+.sp-gal .credit-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.34rem .5rem;
+  margin-top:.34rem;font-family:var(--sans);font-size:.72rem;color:var(--ink-faint)}
+.sp-gal .credit-meta .sep{opacity:.5}
+.sp-gal .cc-badge{display:inline-flex;border:1px solid var(--rule-strong);
+  border-radius:2px;overflow:hidden;font-size:.62rem;font-weight:700;
+  letter-spacing:.03em;color:var(--green-ink);background:var(--paper);line-height:1}
+.sp-gal .cc-badge .cc-mark{font-family:Georgia,serif;text-transform:lowercase;
+  padding:.22em .34em}
+.sp-gal .cc-badge .cc-term{padding:.22em .34em;border-left:1px solid var(--rule)}
+
+/* ── ALSO KNOWN AS/* ── ALSO KNOWN AS — was a grey footnote nobody could see. It is a real
+     answer to a real question ("I know this as a Cuban anole"), so it gets
+     a labelled block like everything else that matters. */
+.sp-aka{border-top:1px solid var(--rule);margin-top:2.4rem;padding-top:1.2rem;max-width:var(--col)}
+.sp-aka .sp-block-label{margin-bottom:.35rem}
+.sp-aka p{margin:0;font-size:var(--t-base);color:var(--ink)}
+.sp-aka em{color:var(--ink-soft);font-style:normal}
+
+/* ── HERO GALLERY CUE — "there are more pictures, here" ──────────────────
+   The universal pattern: stacked-photo icon + a count, bottom corner of the
+   hero, opening the lightbox at the first image. A visitor who only wants
+   pictures should not have to scroll past four sections of prose to find
+   them.
+
+   Solid dark chip rather than a translucent overlay, for the same reason the
+   lightbox controls are: this gets used on a phone in full sun. */
+.sp-herogal{position:absolute;right:1.1rem;bottom:1.2rem;z-index:3;
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:rgba(12,20,13,.82);border:1px solid rgba(255,255,255,.35);
+  color:#fff;font-family:var(--sans);font-size:.88rem;font-weight:600;
+  padding:.55rem .95rem .55rem .6rem;border-radius:2rem;cursor:pointer;
+  backdrop-filter:blur(3px);transition:background .2s,transform .2s}
+.sp-herogal:hover{background:rgba(12,20,13,.95);transform:translateY(-1px)}
+.sp-herogal svg{flex:none;opacity:.92}
+.sp-herogal .n{color:var(--gold-mark)}
+@media (max-width:600px){
+  .sp-herogal{right:.8rem;bottom:.8rem;font-size:.82rem;padding:.5rem .8rem .5rem .55rem}
+}
+
+
+/* ── HERO FILMSTRIP — the alternative to the chip. Three thumbnails down the
+     right edge, the last carrying the remaining count. Shows what is in the
+     gallery rather than just announcing that one exists.
+     Below 700px it is suppressed and the chip takes over: three thumbs on a
+     phone hero are too small to read and eat the photograph. */
+.sp-strip{position:absolute;right:1rem;top:50%;transform:translateY(-50%);z-index:3;
+  display:none;flex-direction:column;gap:.5rem}
+body[data-hero="strip"] .sp-strip{display:flex}
+body[data-hero="strip"] .sp-herogal{display:none}
+.sp-strip button{width:78px;height:78px;padding:0;border:2px solid rgba(255,255,255,.75);
+  border-radius:3px;overflow:hidden;cursor:pointer;background:none;position:relative;
+  transition:transform .18s,border-color .18s}
+.sp-strip button:hover{transform:scale(1.05);border-color:#fff}
+.sp-strip img{width:100%;height:100%;object-fit:cover;display:block}
+.sp-strip .more{position:absolute;inset:0;background:rgba(12,20,13,.72);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-family:var(--sans);
+  font-size:.95rem;font-weight:700}
+@media (max-width:760px){
+  body[data-hero="strip"] .sp-strip{display:none}
+  body[data-hero="strip"] .sp-herogal{display:inline-flex}
+}
+
+
+/* Hero credit sits inside the picture, bottom right — the site-standard
+   .photo-attr bar, contents right-aligned. */
+.sp-heroattr{align-items:flex-end;text-align:right;padding:var(--s3) var(--s4)}
+.sp-heroattr .attr-line{justify-content:flex-end}
+.sp-heroattr .cc-badge{display:inline-flex;border:1px solid rgba(255,255,255,.4);
+  border-radius:2px;overflow:hidden;font-size:.6rem;font-weight:700;line-height:1;
+  color:#fff}
+.sp-heroattr .cc-badge .cc-mark{font-family:Georgia,serif;text-transform:lowercase;padding:.24em .34em}
+.sp-heroattr .cc-badge .cc-term{padding:.24em .34em;border-left:1px solid rgba(255,255,255,.3)}
+
+/* ── HERO CAPTION ───────────────────────────────────────────────────────
+   The hero's caption was buried in the gallery at the foot of the page, where
+   the one line that makes the image worth looking at arrived long after the
+   image. It belongs directly under the photograph, where it lands on arrival.
+
+   It also carries the photographer, which replaces the translucent chip that
+   used to float in the top corner of the hero — unreadable over a bright
+   photo, and a worse place for a person's name than a caption line. */
+.sp-herocap{max-width:1100px;margin:0 auto;padding:.9rem 1.4rem 0;
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:.3rem 1rem}
+.sp-herocap .cap{font-family:var(--sans);font-size:var(--t-base);
+  color:var(--ink-soft);line-height:1.65;max-width:60ch}
+.sp-herocap .by{font-family:var(--sans);font-size:.8rem;color:var(--ink-faint);
+  white-space:nowrap}
+.sp-herocap .by b{color:var(--green-ink);font-weight:600}
+
+/* ── THE TWO WIDTHS ─────────────────────────────────────────────────────
+   The page had five different right edges and no rule saying which applied,
+   so it read as accidental. There are now exactly two:
+
+     --col   the reading column (66ch). EVERYTHING in the flow sits here —
+             paragraphs, labelled blocks, the look-alike callout, in-flow
+             photographs, the pull quote, "Also known as".
+     full    deliberate breakouts, and only two of them: the photograph grid
+             and the sequence bar that ends the page.
+
+   Putting the in-flow photographs in the reading column also fixes their
+   dominance: at full width they out-shouted the prose they were meant to
+   punctuate. ── */
+:root{ --col: 66ch; }
+
+/* ── LAYOUT ─────────────────────────────────────────────────────────── */
+.sp-wrap{max-width:1100px;margin:0 auto;padding:0 1.4rem}
+.sp-cols{display:grid;grid-template-columns:200px 1fr;gap:3rem;align-items:start;
+  padding:2.6rem 0 3rem}
+
+/* Rail — DESKTOP ONLY. On a phone it is removed entirely rather than turned
+   into a horizontally scrolling chip strip: that strip hid "Conservation
+   notes" past the right edge on a 390px screen with no sign it existed.
+   A species page is short enough to scroll. */
+.sp-rail{position:sticky;top:1.5rem;font-family:var(--sans)}
+.sp-rail-title{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-faint);font-weight:700;margin-bottom:.8rem}
+.sp-rail a{display:block;padding:.42rem 0;font-size:.95rem;color:var(--ink-soft);
+  text-decoration:none;border-left:2px solid transparent;padding-left:.8rem;
+  transition:color .15s,border-color .15s}
+.sp-rail a:hover{color:var(--green)}
+.sp-rail a.on{color:var(--green-ink);font-weight:600;border-left-color:var(--gold-mark)}
+
+/* ── QUICK HITS — the top of the page, not a section among sections ──────
+   These are the best material on the page, so they get the first screen and
+   a treatment nothing else competes with. */
+.sp-quick{border-top:3px solid var(--gold-mark);background:var(--sunk);
+  padding:1.8rem 1.6rem;margin-bottom:2.6rem;max-width:var(--col)}
+.sp-quick ul{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
+.sp-quick li{font-size:1.13rem;line-height:1.62;color:var(--ink);
+  padding-left:1.4rem;position:relative}
+.sp-quick li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;
+  border-radius:50%;background:var(--gold-mark)}
+
+/* ── SECTIONS ───────────────────────────────────────────────────────── */
+.sp-sec{margin-bottom:2.8rem;scroll-margin-top:1.5rem}
+.sp-sec h2{font-family:var(--serif);font-size:clamp(1.4rem,3vw,1.85rem);
+  color:var(--green-ink);margin:0 0 .2rem;line-height:1.2}
+.sp-sec-rule{height:1px;background:var(--rule);margin:0 0 1.3rem}
+.sp-sec p{font-size:var(--t-base);line-height:1.78;color:var(--ink);margin:0 0 1.1rem;
+  max-width:var(--col)}
+
+/* A labelled block. label is optional: it means "this block is a distinct
+   thing worth signposting", null means "just the next paragraph". */
+.sp-block{margin-bottom:1.25rem;max-width:var(--col)}
+.sp-block-label{font-family:var(--sans);font-size:.74rem;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:700;color:var(--green);margin-bottom:.3rem}
+.sp-block p{margin:0}
+
+/* ── SIMILAR SPECIES — the look-alike callout. `similar_species` is on 23
+   records and renders nowhere today. For a park where telling two anoles
+   apart is the whole game, this is high-value and belongs near the top. */
+.sp-similar{border:1px solid var(--rule-strong);border-left:4px solid var(--gold-mark);
+  background:var(--paper);padding:1.1rem 1.3rem;margin:0 0 1.4rem;max-width:var(--col)}
+.sp-similar-h{font-family:var(--sans);font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-faint);margin-bottom:.45rem}
+.sp-similar p{margin:0;font-size:var(--t-base);line-height:1.7}
+.sp-similar a{color:var(--green);font-weight:600}
+
+/* ── IN-FLOW PHOTOGRAPH — the main answer to "it's a wall of text".
+     A species page had six photographs sitting in a pile at the end. Moving
+     three of them INTO the prose breaks the column and puts the park's one
+     irreplaceable asset where it does work. Placement is editorial, not
+     decorative: the ID shot sits with identification, the sign shot sits with
+     the introduced-species story. */
+.sp-figure{margin:1.8rem 0 2rem;max-width:var(--col)}
+.sp-figure img{width:100%;max-height:330px;object-fit:cover;display:block;border-radius:2px;cursor:zoom-in}
+.sp-figure figcaption{font-family:var(--sans);font-size:.86rem;line-height:1.6;
+  color:var(--ink-soft);margin-top:.6rem;padding-left:.9rem;
+  border-left:2px solid var(--gold-mark)}
+.sp-figure figcaption a{color:var(--green);font-weight:600}
+.sp-figure .cr{display:block;color:var(--ink-faint);font-size:.76rem;margin-top:.2rem}
+
+/* ── SECTION BANDS — the alternation the rest of the site already uses
+     (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
+     section so the eye gets a boundary without any new component. */
+body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
+body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
+  top:0;bottom:0;left:-50vw;right:-50vw;background:var(--wash);z-index:-1}
+
+/* ── GALLERY ────────────────────────────────────────────────────────────
+   Every photo taken by a named person. The credit is part of the picture,
+   not a footnote at the bottom of the page — that is the whole point of
+   this catalogue. */
+/* ── THE CREDITS ROLL ───────────────────────────────────────────────────
+   This section is NOT the gallery — the lightbox is. Its job is to make every
+   photographer legible without anyone having to tap: five names visible at a
+   glance is the community fact stated by showing rather than claiming.
+
+   So it stops pretending to be a gallery. Small square thumbnail, the site's
+   standard .credit-plate beside it (psbp.css / PSBPPhotos.creditPlate), two or
+   three per row. Denser, much shorter, and not one credit lost. Clicking any
+   of them opens the lightbox at that photograph, where the picture is actually
+   meant to be looked at. */
+.sp-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:.7rem 1.1rem}
+.sp-gal figure{margin:0;display:grid;grid-template-columns:68px 1fr;gap:.8rem;
+  align-items:center;padding:.5rem;border:1px solid var(--rule);border-radius:3px;
+  background:var(--surface);transition:border-color .15s,background .15s}
+.sp-gal figure:hover{border-color:var(--rule-strong);background:var(--paper)}
+.sp-gal .shot{width:68px;height:68px;overflow:hidden;border-radius:2px;
+  background:var(--wash);cursor:zoom-in}
+.sp-gal img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .35s ease}
+.sp-gal .shot:hover img{transform:scale(1.07)}
+.sp-gal figcaption{min-width:0}
+
+/* The standard plate, unboxed — the tile is already the box. */
+/* The plate, unboxed — the tile is already the box.
+   Everything that qualifies the photograph (date, licence, source) sits on ONE
+   line directly beneath the name, so the credit reads as a single unit instead
+   of a name with loose metadata drifting away from it. The CC mark uses the
+   site's .cc-badge component rather than the words "CC-BY-NC", which carries
+   the same information with far more presence at a smaller size. */
+.sp-gal .credit-plate{display:block;padding:0;border:0;background:none;min-width:0}
+.sp-gal .credit-eyebrow{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);font-weight:700;display:block}
+/* Names WRAP. nowrap + ellipsis guaranteed truncation — "David Vanderbilt"
+   was chopped at sixteen characters, so anything longer had no chance. A name
+   is the one thing on this tile that must never be abbreviated. */
+.sp-gal .credit-name{font-family:var(--serif);font-size:1.08rem;font-weight:400;
+  color:var(--green-ink);line-height:1.25;display:block;margin-top:.12rem;
+  overflow-wrap:break-word}
+.sp-gal .credit-meta{display:flex;align-items:center;flex-wrap:wrap;gap:.34rem .5rem;
+  margin-top:.34rem;font-family:var(--sans);font-size:.72rem;color:var(--ink-faint)}
+.sp-gal .credit-meta .sep{opacity:.5}
+.sp-gal .cc-badge{display:inline-flex;border:1px solid var(--rule-strong);
+  border-radius:2px;overflow:hidden;font-size:.62rem;font-weight:700;
+  letter-spacing:.03em;color:var(--green-ink);background:var(--paper);line-height:1}
+.sp-gal .cc-badge .cc-mark{font-family:Georgia,serif;text-transform:lowercase;
+  padding:.22em .34em}
+.sp-gal .cc-badge .cc-term{padding:.22em .34em;border-left:1px solid var(--rule)}
+
+/* ── ALSO KNOWN AS/* ── ALSO KNOWN AS — was a grey footnote nobody could see. It is a real
+     answer to a real question ("I know this as a Cuban anole"), so it gets
+     a labelled block like everything else that matters. */
+.sp-aka{border-top:1px solid var(--rule);margin-top:2.4rem;padding-top:1.2rem;max-width:var(--col)}
+.sp-aka .sp-block-label{margin-bottom:.35rem}
+.sp-aka p{margin:0;font-size:var(--t-base);color:var(--ink)}
+.sp-aka em{color:var(--ink-soft);font-style:normal}
+
+
+/* ── HERO GALLERY CUE — "there are more pictures, here" ──────────────────
+   The universal pattern: stacked-photo icon + a count, bottom corner of the
+   hero, opening the lightbox at the first image. A visitor who only wants
+   pictures should not have to scroll past four sections of prose to find
+   them.
+
+   Solid dark chip rather than a translucent overlay, for the same reason the
+   lightbox controls are: this gets used on a phone in full sun. */
+.sp-herogal{position:absolute;right:1.1rem;bottom:1.2rem;z-index:3;
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:rgba(12,20,13,.82);border:1px solid rgba(255,255,255,.35);
+  color:#fff;font-family:var(--sans);font-size:.88rem;font-weight:600;
+  padding:.55rem .95rem .55rem .6rem;border-radius:2rem;cursor:pointer;
+  backdrop-filter:blur(3px);transition:background .2s,transform .2s}
+.sp-herogal:hover{background:rgba(12,20,13,.95);transform:translateY(-1px)}
+.sp-herogal svg{flex:none;opacity:.92}
+.sp-herogal .n{color:var(--gold-mark)}
+@media (max-width:600px){
+  .sp-herogal{right:.8rem;bottom:.8rem;font-size:.82rem;padding:.5rem .8rem .5rem .55rem}
+}
+
+
+/* ── HERO FILMSTRIP — the alternative to the chip. Three thumbnails down the
+     right edge, the last carrying the remaining count. Shows what is in the
+     gallery rather than just announcing that one exists.
+     Below 700px it is suppressed and the chip takes over: three thumbs on a
+     phone hero are too small to read and eat the photograph. */
+.sp-strip{position:absolute;right:1rem;top:50%;transform:translateY(-50%);z-index:3;
+  display:none;flex-direction:column;gap:.5rem}
+body[data-hero="strip"] .sp-strip{display:flex}
+body[data-hero="strip"] .sp-herogal{display:none}
+.sp-strip button{width:78px;height:78px;padding:0;border:2px solid rgba(255,255,255,.75);
+  border-radius:3px;overflow:hidden;cursor:pointer;background:none;position:relative;
+  transition:transform .18s,border-color .18s}
+.sp-strip button:hover{transform:scale(1.05);border-color:#fff}
+.sp-strip img{width:100%;height:100%;object-fit:cover;display:block}
+.sp-strip .more{position:absolute;inset:0;background:rgba(12,20,13,.72);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-family:var(--sans);
+  font-size:.95rem;font-weight:700}
+@media (max-width:760px){
+  body[data-hero="strip"] .sp-strip{display:none}
+  body[data-hero="strip"] .sp-herogal{display:inline-flex}
+}
+
+/* ── LAYOUT ─────────────────────────────────────────────────────────── */
+.sp-wrap{max-width:1100px;margin:0 auto;padding:0 1.4rem}
+.sp-cols{display:grid;grid-template-columns:200px 1fr;gap:3rem;align-items:start;
+  padding:2.6rem 0 3rem}
+
+/* Rail — DESKTOP ONLY. On a phone it is removed entirely rather than turned
+   into a horizontally scrolling chip strip: that strip hid "Conservation
+   notes" past the right edge on a 390px screen with no sign it existed.
+   A species page is short enough to scroll. */
+.sp-rail{position:sticky;top:1.5rem;font-family:var(--sans)}
+.sp-rail-title{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-faint);font-weight:700;margin-bottom:.8rem}
+.sp-rail a{display:block;padding:.42rem 0;font-size:.95rem;color:var(--ink-soft);
+  text-decoration:none;border-left:2px solid transparent;padding-left:.8rem;
+  transition:color .15s,border-color .15s}
+.sp-rail a:hover{color:var(--green)}
+.sp-rail a.on{color:var(--green-ink);font-weight:600;border-left-color:var(--gold-mark)}
+
+/* ── QUICK HITS — the top of the page, not a section among sections ──────
+   These are the best material on the page, so they get the first screen and
+   a treatment nothing else competes with. */
+.sp-quick{border-top:3px solid var(--gold-mark);background:var(--sunk);
+  padding:1.8rem 1.6rem;margin-bottom:2.6rem;max-width:var(--col)}
+.sp-quick ul{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
+.sp-quick li{font-size:1.13rem;line-height:1.62;color:var(--ink);
+  padding-left:1.4rem;position:relative}
+.sp-quick li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;
+  border-radius:50%;background:var(--gold-mark)}
+
+/* ── SECTIONS ───────────────────────────────────────────────────────── */
+.sp-sec{margin-bottom:2.8rem;scroll-margin-top:1.5rem}
+.sp-sec h2{font-family:var(--serif);font-size:clamp(1.4rem,3vw,1.85rem);
+  color:var(--green-ink);margin:0 0 .2rem;line-height:1.2}
+.sp-sec-rule{height:1px;background:var(--rule);margin:0 0 1.3rem}
+.sp-sec p{font-size:var(--t-base);line-height:1.78;color:var(--ink);margin:0 0 1.1rem;
+  max-width:var(--col)}
+
+/* A labelled block. label is optional: it means "this block is a distinct
+   thing worth signposting", null means "just the next paragraph". */
+.sp-block{margin-bottom:1.25rem;max-width:var(--col)}
+.sp-block-label{font-family:var(--sans);font-size:.74rem;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:700;color:var(--green);margin-bottom:.3rem}
+.sp-block p{margin:0}
+
+/* ── SIMILAR SPECIES — the look-alike callout. `similar_species` is on 23
+   records and renders nowhere today. For a park where telling two anoles
+   apart is the whole game, this is high-value and belongs near the top. */
+.sp-similar{border:1px solid var(--rule-strong);border-left:4px solid var(--gold-mark);
+  background:var(--paper);padding:1.1rem 1.3rem;margin:0 0 1.4rem;max-width:var(--col)}
+.sp-similar-h{font-family:var(--sans);font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:700;color:var(--ink-faint);margin-bottom:.45rem}
+.sp-similar p{margin:0;font-size:var(--t-base);line-height:1.7}
+.sp-similar a{color:var(--green);font-weight:600}
+
+/* ── IN-FLOW PHOTOGRAPH — the main answer to "it's a wall of text".
+     A species page had six photographs sitting in a pile at the end. Moving
+     three of them INTO the prose breaks the column and puts the park's one
+     irreplaceable asset where it does work. Placement is editorial, not
+     decorative: the ID shot sits with identification, the sign shot sits with
+     the introduced-species story. */
+.sp-figure{margin:1.8rem 0 2rem;max-width:var(--col)}
+.sp-figure img{width:100%;max-height:330px;object-fit:cover;display:block;border-radius:2px;cursor:zoom-in}
+.sp-figure figcaption{font-family:var(--sans);font-size:.86rem;line-height:1.6;
+  color:var(--ink-soft);margin-top:.6rem;padding-left:.9rem;
+  border-left:2px solid var(--gold-mark)}
+.sp-figure figcaption a{color:var(--green);font-weight:600}
+.sp-figure .cr{display:block;color:var(--ink-faint);font-size:.76rem;margin-top:.2rem}
+
+/* ── PULL QUOTE — one per page, the single best line, set large. Breaks the
+     column and gives a skimmer something to catch on. */
+
+/* ── SECTION BANDS — the alternation the rest of the site already uses
+     (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
+     section so the eye gets a boundary without any new component. */
+body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
+body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
+  top:0;bottom:0;left:-50vw;right:-50vw;background:var(--wash);z-index:-1}
+
+/* ── GALLERY ────────────────────────────────────────────────────────────
+   Every photo taken by a named person. The credit is part of the picture,
+   not a footnote at the bottom of the page — that is the whole point of
+   this catalogue. */
+/* Grid with a lead image. Uniform tiles of portrait photos plus a boxed plate
+   under each read as a form, not a gallery — that was the "not pretty".
+   The first photograph runs wide, the rest fill in, and the credit is ONE
+   elegant line with the person's name in the serif, not a bordered plate.
+
+   Credits stay visible (they are the point) but stop competing with the
+   photographs for weight. The rich version — name, contribution count, link
+   to their other work — lives in the lightbox, where there is room for it. */
+.sp-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  gap:1.5rem 1.1rem}
+.sp-gal figure{margin:0}
+.sp-gal figure.lead{grid-column:span 2}
+.sp-gal .shot{overflow:hidden;background:var(--wash);border-radius:3px;cursor:zoom-in;
+  aspect-ratio:4/5;position:relative}
+.sp-gal figure.lead .shot{aspect-ratio:16/10}
+.sp-gal img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.sp-gal .shot:hover img{transform:scale(1.04)}
+.sp-gal .shot::after{content:"";position:absolute;inset:0;background:rgba(20,30,20,0);
+  transition:background .25s}
+.sp-gal .shot:hover::after{background:rgba(20,30,20,.12)}
+.sp-gal figcaption{margin-top:.55rem;font-family:var(--sans);font-size:.8rem;
+  color:var(--ink-faint);line-height:1.45}
+.sp-gal .by{display:block;font-family:var(--serif);font-size:1.02rem;
+  color:var(--green-ink);line-height:1.25}
+.sp-gal .note{display:block;color:var(--ink-soft);font-size:.83rem;margin-top:.3rem}
+
+/* ── ALSO KNOWN AS/* ── ALSO KNOWN AS — was a grey footnote nobody could see. It is a real
+     answer to a real question ("I know this as a Cuban anole"), so it gets
+     a labelled block like everything else that matters. */
+.sp-aka{border-top:1px solid var(--rule);margin-top:2.4rem;padding-top:1.2rem;max-width:var(--col)}
+.sp-aka .sp-block-label{margin-bottom:.35rem}
+.sp-aka p{margin:0;font-size:var(--t-base);color:var(--ink)}
+.sp-aka em{color:var(--ink-soft);font-style:normal}
+
+
+
+/* ── LIGHTBOX ───────────────────────────────────────────────────────────
+   Built for a phone held in bright sun in the middle of the park, which is
+   where this actually gets used:
+     · SWIPE is the primary control (same 60px / horizontal-dominance test the
+       nature.html drawer already uses). Thin white chevrons over a photograph
+       are invisible outdoors.
+     · Controls sit at the BOTTOM, thumb-reachable one-handed, on solid dark
+       chips rather than floating over the image.
+     · The credit is the interesting part, not a metadata string: the person's
+       name, and how much of this park they have photographed.
+   No emoji — the same reason they came out of visit.html. */
+.lb{position:fixed;inset:0;background:rgba(10,14,10,.97);z-index:100;
+  display:none;flex-direction:column}
+.lb.on{display:flex}
+.lb-stage{flex:1;display:flex;align-items:center;justify-content:center;
+  padding:1rem;min-height:0;touch-action:pan-y}
+.lb-stage img{max-width:100%;max-height:100%;object-fit:contain;border-radius:2px}
+.lb-foot{flex:none;padding:1rem 1.1rem 1.5rem;background:rgba(0,0,0,.55);
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.lb-cred{flex:1;min-width:0;font-family:var(--sans)}
+.lb-eyebrow{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold-mark);font-weight:700}
+.lb-name{font-family:var(--serif);font-size:1.35rem;color:#fff;line-height:1.2;margin-top:.15rem}
+.lb-meta{font-size:.82rem;color:rgba(255,255,255,.66);margin-top:.3rem;line-height:1.5}
+.lb-meta a{color:#fff;border-bottom:1px solid rgba(255,255,255,.4);text-decoration:none}
+.lb-ctrls{display:flex;align-items:center;gap:.6rem}
+.lb-btn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);
+  color:#fff;width:52px;height:52px;border-radius:50%;font-size:1.4rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;line-height:1}
+.lb-btn:hover{background:rgba(255,255,255,.26)}
+.lb-btn:disabled{opacity:.28;cursor:default}
+.lb-count{font-family:var(--sans);font-size:.85rem;color:rgba(255,255,255,.7);
+  min-width:3.4rem;text-align:center}
+.lb-close{position:absolute;top:.7rem;right:.9rem;background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.25);color:#fff;width:44px;height:44px;
+  border-radius:50%;font-size:1.5rem;cursor:pointer;line-height:1;z-index:2}
+.lb-hint{width:100%;font-family:var(--sans);font-size:.75rem;
+  color:rgba(255,255,255,.45);text-align:center}
+@media (min-width:700px){.lb-hint{display:none}}
+
+@media (max-width:900px){
+  .sp-cols{grid-template-columns:1fr;gap:0;padding-top:2rem}
+  .sp-rail{display:none}           /* removed on mobile, not made scrollable */
+}
+</style>
+</head>
+<body data-bands="on" data-hero="strip">
+
+
+<div class="sp-hero">
+  <img src="../photos/PSBP-99999/635346033.jpg" alt="Brown anole displaying its orange throat fan"
+       data-focus="65% 52%">
+  <div class="sp-hero-scrim"></div>
+  <!-- Site-standard credit: the same .photo-attr / .attr-line / .attr-by /
+       .cc-badge structure PSBPPhotos.attribution() emits on index.html, so a
+       photographer is credited identically everywhere. Right-aligned per
+       Randy; the standard spans full width, only the content shifts.
+       The camera emoji the live helper prepends is dropped, for the same
+       reason emoji came out of visit.html and the lightbox. -->
+  <div class="photo-attr photo-attr--muted sp-heroattr">
+    <span class="attr-line">
+      <span class="attr-credit"><span class="attr-by">Cole Guyton</span><span class="attr-date"><span class="attr-dot">&middot;</span> 8 April 2026</span></span>
+      <span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span>
+      <span class="attr-src">via iNaturalist</span>
+    </span>
   </div>
-  <div class="wild-sci-band">
-    <span class="wild-sci-name">Anolis sagrei</span>
-    <a class="wild-family-tag" href="../nature.html?wfamily=Anolidae">Anolidae</a>
+  <div class="sp-strip" id="heroStrip" aria-label="Photographs of this species">
+    <button type="button" data-i="1" aria-label="Photograph 2"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt=""></button>
+    <button type="button" data-i="2" aria-label="Photograph 3"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg" alt=""></button>
+    <button type="button" data-i="3" aria-label="See all six photographs"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg" alt=""><span class="more">+3</span></button>
   </div>
-  <div class="wild-credit">📷 Photo by <strong data-login="coleguyton">Cole Guyton</strong> · CC-BY-NC · via iNaturalist · 📅 Apr 8, 2026</div>
-  <div class="wild-content">
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list"><li>If you see a small brown lizard doing push-ups on a fence post or flashing a reddish-orange throat fan, that is a brown anole — almost certainly the most common lizard you will meet anywhere in Florida.</li><li>It is not from here. Brown anoles arrived from Cuba and the Bahamas in the late 1800s and have since spread into nearly every county in the state.</li><li>Their success came at a cost to Florida&#x27;s native green anole, which now spends more time high in the trees to stay out of the newcomer&#x27;s way.</li><li>Males stake out territory with a stretchy throat flap called a dewlap and a bobbing push-up display — body language that says this spot is taken.</li></ul></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🔎</span><span class="wild-section-title">How to Spot It</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Color</div><p>Shades of brown, tan, or gray, often with a pattern of triangles, diamonds, or a light stripe down the back. Unlike the green anole, it cannot turn green.</p></div><div class="spot-item"><div class="spot-label">Throat fan (dewlap)</div><p>Males flash a reddish-orange dewlap edged in yellow during displays.</p></div><div class="spot-item"><div class="spot-label">Body</div><p>Stocky, with a fairly short pointed snout and ridged (keeled) scales that give the back a slightly rough look.</p></div><div class="spot-item"><div class="spot-label">Behavior cue</div><p>Usually seen low down — on the ground, fences, walls, and the base of trees — doing push-up displays.</p></div><div class="spot-item"><div class="spot-label">Voice</div><p>Essentially silent. Anoles communicate with body language — push-ups and the colorful dewlap — rather than sound.</p></div><div class="spot-item look"><div class="spot-label">What to Look For</div><p>A small brown lizard perched head-down on a post or trunk, bobbing up and down. If it flashes an orange throat fan, it is a displaying male. The one thing it will never do is turn bright green — that is the native green anole, which tends to stay higher up.</p></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🍽️</span><span class="wild-section-title">What It Eats</span></div><div class="wild-section-body"><p>Insects and other small invertebrates — beetles, ants, flies, spiders, and just about anything it can catch and fit in its mouth. It will also eat the eggs and young of other lizards, including the native green anole.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📍</span><span class="wild-section-title">Where &amp; When</span></div><div class="spot-list"><div class="spot-item"><div class="spot-label">Where in the park</div><p>Almost everywhere on warm days — fence rails, tree trunks, sidewalk edges, and sunny garden borders. Watch low surfaces for a brown lizard doing push-ups.</p></div><div class="spot-item"><div class="spot-label">When to see it</div><p>Year-round resident. Most active and visible on warm, sunny days; scarce during cold snaps.</p></div></div></div>
-    <div class="wild-safe-section"><div class="wild-section-header"><span class="wild-section-icon">🤝</span><span class="wild-section-title">Watching It Respectfully</span></div><div class="wild-section-body"><p>Just watch and enjoy. No need to feed or handle them — they are doing fine on their own.</p></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" loading="lazy" alt="Brown Anole — photo by celestes"><div class="gal-credit" data-login="celestes">📷 celestes</div><div class="gal-date">📅 May 12, 2024</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg" loading="lazy" alt="Brown Anole — photo by celestes"><div class="gal-credit" data-login="celestes">📷 celestes</div><div class="gal-date">📅 May 12, 2024</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg" loading="lazy" alt="Brown Anole — photo by David Vanderbilt"><div class="gal-credit" data-login="david_vanderbilt">📷 David Vanderbilt</div><div class="gal-date">📅 Jul 20, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg" loading="lazy" alt="Brown Anole — photo by Yavid Justiniano"><div class="gal-credit" data-login="yavid">📷 Yavid Justiniano</div><div class="gal-date">📅 Jul 15, 2026</div></div><div class="gal-item" onclick="openLB(5)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg" loading="lazy" alt="Brown Anole — photo by Denise Sosa"><div class="gal-credit" data-login="denise_sosa">📷 Denise Sosa</div><div class="gal-date">📅 Jul 22, 2026</div></div></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">🏷️</span><span class="wild-section-title">Also Known As</span></div><div class="alias-list"><span class="alias-tag">Cuban Anole</span><span class="alias-tag">Cuban Brown Anole</span></div></div>
-    <div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">📸</span><span class="wild-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Cole Guyton (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© celestes (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© David Vanderbilt (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Yavid Justiniano (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid);padding:8px 0;border-bottom:1px solid rgba(60,90,110,0.10)">© Denise Sosa (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <img class="lb-img" id="lbImg">
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-99999/635346033.jpg", "credit": "Cole Guyton", "license": "CC-BY-NC", "observed": "Apr 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg", "credit": "celestes", "credit_login": "celestes", "license": "CC-BY-NC", "observed": "May 12, 2024"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg", "credit": "celestes", "credit_login": "celestes", "license": "CC-BY-NC", "observed": "May 12, 2024"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg", "credit": "David Vanderbilt", "credit_login": "david_vanderbilt", "license": "CC-BY-NC", "observed": "Jul 20, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg", "credit": "Yavid Justiniano", "credit_login": "yavid", "license": "CC-BY-NC", "observed": "Jul 15, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg", "credit": "Denise Sosa", "credit_login": "denise_sosa", "license": "CC-BY-NC", "observed": "Jul 22, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-    <a class="all-wild-link" href="../nature.html#wildlife">🦜 Explore More Wildlife</a>
+  <button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="7" y="3" width="14" height="14" rx="2"></rect>
+      <path d="M3 7v12a2 2 0 0 0 2 2h12"></path>
+      <circle cx="11.5" cy="7.5" r="1.4"></circle>
+      <path d="M21 13l-4.2-4.2a1.5 1.5 0 0 0-2.1 0L7 16"></path>
+    </svg>
+    <span><span class="n">6</span> photographs</span>
+  </button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Lizard · Introduced · Seen year-round</div>
+    <h1 class="sp-name">Brown Anole</h1>
+    <div class="sp-sci">Anolis sagrei</div>
   </div>
 </div>
 
-<a class="wild-float-back theme-other" href="../nature.html#wildlife">🦜 All Wildlife</a>
 
-<div class="page-stamp">Page updated <strong>August 31, 2026</strong></div>
-<div id="footer-placeholder"></div>
+<div class="sp-herocap">
+  <span class="cap">This one is sitting on a hand-painted sign for the native plant garden.</span>
+</div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+
+    <aside class="sp-rail">
+      <div class="sp-rail-title">On this page</div>
+      <a href="#know" class="on">How to know it</a>
+      <a href="#find">Where to find it here</a>
+      <a href="#lives">How it lives</a>
+      <a href="#does">What it does here</a>
+      <a href="#photos">Photographs</a>
+    </aside>
+
+    <main>
+      <div class="sp-quick">
+        <ul>
+          <li>A small brown lizard doing push-ups on a fence post, flashing a reddish-orange throat fan, is the most common lizard you will meet anywhere in Florida.</li>
+          <li>It is not from here. Brown anoles arrived from Cuba and the Bahamas around 1887 and now live in nearly every county in the state.</li>
+          <li>Florida's native green anoles responded by moving up. Where brown anoles are common, greens spend their time higher in the shrubs and trees.</li>
+          <li>And they are still changing. Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads in only a few generations — evolution fast enough to watch.</li>
+        </ul>
+      </div>
+
+      <section class="sp-sec" id="know">
+        <h2>How to know it</h2><div class="sp-sec-rule"></div>
+
+        <div class="sp-similar">
+          <div class="sp-similar-h">Easily confused with</div>
+          <p><a href="PSBP-99962-Green-Anole.html">Green Anole</a> — the green anole turns
+          bright green, flashes a pink throat fan, and climbs high. The brown anole never turns green,
+          flashes reddish-orange, and stays low.</p>
+        </div>
+
+        <div class="sp-block"><div class="sp-block-label">Color</div>
+          <p>Brown, tan, or gray, usually patterned with triangles, diamonds, or a pale stripe down the back. The one thing it will never do is turn bright green.</p></div>
+
+        <figure class="sp-figure">
+          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg" alt="Brown anole almost invisible against the mottled stems of a spurge">
+          <figcaption>There is an anole in this photograph, on a
+            <a href="../plants/PSBP-00303-Mottled-Spurge.html">mottled spurge</a> in this park. The
+            markings that look arbitrary on a fence rail are doing something else here.</figcaption>
+          <div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Denise Sosa</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">22 July 2026 &middot; via iNaturalist</span></div></div>
+        </figure>
+
+        <div class="sp-block"><div class="sp-block-label">Throat fan</div>
+          <p>Males flash a reddish-orange dewlap edged in yellow. The native green anole's is pink — that single detail settles most identifications.</p></div>
+        <div class="sp-block"><div class="sp-block-label">Body</div>
+          <p>Stocky, short-snouted, with ridged scales that give the back a slightly rough look. Five to eight inches long, tail included; males run larger.</p></div>
+        <div class="sp-block"><div class="sp-block-label">Where it sits</div>
+          <p>Low. Fence rails, walls, sidewalk edges, the base of a trunk — often head-down, bobbing. A green anole in the same garden will usually be well above it.</p></div>
+
+        <figure class="sp-figure">
+          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt="Brown anole head-down on a tree trunk">
+          <figcaption>Head-down on a trunk, low to the ground — the posture you will see ninety-nine times out of a hundred.
+            </figcaption>
+          <div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">celestes</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">12 May 2024 &middot; via iNaturalist</span></div></div>
+        </figure>
+      </section>
+
+      <section class="sp-sec" id="find">
+        <h2>Where to find it here</h2><div class="sp-sec-rule"></div>
+        <p>Almost anywhere the sun hits. Fence rails, tree trunks, the warm edge of a sidewalk, the border of a planting bed — scan low surfaces on a warm day and you will find one within a minute or two.</p>
+        <p>They are here every month of the year, though a cold snap sends them out of sight for a few days. Warm mornings are best; that is when they are out basking and displaying.</p>
+        <div class="sp-block"><div class="sp-block-label">In this park</div>
+          <p>The brown anole is the most-recorded animal in the park. Visitors have been logging it here since 2018, and it turns up more often than any other creature we track. If you are looking for a lizard, this is the one you will find.</p></div>
+      </section>
+
+      <section class="sp-sec sp-sec--band" id="lives">
+        <h2>How it lives</h2><div class="sp-sec-rule"></div>
+        <p>Active by day and almost always close to the ground. Males hold territory and advertise it constantly: a bobbing push-up display and a flash of the throat fan, repeated at anything that comes near. It is body language for <em>this spot is taken</em>, and it works on rivals and visitors alike.</p>
+        <p>They hunt whatever they can catch and swallow — beetles, ants, flies, spiders. Grabbed by a predator, an anole can drop its tail and leave it twitching as a decoy, then regrow a shorter one over the following weeks.</p>
+      </section>
+
+      <section class="sp-sec" id="does">
+        <h2>What it does here</h2><div class="sp-sec-rule"></div>
+        <p>Brown anoles reached the Florida Keys around 1887, most likely as stowaways in cargo and on nursery plants. They have since spread through nearly the whole state and are now among Florida's most abundant land vertebrates.</p>
+        <p>That arrival reshaped life for the green anole, Florida's only native anole. The two want the same things — the same insects, the same sunny perches — and where browns move in, greens move up, shifting into the shrubs and higher trunks. Brown anoles also eat green anole eggs and hatchlings, which adds to the pressure.</p>
+        <figure class="sp-figure">
+          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg" alt="Brown anole resting on a park plant label reading NOT NATIVE">
+          <figcaption>Photographed in this park, on a label reading <em>NOT NATIVE (S America)</em>. The sign means the philodendron. It applies to the lizard too.
+            </figcaption>
+          <div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Yavid Justiniano</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">15 July 2026 &middot; via iNaturalist</span></div></div>
+        </figure>
+
+        <div class="sp-block"><div class="sp-block-label">Evolution you can watch</div>
+          <p>Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads — measurably, in only a few generations. Biologists point to it as one of the clearest cases of evolution moving fast enough to observe, and it is happening in ordinary Florida gardens.</p></div>
+
+
+        <p>None of this is the brown anole doing anything wrong; it is simply very good at being a lizard in Florida. It is also food for a great many things here — birds, snakes, larger lizards, cats.</p>
+      </section>
+
+      <section class="sp-sec" id="photos">
+        <h2>Photographs</h2><div class="sp-sec-rule"></div>
+        <p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p>
+        <div class="sp-gal" id="gal">
+          <figure data-i="0">
+            <div class="shot"><img src="../photos/PSBP-99999/635346033.jpg" alt="Brown anole on a Native Plants sign" loading="lazy"></div>
+            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Cole Guyton</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>8 April 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
+          </figure>
+          <figure data-i="1">
+            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt="Brown anole on a trunk" loading="lazy"></div>
+            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">celestes</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>12 May 2024</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
+          </figure>
+          <figure data-i="2">
+            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg" alt="Brown anole on a planter rim" loading="lazy"></div>
+            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">celestes</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>12 May 2024</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
+          </figure>
+          <figure data-i="3">
+            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg" alt="Brown anole among leaves" loading="lazy"></div>
+            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">David Vanderbilt</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>20 July 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
+          </figure>
+          <figure data-i="4">
+            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg" alt="Brown anole on a NOT NATIVE plant label" loading="lazy"></div>
+            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Yavid Justiniano</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>15 July 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
+          </figure>
+          <figure data-i="5">
+            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg" alt="Brown anole among lichen" loading="lazy"></div>
+            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Denise Sosa</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>22 July 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
+          </figure>
+        </div>
+
+        <div class="sp-aka">
+          <div class="sp-block-label">Also known as</div>
+          <p>Cuban Anole · Cuban Brown Anole</p>
+        </div>
+      </section>
+
+
+      <!-- The sequence bar is NOT in this markup. site.js buildNav() injects it
+           at the end of the main element, reading the filtered list you arrived from, so
+           "next" means next in that list and "back to the list" restores your
+           filters, page and scroll. A static copy here would duplicate it. -->
+    </main>
+  </div>
+</div>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot">
+    <div class="lb-cred">
+      <div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div>
+      <div class="lb-meta" id="lbMeta"></div>
+    </div>
+    <div class="lb-ctrls">
+      <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+      <span class="lb-count" id="lbCount"></span>
+      <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button>
+    </div>
+    <div class="lb-hint">Swipe to move between photographs</div>
+  </div>
+</div>
+
+<script>
+var PHOTOS=[{"src": "../photos/PSBP-99999/635346033.jpg", "alt": "Brown anole on a hand-painted Native Plants sign", "by": "Cole Guyton", "date": "8 April 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg", "alt": "Brown anole among broad green leaves", "by": "David Vanderbilt", "date": "20 July 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg", "alt": "Brown anole on a park plant label reading NOT NATIVE", "by": "Yavid Justiniano", "date": "15 July 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg", "alt": "Well-camouflaged brown anole among lichen", "by": "Denise Sosa", "date": "22 July 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg", "alt": "Brown anole head-down on a tree trunk", "by": "celestes", "date": "12 May 2024"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg", "alt": "Brown anole on the rim of a planter", "by": "celestes", "date": "12 May 2024"}];
+
+/* ── GALLERY LIGHTBOX ─────────────────────────────────────────────────
+   Swipe is the primary control. The threshold (60px horizontal, and at least
+   1.6x the vertical movement) is lifted from the nature.html drawer so the two
+   feel identical — a visitor should not have to learn two swipes. */
+var lb=document.getElementById('lb'), lbImg=document.getElementById('lbImg'),
+    lbName=document.getElementById('lbName'), lbMeta=document.getElementById('lbMeta'),
+    lbCount=document.getElementById('lbCount'), lbPrev=document.getElementById('lbPrev'),
+    lbNext=document.getElementById('lbNext'), lbStage=document.getElementById('lbStage');
+var cur=-1;
+
+function paintLb(){
+  var p=PHOTOS[cur]; if(!p) return;
+  lbImg.src=p.src; lbImg.alt=p.alt;
+  lbName.textContent=p.by;
+  lbMeta.innerHTML = p.date + ' &middot; CC-BY-NC, via iNaturalist';
+  lbCount.textContent=(cur+1)+' / '+PHOTOS.length;
+  lbPrev.disabled = cur===0; lbNext.disabled = cur===PHOTOS.length-1;
+}
+function openLb(i){ cur=i; paintLb(); lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden'; }
+function closeLb(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
+  document.body.style.overflow=''; cur=-1; }
+function stepLb(d){ var j=cur+d; if(j<0||j>=PHOTOS.length) return; cur=j; paintLb(); }
+
+/* Apply the stored focus point to every photograph that has one. In the real
+   publisher this is written server-side from photo_credits.json; done here at
+   runtime so the demo reads the same field rather than a hardcoded value.
+   Photos with no focus fall back to centre, which is what five of these six
+   currently do — worth setting for tall portraits, where centre-cropping a
+   4:5 thumbnail can lose the animal entirely. */
+document.querySelectorAll('img[data-focus]').forEach(function(im){
+  im.style.objectPosition = im.dataset.focus;
+});
+
+var heroGal=document.getElementById('heroGal');
+if(heroGal) heroGal.addEventListener('click',function(){ openLb(0); });
+document.querySelectorAll('#heroStrip button').forEach(function(b){
+  b.addEventListener('click',function(){ openLb(+b.dataset.i); });
+});
+
+document.querySelectorAll('#gal figure').forEach(function(f){
+  f.querySelector('.shot').addEventListener('click',function(){ openLb(+f.dataset.i); });
+});
+lbPrev.addEventListener('click',function(){stepLb(-1);});
+lbNext.addEventListener('click',function(){stepLb(1);});
+document.getElementById('lbClose').addEventListener('click',closeLb);
+document.addEventListener('keydown',function(e){
+  if(!lb.classList.contains('on')) return;
+  if(e.key==='Escape') closeLb();
+  else if(e.key==='ArrowRight') stepLb(1);
+  else if(e.key==='ArrowLeft')  stepLb(-1);
+});
+
+/* Swipe — the control that matters outdoors. */
+(function(){
+  var x0=null,y0=null;
+  lbStage.addEventListener('touchstart',function(e){
+    var t=e.touches[0]; x0=t.clientX; y0=t.clientY;
+  },{passive:true});
+  lbStage.addEventListener('touchend',function(e){
+    if(x0==null) return;
+    var t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0;
+    x0=null;
+    if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.6) stepLb(dx<0?1:-1);
+  },{passive:true});
+})();
+
+/* Rail highlight — marks the section you are actually reading. */
+var links={};
+document.querySelectorAll('.sp-rail a').forEach(function(a){
+  links[a.getAttribute('href').slice(1)] = a;
+});
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if (!en.isIntersecting) return;
+    Object.keys(links).forEach(function(k){ links[k].classList.remove('on'); });
+    var a = links[en.target.id];
+    if (a) a.classList.add('on');
+  });
+}, { rootMargin: '-10% 0px -70% 0px' });
+document.querySelectorAll('.sp-sec').forEach(function(s){ io.observe(s); });
+</script>
+<!-- site.js injects the site nav, the footer and the photo-credit layer. The
+     demo had no nav because this was missing — nothing to do with the CSS. -->
 <script src="../js/site.js"></script>
-<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>
