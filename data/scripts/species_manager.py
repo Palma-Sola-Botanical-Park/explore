@@ -2934,7 +2934,12 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
                     f'{", ".join(sorted(VALID_ANIMAL_GROUPS))}.</p></div>'
                     + gaps_html, 200)
 
-        html = pub.generate_html(species, hero, galleries.get(species_id, []))
+        # v2 layout (2026-09-07). Preview must render what Publish will WRITE —
+        # write_html() now calls generate_html_v2, so a preview on the old
+        # generator would show a layout the publish path no longer produces.
+        # Falls back to v1 for plants, whose publisher has no v2 yet.
+        _gen = getattr(pub, "generate_html_v2", None) or pub.generate_html
+        html = _gen(species, hero, galleries.get(species_id, []))
 
         # Banner + a toggle between Visitor view and Gaps view. The gaps overlay
         # is rendered from a preview-only audit — nothing here touches the data
