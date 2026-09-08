@@ -536,7 +536,8 @@ def v2_similar(species):
         name = h(sp.get("common_name", ""))
         pid  = sp.get("psbp_id")
         how  = h(sp.get("how_to_tell_apart", ""))
-        link = f'<a href="{page_filename(pid, sp.get("common_name",""))}">{name}</a>' if pid else name
+        link = (f'<a href="{page_filename(pid, sp.get("common_name",""))}">{name}</a>'
+                if pid and _has_page(pid) else name)
         rows.append(f"<p>{link} — {how}</p>")
     return ('<div class="sp-similar"><div class="sp-similar-h">Easily confused with</div>'
             + "".join(rows) + "</div>")
@@ -702,6 +703,59 @@ def _v2_credit_plate_wide(rec):
             f'<span class="credit-src">{src}</span></div></div>')
 
 
+_PUBLISHED_IDS = None
+
+
+def _has_page(psbp_id):
+    """True only if that species actually has a published wildlife page.
+
+    2026-09-08: the look-alike callout linked any `psbp_id` it was given, so a
+    `similar_species` entry naming a species we have not published produced a
+    404. The Mangrove Skipper pointed at PSBP-99954 (Long-tailed Skipper),
+    which is not in wildlife_signage.json at all. Same failure as the mottled
+    spurge plant link — a link built from an id rather than from what exists.
+    """
+    global _PUBLISHED_IDS
+    if _PUBLISHED_IDS is None:
+        _PUBLISHED_IDS = set()
+        try:
+            raw = load_signage()
+            rows = raw.get("species") if isinstance(raw, dict) else raw
+            for r in (rows or []):
+                if r.get("id") and r.get("status") == "html":
+                    _PUBLISHED_IDS.add(str(r["id"]))
+        except Exception:
+            pass
+    return str(psbp_id) in _PUBLISHED_IDS
+
+
+_PLANT_PAGES = None
+
+
+def _plant_page(plant_id):
+    """Real published path for a plant page, e.g. PSBP-00303 ->
+    plants/PSBP-00303-Mottled-Spurge.html
+
+    2026-09-08: this used to be built as f"plants/{id}.html", which 404s — the
+    filename carries the common name too. Randy found it on the Brown Anole's
+    mottled spurge caption, the only in-flow plant link in the catalogue.
+    plants.json already stores the correct path, so ask it rather than guess.
+    """
+    global _PLANT_PAGES
+    if _PLANT_PAGES is None:
+        _PLANT_PAGES = {}
+        try:
+            with open(REPO / "plants.json", encoding="utf-8") as fh:
+                raw = json.load(fh)
+            rows = raw.get("species") if isinstance(raw, dict) else raw
+            for r in (rows or []):
+                if r.get("id") and r.get("page"):
+                    _PLANT_PAGES[str(r["id"])] = str(r["page"])
+        except Exception:
+            pass
+    return _PLANT_PAGES.get(str(plant_id))
+
+
 def v2_inflow_figure(pid, rec):
     """A photograph placed IN the prose, captioned from the `note` field on its
     photo_credits row. No note, no figure — a forced caption is worse than none.
@@ -715,7 +769,9 @@ def v2_inflow_figure(pid, rec):
     link = rec.get("note_species")
     cap = h(note)
     if link:
-        cap += f' <a href="../plants/{h(link)}.html">See the plant</a>'
+        page = _plant_page(link)
+        if page:
+            cap += f' <a href="../{h(page)}">See the plant</a>'
     return (f'<figure class="sp-figure"><img src="{h(_v2_photo_url(pid, rec))}" '
             f'alt="{h(rec.get("alt") or "")}" loading="lazy">'
             f'<figcaption>{cap}</figcaption>{_v2_credit_plate_wide(rec)}</figure>')
