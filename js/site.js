@@ -2764,14 +2764,25 @@ async function loadRightNow(targetId, opts) {
        existing pages are unaffected until their template carries one. */
     var top = document.getElementById('seq-top');
     if (top) {
+      /* Rebuilt 2026-09-08 to match the bottom bar. Randy: "I want the
+         appearance to be like 'ah yes, that's how I navigate around from here'
+         and have it look obvious that those two areas are the same thing."
+         Same three zones, same border, same eyebrow-over-name structure —
+         smaller, and the names drop out on narrow screens where they will not
+         fit beside the photo caption. */
       top.innerHTML =
-        (prev >= 0 ? '<a class="seqt-btn" href="' + href(prev) + '" title="' +
-                     String(s.names[prev]) + '">&#8249;<span>Prev</span></a>'
-                   : '<span class="seqt-btn seqt-off">&#8249;<span>Prev</span></span>') +
-        '<a class="seqt-ctx" href="../' + s.from + '#restore">' + ctx + '</a>' +
-        (next >= 0 ? '<a class="seqt-btn" href="' + href(next) + '" title="' +
-                     String(s.names[next]) + '"><span>Next</span>&#8250;</a>'
-                   : '<span class="seqt-btn seqt-off"><span>Next</span>&#8250;</span>');
+        (prev >= 0
+          ? '<a class="seqt-btn seqt-prev" href="' + href(prev) + '">' +
+              '<span class="seqt-dir">&larr; Prev</span>' +
+              '<span class="seqt-name">' + String(s.names[prev]) + '</span></a>'
+          : '<span class="seqt-btn seqt-empty"></span>') +
+        '<a class="seqt-back" href="../' + s.from + '#restore">' +
+          '<span class="seqt-ctx">' + ctx + '</span></a>' +
+        (next >= 0
+          ? '<a class="seqt-btn seqt-next" href="' + href(next) + '">' +
+              '<span class="seqt-dir">Next &rarr;</span>' +
+              '<span class="seqt-name">' + String(s.names[next]) + '</span></a>'
+          : '<span class="seqt-btn seqt-empty"></span>');
     }
 
     var anchor = document.querySelector('.all-plants-link, .all-wild-link');
@@ -2809,16 +2820,28 @@ async function loadRightNow(targetId, opts) {
       '.seq-ctx{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;' +
         'color:var(--ink-faint,#8a8d82);font-weight:700}' +
       '.seq-back-label{font-size:.98rem;color:var(--green,#2d6a35);font-weight:600}' +
-      '.seqt{display:inline-flex;align-items:center;gap:.15rem;font-family:var(--sans,system-ui)}' +
-      '.seqt-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.34rem .6rem;' +
-        'font-size:.82rem;font-weight:600;color:var(--green,#2d6a35);text-decoration:none;' +
-        'border:1px solid var(--rule,#e6e2d6);border-radius:2rem;background:var(--paper,#fdfcf8)}' +
-      '.seqt-btn:hover{border-color:var(--rule-strong,#d3cebd);background:#fff}' +
-      '.seqt-off{opacity:.32}' +
-      '.seqt-ctx{padding:0 .6rem;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;' +
-        'color:var(--ink-faint,#8a8d82);font-weight:700;text-decoration:none;white-space:nowrap}' +
-      '.seqt-ctx:hover{color:var(--green,#2d6a35)}' +
-      '@media(max-width:640px){.seqt-ctx{display:none}}' +
+      '.seqt{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;' +
+        'border:1px solid var(--rule-strong,#d3cebd);border-radius:3px;' +
+        'background:var(--sunk,#f6f3ea);overflow:hidden;font-family:var(--sans,system-ui);' +
+        'max-width:34rem}' +
+      '.seqt > *{padding:.42rem .75rem;display:flex;flex-direction:column;' +
+        'justify-content:center;gap:.1rem;text-decoration:none;color:var(--ink,#23241f);' +
+        'transition:background .15s;min-width:0}' +
+      '.seqt > * + *{border-left:1px solid var(--rule-strong,#d3cebd)}' +
+      '.seqt a:hover{background:var(--surface,#fff)}' +
+      '.seqt-empty{background:none}' +
+      '.seqt-next{align-items:flex-end;text-align:right}' +
+      '.seqt-dir{font-size:.6rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;' +
+        'color:var(--ink-faint,#8a8d82);white-space:nowrap}' +
+      '.seqt-name{font-family:var(--serif,Georgia,serif);font-size:.86rem;' +
+        'color:var(--green-ink,#1a3a1f);line-height:1.2;' +
+        'overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+      '.seqt-back{align-items:center;text-align:center;background:var(--paper,#fdfcf8);' +
+        'justify-content:center}' +
+      '.seqt-ctx{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;' +
+        'color:var(--ink-faint,#8a8d82);font-weight:700;white-space:nowrap}' +
+      '.seqt-back:hover .seqt-ctx{color:var(--green,#2d6a35)}' +
+      '@media(max-width:820px){.seqt-name{display:none}.seqt>*{padding:.42rem .6rem}}' +
       '@media(max-width:640px){.seq-nav{grid-template-columns:1fr 1fr}' +
         '.seq-back{grid-column:1/-1;order:3;min-width:0;border-left:0;' +
         'border-top:1px solid var(--rule-strong,#d3cebd)}' +

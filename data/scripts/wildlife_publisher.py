@@ -904,7 +904,8 @@ def generate_html_v2(species, hero, gallery_photos, published_on=""):
 <div id="nav-placeholder"></div>
 
 <div class="sp-hero">
-  <img src="{h(hero_src)}" alt="{h(common)} at Palma Sola Botanical Park" data-focus="{h(hero_focus)}">
+  <img class="sp-hero-bg" src="{h(hero_src)}" alt="" aria-hidden="true" style="object-position:{h(hero_focus)}">
+  <img class="sp-hero-fg" src="{h(hero_src)}" alt="{h(common)} at Palma Sola Botanical Park" style="object-position:{h(hero_focus)}">
   <div class="sp-hero-scrim"></div>
   {hero_attr}
   {strip}
