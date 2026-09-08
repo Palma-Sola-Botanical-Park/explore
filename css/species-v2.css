@@ -38,7 +38,16 @@
 /* No nav offset here: psbp.css already puts padding-top:var(--nav-h) on body
    for the fixed nav. Adding a margin as well produced a 64px white band between
    the nav and the hero. */
-.sp-hero{position:relative;height:clamp(340px,50vh,520px);
+/* WIDTH IS WHY THE CROP WAS SO SEVERE (2026-09-08). Randy: "making the pic
+   full screen width on computer caused us a lot of problems." He is right —
+   a full-bleed banner on a 2000px monitor is roughly 4:1, while an ordinary
+   photograph is about 1.5:1, so three-quarters of the frame had to be thrown
+   away. Capping the width and adding a little height brings the box closer to
+   the shape of the pictures going into it, so `cover` crops far less.
+   The plant page's 310px strip is the opposite mistake — too small to carry a
+   page on a desktop screen. This sits between the two. */
+.sp-hero{position:relative;max-width:1400px;margin:0 auto;
+  height:clamp(340px,56vh,600px);
   overflow:hidden;background:var(--green-ink)}
 /* THE HERO. One image, filling the banner, cropped around its focus point —
    the same approach the plant pages use.
