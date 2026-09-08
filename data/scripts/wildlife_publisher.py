@@ -453,13 +453,20 @@ def _v2_block(label, text):
 
 
 def _v2_section(anchor_id, title, inner, band=False):
-    """band=True paints a full-bleed wash behind the section — the alternation
-    the rest of the site uses, and what stops a species page reading as one
-    long column. Exactly ONE section is banded: more than one and it stops
-    being a break, none and the page has no rhythm."""
+    """Banding is no longer decided here.
+
+    Every section now alternates paper / wash / sunk via :nth-of-type in
+    species-v2.css, which is what the rest of the site already does. This used
+    to band exactly ONE section, on the reasoning that more than one stops
+    being a break. Randy asked for the alternation across all of them,
+    2026-09-08: "add some alternate color shading for every new section ...
+    might help break it up."
+
+    The `band` argument is kept so existing callers keep working, but it no
+    longer emits a class."""
     if not inner:
         return ""
-    cls = "sp-sec sp-sec--band" if band else "sp-sec"
+    cls = "sp-sec"
     return (f'<section class="{cls}" id="{anchor_id}">'
             f'<h2>{h(title)}</h2><div class="sp-sec-rule"></div>{inner}</section>')
 

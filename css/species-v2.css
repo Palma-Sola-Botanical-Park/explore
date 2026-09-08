@@ -130,10 +130,8 @@
    rather than `hidden` — hidden on html/body silently breaks position:sticky
    on descendants, and the rail depends on it. */
 html,body{overflow-x:clip}
-/* ── SECTION BANDS — the alternation the rest of the site already uses
-     (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
-     section so the eye gets a boundary without any new component. */
-body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
+/* (The section-band rules live further down, with the rest of the section
+   styling. This duplicate block used to sit here and did nothing.) */
 /* ── GALLERY ────────────────────────────────────────────────────────────
    Every photo taken by a named person. The credit is part of the picture,
    not a footnote at the bottom of the page — that is the whole point of
@@ -298,11 +296,24 @@ body[data-hero="strip"] .sp-herogal{display:none}
      column and gives a skimmer something to catch on. */
 
 /* ── SECTION BANDS — the alternation the rest of the site already uses
-     (bg-wash / bg-sunk on contact.html and index.html). Full-bleed behind a
-     section so the eye gets a boundary without any new component. */
-body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
-body[data-bands="on"] .sp-sec--band::before{content:"";position:absolute;
-  top:0;bottom:0;left:-50vw;right:-50vw;background:var(--wash);z-index:-1}
+     (bg-wash / bg-sunk on index.html and contact.html). Full-bleed behind each
+     section so the eye gets a boundary without any new component.
+
+     2026-09-08: this was ONE banded section, on the reasoning that more than
+     one stops being a break. Randy asked for the alternation across every
+     section instead — "might help break it up" — which is what the rest of the
+     site actually does, so the tokens already exist for it.
+
+     Three surfaces cycling, so no two neighbours ever share a tone:
+       1 paper (the page itself) · 2 wash (pale green) · 3 sunk (faint sand)
+     Driven by :nth-of-type, so a page missing Take care still alternates
+     correctly rather than repeating a colour. */
+body[data-bands="on"] .sp-sec{position:relative;margin-bottom:0;
+  padding:2.6rem 0 1.8rem}
+body[data-bands="on"] .sp-sec::before{content:"";position:absolute;
+  top:0;bottom:0;left:-50vw;right:-50vw;z-index:-1}
+body[data-bands="on"] .sp-sec:nth-of-type(3n+2)::before{background:var(--wash)}
+body[data-bands="on"] .sp-sec:nth-of-type(3n+3)::before{background:var(--sunk)}
 /* ── GALLERY ────────────────────────────────────────────────────────────
    Every photo taken by a named person. The credit is part of the picture,
    not a footnote at the bottom of the page — that is the whole point of
