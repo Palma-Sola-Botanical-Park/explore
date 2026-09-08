@@ -46,8 +46,8 @@
    the shape of the pictures going into it, so `cover` crops far less.
    The plant page's 310px strip is the opposite mistake — too small to carry a
    page on a desktop screen. This sits between the two. */
-.sp-hero{position:relative;max-width:1400px;margin:0 auto;
-  height:clamp(340px,56vh,600px);
+.sp-hero{position:relative;max-width:1100px;margin:0 auto;
+  height:clamp(340px,58vh,620px);
   overflow:hidden;background:var(--green-ink)}
 /* THE HERO. One image, filling the banner, cropped around its focus point —
    the same approach the plant pages use.
@@ -68,7 +68,12 @@
    a positioned element with z-index:auto paints below any positive z-index in
    the same stacking context, whatever the DOM order says. */
 .sp-hero-scrim{z-index:2}
-.sp-hero-inner,.sp-heroattr,.sp-herogal,.sp-herostrip{z-index:3}
+.sp-hero-inner,.sp-heroattr,.sp-herostrip{z-index:3}
+/* The gallery button must beat .sp-hero-inner, which spans the full width of
+   the hero's bottom edge and overlaps it. At an equal z-index the later element
+   in the DOM wins, and the title block comes last — which made the button
+   unclickable on 2026-09-08 until this was raised to 4. */
+.sp-herogal{z-index:4}
 .sp-hero-scrim{position:absolute;inset:0;z-index:2;
   background:linear-gradient(to top,rgba(15,25,17,.88) 0%,rgba(15,25,17,.35) 45%,rgba(15,25,17,.05) 100%)}
 .sp-hero-inner{position:absolute;left:0;right:0;bottom:0;padding:2rem 1.4rem 1.6rem;
