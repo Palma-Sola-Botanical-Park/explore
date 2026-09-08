@@ -52,9 +52,15 @@
    space the photo could not reach. object-position is written server-side now,
    as the plant template already did, so the framing does not wait on JS. */
 .sp-hero img{display:block;position:absolute;inset:0;width:100%;height:100%}
-.sp-hero-bg{object-fit:cover;filter:blur(26px) saturate(1.15) brightness(.82);
+.sp-hero-bg{object-fit:cover;filter:blur(30px) saturate(1.1) brightness(.62);
   transform:scale(1.15);z-index:0}
 .sp-hero-fg{object-fit:contain;z-index:1}
+/* Everything laid over the photograph must sit above BOTH image layers. Giving
+   the images a z-index at all pushed them above the title, which had none —
+   a positioned element with z-index:auto paints below any positive z-index in
+   the same stacking context, whatever the DOM order says. */
+.sp-hero-scrim{z-index:2}
+.sp-hero-inner,.sp-heroattr,.sp-herogal,.sp-herostrip{z-index:3}
 .sp-hero-scrim{position:absolute;inset:0;z-index:2;
   background:linear-gradient(to top,rgba(15,25,17,.88) 0%,rgba(15,25,17,.35) 45%,rgba(15,25,17,.05) 100%)}
 .sp-hero-inner{position:absolute;left:0;right:0;bottom:0;padding:2rem 1.4rem 1.6rem;
