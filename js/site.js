@@ -2851,9 +2851,45 @@ async function loadRightNow(targetId, opts) {
 
   /* ── boot ─────────────────────────────────────────────────────────────── */
 
+  /* A DIRECT ARRIVAL STILL DESERVES A WAY ONWARD (2026-09-08).
+     Randy emailed Bev a link to the Brown Anole and it landed as a dead end:
+     "no nav links back to view (cause it didn't come from there!)". Every
+     shared link, every QR scan off a sign and every bookmark hits this path.
+     So when there is no stored sequence, build one from the published feed and
+     walk the whole catalogue alphabetically. Arriving from the grid still wins
+     — that sequence is the filtered list the visitor was actually browsing. */
+  function seqFromFeed(id, done) {
+    var wild = /\/wildlife\//.test(location.pathname);
+    var feed = '../' + (wild ? 'wildlife.json' : 'plants.json');
+    fetch(feed).then(function (r) { return r.json(); }).then(function (j) {
+      var list = (j && j.species) || j || [];
+      if (!Array.isArray(list) || !list.length) return;
+      list = list.slice().sort(function (a, b) {
+        return String(a.common || a.name || '').localeCompare(String(b.common || b.name || ''));
+      });
+      if (!list.some(function (r) { return r.id === id; })) return;
+      save({
+        kind: wild ? 'wild' : 'plant',
+        ids:   list.map(function (r) { return r.id; }),
+        names: list.map(function (r) { return r.common || r.name || r.id; }),
+        pages: list.map(function (r) { return r.page || ''; }),
+        label: '', from: 'nature.html',
+        hash: wild ? '#wildlife' : '#plants',
+        filters: null, current: id
+      });
+      done();
+    }).catch(function () {});
+  }
+
   function go() {
     try {
-      if (idFromUrl()) { buildNav(); return; }
+      var pid = idFromUrl();
+      if (pid) {
+        var have = read();
+        if (have && have.ids && have.ids.indexOf(pid) >= 0) { buildNav(); }
+        else { seqFromFeed(pid, buildNav); }
+        return;
+      }
       if (location.hash === '#restore') {
         history.replaceState(null, '', location.pathname + location.search);
         setTimeout(restore, 120);            // let the feeds land first
