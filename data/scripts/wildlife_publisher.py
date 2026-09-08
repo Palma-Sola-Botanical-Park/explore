@@ -544,7 +544,12 @@ def v2_similar(species):
 
 
 def v2_how_to_know_it(species, photos_by_id=None):
-    """identification blocks + sounds + size, with the look-alike callout on top.
+    """identification blocks + sounds + size, with the look-alike callout LAST.
+
+    Moved to the end 2026-09-08. It had opened the section since v2, so every
+    page began by telling you what the animal is NOT. Randy: "That feels like
+    info that can go at the bottom of how to spot it as an aside. Why would that
+    go right near the top?" Correct — identify first, disambiguate after.
 
     `sounds` gets its own labelled block: whether an animal makes noise is an
     identification fact, and on the anole "you will never hear one" is one of
@@ -554,7 +559,7 @@ def v2_how_to_know_it(species, photos_by_id=None):
         return _v2_section("know", "How to know it",
                            _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     ident = species.get("identification") or {}
-    parts = [v2_similar(species)]
+    parts = []
     for b in (ident.get("blocks") or []):
         parts.append(_v2_block(b.get("label", ""), b.get("text", "")))
     parts.append(_v2_block("Voice", species.get("sounds")))
@@ -565,6 +570,7 @@ def v2_how_to_know_it(species, photos_by_id=None):
     if bits:
         parts.append(_v2_block("Size", "; ".join(str(b) for b in bits)))
     parts.append(_v2_block("What to look for", ident.get("what_to_look_for")))
+    parts.append(v2_similar(species))
     return _v2_section("know", "How to know it", "".join(parts))
 
 
@@ -821,7 +827,22 @@ def generate_html_v2(species, hero, gallery_photos, published_on=""):
     # hero is excluded — its note is already the hero caption, and using it
     # again put the same picture on the page twice while a genuinely captioned
     # photo further down was never placed at all.
-    noted = [r for r in photos if (r.get("note") or "").strip() and r is not hero]
+    #
+    # 2026-09-08: also exclude any photo a POLISHED block already places. Both
+    # paths were firing — this one and the {"photo": id} blocks in `page` — so a
+    # species with both put the same image on the page twice, with two different
+    # captions. Only the anole had both, which is why it took a visitor's eye to
+    # spot it. The assembled path stays for the 91 species that have no blocks.
+    placed = set()
+    for _sec in (species.get("page") or {}).values():
+        if isinstance(_sec, list):
+            for _b in _sec:
+                if isinstance(_b, dict) and _b.get("photo"):
+                    placed.add(str(_b["photo"]))
+    noted = [r for r in photos
+             if (r.get("note") or "").strip()
+             and r is not hero
+             and str(r.get("photo_id")) not in placed]
     fig_know = v2_inflow_figure(pid, noted[0]) if len(noted) > 0 else ""
     fig_does = v2_inflow_figure(pid, noted[1]) if len(noted) > 1 else ""
 
