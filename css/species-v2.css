@@ -71,8 +71,11 @@
 /* The gallery button must beat .sp-hero-inner, which spans the full width of
    the hero's bottom edge and overlaps it. At an equal z-index the later element
    in the DOM wins, and the title block comes last — which made the button
-   unclickable on 2026-09-08 until this was raised to 4. */
-.sp-herogal{z-index:4}
+   unclickable on 2026-09-08.
+   The z-index that does the work lives in the full .sp-herogal rule further
+   down this file. Setting it here as well is useless: the later rule wins on
+   source order, so a value here is silently overridden. That is exactly how
+   this regressed the same day it was first fixed. Do not re-add it here. */
 .sp-hero-scrim{position:absolute;inset:0;z-index:2;
   background:linear-gradient(to top,rgba(15,25,17,.88) 0%,rgba(15,25,17,.35) 45%,rgba(15,25,17,.05) 100%)}
 .sp-hero-inner{position:absolute;left:0;right:0;bottom:0;padding:2rem 1.4rem 1.6rem;
@@ -190,7 +193,9 @@ body[data-bands="on"] .sp-sec--band{position:relative;padding:2.4rem 0 1.2rem}
 
    Solid dark chip rather than a translucent overlay, for the same reason the
    lightbox controls are: this gets used on a phone in full sun. */
-.sp-herogal{position:absolute;right:1.1rem;bottom:4.2rem;z-index:3;
+/* z-index:4 — must beat .sp-hero-inner (z-index:3), which spans the hero's
+   bottom edge and comes later in the DOM. At 3 the button is unclickable. */
+.sp-herogal{position:absolute;right:1.1rem;bottom:4.2rem;z-index:4;
   display:inline-flex;align-items:center;gap:.6rem;
   background:rgba(12,20,13,.82);border:1px solid rgba(255,255,255,.35);
   color:#fff;font-family:var(--sans);font-size:.88rem;font-weight:600;
