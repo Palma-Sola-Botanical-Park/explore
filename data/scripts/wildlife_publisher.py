@@ -565,6 +565,12 @@ def v2_how_to_know_it(species, photos_by_id=None):
     parts.append(_v2_block("Voice", species.get("sounds")))
 
     size = species.get("size") or {}
+    # `shell_length` and `width` are deliberately NOT read. Randy, 2026-09-08:
+    # "The whole point of this exercise was to hide things that are boring and
+    # just statistics." The four records carrying them (both cooters, Pond
+    # Slider, Atlantic Blue Crab) already state size narratively inside
+    # `identification` — "clearly bigger than a slider" beats "9 to 13 inches".
+    # Rendering both produced two Size blocks saying the same thing twice.
     bits = [size.get("length"), size.get("wingspan"), size.get("height")]
     bits = [b for b in bits if b]
     if bits:
