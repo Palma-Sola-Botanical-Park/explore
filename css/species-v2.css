@@ -40,23 +40,20 @@
    the nav and the hero. */
 .sp-hero{position:relative;height:clamp(340px,50vh,520px);
   overflow:hidden;background:var(--green-ink)}
-/* THE HERO, rebuilt 2026-09-08. Randy: "Rule should be focus gets kept in
-   centre. Then build the biggest picture you can with that and fill the rest of
-   the frame with a background fuzzy version."
+/* THE HERO. One image, filling the banner, cropped around its focus point —
+   the same approach the plant pages use.
 
-   Before: one image at object-fit:cover, which fills the banner by cropping
-   whatever will not fit — and on 29 portrait heroes that meant the animal's
-   head. Now two copies of the same file: a blurred, over-scaled COVER layer
-   that fills the box edge to edge, and a CONTAIN layer on top that is never
-   cropped at all. The subject is always whole; the blur only ever occupies the
-   space the photo could not reach. object-position is written server-side now,
-   as the plant template already did, so the framing does not wait on JS. */
-.sp-hero img{display:block;position:absolute;inset:0;width:100%;height:100%}
-.sp-hero-bg{object-fit:cover;filter:blur(30px) saturate(1.1) brightness(.62);
-  transform:scale(1.15);z-index:0}
-.sp-hero-fg{z-index:1}
-.sp-fit-cover{object-fit:cover}      /* landscape: fill the banner, crop to focus */
-.sp-fit-contain{object-fit:contain}  /* portrait: show it whole over the blur */
+   A blurred-backdrop version was tried 2026-09-08 and removed the same day.
+   Randy: "I might actually prefer chopped heads to this treatment... The
+   left/right blur is really really boring and the zoom level is awful." He is
+   right: showing the whole frame means a tall photo becomes a narrow strip in
+   a wide banner, which looks worse than a tight crop.
+
+   What survived from that attempt is the fix that mattered: object-position is
+   now written SERVER-SIDE from photo_credits.json, as the plant template always
+   did, rather than being applied at runtime by a shim in species-v2.js. */
+.sp-hero img{display:block;position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;z-index:1}
 /* Everything laid over the photograph must sit above BOTH image layers. Giving
    the images a z-index at all pushed them above the title, which had none —
    a positioned element with z-index:auto paints below any positive z-index in

@@ -871,16 +871,6 @@ def generate_html_v2(species, hero, gallery_photos, published_on=""):
     hero_src   = _v2_photo_url(pid, hero) if hero else ""
     hero_focus = (hero.get("focus") if hero else None) or "50% 50%"
 
-    # HOW HARD TO CROP THE HERO (2026-09-08). Randy: "I don't need the whole
-    # photo in the hero. I like going in close. But I don't want heads chopped
-    # off." Those are only in conflict for tall photographs, so the shape of the
-    # file decides. A landscape frame fills the banner edge to edge, cropped
-    # around its focus point — close in, nothing lost that matters. A portrait
-    # in a 2:1 banner cannot be cropped that hard without losing the animal, so
-    # it is shown whole against the blurred backdrop instead. 59 landscape, 4
-    # squarish, 29 portrait across the current hero set.
-    _hw, _hh = (hero.get("w"), hero.get("h")) if hero else (None, None)
-    hero_fit = "cover" if (_hw and _hh and (_hw / _hh) >= 1.15) else "contain"
     hero_note  = (hero.get("note") or "").strip() if hero else ""
     hero_attr  = _v2_hero_attr(hero)
     gal_cue    = _v2_hero_gallery_cue(len(photos))
@@ -915,8 +905,7 @@ def generate_html_v2(species, hero, gallery_photos, published_on=""):
 <div id="nav-placeholder"></div>
 
 <div class="sp-hero">
-  <img class="sp-hero-bg" src="{h(hero_src)}" alt="" aria-hidden="true" style="object-position:{h(hero_focus)}">
-  <img class="sp-hero-fg sp-fit-{hero_fit}" src="{h(hero_src)}" alt="{h(common)} at Palma Sola Botanical Park" style="object-position:{h(hero_focus)}">
+  <img class="sp-hero-fg" src="{h(hero_src)}" alt="{h(common)} at Palma Sola Botanical Park" style="object-position:{h(hero_focus)}">
   <div class="sp-hero-scrim"></div>
   {hero_attr}
   {strip}
