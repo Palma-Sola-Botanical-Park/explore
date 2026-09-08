@@ -1,15 +1,4 @@
 <!DOCTYPE html>
-<!-- PSBP-HANDBUILT-V2 ═══════════════════════════════════════════════════════
-     Written by hand, 2026-09-07, as the first page in the v2 layout. The
-     generator still emits the OLD template, so wildlife_publisher.write_html()
-     refuses to overwrite any page carrying this marker — regenerating would
-     replace this with the layout it exists to retire, and the result would look
-     perfectly valid, which is what makes it dangerous.
-
-     Content comes from data/sources/wildlife_v2_sample.json (nothing reads that
-     file yet) and the captions from the `note` fields on photo_credits.json.
-     When the publisher can produce this layout, delete the marker and generate.
-     ══════════════════════════════════════════════════════════════════════ -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -20,218 +9,42 @@
 <link rel="stylesheet" href="../css/psbp.css">
 <link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body data-bands="on" data-hero="strip">
-<!-- site.js replaces these by id, using outerHTML — it does not append. Without
-     them the page renders with no nav and no footer, which is exactly what
-     happened on the first push of this page. -->
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-
 <div class="sp-hero">
-  <img src="../photos/PSBP-99999/635346033.jpg" alt="Brown anole displaying its orange throat fan"
-       data-focus="65% 60%">
+  <img src="../photos/PSBP-99999/635346033.jpg" alt="Brown Anole at Palma Sola Botanical Park" data-focus="65% 60%">
   <div class="sp-hero-scrim"></div>
-  <!-- Site-standard credit: the same .photo-attr / .attr-line / .attr-by /
-       .cc-badge structure PSBPPhotos.attribution() emits on index.html, so a
-       photographer is credited identically everywhere. Right-aligned per
-       Randy; the standard spans full width, only the content shifts.
-       The camera emoji the live helper prepends is dropped, for the same
-       reason emoji came out of visit.html and the lightbox. -->
-  <div class="photo-attr photo-attr--muted sp-heroattr">
-    <span class="attr-line">
-      <span class="attr-credit"><span class="attr-by">Cole Guyton</span><span class="attr-date"><span class="attr-dot">&middot;</span> 8 April 2026</span></span>
-      <span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span>
-      <span class="attr-src">via iNaturalist</span>
-    </span>
-  </div>
-  <div class="sp-strip" id="heroStrip" aria-label="Photographs of this species">
-    <button type="button" data-i="1" aria-label="Photograph 2"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt=""></button>
-    <button type="button" data-i="2" aria-label="Photograph 3"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg" alt=""></button>
-    <button type="button" data-i="3" aria-label="See all six photographs"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg" alt=""><span class="more">+3</span></button>
-  </div>
-  <button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <rect x="7" y="3" width="14" height="14" rx="2"></rect>
-      <path d="M3 7v12a2 2 0 0 0 2 2h12"></path>
-      <circle cx="11.5" cy="7.5" r="1.4"></circle>
-      <path d="M21 13l-4.2-4.2a1.5 1.5 0 0 0-2.1 0L7 16"></path>
-    </svg>
-    <span><span class="n">6</span> photographs</span>
-  </button>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by">Cole Guyton</span><span class="attr-date"><span class="attr-dot">&middot;</span> Apr 8, 2026</span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg" alt=""><span class="more">+2</span></button></div>
+  <button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="3" width="14" height="14" rx="2"></rect><path d="M3 7v12a2 2 0 0 0 2 2h12"></path><circle cx="11.5" cy="7.5" r="1.4"></circle><path d="M21 13l-4.2-4.2a1.5 1.5 0 0 0-2.1 0L7 16"></path></svg><span><span class="n">6</span> photographs</span></button>
   <div class="sp-hero-inner">
-    <div class="sp-eyebrow">Lizard · Introduced · Seen year-round</div>
+    <div class="sp-eyebrow">Lizard &middot; Introduced &middot; Seen year-round</div>
     <h1 class="sp-name">Brown Anole</h1>
     <div class="sp-sci">Anolis sagrei</div>
   </div>
 </div>
 
-
 <div class="sp-herocap">
-  <span class="cap">This one is sitting on a hand-painted sign for the native plant garden.</span>
-  <!-- site.js buildNav() fills this with a compact prev / position / next when
-       you arrived from the grid. Empty and invisible on a QR-code arrival. -->
+  <span class="cap">Perched on the hand-painted sign for the native plant garden. Brown anoles are from Cuba.</span>
   <span class="seqt" id="seq-top"></span>
 </div>
 
 <div class="sp-wrap">
   <div class="sp-cols">
-
-    <aside class="sp-rail">
-      <div class="sp-rail-title">On this page</div>
-      <a href="#glance" class="on">At a glance</a>
-      <a href="#know">How to know it</a>
-      <a href="#find">Where to find it here</a>
-      <a href="#lives">How it lives</a>
-      <a href="#does">What it does here</a>
-      <a href="#photos">Photographs</a>
-    </aside>
-
-    <main>
-      <section class="sp-sec" id="glance">
-        <h2>At a glance</h2><div class="sp-sec-rule"></div>
-        <div class="sp-quick">
-        <ul>
-          <li>A small brown lizard doing push-ups on a fence post, flashing a reddish-orange throat fan, is the most common lizard you will meet anywhere in Florida.</li>
-          <li>It is not from here. Brown anoles arrived from Cuba and the Bahamas around 1887 and now live in nearly every county in the state.</li>
-          <li>Florida's native green anoles responded by moving up. Where brown anoles are common, greens spend their time higher in the shrubs and trees.</li>
-          <li>And they are still changing. Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads in only a few generations — evolution fast enough to watch.</li>
-        </ul>
-        </div>
-      </section>
-
-      <section class="sp-sec" id="know">
-        <h2>How to know it</h2><div class="sp-sec-rule"></div>
-
-        <div class="sp-similar">
-          <div class="sp-similar-h">Easily confused with</div>
-          <p><a href="PSBP-99962-Green-Anole.html">Green Anole</a> — the green anole turns
-          bright green, flashes a pink throat fan, and climbs high. The brown anole never turns green,
-          flashes reddish-orange, and stays low.</p>
-        </div>
-
-        <div class="sp-block"><div class="sp-block-label">Color</div>
-          <p>Brown, tan, or gray, usually patterned with triangles, diamonds, or a pale stripe down the back. The one thing it will never do is turn bright green.</p></div>
-
-        <figure class="sp-figure">
-          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg" alt="Brown anole almost invisible against the mottled stems of a spurge">
-          <figcaption>There is an anole in this photograph, on a
-            <a href="../plants/PSBP-00303-Mottled-Spurge.html">mottled spurge</a> in this park. The
-            markings that look arbitrary on a fence rail are doing something else here.</figcaption>
-          <div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Denise Sosa</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">22 July 2026 &middot; via iNaturalist</span></div></div>
-        </figure>
-
-        <div class="sp-block"><div class="sp-block-label">Throat fan</div>
-          <p>Males flash a reddish-orange dewlap edged in yellow. The native green anole's is pink — that single detail settles most identifications.</p></div>
-        <div class="sp-block"><div class="sp-block-label">Voice</div>
-          <p>Essentially silent. Anoles talk with their bodies — push-ups and the dewlap — not with sound. You will never hear one.</p></div>
-        <div class="sp-block"><div class="sp-block-label">Body</div>
-          <p>Stocky, short-snouted, with ridged scales that give the back a slightly rough look. Five to eight inches long, tail included; males run larger.</p></div>
-        <div class="sp-block"><div class="sp-block-label">Where it sits</div>
-          <p>Low. Fence rails, walls, sidewalk edges, the base of a trunk — often head-down, bobbing. A green anole in the same garden will usually be well above it.</p></div>
-
-        <figure class="sp-figure">
-          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt="Brown anole head-down on a tree trunk">
-          <figcaption>Head-down on a trunk, low to the ground — the posture you will see ninety-nine times out of a hundred.
-            </figcaption>
-          <div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">celestes</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">12 May 2024 &middot; via iNaturalist</span></div></div>
-        </figure>
-      </section>
-
-      <section class="sp-sec" id="find">
-        <h2>Where to find it here</h2><div class="sp-sec-rule"></div>
-        <p>Almost anywhere the sun hits. Fence rails, tree trunks, the warm edge of a sidewalk, the border of a planting bed — scan low surfaces on a warm day and you will find one within a minute or two.</p>
-        <p>They are here every month of the year, though a cold snap sends them out of sight for a few days. Warm mornings are best; that is when they are out basking and displaying.</p>
-        <div class="sp-block"><div class="sp-block-label">In this park</div>
-          <p>The brown anole is the most-recorded animal in the park. Visitors have been logging it here since 2018, and it turns up more often than any other creature we track. If you are looking for a lizard, this is the one you will find.</p></div>
-      </section>
-
-      <section class="sp-sec sp-sec--band" id="lives">
-        <h2>How it lives</h2><div class="sp-sec-rule"></div>
-        <p>Active by day and almost always close to the ground. Males hold territory and advertise it constantly: a bobbing push-up display and a flash of the throat fan, repeated at anything that comes near. It is body language for <em>this spot is taken</em>, and it works on rivals and visitors alike.</p>
-        <p>They hunt whatever they can catch and swallow — beetles, ants, flies, spiders. Grabbed by a predator, an anole can drop its tail and leave it twitching as a decoy, then regrow a shorter one over the following weeks.</p>
-      </section>
-
-      <section class="sp-sec" id="does">
-        <h2>What it does here</h2><div class="sp-sec-rule"></div>
-        <p>Brown anoles reached the Florida Keys around 1887, most likely as stowaways in cargo and on nursery plants. They have since spread through nearly the whole state and are now among Florida's most abundant land vertebrates.</p>
-        <p>That arrival reshaped life for the green anole, Florida's only native anole. The two want the same things — the same insects, the same sunny perches — and where browns move in, greens move up, shifting into the shrubs and higher trunks. Brown anoles also eat green anole eggs and hatchlings, which adds to the pressure.</p>
-        <figure class="sp-figure">
-          <img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg" alt="Brown anole resting on a park plant label reading NOT NATIVE">
-          <figcaption>Photographed in this park, on a label reading <em>NOT NATIVE (S America)</em>. The sign means the philodendron. It applies to the lizard too.
-            </figcaption>
-          <div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Yavid Justiniano</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">15 July 2026 &middot; via iNaturalist</span></div></div>
-        </figure>
-
-        <div class="sp-block"><div class="sp-block-label">Evolution you can watch</div>
-          <p>Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads — measurably, in only a few generations. Biologists point to it as one of the clearest cases of evolution moving fast enough to observe, and it is happening in ordinary Florida gardens.</p></div>
-
-
-        <p>None of this is the brown anole doing anything wrong; it is simply very good at being a lizard in Florida. It is also food for a great many things here — birds, snakes, larger lizards, cats.</p>
-      </section>
-
-      <section class="sp-sec" id="photos">
-        <h2>Photographs</h2><div class="sp-sec-rule"></div>
-        <p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p>
-        <div class="sp-gal" id="gal">
-          <figure data-i="0">
-            <div class="shot"><img src="../photos/PSBP-99999/635346033.jpg" alt="Brown anole on a Native Plants sign" loading="lazy"></div>
-            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Cole Guyton</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>8 April 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
-          </figure>
-          <figure data-i="1">
-            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt="Brown anole on a trunk" loading="lazy"></div>
-            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">celestes</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>12 May 2024</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
-          </figure>
-          <figure data-i="2">
-            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg" alt="Brown anole on a planter rim" loading="lazy"></div>
-            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">celestes</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>12 May 2024</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
-          </figure>
-          <figure data-i="3">
-            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg" alt="Brown anole among leaves" loading="lazy"></div>
-            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">David Vanderbilt</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>20 July 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
-          </figure>
-          <figure data-i="4">
-            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg" alt="Brown anole on a NOT NATIVE plant label" loading="lazy"></div>
-            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Yavid Justiniano</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>15 July 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
-          </figure>
-          <figure data-i="5">
-            <div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg" alt="Brown anole among lichen" loading="lazy"></div>
-            <figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Denise Sosa</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>22 July 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption>
-          </figure>
-        </div>
-
-        <div class="sp-aka">
-          <div class="sp-block-label">Also known as</div>
-          <p>Cuban Anole · Cuban Brown Anole</p>
-        </div>
-      </section>
-
-
-      <!-- The sequence bar is NOT in this markup. site.js buildNav() injects it
-           at the end of the main element, reading the filtered list you arrived from, so
-           "next" means next in that list and "back to the list" restores your
-           filters, page and scroll. A static copy here would duplicate it. -->
-    </main>
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#know">How to know it</a><a href="#find">Where to find it here</a><a href="#lives">How it lives</a><a href="#does">What it does here</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>A small brown lizard doing push-ups on a fence post, flashing a reddish-orange throat fan, is the most common lizard you will meet anywhere in Florida.</li><li>It is not from here. Brown anoles arrived from Cuba and the Bahamas around 1887 and now live in nearly every county in the state.</li><li>Florida&#x27;s native green anoles responded by moving up. Where brown anoles are common, greens spend their time higher in the shrubs and trees.</li><li>And they are still changing. Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads in only a few generations — evolution fast enough to watch.</li></ul></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><figure class="sp-figure"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg" alt="" loading="lazy"><figcaption>Resting on a park plant label reading NOT NATIVE (S America). The sign means the philodendron.</figcaption><div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Yavid Justiniano</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">Jul 15, 2026 &middot; via iNaturalist</span></div></div></figure><div class="sp-similar"><div class="sp-similar-h">Easily confused with</div><p><a href="PSBP-99962-Green-Anole.html">Green Anole</a> — The green anole can turn bright green and has a pink throat fan and climbs higher; the brown anole never turns green, flashes a reddish-orange fan, and stays low.</p></div><div class="sp-block"><div class="sp-block-label">Color</div><p>Brown, tan, or gray, usually patterned with triangles, diamonds, or a pale stripe down the back. The one thing it will never do is turn bright green.</p></div><figure class="sp-figure"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg" alt="" loading="lazy"><figcaption>There is an anole in this photograph, on a mottled spurge in this park. The markings that look arbitrary on a fence rail are doing something else here. <a href="../plants/PSBP-00303.html">See the plant</a></figcaption><div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Denise Sosa</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">Jul 22, 2026 &middot; via iNaturalist</span></div></div></figure><div class="sp-block"><div class="sp-block-label">Throat fan</div><p>Males flash a reddish-orange dewlap edged in yellow. The native green anole&#x27;s is pink — that single detail settles most identifications.</p></div><div class="sp-block"><div class="sp-block-label">Body</div><p>Stocky, short-snouted, with ridged scales that give the back a slightly rough look.</p></div><div class="sp-block"><div class="sp-block-label">Voice</div><p>Essentially silent. Anoles talk with their bodies — push-ups and the dewlap — not with sound. You will never hear one.</p></div><div class="sp-block"><div class="sp-block-label">Where it sits</div><p>Low. Fence rails, walls, sidewalk edges, the base of a trunk — often head-down, bobbing. A green anole in the same garden will usually be well above it.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Almost anywhere the sun hits. Fence rails, tree trunks, the warm edge of a sidewalk, the border of a planting bed — scan low surfaces on a warm day and you will find one within a minute or two.</p></div><div class="sp-block"><p>They are here every month of the year, though a cold snap sends them out of sight for a few days. Warm mornings are best; that is when they are out basking and displaying.</p></div><div class="sp-block"><div class="sp-block-label">In this park</div><p>The brown anole is the most-recorded animal in the park. Visitors have been logging it here since 2018, and it turns up more often than any other creature we track. If you are looking for a lizard, this is the one you will find.</p></div></section><section class="sp-sec sp-sec--band" id="lives"><h2>How it lives</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Active by day and almost always close to the ground. Males hold territory and advertise it constantly: a bobbing push-up display and a flash of the throat fan, repeated at anything that comes near. It is body language for this spot is taken, and it works on rivals and visitors alike.</p></div><div class="sp-block"><p>They hunt whatever they can catch and swallow — beetles, ants, flies, spiders. Grabbed by a predator, an anole can drop its tail and leave it twitching as a decoy, then regrow a shorter one over the following weeks.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Brown anoles reached the Florida Keys around 1887, most likely as stowaways in cargo and on nursery plants. They have since spread through nearly the whole state and are now among Florida&#x27;s most abundant land vertebrates.</p><figure class="sp-figure"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg" alt="" loading="lazy"><figcaption>Almost invisible against the mottled stems of a spurge. Shows the pattern doing what it is for. <a href="../plants/PSBP-00303.html">See the plant</a></figcaption><div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Denise Sosa</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">Jul 22, 2026 &middot; via iNaturalist</span></div></div></figure></div><div class="sp-block"><p>That arrival reshaped life for the green anole, Florida&#x27;s only native anole. The two want the same things — the same insects, the same sunny perches — and where browns move in, greens move up, shifting into the shrubs and higher trunks. Brown anoles also eat green anole eggs and hatchlings, which adds to the pressure.</p></div><figure class="sp-figure"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg" alt="" loading="lazy"><figcaption>Photographed in this park, on a label reading NOT NATIVE (S America). The sign means the philodendron. It applies to the lizard too.</figcaption><div class="credit-plate"><div class="credit-byline"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Yavid Justiniano</span></div><div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span class="credit-src">Jul 15, 2026 &middot; via iNaturalist</span></div></div></figure><div class="sp-block"><div class="sp-block-label">Evolution you can watch</div><p>Green anoles pushed onto higher, smoother perches have evolved larger, stickier toepads — measurably, in only a few generations. Biologists point to it as one of the clearest cases of evolution moving fast enough to observe, and it is happening in ordinary Florida gardens.</p></div><div class="sp-block"><p>None of this is the brown anole doing anything wrong; it is simply very good at being a lizard in Florida. It is also food for a great many things here — birds, snakes, larger lizards, cats.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-99999/635346033.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Cole Guyton</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>Apr 8, 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">celestes</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>May 12, 2024</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">celestes</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>May 12, 2024</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">David Vanderbilt</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>Jul 20, 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="4"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Yavid Justiniano</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>Jul 15, 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="5"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name">Denise Sosa</span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">BY-NC</span></span><span>Jul 22, 2026</span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Cuban Anole · Cuban Brown Anole</p></div></main>
   </div>
 </div>
 
-<!-- Always-present route back. buildNav() rewrites this href to
-     "../nature.html#restore" when you arrived from the grid, so it returns you to
-     your filters and page; on a QR-code arrival it stays a plain link to the
-     list. The class is what buildNav looks for — see the floater rewrite in
-     site.js. Removing this left the page with no way back at all when there was
-     no stored sequence, which is most direct arrivals. -->
 <a class="wild-float-back" href="../nature.html#wildlife">All wildlife</a>
 
 <div class="lb" id="lb" aria-hidden="true">
   <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
   <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
   <div class="lb-foot">
-    <div class="lb-cred">
-      <div class="lb-eyebrow">Photograph by</div>
-      <div class="lb-name" id="lbName"></div>
-      <div class="lb-meta" id="lbMeta"></div>
-    </div>
+    <div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+      <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
     <div class="lb-ctrls">
       <button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
       <span class="lb-count" id="lbCount"></span>
@@ -241,16 +54,10 @@
   </div>
 </div>
 
-<script>window.PHOTOS=[{"src": "../photos/PSBP-99999/635346033.jpg", "alt": "Brown anole on a hand-painted Native Plants sign", "by": "Cole Guyton", "date": "8 April 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg", "alt": "Brown anole among broad green leaves", "by": "David Vanderbilt", "date": "20 July 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg", "alt": "Brown anole on a park plant label reading NOT NATIVE", "by": "Yavid Justiniano", "date": "15 July 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg", "alt": "Well-camouflaged brown anole among lichen", "by": "Denise Sosa", "date": "22 July 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg", "alt": "Brown anole head-down on a tree trunk", "by": "celestes", "date": "12 May 2024"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg", "alt": "Brown anole on the rim of a planter", "by": "celestes", "date": "12 May 2024"}];</script>
-<script src="../js/species-v2.js"></script>
-<!-- site.js injects the site nav, the footer and the photo-credit layer. The
-     demo had no nav because this was missing — nothing to do with the CSS. -->
 <div id="footer-placeholder"></div>
+<script>window.PHOTOS=[{"src": "../photos/PSBP-99999/635346033.jpg", "alt": "", "by": "Cole Guyton", "date": "Apr 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754794/large.jpg", "alt": "", "by": "celestes", "date": "May 12, 2024"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/385754838/large.jpg", "alt": "", "by": "celestes", "date": "May 12, 2024"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/701497520/large.jpg", "alt": "", "by": "David Vanderbilt", "date": "Jul 20, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702794508/large.jpg", "alt": "", "by": "Yavid Justiniano", "date": "Jul 15, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/711514366/large.jpg", "alt": "", "by": "Denise Sosa", "date": "Jul 22, 2026"}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<!-- site.js does NOT mount the nav on load: injectShared() does, and every page
-     calls it. The placeholders above are necessary but not sufficient — without
-     this line the page renders with a 64px gap where the nav should be, and no
-     error to explain it. -->
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

@@ -543,7 +543,7 @@ def v2_similar(species):
 
 
 
-def v2_how_to_know_it(species, notes_by_id=None):
+def v2_how_to_know_it(species, photos_by_id=None):
     """identification blocks + sounds + size, with the look-alike callout on top.
 
     `sounds` gets its own labelled block: whether an animal makes noise is an
@@ -552,7 +552,7 @@ def v2_how_to_know_it(species, notes_by_id=None):
     pol = _v2_polished(species, "how_to_know_it")
     if pol:
         return _v2_section("know", "How to know it",
-                           _v2_render_blocks(species, pol, species.get("id"), notes_by_id))
+                           _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     ident = species.get("identification") or {}
     parts = [v2_similar(species)]
     for b in (ident.get("blocks") or []):
@@ -568,39 +568,39 @@ def v2_how_to_know_it(species, notes_by_id=None):
     return _v2_section("know", "How to know it", "".join(parts))
 
 
-def v2_where_to_find_it(species):
+def v2_where_to_find_it(species, photos_by_id=None):
     """The section only this park can write. Place, then time of day, then time
     of year. Empty is a legitimate outcome — better a missing section than
     'found throughout Florida'."""
     pol = _v2_polished(species, "where_to_find_it_here")
     if pol:
         return _v2_section("find", "Where to find it here",
-                           _v2_render_blocks(species, pol, species.get("id")))
+                           _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     seas = species.get("seasonality") or {}
     inner = _v2_paras(species.get("where_to_look"), species.get("when_to_see"))
     inner += _v2_block("When", seas.get("note") if seas.get("note") != species.get("when_to_see") else "")
     return _v2_section("find", "Where to find it here", inner)
 
 
-def v2_how_it_lives(species):
+def v2_how_it_lives(species, photos_by_id=None):
     """Behaviour first, then diet as behaviour rather than a list."""
     pol = _v2_polished(species, "how_it_lives")
     if pol:
         return _v2_section("lives", "How it lives",
-                           _v2_render_blocks(species, pol, species.get("id")), band=True)
+                           _v2_render_blocks(species, pol, species.get("id"), photos_by_id), band=True)
     return _v2_section("lives", "How it lives",
                        _v2_paras(species.get("behavior"), species.get("diet")),
                        band=True)
 
 
-def v2_what_it_does_here(species):
+def v2_what_it_does_here(species, photos_by_id=None):
     """The animal's effect on the place. Origin leads ONLY when the species is
     introduced — for a native, 'it is from here' is not a story, and opening
     with range would bury the ecology behind a non-fact."""
     pol = _v2_polished(species, "what_it_does_here")
     if pol:
         return _v2_section("does", "What it does here",
-                           _v2_render_blocks(species, pol, species.get("id")))
+                           _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     inv = species.get("invasive") or {}
     origin = species.get("range_and_origin")
     parts = []
@@ -620,7 +620,7 @@ def v2_what_it_does_here(species):
     return _v2_section("does", "What it does here", _v2_paras(*parts))
 
 
-def v2_take_care(species):
+def v2_take_care(species, photos_by_id=None):
     """OMITTED unless there is something to say. An animal that simply wants
     leaving alone gets no section — one that says 'nothing will happen' is
     worse than none. Safety is the exception to brevity, so where the hazard is
@@ -628,7 +628,7 @@ def v2_take_care(species):
     pol = _v2_polished(species, "take_care")
     if pol:
         return _v2_section("care", "Take care",
-                           _v2_render_blocks(species, pol, species.get("id")))
+                           _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     dang = species.get("danger") or {}
     inter = species.get("interaction") or {}
     cons = species.get("conservation") or {}
@@ -814,21 +814,27 @@ def generate_html_v2(species, hero, gallery_photos, published_on=""):
     if hero and hero not in photos:
         photos.insert(0, hero)
 
-    # in-flow figures: any photo carrying a `note`, placed where its section is
-    noted = [r for r in photos if (r.get("note") or "").strip()]
+    # photo lookup for {"photo": id} blocks in a polished section
+    photos_by_id = {str(r.get("photo_id")): r for r in photos if r.get("photo_id")}
+
+    # in-flow figures for the ASSEMBLED path: any photo carrying a note. The
+    # hero is excluded — its note is already the hero caption, and using it
+    # again put the same picture on the page twice while a genuinely captioned
+    # photo further down was never placed at all.
+    noted = [r for r in photos if (r.get("note") or "").strip() and r is not hero]
     fig_know = v2_inflow_figure(pid, noted[0]) if len(noted) > 0 else ""
     fig_does = v2_inflow_figure(pid, noted[1]) if len(noted) > 1 else ""
 
-    know = v2_how_to_know_it(species)
-    does = v2_what_it_does_here(species)
+    know = v2_how_to_know_it(species, photos_by_id)
+    does = v2_what_it_does_here(species, photos_by_id)
     # drop the figure in after the first block of its section
     if fig_know and know:
         know = know.replace('</div>', '</div>' + fig_know, 1) if '<div class="sp-block"' in know else know
     if fig_does and does:
         does = does.replace('</p>', '</p>' + fig_does, 1)
 
-    body = "".join([v2_at_a_glance(species), know, v2_where_to_find_it(species),
-                    v2_how_it_lives(species), does, v2_take_care(species),
+    body = "".join([v2_at_a_glance(species), know, v2_where_to_find_it(species, photos_by_id),
+                    v2_how_it_lives(species, photos_by_id), does, v2_take_care(species, photos_by_id),
                     v2_photographs(pid, photos), v2_also_known_as(species)])
 
     rail = "".join(
