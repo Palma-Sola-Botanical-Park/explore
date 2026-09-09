@@ -1,124 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Firebush · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Firebush (Hamelia patens) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00074/667431489.jpg" alt="Firebush at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Shrub &amp; Vine</div>
-    <div class="plant-hero-name">Firebush</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00074/667431489.jpg" alt="Firebush at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667431447/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685290794/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689679665/large.jpg" alt=""></button><button type="button" data-i="4" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689679666/large.jpg" alt=""></button><button type="button" data-i="5" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689679667/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">6</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Shrub &amp; Vine</div>
+    <h1 class="sp-name">Firebush</h1>
+    <div class="sp-sci">Hamelia patens</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Hamelia patens</span>
-  <a class="plant-family-tag" href="../nature.html?family=Rubiaceae">Rubiaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="greg_bratlee">Greg Bratlee</strong> · CC-BY-NC · via iNaturalist · 📅 May 26, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Firebush is one of the most important <b>native plants</b> in South Florida for wildlife — hummingbirds, butterflies, and more than two dozen bird species use it for nectar, fruit, or cover through the entire year.</li>
-    <li>It <b>blooms and fruits simultaneously</b>, making it a multi-function wildlife station.</li>
-    <li><b>Seminole</b> people used the plant medicinally, applying crushed leaves to skin irritations.</li>
-    <li>It grows fast, tolerates drought, and in frost-free areas becomes a sizeable shrub — one of the first recommendations any Florida naturalist makes for a <b>wildlife-friendly yard</b>.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to the American subtropics and tropics, with the widest range of any plant in its genus — from central Florida south through the Keys, the West Indies, and Mexico, all the way to Argentina. It belongs to the coffee family (Rubiaceae). The genus name Hamelia honors the 18th-century French botanist Henri-Louis Duhamel du Monceau, and patens means &quot;spreading,&quot; for its open, spreading branches.</p>
-      <p>The true Florida native is Hamelia patens var. patens. In Belize it carries the Mayan name Ix Canaan, &quot;Guardian of the Forest.&quot;</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>For all its value, firebush comes wrapped in a cautionary tale that Florida native-plant lovers call “The Hamelia Mess.” Most “firebush” sold in garden centers is not the native at all but a look-alike, Hamelia patens var. glabra, marketed as “African,” “Dwarf,” or “Compacta” firebush.</li>
-    <li>It has smoother leaves and paler, more yellow-orange flowers, and it can interbreed with and genetically swamp wild native populations. So this unassuming shrub is both a beloved native wildlife powerhouse and a real lesson in why knowing exactly which plant you are planting matters.</li>
-    <li>Gardeners who want a more compact plant without the genetic risk can choose ‘Calusa,’ a true-native cultivar selected to stay small — the recommended alternative to the non-native dwarf forms.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Firebush is among the very best wildlife plants Florida offers. Its near-constant orange-red tubular flowers are perfectly shaped for the bills of ruby-throated hummingbirds, while zebra longwings — Florida&#x27;s state butterfly — gulf fritillaries, and sulphurs work the blooms throughout the day.</p>
-      <p>The berries, ripening from green to red to purple-black, are eaten by mockingbirds, gray catbirds, and other songbirds. Because the native form blooms and fruits nearly year-round in warm weather, a single plant feeds both pollinators and birds across every season — one of the hardest-working natives in the garden.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Clusters of narrow red-orange tubular flowers, spring through fall — nearly year-round in frost-free spots.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Berries ripen through green, red, and finally purple-black, often at several stages on the same cluster.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Whorls of elliptical leaves with reddish veins and stalks. The native form is slightly fuzzy and often blushes red in cool weather.</p></div>
-<div class="repro-item"><div class="repro-label">Propagation</div><p>Reproduces by seed (spread by the many birds that eat its berries) and is easily grown from cuttings.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Whorls of elliptical leaves with reddish veins, terminal clusters of slim orange-red trumpets, and strings of berries at several ripening stages on the same cluster.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">12 to 15 feet (easily kept to 5 to 8 feet)</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">fast-growing evergreen shrub to small tree; a root-hardy perennial in central and north Florida (dies back in a freeze, resprouts)</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun for best flowering; tolerates partial shade (lusher foliage)</div></div>
-    <div class="data-item"><div class="data-label">Soil tolerances</div><div class="data-value">wide range, well-drained</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">heat- and drought-tolerant once established</div></div>
-    <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">moderate</div></div>
-    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">USDA zones 8 to 11; top cold-sensitive in cooler zones</div></div>
-    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">well suited to Florida-Friendly and pollinator gardens</div></div>
-    </div>
-  </div>
-  <div class="plant-safe-section">
-    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The ripe berries are edible — juicy with a pleasant tang, if seedy — and have been fermented into a traditional drink in Mexico, though they matter far more as wildlife food.</p><p>It has no significant toxicity to people and isn&#x27;t a concern for dogs. As with any wild plant, only eat fruit you&#x27;ve positively identified.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667431447/large.jpg" loading="lazy" alt="Firebush — photo by Greg Bratlee"><div class="gal-credit" data-login="greg_bratlee">📷 Greg Bratlee</div><div class="gal-date">📅 May 26, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685290794/large.jpg" loading="lazy" alt="Firebush — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jun 24, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689679665/large.jpg" loading="lazy" alt="Firebush — photo by Ruby Meador"><div class="gal-credit" data-login="ruby_meador">📷 Ruby Meador</div><div class="gal-date">📅 Jul 1, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689679666/large.jpg" loading="lazy" alt="Firebush — photo by Ruby Meador"><div class="gal-credit" data-login="ruby_meador">📷 Ruby Meador</div><div class="gal-date">📅 Jul 1, 2026</div></div><div class="gal-item" onclick="openLB(5)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689679667/large.jpg" loading="lazy" alt="Firebush — photo by Ruby Meador"><div class="gal-credit" data-login="ruby_meador">📷 Ruby Meador</div><div class="gal-date">📅 Jul 1, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Hummingbird Bush</span><span class="alias-tag">Scarlet Bush</span><span class="alias-tag">Redhead</span><span class="alias-tag">Ix Canaan</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Greg Bratlee (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Ruby Meador (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00074/667431489.jpg", "credit": "Greg Bratlee", "license": "CC-BY-NC", "observed": "May 26, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/667431447/large.jpg", "credit": "Greg Bratlee", "credit_login": "greg_bratlee", "license": "CC-BY-NC", "observed": "May 26, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685290794/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jun 24, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689679665/large.jpg", "credit": "Ruby Meador", "credit_login": "ruby_meador", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689679666/large.jpg", "credit": "Ruby Meador", "credit_login": "ruby_meador", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689679667/large.jpg", "credit": "Ruby Meador", "credit_login": "ruby_meador", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Firebush is one of the most important &lt;b&gt;native plants&lt;/b&gt; in South Florida for wildlife — hummingbirds, butterflies, and more than two dozen bird species use it for nectar, fruit, or cover through the entire year.</li><li>It &lt;b&gt;blooms and fruits simultaneously&lt;/b&gt;, making it a multi-function wildlife station.</li><li>&lt;b&gt;Seminole&lt;/b&gt; people used the plant medicinally, applying crushed leaves to skin irritations.</li><li>It grows fast, tolerates drought, and in frost-free areas becomes a sizeable shrub — one of the first recommendations any Florida naturalist makes for a &lt;b&gt;wildlife-friendly yard&lt;/b&gt;.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Native to the American subtropics and tropics, with the widest range of any plant in its genus — from central Florida south through the Keys, the West Indies, and Mexico, all the way to Argentina. It belongs to the coffee family (Rubiaceae). The genus name Hamelia honors the 18th-century French botanist Henri-Louis Duhamel du Monceau, and patens means &quot;spreading,&quot; for its open, spreading branches.</p></div><div class="sp-block"><p>The true Florida native is Hamelia patens var. patens. In Belize it carries the Mayan name Ix Canaan, &quot;Guardian of the Forest.&quot;</p></div><div class="sp-block"><p>For all its value, firebush comes wrapped in a cautionary tale that Florida native-plant lovers call “The Hamelia Mess.” Most “firebush” sold in garden centers is not the native at all but a look-alike, Hamelia patens var. glabra, marketed as “African,” “Dwarf,” or “Compacta” firebush.</p></div><div class="sp-block"><p>It has smoother leaves and paler, more yellow-orange flowers, and it can interbreed with and genetically swamp wild native populations. So this unassuming shrub is both a beloved native wildlife powerhouse and a real lesson in why knowing exactly which plant you are planting matters.</p></div><div class="sp-block"><p>Gardeners who want a more compact plant without the genetic risk can choose ‘Calusa,’ a true-native cultivar selected to stay small — the recommended alternative to the non-native dwarf forms.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Shade Garden.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Firebush is among the very best wildlife plants Florida offers. Its near-constant orange-red tubular flowers are perfectly shaped for the bills of ruby-throated hummingbirds, while zebra longwings — Florida&#x27;s state butterfly — gulf fritillaries, and sulphurs work the blooms throughout the day.</p></div><div class="sp-block"><p>The berries, ripening from green to red to purple-black, are eaten by mockingbirds, gray catbirds, and other songbirds. Because the native form blooms and fruits nearly year-round in warm weather, a single plant feeds both pollinators and birds across every season — one of the hardest-working natives in the garden.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>A top nectar plant — draws zebra longwings, monarchs, many butterflies, and hummingbirds. Larval host for the pluto sphinx moth.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Clusters of narrow red-orange tubular flowers, spring through fall — nearly year-round in frost-free spots.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Berries ripen through green, red, and finally purple-black, often at several stages on the same cluster.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Whorls of elliptical leaves with reddish veins and stalks. The native form is slightly fuzzy and often blushes red in cool weather.</p></div><div class="sp-block"><p>Whorls of elliptical leaves with reddish veins, terminal clusters of slim orange-red trumpets, and strings of berries at several ripening stages on the same cluster.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>well suited to Florida-Friendly and pollinator gardens</p></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun for best flowering; tolerates partial shade (lusher foliage)</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Wide range, well-drained</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Heat- and drought-tolerant once established</p></div><div class="sp-block"><div class="sp-block-label">Salt</div><p>Moderate</p></div><div class="sp-block"><div class="sp-block-label">Cold</div><p>USDA zones 8 to 11; top cold-sensitive in cooler zones</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>12 to 15 feet (easily kept to 5 to 8 feet)</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Fast-growing evergreen shrub to small tree; a root-hardy perennial in central and north Florida (dies back in a freeze, resprouts)</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00074/667431489.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667431447/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685290794/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689679665/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="4"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689679666/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="5"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689679667/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Hummingbird Bush &middot; Scarlet Bush &middot; Redhead &middot; Ix Canaan</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00074/667431489.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/667431447/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685290794/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689679665/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689679666/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689679667/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

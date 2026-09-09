@@ -1,132 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Olive · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olive (Olea europaea) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:47% 37%" src="../photos/PSBP-00716/698449532.jpg" alt="Olive at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Tree</div>
-    <div class="plant-hero-name">Olive</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00716/698449532.jpg" alt="Olive at Palma Sola Botanical Park" style="object-position:47% 37%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698449442/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698449609/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">3</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Tree</div>
+    <h1 class="sp-name">Olive</h1>
+    <div class="sp-sci">Olea europaea</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Olea europaea</span>
-  <a class="plant-family-tag" href="../nature.html?family=Oleaceae">Oleaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="hailee_alenduff">Hailee Alenduff</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 15, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Olives are among the oldest cultivated plants on Earth. DNA analysis traces domestication to the eastern Mediterranean — the region of present-day Turkey and Syria — roughly 6,000 to 8,000 years ago, and fossil evidence of wild olive ancestors pushes back even further, to 20 to 40 million years ago.</li>
-    <li>A fresh olive picked off the tree is almost completely inedible — intensely bitter from a compound called oleuropein. Every table olive you have ever eaten was first cured, brined, or fermented to break that bitterness down. The process is ancient, but the chemistry is real.</li>
-    <li>Olives are primarily wind-pollinated, not bee-pollinated. The small flowers produce abundant pollen that drifts on air currents — and that pollen is one of the more potent tree allergens in the regions where olives are widely grown.</li>
-    <li>Here in central Florida, fruiting is unreliable: olive trees need several hundred hours of temperatures below 45 degrees F each winter to trigger flowering. Most years, Bradenton simply does not get cold enough, making this tree more ornamental than productive in our landscape.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>The olive is native to the Mediterranean Basin and western Asia, with its wild ancestor, the oleaster, naturally distributed from the Levant through Greece, Italy, Spain, Portugal, and North Africa. Domestication began in the eastern Mediterranean — the area of present-day Turkey and Syria — at least 6,000 years ago, making it one of the oldest continuously cultivated food trees in the world.</p>
-      <p>From its eastern Mediterranean heartland, olive cultivation spread westward with Greek and Phoenician traders, eventually reaching every shore of the Mediterranean. Spanish explorers carried cuttings to the Americas in the 1500s; Franciscan missionaries introduced the tree to California in the 18th century.</p>
-      <p>In Florida, olive trees have been grown since at least the 1700s, though commercial cultivation remains limited and experimental, concentrated in the state&#x27;s northern tier where winter chill is most reliable.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The olive lends its name to the entire Oleaceae family — a clan that also includes lilac, jasmine, forsythia, and ash. The genus name Olea is simply the Latin word for olive, and the species epithet europaea reflects where European botanists first formally described it, though the tree&#x27;s true heartland is further east.</li>
-    <li>There are roughly 20 species of Olea found in tropical and subtropical regions worldwide, but only Olea europaea produces the familiar edible fruit.</li>
-    <li>Olive wood is famously dense and decay-resistant. When the top of a tree is killed by frost, disease, or cutting, new shoots commonly arise from the root system — a regenerative habit that has allowed some groves to persist for centuries.</li>
-    <li>Some specimens in the Mediterranean are credibly reported to have lived for 1,000 years or more, and the trunks of old trees become dramatically gnarled and hollow over time without losing vitality.</li>
-    <li>The tree has a notable tendency toward alternate bearing: a heavy fruit crop one year is often followed by a light one the next. Commercial growers manage this through careful pruning and nutrition, but it remains one of the defining rhythms of olive horticulture.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The flowers are small, creamy-white, and lightly fragrant, appearing in spring. Pollination is primarily by wind — the tree produces abundant, lightweight pollen — though bees do visit and collect pollen as a food source. The flowers are not a significant nectar resource by bee-pollinator standards, and no documented association with Florida butterfly species as a larval host has been found.</p>
-      <p>When fruit does set, the ripe drupes can be taken by birds. In Florida&#x27;s central region, however, reliable fruiting is uncommon due to insufficient winter chill hours, so wildlife value here is modest and centers mainly on the spring pollen flush and the tree&#x27;s evergreen canopy as shelter.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, creamy-white, and four-petaled, carried in branched clusters called panicles that arise from the leaf axils on the previous year&#x27;s wood. Flowers appear in spring — typically April to May in Florida.</p><p>The tree is hermaphroditic (each flower has both male and female parts), and most cultivars are at least partially self-fertile, though cross-pollination between two individuals generally improves fruit set. Pollination is primarily by wind.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>A fleshy drupe with a thin skin, a single hard pit, and oil-rich flesh. Fruits start green and ripen to blackish-purple (or copper-brown in some cultivars) over the course of the summer and fall. Fresh olives are intensely bitter and require curing or brining before they are palatable.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Narrow, lance-shaped, and arranged in opposite pairs along the stem. The upper surface is gray-green; the underside is distinctly silvery, covered in tiny scales that reflect light and slow water loss — a clear adaptation to the hot, dry Mediterranean summer. Leaves are evergreen and persistent.</p></div>
-<div class="repro-item"><div class="repro-label">Trunk and Bark</div><p>Young stems are smooth and gray-green, with characteristic corky lenticels (small raised pores) visible even on thin branches — a trait shared across the Oleaceae family. With age the trunk thickens, darkens, and becomes deeply furrowed and twisted, sometimes developing hollow chambers in very old specimens. New shoots can regenerate from the root system if the crown is damaged.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>The two-toned leaves are the easiest field mark at any time of year: hold a branch up to the light and you will see gray-green on top and bright silver beneath. In spring, look for small creamy-white flower clusters nestled at the base of the leaves along the stems. The corky, pore-dotted texture of young stems is subtle but distinctive up close and shared by other members of the olive family.</p><p>If the tree is fruiting, the small oval drupes hanging in clusters — green first, darkening toward black — are unmistakable.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">15 to 30 feet in cultivation; occasionally to 30 feet under ideal conditions</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">15 to 25 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">single or multi-trunked small tree with a rounded, somewhat open canopy; naturally picturesque with age</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">slow to moderate; roughly 12 to 24 inches per year under good conditions</div></div>
-    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">fine to medium, owing to the narrow silvery leaves</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun; requires at least 6 to 8 hours of direct sun for best growth</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">well-drained soils strongly preferred; tolerates sandy, loamy, and rocky soils; adaptable to a wide pH range (approximately 5.5 to 8.5); salt-tolerant; does not tolerate consistently wet or waterlogged conditions</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established — a defining trait of the species</div></div>
-    </div>
-  </div>
-  <div class="plant-caution-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Raw olives straight from the tree are too bitter to eat comfortably — the compound oleuropein makes them astringent and unpleasant. They are not toxic, but they need curing, brining, or fermenting before they become the table olives you know. The olive oil pressed from ripe fruit is, of course, perfectly safe.</p><p>The tree itself is non-toxic to people, dogs, and cats according to the ASPCA and major veterinary databases; a nibble on a leaf or bark will not harm a pet.</p><p>One real nuisance worth noting: olive pollen is a potent allergen, and people with tree-pollen sensitivities may find the spring bloom uncomfortable.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>There are hundreds of named olive cultivars worldwide, selected over millennia for oil content, fruit size, flavor, curing characteristics, or low-chill requirements. A handful of cultivars bred for reduced chill needs have been trialed in Florida, but the state&#x27;s olive industry remains small and largely experimental.</p>
-      <p>Olive pollen allergy is a serious concern in Mediterranean regions and in parts of California and Arizona where large-scale olive cultivation is common. Florida&#x27;s limited planting keeps airborne olive pollen at low levels here, but people with known tree-pollen allergies may still notice a mild response during the spring bloom period.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698449442/large.jpg" loading="lazy" alt="Olive — photo by Hailee Alenduff"><div class="gal-credit" data-login="hailee_alenduff">📷 Hailee Alenduff</div><div class="gal-date">📅 Jul 15, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698449609/large.jpg" loading="lazy" alt="Olive — photo by Hailee Alenduff"><div class="gal-credit" data-login="hailee_alenduff">📷 Hailee Alenduff</div><div class="gal-date">📅 Jul 15, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Common Olive</span><span class="alias-tag">European Olive</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Hailee Alenduff (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00716/698449532.jpg", "credit": "Hailee Alenduff", "license": "CC-BY-NC", "observed": "Jul 15, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698449442/large.jpg", "credit": "Hailee Alenduff", "credit_login": "hailee_alenduff", "license": "CC-BY-NC", "observed": "Jul 15, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698449609/large.jpg", "credit": "Hailee Alenduff", "credit_login": "hailee_alenduff", "license": "CC-BY-NC", "observed": "Jul 15, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Olives are among the oldest cultivated plants on Earth. DNA analysis traces domestication to the eastern Mediterranean — the region of present-day Turkey and Syria — roughly 6,000 to 8,000 years ago, and fossil evidence of wild olive ancestors pushes back even further, to 20 to 40 million years ago.</li><li>A fresh olive picked off the tree is almost completely inedible — intensely bitter from a compound called oleuropein. Every table olive you have ever eaten was first cured, brined, or fermented to break that bitterness down. The process is ancient, but the chemistry is real.</li><li>Olives are primarily wind-pollinated, not bee-pollinated. The small flowers produce abundant pollen that drifts on air currents — and that pollen is one of the more potent tree allergens in the regions where olives are widely grown.</li><li>Here in central Florida, fruiting is unreliable: olive trees need several hundred hours of temperatures below 45 degrees F each winter to trigger flowering. Most years, Bradenton simply does not get cold enough, making this tree more ornamental than productive in our landscape.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-fact"><div class="sp-fact-h">Worth knowing</div><p>The tree has a notable tendency toward alternate bearing: a heavy fruit crop one year is often followed by a light one the next. Commercial growers manage this through careful pruning and nutrition, but it remains one of the defining rhythms of olive horticulture.</p></div><div class="sp-block"><p>The olive is native to the Mediterranean Basin and western Asia, with its wild ancestor, the oleaster, naturally distributed from the Levant through Greece, Italy, Spain, Portugal, and North Africa. Domestication began in the eastern Mediterranean — the area of present-day Turkey and Syria — at least 6,000 years ago, making it one of the oldest continuously cultivated food trees in the world.</p></div><div class="sp-block"><p>From its eastern Mediterranean heartland, olive cultivation spread westward with Greek and Phoenician traders, eventually reaching every shore of the Mediterranean. Spanish explorers carried cuttings to the Americas in the 1500s; Franciscan missionaries introduced the tree to California in the 18th century.</p></div><div class="sp-block"><p>In Florida, olive trees have been grown since at least the 1700s, though commercial cultivation remains limited and experimental, concentrated in the state&#x27;s northern tier where winter chill is most reliable.</p></div><div class="sp-block"><p>The olive lends its name to the entire Oleaceae family — a clan that also includes lilac, jasmine, forsythia, and ash. The genus name Olea is simply the Latin word for olive, and the species epithet europaea reflects where European botanists first formally described it, though the tree&#x27;s true heartland is further east.</p></div><div class="sp-block"><p>There are roughly 20 species of Olea found in tropical and subtropical regions worldwide, but only Olea europaea produces the familiar edible fruit.</p></div><div class="sp-block"><p>Olive wood is famously dense and decay-resistant. When the top of a tree is killed by frost, disease, or cutting, new shoots commonly arise from the root system — a regenerative habit that has allowed some groves to persist for centuries.</p></div><div class="sp-block"><p>Some specimens in the Mediterranean are credibly reported to have lived for 1,000 years or more, and the trunks of old trees become dramatically gnarled and hollow over time without losing vitality.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The flowers are small, creamy-white, and lightly fragrant, appearing in spring. Pollination is primarily by wind — the tree produces abundant, lightweight pollen — though bees do visit and collect pollen as a food source. The flowers are not a significant nectar resource by bee-pollinator standards, and no documented association with Florida butterfly species as a larval host has been found.</p></div><div class="sp-block"><p>When fruit does set, the ripe drupes can be taken by birds. In Florida&#x27;s central region, however, reliable fruiting is uncommon due to insufficient winter chill hours, so wildlife value here is modest and centers mainly on the spring pollen flush and the tree&#x27;s evergreen canopy as shelter.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>Documented larval hosts are Old World moths native to the Mediterranean region and not present in Florida; no North American or Florida butterfly species is known to use Olea europaea as a larval host, and olive flowers are wind-pollinated and not a notable adult nectar source for butterflies at Bradenton&#x27;s latitude.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Small, creamy-white, and four-petaled, carried in branched clusters called panicles that arise from the leaf axils on the previous year&#x27;s wood. Flowers appear in spring — typically April to May in Florida. The tree is hermaphroditic (each flower has both male and female parts), and most cultivars are at least partially self-fertile, though cross-pollination between two individuals generally improves fruit set. Pollination is primarily by wind.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>A fleshy drupe with a thin skin, a single hard pit, and oil-rich flesh. Fruits start green and ripen to blackish-purple (or copper-brown in some cultivars) over the course of the summer and fall. Fresh olives are intensely bitter and require curing or brining before they are palatable.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Narrow, lance-shaped, and arranged in opposite pairs along the stem. The upper surface is gray-green; the underside is distinctly silvery, covered in tiny scales that reflect light and slow water loss — a clear adaptation to the hot, dry Mediterranean summer. Leaves are evergreen and persistent.</p></div><div class="sp-block"><div class="sp-block-label">Trunk and Bark</div><p>Young stems are smooth and gray-green, with characteristic corky lenticels (small raised pores) visible even on thin branches — a trait shared across the Oleaceae family. With age the trunk thickens, darkens, and becomes deeply furrowed and twisted, sometimes developing hollow chambers in very old specimens. New shoots can regenerate from the root system if the crown is damaged.</p></div><div class="sp-block"><p>The two-toned leaves are the easiest field mark at any time of year: hold a branch up to the light and you will see gray-green on top and bright silver beneath. In spring, look for small creamy-white flower clusters nestled at the base of the leaves along the stems. The corky, pore-dotted texture of young stems is subtle but distinctive up close and shared by other members of the olive family. If the tree is fruiting, the small oval drupes hanging in clusters — green first, darkening toward black — are unmistakable.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun; requires at least 6 to 8 hours of direct sun for best growth</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Well-drained soils strongly preferred; tolerates sandy, loamy, and rocky soils; adaptable to a wide pH range (approximately 5.5 to 8.5); salt-tolerant; does not tolerate consistently wet or waterlogged conditions</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Excellent once established — a defining trait of the species</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>15 to 30 feet in cultivation; occasionally to 30 feet under ideal conditions; 15 to 25 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Single or multi-trunked small tree with a rounded, somewhat open canopy; naturally picturesque with age</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Slow to moderate; roughly 12 to 24 inches per year under good conditions</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Raw olives straight from the tree are too bitter to eat comfortably — the compound oleuropein makes them astringent and unpleasant. They are not toxic, but they need curing, brining, or fermenting before they become the table olives you know. The olive oil pressed from ripe fruit is, of course, perfectly safe.</p></div><div class="sp-block"><p>The tree itself is non-toxic to people, dogs, and cats according to the ASPCA and major veterinary databases; a nibble on a leaf or bark will not harm a pet.</p></div><div class="sp-block"><p>One real nuisance worth noting: olive pollen is a potent allergen, and people with tree-pollen sensitivities may find the spring bloom uncomfortable.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00716/698449532.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698449442/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698449609/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Common Olive &middot; European Olive</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00716/698449532.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698449442/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698449609/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

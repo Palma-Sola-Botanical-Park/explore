@@ -1,128 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gumbo Limbo · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gumbo Limbo (Bursera simaruba) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00018/332545422.jpg" alt="Gumbo Limbo at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Tree</div>
-    <div class="plant-hero-name">Gumbo Limbo</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00018/332545422.jpg" alt="Gumbo Limbo at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685275656/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685275684/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">3</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Tree</div>
+    <h1 class="sp-name">Gumbo Limbo</h1>
+    <div class="sp-sci">Bursera simaruba</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Bursera simaruba</span>
-  <a class="plant-family-tag" href="../nature.html?family=Burseraceae">Burseraceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="pammy63">Pammy63</strong> · CC-BY-NC · via iNaturalist · 📅 Nov 2, 2023</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>The peeling red-green bark is so distinctive it earned this tree one of Florida&#x27;s best nicknames: the Tourist Tree — because the bark is always red and peeling.</li>
-    <li>A branch stuck in the ground roots readily — the Seminoles used living Gumbo Limbo fence posts that sprouted and grew.</li>
-    <li>Larval host for the dingy purplewing butterfly, and the fatty red aril on its fruit is exactly what migrating songbirds need in spring.</li>
-    <li>The Calusa used the sticky resin to trap songbirds for food and trade.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to coastal hardwood hammocks of southern Florida including the Florida Keys, the West Indies, and tropical America from Mexico south to Colombia and Venezuela. In Florida it is found at the northern edge of its natural range, making Manatee County specimens botanically significant.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>Gumbo Limbo wood is extraordinarily soft and light — so easy to carve it was the timber of choice for carousel horses before molded plastic replaced wood in the mid-20th century. It was also used for toothpicks, matchsticks, and rustic furniture.</li>
-    <li>The resin has been used for varnish, glue, incense, and folk medicine across the Caribbean and Central America for centuries. The Calusa people of South Florida used the sticky resin to trap songbirds for food or trade.</li>
-    <li>A Gumbo Limbo branch stuck directly in the ground will root and grow — the Seminoles used this property to create living fence posts that sprouted into trees. The same flexibility makes it famously hurricane-resistant: the wood bends rather than breaks, then springs back.</li>
-    <li>The Tourist Tree nickname is irrefutable once you know it. The genus name Bursera honors Joachim Burser (1583–1649), a German physician-botanist.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The Gumbo Limbo is a top-tier bird tree. Its small capsules split to reveal a fatty, lipid-rich red aril that fruit-eating and migrating songbirds seek out as a high-energy food in spring — kingbirds and flycatchers are particularly documented visitors. Its inconspicuous flowers are a reliable bee food source. It serves as the larval host plant for the dingy purplewing butterfly (Eunica monima).</p>
-      <p>As a fast-rooting, hurricane-resistant native, it provides lasting canopy and nesting structure — and even a fallen branch can root and regrow into new habitat.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Propagation</div><p>The main fruiting season is March and April. A fast self-propagator — cuttings and even large branches root readily when placed in the ground.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, greenish-white, inconspicuous, appearing spring through early summer. Not showy but a reliable bee food source.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Small three-valved top-shaped capsule encasing a single seed covered in a red, fatty aril. Both ripe and unripe fruits detach loosely and may drop spontaneously when the tree is shaken.</p></div>
-<div class="repro-item"><div class="repro-label">Bark</div><p>The defining feature — smooth, peeling in thin layers that curl up on themselves. Outer bark is coppery red to bronze with an almost varnished appearance; inner exposed bark is whitish to silver-gray. Resinous, with a faint turpentine scent.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Compound, with long relatively narrow leaflets arranged opposite each other. Semi-deciduous — drops leaves during drought or seasonally, but rarely completely bare.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>The peeling coppery-red bark is unmistakable year-round and the single most reliable field ID feature in Florida. Run your hand along the trunk — the smooth, almost waxy texture beneath the peeling layers is distinctive. Watch for the red fruit clusters in spring and the birds they attract.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">25 to 40 feet; can reach 50 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">25 to 35 feet, often as wide as tall at maturity</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">open, irregular to rounded crown; thick trunk and large spreading branches</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium-coarse</div></div>
-    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to part shade</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">wide range including sandy, rocky, and calcareous soils</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">high — leaf drop is the drought-avoidance strategy</div></div>
-    <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">medium</div></div>
-    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">frost sensitive; USDA zones 10B–11</div></div>
-    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">no serious pests or diseases; growth often best in drier locations without irrigation</div></div>
-    </div>
-  </div>
-  <div class="plant-caution-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The fruits are edible but not especially palatable, and the resin has traditional medicinal uses — but it isn&#x27;t a significant food plant.</p><p>It has no known toxicity to people or pets.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/331252707/large.jpg" loading="lazy" alt="Gumbo Limbo — photo by Pammy63"><div class="gal-credit" data-login="pammy63">📷 Pammy63</div><div class="gal-date">📅 Oct 27, 2023</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685275656/large.jpg" loading="lazy" alt="Gumbo Limbo — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jun 24, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685275684/large.jpg" loading="lazy" alt="Gumbo Limbo — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jun 24, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Tourist Tree</span><span class="alias-tag">Copperwood</span><span class="alias-tag">Chaca</span><span class="alias-tag">West Indian Birch</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Pammy63 (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00018/332545422.jpg", "credit": "Pammy63", "license": "CC-BY-NC", "observed": "Nov 2, 2023"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/331252707/large.jpg", "credit": "Pammy63", "credit_login": "pammy63", "license": "CC-BY-NC", "observed": "Oct 27, 2023"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685275656/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jun 24, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685275684/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jun 24, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 28, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#culture">Cultural significance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>The peeling red-green bark is so distinctive it earned this tree one of Florida&#x27;s best nicknames: the Tourist Tree — because the bark is always red and peeling.</li><li>A branch stuck in the ground roots readily — the Seminoles used living Gumbo Limbo fence posts that sprouted and grew.</li><li>Larval host for the dingy purplewing butterfly, and the fatty red aril on its fruit is exactly what migrating songbirds need in spring.</li><li>The Calusa used the sticky resin to trap songbirds for food and trade.</li></ul></div></section><section class="sp-sec" id="culture"><h2>Cultural significance</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Gumbo Limbo wood is extraordinarily soft and light — so easy to carve it was the timber of choice for carousel horses before molded plastic replaced wood in the mid-20th century. It was also used for toothpicks, matchsticks, and rustic furniture.</p></div><div class="sp-block"><p>The resin has been used for varnish, glue, incense, and folk medicine across the Caribbean and Central America for centuries. The Calusa people of South Florida used the sticky resin to trap songbirds for food or trade.</p></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Native to coastal hardwood hammocks of southern Florida including the Florida Keys, the West Indies, and tropical America from Mexico south to Colombia and Venezuela. In Florida it is found at the northern edge of its natural range, making Manatee County specimens botanically significant.</p></div><div class="sp-block"><p>A Gumbo Limbo branch stuck directly in the ground will root and grow — the Seminoles used this property to create living fence posts that sprouted into trees. The same flexibility makes it famously hurricane-resistant: the wood bends rather than breaks, then springs back.</p></div><div class="sp-block"><p>The Tourist Tree nickname is irrefutable once you know it. The genus name Bursera honors Joachim Burser (1583–1649), a German physician-botanist.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Front Pond.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The Gumbo Limbo is a top-tier bird tree. Its small capsules split to reveal a fatty, lipid-rich red aril that fruit-eating and migrating songbirds seek out as a high-energy food in spring — kingbirds and flycatchers are particularly documented visitors. Its inconspicuous flowers are a reliable bee food source. It serves as the larval host plant for the dingy purplewing butterfly (Eunica monima).</p></div><div class="sp-block"><p>As a fast-rooting, hurricane-resistant native, it provides lasting canopy and nesting structure — and even a fallen branch can root and regrow into new habitat.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>Larval host for the dingy purplewing (mainly the Keys). Inconspicuous flowers draw bees, not butterflies.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Small, greenish-white, inconspicuous, appearing spring through early summer. Not showy but a reliable bee food source.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Small three-valved top-shaped capsule encasing a single seed covered in a red, fatty aril. Both ripe and unripe fruits detach loosely and may drop spontaneously when the tree is shaken.</p></div><div class="sp-block"><div class="sp-block-label">Bark</div><p>The defining feature — smooth, peeling in thin layers that curl up on themselves. Outer bark is coppery red to bronze with an almost varnished appearance; inner exposed bark is whitish to silver-gray. Resinous, with a faint turpentine scent.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Compound, with long relatively narrow leaflets arranged opposite each other. Semi-deciduous — drops leaves during drought or seasonally, but rarely completely bare.</p></div><div class="sp-block"><p>The peeling coppery-red bark is unmistakable year-round and the single most reliable field ID feature in Florida. Run your hand along the trunk — the smooth, almost waxy texture beneath the peeling layers is distinctive. Watch for the red fruit clusters in spring and the birds they attract.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>no serious pests or diseases; growth often best in drier locations without irrigation</p></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun to part shade</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Wide range including sandy, rocky, and calcareous soils</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>High — leaf drop is the drought-avoidance strategy</p></div><div class="sp-block"><div class="sp-block-label">Salt</div><p>Medium</p></div><div class="sp-block"><div class="sp-block-label">Cold</div><p>Frost sensitive; USDA zones 10B–11</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>25 to 40 feet; can reach 50 feet; 25 to 35 feet, often as wide as tall at maturity</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Open, irregular to rounded crown; thick trunk and large spreading branches</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Fast</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>No known toxicity to humans or pets.</p></div><div class="sp-block"><p>The fruits are edible but not especially palatable, and the resin has traditional medicinal uses — but it isn&#x27;t a significant food plant.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/331252707/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685275656/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685275684/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Tourist Tree &middot; Copperwood &middot; Chaca &middot; West Indian Birch</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/331252707/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685275656/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685275684/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

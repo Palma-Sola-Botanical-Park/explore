@@ -1,132 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Desert Rose · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desert Rose (Adenium obesum) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:53% 69%" src="../photos/PSBP-00170/689687700.jpg" alt="Desert Rose at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Foliage &amp; Accent</div>
-    <div class="plant-hero-name">Desert Rose</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00170/689687700.jpg" alt="Desert Rose at Palma Sola Botanical Park" style="object-position:53% 69%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672223294/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689687721/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/703872894/large.jpg" alt=""></button><button type="button" data-i="4" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/703872898/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">5</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Foliage &amp; Accent</div>
+    <h1 class="sp-name">Desert Rose</h1>
+    <div class="sp-sci">Adenium obesum</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Adenium obesum</span>
-  <a class="plant-family-tag" href="../nature.html?family=Apocynaceae">Apocynaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="ruby_meador">Ruby Meador</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 1, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Despite the name, Desert Rose is no rose at all — it belongs to the same family as Oleander and Plumeria, and shares their hallmark trait: a milky sap loaded with heart-affecting toxins.</li>
-    <li>The Hadza people of Tanzania have long used the boiled sap of this plant as their primary arrow poison for hunting large game — the same cardiac glycosides that make the sap dangerous in a garden make it lethal in the field.</li>
-    <li>The dramatic swollen trunk is not just for show. The caudex stores water through months of drought, acting as a built-in reservoir that lets the plant flower brilliantly while everything around it is bone-dry.</li>
-    <li>In South and Southeast Asia, Adenium has become a bonsai phenomenon: hundreds of named cultivars have been bred for flower color and caudex shape, and a single prize specimen can sell for hundreds of dollars.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to a broad arc of arid and semi-arid Africa and the Arabian Peninsula — from Mauritania and Senegal across the Sahel south of the Sahara, east through Ethiopia, Somalia, Kenya, and Tanzania, and north into Saudi Arabia, Oman, and Yemen. In the wild it grows on rocky slopes, sandy savanna, and dry bushland, often in poor soils with intense sun and almost no summer rain.</p>
-      <p>It is not naturalized in Florida and has no wild populations here. It arrived as an ornamental and is grown as a container plant or in frost-free landscapes across South Florida, prized for its sculptural caudex and bright trumpet flowers.</p>
-      <p>UF/IFAS rates it for outdoor year-round use only in USDA zones 10B through 12; Manatee County sits at the edge of that range and a hard freeze will damage or kill unprotected plants.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The genus name Adenium comes from Aden, the Yemeni port city near where the plant was first collected by European botanists; obesum is Latin for fat or swollen, a nod to the plant&#x27;s most distinctive feature. That swollen base — the caudex — is a water-storage organ shaped by millions of years of drought. A mature plant can go months without water and still push out flowers.</li>
-    <li>Adenium sits in the Apocynaceae — the dogbane family — which means it is kin to Oleander, Plumeria, and the milkweeds. The family thread running through all of them is milky, toxic latex and elaborate flower architecture designed to exploit very specific pollinators.</li>
-    <li>Adenium&#x27;s tubular flowers are structured for long-tongued insects, especially hawkmoths, which probe the tube for nectar and carry pollen between plants.</li>
-    <li>The plant&#x27;s toxicity has been put to practical use across Africa for centuries. The Hadza of Tanzania boil the sap into a concentrated black paste and wind it behind arrowheads to bring down buffalo, zebra, and giraffe. The same cardiac glycosides that stop a large mammal&#x27;s heart in the field are the reason this otherwise beautiful garden plant demands respect from everyone who handles it.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>In its native African range the tubular flowers are worked primarily by hawkmoths (family Sphingidae), which have proboscises long enough to reach the nectar at the base of the floral tube; bees and butterflies visit as secondary pollinators during daylight hours. The flower remains receptive for more than 24 hours, supporting both nocturnal and daytime visitors.</p>
-      <p>In a Florida garden Adenium&#x27;s value to local wildlife is modest compared with native plants. The flowers do attract nectar-seeking butterflies and bees during bloom periods, but it hosts no documented Florida butterfly or moth larvae, and it provides no fruit for birds or mammals. Plant it for the flowers and the form, not as a wildlife cornerstone.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Propagation</div><p>Grown from seed or stem cuttings; named cultivars and hybrids are typically grafted onto seedling rootstock to preserve flower color and caudex form. Stem cuttings root readily in warm weather in a fast-draining mix, though seed-grown plants often develop more dramatic caudex shapes.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Showy, funnel-shaped to trumpet-shaped blooms up to roughly 2 inches across, produced in clusters at branch tips. Wild plants are typically pink to deep rose-red with a pale throat; cultivated varieties range from white and cream through salmon, coral, and bicolored. The tubular corolla is structured for long-tongued pollinators.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit and seed</div><p>Pollinated flowers produce paired, elongated follicles (seed pods) that split open to release seeds, each tipped with a tuft of silky white hairs for wind dispersal — the same design seen in milkweeds and other Apocynaceae.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Leathery, dark green, obovate leaves clustered at the tips of the branches, typically 2 to 5 inches long. Leaves drop during cool or dry dormancy and regrow when warmth and moisture return.</p></div>
-<div class="repro-item"><div class="repro-label">Caudex and sap</div><p>The swollen base (caudex) and roots store water and are packed with milky, toxic latex. Growers sometimes &#x27;lift&#x27; the roots above the soil surface to display the sculptural root-and-trunk form — a common practice in Florida container culture.</p><p>Because of our intense summer rainy season, coastal Florida gardeners often keep Desert Rose in containers or elevated, sharply draining sandy beds to prevent the prized caudex from rotting.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Start at the base: the fat, gray-green swollen trunk is the giveaway from across the garden. Follow the trunk up to the cluster of branches, each tipped with a rosette of dark leaves and, in bloom, a burst of bright trumpet flowers. Look for the narrow paired seedpods on older plants — they split to release silky-tailed seeds.</p><p>Do not touch any part of this plant: the milky sap that beads up at any cut or broken stem contains the same cardiac toxins used on African hunting arrows, and contact with skin, eyes, or mouth is dangerous.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">3 to 9 feet (typically 3 to 5 feet in Florida landscape or container culture)</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">3 to 5 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">Upright to rounded succulent shrub or small tree; sparsely branched with leaves and flowers clustered at branch tips; sculptural swollen trunk</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">Slow</div></div>
-    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">Medium; dark leathery leaves contrast with smooth, pale gray-green swollen trunk</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">Full sun — requires bright direct sun for maximum flowering; will not bloom well in shade</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">Well-drained sandy or gravelly soils; highly intolerant of wet or waterlogged conditions, which cause rapid root rot</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">Excellent — a true succulent; reduce watering sharply during cool-season dormancy</div></div>
-    </div>
-  </div>
-  <div class="plant-toxic-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Do not eat any part of this plant. Every part — sap, roots, stems, leaves, and flowers — contains cardiac glycosides potent enough to have served for centuries as arrow poison.</p><p>Ingestion can cause a slowed heart rate, low blood pressure, digestive distress, and dangerous arrhythmia.</p><p>The milky sap can irritate skin and, in sensitive people, cause blistering.</p><p>Wear gloves when pruning, repotting, or taking cuttings, keep the sap away from your eyes and mouth, and keep children away from the plant.</p><p>It&#x27;s toxic to dogs, cats, and horses (ASPCA); even licking the sap can trigger poisoning, with vomiting, diarrhea, appetite loss, depression, and potentially fatal irregular heartbeat.</p><p>If a pet mouths any part, contact your vet or the ASPCA Poison Control Center (888-426-4435) immediately.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>COLD HARDINESS NOTE: UF/IFAS rates Adenium obesum for outdoor year-round planting in USDA zones 10B through 12. Palma Sola Botanical Park falls in zone 10A, which is marginal. Plants are likely to defoliate or sustain tip damage in a hard freeze; move container specimens indoors or under cover when temperatures are forecast below 35 degrees F.</p>
-      <p>NOMENCLATURE NOTE: The genus name Adenium is a Latinization of &#x27;Aden,&#x27; the Yemeni city near the plant&#x27;s original collection site. The species epithet obesum means fat or swollen in Latin, referring to the water-storing caudex.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672223294/large.jpg" loading="lazy" alt="Desert Rose — photo by Maria Escobar"><div class="gal-credit" data-login="mariaaaz">📷 Maria Escobar</div><div class="gal-date">📅 Jun 3, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689687721/large.jpg" loading="lazy" alt="Desert Rose — photo by Ruby Meador"><div class="gal-credit" data-login="ruby_meador">📷 Ruby Meador</div><div class="gal-date">📅 Jul 1, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/703872894/large.jpg" loading="lazy" alt="Desert Rose — photo by Rhonda Olschefskie"><div class="gal-credit" data-login="rhonda_olschefskie">📷 Rhonda Olschefskie</div><div class="gal-date">📅 May 13, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/703872898/large.jpg" loading="lazy" alt="Desert Rose — photo by Rhonda Olschefskie"><div class="gal-credit" data-login="rhonda_olschefskie">📷 Rhonda Olschefskie</div><div class="gal-date">📅 May 13, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Desert Azalea</span><span class="alias-tag">Impala Lily</span><span class="alias-tag">Sabi Star</span><span class="alias-tag">Mock Azalea</span><span class="alias-tag">Kudu Lily</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Ruby Meador (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Maria Escobar (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Rhonda Olschefskie (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00170/689687700.jpg", "credit": "Ruby Meador", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672223294/large.jpg", "credit": "Maria Escobar", "credit_login": "mariaaaz", "license": "CC-BY-NC", "observed": "Jun 3, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689687721/large.jpg", "credit": "Ruby Meador", "credit_login": "ruby_meador", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/703872894/large.jpg", "credit": "Rhonda Olschefskie", "credit_login": "rhonda_olschefskie", "license": "CC-BY-NC", "observed": "May 13, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/703872898/large.jpg", "credit": "Rhonda Olschefskie", "credit_login": "rhonda_olschefskie", "license": "CC-BY-NC", "observed": "May 13, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>September 1, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Despite the name, Desert Rose is no rose at all — it belongs to the same family as Oleander and Plumeria, and shares their hallmark trait: a milky sap loaded with heart-affecting toxins.</li><li>The Hadza people of Tanzania have long used the boiled sap of this plant as their primary arrow poison for hunting large game — the same cardiac glycosides that make the sap dangerous in a garden make it lethal in the field.</li><li>The dramatic swollen trunk is not just for show. The caudex stores water through months of drought, acting as a built-in reservoir that lets the plant flower brilliantly while everything around it is bone-dry.</li><li>In South and Southeast Asia, Adenium has become a bonsai phenomenon: hundreds of named cultivars have been bred for flower color and caudex shape, and a single prize specimen can sell for hundreds of dollars.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Native to a broad arc of arid and semi-arid Africa and the Arabian Peninsula — from Mauritania and Senegal across the Sahel south of the Sahara, east through Ethiopia, Somalia, Kenya, and Tanzania, and north into Saudi Arabia, Oman, and Yemen. In the wild it grows on rocky slopes, sandy savanna, and dry bushland, often in poor soils with intense sun and almost no summer rain.</p></div><div class="sp-block"><p>It is not naturalized in Florida and has no wild populations here. It arrived as an ornamental and is grown as a container plant or in frost-free landscapes across South Florida, prized for its sculptural caudex and bright trumpet flowers.</p></div><div class="sp-block"><p>UF/IFAS rates it for outdoor year-round use only in USDA zones 10B through 12; Manatee County sits at the edge of that range and a hard freeze will damage or kill unprotected plants.</p></div><div class="sp-block"><p>The genus name Adenium comes from Aden, the Yemeni port city near where the plant was first collected by European botanists; obesum is Latin for fat or swollen, a nod to the plant&#x27;s most distinctive feature. That swollen base — the caudex — is a water-storage organ shaped by millions of years of drought. A mature plant can go months without water and still push out flowers.</p></div><div class="sp-block"><p>Adenium sits in the Apocynaceae — the dogbane family — which means it is kin to Oleander, Plumeria, and the milkweeds. The family thread running through all of them is milky, toxic latex and elaborate flower architecture designed to exploit very specific pollinators.</p></div><div class="sp-block"><p>Adenium&#x27;s tubular flowers are structured for long-tongued insects, especially hawkmoths, which probe the tube for nectar and carry pollen between plants.</p></div><div class="sp-block"><p>The plant&#x27;s toxicity has been put to practical use across Africa for centuries. The Hadza of Tanzania boil the sap into a concentrated black paste and wind it behind arrowheads to bring down buffalo, zebra, and giraffe. The same cardiac glycosides that stop a large mammal&#x27;s heart in the field are the reason this otherwise beautiful garden plant demands respect from everyone who handles it.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In its native African range the tubular flowers are worked primarily by hawkmoths (family Sphingidae), which have proboscises long enough to reach the nectar at the base of the floral tube; bees and butterflies visit as secondary pollinators during daylight hours. The flower remains receptive for more than 24 hours, supporting both nocturnal and daytime visitors.</p></div><div class="sp-block"><p>In a Florida garden Adenium&#x27;s value to local wildlife is modest compared with native plants. The flowers do attract nectar-seeking butterflies and bees during bloom periods, but it hosts no documented Florida butterfly or moth larvae, and it provides no fruit for birds or mammals. Plant it for the flowers and the form, not as a wildlife cornerstone.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Showy, funnel-shaped to trumpet-shaped blooms up to roughly 2 inches across, produced in clusters at branch tips. Wild plants are typically pink to deep rose-red with a pale throat; cultivated varieties range from white and cream through salmon, coral, and bicolored. The tubular corolla is structured for long-tongued pollinators.</p></div><div class="sp-block"><div class="sp-block-label">Fruit and seed</div><p>Pollinated flowers produce paired, elongated follicles (seed pods) that split open to release seeds, each tipped with a tuft of silky white hairs for wind dispersal — the same design seen in milkweeds and other Apocynaceae.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Leathery, dark green, obovate leaves clustered at the tips of the branches, typically 2 to 5 inches long. Leaves drop during cool or dry dormancy and regrow when warmth and moisture return.</p></div><div class="sp-block"><div class="sp-block-label">Caudex and sap</div><p>The swollen base (caudex) and roots store water and are packed with milky, toxic latex. Growers sometimes &#x27;lift&#x27; the roots above the soil surface to display the sculptural root-and-trunk form — a common practice in Florida container culture. Because of our intense summer rainy season, coastal Florida gardeners often keep Desert Rose in containers or elevated, sharply draining sandy beds to prevent the prized caudex from rotting.</p></div><div class="sp-block"><p>Start at the base: the fat, gray-green swollen trunk is the giveaway from across the garden. Follow the trunk up to the cluster of branches, each tipped with a rosette of dark leaves and, in bloom, a burst of bright trumpet flowers. Look for the narrow paired seedpods on older plants — they split to release silky-tailed seeds. Do not touch any part of this plant: the milky sap that beads up at any cut or broken stem contains the same cardiac toxins used on African hunting arrows, and contact with skin, eyes, or mouth is dangerous.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun — requires bright direct sun for maximum flowering; will not bloom well in shade</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Well-drained sandy or gravelly soils; highly intolerant of wet or waterlogged conditions, which cause rapid root rot</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Excellent — a true succulent; reduce watering sharply during cool-season dormancy</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>3 to 9 feet (typically 3 to 5 feet in Florida landscape or container culture); 3 to 5 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Upright to rounded succulent shrub or small tree; sparsely branched with leaves and flowers clustered at branch tips; sculptural swollen trunk</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Slow</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>Toxic. All parts — sap, roots, stems, leaves, and flowers — contain cardiac glycosides. Ingestion can cause reduced heart rate, low blood pressure, gastrointestinal distress, and serious cardiac arrhythmia. Skin contact with the milky sap can cause irritation and, in sensitive individuals, blistering.</p></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>Wear gloves when pruning, repotting, or taking cuttings, and keep sap away from eyes and mouth. Keep children away from the plant. The same toxins have been used to prepare lethal arrow poison across Africa — this is not a plant to handle carelessly.</p></div><div class="sp-block"><p>Do not eat any part of this plant. Every part — sap, roots, stems, leaves, and flowers — contains cardiac glycosides potent enough to have served for centuries as arrow poison.</p></div><div class="sp-block"><p>It&#x27;s toxic to dogs, cats, and horses (ASPCA); even licking the sap can trigger poisoning, with vomiting, diarrhea, appetite loss, depression, and potentially fatal irregular heartbeat.</p></div><div class="sp-block"><p>If a pet mouths any part, contact your vet or the ASPCA Poison Control Center (888-426-4435) immediately.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00170/689687700.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672223294/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689687721/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/703872894/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="4"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/703872898/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Desert Azalea &middot; Impala Lily &middot; Sabi Star &middot; Mock Azalea &middot; Kudu Lily</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00170/689687700.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672223294/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689687721/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/703872894/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/703872898/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

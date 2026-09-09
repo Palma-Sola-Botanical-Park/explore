@@ -1,132 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solitaire Palm · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solitaire Palm (Ptychosperma elegans) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 44%" src="../photos/PSBP-00418/702794269.jpg" alt="Solitaire Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Palm &amp; Cycad</div>
-    <div class="plant-hero-name">Solitaire Palm</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00418/702794269.jpg" alt="Solitaire Palm at Palma Sola Botanical Park" style="object-position:50% 44%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697842563/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698426723/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">3</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Palm &amp; Cycad</div>
+    <h1 class="sp-name">Solitaire Palm</h1>
+    <div class="sp-sci">Ptychosperma elegans</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Ptychosperma elegans</span>
-  <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="yavid">Yavid Justiniano</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 8, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>The name &#x27;solitaire&#x27; is not just decorative — it literally sets this species apart from its relatives. Most other Ptychosperma palms spread into clumping colonies of multiple trunks; this one grows exactly one, always alone.</li>
-    <li>The genus name encodes an odd detail visible in every seed: Ptychosperma comes from the Greek for &#x27;folded seed.&#x27; Crack one open and you will find it deeply grooved — five longitudinal channels pressed into the surface like folds in fabric.</li>
-    <li>Ptychosperma elegans was among the first Australian palms to reach cultivation outside its homeland, arriving in European conservatories by the 1820s — less than two decades after it was formally described by botanist Robert Brown in 1810.</li>
-    <li>Because birds feed enthusiastically on the bright red fruit and disperse the seeds into natural areas, this palm has established itself beyond gardens and is considered invasive in southern Florida&#x27;s moist habitats.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>The Solitaire Palm is endemic to Queensland, Australia, occurring along the coast and near-coast from the tip of Cape York Peninsula south to roughly the Mission Beach area. In its home range it is a rainforest understory tree, typically found in lowland tropical and subtropical forests — often close to rivers and streams where moisture is reliable and drainage is good.</p>
-      <p>It was formally described by botanist Robert Brown in 1810 under the name Seaforthia elegans, then reclassified into the genus Ptychosperma by Carl Ludwig Blume in 1843. It was among the very first Australian palms to enter cultivation beyond its native range, reaching European conservatories by the 1820s and spreading through tropical botanical gardens worldwide across the 19th century.</p>
-      <p>By the post-World War II era it was firmly established in Florida landscapes, valued for its fast growth and slender footprint. Today it is one of the most commonly planted palms in South Florida, though that same success — abundant red fruit eaten and dispersed by birds — has earned it a place on Florida&#x27;s invasive plant watchlist.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The species epithet elegans is the Latin term for &#x27;graceful&#x27; or &#x27;elegant,&#x27; and the name fits: the trunk is almost impossibly slender for its height, barely four inches in diameter at maturity, and topped by a clean olive-green crownshaft and arching canopy of deep green fronds. UF/IFAS has called it a good specimen for small residential yards precisely because it takes up so little lateral space.</li>
-    <li>That narrow trunk is ringed with dark circular leaf-base scars that lighten with age, giving the stem a bamboo-like banded quality. The crownshaft — the smooth, waxy, slightly swollen cylinder at the top of the trunk from which all the fronds emerge — is a reliable way to identify a palm in the Ptychosperma group.</li>
-    <li>When a frond dies, the whole thing detaches cleanly, keeping the tree tidy without any pruning.</li>
-    <li>The leaflets are unusual among feather palms: they are bluntly squared and jagged at the tip rather than coming to a point, giving the frond a soft, almost notched silhouette. This truncated leaflet tip is one of the clearest field marks for the species.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The inflorescences — heavily branched, green-yellow sprays two to three feet long that emerge just below the crownshaft — produce small white male and female flowers and attract pollinating insects when in bloom. The palm is monoecious, meaning both sexes of flower appear on the same tree, so every individual can set fruit without a separate pollen source nearby.</p>
-      <p>The real wildlife moment comes with the fruit. Clusters of bright red, egg-shaped drupes about an inch in diameter ripen in quantity and are readily taken by birds, which distribute the seeds widely.</p>
-      <p>In southern Florida that seed dispersal has allowed the palm to establish in moist natural areas beyond gardens — a conservation concern the park takes seriously, which is why visitors will find it here as an established specimen rather than a plant we would introduce today.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Heavily branched, green-yellow inflorescences two to three feet long emerge just below the crownshaft. Each inflorescence bears both male and female flowers — small and white — on the same tree, so a single palm can set fruit without cross-pollination.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Bright red, egg-shaped drupes roughly one inch in diameter and up to roughly half an inch wide. Each fruit holds a single seed with five deep longitudinal grooves — the &#x27;folded seed&#x27; that gives the genus its name. Fruit is not edible.</p></div>
-<div class="repro-item"><div class="repro-label">Fronds</div><p>Pinnately compound, reaching six to eight feet in length on a roughly one-foot petiole. Leaflets are narrowly oblong, dark green above and gray-green beneath, and distinctively blunt and jagged at the tip rather than tapered to a point. They grow in a V-shaped arrangement along the rachis.</p></div>
-<div class="repro-item"><div class="repro-label">Crownshaft and Trunk</div><p>A prominent two-foot-tall olive-green crownshaft with a slightly bulging, smooth waxy base sits atop the trunk and is the point from which all fronds emerge. The trunk is solitary, very slender — up to roughly four inches in diameter — light gray to near white, and marked by dark encircling leaf-base scars that fade with age.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Start at the top with the crownshaft — a smooth, slightly swollen olive-green cylinder about two feet tall sitting right beneath the fronds; it is the clearest structural landmark on the whole tree.</p><p>Next, look closely at the leaflet tips: they are bluntly squared off and jagged, almost as if cut with pinking shears, rather than coming to a point — unusual for a feather palm and a reliable field mark. Finally, scan down the ultra-slender trunk for the neat, dark horizontal rings left behind by cleanly shed fronds; older scars near the base have faded to nearly match the pale gray trunk.</p><p>When in fruit, the clusters of bright red egg-shaped drupes hanging just below the crownshaft are hard to miss.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">20 feet in Florida landscapes (UF/IFAS); up to roughly 40 feet in optimal tropical conditions</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">8 to 10 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">solitary trunk, arching canopy of pinnate fronds; notably slender and vertical</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast for a palm in South Florida&#x27;s climate</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium-fine</div></div>
-    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">adaptable to sandy, loamy, and clay soils; fair growth in well-drained soils, best in organic, nutrient-rich soils (UF/IFAS); not highly drought-tolerant — regular watering is needed</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">low to moderate; requires consistent moisture and does not thrive if allowed to dry out</div></div>
-    </div>
-  </div>
-  <div class="plant-safe-section">
-    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The fruit is not edible — the flesh around the seed is minimal and not a food source — but it is not toxic to people or dogs. UF/IFAS notes that all members of the Ptychosperma genus are considered moderately to highly allergenic, so people with pollen sensitivities may notice a reaction during bloom. Otherwise this palm poses no meaningful safety concern.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>Palmpedia and other sources note that this palm is sometimes sold or labeled as &#x27;Alexander palm&#x27; in the nursery trade — a name that properly belongs to Archontophoenix alexandrae, a different Australian species. The confusion is widespread enough that UF/IFAS and Wikipedia both flag it specifically.</p>
-      <p>Because of its FISC Category II status, the park does not recommend this species for new plantings in landscapes adjacent to natural areas in southern Florida. The specimen here predates that understanding and is maintained as an educational example of both the plant&#x27;s ornamental qualities and the real conservation questions it raises.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697842563/large.jpg" loading="lazy" alt="Solitaire Palm — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jul 14, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698426723/large.jpg" loading="lazy" alt="Solitaire Palm — photo by Yavid Justiniano"><div class="gal-credit" data-login="yavid">📷 Yavid Justiniano</div><div class="gal-date">📅 Jul 8, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Elegant Palm</span><span class="alias-tag">Alexander Palm</span><span class="alias-tag">Solitary Palm</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Yavid Justiniano (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00418/702794269.jpg", "credit": "Yavid Justiniano", "license": "CC-BY-NC", "observed": "Jul 8, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697842563/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698426723/large.jpg", "credit": "Yavid Justiniano", "credit_login": "yavid", "license": "CC-BY-NC", "observed": "Jul 8, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>September 1, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>The name &#x27;solitaire&#x27; is not just decorative — it literally sets this species apart from its relatives. Most other Ptychosperma palms spread into clumping colonies of multiple trunks; this one grows exactly one, always alone.</li><li>The genus name encodes an odd detail visible in every seed: Ptychosperma comes from the Greek for &#x27;folded seed.&#x27; Crack one open and you will find it deeply grooved — five longitudinal channels pressed into the surface like folds in fabric.</li><li>Ptychosperma elegans was among the first Australian palms to reach cultivation outside its homeland, arriving in European conservatories by the 1820s — less than two decades after it was formally described by botanist Robert Brown in 1810.</li><li>Because birds feed enthusiastically on the bright red fruit and disperse the seeds into natural areas, this palm has established itself beyond gardens and is considered invasive in southern Florida&#x27;s moist habitats.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The Solitaire Palm is endemic to Queensland, Australia, occurring along the coast and near-coast from the tip of Cape York Peninsula south to roughly the Mission Beach area. In its home range it is a rainforest understory tree, typically found in lowland tropical and subtropical forests — often close to rivers and streams where moisture is reliable and drainage is good.</p></div><div class="sp-block"><p>It was formally described by botanist Robert Brown in 1810 under the name Seaforthia elegans, then reclassified into the genus Ptychosperma by Carl Ludwig Blume in 1843. It was among the very first Australian palms to enter cultivation beyond its native range, reaching European conservatories by the 1820s and spreading through tropical botanical gardens worldwide across the 19th century.</p></div><div class="sp-block"><p>By the post-World War II era it was firmly established in Florida landscapes, valued for its fast growth and slender footprint. Today it is one of the most commonly planted palms in South Florida, though that same success — abundant red fruit eaten and dispersed by birds — has earned it a place on Florida&#x27;s invasive plant watchlist.</p></div><div class="sp-block"><p>The species epithet elegans is the Latin term for &#x27;graceful&#x27; or &#x27;elegant,&#x27; and the name fits: the trunk is almost impossibly slender for its height, barely four inches in diameter at maturity, and topped by a clean olive-green crownshaft and arching canopy of deep green fronds. UF/IFAS has called it a good specimen for small residential yards precisely because it takes up so little lateral space.</p></div><div class="sp-block"><p>That narrow trunk is ringed with dark circular leaf-base scars that lighten with age, giving the stem a bamboo-like banded quality. The crownshaft — the smooth, waxy, slightly swollen cylinder at the top of the trunk from which all the fronds emerge — is a reliable way to identify a palm in the Ptychosperma group.</p></div><div class="sp-block"><p>When a frond dies, the whole thing detaches cleanly, keeping the tree tidy without any pruning.</p></div><div class="sp-block"><p>The leaflets are unusual among feather palms: they are bluntly squared and jagged at the tip rather than coming to a point, giving the frond a soft, almost notched silhouette. This truncated leaflet tip is one of the clearest field marks for the species.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Big Pond.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The inflorescences — heavily branched, green-yellow sprays two to three feet long that emerge just below the crownshaft — produce small white male and female flowers and attract pollinating insects when in bloom. The palm is monoecious, meaning both sexes of flower appear on the same tree, so every individual can set fruit without a separate pollen source nearby.</p></div><div class="sp-block"><p>The real wildlife moment comes with the fruit. Clusters of bright red, egg-shaped drupes about an inch in diameter ripen in quantity and are readily taken by birds, which distribute the seeds widely.</p></div><div class="sp-block"><p>In southern Florida that seed dispersal has allowed the palm to establish in moist natural areas beyond gardens — a conservation concern the park takes seriously, which is why visitors will find it here as an established specimen rather than a plant we would introduce today.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>No documented association between Ptychosperma elegans and any North American butterfly or moth as a larval host or significant adult nectar source was found. A related genus member (Ptychosperma macarthurii) is listed as a host for the Asian butterfly Elymnias hypermnestra in Indian butterfly databases, but that species does not occur in Florida and the record is for a different Ptychosperma species.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Heavily branched, green-yellow inflorescences two to three feet long emerge just below the crownshaft. Each inflorescence bears both male and female flowers — small and white — on the same tree, so a single palm can set fruit without cross-pollination.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Bright red, egg-shaped drupes roughly one inch in diameter and up to roughly half an inch wide. Each fruit holds a single seed with five deep longitudinal grooves — the &#x27;folded seed&#x27; that gives the genus its name. Fruit is not edible.</p></div><div class="sp-block"><div class="sp-block-label">Fronds</div><p>Pinnately compound, reaching six to eight feet in length on a roughly one-foot petiole. Leaflets are narrowly oblong, dark green above and gray-green beneath, and distinctively blunt and jagged at the tip rather than tapered to a point. They grow in a V-shaped arrangement along the rachis.</p></div><div class="sp-block"><div class="sp-block-label">Crownshaft and Trunk</div><p>A prominent two-foot-tall olive-green crownshaft with a slightly bulging, smooth waxy base sits atop the trunk and is the point from which all fronds emerge. The trunk is solitary, very slender — up to roughly four inches in diameter — light gray to near white, and marked by dark encircling leaf-base scars that fade with age.</p></div><div class="sp-block"><p>Start at the top with the crownshaft — a smooth, slightly swollen olive-green cylinder about two feet tall sitting right beneath the fronds; it is the clearest structural landmark on the whole tree. Next, look closely at the leaflet tips: they are bluntly squared off and jagged, almost as if cut with pinking shears, rather than coming to a point — unusual for a feather palm and a reliable field mark. Finally, scan down the ultra-slender trunk for the neat, dark horizontal rings left behind by cleanly shed fronds; older scars near the base have faded to nearly match the pale gray trunk. When in fruit, the clusters of bright red egg-shaped drupes hanging just below the crownshaft are hard to miss.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun to partial shade</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Adaptable to sandy, loamy, and clay soils; fair growth in well-drained soils, best in organic, nutrient-rich soils (UF/IFAS); not highly drought-tolerant — regular watering is needed</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Low to moderate; requires consistent moisture and does not thrive if allowed to dry out</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>20 feet in Florida landscapes (UF/IFAS); up to roughly 40 feet in optimal tropical conditions; 8 to 10 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Solitary trunk, arching canopy of pinnate fronds; notably slender and vertical</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Fast for a palm in South Florida&#x27;s climate</p></div><div class="sp-block"><div class="sp-block-label">It spreads</div><p>Listed as FISC (formerly FLEPPC) Category II invasive in Florida, with a southern (S) regional distribution. Category II species have increased in abundance or frequency but have not yet altered Florida plant communities to the extent of Category I species. Birds consume the abundant red fruit and disperse seeds into moist natural areas. The &#x27;S&#x27; distribution code indicates the documented invasion is concentrated in southern Florida; Bradenton (Central Florida) is at the northern fringe of concern, but the FISC listing is statewide in standing and meets the value=true threshold per the stated rule.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00418/702794269.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697842563/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698426723/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Elegant Palm &middot; Alexander Palm &middot; Solitary Palm</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00418/702794269.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697842563/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698426723/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

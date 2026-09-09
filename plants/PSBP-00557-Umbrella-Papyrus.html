@@ -1,132 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Umbrella Papyrus · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Umbrella Papyrus (Cyperus alternifolius) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:51% 43%" src="../photos/PSBP-00557/663459153.jpg" alt="Umbrella Papyrus at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Aquatic &amp; Wetland</div>
-    <div class="plant-hero-name">Umbrella Papyrus</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00557/663459153.jpg" alt="Umbrella Papyrus at Palma Sola Botanical Park" style="object-position:51% 43%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689595314/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/713089607/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">3</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Aquatic &amp; Wetland</div>
+    <h1 class="sp-name">Umbrella Papyrus</h1>
+    <div class="sp-sci">Cyperus alternifolius</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Cyperus alternifolius</span>
-  <a class="plant-family-tag" href="../nature.html?family=Cyperaceae">Cyperaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="joanne_walker">Joanne Walker</strong> · CC-BY-NC · via iNaturalist · 📅 May 20, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Cut a stem, flip it upside down in a glass of water, and within a couple of weeks a new plant sprouts from the bract bases — one of the more counterintuitive propagation tricks in the plant world. The stems naturally bend and touch water in the wild, rooting wherever the bract-head makes contact with wet soil.</li>
-    <li>Despite its water-loving nature, research has shown this plant can actively pull heavy metals such as copper and manganese out of contaminated water — a process called phytoremediation — making it a candidate for constructed wetland treatment systems.</li>
-    <li>A subspecies of this plant — Cyperus alternifolius subsp. flabelliformis — holds the Royal Horticultural Society&#x27;s Award of Garden Merit, the RHS&#x27;s benchmark distinction for plants proven to perform reliably in cultivation. It is a rare honor for a wetland sedge and reflects how far this African marsh plant has traveled from its origins to international ornamental status.</li>
-    <li>Scientists have taken the phytoremediation story one step further: the metal-laden plant biomass harvested from treatment wetlands can be converted into biochar through high-heat pyrolysis.</li>
-    <li>A 2022 study in Environmental Science and Pollution Research confirmed that biochar made from Cyperus alternifolius functions as an effective depolluting agent — turning a harvested invasive weed into a tool for further cleanup.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to tropical and southern Africa, Madagascar, and the Arabian Peninsula, where it grows in swamps, along stream margins, and in seasonally flooded grasslands from sea level to well over 6,500 feet. Its native range spans more than 30 sub-Saharan countries.</p>
-      <p>It arrived in cultivation worldwide as an ornamental — valued for its striking geometric form in water gardens and containers. In Florida it has naturalized in wet, disturbed sites throughout the central and southern peninsula, spreading from planted stock by both seed and rhizome.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The genus name Cyperus comes from the Greek kypeiros, a word used by the ancient botanists Theocritus and Theophrastus to describe a type of sedge. The species epithet alternifolius combines the Latin alternus (alternate) and folium (leaf), referring to the alternating arrangement of the bract-like structures at the stem tip.</li>
-    <li>Sedges as a family — Cyperaceae — are distinguished from true grasses by their typically triangular stems, three-ranked leaves, and solid (not hollow) culms. The field mnemonic &#x27;sedges have edges&#x27; refers to that triangular stem, which you can feel by rolling a culm between your fingers. Umbrella Papyrus shows this trait clearly.</li>
-    <li>In its native Africa the plant has long been harvested for practical uses: fiber for weaving, material for construction, and as animal forage. In cultivation worldwide it has found a second life as a water-garden ornamental and, more recently, as a study subject for phytoremediation — its roots absorb and concentrate heavy metals from polluted water with notable efficiency.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>In Florida&#x27;s wet margins and pond edges, the dense stands of Umbrella Papyrus provide cover and nesting substrate for wading birds, waterfowl, and small mammals. The small achene seeds, produced in quantity after flowering, are eaten by birds and contribute to the plant&#x27;s spread — which is part of why it has naturalized so readily in wetland edges across central and south Florida.</p>
-      <p>Aquatic invertebrates use the submerged root zone and stem bases as shelter and attachment sites, supporting the base of the food web in still or slow-moving water. Because this is a non-native plant with no co-evolutionary history with Florida&#x27;s native fauna, it does not serve as a larval host for any of the state&#x27;s butterflies or moths.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Spreads by two routes: seed and vegetative expansion via rhizomes. The rhizomatous rootstock sends up new culms, steadily enlarging the clump. Seeds disperse primarily by water — consistent with the plant&#x27;s wetland habit — and germinate readily in saturated or moist soil.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, pale yellow-green to brown spikelets are borne in compound clusters (antheals) directly among the bract whorls at the stem tip. Individually they are not showy, but the overall arrangement — dense radiating clusters sitting in the umbrella of bracts — is the signature look of the plant. Flowering occurs primarily in summer through fall.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Each flower matures into a tiny, ellipsoid achene about the size of a pinhead. The achenes are three-angled — typical of the sedge family — and turn pale brown at maturity. They are eaten by birds and spread by water movement.</p></div>
-<div class="repro-item"><div class="repro-label">Stems and Bracts</div><p>The upright culms are stiff, triangular in cross-section, and sheathed at the base by papery reduced leaves. Each culm is topped by a whorl of 11 to 22 narrow, arching, leaf-like bracts 4 to 14 inches long — the &#x27;spokes&#x27; of the umbrella. Small flower clusters emerge from among these bracts. True leaves are absent; photosynthesis happens in the bracts and culms themselves.</p></div>
-<div class="repro-item"><div class="repro-label">Roots and Rhizome</div><p>A stout, creeping, woody rhizome anchors the plant and sends up new culms, often in a roughly linear row. The root system is fibrous and dense, contributing to erosion control in wetland margins but also making established clumps tenacious and difficult to fully remove.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>The umbrella silhouette is unmistakable: a cluster of stiff, upright stems each crowned by a flat whorl of spreading green bracts. Look closely at the center of any mature umbrella-top and you will find the small, dense flower or seed clusters nestled between the bract bases.</p><p>Roll a stem between your fingers and feel the three edges — that triangular cross-section is the family trademark of the sedges. At the base of the clump, look for the dense mat of rhizomes and the papery sheaths where culms emerge.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">2 to 5 feet typically; culms occasionally reach 6 feet in optimal wet conditions</div></div>
-    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">clump-forming; individual clumps spread 2 to 4 feet wide and expand over time via rhizome</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">upright, densely clumping; culms emerge in roughly linear rows from a spreading rhizome</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast, especially in warm, wet conditions</div></div>
-    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium-fine — slender culms and narrow bracts give an airy, delicate look despite the bold silhouette</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to part shade; tolerates a range of light but grows most vigorously in full sun with consistent moisture</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">prefers consistently wet to waterlogged soil; thrives at pond margins and in shallow standing water; tolerates a wide range of soil types as long as moisture is high</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">very low — this plant requires constant moisture and will decline quickly if allowed to dry out</div></div>
-    </div>
-  </div>
-  <div class="plant-safe-section">
-    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The plant is not used as food and is not considered a meaningful edible. One source flags mild gastrointestinal upset — nausea and loose stools — if significant plant material is ingested, so it is best left uneaten. No credible toxicity listing for dogs was found; the ASPCA does not list this species as toxic to pets. Overall a low-hazard plant — just not one to snack on.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>A note on the name: the plant widely sold and grown as Cyperus alternifolius in Florida is treated by the Atlas of Florida Plants (USF) and UF/IFAS as Cyperus involucratus — a closely related species from tropical Africa that has long been misidentified under the alternifolius name. Some taxonomic authorities treat the two as subspecies of a single species; others keep them separate.</p>
-      <p>We follow the botanical name as labeled on this specimen.</p>
-      <p>The FISC invasive listing applies under the name Cyperus involucratus (with C. alternifolius noted as a misapplied synonym). The practical implications are the same: in Florida&#x27;s wet natural areas this is a plant to manage, not encourage to spread beyond cultivated settings.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689595314/large.jpg" loading="lazy" alt="Umbrella Papyrus — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jul 1, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/713089607/large.jpg" loading="lazy" alt="Umbrella Papyrus — photo by Lilah Thomas"><div class="gal-credit" data-login="theblackd0g13">📷 Lilah Thomas</div><div class="gal-date">📅 Aug 5, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Umbrella Sedge</span><span class="alias-tag">Umbrella Plant</span><span class="alias-tag">Umbrella Palm</span><span class="alias-tag">Flat Sedge</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Joanne Walker (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Lilah Thomas (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00557/663459153.jpg", "credit": "Joanne Walker", "license": "CC-BY-NC", "observed": "May 20, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689595314/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/713089607/large.jpg", "credit": "Lilah Thomas", "credit_login": "theblackd0g13", "license": "CC-BY-NC", "observed": "Aug 5, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>September 1, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Cut a stem, flip it upside down in a glass of water, and within a couple of weeks a new plant sprouts from the bract bases — one of the more counterintuitive propagation tricks in the plant world. The stems naturally bend and touch water in the wild, rooting wherever the bract-head makes contact with wet soil.</li><li>Despite its water-loving nature, research has shown this plant can actively pull heavy metals such as copper and manganese out of contaminated water — a process called phytoremediation — making it a candidate for constructed wetland treatment systems.</li><li>A subspecies of this plant — Cyperus alternifolius subsp. flabelliformis — holds the Royal Horticultural Society&#x27;s Award of Garden Merit, the RHS&#x27;s benchmark distinction for plants proven to perform reliably in cultivation. It is a rare honor for a wetland sedge and reflects how far this African marsh plant has traveled from its origins to international ornamental status.</li><li>Scientists have taken the phytoremediation story one step further: the metal-laden plant biomass harvested from treatment wetlands can be converted into biochar through high-heat pyrolysis.</li><li>A 2022 study in Environmental Science and Pollution Research confirmed that biochar made from Cyperus alternifolius functions as an effective depolluting agent — turning a harvested invasive weed into a tool for further cleanup.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-fact"><div class="sp-fact-h">Worth knowing</div><p>In its native Africa the plant has long been harvested for practical uses: fiber for weaving, material for construction, and as animal forage. In cultivation worldwide it has found a second life as a water-garden ornamental and, more recently, as a study subject for phytoremediation — its roots absorb and concentrate heavy metals from polluted water with notable efficiency.</p></div><div class="sp-block"><p>Native to tropical and southern Africa, Madagascar, and the Arabian Peninsula, where it grows in swamps, along stream margins, and in seasonally flooded grasslands from sea level to well over 6,500 feet. Its native range spans more than 30 sub-Saharan countries.</p></div><div class="sp-block"><p>It arrived in cultivation worldwide as an ornamental — valued for its striking geometric form in water gardens and containers. In Florida it has naturalized in wet, disturbed sites throughout the central and southern peninsula, spreading from planted stock by both seed and rhizome.</p></div><div class="sp-block"><p>The genus name Cyperus comes from the Greek kypeiros, a word used by the ancient botanists Theocritus and Theophrastus to describe a type of sedge. The species epithet alternifolius combines the Latin alternus (alternate) and folium (leaf), referring to the alternating arrangement of the bract-like structures at the stem tip.</p></div><div class="sp-block"><p>Sedges as a family — Cyperaceae — are distinguished from true grasses by their typically triangular stems, three-ranked leaves, and solid (not hollow) culms. The field mnemonic &#x27;sedges have edges&#x27; refers to that triangular stem, which you can feel by rolling a culm between your fingers. Umbrella Papyrus shows this trait clearly.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In Florida&#x27;s wet margins and pond edges, the dense stands of Umbrella Papyrus provide cover and nesting substrate for wading birds, waterfowl, and small mammals. The small achene seeds, produced in quantity after flowering, are eaten by birds and contribute to the plant&#x27;s spread — which is part of why it has naturalized so readily in wetland edges across central and south Florida.</p></div><div class="sp-block"><p>Aquatic invertebrates use the submerged root zone and stem bases as shelter and attachment sites, supporting the base of the food web in still or slow-moving water. Because this is a non-native plant with no co-evolutionary history with Florida&#x27;s native fauna, it does not serve as a larval host for any of the state&#x27;s butterflies or moths.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Small, pale yellow-green to brown spikelets are borne in compound clusters (antheals) directly among the bract whorls at the stem tip. Individually they are not showy, but the overall arrangement — dense radiating clusters sitting in the umbrella of bracts — is the signature look of the plant. Flowering occurs primarily in summer through fall.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Each flower matures into a tiny, ellipsoid achene about the size of a pinhead. The achenes are three-angled — typical of the sedge family — and turn pale brown at maturity. They are eaten by birds and spread by water movement.</p></div><div class="sp-block"><div class="sp-block-label">Stems and Bracts</div><p>The upright culms are stiff, triangular in cross-section, and sheathed at the base by papery reduced leaves. Each culm is topped by a whorl of 11 to 22 narrow, arching, leaf-like bracts 4 to 14 inches long — the &#x27;spokes&#x27; of the umbrella. Small flower clusters emerge from among these bracts. True leaves are absent; photosynthesis happens in the bracts and culms themselves.</p></div><div class="sp-block"><div class="sp-block-label">Roots and Rhizome</div><p>A stout, creeping, woody rhizome anchors the plant and sends up new culms, often in a roughly linear row. The root system is fibrous and dense, contributing to erosion control in wetland margins but also making established clumps tenacious and difficult to fully remove.</p></div><div class="sp-block"><p>The umbrella silhouette is unmistakable: a cluster of stiff, upright stems each crowned by a flat whorl of spreading green bracts. Look closely at the center of any mature umbrella-top and you will find the small, dense flower or seed clusters nestled between the bract bases. Roll a stem between your fingers and feel the three edges — that triangular cross-section is the family trademark of the sedges. At the base of the clump, look for the dense mat of rhizomes and the papery sheaths where culms emerge.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun to part shade; tolerates a range of light but grows most vigorously in full sun with consistent moisture</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Prefers consistently wet to waterlogged soil; thrives at pond margins and in shallow standing water; tolerates a wide range of soil types as long as moisture is high</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Very low — this plant requires constant moisture and will decline quickly if allowed to dry out</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>2 to 5 feet typically; culms occasionally reach 6 feet in optimal wet conditions; clump-forming; individual clumps spread 2 to 4 feet wide and expand over time via rhizome</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Upright, densely clumping; culms emerge in roughly linear rows from a spreading rhizome</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Fast, especially in warm, wet conditions</p></div><div class="sp-block"><div class="sp-block-label">It spreads</div><p>Listed as FISC (formerly FLEPPC) Category II in central and south Florida, where it has naturalized in wet, disturbed sites from planted ornamental stock. UF/IFAS notes it spreads by both seed and rhizome and advises management in Florida gardens. Category II indicates the species has increased in abundance but has not yet altered plant communities to the extent of Category I species.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00557/663459153.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689595314/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/713089607/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Umbrella Sedge &middot; Umbrella Plant &middot; Umbrella Palm &middot; Flat Sedge</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00557/663459153.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689595314/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/713089607/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

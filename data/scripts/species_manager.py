@@ -2937,7 +2937,10 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
         # v2 layout (2026-09-07). Preview must render what Publish will WRITE —
         # write_html() now calls generate_html_v2, so a preview on the old
         # generator would show a layout the publish path no longer produces.
-        # Falls back to v1 for plants, whose publisher has no v2 yet.
+        # Both publishers now have a v2 (plants gained one 2026-09-08).
+        # For a few hours that day this preview picked up the new plant
+        # generator while write_html still wrote v1, so preview and publish
+        # disagreed — the exact failure this getattr was meant to avoid.
         _gen = getattr(pub, "generate_html_v2", None) or pub.generate_html
         html = _gen(species, hero, galleries.get(species_id, []))
 

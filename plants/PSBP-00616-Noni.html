@@ -1,135 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Noni · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Noni (Morinda citrifolia) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00616/602867152.jpg" alt="Noni at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Tree</div>
-    <div class="plant-hero-name">Noni</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00616/602867152.jpg" alt="Noni at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689615080/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689615081/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689615084/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">4</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Tree</div>
+    <h1 class="sp-name">Noni</h1>
+    <div class="sp-sci">Morinda citrifolia</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Morinda citrifolia</span>
-  <a class="plant-family-tag" href="../nature.html?family=Rubiaceae">Rubiaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="elurding">elurding</strong> · CC-BY-NC · via iNaturalist · 📅 Dec 25, 2025</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Fully ripe noni earns its nicknames — cheese fruit, vomit fruit — honestly. The pungent, fermented odor is an evolutionary broadcast aimed squarely at fruit bats, which are the primary seed dispersers across noni&#x27;s native range. The smell is not a flaw; it is the whole strategy.</li>
-    <li>Polynesian seafarers treated noni as a canoe plant — one of a handful of species so essential to survival that it was carried on every long ocean voyage. It served as a portable medicine chest, a textile dye source, and a famine food all packed into one small tree.</li>
-    <li>Noni is a two-dye tree: the bark yields a red pigment and the roots a yellow one. Across the Pacific and Southeast Asia, both colors were extracted from a single organism and used to dye fabric for centuries.</li>
-    <li>Noni ignores the calendar entirely. A mature tree flowers and fruits continuously year-round, and a single branch can carry fresh white blooms, hard green unripe fruit, and translucent ripe fruit all at the same time.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Noni is native to a vast tropical zone spanning the Indian subcontinent, Southeast Asia, the Pacific Islands, and northern Australia. Remarkably resilient, it thrives in coastal zones, coral atolls, and brackish shores — and is recognized as one of the first woody pioneer species to colonize completely bare lava fields after an eruption.</p>
-      <p>Long before European exploration, the plant&#x27;s range expanded dramatically through human migration. Polynesian voyagers carefully packed noni among their canoe plants, intentionally introducing the tree to distant archipelagos as they settled the Pacific over hundreds of years.</p>
-      <p>In more recent history, noni was introduced to the Americas and the Caribbean through botanical collection and cultivation. It has naturalized across global tropical environments, finding a comfortable modern home in South and Central Florida as an ornamental and collection fruit tree.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The genus name Morinda is a compressed form of the Latin morus (mulberry) and indicus (Indian), a nod to the fruit&#x27;s visual resemblance to a true mulberry. The species name citrifolia means &#x27;with leaves like Citrus&#x27; — you can see why when you look at the large, glossy, prominently veined leaves.</li>
-    <li>Noni has one of the broader ethnobotanical records of any tropical plant. Roots, bark, leaves, and fruit have all been used medicinally in traditional Pacific and Asian cultures for well over two thousand years, with the first written mention appearing in Chinese literature during the Han dynasty.</li>
-    <li>Polynesian peoples held noni in particular reverence — it was considered a gift from the gods and, because of its ability to grow on lava fields, was associated with the volcano goddess Pele. That sacred status is part of why voyagers made certain it traveled with them on every long ocean journey.</li>
-    <li>Commercial interest in noni juice exploded in the 1990s and has generated considerable research, along with considerable marketing hype. Most of the dramatic health claims remain unconfirmed by rigorous clinical trials, though the fruit&#x27;s nutritional profile — antioxidants, vitamins, and various bioactive compounds — is well documented.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The flowers are a reliable nectar source for honey bees and other pollinating insects; noni&#x27;s flower nectaries are notably attractive to bees throughout its range. The plant also produces extrafloral nectaries that draw ants, which in turn provide some protection against herbivorous insects — a quiet mutualism that requires no help from us.</p>
-      <p>The real wildlife action centers on the ripe fruit. Its strong, fermented odor — off-putting to most humans — is precisely what attracts fruit bats, which are the primary seed dispersers across much of noni&#x27;s native range. Birds also take the fruit and spread seeds.</p>
-      <p>Because noni has no co-evolutionary history with Florida&#x27;s native fauna, it does not serve as a larval host for local butterflies or moths, but its flowers do bring in bees and general pollinators.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, white, tubular, and fragrant, with five petals fused into a tube. Flowers emerge in dense globe-shaped heads directly from the developing fruit — so the blooms appear to be growing out of the fruit itself rather than on separate stalks. The plant is monoecious (both sexes on the same individual) and flowering continues year-round in Florida&#x27;s warm climate.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>A lumpy, oval compound fruit formed from many fused drupes, typically 2 to 4 inches long, with a warty surface marked by hexagonal facets — each one the imprint of an individual drupelet. Fruit progresses from hard and green to translucent yellow-white when ripe, at which point it softens dramatically and develops its characteristic pungent odor.</p><p>Seeds are buoyant and hydrophobic, capable of surviving long ocean voyages — a key reason noni spread so widely across the Pacific.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Large, simple, opposite, and glossy dark green, with deeply impressed veins that give the surface a quilted look. Blades are broadly elliptic, typically 8 to 20 inches long. The plant is evergreen and holds its foliage year-round.</p></div>
-<div class="repro-item"><div class="repro-label">Stems and Bark</div><p>Young stems are distinctively four-sided — square in cross-section with rounded angles — a reliable field mark that sets noni apart from most other small trees. The trunk is straight; bark is pale gray-brown.</p></div>
-<div class="repro-item"><div class="repro-label">Propagation</div><p>Propagated from seed and by stem or root cuttings; seeds germinate readily. A mature tree begins flowering and fruiting within about 18 months of transplanting and then produces continuously.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Step up close and start at the stem tips: young growth is distinctly four-sided — square in cross-section — which is unusual for any tree this size and a dependable ID mark.</p><p>Next, trace down to where the white tubular flowers emerge; they bloom directly from the surface of the lumpy, potato-shaped young fruit rather than on separate stalks, an arrangement that looks wrong until you realize it is exactly how noni works.</p><p>Finally, lean in on the mature fruit and look for the honeycomb of hexagonal facets covering its skin — each one a permanent scar left by an individual flower drupelet.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">10 to 20 feet in Florida cultivation; up to roughly 30 feet in optimal tropical conditions</div></div>
-    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">roughly equal to height at maturity; conical crown</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">small tree or large shrub with a straight trunk and broadly conical canopy</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate — approximately 2.5 to 5 feet per year under good conditions</div></div>
-    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">coarse, due to very large leaves</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun preferred; tolerates partial shade</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">adaptable to sandy, loamy, and clay soils; tolerates poor, saline, and rocky soils; prefers well-drained conditions</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">good once established; deep taproot aids drought resistance</div></div>
-    </div>
-  </div>
-  <div class="plant-caution-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The fruit is edible and has been consumed across the Pacific for centuries, but approach a taste test with honest expectations: ripe noni has a powerfully pungent odor and a bitter, intensely medicinal flavor, and the texture becomes very soft and mushy at peak ripeness. It is typically fermented or blended with sweeter fruits to make it palatable.</p><p>The plant and its fruit are non-toxic to dogs and cats, and commercial noni juice is generally regarded as safe at normal consumption levels — though case reports have linked large or chronic doses to liver stress in humans, so moderation applies.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>Noni belongs to the coffee family (Rubiaceae), and the kinship is visible once you know it: the glossy leaves, tubular white flowers, and overall growth habit echo its more famous relative. The family also includes gardenias, pentas, and buttonbush.</p>
-      <p>The seeds are naturally buoyant and water-resistant — each one carries a small air chamber and a hydrophobic seed coat that lets it float for months without losing viability. This is how noni colonized Pacific atolls long before humans arrived with canoes, and it is part of what makes the species such a capable long-distance traveler.</p>
-      <p>For those curious enough to try processing noni at home, the traditional method involves placing ripe, yellow-white fruits in a sealed glass jar at ambient temperature and allowing them to ferment naturally for roughly two months. The fruit breaks down and releases juice that seeps out on its own — no pressing needed.</p>
-      <p>The result is tart and funky; most people blend it with sweeter fruit juice before drinking.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689615080/large.jpg" loading="lazy" alt="Noni — photo by Zailibeth Perez"><div class="gal-credit" data-login="zailibeth">📷 Zailibeth Perez</div><div class="gal-date">📅 Jun 24, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689615081/large.jpg" loading="lazy" alt="Noni — photo by Zailibeth Perez"><div class="gal-credit" data-login="zailibeth">📷 Zailibeth Perez</div><div class="gal-date">📅 Jun 24, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689615084/large.jpg" loading="lazy" alt="Noni — photo by Zailibeth Perez"><div class="gal-credit" data-login="zailibeth">📷 Zailibeth Perez</div><div class="gal-date">📅 Jun 24, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Indian Mulberry</span><span class="alias-tag">Great Morinda</span><span class="alias-tag">Cheese Fruit</span><span class="alias-tag">Beach Mulberry</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© elurding (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Zailibeth Perez (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00616/602867152.jpg", "credit": "elurding", "license": "CC-BY-NC", "observed": "Dec 25, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689615080/large.jpg", "credit": "Zailibeth Perez", "credit_login": "zailibeth", "license": "CC-BY-NC", "observed": "Jun 24, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689615081/large.jpg", "credit": "Zailibeth Perez", "credit_login": "zailibeth", "license": "CC-BY-NC", "observed": "Jun 24, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689615084/large.jpg", "credit": "Zailibeth Perez", "credit_login": "zailibeth", "license": "CC-BY-NC", "observed": "Jun 24, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>September 1, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#culture">Cultural significance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Fully ripe noni earns its nicknames — cheese fruit, vomit fruit — honestly. The pungent, fermented odor is an evolutionary broadcast aimed squarely at fruit bats, which are the primary seed dispersers across noni&#x27;s native range. The smell is not a flaw; it is the whole strategy.</li><li>Polynesian seafarers treated noni as a canoe plant — one of a handful of species so essential to survival that it was carried on every long ocean voyage. It served as a portable medicine chest, a textile dye source, and a famine food all packed into one small tree.</li><li>Noni is a two-dye tree: the bark yields a red pigment and the roots a yellow one. Across the Pacific and Southeast Asia, both colors were extracted from a single organism and used to dye fabric for centuries.</li><li>Noni ignores the calendar entirely. A mature tree flowers and fruits continuously year-round, and a single branch can carry fresh white blooms, hard green unripe fruit, and translucent ripe fruit all at the same time.</li></ul></div></section><section class="sp-sec" id="culture"><h2>Cultural significance</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Noni has one of the broader ethnobotanical records of any tropical plant. Roots, bark, leaves, and fruit have all been used medicinally in traditional Pacific and Asian cultures for well over two thousand years, with the first written mention appearing in Chinese literature during the Han dynasty.</p></div><div class="sp-block"><p>Commercial interest in noni juice exploded in the 1990s and has generated considerable research, along with considerable marketing hype. Most of the dramatic health claims remain unconfirmed by rigorous clinical trials, though the fruit&#x27;s nutritional profile — antioxidants, vitamins, and various bioactive compounds — is well documented.</p></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Noni is native to a vast tropical zone spanning the Indian subcontinent, Southeast Asia, the Pacific Islands, and northern Australia. Remarkably resilient, it thrives in coastal zones, coral atolls, and brackish shores — and is recognized as one of the first woody pioneer species to colonize completely bare lava fields after an eruption.</p></div><div class="sp-block"><p>Long before European exploration, the plant&#x27;s range expanded dramatically through human migration. Polynesian voyagers carefully packed noni among their canoe plants, intentionally introducing the tree to distant archipelagos as they settled the Pacific over hundreds of years.</p></div><div class="sp-block"><p>In more recent history, noni was introduced to the Americas and the Caribbean through botanical collection and cultivation. It has naturalized across global tropical environments, finding a comfortable modern home in South and Central Florida as an ornamental and collection fruit tree.</p></div><div class="sp-block"><p>The genus name Morinda is a compressed form of the Latin morus (mulberry) and indicus (Indian), a nod to the fruit&#x27;s visual resemblance to a true mulberry. The species name citrifolia means &#x27;with leaves like Citrus&#x27; — you can see why when you look at the large, glossy, prominently veined leaves.</p></div><div class="sp-block"><p>Polynesian peoples held noni in particular reverence — it was considered a gift from the gods and, because of its ability to grow on lava fields, was associated with the volcano goddess Pele. That sacred status is part of why voyagers made certain it traveled with them on every long ocean journey.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The flowers are a reliable nectar source for honey bees and other pollinating insects; noni&#x27;s flower nectaries are notably attractive to bees throughout its range. The plant also produces extrafloral nectaries that draw ants, which in turn provide some protection against herbivorous insects — a quiet mutualism that requires no help from us.</p></div><div class="sp-block"><p>The real wildlife action centers on the ripe fruit. Its strong, fermented odor — off-putting to most humans — is precisely what attracts fruit bats, which are the primary seed dispersers across much of noni&#x27;s native range. Birds also take the fruit and spread seeds.</p></div><div class="sp-block"><p>Because noni has no co-evolutionary history with Florida&#x27;s native fauna, it does not serve as a larval host for local butterflies or moths, but its flowers do bring in bees and general pollinators.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>The only documented larval host relationship found is with Conogethes punctiferalis (Yellow Peach Moth), an Old World species not present in Florida; no Florida-relevant butterfly or moth larval host association was found, and no notable adult nectar role was documented in any source.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Small, white, tubular, and fragrant, with five petals fused into a tube. Flowers emerge in dense globe-shaped heads directly from the developing fruit — so the blooms appear to be growing out of the fruit itself rather than on separate stalks. The plant is monoecious (both sexes on the same individual) and flowering continues year-round in Florida&#x27;s warm climate.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>A lumpy, oval compound fruit formed from many fused drupes, typically 2 to 4 inches long, with a warty surface marked by hexagonal facets — each one the imprint of an individual drupelet. Fruit progresses from hard and green to translucent yellow-white when ripe, at which point it softens dramatically and develops its characteristic pungent odor. Seeds are buoyant and hydrophobic, capable of surviving long ocean voyages — a key reason noni spread so widely across the Pacific.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Large, simple, opposite, and glossy dark green, with deeply impressed veins that give the surface a quilted look. Blades are broadly elliptic, typically 8 to 20 inches long. The plant is evergreen and holds its foliage year-round.</p></div><div class="sp-block"><div class="sp-block-label">Stems and Bark</div><p>Young stems are distinctively four-sided — square in cross-section with rounded angles — a reliable field mark that sets noni apart from most other small trees. The trunk is straight; bark is pale gray-brown.</p></div><div class="sp-block"><p>Step up close and start at the stem tips: young growth is distinctly four-sided — square in cross-section — which is unusual for any tree this size and a dependable ID mark. Next, trace down to where the white tubular flowers emerge; they bloom directly from the surface of the lumpy, potato-shaped young fruit rather than on separate stalks, an arrangement that looks wrong until you realize it is exactly how noni works. Finally, lean in on the mature fruit and look for the honeycomb of hexagonal facets covering its skin — each one a permanent scar left by an individual flower drupelet.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun preferred; tolerates partial shade</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Adaptable to sandy, loamy, and clay soils; tolerates poor, saline, and rocky soils; prefers well-drained conditions</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Good once established; deep taproot aids drought resistance</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>10 to 20 feet in Florida cultivation; up to roughly 30 feet in optimal tropical conditions; roughly equal to height at maturity; conical crown</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Small tree or large shrub with a straight trunk and broadly conical canopy</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Moderate — approximately 2.5 to 5 feet per year under good conditions</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The fruit is edible and has been consumed across the Pacific for centuries, but approach a taste test with honest expectations: ripe noni has a powerfully pungent odor and a bitter, intensely medicinal flavor, and the texture becomes very soft and mushy at peak ripeness. It is typically fermented or blended with sweeter fruits to make it palatable.</p></div><div class="sp-block"><p>The plant and its fruit are non-toxic to dogs and cats, and commercial noni juice is generally regarded as safe at normal consumption levels — though case reports have linked large or chronic doses to liver stress in humans, so moderation applies.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00616/602867152.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689615080/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689615081/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689615084/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Indian Mulberry &middot; Great Morinda &middot; Cheese Fruit &middot; Beach Mulberry</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00616/602867152.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689615080/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689615081/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689615084/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

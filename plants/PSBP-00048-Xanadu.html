@@ -1,115 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xanadu · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xanadu (Thaumatophyllum xanadu) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00048/667518390.jpg" alt="Xanadu at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Foliage &amp; Accent</div>
-    <div class="plant-hero-name">Xanadu</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00048/667518390.jpg" alt="Xanadu at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/661592696/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667518407/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">3</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Foliage &amp; Accent</div>
+    <h1 class="sp-name">Xanadu</h1>
+    <div class="sp-sci">Thaumatophyllum xanadu</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Thaumatophyllum xanadu</span>
-  <a class="plant-family-tag" href="../nature.html?family=Araceae">Araceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="greg_bratlee">Greg Bratlee</strong> · CC-BY-NC · via iNaturalist · 📅 May 26, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Recently reclassified from Philodendron into its own genus, the Xanadu is still adjusting to its new scientific identity.</li>
-    <li>The deeply lobed leaves are engineered to let wind pass through without toppling the plant — an adaptation from its native Mato Grosso forests of Brazil, where afternoon storms are severe.</li>
-    <li>It spreads slowly by underground rhizomes into dense, sculptural clumps that need no maintenance once established.</li>
-    <li>Mildly toxic if ingested, which keeps browsers away.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to southern Brazil — specifically Santa Catarina state. Despite being one of the most widely sold landscape plants in Florida, its wild origin was unknown for years until a wild population was discovered in Brazil in 2001. Reclassified from Philodendron to Thaumatophyllum in 2018 based on molecular studies, though most nurseries still sell it under the old name.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The name Thaumatophyllum means &quot;wonder leaf&quot; in Greek — an appropriate name for one of the most distinctive leaf forms in the plant world. The reclassification from Philodendron to Thaumatophyllum in 2018 upset decades of nomenclature, and most of the horticultural world has yet to catch up.</li>
-    <li>The name Xanadu comes from the Samuel Taylor Coleridge poem &quot;Kubla Khan&quot; — used by the original plant patent holder to evoke the exotic and the lush.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Limited wildlife value. It is grown for its deeply lobed foliage and rarely flowers in cultivation, so it offers little nectar or fruit; the dense, low clump gives some ground-level cover for small animals.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>spathe and spadix inflorescence typical of the Araceae family — rarely produced in cultivation. Propagation by division of basal offshoots. The plant slowly spreads at the base, producing new growth points that can be separated. The deeply lobed leaves are the signature feature — each leaf has up to 15 lobes radiating from the central stem.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">2 to 4 feet. Spread: 4 to 6 feet. Compact self-heading (non-climbing) clump of deeply lobed dark green leaves. Growth rate: moderate. Texture: coarse — leaves deeply lobed and glossy.</div></div>
-    </div>
-  </div>
-  <div class="plant-toxic-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Do not eat any part of this plant. Like other aroids it contains calcium oxalate crystals that cause immediate, intense burning of the lips, mouth, tongue, and throat, and can cause swelling.</p><p>Keep it away from children.</p><p>It&#x27;s toxic to dogs and cats the same way (ASPCA) — oral burning, drooling, and vomiting if the leaves are chewed. Keep pets from chewing it.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>NOMENCLATURE: Widely sold as &#x27;Philodendron xanadu,&#x27; the accepted name has been reclassified to Thaumatophyllum xanadu (Sakuragui, Calazans &amp; Mayo, 2018), moving it out of Philodendron into the segregate genus Thaumatophyllum within the arum family (Araceae).</p>
-      <p>Kew&#x27;s Plants of the World Online still lists Philodendron xanadu as the accepted name with Thaumatophyllum as a synonym, so both names remain in current use. Family placement (Araceae) is not in dispute. Signage uses Thaumatophyllum xanadu.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/661592696/large.jpg" loading="lazy" alt="Xanadu — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 May 17, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667518407/large.jpg" loading="lazy" alt="Xanadu — photo by Greg Bratlee"><div class="gal-credit" data-login="greg_bratlee">📷 Greg Bratlee</div><div class="gal-date">📅 May 26, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Formerly classified as Philodendron xanadu</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Greg Bratlee (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00048/667518390.jpg", "credit": "Greg Bratlee", "license": "CC-BY-NC", "observed": "May 26, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/661592696/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "May 17, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/667518407/large.jpg", "credit": "Greg Bratlee", "credit_login": "greg_bratlee", "license": "CC-BY-NC", "observed": "May 26, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 28, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Recently reclassified from Philodendron into its own genus, the Xanadu is still adjusting to its new scientific identity.</li><li>The deeply lobed leaves are engineered to let wind pass through without toppling the plant — an adaptation from its native Mato Grosso forests of Brazil, where afternoon storms are severe.</li><li>It spreads slowly by underground rhizomes into dense, sculptural clumps that need no maintenance once established.</li><li>Mildly toxic if ingested, which keeps browsers away.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Native to southern Brazil — specifically Santa Catarina state. Despite being one of the most widely sold landscape plants in Florida, its wild origin was unknown for years until a wild population was discovered in Brazil in 2001. Reclassified from Philodendron to Thaumatophyllum in 2018 based on molecular studies, though most nurseries still sell it under the old name.</p></div><div class="sp-block"><p>The name Thaumatophyllum means &quot;wonder leaf&quot; in Greek — an appropriate name for one of the most distinctive leaf forms in the plant world. The reclassification from Philodendron to Thaumatophyllum in 2018 upset decades of nomenclature, and most of the horticultural world has yet to catch up.</p></div><div class="sp-block"><p>The name Xanadu comes from the Samuel Taylor Coleridge poem &quot;Kubla Khan&quot; — used by the original plant patent holder to evoke the exotic and the lush.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Shade Garden.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Limited wildlife value. It is grown for its deeply lobed foliage and rarely flowers in cultivation, so it offers little nectar or fruit; the dense, low clump gives some ground-level cover for small animals.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>spathe and spadix inflorescence typical of the Araceae family — rarely produced in cultivation. Propagation by division of basal offshoots. The plant slowly spreads at the base, producing new growth points that can be separated. The deeply lobed leaves are the signature feature — each leaf has up to 15 lobes radiating from the central stem.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Size</div><p>2 to 4 feet. Spread: 4 to 6 feet. Compact self-heading (non-climbing) clump of deeply lobed dark green leaves. Growth rate: moderate. Texture: coarse — leaves deeply lobed and glossy.</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>Yes — contains calcium oxalate crystals that cause immediate intense burning and irritation of the mouth, lips, tongue, and throat if ingested. Can cause swelling. Toxic to cats, dogs, and humans. Keep away from children and pets.</p></div><div class="sp-block"><p>It&#x27;s toxic to dogs and cats the same way (ASPCA) — oral burning, drooling, and vomiting if the leaves are chewed. Keep pets from chewing it.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00048/667518390.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/661592696/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667518407/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Formerly classified as Philodendron xanadu</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00048/667518390.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/661592696/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/667518407/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

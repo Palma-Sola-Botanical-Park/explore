@@ -1,127 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carnaúba Palm · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carnaúba Palm (Copernicia prunifera) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:52% 46%" src="../photos/PSBP-00719/697842423.jpg" alt="Carnaúba Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Palm &amp; Cycad</div>
-    <div class="plant-hero-name">Carnaúba Palm</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00719/697842423.jpg" alt="Carnaúba Palm at Palma Sola Botanical Park" style="object-position:52% 46%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697842418/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">2</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Palm &amp; Cycad</div>
+    <h1 class="sp-name">Carnaúba Palm</h1>
+    <div class="sp-sci">Copernicia prunifera</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Copernicia prunifera</span>
-  <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="randall_carter">Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 14, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>To global industry this palm is the &#x27;Tree of Life&#x27; — the source of the world&#x27;s most valuable natural wax. But the indigenous Tupi peoples who lived alongside it named it for something else entirely: the curved spines lining every leaf stalk. &#x27;Carnaúba&#x27; means &#x27;tree that scratches.&#x27;</li>
-    <li>The wax coating on these fan leaves is the palm&#x27;s own evolutionary armor — secreted directly onto leaf surfaces to lock in moisture while the Caatinga bakes dry for months at a time. That same biological compound ends up in car polish, lipstick, dental floss, and the hard candy shell on M&amp;Ms, with a melting point around 180 to 187 degrees Fahrenheit — higher than any other commercial natural wax.</li>
-    <li>This palm can live up to 200 years, and Brazil accounts for more than 85 percent of the world&#x27;s carnauba wax supply — an industry built almost entirely on hand-harvesting leaves from wild trees.</li>
-    <li>The genus Copernicia is named for the astronomer Nicolaus Copernicus — a tribute, like many botanical names of the era, chosen because the namer admired the man.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>The Carnaúba Palm is native to the Caatinga biome of northeastern Brazil — a semi-arid region covering roughly 800,000 square kilometers across states including Ceará, Piauí, Maranhão, Rio Grande do Norte, and Bahia. It is the state tree of Ceará.</p>
-      <p>Despite its adaptation to a dry climate, the palm typically grows in dense stands along river valleys and flood zones where roots can reach groundwater during the long dry season. It tolerates both periodic drought and seasonal inundation — a combination few palms can manage.</p>
-      <p>It is also the official symbol tree of the state of Ceará, where efforts to promote sustainable harvesting of its wax have helped frame conservation of the species as an economic as well as ecological priority. In Florida it is grown as a specimen palm, primarily in botanical gardens and private tropical collections.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The genus name Copernicia honors Nicolaus Copernicus (1473–1543), the astronomer who proposed a heliocentric model of the solar system. The species epithet prunifera means &#x27;plum-bearing&#x27; — a reference to the palm&#x27;s small, round, dark fruit.</li>
-    <li>The wax coating on the leaves is not incidental — it is the palm&#x27;s solution to a punishing dry season. When rain stops for months at a time, the Caatinga bakes and most plants struggle or go dormant. The carnaúba secretes a layer of wax over both leaf surfaces, dramatically slowing water loss and allowing the palm to stay active and green while the landscape around it dries out.</li>
-    <li>Harvesters collect leaves during the dry season, sun-dry them, then beat the shriveled blades to knock the powdery wax loose. The raw material is then melted, strained, and cooled into the hard yellow-brown flakes traded worldwide. Brazil exports more than 85 percent of global supply, nearly all of it from wild trees rather than plantations.</li>
-    <li>The trunk tells its own story in geometry. The lower two-thirds are sheathed in a dense, spiraling staircase of old petiole bases — each one a knobby callus left behind when a frond dropped away, packed so tightly they form a rough, armored column. Then, abruptly, the trunk transitions to smooth gray wood near the crown, as if the tree switched architectural modes halfway up.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The inflorescences are about two meters long, emerge interfoliar among the leaves, and bear hermaphroditic (bisexual) flowers visited by insects — the palm is primarily insect-pollinated, with some wind pollination as well. The small, round, blackish fruits that follow are eaten by birds and other wildlife both in the palm&#x27;s native range and in cultivation.</p>
-      <p>In northeastern Brazil the palm plays a notable role in local bird ecology. The Fork-tailed Palm-Swift, which builds tiny feather-and-saliva nests inside dead, folded pendant leaves, uses the carnaúba as a nesting site in parts of its range where its preferred host palm is absent.</p>
-      <p>In Florida cultivation, where the palm has no co-evolutionary wildlife relationships, its primary value to local fauna is as a fruit source and opportunistic perch or nesting substrate for birds.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Bisexual (hermaphroditic) flowers are small and yellowish-white, borne on heavily branched inflorescences about two meters long that emerge from among the leaves and barely extend beyond the crown. Both male and female function occur in the same flower on the same tree, so any individual can set fruit without a separate pollen source nearby.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Small, ovoid to round drupes roughly one inch in diameter, ripening from green to glossy black. Each fruit contains a single seed. The fruit pulp is edible and used in Brazil for jellies and flour; the roasted seeds have historically been brewed as a coffee substitute.</p></div>
-<div class="repro-item"><div class="repro-label">Fronds</div><p>Costapalmate fan leaves nearly circular in outline, up to roughly five feet across and deeply divided into stiff segments. Color ranges from yellowish-green to blue-green, with a heavier wax coating on the underside. Petioles are about two to three feet long and lined with robust curved spines along both margins.</p></div>
-<div class="repro-item"><div class="repro-label">Trunk</div><p>Solitary, gray, and roughly ten inches in diameter at maturity. The lower two-thirds of the trunk retain the persistent, spirally arranged bases of shed petioles, giving it a knobby, armored texture; the upper third tends to be smoother. This spiral pattern — denser below than near the crown — is one of the most distinctive field marks of the species.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Trace the Spiral: start at the base of the trunk and follow the dense, knobby staircase of old petiole bases upward — watch how the trunk abruptly shifts from rough and armored to smooth gray wood as it nears the crown.</p><p>Inspect the Underside: look at any frond within reach and find the thick, chalky blue-green wax layer coating the leaf surface — that is the same compound in your car polish and candy shell.</p><p>Respect the Teeth: run your eyes (not your hand) along a petiole margin and note the robust curved spines — those are what earned this palm its Tupi name. If the palm is in fruit, scan near the base of the inflorescence for small, glossy black drupes nestled among the leaves.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">30 to 50 feet in Florida landscapes (Palmpedia, unusualpalmsandplants.com); up to roughly 65 feet in the wild</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">10 to 14 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">solitary trunk; rounded, fairly dense crown of stiff fan fronds</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">slow</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">coarse</div></div>
-    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">adaptable — sandy, loamy, or clay; tolerates both drought and periodic flooding; a slightly saline soil suits it well; performs poorly in poorly drained, waterlogged conditions over extended periods</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established; evolved for long dry seasons</div></div>
-    </div>
-  </div>
-  <div class="plant-caution-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The petioles carry robust, curved spines along both margins — they will grip and cut without warning, so keep a respectful distance from the crown and never brush past a frond casually.</p><p>In northeastern Brazil this palm has historically served as a famine food — the fruit pulp dried into flour, the seeds roasted as a coffee substitute — a legacy that earns it the &#x27;Tree of Life&#x27; title and this sign&#x27;s Yellow edibility flag. The preparation is not casual; leave it to tradition and enjoy the specimen intact.</p><p>The wax is food-safe worldwide, and no toxicity to people or dogs has been documented.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697842418/large.jpg" loading="lazy" alt="Carnaúba Palm — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jul 14, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Carnauba Wax Palm</span><span class="alias-tag">Brazilian Wax Palm</span><span class="alias-tag">Tree of Life</span><span class="alias-tag">Carnaubeira</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00719/697842423.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697842418/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>September 1, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#culture">Cultural significance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>To global industry this palm is the &#x27;Tree of Life&#x27; — the source of the world&#x27;s most valuable natural wax. But the indigenous Tupi peoples who lived alongside it named it for something else entirely: the curved spines lining every leaf stalk. &#x27;Carnaúba&#x27; means &#x27;tree that scratches.&#x27;</li><li>The wax coating on these fan leaves is the palm&#x27;s own evolutionary armor — secreted directly onto leaf surfaces to lock in moisture while the Caatinga bakes dry for months at a time. That same biological compound ends up in car polish, lipstick, dental floss, and the hard candy shell on M&amp;Ms, with a melting point around 180 to 187 degrees Fahrenheit — higher than any other commercial natural wax.</li><li>This palm can live up to 200 years, and Brazil accounts for more than 85 percent of the world&#x27;s carnauba wax supply — an industry built almost entirely on hand-harvesting leaves from wild trees.</li><li>The genus Copernicia is named for the astronomer Nicolaus Copernicus — a tribute, like many botanical names of the era, chosen because the namer admired the man.</li></ul></div></section><section class="sp-sec" id="culture"><h2>Cultural significance</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The wax coating on the leaves is not incidental — it is the palm&#x27;s solution to a punishing dry season. When rain stops for months at a time, the Caatinga bakes and most plants struggle or go dormant. The carnaúba secretes a layer of wax over both leaf surfaces, dramatically slowing water loss and allowing the palm to stay active and green while the landscape around it dries out.</p></div><div class="sp-block"><p>Harvesters collect leaves during the dry season, sun-dry them, then beat the shriveled blades to knock the powdery wax loose. The raw material is then melted, strained, and cooled into the hard yellow-brown flakes traded worldwide. Brazil exports more than 85 percent of global supply, nearly all of it from wild trees rather than plantations.</p></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The Carnaúba Palm is native to the Caatinga biome of northeastern Brazil — a semi-arid region covering roughly 800,000 square kilometers across states including Ceará, Piauí, Maranhão, Rio Grande do Norte, and Bahia. It is the state tree of Ceará.</p></div><div class="sp-block"><p>Despite its adaptation to a dry climate, the palm typically grows in dense stands along river valleys and flood zones where roots can reach groundwater during the long dry season. It tolerates both periodic drought and seasonal inundation — a combination few palms can manage.</p></div><div class="sp-block"><p>It is also the official symbol tree of the state of Ceará, where efforts to promote sustainable harvesting of its wax have helped frame conservation of the species as an economic as well as ecological priority. In Florida it is grown as a specimen palm, primarily in botanical gardens and private tropical collections.</p></div><div class="sp-block"><p>The genus name Copernicia honors Nicolaus Copernicus (1473–1543), the astronomer who proposed a heliocentric model of the solar system. The species epithet prunifera means &#x27;plum-bearing&#x27; — a reference to the palm&#x27;s small, round, dark fruit.</p></div><div class="sp-block"><p>The trunk tells its own story in geometry. The lower two-thirds are sheathed in a dense, spiraling staircase of old petiole bases — each one a knobby callus left behind when a frond dropped away, packed so tightly they form a rough, armored column. Then, abruptly, the trunk transitions to smooth gray wood near the crown, as if the tree switched architectural modes halfway up.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The inflorescences are about two meters long, emerge interfoliar among the leaves, and bear hermaphroditic (bisexual) flowers visited by insects — the palm is primarily insect-pollinated, with some wind pollination as well. The small, round, blackish fruits that follow are eaten by birds and other wildlife both in the palm&#x27;s native range and in cultivation.</p></div><div class="sp-block"><p>In northeastern Brazil the palm plays a notable role in local bird ecology. The Fork-tailed Palm-Swift, which builds tiny feather-and-saliva nests inside dead, folded pendant leaves, uses the carnaúba as a nesting site in parts of its range where its preferred host palm is absent.</p></div><div class="sp-block"><p>In Florida cultivation, where the palm has no co-evolutionary wildlife relationships, its primary value to local fauna is as a fruit source and opportunistic perch or nesting substrate for birds.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Bisexual (hermaphroditic) flowers are small and yellowish-white, borne on heavily branched inflorescences about two meters long that emerge from among the leaves and barely extend beyond the crown. Both male and female function occur in the same flower on the same tree, so any individual can set fruit without a separate pollen source nearby.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Small, ovoid to round drupes roughly one inch in diameter, ripening from green to glossy black. Each fruit contains a single seed. The fruit pulp is edible and used in Brazil for jellies and flour; the roasted seeds have historically been brewed as a coffee substitute.</p></div><div class="sp-block"><div class="sp-block-label">Fronds</div><p>Costapalmate fan leaves nearly circular in outline, up to roughly five feet across and deeply divided into stiff segments. Color ranges from yellowish-green to blue-green, with a heavier wax coating on the underside. Petioles are about two to three feet long and lined with robust curved spines along both margins.</p></div><div class="sp-block"><div class="sp-block-label">Trunk</div><p>Solitary, gray, and roughly ten inches in diameter at maturity. The lower two-thirds of the trunk retain the persistent, spirally arranged bases of shed petioles, giving it a knobby, armored texture; the upper third tends to be smoother. This spiral pattern — denser below than near the crown — is one of the most distinctive field marks of the species.</p></div><div class="sp-block"><p>Trace the Spiral: start at the base of the trunk and follow the dense, knobby staircase of old petiole bases upward — watch how the trunk abruptly shifts from rough and armored to smooth gray wood as it nears the crown. Inspect the Underside: look at any frond within reach and find the thick, chalky blue-green wax layer coating the leaf surface — that is the same compound in your car polish and candy shell. Respect the Teeth: run your eyes (not your hand) along a petiole margin and note the robust curved spines — those are what earned this palm its Tupi name. If the palm is in fruit, scan near the base of the inflorescence for small, glossy black drupes nestled among the leaves.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Adaptable — sandy, loamy, or clay; tolerates both drought and periodic flooding; a slightly saline soil suits it well; performs poorly in poorly drained, waterlogged conditions over extended periods</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Excellent once established; evolved for long dry seasons</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>30 to 50 feet in Florida landscapes (Palmpedia, unusualpalmsandplants.com); up to roughly 65 feet in the wild; 10 to 14 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Solitary trunk; rounded, fairly dense crown of stiff fan fronds</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Slow</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The petioles carry robust, curved spines along both margins — they will grip and cut without warning, so keep a respectful distance from the crown and never brush past a frond casually.</p></div><div class="sp-block"><p>In northeastern Brazil this palm has historically served as a famine food — the fruit pulp dried into flour, the seeds roasted as a coffee substitute — a legacy that earns it the &#x27;Tree of Life&#x27; title and this sign&#x27;s Yellow edibility flag. The preparation is not casual; leave it to tradition and enjoy the specimen intact.</p></div><div class="sp-block"><p>The wax is food-safe worldwide, and no toxicity to people or dogs has been documented.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00719/697842423.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697842418/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Carnauba Wax Palm &middot; Brazilian Wax Palm &middot; Tree of Life &middot; Carnaubeira</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00719/697842423.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697842418/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

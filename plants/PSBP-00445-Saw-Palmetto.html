@@ -1,137 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saw Palmetto · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saw Palmetto (Serenoa repens) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00445/667875556.jpg" alt="Saw Palmetto at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Palm &amp; Cycad</div>
-    <div class="plant-hero-name">Saw Palmetto</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00445/667875556.jpg" alt="Saw Palmetto at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667875554/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667875557/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">3</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Palm &amp; Cycad</div>
+    <h1 class="sp-name">Saw Palmetto</h1>
+    <div class="sp-sci">Serenoa repens</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Serenoa repens</span>
-  <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="randall_carter">Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 May 27, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>The plant in front of you may be older than you think — by a lot. Individual saw palmetto stems can exceed 500 years, and a single clonal colony has been estimated at over 5,000 years old. Some researchers believe certain genets predate European contact by millennia.</li>
-    <li>Florida wild-harvests millions of pounds of these berries annually for a $105 million prostate-health supplement industry. A state permit is required to pick them.</li>
-    <li>Ecologists classify it as a critical keystone species; a massive array of Florida wildlife relies on it for food, cover, and nesting.</li>
-    <li>The name comes from the leaf stems, not the fronds — each petiole is lined with stiff, recurved teeth sharp enough to slash skin. Wear long pants if you walk through a thicket.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to the southeastern United States coastal plain, from southeastern Louisiana to southern South Carolina, with Florida at the heart of its range. Here it is the dominant understory plant across millions of acres of pine flatwoods, coastal dunes, scrub, and oak hammocks.</p>
-      <p>It is not introduced or transplanted — this is one of the most abundant and geographically widespread palms in North America, and it has been part of Florida&#x27;s landscape long enough that some clonal colonies appear to predate the Columbian Exchange.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>Saw palmetto&#x27;s creeping, horizontal stems sprawl underground, throwing up clusters of fan-shaped fronds that look like individual plants but are often genetically identical branches of one vast organism. A single clone can cover a substantial patch of ground, and molecular studies have pushed estimated genet ages past 5,000 years.</li>
-    <li>What looks like a low shrub at your feet may be a living record of Florida before the Spanish arrived.</li>
-    <li>Fire is not an enemy to saw palmetto — it is practically a collaborator. The plant carries the highest fuel biomass of the ten common Florida flatwoods understory species, burns hot, and then resprouts almost immediately from deep rhizomes. The result is that saw palmetto both maintains and benefits from the fire-dependent ecosystems it dominates.</li>
-    <li>Land managers trying to restore longleaf pine flatwoods often work with saw palmetto as much as around it.</li>
-    <li>The berry harvest is a cottage industry embedded in Florida&#x27;s agricultural labor calendar. Nearly the entire global commercial supply of saw palmetto extract — used widely as a supplement for benign prostatic hyperplasia — is wild-harvested in Florida and adjacent Georgia, with an estimated 4,500 to 8,000 metric tons of fresh berries taken annually in good years.</li>
-    <li>The Florida Department of Agriculture placed saw palmetto on its Commercially Exploited Plant List in 2018, making a free permit mandatory to harvest, transport, or sell the berries. Indigenous peoples were eating and drying the berries before 1575 — the first written record of their use predates Florida statehood by nearly three centuries.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>By almost any measure, saw palmetto is Florida&#x27;s most important single wildlife plant. Researchers have documented more than 100 bird species, 27 mammals, 25 amphibians, and 61 reptile species depending on it for food, cover, or nesting.</p>
-      <p>Black bears rely heavily on the ripe berries in late summer and fall; white-tailed deer browse the fruit especially in dry years; wild turkeys, raccoons, and numerous songbirds all make use of the same harvest. The Florida scrub jay — a threatened subspecies — uses dense saw palmetto stands as essential cover in its scrub habitat.</p>
-      <p>At bloom time in late spring and early summer, the branched flower clusters become a significant pollinator resource. Documented bee visitors run to dozens of species, including multiple native Colletes, Augochlora, and Megachile bees.</p>
-      <p>The Florida Native Plant Society also lists saw palmetto as a larval host for the monk skipper (Asbolis capucinus) and palmetto skipper (Euphyes arpa) butterflies, and as a nectar plant for the atala and Bartram&#x27;s scrub-hairstreak — two of Florida&#x27;s more notable butterfly species.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Two modes: vegetative spread via horizontal creeping stems and rhizomes — which produces the characteristic clumping habit and allows colonies to expand across large areas — and sexual reproduction by insect-pollinated flowers followed by animal-dispersed seed. Seeds are dispersed primarily by vertebrates that eat the fruit.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, creamy-white, mildly fragrant flowers borne in dense, branching panicles up to roughly 3 feet long that emerge below the frond canopy. In Florida, blooms appear from roughly February–March in the south to April–May farther north, with peak flowering in spring.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Olive-shaped drupes about 0.5–1 inch long; green when immature (May–July), turning yellow-orange through August, ripening to blue-black in September–October. Each drupe contains a single seed.</p></div>
-<div class="repro-item"><div class="repro-label">Stems and Fronds</div><p>Stems typically creep horizontally at or just below ground level — the plant is essentially trunkless in most forms, though rarely an individual stem will become upright and tree-like. Each stem carries 12–30 fan-shaped, evergreen fronds divided into stiff, pointed segments.</p><p>Leaf color ranges from green to silver-blue; the silver-blue form is more common on Florida&#x27;s east coast but occurs throughout the range.</p></div>
-<div class="repro-item"><div class="repro-label">Petioles</div><p>Leaf stems (petioles) are armed with stiff, recurved teeth — the feature that gives the plant its common name and that can cause significant cuts to anyone moving through a dense thicket.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Start at the base: the spreading, ground-hugging stems are the clue that what you&#x27;re looking at is not a cluster of individual plants but branches of one organism. Look for the serrated petioles — rows of sharp, recurved teeth along each leaf stem — that give the plant its name.</p><p>In late spring, watch for the cream-colored flower panicles arching out beneath the fronds; by late summer the same stalks carry clusters of olive-shaped berries turning from green through orange to blue-black.</p><p>Check the frond color: green and silver-blue forms sometimes grow side by side.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">3 to 8 feet (rarely to 15 feet on upright arborescent forms)</div></div>
-    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">4 to 10 feet per stem cluster; clonal colonies can extend much farther</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">multi-stemmed, clumping, creeping — essentially trunkless in typical form; spreads horizontally via rhizomes</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">slow; seedling establishment takes 2–6 years; growth rate varies by color form (silver forms tend to grow faster than green forms) and soil conditions</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium-coarse</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to part shade — shade-tolerant by palm standards, but fruits and flowers best in sun</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">sand · well-drained upland soils · tolerates acidic, infertile sands; wide adaptability from dry scrub to periodically wet flatwoods</div></div>
-    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">excellent once established</div></div>
-    <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">good</div></div>
-    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">hardy to brief periods well below freezing; suitable for USDA zones 8–11</div></div>
-    </div>
-  </div>
-  <div class="plant-caution-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The primary hazard is physical: the razor-sharp serrated leaf stems can cause severe lacerations to anyone clearing them.</p><p>The ripe berries are technically edible and were eaten by Indigenous peoples, but raw they&#x27;re strongly musky and acrid.</p><p>The extract is a pharmaceutical-grade supplement, not a food — don&#x27;t self-medicate with raw berries, which carry hormonally active compounds.</p><p>For dogs, raw berries may cause mild stomach upset but aren&#x27;t a poisoning risk; the serrated stems are the real danger.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>NOMENCLATURE: The synonym Serenoa serrulata (Michx.) Nichols. appears in older references; Serenoa repens (Bartr.) Small is the accepted name. The genus Serenoa is monotypic — saw palmetto is its only species, and it is found nowhere in the world outside the southeastern United States coastal plain.</p>
-      <p>HARVEST REGULATION: As of July 17, 2018, Florida lists saw palmetto on its Commercially Exploited Plant List. A free permit from the Florida Department of Agriculture and Consumer Services (FDACS) is required to harvest, transport, or sell the berries, even from private land. Unpermitted harvest is a criminal offense.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667875554/large.jpg" loading="lazy" alt="Saw Palmetto — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 May 27, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667875557/large.jpg" loading="lazy" alt="Saw Palmetto — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 May 27, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Scrub Palmetto</span><span class="alias-tag">Sabal Serrulatum (former botanical name)</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00445/667875556.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "May 27, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/667875554/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "May 27, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/667875557/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "May 27, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>September 1, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#culture">Cultural significance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>The plant in front of you may be older than you think — by a lot. Individual saw palmetto stems can exceed 500 years, and a single clonal colony has been estimated at over 5,000 years old. Some researchers believe certain genets predate European contact by millennia.</li><li>Florida wild-harvests millions of pounds of these berries annually for a $105 million prostate-health supplement industry. A state permit is required to pick them.</li><li>Ecologists classify it as a critical keystone species; a massive array of Florida wildlife relies on it for food, cover, and nesting.</li><li>The name comes from the leaf stems, not the fronds — each petiole is lined with stiff, recurved teeth sharp enough to slash skin. Wear long pants if you walk through a thicket.</li></ul></div></section><section class="sp-sec" id="culture"><h2>Cultural significance</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The berry harvest is a cottage industry embedded in Florida&#x27;s agricultural labor calendar. Nearly the entire global commercial supply of saw palmetto extract — used widely as a supplement for benign prostatic hyperplasia — is wild-harvested in Florida and adjacent Georgia, with an estimated 4,500 to 8,000 metric tons of fresh berries taken annually in good years.</p></div><div class="sp-block"><p>The Florida Department of Agriculture placed saw palmetto on its Commercially Exploited Plant List in 2018, making a free permit mandatory to harvest, transport, or sell the berries. Indigenous peoples were eating and drying the berries before 1575 — the first written record of their use predates Florida statehood by nearly three centuries.</p></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Native to the southeastern United States coastal plain, from southeastern Louisiana to southern South Carolina, with Florida at the heart of its range. Here it is the dominant understory plant across millions of acres of pine flatwoods, coastal dunes, scrub, and oak hammocks.</p></div><div class="sp-block"><p>It is not introduced or transplanted — this is one of the most abundant and geographically widespread palms in North America, and it has been part of Florida&#x27;s landscape long enough that some clonal colonies appear to predate the Columbian Exchange.</p></div><div class="sp-block"><p>Saw palmetto&#x27;s creeping, horizontal stems sprawl underground, throwing up clusters of fan-shaped fronds that look like individual plants but are often genetically identical branches of one vast organism. A single clone can cover a substantial patch of ground, and molecular studies have pushed estimated genet ages past 5,000 years.</p></div><div class="sp-block"><p>What looks like a low shrub at your feet may be a living record of Florida before the Spanish arrived.</p></div><div class="sp-block"><p>Fire is not an enemy to saw palmetto — it is practically a collaborator. The plant carries the highest fuel biomass of the ten common Florida flatwoods understory species, burns hot, and then resprouts almost immediately from deep rhizomes. The result is that saw palmetto both maintains and benefits from the fire-dependent ecosystems it dominates.</p></div><div class="sp-block"><p>Land managers trying to restore longleaf pine flatwoods often work with saw palmetto as much as around it.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>By almost any measure, saw palmetto is Florida&#x27;s most important single wildlife plant. Researchers have documented more than 100 bird species, 27 mammals, 25 amphibians, and 61 reptile species depending on it for food, cover, or nesting.</p></div><div class="sp-block"><p>Black bears rely heavily on the ripe berries in late summer and fall; white-tailed deer browse the fruit especially in dry years; wild turkeys, raccoons, and numerous songbirds all make use of the same harvest. The Florida scrub jay — a threatened subspecies — uses dense saw palmetto stands as essential cover in its scrub habitat.</p></div><div class="sp-block"><p>At bloom time in late spring and early summer, the branched flower clusters become a significant pollinator resource. Documented bee visitors run to dozens of species, including multiple native Colletes, Augochlora, and Megachile bees.</p></div><div class="sp-block"><p>The Florida Native Plant Society also lists saw palmetto as a larval host for the monk skipper (Asbolis capucinus) and palmetto skipper (Euphyes arpa) butterflies, and as a nectar plant for the atala and Bartram&#x27;s scrub-hairstreak — two of Florida&#x27;s more notable butterfly species.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>Larval host for the palmetto and monk skippers; fragrant flowers are a major nectar source (prized saw palmetto honey) for many butterflies and bees. Berries feed bears, birds, and mammals.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Small, creamy-white, mildly fragrant flowers borne in dense, branching panicles up to roughly 3 feet long that emerge below the frond canopy. In Florida, blooms appear from roughly February–March in the south to April–May farther north, with peak flowering in spring.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Olive-shaped drupes about 0.5–1 inch long; green when immature (May–July), turning yellow-orange through August, ripening to blue-black in September–October. Each drupe contains a single seed.</p></div><div class="sp-block"><div class="sp-block-label">Stems and Fronds</div><p>Stems typically creep horizontally at or just below ground level — the plant is essentially trunkless in most forms, though rarely an individual stem will become upright and tree-like. Each stem carries 12–30 fan-shaped, evergreen fronds divided into stiff, pointed segments. Leaf color ranges from green to silver-blue; the silver-blue form is more common on Florida&#x27;s east coast but occurs throughout the range.</p></div><div class="sp-block"><div class="sp-block-label">Petioles</div><p>Leaf stems (petioles) are armed with stiff, recurved teeth — the feature that gives the plant its common name and that can cause significant cuts to anyone moving through a dense thicket.</p></div><div class="sp-block"><p>Start at the base: the spreading, ground-hugging stems are the clue that what you&#x27;re looking at is not a cluster of individual plants but branches of one organism. Look for the serrated petioles — rows of sharp, recurved teeth along each leaf stem — that give the plant its name. In late spring, watch for the cream-colored flower panicles arching out beneath the fronds; by late summer the same stalks carry clusters of olive-shaped berries turning from green through orange to blue-black. Check the frond color: green and silver-blue forms sometimes grow side by side.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun to part shade — shade-tolerant by palm standards, but fruits and flowers best in sun</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Sand · well-drained upland soils · tolerates acidic, infertile sands; wide adaptability from dry scrub to periodically wet flatwoods</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Excellent once established</p></div><div class="sp-block"><div class="sp-block-label">Salt</div><p>Good</p></div><div class="sp-block"><div class="sp-block-label">Cold</div><p>Hardy to brief periods well below freezing; suitable for USDA zones 8–11</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>3 to 8 feet (rarely to 15 feet on upright arborescent forms); 4 to 10 feet per stem cluster; clonal colonies can extend much farther</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Multi-stemmed, clumping, creeping — essentially trunkless in typical form; spreads horizontally via rhizomes</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Slow; seedling establishment takes 2–6 years; growth rate varies by color form (silver forms tend to grow faster than green forms) and soil conditions</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>Not considered significantly toxic. The berries contain bioactive fatty acids and phytosterols with documented hormonal (antiandrogenic) activity, which is why the supplement industry values them. Consuming raw berries is unlikely to cause serious harm in adults, but the extract has been associated with rare cases of gastrointestinal side effects in supplement users.</p></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>The primary physical hazard is the serrated petiole teeth, which can cause significant lacerations.</p></div><div class="sp-block"><p>The primary hazard is physical: the razor-sharp serrated leaf stems can cause severe lacerations to anyone clearing them.</p></div><div class="sp-block"><p>The ripe berries are technically edible and were eaten by Indigenous peoples, but raw they&#x27;re strongly musky and acrid.</p></div><div class="sp-block"><p>The extract is a pharmaceutical-grade supplement, not a food — don&#x27;t self-medicate with raw berries, which carry hormonally active compounds.</p></div><div class="sp-block"><p>For dogs, raw berries may cause mild stomach upset but aren&#x27;t a poisoning risk; the serrated stems are the real danger.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00445/667875556.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667875554/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/667875557/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Scrub Palmetto &middot; Sabal Serrulatum (former botanical name)</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00445/667875556.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/667875554/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/667875557/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

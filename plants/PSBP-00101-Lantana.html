@@ -1,123 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lantana · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lantana (Lantana strigocamara) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00101/711524109.jpg" alt="Lantana at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Shrub &amp; Vine</div>
-    <div class="plant-hero-name">Lantana</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00101/711524109.jpg" alt="Lantana at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711524113/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">2</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Shrub &amp; Vine</div>
+    <h1 class="sp-name">Lantana</h1>
+    <div class="sp-sci">Lantana strigocamara</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Lantana strigocamara</span>
-  <a class="plant-family-tag" href="../nature.html?family=Verbenaceae">Verbenaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="denise_sosa">Denise Sosa</strong> · CC-BY-NC · via iNaturalist · 📅 Aug 5, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>One of the world&#x27;s most invasive plants — listed among the 100 worst invasive species globally by the IUCN. Also one of the most productive butterfly nectar plants in Florida. Both of these things are true simultaneously, and that tension is the story.</li>
-    <li>The FISC lists Florida&#x27;s Lantana camara as a Category I invasive. This species, L. strigocamara, is closely related and similarly aggressive. The green berries are toxic to livestock and children; the ripe purple-black berries are edible to birds and are how the plant spreads.</li>
-    <li>The flower clusters change color as they age — yellow to orange to pink to red — all on the same plant at once. The color change signals pollination status to insects.</li>
-    <li>The invasive risk and the butterfly value are genuinely in tension. Context determines how to weigh them.</li>
-    <li>The flower color change is a direct signal to pollinators: yellow flowers are fresh and nectar-rich, red flowers are spent. Butterflies learn quickly to skip the red and head for the yellow. Watch them work a cluster and you will see the preference in action.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Non-native. Origin complex — the ornamental Lantana camara group is a hybrid complex derived from multiple Caribbean and South American species. Now naturalized and invasive throughout the world&#x27;s tropics and subtropics. Member of Verbenaceae.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>A note for local gardeners: the invasive concern applies specifically to wild-type Lantana (L. strigocamara) which produces viable seeds spread by birds. The sterile cultivated hybrids widely sold at Bradenton nurseries — trailing purple varieties, New Gold, and similar cultivars — do not produce viable seeds and carry none of the invasive risk.</li>
-    <li>If you want the butterfly value without the ecological concern, ask for a sterile hybrid.</li>
-    <li>At the park, Lantana grows in several spots, does its job as a butterfly plant, and makes no demands. Common, reliable, and completely unbothered.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>One of the highest-value butterfly nectar plants available in Florida — used by dozens of butterfly species. The flower color change from yellow to red signals to butterflies that yellow flowers are freshly open and nectar-bearing; red flowers have been pollinated and nectar is spent. Butterflies learn to select yellow flowers.</p>
-      <p>The ripe purple-black berries are eaten by birds, which disperse seeds widely. The unripe green berries are toxic. This is the mechanism of invasive spread — birds carry seeds from gardens into natural areas.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, tubular, in rounded clusters. Each cluster contains flowers of multiple ages and therefore multiple colors simultaneously — yellow, orange, pink, and red on one cluster.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Small, round, green ripening to purple-black. Green berries toxic; ripe berries eaten by birds.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Rough, opposite, strongly aromatic when crushed. The scent is distinctive and not universally liked.</p></div>
-<div class="repro-item"><div class="repro-label">Form</div><p>Sprawling to mounding shrub, variable height. Aggressive grower.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>The multi-colored flower clusters — multiple colors simultaneously on one head — are the most reliable ID feature. The strongly aromatic rough-textured leaves confirm it. The green and purple-black fruit together on the same plant.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height</div><div class="data-value">2 to 6 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">3 to 8 feet, mounding and spreading</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">bushy, somewhat sprawling shrub with rough, aromatic foliage and prickly stems</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun - best flowering and least disease in sun</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">wide range, well-drained; tolerates poor and sandy soils</div></div>
-    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">high once established</div></div>
-    <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">high</div></div>
-    <div class="data-item full-width"><div class="data-label">Cold tolerance</div><div class="data-value">root-hardy in warm areas, may freeze back; USDA zones 8 to 11</div></div>
-    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">the wild/fertile type is a FISC Category I invasive - do not plant it; sterile cultivars are the recommended alternative. Foliage is aromatic; green berries are toxic.</div></div>
-    </div>
-  </div>
-  <div class="plant-toxic-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The ripe purple-black berries are edible, but the green unripe berries are toxic and must never be eaten.</p><p>They contain lantadene compounds that cause liver damage and photosensitivity, and children have been seriously harmed.</p><p>Keep children away from unripe fruit.</p><p>Green berries are especially dangerous to dogs and cats for the same reason; ripe berries are less so, but any ingestion of plant material warrants a call to your vet.</p><p>Keep pets from grazing on the plant.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711524113/large.jpg" loading="lazy" alt="Lantana — photo by Denise Sosa"><div class="gal-credit" data-login="denise_sosa">📷 Denise Sosa</div><div class="gal-date">📅 Aug 5, 2026</div></div></div></div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Denise Sosa (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00101/711524109.jpg", "credit": "Denise Sosa", "license": "CC-BY-NC", "observed": "Aug 5, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/711524113/large.jpg", "credit": "Denise Sosa", "credit_login": "denise_sosa", "license": "CC-BY-NC", "observed": "Aug 5, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 27, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>One of the world&#x27;s most invasive plants — listed among the 100 worst invasive species globally by the IUCN. Also one of the most productive butterfly nectar plants in Florida. Both of these things are true simultaneously, and that tension is the story.</li><li>The FISC lists Florida&#x27;s Lantana camara as a Category I invasive. This species, L. strigocamara, is closely related and similarly aggressive. The green berries are toxic to livestock and children; the ripe purple-black berries are edible to birds and are how the plant spreads.</li><li>The flower clusters change color as they age — yellow to orange to pink to red — all on the same plant at once. The color change signals pollination status to insects.</li><li>The invasive risk and the butterfly value are genuinely in tension. Context determines how to weigh them.</li><li>The flower color change is a direct signal to pollinators: yellow flowers are fresh and nectar-rich, red flowers are spent. Butterflies learn quickly to skip the red and head for the yellow. Watch them work a cluster and you will see the preference in action.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Non-native. Origin complex — the ornamental Lantana camara group is a hybrid complex derived from multiple Caribbean and South American species. Now naturalized and invasive throughout the world&#x27;s tropics and subtropics. Member of Verbenaceae.</p></div><div class="sp-block"><p>A note for local gardeners: the invasive concern applies specifically to wild-type Lantana (L. strigocamara) which produces viable seeds spread by birds. The sterile cultivated hybrids widely sold at Bradenton nurseries — trailing purple varieties, New Gold, and similar cultivars — do not produce viable seeds and carry none of the invasive risk.</p></div><div class="sp-block"><p>If you want the butterfly value without the ecological concern, ask for a sterile hybrid.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>One of the highest-value butterfly nectar plants available in Florida — used by dozens of butterfly species. The flower color change from yellow to red signals to butterflies that yellow flowers are freshly open and nectar-bearing; red flowers have been pollinated and nectar is spent. Butterflies learn to select yellow flowers.</p></div><div class="sp-block"><p>The ripe purple-black berries are eaten by birds, which disperse seeds widely. The unripe green berries are toxic. This is the mechanism of invasive spread — birds carry seeds from gardens into natural areas.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>A butterfly nectar magnet — but a Category I invasive that threatens native lantana. Prefer sterile cultivars or native pineland lantana.</p></div><div class="sp-block"><p>At the park, Lantana grows in several spots, does its job as a butterfly plant, and makes no demands. Common, reliable, and completely unbothered.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Small, tubular, in rounded clusters. Each cluster contains flowers of multiple ages and therefore multiple colors simultaneously — yellow, orange, pink, and red on one cluster.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Small, round, green ripening to purple-black. Green berries toxic; ripe berries eaten by birds.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Rough, opposite, strongly aromatic when crushed. The scent is distinctive and not universally liked.</p></div><div class="sp-block"><div class="sp-block-label">Form</div><p>Sprawling to mounding shrub, variable height. Aggressive grower.</p></div><div class="sp-block"><p>The multi-colored flower clusters — multiple colors simultaneously on one head — are the most reliable ID feature. The strongly aromatic rough-textured leaves confirm it. The green and purple-black fruit together on the same plant.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>the wild/fertile type is a FISC Category I invasive - do not plant it; sterile cultivars are the recommended alternative. Foliage is aromatic; green berries are toxic.</p></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun - best flowering and least disease in sun</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Wide range, well-drained; tolerates poor and sandy soils</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>High once established</p></div><div class="sp-block"><div class="sp-block-label">Salt</div><p>High</p></div><div class="sp-block"><div class="sp-block-label">Cold</div><p>Root-hardy in warm areas, may freeze back; USDA zones 8 to 11</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>2 to 6 feet; 3 to 8 feet, mounding and spreading</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Bushy, somewhat sprawling shrub with rough, aromatic foliage and prickly stems</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Fast</p></div><div class="sp-block"><div class="sp-block-label">It spreads</div><p>FISC Category I invasive (L. camara) and closely related species similarly invasive in Florida. Spreads via bird-dispersed seeds into natural areas. Managed as an educational specimen demonstrating invasive plant complexity — a plant with high butterfly value and significant invasive risk simultaneously.</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>Green berries toxic to people — contain lantadene compounds causing liver damage and photosensitivity. Children have been seriously harmed. Ripe black berries are safe. Keep children away from unripe fruit.</p></div><div class="sp-block"><p>The ripe purple-black berries are edible, but the green unripe berries are toxic and must never be eaten.</p></div><div class="sp-block"><p>Green berries are especially dangerous to dogs and cats for the same reason; ripe berries are less so, but any ingestion of plant material warrants a call to your vet.</p></div><div class="sp-block"><p>Keep pets from grazing on the plant.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00101/711524109.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/711524113/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00101/711524109.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/711524113/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

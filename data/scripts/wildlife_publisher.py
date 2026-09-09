@@ -84,6 +84,30 @@ def _safety_word(level):
     )
 
 
+def card_hits(species):
+    """The bullets the INDEX shows: authored `page.at_a_glance` if it exists,
+    otherwise the original `quick_hits`.
+
+    Same override the page generator uses, one level up. Randy, 2026-09-08:
+    "we keep it and shift to pages.ataglance when it is available. quick hit
+    would ONLY go to index if at a glance isn't populated of course."
+
+    Without this the card, the browse drawer and screen.html keep showing the
+    older draft while the page shows the authored one — 34 of 92 wildlife
+    species had already diverged that way before this was added.
+    """
+    pol = (species.get("page") or {}).get("at_a_glance")
+    if pol:
+        out = []
+        for b in pol:
+            t = b.get("text") if isinstance(b, dict) else b
+            if t:
+                out.append(str(t))
+        if out:
+            return out
+    return species.get("quick_hits") or []
+
+
 def build_wildlife_json_entry(species, hero):
     pid = species["id"]
     theme = theme_for(species.get("animal_group", ""))
@@ -132,7 +156,7 @@ def build_wildlife_json_entry(species, hero):
         # searchable text: filterWildlife() in site.js has always scored against
         # w.quick, but nothing ever emitted it, so that branch compared against
         # an empty string. quick_hits is populated on all 90.
-        "quick":  " ".join(species.get("quick_hits") or []),
+        "quick":  " ".join(card_hits(species)),
 
         # ── Added 2026-09-07 — the real array, and the curated teaser. ──
         # `quick` above is the flattened SEARCH string; it has no hit
@@ -148,7 +172,7 @@ def build_wildlife_json_entry(species, hero):
         # animal. Only 21/96 wildlife records have one written; the drawer now
         # falls back to the shortest whole quick hit rather than a truncated
         # sentence, so the gap degrades gracefully.
-        "quick_hits": species.get("quick_hits") or [],
+        "quick_hits": card_hits(species),
         "teaser":     (species.get("teaser") or "").strip(),
         # facet: safe around a dog?  mirrors "dogs" on the plant cards
         "pets":   _safety_word((species.get("danger") or {}).get("pets_level")),

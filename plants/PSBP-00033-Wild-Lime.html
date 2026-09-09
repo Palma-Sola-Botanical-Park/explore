@@ -1,125 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wild Lime · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wild Lime (Zanthoxylum fagara) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:51% 39%" src="../photos/PSBP-00033/661626447.jpg" alt="Wild Lime at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Shrub &amp; Vine</div>
-    <div class="plant-hero-name">Wild Lime</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00033/661626447.jpg" alt="Wild Lime at Palma Sola Botanical Park" style="object-position:51% 39%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/723663149/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/723663152/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">3</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Shrub &amp; Vine</div>
+    <h1 class="sp-name">Wild Lime</h1>
+    <div class="sp-sci">Zanthoxylum fagara</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Zanthoxylum fagara</span>
-  <a class="plant-family-tag" href="../nature.html?family=Rutaceae">Rutaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="randall_carter">Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 May 17, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>The Wild Lime is the essential host plant for the Giant Swallowtail butterfly — Florida&#x27;s largest butterfly, with a wingspan reaching six inches.</li>
-    <li>Without plants like this one, those spectacular butterflies cannot complete their life cycle.</li>
-    <li>The aromatic leaves smell like citrus when crushed, a clue to its membership in the rue family alongside oranges and lemons.</li>
-    <li>Small and thorny enough to be overlooked, but ecologically critical to the butterfly community of the park.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to hammocks throughout Central and South Florida, as well as southern Texas, Mexico, the Caribbean, and South America. Member of the Rutaceae — the citrus family — making it a native Florida relative of oranges, lemons, and limes. The genus Zanthoxylum comes from the Greek xanthos meaning &quot;yellow&quot; and xylon meaning &quot;wood.&quot;</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The Giant Swallowtail butterfly (*Papilio cresphontes*) — North America&#x27;s largest butterfly, wingspan up to 6 inches — hosts on Wild Lime as one of its preferred native plants. The caterpillar is called the &#x27;Orange Dog&#x27; by citrus growers because it feeds on citrus family plants and can defoliate a young tree.</li>
-    <li>Its disguise is remarkable: the larva looks almost exactly like a fresh bird dropping — brown, cream-splotched, glistening. When threatened it extends a forked orange scent organ from its head that smells like rancid cheese to deter predators. The butterfly that emerges from this unglamorous larva is spectacular — bold yellow and black, with blue and orange hindwing accents.</li>
-    <li>The plant itself is a member of Rutaceae — the citrus family — which explains why the leaves smell distinctly of citrus when crushed. The hooked spines along the branches are effective deterrents and make it a useful native barrier plant. Despite its modest appearance, it is one of the hardest-working butterfly plants in the Palma Sola collection.</li>
-    <li>The genus name Zanthoxylum comes from the Greek for &#x27;yellow wood,&#x27; and the species fagara is from an Arabic term for a spice plant — both pointing to the aromatic, spice-like qualities of the bark and leaves.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Wild Lime is a butterfly powerhouse. As a member of the citrus family, it is the larval host for the giant swallowtail — North America&#x27;s largest butterfly — and for the endangered Schaus&#x27;s swallowtail of South Florida, whose caterpillars feed on its aromatic leaves.</p>
-      <p>Its small fruits feed birds and other wildlife, while the dense, thorny, evergreen growth makes excellent protected cover and nesting habitat, especially for small songbirds.</p>
-      <p>Few native shrubs offer this much at once: a nursery for rare butterflies and a fortress of shelter for nesting birds.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Form</div><p>Evergreen shrub to small tree. Blooms year-round with peak flowering in winter and spring.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Tiny, greenish-yellow, in small clusters. Individually inconspicuous but abundant. Attract small bees, beetles, and insects.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Small, round, reddish-orange to black when ripe, containing a single shiny black seed. Aromatic. Edible but strongly numbing to the tongue.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Pinnately compound with small, rounded, winged-rachis leaflets — the rachis (central leaf stem) has narrow flanges between leaflets, a distinctive Zanthoxylum feature. Smell strongly of citrus when crushed.</p></div>
-<div class="repro-item"><div class="repro-label">Stems</div><p>Armed with small, sharp, hooked spines along branches — a serious physical hazard. The hooks are curved back like cat claws.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Crush a leaf and smell it — instant citrus. Look for the hooked spines and the winged leaf rachis between leaflets. Watch the branches closely for Giant Swallowtail eggs (tiny, round, yellowish-orange) laid singly on leaflets, and for the bird-dropping caterpillars that follow. This is one of the best plants in the park for finding butterfly larvae.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">5 to 23 feet (typically 5 to 20)</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">3 to 10 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">spreading shrub to small tree; irregular branches armed with hooked spines</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">fine; rough gray bark</div></div>
-    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun to partial shade</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">moist to very dry; well-drained sandy, loamy, or calcareous soils</div></div>
-    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">high</div></div>
-    <div class="data-item full-width"><div class="data-label">Salt tolerance</div><div class="data-value">tolerates salt inundation; only slightly salt-wind tolerant</div></div>
-    <div class="data-item"><div class="data-label">Cold tolerance</div><div class="data-value">USDA zones 9B-11</div></div>
-    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">dense foliage and thorny branches make it ideal for natural thickets and barrier plantings</div></div>
-    </div>
-  </div>
-  <div class="plant-caution-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The stems carry sharp spines that cause severe pain on contact — a real physical hazard to watch around.</p><p>The fruit is edible but numbs the mouth, and the bark, leaves, and fruit are used as a spice in its native range. No systemic toxicity is documented.</p><p>For dogs the thorns are the main concern rather than any poisoning risk.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/690121206/large.jpg" loading="lazy" alt="Wild Lime — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jul 1, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/723663149/large.jpg" loading="lazy" alt="Wild Lime — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Aug 26, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/723663152/large.jpg" loading="lazy" alt="Wild Lime — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Aug 26, 2026</div></div></div></div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00033/661626447.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "May 17, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/690121206/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/723663149/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Aug 26, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/723663152/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Aug 26, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 27, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>The Wild Lime is the essential host plant for the Giant Swallowtail butterfly — Florida&#x27;s largest butterfly, with a wingspan reaching six inches.</li><li>Without plants like this one, those spectacular butterflies cannot complete their life cycle.</li><li>The aromatic leaves smell like citrus when crushed, a clue to its membership in the rue family alongside oranges and lemons.</li><li>Small and thorny enough to be overlooked, but ecologically critical to the butterfly community of the park.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Native to hammocks throughout Central and South Florida, as well as southern Texas, Mexico, the Caribbean, and South America. Member of the Rutaceae — the citrus family — making it a native Florida relative of oranges, lemons, and limes. The genus Zanthoxylum comes from the Greek xanthos meaning &quot;yellow&quot; and xylon meaning &quot;wood.&quot;</p></div><div class="sp-block"><p>The Giant Swallowtail butterfly (*Papilio cresphontes*) — North America&#x27;s largest butterfly, wingspan up to 6 inches — hosts on Wild Lime as one of its preferred native plants. The caterpillar is called the &#x27;Orange Dog&#x27; by citrus growers because it feeds on citrus family plants and can defoliate a young tree.</p></div><div class="sp-block"><p>Its disguise is remarkable: the larva looks almost exactly like a fresh bird dropping — brown, cream-splotched, glistening. When threatened it extends a forked orange scent organ from its head that smells like rancid cheese to deter predators. The butterfly that emerges from this unglamorous larva is spectacular — bold yellow and black, with blue and orange hindwing accents.</p></div><div class="sp-block"><p>The plant itself is a member of Rutaceae — the citrus family — which explains why the leaves smell distinctly of citrus when crushed. The hooked spines along the branches are effective deterrents and make it a useful native barrier plant. Despite its modest appearance, it is one of the hardest-working butterfly plants in the Palma Sola collection.</p></div><div class="sp-block"><p>The genus name Zanthoxylum comes from the Greek for &#x27;yellow wood,&#x27; and the species fagara is from an Arabic term for a spice plant — both pointing to the aromatic, spice-like qualities of the bark and leaves.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Pavilion Gazebo.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Wild Lime is a butterfly powerhouse. As a member of the citrus family, it is the larval host for the giant swallowtail — North America&#x27;s largest butterfly — and for the endangered Schaus&#x27;s swallowtail of South Florida, whose caterpillars feed on its aromatic leaves.</p></div><div class="sp-block"><p>Its small fruits feed birds and other wildlife, while the dense, thorny, evergreen growth makes excellent protected cover and nesting habitat, especially for small songbirds.</p></div><div class="sp-block"><p>Few native shrubs offer this much at once: a nursery for rare butterflies and a fortress of shelter for nesting birds.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>Larval host for the giant swallowtail (and the endangered Schaus&#x27; and Bahamian swallowtails in the Keys). Tiny flowers offer little nectar; fruit feeds birds.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Form</div><p>Evergreen shrub to small tree. Blooms year-round with peak flowering in winter and spring.</p></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Tiny, greenish-yellow, in small clusters. Individually inconspicuous but abundant. Attract small bees, beetles, and insects.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Small, round, reddish-orange to black when ripe, containing a single shiny black seed. Aromatic. Edible but strongly numbing to the tongue.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Pinnately compound with small, rounded, winged-rachis leaflets — the rachis (central leaf stem) has narrow flanges between leaflets, a distinctive Zanthoxylum feature. Smell strongly of citrus when crushed.</p></div><div class="sp-block"><div class="sp-block-label">Stems</div><p>Armed with small, sharp, hooked spines along branches — a serious physical hazard. The hooks are curved back like cat claws.</p></div><div class="sp-block"><p>Crush a leaf and smell it — instant citrus. Look for the hooked spines and the winged leaf rachis between leaflets. Watch the branches closely for Giant Swallowtail eggs (tiny, round, yellowish-orange) laid singly on leaflets, and for the bird-dropping caterpillars that follow. This is one of the best plants in the park for finding butterfly larvae.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>dense foliage and thorny branches make it ideal for natural thickets and barrier plantings</p></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun to partial shade</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Moist to very dry; well-drained sandy, loamy, or calcareous soils</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>High</p></div><div class="sp-block"><div class="sp-block-label">Salt</div><p>Tolerates salt inundation; only slightly salt-wind tolerant</p></div><div class="sp-block"><div class="sp-block-label">Cold</div><p>USDA zones 9B-11</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>5 to 23 feet (typically 5 to 20); 3 to 10 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Spreading shrub to small tree; irregular branches armed with hooked spines</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Moderate</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>Stems have sharp spines that can cause severe pain when they contact flesh — a serious physical hazard. The fruit numbs the mouth — use with caution. No systemic toxicity documented.</p></div><div class="sp-block"><p>The fruit is edible but numbs the mouth, and the bark, leaves, and fruit are used as a spice in its native range. No systemic toxicity is documented.</p></div><div class="sp-block"><p>For dogs the thorns are the main concern rather than any poisoning risk.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/690121206/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/723663149/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/723663152/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/690121206/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/723663149/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/723663152/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

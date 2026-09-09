@@ -1,132 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marsh Fleabane · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marsh Fleabane (Pluchea odorata) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:49% 42%" src="../photos/PSBP-00714/723814751.jpg" alt="Marsh Fleabane at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Aquatic &amp; Wetland</div>
-    <div class="plant-hero-name">Marsh Fleabane</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00714/723814751.jpg" alt="Marsh Fleabane at Palma Sola Botanical Park" style="object-position:49% 42%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698389102/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698389116/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698421355/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">4</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Aquatic &amp; Wetland</div>
+    <h1 class="sp-name">Marsh Fleabane</h1>
+    <div class="sp-sci">Pluchea odorata</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Pluchea odorata</span>
-  <a class="plant-family-tag" href="../nature.html?family=Asteraceae">Asteraceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="randall_carter">Randall Carter</strong> · CC-BY-NC · via iNaturalist · 📅 Aug 26, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>The name &#x27;fleabane&#x27; is a old-world folk claim that burning or strewing aromatic plants like this one would drive off fleas. Whether it works is doubtful, but the camphor-like scent is real — crush a leaf and you&#x27;ll know immediately why this plant goes by camphorweed and sweetscent in the same breath.</li>
-    <li>In parts of the Caribbean, a tea brewed from the leaves is a familiar household remedy — traditionally valued as a stimulant, diuretic, and antispasmodic. The plant has been used medicinally across the Americas and Africa for centuries.</li>
-    <li>Every tiny flower in that flat-topped pink cluster is a disc floret — there are no ray florets at all. What looks like a fuzzy button is a dense head of dozens of individual tubular blooms, each one a potential nectar stop for a passing bee or skipper.</li>
-    <li>Its late-summer bloom timing is part of what makes it ecologically useful: marsh fleabane is flowering and offering nectar at a moment when many other wildflowers have already gone to seed.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Marsh fleabane is native to the United States, Mexico, Central America, the Caribbean, and northern South America, with its core habitat in coastal wetlands and moist inland areas, often in saline or brackish substrates. In Florida it occurs naturally throughout the state, from panhandle marshes to coastal hammocks along both coasts.</p>
-      <p>The species also appears in western Africa and on certain Pacific Islands, likely through human-assisted dispersal over centuries of maritime trade. It has become a noxious weed in Hawaii and New Caledonia, where it arrived as an introduced plant — a reminder that even plants with valuable ecological roles at home can cause problems when moved outside their native range.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The genus name Pluchea honors Noel-Antoine Pluche (1688–1761), a French abbé and popular natural-history writer whose &#x27;Spectacle de la Nature&#x27; was one of the most widely read science books of the eighteenth century. The species epithet odorata simply means &#x27;fragrant&#x27; — an accurate descriptor for a plant whose leaves emit a strong, resinous, camphor-like odor when handled.</li>
-    <li>Marsh fleabane sits comfortably in the company of pickerelweed, spartina grass, and saltmeadow cordgrass in Florida&#x27;s brackish and freshwater marsh edges. It tolerates periodic flooding and can grow in standing water, but it also establishes well in moist garden soils, making it a practical choice for rain gardens and wet-meadow plantings at the same latitude as Bradenton.</li>
-    <li>The plant behaves as a short-lived perennial in Florida&#x27;s mild climate, dying back in the coldest weeks of winter but re-sprouting from the roots or reseeding reliably in place.</li>
-    <li>It spreads both by wind-dispersed seeds — each tiny achene carries a bristly pappus that acts as a parachute — and, in favorable conditions, by rhizomatous expansion, allowing it to gradually form loose colonies at wet margins.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Few native wetland plants deliver pollinator value as reliably in the late-season gap as marsh fleabane. The flat-topped clusters of rosy pink disc flowers are a magnet for bees and butterflies from midsummer through fall, when nectar sources in Florida marshes can be scarce.</p>
-      <p>Monarch butterflies, skippers, and a range of native bees visit regularly, and the common checkered skipper uses the plant as a larval host, laying eggs on the leaves so caterpillars can feed.</p>
-      <p>Beyond butterflies and bees, the dense upright stems provide cover and foraging structure for small insects, and the seeds — each tipped with a feathery pappus — are occasionally taken by birds. The plant&#x27;s aromatic foliage is strongly deer-resistant, which in Florida&#x27;s suburban-edge habitats is a real practical advantage.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Marsh fleabane spreads readily by seed, with each fruit carrying a bristly pappus that allows wind dispersal across wet areas. It also spreads slowly by rhizomes in favorable conditions, forming loose colonies over time. In cultivation it can be grown from seed or stem cuttings, and self-sown seedlings appear reliably around established plants.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>The inflorescence is a broad, flat-topped cyme of many small flower heads, rosy pink to lavender-pink, clustered at the tips of the stems. Individual flower heads are less than half an inch across and contain only disc florets — no showy ray petals — giving the cluster a soft, fuzzy appearance. Bloom runs from summer through fall in Florida, with peak display in late summer.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Each fertilized floret produces a tiny, dry, one-seeded fruit (a cypsela, often called an achene) tipped with a bristly pappus of white hairs. The fruiting heads are inconspicuous but produce large numbers of seeds that disperse on the wind or by water.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Leaves are alternately arranged, ovate to lanceolate with toothed margins and a noticeably rough, glandular surface covered in fine hairs. They reach roughly two to four inches long and emit a strong camphor-like odor when crushed. This aromatic quality contributes to the plant&#x27;s deer resistance.</p></div>
-<div class="repro-item"><div class="repro-label">Stems</div><p>Stems are erect, stiff, and branching in the upper portion, covered in fine hairs, and can reach three to six feet in height. The plant dies back in cold winters in Florida but re-sprouts from the root crown in spring.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Look for an upright, multi-stemmed plant with rough, toothed leaves — give one a pinch and you&#x27;ll get that immediate camphor-and-sweetness scent. The flat-topped clusters of rosy pink flowers sit at the tips of the stems and are the most eye-catching feature from midsummer onward.</p><p>Up close, notice that the individual flower heads are entirely tubular; there are no ray florets, just a dense button of tiny disc flowers. In fruit, the heads take on a frizzy, white-plumed look as the pappus-tipped seeds wait for a breeze.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height</div><div class="data-value">3 to 6 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">2 to 3 feet; can spread wider in colonies via rhizomes</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">erect, multi-stemmed, branching in the upper half; loosely bushy at maturity</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast in moist to wet conditions</div></div>
-    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">medium-fine; hairy stems and leaves give a slightly fuzzy look up close</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun preferred; tolerates part shade</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">sand, loam, clay, organic soils; tolerates saline and brackish substrates; performs best in consistently moist to wet soils; can tolerate periodic flooding</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">low — growth is directly tied to soil moisture; not a dry-site plant</div></div>
-    </div>
-  </div>
-  <div class="plant-safe-section">
-    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Marsh fleabane is not toxic to people or pets, but it is not a food plant in any conventional sense. A leaf tea has a long history of use in the Caribbean as a folk remedy — traditionally taken as a stimulant and for fevers — but any medicinal preparation should be approached with caution and is outside what a casual garden visit calls for.</p><p>The edibility level reflects that caution: consult a health professional before using any part of this plant medicinally. Handling the foliage is generally harmless, though the rough, glandular leaf surface may mildly irritate sensitive skin in some individuals.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>Pluchea odorata was formerly listed under the synonym Pluchea purpurascens in some older references; the current accepted name is P. odorata. The Atlas of Florida Plants (USF) uses P. odorata as the accepted name, which is what you will find in FNPS, USDA PLANTS, and UF/IFAS sources.</p>
-      <p>Although marsh fleabane is well-behaved in Florida as a native plant, it is listed as a noxious weed in Hawaii and New Caledonia, where it was introduced and has spread aggressively. In its native Florida range it presents no such concern and is actively encouraged in wetland restoration plantings.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698389102/large.jpg" loading="lazy" alt="Marsh Fleabane — photo by Hailee Alenduff"><div class="gal-credit" data-login="hailee_alenduff">📷 Hailee Alenduff</div><div class="gal-date">📅 Jul 15, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698389116/large.jpg" loading="lazy" alt="Marsh Fleabane — photo by Hailee Alenduff"><div class="gal-credit" data-login="hailee_alenduff">📷 Hailee Alenduff</div><div class="gal-date">📅 Jul 15, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698421355/large.jpg" loading="lazy" alt="Marsh Fleabane — photo by Hailee Alenduff"><div class="gal-credit" data-login="hailee_alenduff">📷 Hailee Alenduff</div><div class="gal-date">📅 Jul 15, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Sweetscent</span><span class="alias-tag">Saltmarsh Fleabane</span><span class="alias-tag">Shrubby Camphorweed</span><span class="alias-tag">Camphorweed</span><span class="alias-tag">Sourbush</span><span class="alias-tag">Cattle-tongue</span><span class="alias-tag">Stinkweed</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Hailee Alenduff (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00714/723814751.jpg", "credit": "Randall Carter", "license": "CC-BY-NC", "observed": "Aug 26, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698389102/large.jpg", "credit": "Hailee Alenduff", "credit_login": "hailee_alenduff", "license": "CC-BY-NC", "observed": "Jul 15, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698389116/large.jpg", "credit": "Hailee Alenduff", "credit_login": "hailee_alenduff", "license": "CC-BY-NC", "observed": "Jul 15, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698421355/large.jpg", "credit": "Hailee Alenduff", "credit_login": "hailee_alenduff", "license": "CC-BY-NC", "observed": "Jul 15, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 27, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>The name &#x27;fleabane&#x27; is a old-world folk claim that burning or strewing aromatic plants like this one would drive off fleas. Whether it works is doubtful, but the camphor-like scent is real — crush a leaf and you&#x27;ll know immediately why this plant goes by camphorweed and sweetscent in the same breath.</li><li>In parts of the Caribbean, a tea brewed from the leaves is a familiar household remedy — traditionally valued as a stimulant, diuretic, and antispasmodic. The plant has been used medicinally across the Americas and Africa for centuries.</li><li>Every tiny flower in that flat-topped pink cluster is a disc floret — there are no ray florets at all. What looks like a fuzzy button is a dense head of dozens of individual tubular blooms, each one a potential nectar stop for a passing bee or skipper.</li><li>Its late-summer bloom timing is part of what makes it ecologically useful: marsh fleabane is flowering and offering nectar at a moment when many other wildflowers have already gone to seed.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Marsh fleabane is native to the United States, Mexico, Central America, the Caribbean, and northern South America, with its core habitat in coastal wetlands and moist inland areas, often in saline or brackish substrates. In Florida it occurs naturally throughout the state, from panhandle marshes to coastal hammocks along both coasts.</p></div><div class="sp-block"><p>The species also appears in western Africa and on certain Pacific Islands, likely through human-assisted dispersal over centuries of maritime trade. It has become a noxious weed in Hawaii and New Caledonia, where it arrived as an introduced plant — a reminder that even plants with valuable ecological roles at home can cause problems when moved outside their native range.</p></div><div class="sp-block"><p>The genus name Pluchea honors Noel-Antoine Pluche (1688–1761), a French abbé and popular natural-history writer whose &#x27;Spectacle de la Nature&#x27; was one of the most widely read science books of the eighteenth century. The species epithet odorata simply means &#x27;fragrant&#x27; — an accurate descriptor for a plant whose leaves emit a strong, resinous, camphor-like odor when handled.</p></div><div class="sp-block"><p>Marsh fleabane sits comfortably in the company of pickerelweed, spartina grass, and saltmeadow cordgrass in Florida&#x27;s brackish and freshwater marsh edges. It tolerates periodic flooding and can grow in standing water, but it also establishes well in moist garden soils, making it a practical choice for rain gardens and wet-meadow plantings at the same latitude as Bradenton.</p></div><div class="sp-block"><p>The plant behaves as a short-lived perennial in Florida&#x27;s mild climate, dying back in the coldest weeks of winter but re-sprouting from the roots or reseeding reliably in place.</p></div><div class="sp-block"><p>It spreads both by wind-dispersed seeds — each tiny achene carries a bristly pappus that acts as a parachute — and, in favorable conditions, by rhizomatous expansion, allowing it to gradually form loose colonies at wet margins.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Few native wetland plants deliver pollinator value as reliably in the late-season gap as marsh fleabane. The flat-topped clusters of rosy pink disc flowers are a magnet for bees and butterflies from midsummer through fall, when nectar sources in Florida marshes can be scarce.</p></div><div class="sp-block"><p>Monarch butterflies, skippers, and a range of native bees visit regularly, and the common checkered skipper uses the plant as a larval host, laying eggs on the leaves so caterpillars can feed.</p></div><div class="sp-block"><p>Beyond butterflies and bees, the dense upright stems provide cover and foraging structure for small insects, and the seeds — each tipped with a feathery pappus — are occasionally taken by birds. The plant&#x27;s aromatic foliage is strongly deer-resistant, which in Florida&#x27;s suburban-edge habitats is a real practical advantage.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>Multiple nursery and regional sources (Blue Stem Natives, Native Plant Society of Texas) repeat the claim that Pluchea odorata hosts Common Checkered-Skipper and Silvery Checkerspot larvae, but authoritative species-level sources (Animal Diversity Web, wildflphoto.com) confirm that Burnsius communis larvae feed exclusively on Malvaceae, not Asteraceae; those same sources note adults visit Asteraceae composites including fleabane for nectar. The larval host claim appears to be a persistent secondary-source error conflating adult nectar use with larval hosting. The Florida Wildflower Foundation confirms the plant is a genuine adult butterfly and bee nectar attractor. Silvery Checkerspot (Chlosyne nycteis) has Asteraceae larval hosts in its core range but is not an established breeder in Southwest Florida. Larval_food is set to false pending a primary rearing or oviposition study; adult_food is confirmed true.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>The inflorescence is a broad, flat-topped cyme of many small flower heads, rosy pink to lavender-pink, clustered at the tips of the stems. Individual flower heads are less than half an inch across and contain only disc florets — no showy ray petals — giving the cluster a soft, fuzzy appearance. Bloom runs from summer through fall in Florida, with peak display in late summer.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Each fertilized floret produces a tiny, dry, one-seeded fruit (a cypsela, often called an achene) tipped with a bristly pappus of white hairs. The fruiting heads are inconspicuous but produce large numbers of seeds that disperse on the wind or by water.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Leaves are alternately arranged, ovate to lanceolate with toothed margins and a noticeably rough, glandular surface covered in fine hairs. They reach roughly two to four inches long and emit a strong camphor-like odor when crushed. This aromatic quality contributes to the plant&#x27;s deer resistance.</p></div><div class="sp-block"><div class="sp-block-label">Stems</div><p>Stems are erect, stiff, and branching in the upper portion, covered in fine hairs, and can reach three to six feet in height. The plant dies back in cold winters in Florida but re-sprouts from the root crown in spring.</p></div><div class="sp-block"><p>Look for an upright, multi-stemmed plant with rough, toothed leaves — give one a pinch and you&#x27;ll get that immediate camphor-and-sweetness scent. The flat-topped clusters of rosy pink flowers sit at the tips of the stems and are the most eye-catching feature from midsummer onward. Up close, notice that the individual flower heads are entirely tubular; there are no ray florets, just a dense button of tiny disc flowers. In fruit, the heads take on a frizzy, white-plumed look as the pappus-tipped seeds wait for a breeze.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun preferred; tolerates part shade</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Sand, loam, clay, organic soils; tolerates saline and brackish substrates; performs best in consistently moist to wet soils; can tolerate periodic flooding</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Low — growth is directly tied to soil moisture; not a dry-site plant</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>3 to 6 feet; 2 to 3 feet; can spread wider in colonies via rhizomes</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Erect, multi-stemmed, branching in the upper half; loosely bushy at maturity</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Fast in moist to wet conditions</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00714/723814751.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698389102/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698389116/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698421355/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Sweetscent &middot; Saltmarsh Fleabane &middot; Shrubby Camphorweed &middot; Camphorweed &middot; Sourbush &middot; Cattle-tongue &middot; Stinkweed</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00714/723814751.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698389102/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698389116/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698421355/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

@@ -1,132 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lychee · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lychee (Litchi chinensis) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:48% 40%" src="../photos/PSBP-00606/672222912.jpg" alt="Lychee at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Tree</div>
-    <div class="plant-hero-name">Lychee</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00606/672222912.jpg" alt="Lychee at Palma Sola Botanical Park" style="object-position:48% 40%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672227593/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685329313/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698447299/large.jpg" alt=""></button><button type="button" data-i="4" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702734964/large.jpg" alt=""></button><button type="button" data-i="5" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702735199/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">6</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Tree</div>
+    <h1 class="sp-name">Lychee</h1>
+    <div class="sp-sci">Litchi chinensis</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Litchi chinensis</span>
-  <a class="plant-family-tag" href="../nature.html?family=Sapindaceae">Sapindaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="mariaaaz">Maria Escobar</strong> · CC-BY-NC · via iNaturalist · 📅 Jun 3, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Lychee was domesticated not once but twice — independently in two separate regions of ancient China, Yunnan and Hainan — a discovery made through genomic analysis published in Nature Genetics in 2022.</li>
-    <li>The Tang Dynasty emperor Xuanzong famously organized a horse-relay courier system to rush fresh lychees hundreds of miles to the imperial court — the fruit was that perishable, and that prized.</li>
-    <li>New lychee leaves flush bronze-red before hardening to deep glossy green, giving the tree a brief, striking two-tone look each spring.</li>
-    <li>Lychee arrived in Florida from India sometime between 1870 and 1880, but the first fruits here are said to have ripened only in 1916 — the tree takes its time.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Lychee is native to the low-elevation subtropical forests of southern China and possibly northern Vietnam, where wild populations still grow in the rainforests and hill country of Yunnan, Hainan, and neighboring provinces. Recorded cultivation in China stretches back more than 2,100 years.</p>
-      <p>It reached Florida from India between 1870 and 1880, though the first fruits here are said to have ripened only in 1916. The tree attracted little commercial attention until the 1940s, when Florida growers began actively promoting it as a dooryard and orchard crop.</p>
-      <p>Today Florida is the leading lychee-producing state in the continental U.S., with the Sarasota region among the areas where old seed-grown trees — some planted in the 1940s and 1950s — still stand and fruit.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>Few fruits carry as much cultural freight as the lychee. Its recorded history in China spans more than two millennia, and genomic research has confirmed something remarkable: the tree was independently domesticated in two separate regions of ancient China — a finding that underscores just how deeply different communities valued it long before they were in contact with each other.</li>
-    <li>Lychee belongs to the Sapindaceae family — the soapberry family — alongside two of its closest relatives: longan (Dimocarpus longan) and rambutan (Nephelium lappaceum). All three share the same essential architecture: fragrant white flesh wrapped around a single large seed.</li>
-    <li>Peel them side by side and the family resemblance is unmistakable, even though their outsides — bumpy and red, hairy and scarlet, tan and papery — could hardly look more different.</li>
-    <li>In Florida, the lychee is a subtropical tree that needs a genuine seasonal rhythm to perform well: a cool, dry fall and winter to trigger flowering, followed by warmth and moisture through fruit development. That requirement — chilling without freezing — keeps the tree happiest in central and southern Florida, USDA zones 10A through 11.</li>
-    <li>The wood is notably dense, and established trees are reasonably wind-resistant.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Lychee flowers are hermaphroditic but self-sterile, meaning the tree depends entirely on outside pollinators to set fruit. The spring flower panicles — drooping clusters up to two and a half feet long — are a meaningful nectar source for bees and various fly species, which are its primary pollinators in Florida.</p>
-      <p>As a non-native tree with no long evolutionary history with Florida&#x27;s fauna, lychee does not serve as a larval host for local butterflies or moths. Its wildlife value lies mainly in its pollinator support during bloom and in the fruit clusters, which can attract birds when ripe.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Small greenish-white to yellow flowers appear in early spring on drooping panicles one to two and a half feet long. The flowers are hermaphroditic but self-sterile, so cross-pollination by bees and flies is essential for fruit set.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Clusters of roughly 1.5-inch-diameter drupes ripen in late June and July. Skin is warty and turns bright strawberry-red when ripe, becoming brittle. Inside, sweet white flesh surrounds a single large glossy brown seed.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Pinnately compound, with three to four pairs of leaflets that are dark, glossy green at maturity. New growth flushes a distinctive bronze-red before hardening. The dense, rounded canopy is evergreen.</p></div>
-<div class="repro-item"><div class="repro-label">Propagation</div><p>In commercial and home settings, lychee is most reliably propagated by air layering (marcottage), which preserves the fruiting characteristics of the parent tree. Container-grown plants are the easiest way to establish a new tree. Lychees do not grow true from seed, though some older Florida trees were grown from seed with good results.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>In spring, look for the drooping flower panicles emerging at branch tips — long, airy clusters of small pale flowers that attract a steady buzz of bees. In summer (late June through July), watch for the hanging fruit clusters: warty, bright red spheres about the size of a large grape, turning brittle when fully ripe.</p><p>Year-round, notice the deep glossy green canopy and its compact, rounded crown — and watch in spring for the brief bronze-red flush as new leaves push out before hardening to green.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">30 to 50 feet at maturity (UF/IFAS); often maintained smaller in cultivation</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">30 to 50 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">dense, rounded, symmetrical canopy; typically multi-trunked; branches droop</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">slow to moderate</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium to fine</div></div>
-    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">prefers slightly acidic, well-drained loam or sandy loam (pH 5.0–6.5); avoid compacted or poorly drained soils; salt-sensitive</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">moderate once established; needs consistent moisture during spring flowering and fruit development</div></div>
-    </div>
-  </div>
-  <div class="plant-caution-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The skin and seeds are where the caution lies. Lychee seeds contain methylene cyclopropyl glycine (MCPG), a compound linked to dangerous drops in blood sugar — a risk that is well-documented in malnourished children who ate large quantities of unripe fruit on an empty stomach. Ripe lychee flesh is a safe and widely enjoyed food for healthy adults; simply discard the skin and seed.</p><p>Keep seeds away from dogs, as the same compounds are potentially harmful to them, and the large seed is a choking and obstruction hazard.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>Florida is the leading lychee-producing state in the continental United States. The delicate, perishable fruit is difficult to ship long distances, which makes locally grown Florida lychee especially prized at summer farmers markets.</p>
-      <p>The oldest known lychee tree, located in Fujian, China, is reported to be over 1,250 years old and still bearing fruit — a testament to how long-lived a well-sited lychee can be.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672227593/large.jpg" loading="lazy" alt="Lychee — photo by Denise Sosa"><div class="gal-credit" data-login="denise_sosa">📷 Denise Sosa</div><div class="gal-date">📅 Jun 3, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685329313/large.jpg" loading="lazy" alt="Lychee — photo by Zailibeth Perez"><div class="gal-credit" data-login="zailibeth">📷 Zailibeth Perez</div><div class="gal-date">📅 Jun 24, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698447299/large.jpg" loading="lazy" alt="Lychee — photo by Hailee Alenduff"><div class="gal-credit" data-login="hailee_alenduff">📷 Hailee Alenduff</div><div class="gal-date">📅 Jul 15, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702734964/large.jpg" loading="lazy" alt="Lychee — photo by Ruby Meador"><div class="gal-credit" data-login="ruby_meador">📷 Ruby Meador</div><div class="gal-date">📅 Jul 22, 2026</div></div><div class="gal-item" onclick="openLB(5)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702735199/large.jpg" loading="lazy" alt="Lychee — photo by Ruby Meador"><div class="gal-credit" data-login="ruby_meador">📷 Ruby Meador</div><div class="gal-date">📅 Jul 22, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Litchi</span><span class="alias-tag">Leechee</span><span class="alias-tag">Lichee</span><span class="alias-tag">Lichi</span><span class="alias-tag">Mamoncillo chino</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Maria Escobar (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Denise Sosa (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Zailibeth Perez (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Hailee Alenduff (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Ruby Meador (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00606/672222912.jpg", "credit": "Maria Escobar", "license": "CC-BY-NC", "observed": "Jun 3, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672227593/large.jpg", "credit": "Denise Sosa", "credit_login": "denise_sosa", "license": "CC-BY-NC", "observed": "Jun 3, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685329313/large.jpg", "credit": "Zailibeth Perez", "credit_login": "zailibeth", "license": "CC-BY-NC", "observed": "Jun 24, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698447299/large.jpg", "credit": "Hailee Alenduff", "credit_login": "hailee_alenduff", "license": "CC-BY-NC", "observed": "Jul 15, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702734964/large.jpg", "credit": "Ruby Meador", "credit_login": "ruby_meador", "license": "CC-BY-NC", "observed": "Jul 22, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702735199/large.jpg", "credit": "Ruby Meador", "credit_login": "ruby_meador", "license": "CC-BY-NC", "observed": "Jul 22, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 28, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Lychee was domesticated not once but twice — independently in two separate regions of ancient China, Yunnan and Hainan — a discovery made through genomic analysis published in Nature Genetics in 2022.</li><li>The Tang Dynasty emperor Xuanzong famously organized a horse-relay courier system to rush fresh lychees hundreds of miles to the imperial court — the fruit was that perishable, and that prized.</li><li>New lychee leaves flush bronze-red before hardening to deep glossy green, giving the tree a brief, striking two-tone look each spring.</li><li>Lychee arrived in Florida from India sometime between 1870 and 1880, but the first fruits here are said to have ripened only in 1916 — the tree takes its time.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-fact"><div class="sp-fact-h">Worth knowing</div><p>Few fruits carry as much cultural freight as the lychee. Its recorded history in China spans more than two millennia, and genomic research has confirmed something remarkable: the tree was independently domesticated in two separate regions of ancient China — a finding that underscores just how deeply different communities valued it long before they were in contact with each other.</p></div><div class="sp-block"><p>Lychee is native to the low-elevation subtropical forests of southern China and possibly northern Vietnam, where wild populations still grow in the rainforests and hill country of Yunnan, Hainan, and neighboring provinces. Recorded cultivation in China stretches back more than 2,100 years.</p></div><div class="sp-block"><p>It reached Florida from India between 1870 and 1880, though the first fruits here are said to have ripened only in 1916. The tree attracted little commercial attention until the 1940s, when Florida growers began actively promoting it as a dooryard and orchard crop.</p></div><div class="sp-block"><p>Today Florida is the leading lychee-producing state in the continental U.S., with the Sarasota region among the areas where old seed-grown trees — some planted in the 1940s and 1950s — still stand and fruit.</p></div><div class="sp-block"><p>Lychee belongs to the Sapindaceae family — the soapberry family — alongside two of its closest relatives: longan (Dimocarpus longan) and rambutan (Nephelium lappaceum). All three share the same essential architecture: fragrant white flesh wrapped around a single large seed.</p></div><div class="sp-block"><p>Peel them side by side and the family resemblance is unmistakable, even though their outsides — bumpy and red, hairy and scarlet, tan and papery — could hardly look more different.</p></div><div class="sp-block"><p>In Florida, the lychee is a subtropical tree that needs a genuine seasonal rhythm to perform well: a cool, dry fall and winter to trigger flowering, followed by warmth and moisture through fruit development. That requirement — chilling without freezing — keeps the tree happiest in central and southern Florida, USDA zones 10A through 11.</p></div><div class="sp-block"><p>The wood is notably dense, and established trees are reasonably wind-resistant.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Lychee flowers are hermaphroditic but self-sterile, meaning the tree depends entirely on outside pollinators to set fruit. The spring flower panicles — drooping clusters up to two and a half feet long — are a meaningful nectar source for bees and various fly species, which are its primary pollinators in Florida.</p></div><div class="sp-block"><p>As a non-native tree with no long evolutionary history with Florida&#x27;s fauna, lychee does not serve as a larval host for local butterflies or moths. Its wildlife value lies mainly in its pollinator support during bloom and in the fruit clusters, which can attract birds when ripe.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>All documented larval hosts are Asian lycaenid and nymphalid species with no established populations in Florida or at Bradenton&#x27;s latitude; lychee is not a documented larval host for any North American butterfly. No notable adult nectar role has been recorded in the literature.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Small greenish-white to yellow flowers appear in early spring on drooping panicles one to two and a half feet long. The flowers are hermaphroditic but self-sterile, so cross-pollination by bees and flies is essential for fruit set.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Clusters of roughly 1.5-inch-diameter drupes ripen in late June and July. Skin is warty and turns bright strawberry-red when ripe, becoming brittle. Inside, sweet white flesh surrounds a single large glossy brown seed.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Pinnately compound, with three to four pairs of leaflets that are dark, glossy green at maturity. New growth flushes a distinctive bronze-red before hardening. The dense, rounded canopy is evergreen.</p></div><div class="sp-block"><p>In spring, look for the drooping flower panicles emerging at branch tips — long, airy clusters of small pale flowers that attract a steady buzz of bees. In summer (late June through July), watch for the hanging fruit clusters: warty, bright red spheres about the size of a large grape, turning brittle when fully ripe. Year-round, notice the deep glossy green canopy and its compact, rounded crown — and watch in spring for the brief bronze-red flush as new leaves push out before hardening to green.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Prefers slightly acidic, well-drained loam or sandy loam (pH 5.0–6.5); avoid compacted or poorly drained soils; salt-sensitive</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Moderate once established; needs consistent moisture during spring flowering and fruit development</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>30 to 50 feet at maturity (UF/IFAS); often maintained smaller in cultivation; 30 to 50 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Dense, rounded, symmetrical canopy; typically multi-trunked; branches droop</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Slow to moderate</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The skin and seeds are where the caution lies. Lychee seeds contain methylene cyclopropyl glycine (MCPG), a compound linked to dangerous drops in blood sugar — a risk that is well-documented in malnourished children who ate large quantities of unripe fruit on an empty stomach. Ripe lychee flesh is a safe and widely enjoyed food for healthy adults; simply discard the skin and seed.</p></div><div class="sp-block"><p>Keep seeds away from dogs, as the same compounds are potentially harmful to them, and the large seed is a choking and obstruction hazard.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00606/672222912.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672227593/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/685329313/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698447299/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="4"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702734964/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="5"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702735199/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Litchi &middot; Leechee &middot; Lichee &middot; Lichi &middot; Mamoncillo chino</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00606/672222912.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672227593/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/685329313/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698447299/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702734964/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702735199/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

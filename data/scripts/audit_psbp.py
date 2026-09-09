@@ -230,6 +230,21 @@ def main():
                     f"{sp['id']} {sp.get('common_name')}: published with no teaser — "
                     f"the sign has no hook and the quick-view drawer opens empty")
 
+        # origin_short — the short place name that fits the sign's origin chip.
+        # PLANTS ONLY, same reasoning as teaser: it is sign copy first.
+        # Added 2026-09-08 after make_signs.py had its silent fallbacks removed.
+        # It used to substitute quick_hits[0] and then scrape the published page,
+        # so a missing field printed a plausible sign nobody knew was wrong.
+        # Randy: "I want EVERY TEASER filled out and do not want a silent
+        # fallback ... It's just a reprint if I see an empty teaser."
+        for sp in plants:
+            if sp.get("status") != "html":
+                continue
+            if not (sp.get("origin_short") or "").strip():
+                add("CONTENT", "WARN",
+                    f"{sp['id']} {sp.get('common_name')}: published with no origin_short — "
+                    f"the sign prints with an empty origin chip")
+
         for sp in plants + wild:
             if sp.get("status") != "html":
                 continue

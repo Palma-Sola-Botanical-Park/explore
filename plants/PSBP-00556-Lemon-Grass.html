@@ -1,131 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lemon Grass · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lemon Grass (Cymbopogon citratus) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00556/245370283.jpg" alt="Lemon Grass at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Groundcover &amp; Wildflower</div>
-    <div class="plant-hero-name">Lemon Grass</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00556/245370283.jpg" alt="Lemon Grass at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245370309/large.jpeg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245370342/large.jpeg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">3</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Groundcover &amp; Wildflower</div>
+    <h1 class="sp-name">Lemon Grass</h1>
+    <div class="sp-sci">Cymbopogon citratus</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Cymbopogon citratus</span>
-  <a class="plant-family-tag" href="../nature.html?family=Poaceae">Poaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="teschaim">teschaim</strong> · CC-BY-NC · via iNaturalist · 📅 Nov 27, 2022</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Beekeepers use lemongrass oil in swarm traps to lure honeybee scouts. The oil mimics the Nasonov pheromone worker bees use to signal a good new home — which means this clump of grass is, chemically speaking, speaking bee.</li>
-    <li>The scent that makes lemongrass so recognizable in the kitchen comes almost entirely from a single compound — citral — which makes up 65 to 85 percent of the plant&#x27;s essential oil. Citral is also a starting material for synthesizing ionones, which are used in turn to manufacture vitamin A.</li>
-    <li>Lemongrass almost never flowers or sets viable seed in cultivation. Every plant you have ever bought at a nursery or grocery store was almost certainly propagated by division — a rooted cutting or a separated tiller from a mother clump.</li>
-    <li>The plant has two culinary identities: the lower, pale bulb-like stem base is sliced or pounded for pastes and soups, while the leaves are bruised and steeped as an aromatic in teas and broths — removed before eating, the way a bay leaf is.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Lemongrass is native to the wet tropical grasslands and open woodlands of southern India and Sri Lanka, where it thrives in warm, monsoon-influenced conditions from sea level to roughly 3,000 feet.</p>
-      <p>Kew&#x27;s Plants of the World Online treats that core range as the species&#x27; homeland, though some authorities extend the native range into maritime Southeast Asia — Indonesia, Malaysia, and the Philippines — where the plant has been cultivated and semi-wild for so long that the line between native and naturalized blurred centuries ago.</p>
-      <p>After World War I, commercial cultivation spread rapidly to Madagascar, Central America, and South America. It reached Florida through the horticultural and culinary trades and is today a fixture in Florida herb gardens, thriving as a near-permanent perennial in the warmest parts of the state.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The genus name Cymbopogon comes from the Greek kymbe, meaning &#x27;boat,&#x27; and pogon, meaning &#x27;beard&#x27; — a reference to the hairy spikelets that project from boat-shaped leaf-like bracts (spathes) in the inflorescences. The species name citratus simply notes its citrus-like scent.</li>
-    <li>For centuries, traditional medicine systems across Asia, Africa, and the Caribbean have drawn on lemongrass for fevers, digestive complaints, and respiratory ailments — the common name &#x27;fever grass&#x27; still used in Jamaica reflects that history directly.</li>
-    <li>The U.S. FDA has declared lemongrass essential oil generally recognized as safe (GRAS) as a food flavoring, grounding the plant&#x27;s long culinary reputation in modern regulatory standing.</li>
-    <li>Lemongrass is also a significant industrial crop. The essential oil is extracted commercially by steam distillation of the leaves and used in perfumes, soaps, cosmetics, and insect repellents. The citral it yields serves as a raw material for synthesizing other aroma compounds and for producing beta-ionone, a precursor to vitamin A.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Lemongrass has modest direct wildlife value in a Florida garden setting. It rarely flowers in cultivation, and when it does, the wind-pollinated spikelets provide little in the way of nectar or pollen for bees or butterflies. The dense clumps do offer shelter, and the fibrous base provides nesting material opportunities for small animals.</p>
-      <p>One documented connection to pollinators is indirect but charming: beekeepers use lemongrass essential oil in swarm-capture traps because it closely mimics the Nasonov pheromone that honeybee scouts use to recruit a swarm to a new home. The same chemistry that makes the plant appealing in the kitchen turns out to speak directly to honeybees.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Propagation</div><p>Lemongrass is propagated almost exclusively by division. A mature clump builds over time into 50 to 200 individual tillers; rooted sections about 4 to 6 inches long can be separated from the mother plant and planted directly. Fresh stalks purchased at an Asian grocery store — as long as a small rooting node is intact — will root in a glass of water in about two weeks and can then be planted.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers and Seed</div><p>Lemongrass rarely flowers in cultivation outside the tropics, and seed propagation is considered inefficient because viable seed is seldom produced. When flowering does occur, the inflorescences are long, nodding, branched structures bearing small wind-pollinated spikelets subtended by boat-shaped bracts. They are not ornamentally showy.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves and Stem Base</div><p>The plant grows as a dense, arching clump of linear, blue-green to pale green leaves 18 to 36 inches long and up to roughly one inch wide, with rough edges and a prominent midrib. The base of each shoot is a tightly wrapped, pale white-to-green sheath — slightly bulbous in appearance — that is the part used in cooking.</p><p>Crush any part of the leaf and the citral-rich essential oil releases immediately as a sharp, clean lemon scent.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>When you find this clump, engage all your senses — this is one of the park&#x27;s most hands-on plants.</p><p>Start with the overall form: a dense, fountain-like spray of long arching leaves rising from a tight central base. Crouch down and look at where the leaves meet the ground: the lower sheaths are pale greenish-white, sometimes with a faint purple tinge at the very base, and tightly wrapped around each other like a small bulb.</p><p>Watch the leaf edges — they are finely serrated and can nick unaware fingers, so pinch a blade gently in the middle, not along the edge, and bring your fingers to your nose: the citral-rich oil releases immediately as a sharp, clean burst of lemon.</p><p>If the plant is mature enough to have flowered, look for a nodding, multi-branched stalk rising from the center — though in Florida gardens, you may never see one.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">2 to 4 feet in typical cultivation; may reach up to 6 feet under optimal tropical conditions</div></div>
-    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">2 to 3 feet per clump; expands slowly over time as new tillers are added</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">dense, upright to arching clump; fountain-like silhouette</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">fast in warm, moist conditions; slows markedly in cool or dry weather</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">fine to medium</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun; requires at least 6 to 8 hours of direct sunlight daily for best growth</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">adaptable to a wide range of soils from sandy to loam to clay; performs best in organically rich, well-drained soils; pH 6.5 to 7.5 preferred</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">moderate once established; prefers consistent moisture and will look stressed in prolonged drought, but recovers quickly when watered</div></div>
-    </div>
-  </div>
-  <div class="plant-caution-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The ASPCA lists lemongrass as toxic to dogs, cats, and horses, with essential oils and cyanogenic glycosides as the toxic principles; stomach upset is the most common sign in dogs and cats, and a significant quantity must be ingested to cause serious harm. Keep pets from grazing on the clump and contact a veterinarian if a dog or cat eats a meaningful amount.</p><p>For people, the plant and its culinary uses are well established and safe — lemongrass essential oil is FDA-recognized as safe in food. The one handling caution: the leaf edges are finely serrated and can deliver a paper-cut-style nick, so wear thin gloves when dividing or cutting back a large clump.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>Two species are sold and used as &#x27;lemongrass&#x27;: West Indian lemongrass (Cymbopogon citratus, this plant) and East Indian lemongrass (Cymbopogon flexuosus). Both are used interchangeably in cooking, though C. citratus is generally considered superior for culinary use and is the form most commonly found in Florida gardens and markets.</p>
-      <p>A stalk of lemongrass purchased at an Asian grocery store — roots attached or not — can often be coaxed to root in a glass of water and grown on. It is one of the more accessible &#x27;grocery store to garden&#x27; plants, which partly explains how widely it has spread through home gardens across the tropics.</p>
-      <p>When harvesting for the kitchen, peel away and discard the tough outer sheaths to reach the pale, tender inner stalk — this is the part you slice or pound. The upper green leaves are best bruised and simmered whole in soups or teas, then removed before serving; their edges are sharply serrated, so use a knife rather than tearing by hand.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245370309/large.jpeg" loading="lazy" alt="Lemon Grass — photo by teschaim"><div class="gal-credit" data-login="teschaim">📷 teschaim</div><div class="gal-date">📅 Nov 27, 2022</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245370342/large.jpeg" loading="lazy" alt="Lemon Grass — photo by teschaim"><div class="gal-credit" data-login="teschaim">📷 teschaim</div><div class="gal-date">📅 Nov 27, 2022</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">West Indian Lemongrass</span><span class="alias-tag">Oil Grass</span><span class="alias-tag">Fever Grass</span><span class="alias-tag">Barbed Wire Grass</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© teschaim (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00556/245370283.jpg", "credit": "teschaim", "license": "CC-BY-NC", "observed": "Nov 27, 2022"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/245370309/large.jpeg", "credit": "teschaim", "credit_login": "teschaim", "license": "CC-BY-NC", "observed": "Nov 27, 2022"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/245370342/large.jpeg", "credit": "teschaim", "credit_login": "teschaim", "license": "CC-BY-NC", "observed": "Nov 27, 2022"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>September 2, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#culture">Cultural significance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Beekeepers use lemongrass oil in swarm traps to lure honeybee scouts. The oil mimics the Nasonov pheromone worker bees use to signal a good new home — which means this clump of grass is, chemically speaking, speaking bee.</li><li>The scent that makes lemongrass so recognizable in the kitchen comes almost entirely from a single compound — citral — which makes up 65 to 85 percent of the plant&#x27;s essential oil. Citral is also a starting material for synthesizing ionones, which are used in turn to manufacture vitamin A.</li><li>Lemongrass almost never flowers or sets viable seed in cultivation. Every plant you have ever bought at a nursery or grocery store was almost certainly propagated by division — a rooted cutting or a separated tiller from a mother clump.</li><li>The plant has two culinary identities: the lower, pale bulb-like stem base is sliced or pounded for pastes and soups, while the leaves are bruised and steeped as an aromatic in teas and broths — removed before eating, the way a bay leaf is.</li></ul></div></section><section class="sp-sec" id="culture"><h2>Cultural significance</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The genus name Cymbopogon comes from the Greek kymbe, meaning &#x27;boat,&#x27; and pogon, meaning &#x27;beard&#x27; — a reference to the hairy spikelets that project from boat-shaped leaf-like bracts (spathes) in the inflorescences. The species name citratus simply notes its citrus-like scent.</p></div><div class="sp-block"><p>For centuries, traditional medicine systems across Asia, Africa, and the Caribbean have drawn on lemongrass for fevers, digestive complaints, and respiratory ailments — the common name &#x27;fever grass&#x27; still used in Jamaica reflects that history directly.</p></div><div class="sp-block"><p>The U.S. FDA has declared lemongrass essential oil generally recognized as safe (GRAS) as a food flavoring, grounding the plant&#x27;s long culinary reputation in modern regulatory standing.</p></div><div class="sp-block"><p>Lemongrass is also a significant industrial crop. The essential oil is extracted commercially by steam distillation of the leaves and used in perfumes, soaps, cosmetics, and insect repellents. The citral it yields serves as a raw material for synthesizing other aroma compounds and for producing beta-ionone, a precursor to vitamin A.</p></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Lemongrass is native to the wet tropical grasslands and open woodlands of southern India and Sri Lanka, where it thrives in warm, monsoon-influenced conditions from sea level to roughly 3,000 feet.</p></div><div class="sp-block"><p>Kew&#x27;s Plants of the World Online treats that core range as the species&#x27; homeland, though some authorities extend the native range into maritime Southeast Asia — Indonesia, Malaysia, and the Philippines — where the plant has been cultivated and semi-wild for so long that the line between native and naturalized blurred centuries ago.</p></div><div class="sp-block"><p>After World War I, commercial cultivation spread rapidly to Madagascar, Central America, and South America. It reached Florida through the horticultural and culinary trades and is today a fixture in Florida herb gardens, thriving as a near-permanent perennial in the warmest parts of the state.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Every plant you have ever bought at a nursery or grocery store was almost certainly propagated by division — a rooted cutting or a separated tiller from a mother clump.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Lemongrass has modest direct wildlife value in a Florida garden setting. It rarely flowers in cultivation, and when it does, the wind-pollinated spikelets provide little in the way of nectar or pollen for bees or butterflies. The dense clumps do offer shelter, and the fibrous base provides nesting material opportunities for small animals.</p></div><div class="sp-block"><p>One documented connection to pollinators is indirect but charming: beekeepers use lemongrass essential oil in swarm-capture traps because it closely mimics the Nasonov pheromone that honeybee scouts use to recruit a swarm to a new home. The same chemistry that makes the plant appealing in the kitchen turns out to speak directly to honeybees.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>Clouded Skipper caterpillars are extreme grass generalists and have been documented feeding on lemongrass incidentally; this is an opportunistic record, not a preferred or primary host. Lemongrass is not documented as a notable adult nectar source for any butterfly species.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers and Seed</div><p>Lemongrass rarely flowers in cultivation outside the tropics, and seed propagation is considered inefficient because viable seed is seldom produced. When flowering does occur, the inflorescences are long, nodding, branched structures bearing small wind-pollinated spikelets subtended by boat-shaped bracts. They are not ornamentally showy.</p></div><div class="sp-block"><div class="sp-block-label">Leaves and Stem Base</div><p>The plant grows as a dense, arching clump of linear, blue-green to pale green leaves 18 to 36 inches long and up to roughly one inch wide, with rough edges and a prominent midrib. The base of each shoot is a tightly wrapped, pale white-to-green sheath — slightly bulbous in appearance — that is the part used in cooking. Crush any part of the leaf and the citral-rich essential oil releases immediately as a sharp, clean lemon scent.</p></div><div class="sp-block"><p>When you find this clump, engage all your senses — this is one of the park&#x27;s most hands-on plants. Start with the overall form: a dense, fountain-like spray of long arching leaves rising from a tight central base. Crouch down and look at where the leaves meet the ground: the lower sheaths are pale greenish-white, sometimes with a faint purple tinge at the very base, and tightly wrapped around each other like a small bulb. Watch the leaf edges — they are finely serrated and can nick unaware fingers, so pinch a blade gently in the middle, not along the edge, and bring your fingers to your nose: the citral-rich oil releases immediately as a sharp, clean burst of lemon. If the plant is mature enough to have flowered, look for a nodding, multi-branched stalk rising from the center — though in Florida gardens, you may never see one.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun; requires at least 6 to 8 hours of direct sunlight daily for best growth</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Adaptable to a wide range of soils from sandy to loam to clay; performs best in organically rich, well-drained soils; pH 6.5 to 7.5 preferred</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Moderate once established; prefers consistent moisture and will look stressed in prolonged drought, but recovers quickly when watered</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>2 to 4 feet in typical cultivation; may reach up to 6 feet under optimal tropical conditions; 2 to 3 feet per clump; expands slowly over time as new tillers are added</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Dense, upright to arching clump; fountain-like silhouette</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Fast in warm, moist conditions; slows markedly in cool or dry weather</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00556/245370283.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245370309/large.jpeg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245370342/large.jpeg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>West Indian Lemongrass &middot; Oil Grass &middot; Fever Grass &middot; Barbed Wire Grass</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00556/245370283.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/245370309/large.jpeg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/245370342/large.jpeg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

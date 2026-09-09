@@ -1,123 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pink Rain Lily · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pink Rain Lily (Zephyranthes robusta) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00099/703358889.jpg" alt="Pink Rain Lily at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Groundcover &amp; Wildflower</div>
-    <div class="plant-hero-name">Pink Rain Lily</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00099/703358889.jpg" alt="Pink Rain Lily at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702730556/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702730557/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702748114/large.jpg" alt=""></button><button type="button" data-i="4" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702748130/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">5</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Groundcover &amp; Wildflower</div>
+    <h1 class="sp-name">Pink Rain Lily</h1>
+    <div class="sp-sci">Zephyranthes robusta</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Zephyranthes robusta</span>
-  <a class="plant-family-tag" href="../nature.html?family=Amaryllidaceae">Amaryllidaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="rhonda_olschefskie">Rhonda Olschefskie</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 22, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Named for its trigger: a soaking summer rain after a dry spell brings on a flush of flowers within days, often many at once across a whole planting, then silence again until the next storm.</li>
-    <li>Each flower nods at a slight angle on its stalk — a tell-tale trait inherited from its former genus Habranthus. It is one of the features that separates this species from other pink rain lilies.</li>
-    <li>A single clump quietly multiplies underground, pushing out bulb offsets that root readily in Florida&#x27;s sandy soils. A colony that starts as a handful of bulbs can fill an edge planting in just a few seasons without any help.</li>
-    <li>Nearly every rain lily in the park was carried here by hand. Volunteers divide clumps that have filled in, move the offsets to a bed that has none, and bring bulbs from their own gardens — a handful at a time, season after season, so the flowering borders reach a little further into the park each year. The plant&#x27;s habit of multiplying underground is what makes it possible; passing it along is what makes it spread.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Non-native. Native to Brazil, Argentina, and Uruguay — subtropical South America — where it grows in seasonally dry grasslands and along watercourses. Member of Amaryllidaceae, the amaryllis family.</p>
-      <p>It has naturalized well beyond its homeland: Florida populations are established, as are populations in Colombia, South Africa, and Mauritius. All of this spread is traced to its popularity as a low-maintenance ornamental bulb in warm-climate gardens worldwide.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The Pink Rain Lily earns its name from its trigger: a soaking summer rain after a dry spell brings on a flush of pale pink, funnel-shaped flowers within a few days, often many at once, then the plant rests again until the next storm. Between flushes it is just a clump of narrow, slightly glaucous grassy leaves — which is why the show seems to come from nowhere.</li>
-    <li>It is a small bulb from subtropical South America, in the amaryllis family, and it has become a popular, easy edging and naturalizing plant in warm climates worldwide. A botanical detail sets it apart from other pink rain lilies: each flower nods at a slight angle on its scape, a trait it carried over from its former classification in the genus Habranthus.</li>
-    <li>The flowers are also perfect — each one carries both functional stamens and a pistil, so a single bloom can set seed on its own.</li>
-    <li>Like all its amaryllis relatives, every part contains lycorine and related alkaloids, most concentrated in the bulb. The appeal for gardeners is the timing — a built-in response to the same summer storms that drive Florida&#x27;s growing season.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>Modest wildlife value. The open flowers draw bees and other pollinators during their brief bloom flushes. The plant&#x27;s main interest is horticultural - its rain-triggered, synchronized flowering.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Pale pink to lavender, funnel-shaped, 2 to 2.5 inches long, held singly on short scapes at a characteristic slight angle; perfect (bisexual), with both stamens and pistil in each bloom; appearing in synchronized flushes a few days after heavy rain.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Narrow, grassy, dark green with a faint grayish waxy coating (glaucous), growing from an underground bulb.</p></div>
-<div class="repro-item"><div class="repro-label">Form</div><p>Low clumping bulb; spreads slowly by offsets and seed.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Sudden flushes of pale pink, slightly nodding flowers over grassy foliage in the days after a summer downpour. Between rains, an unremarkable, faintly blue-green grassy clump.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height</div><div class="data-value">about 6 to 12 inches in flower</div></div>
-    <div class="data-item full-width"><div class="data-label">Spread</div><div class="data-value">clumping, slowly spreading by bulb offsets</div></div>
-    <div class="data-item"><div class="data-label">Habit</div><div class="data-value">low clumping perennial bulb</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">fine - grassy foliage</div></div>
-    <div class="data-item"><div class="data-label">Light</div><div class="data-value">Full sun to part shade.</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">Well-drained sandy or loamy soils; tolerates periodic wet.</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">High — rests during dry spells; flowering is triggered by rain after a dry period.</div></div>
-    </div>
-  </div>
-  <div class="plant-toxic-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Do not eat this plant. Like daffodils and amaryllis, it contains lycorine and related alkaloids throughout — most concentrated in the bulbs — and ingestion can cause nausea, vomiting, and worse in larger amounts. Keep children and pets from digging up and eating the bulbs.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702730556/large.jpg" loading="lazy" alt="Pink Rain Lily — photo by Zailibeth Perez"><div class="gal-credit" data-login="zailibeth">📷 Zailibeth Perez</div><div class="gal-date">📅 Jul 22, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702730557/large.jpg" loading="lazy" alt="Pink Rain Lily — photo by Zailibeth Perez"><div class="gal-credit" data-login="zailibeth">📷 Zailibeth Perez</div><div class="gal-date">📅 Jul 22, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702748114/large.jpg" loading="lazy" alt="Pink Rain Lily — photo by Austin Sibrian"><div class="gal-credit" data-login="austin_sibrian">📷 Austin Sibrian</div><div class="gal-date">📅 Jul 22, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702748130/large.jpg" loading="lazy" alt="Pink Rain Lily — photo by Austin Sibrian"><div class="gal-credit" data-login="austin_sibrian">📷 Austin Sibrian</div><div class="gal-date">📅 Jul 22, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Rain Lily</span><span class="alias-tag">Zephyr Lily</span><span class="alias-tag">Pink Fairy Lily</span><span class="alias-tag">Brazilian Copperlily</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Rhonda Olschefskie (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Zailibeth Perez (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Austin Sibrian (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00099/703358889.jpg", "credit": "Rhonda Olschefskie", "license": "CC-BY-NC", "observed": "Jul 22, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702730556/large.jpg", "credit": "Zailibeth Perez", "credit_login": "zailibeth", "license": "CC-BY-NC", "observed": "Jul 22, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702730557/large.jpg", "credit": "Zailibeth Perez", "credit_login": "zailibeth", "license": "CC-BY-NC", "observed": "Jul 22, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702748114/large.jpg", "credit": "Austin Sibrian", "credit_login": "austin_sibrian", "license": "CC-BY-NC", "observed": "Jul 22, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702748130/large.jpg", "credit": "Austin Sibrian", "credit_login": "austin_sibrian", "license": "CC-BY-NC", "observed": "Jul 22, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 30, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Named for its trigger: a soaking summer rain after a dry spell brings on a flush of flowers within days, often many at once across a whole planting, then silence again until the next storm.</li><li>Each flower nods at a slight angle on its stalk — a tell-tale trait inherited from its former genus Habranthus. It is one of the features that separates this species from other pink rain lilies.</li><li>A single clump quietly multiplies underground, pushing out bulb offsets that root readily in Florida&#x27;s sandy soils. A colony that starts as a handful of bulbs can fill an edge planting in just a few seasons without any help.</li><li>Nearly every rain lily in the park was carried here by hand. Volunteers divide clumps that have filled in, move the offsets to a bed that has none, and bring bulbs from their own gardens — a handful at a time, season after season, so the flowering borders reach a little further into the park each year. The plant&#x27;s habit of multiplying underground is what makes it possible; passing it along is what makes it spread.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Non-native. Native to Brazil, Argentina, and Uruguay — subtropical South America — where it grows in seasonally dry grasslands and along watercourses. Member of Amaryllidaceae, the amaryllis family.</p></div><div class="sp-block"><p>It has naturalized well beyond its homeland: Florida populations are established, as are populations in Colombia, South Africa, and Mauritius. All of this spread is traced to its popularity as a low-maintenance ornamental bulb in warm-climate gardens worldwide.</p></div><div class="sp-block"><p>The Pink Rain Lily earns its name from its trigger: a soaking summer rain after a dry spell brings on a flush of pale pink, funnel-shaped flowers within a few days, often many at once, then the plant rests again until the next storm. Between flushes it is just a clump of narrow, slightly glaucous grassy leaves — which is why the show seems to come from nowhere.</p></div><div class="sp-block"><p>It is a small bulb from subtropical South America, in the amaryllis family, and it has become a popular, easy edging and naturalizing plant in warm climates worldwide. A botanical detail sets it apart from other pink rain lilies: each flower nods at a slight angle on its scape, a trait it carried over from its former classification in the genus Habranthus.</p></div><div class="sp-block"><p>The flowers are also perfect — each one carries both functional stamens and a pistil, so a single bloom can set seed on its own.</p></div><div class="sp-block"><p>Like all its amaryllis relatives, every part contains lycorine and related alkaloids, most concentrated in the bulb. The appeal for gardeners is the timing — a built-in response to the same summer storms that drive Florida&#x27;s growing season.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Cacti and Succulents and Shade Garden.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Modest wildlife value. The open flowers draw bees and other pollinators during their brief bloom flushes. The plant&#x27;s main interest is horticultural - its rain-triggered, synchronized flowering.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Pale pink to lavender, funnel-shaped, 2 to 2.5 inches long, held singly on short scapes at a characteristic slight angle; perfect (bisexual), with both stamens and pistil in each bloom; appearing in synchronized flushes a few days after heavy rain.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Narrow, grassy, dark green with a faint grayish waxy coating (glaucous), growing from an underground bulb.</p></div><div class="sp-block"><div class="sp-block-label">Form</div><p>Low clumping bulb; spreads slowly by offsets and seed.</p></div><div class="sp-block"><p>Sudden flushes of pale pink, slightly nodding flowers over grassy foliage in the days after a summer downpour. Between rains, an unremarkable, faintly blue-green grassy clump.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun to part shade.</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Well-drained sandy or loamy soils; tolerates periodic wet.</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>High — rests during dry spells; flowering is triggered by rain after a dry period.</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>about 6 to 12 inches in flower; clumping, slowly spreading by bulb offsets</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Low clumping perennial bulb</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Moderate</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Do not eat this plant. Like daffodils and amaryllis, it contains lycorine and related alkaloids throughout — most concentrated in the bulbs — and ingestion can cause nausea, vomiting, and worse in larger amounts. Keep children and pets from digging up and eating the bulbs.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00099/703358889.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702730556/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702730557/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702748114/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="4"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/702748130/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Rain Lily &middot; Zephyr Lily &middot; Pink Fairy Lily &middot; Brazilian Copperlily</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00099/703358889.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702730556/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702730557/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702748114/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/702748130/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

@@ -1,125 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tree Crinum · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tree Crinum (Crinum asiaticum) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:53% 61%" src="../photos/PSBP-00001/681679773.jpg" alt="Tree Crinum at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Shrub &amp; Vine</div>
-    <div class="plant-hero-name">Tree Crinum</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00001/681679773.jpg" alt="Tree Crinum at Palma Sola Botanical Park" style="object-position:53% 61%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245580713/large.jpeg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/663460337/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680953278/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">4</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Shrub &amp; Vine</div>
+    <h1 class="sp-name">Tree Crinum</h1>
+    <div class="sp-sci">Crinum asiaticum</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Crinum asiaticum</span>
-  <a class="plant-family-tag" href="../nature.html?family=Amaryllidaceae">Amaryllidaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="robcarr52">Rob Carr</strong> · CC-BY-NC · via iNaturalist · 📅 May 28, 2023</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>One of the largest true bulbs in the plant kingdom — a single underground bulb can weigh up to 40 pounds.</li>
-    <li>Its spidery white flowers are engineered for the night shift, releasing sweet fragrance at sunset to guide nocturnal Sphinx moths.</li>
-    <li>Nicknamed cemetery lilies, these virtually immortal plants survive freezes, fires, and decades of neglect.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to tropical Asia, ranging from India and Sri Lanka through Southeast Asia to parts of northern Australia and many Pacific islands. It has been widely introduced and naturalized throughout tropical and subtropical regions worldwide, including coastal Florida.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The Tree Crinum grows from some of the largest true bulbs in the plant kingdom — a single underground bulb can weigh up to forty pounds. Its spidery white flowers are engineered for the night shift, boosting their sweet fragrance at sunset and glowing under the moonlight to guide nocturnal Sphinx moths.</li>
-    <li>Nicknamed cemetery lilies, these plants are virtually immortal — surviving freezes, fires, and total neglect to outlive the people who planted them by generations.</li>
-    <li>Unlike most bulbs that rot in wet conditions, this plant thrives equally in bone-dry sand or fully submerged in standing water — an evolutionary anomaly that lets it colonize habitats most plants cannot.</li>
-    <li>A striking purple-leafed cultivar named Queen Emma honors the 19th-century humanitarian queen consort of Hawaii, who grew them in her royal gardens.</li>
-    <li>Ancient cultures across Asia and the Pacific used the plant medicinally — to treat skin ailments, soothe jellyfish stings, and even stun fish for easier harvesting.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The Tree Crinum&#x27;s large white night-blooming flowers are engineered for Sphinx moths — the fragrance intensifies at dusk specifically to guide these primary pollinators.</p>
-      <p>The dense clumping foliage provides ground-level cover for lizards and small animals, and the heavy fruit drops attract wildlife foraging at the base.</p>
-      <p>While toxic to mammals, it supports a nocturnal pollinator community that few other park plants can match.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Offsets (pups)</div><p>Mother bulbs continuously produce underground offshoots forming dense colonies.</p></div>
-<div class="repro-item"><div class="repro-label">Seeds</div><p>Insect-pollinated flowers (mainly Sphinx moths) produce heavy fleshy seeds that drop and sprout directly on the soil.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Tall leafless stalks with clusters of highly fragrant white or pinkish spidery blooms with long purple stamens.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit and Seeds</div><p>Fleshy lumpy irregular green pods containing unusually large soft green-to-tan seeds that germinate quickly without a hard shell.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Dramatic tall flower stalks in warmer months and heavy clusters of green fruit pods later in the season. Dense spreading clumps formed by underground pups.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height</div><div class="data-value">3 to 5 feet</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">3 to 5 feet</div></div>
-    <div class="data-item"><div class="data-label">Habit</div><div class="data-value">spreading, open</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">coarse</div></div>
-    <div class="data-item"><div class="data-label">Light</div><div class="data-value">part shade to part sun</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">extended flooding · clay · sand · acidic · slightly alkaline · loam</div></div>
-    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">moderate</div></div>
-    </div>
-  </div>
-  <div class="plant-toxic-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Do not eat any part of this plant.</p><p>It contains lycorine and related alkaloids that cause vomiting, low blood pressure, heavy salivation, abdominal pain, and diarrhea.</p><p>Serious cases need medical attention, so seek care promptly if any part is swallowed.</p><p>The same alkaloids make it toxic to dogs — the ASPCA lists Crinum as causing vomiting, drooling, and depression.</p><p>Keep pets from chewing the leaves or bulb, and contact your vet if ingestion is suspected.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245580713/large.jpeg" loading="lazy" alt="Tree Crinum — photo by teschaim"><div class="gal-credit" data-login="teschaim">📷 teschaim</div><div class="gal-date">📅 Nov 27, 2022</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/663460337/large.jpg" loading="lazy" alt="Tree Crinum — photo by Joanne Walker"><div class="gal-credit" data-login="joanne_walker">📷 Joanne Walker</div><div class="gal-date">📅 May 20, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680953278/large.jpg" loading="lazy" alt="Tree Crinum — photo by Ruby Meador"><div class="gal-credit" data-login="ruby_meador">📷 Ruby Meador</div><div class="gal-date">📅 Jun 17, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Giant Crinum Lily</span><span class="alias-tag">Poison Bulb</span><span class="alias-tag">Cemetery Lily</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Rob Carr (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© teschaim (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Joanne Walker (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Ruby Meador (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00001/681679773.jpg", "credit": "Rob Carr", "license": "CC-BY-NC", "observed": "May 28, 2023"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/245580713/large.jpeg", "credit": "teschaim", "credit_login": "teschaim", "license": "CC-BY-NC", "observed": "Nov 27, 2022"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/663460337/large.jpg", "credit": "Joanne Walker", "credit_login": "joanne_walker", "license": "CC-BY-NC", "observed": "May 20, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680953278/large.jpg", "credit": "Ruby Meador", "credit_login": "ruby_meador", "license": "CC-BY-NC", "observed": "Jun 17, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>September 2, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>One of the largest true bulbs in the plant kingdom — a single underground bulb can weigh up to 40 pounds.</li><li>Its spidery white flowers are engineered for the night shift, releasing sweet fragrance at sunset to guide nocturnal Sphinx moths.</li><li>Nicknamed cemetery lilies, these virtually immortal plants survive freezes, fires, and decades of neglect.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-fact"><div class="sp-fact-h">Worth knowing</div><p>Ancient cultures across Asia and the Pacific used the plant medicinally — to treat skin ailments, soothe jellyfish stings, and even stun fish for easier harvesting.</p></div><div class="sp-block"><p>Native to tropical Asia, ranging from India and Sri Lanka through Southeast Asia to parts of northern Australia and many Pacific islands. It has been widely introduced and naturalized throughout tropical and subtropical regions worldwide, including coastal Florida.</p></div><div class="sp-block"><p>The Tree Crinum grows from some of the largest true bulbs in the plant kingdom — a single underground bulb can weigh up to forty pounds. Its spidery white flowers are engineered for the night shift, boosting their sweet fragrance at sunset and glowing under the moonlight to guide nocturnal Sphinx moths.</p></div><div class="sp-block"><p>Nicknamed cemetery lilies, these plants are virtually immortal — surviving freezes, fires, and total neglect to outlive the people who planted them by generations.</p></div><div class="sp-block"><p>Unlike most bulbs that rot in wet conditions, this plant thrives equally in bone-dry sand or fully submerged in standing water — an evolutionary anomaly that lets it colonize habitats most plants cannot.</p></div><div class="sp-block"><p>A striking purple-leafed cultivar named Queen Emma honors the 19th-century humanitarian queen consort of Hawaii, who grew them in her royal gardens.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Front Island near Fountain, Pavilion and Pavilion Gazebo.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The Tree Crinum&#x27;s large white night-blooming flowers are engineered for Sphinx moths — the fragrance intensifies at dusk specifically to guide these primary pollinators.</p></div><div class="sp-block"><p>The dense clumping foliage provides ground-level cover for lizards and small animals, and the heavy fruit drops attract wildlife foraging at the base.</p></div><div class="sp-block"><p>While toxic to mammals, it supports a nocturnal pollinator community that few other park plants can match.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Offsets (pups)</div><p>Mother bulbs continuously produce underground offshoots forming dense colonies.</p></div><div class="sp-block"><div class="sp-block-label">Seeds</div><p>Insect-pollinated flowers (mainly Sphinx moths) produce heavy fleshy seeds that drop and sprout directly on the soil.</p></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Tall leafless stalks with clusters of highly fragrant white or pinkish spidery blooms with long purple stamens.</p></div><div class="sp-block"><div class="sp-block-label">Fruit and Seeds</div><p>Fleshy lumpy irregular green pods containing unusually large soft green-to-tan seeds that germinate quickly without a hard shell.</p></div><div class="sp-block"><p>Dramatic tall flower stalks in warmer months and heavy clusters of green fruit pods later in the season. Dense spreading clumps formed by underground pups.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Part shade to part sun</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Extended flooding · clay · sand · acidic · slightly alkaline · loam</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Moderate</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>3 to 5 feet; 3 to 5 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Spreading, open</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Moderate</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>Toxic if ingested. Contains lycorine and other alkaloids that cause vomiting, low blood pressure, excessive salivation, abdominal pain, and diarrhea. Serious cases require medical attention. Seek immediate care if any part is ingested.</p></div><div class="sp-block"><p>Do not eat any part of this plant.</p></div><div class="sp-block"><p>The same alkaloids make it toxic to dogs — the ASPCA lists Crinum as causing vomiting, drooling, and depression.</p></div><div class="sp-block"><p>Keep pets from chewing the leaves or bulb, and contact your vet if ingestion is suspected.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00001/681679773.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/245580713/large.jpeg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/663460337/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680953278/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Giant Crinum Lily &middot; Poison Bulb &middot; Cemetery Lily</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00001/681679773.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/245580713/large.jpeg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/663460337/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680953278/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

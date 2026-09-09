@@ -1,128 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Longan · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Longan (Dimocarpus longan) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00126/680903096.jpg" alt="Longan at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Tree</div>
-    <div class="plant-hero-name">Longan</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00126/680903096.jpg" alt="Longan at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672208832/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672208837/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680893272/large.jpg" alt=""></button><button type="button" data-i="4" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680893359/large.jpg" alt=""></button><button type="button" data-i="5" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680893444/large.jpg" alt=""></button><button type="button" data-i="6" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680902995/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">7</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Tree</div>
+    <h1 class="sp-name">Longan</h1>
+    <div class="sp-sci">Dimocarpus longan</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Dimocarpus longan</span>
-  <a class="plant-family-tag" href="../nature.html?family=Sapindaceae">Sapindaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="david_mcswain">David McSwain</strong> · CC-BY-NC · via iNaturalist · 📅 Jun 17, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Crack the thin tan shell and inside is translucent, juicy flesh wrapped around a single glossy black seed — peeled, it looks startlingly like a real pupil and iris, which is exactly what the Cantonese name lóngyǎn means: dragon&#x27;s eye.</li>
-    <li>Longans are notoriously erratic bloomers, but growers found a wild fix: a soil drench of potassium chlorate — the same compound used in matches and fireworks — reliably shocks the tree into bloom on demand, even off-season.</li>
-    <li>It is the close cousin of the lychee, with a similar sweet, musky flavor.</li>
-    <li>The fruit hangs in heavy drooping clusters, sometimes by the hundreds.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to southern Asia, from southern China through Southeast Asia. Long cultivated for its fruit and now grown commercially in tropical and subtropical regions, including South and Central Florida.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>Longan is a member of the soapberry family and a close relative of the lychee and rambutan. Its fruit is smaller and less flashy than lychee but keeps and ships better, and many find the flavor sweeter and muskier.</li>
-    <li>The name &quot;dragon&#x27;s eye&quot; comes from the peeled fruit: a sphere of translucent, pale flesh with a single round, glossy black seed showing through the center — convincingly eye-like. The flesh is eaten fresh, dried, or in soups and desserts across Asia.</li>
-    <li>The tree is a heavy, sometimes erratic bearer — loading branches with hanging clusters in good years — and prefers a warm climate with a brief cool spell to trigger flowering.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The small cream flowers are excellent bee plants and a notable nectar and honey source. Ripe and fallen fruit feeds birds and small mammals.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Form</div><p>A medium evergreen tree with a dense, rounded, spreading canopy.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Small, yellowish-cream, in large branched clusters (panicles); rich in nectar. Each panicle opens in three sequential waves: staminate (male) flowers first, then hermaphroditic flowers acting as females, then a second wave of hermaphroditic flowers acting as males — a relay designed to maximize cross-pollination.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Round, tan to light brown, thin-shelled, in drooping clusters; pale juicy flesh around one shiny black seed.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves</div><p>Pinnately compound, glossy, with leathery oblong leaflets.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Heavy hanging clusters of round, tan-shelled fruit. Peel one to find the translucent flesh and single dark &quot;dragon&#x27;s eye&quot; seed.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height</div><div class="data-value">30 to 40 feet</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">30 to 45 feet</div></div>
-    <div class="data-item"><div class="data-label">Habit</div><div class="data-value">dense, rounded, spreading</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium</div></div>
-    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">sand · loam · clay · acidic to slightly alkaline · well-drained</div></div>
-    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">moderate</div></div>
-    <div class="data-item full-width"><div class="data-label">Note</div><div class="data-value">needs warmth; a brief cool, dry spell helps trigger flowering</div></div>
-    </div>
-  </div>
-  <div class="plant-safe-section">
-    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The seed is the one thing to watch: longan seeds contain saponins that can cause vomiting, diarrhea, and stomach upset in dogs — and are not edible for people either, being hard and bitter. Keep whole fruit away from dogs; the flesh is fine for people.</p><p>The fruit flesh is safe and widely eaten fresh, dried, or canned. The hard shell poses a choking hazard for small animals. Otherwise the tree is harmless to handle.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>Longan is self-fertile — a single tree will set fruit. However, cross-pollination between trees typically improves crop size and quality.</p>
-      <p>Nearly all Florida trees are the &#x27;Kohala&#x27; cultivar, developed in Hawaii and evaluated for south Florida conditions by UF/IFAS. Several newer Thai cultivars are under evaluation but not yet widely planted.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672208832/large.jpg" loading="lazy" alt="Longan — photo by Maria Escobar"><div class="gal-credit" data-login="mariaaaz">📷 Maria Escobar</div><div class="gal-date">📅 Jun 3, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672208837/large.jpg" loading="lazy" alt="Longan — photo by Maria Escobar"><div class="gal-credit" data-login="mariaaaz">📷 Maria Escobar</div><div class="gal-date">📅 Jun 3, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680893272/large.jpg" loading="lazy" alt="Longan — photo by Harrison Mello"><div class="gal-credit" data-login="harrisonmello">📷 Harrison Mello</div><div class="gal-date">📅 Jun 17, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680893359/large.jpg" loading="lazy" alt="Longan — photo by Harrison Mello"><div class="gal-credit" data-login="harrisonmello">📷 Harrison Mello</div><div class="gal-date">📅 Jun 17, 2026</div></div><div class="gal-item" onclick="openLB(5)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680893444/large.jpg" loading="lazy" alt="Longan — photo by Harrison Mello"><div class="gal-credit" data-login="harrisonmello">📷 Harrison Mello</div><div class="gal-date">📅 Jun 17, 2026</div></div><div class="gal-item" onclick="openLB(6)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680902995/large.jpg" loading="lazy" alt="Longan — photo by David McSwain"><div class="gal-credit" data-login="david_mcswain">📷 David McSwain</div><div class="gal-date">📅 Jun 17, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Dragon&#x27;s Eye</span><span class="alias-tag">Lungan</span><span class="alias-tag">Dimocarpus</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© David McSwain (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Maria Escobar (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Harrison Mello (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00126/680903096.jpg", "credit": "David McSwain", "license": "CC-BY-NC", "observed": "Jun 17, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672208832/large.jpg", "credit": "Maria Escobar", "credit_login": "mariaaaz", "license": "CC-BY-NC", "observed": "Jun 3, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672208837/large.jpg", "credit": "Maria Escobar", "credit_login": "mariaaaz", "license": "CC-BY-NC", "observed": "Jun 3, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680893272/large.jpg", "credit": "Harrison Mello", "credit_login": "harrisonmello", "license": "CC-BY-NC", "observed": "Jun 17, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680893359/large.jpg", "credit": "Harrison Mello", "credit_login": "harrisonmello", "license": "CC-BY-NC", "observed": "Jun 17, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680893444/large.jpg", "credit": "Harrison Mello", "credit_login": "harrisonmello", "license": "CC-BY-NC", "observed": "Jun 17, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680902995/large.jpg", "credit": "David McSwain", "credit_login": "david_mcswain", "license": "CC-BY-NC", "observed": "Jun 17, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Crack the thin tan shell and inside is translucent, juicy flesh wrapped around a single glossy black seed — peeled, it looks startlingly like a real pupil and iris, which is exactly what the Cantonese name lóngyǎn means: dragon&#x27;s eye.</li><li>Longans are notoriously erratic bloomers, but growers found a wild fix: a soil drench of potassium chlorate — the same compound used in matches and fireworks — reliably shocks the tree into bloom on demand, even off-season.</li><li>It is the close cousin of the lychee, with a similar sweet, musky flavor.</li><li>The fruit hangs in heavy drooping clusters, sometimes by the hundreds.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Native to southern Asia, from southern China through Southeast Asia. Long cultivated for its fruit and now grown commercially in tropical and subtropical regions, including South and Central Florida.</p></div><div class="sp-block"><p>Longan is a member of the soapberry family and a close relative of the lychee and rambutan. Its fruit is smaller and less flashy than lychee but keeps and ships better, and many find the flavor sweeter and muskier.</p></div><div class="sp-block"><p>The name &quot;dragon&#x27;s eye&quot; comes from the peeled fruit: a sphere of translucent, pale flesh with a single round, glossy black seed showing through the center — convincingly eye-like. The flesh is eaten fresh, dried, or in soups and desserts across Asia.</p></div><div class="sp-block"><p>The tree is a heavy, sometimes erratic bearer — loading branches with hanging clusters in good years — and prefers a warm climate with a brief cool spell to trigger flowering.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Rare Fruit.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The small cream flowers are excellent bee plants and a notable nectar and honey source. Ripe and fallen fruit feeds birds and small mammals.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Form</div><p>A medium evergreen tree with a dense, rounded, spreading canopy.</p></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Small, yellowish-cream, in large branched clusters (panicles); rich in nectar. Each panicle opens in three sequential waves: staminate (male) flowers first, then hermaphroditic flowers acting as females, then a second wave of hermaphroditic flowers acting as males — a relay designed to maximize cross-pollination.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Round, tan to light brown, thin-shelled, in drooping clusters; pale juicy flesh around one shiny black seed.</p></div><div class="sp-block"><div class="sp-block-label">Leaves</div><p>Pinnately compound, glossy, with leathery oblong leaflets.</p></div><div class="sp-block"><p>Heavy hanging clusters of round, tan-shelled fruit. Peel one to find the translucent flesh and single dark &quot;dragon&#x27;s eye&quot; seed.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>needs warmth; a brief cool, dry spell helps trigger flowering</p></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Sand · loam · clay · acidic to slightly alkaline · well-drained</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Moderate</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>30 to 40 feet; 30 to 45 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Dense, rounded, spreading</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Moderate</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00126/680903096.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672208832/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/672208837/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680893272/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="4"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680893359/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="5"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680893444/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="6"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/680902995/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Dragon&#x27;s Eye &middot; Lungan &middot; Dimocarpus</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00126/680903096.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672208832/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/672208837/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680893272/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680893359/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680893444/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/680902995/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

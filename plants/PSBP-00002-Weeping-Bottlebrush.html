@@ -1,125 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weeping Bottlebrush · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weeping Bottlebrush (Melaleuca viminalis) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:54% 62%" src="../photos/PSBP-00002/602872039.jpg" alt="Weeping Bottlebrush at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Shrub &amp; Vine</div>
-    <div class="plant-hero-name">Weeping Bottlebrush</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00002/602872039.jpg" alt="Weeping Bottlebrush at Palma Sola Botanical Park" style="object-position:54% 62%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/382220097/large.jpeg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602872016/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698710721/large.jpg" alt=""></button><button type="button" data-i="4" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/717893091/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">5</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Shrub &amp; Vine</div>
+    <h1 class="sp-name">Weeping Bottlebrush</h1>
+    <div class="sp-sci">Melaleuca viminalis</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Melaleuca viminalis</span>
-  <a class="plant-family-tag" href="../nature.html?family=Myrtaceae">Myrtaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="elurding">elurding</strong> · CC-BY-NC · via iNaturalist · 📅 Dec 25, 2025</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>The showy red &quot;bottlebrush&quot; is not made of petals — it&#x27;s a burst of pollen-bearing stamens.</li>
-    <li>Crush a leaf for a pleasant citrus scent.</li>
-    <li>Hummingbirds, butterflies, and honeybees swarm the nectar-rich blooms, making this one of the most productive wildlife plants in the park.</li>
-    <li>Though often sold as a tree, it is technically a large shrub trained into tree form.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to eastern Australia, primarily along watercourses in Queensland and New South Wales, with a disjunct population in the Kimberley region of Western Australia. It grows naturally in moist habitats such as riverbanks, creek edges, and flood-prone areas.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The nectar-rich flowers are absolute magnets for local wildlife, making them highly favored by hummingbirds, butterflies, and honeybees.</li>
-    <li>The &quot;bottles&quot; you see are not actually petals; the showy, colorful parts of the flower are the stamens (the pollen-bearing male organs).</li>
-    <li>When the narrow, pale green leaves are crushed, they release a pleasant, distinctly citrusy aroma.</li>
-    <li>While they are highly drought-tolerant once established and can handle short bursts of cold, they dislike highly alkaline soil and prefer full sun.</li>
-    <li>While sold in garden centers trained into a single-trunk &quot;tree&quot; form, the Weeping Bottlebrush is biologically classified as a large shrub that naturally grows weeping, fountain-like branches</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The nectar-rich red bottlebrush spikes are absolute magnets for Florida wildlife, especially hummingbirds, butterflies (including zebra longwings), and honeybees. In Florida gardens it serves as a high-value nectar source during the warm months when many other plants have finished blooming.</p>
-      <p>The small woody seed capsules provide food for various birds and small mammals. Its dense, weeping canopy offers excellent cover and nesting sites for birds.</p>
-      <p>While not a Florida native, it is considered a relatively well-behaved non-native that supports local pollinators without becoming invasive here.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Reproduction by seeds held in small woody cup-like capsules clustered around stems.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Bright red &quot;bottlebrush&quot; spikes 3–4 inches long, appearing mainly spring and summer — highly attractive to hummingbirds, butterflies, and bees.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Small gray or brown woody capsules that look like beads on a necklace. Leaves: Narrow, pale green, lance-shaped, and strongly citrus-scented when crushed.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>The cascading weeping form is distinctive year-round — no other park tree has quite that silhouette. In bloom, the vivid red bottlebrush spikes are unmistakable. Crush a leaf to confirm with the citrus scent. Look for hummingbirds hovering at the branch tips.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height</div><div class="data-value">15 to 20 feet</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">15 to 20 feet</div></div>
-    <div class="data-item"><div class="data-label">Habit</div><div class="data-value">cascading, weeping crown</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">moderate</div></div>
-    <div class="data-item"><div class="data-label">Light</div><div class="data-value">full sun</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">clay · sand · loam · slightly alkaline · acidic · well-drained</div></div>
-    <div class="data-item"><div class="data-label">Drought tolerance</div><div class="data-value">high</div></div>
-    <div class="data-item"><div class="data-label">Salt tolerance</div><div class="data-value">moderate</div></div>
-    </div>
-  </div>
-  <div class="plant-caution-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>The flowers can be steeped into a sweet edible tea or syrup, but this isn&#x27;t grown as a food plant in Florida.</p><p>It has no known toxicity to people, dogs, or cats — handle it freely.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/382220097/large.jpeg" loading="lazy" alt="Weeping Bottlebrush — photo by kathynoran88"><div class="gal-credit" data-login="kathynoran88">📷 kathynoran88</div><div class="gal-date">📅 May 16, 2024</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602872016/large.jpg" loading="lazy" alt="Weeping Bottlebrush — photo by elurding"><div class="gal-credit" data-login="elurding">📷 elurding</div><div class="gal-date">📅 Dec 25, 2025</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698710721/large.jpg" loading="lazy" alt="Weeping Bottlebrush — photo by Lilah Thomas"><div class="gal-credit" data-login="theblackd0g13">📷 Lilah Thomas</div><div class="gal-date">📅 Jul 15, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/717893091/large.jpg" loading="lazy" alt="Weeping Bottlebrush — photo by Joni Hoezee"><div class="gal-credit" data-login="joni76115">📷 Joni Hoezee</div><div class="gal-date">📅 Jun 3, 2024</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Callistemon viminalis</span><span class="alias-tag">Creek Bottlebrush</span><span class="alias-tag">Drooping Bottlebrush</span><span class="alias-tag">Crimson Bottlebrush</span><span class="alias-tag">Red Bottlebrush</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© elurding (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© kathynoran88 (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Lilah Thomas (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Joni Hoezee (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00002/602872039.jpg", "credit": "elurding", "license": "CC-BY-NC", "observed": "Dec 25, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/382220097/large.jpeg", "credit": "kathynoran88", "credit_login": "kathynoran88", "license": "CC-BY-NC", "observed": "May 16, 2024"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/602872016/large.jpg", "credit": "elurding", "credit_login": "elurding", "license": "CC-BY-NC", "observed": "Dec 25, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698710721/large.jpg", "credit": "Lilah Thomas", "credit_login": "theblackd0g13", "license": "CC-BY-NC", "observed": "Jul 15, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/717893091/large.jpg", "credit": "Joni Hoezee", "credit_login": "joni76115", "license": "CC-BY-NC", "observed": "Jun 3, 2024"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 27, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>The showy red &quot;bottlebrush&quot; is not made of petals — it&#x27;s a burst of pollen-bearing stamens.</li><li>Crush a leaf for a pleasant citrus scent.</li><li>Hummingbirds, butterflies, and honeybees swarm the nectar-rich blooms, making this one of the most productive wildlife plants in the park.</li><li>Though often sold as a tree, it is technically a large shrub trained into tree form.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Native to eastern Australia, primarily along watercourses in Queensland and New South Wales, with a disjunct population in the Kimberley region of Western Australia. It grows naturally in moist habitats such as riverbanks, creek edges, and flood-prone areas.</p></div><div class="sp-block"><p>The nectar-rich flowers are absolute magnets for local wildlife, making them highly favored by hummingbirds, butterflies, and honeybees.</p></div><div class="sp-block"><p>The &quot;bottles&quot; you see are not actually petals; the showy, colorful parts of the flower are the stamens (the pollen-bearing male organs).</p></div><div class="sp-block"><p>When the narrow, pale green leaves are crushed, they release a pleasant, distinctly citrusy aroma.</p></div><div class="sp-block"><p>While they are highly drought-tolerant once established and can handle short bursts of cold, they dislike highly alkaline soil and prefer full sun.</p></div><div class="sp-block"><p>While sold in garden centers trained into a single-trunk &quot;tree&quot; form, the Weeping Bottlebrush is biologically classified as a large shrub that naturally grows weeping, fountain-like branches</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Front Pond and Galleria Field.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The nectar-rich red bottlebrush spikes are absolute magnets for Florida wildlife, especially hummingbirds, butterflies (including zebra longwings), and honeybees. In Florida gardens it serves as a high-value nectar source during the warm months when many other plants have finished blooming.</p></div><div class="sp-block"><p>The small woody seed capsules provide food for various birds and small mammals. Its dense, weeping canopy offers excellent cover and nesting sites for birds.</p></div><div class="sp-block"><p>While not a Florida native, it is considered a relatively well-behaved non-native that supports local pollinators without becoming invasive here.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>Brushy red flowers are a nectar source for butterflies and hummingbirds.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Bright red &quot;bottlebrush&quot; spikes 3–4 inches long, appearing mainly spring and summer — highly attractive to hummingbirds, butterflies, and bees.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Small gray or brown woody capsules that look like beads on a necklace. Leaves: Narrow, pale green, lance-shaped, and strongly citrus-scented when crushed.</p></div><div class="sp-block"><p>The cascading weeping form is distinctive year-round — no other park tree has quite that silhouette. In bloom, the vivid red bottlebrush spikes are unmistakable. Crush a leaf to confirm with the citrus scent. Look for hummingbirds hovering at the branch tips.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Clay · sand · loam · slightly alkaline · acidic · well-drained</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>High</p></div><div class="sp-block"><div class="sp-block-label">Salt</div><p>Moderate</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>15 to 20 feet; 15 to 20 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Cascading, weeping crown</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Moderate</p></div><div class="sp-block"><div class="sp-block-label">It spreads</div><p>UF/IFAS has formally predicted Melaleuca viminalis to be invasive and no longer recommends it as a landscape plant. In North and Central Florida (including Manatee County) it is not currently considered a problem species, but caution is advised and it should be managed to prevent escape into natural areas. In South Florida it is not recommended at all. The genus Melaleuca includes some of Florida&#x27;s most damaging invasive species. This specimen is established at the park — visitors should be aware of the nuance before planting elsewhere.</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">The risk</div><p>No toxicity to people or pets.</p></div><div class="sp-block"><p>The flowers can be steeped into a sweet edible tea or syrup, but this isn&#x27;t grown as a food plant in Florida.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00002/602872039.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/382220097/large.jpeg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602872016/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698710721/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="4"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/717893091/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Callistemon viminalis &middot; Creek Bottlebrush &middot; Drooping Bottlebrush &middot; Crimson Bottlebrush &middot; Red Bottlebrush</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00002/602872039.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/382220097/large.jpeg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/602872016/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/698710721/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/717893091/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

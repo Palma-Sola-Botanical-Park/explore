@@ -1,128 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mother of Millions · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mother of Millions (Kalanchoe delagoensis) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:52% 48%" src="../photos/PSBP-00601/689677618.jpg" alt="Mother of Millions at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Foliage &amp; Accent</div>
-    <div class="plant-hero-name">Mother of Millions</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00601/689677618.jpg" alt="Mother of Millions at Palma Sola Botanical Park" style="object-position:52% 48%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602870058/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602870079/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/626741621/large.jpg" alt=""></button><button type="button" data-i="4" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689677565/large.jpg" alt=""></button><button type="button" data-i="5" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689677623/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">6</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Foliage &amp; Accent</div>
+    <h1 class="sp-name">Mother of Millions</h1>
+    <div class="sp-sci">Kalanchoe delagoensis</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Kalanchoe delagoensis</span>
-  <a class="plant-family-tag" href="../nature.html?family=Crassulaceae">Crassulaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="ruby_meador">Ruby Meador</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 1, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>Each narrow leaf carries a cluster of tiny, fully formed plantlets at its tip — not seeds, but miniature plants complete with roots, ready to drop and grow the moment they touch soil. A single parent plant can shed hundreds of these in a season, which is exactly how the name came about.</li>
-    <li>The toxic compounds in this plant are chemically close cousins of the poisons found in the skin of Bufo toads — and they work by the same mechanism as the heart drug digoxin, disrupting the electrical rhythm of cardiac cells.</li>
-    <li>Despite its flamboyant reproductive strategy, Mother of Millions rarely bothers to flower. Plants reproduce so efficiently through plantlets that flowering is almost redundant — though a well-grown specimen that gets a dry winter rest can produce a striking chandelier of orange-red bells.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>Native to the arid savannas of southern and central Madagascar, where it grows in dry grasslands with sparse tree cover and long dry seasons. Like the continent-sized island itself, it evolved in isolation — and that evolutionary history left it with almost no natural checks on its spread once it was introduced elsewhere.</p>
-      <p>It arrived in cultivation worldwide through the succulent and houseplant trade, valued for its unusual look and near-indestructibility. In Florida, escaped plants have established most readily along the east and south coasts, where warm winters and sandy, well-drained soils suit it perfectly.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>The genus name Kalanchoe is thought to derive from a Chinese name that early European botanists recorded in the 1600s. The species epithet delagoensis refers to Delagoa Bay — the colonial name for what is now Maputo Bay in Mozambique — where specimens were collected in the 19th century, though the plant is a Madagascan native rather than an African one.</li>
-    <li>Mother of Millions belongs to the Crassulaceae — the stonecrop family — and shares its clade with jade plants, sedums, and echeverias. All members of this family are succulents built for water storage, but few have pushed vegetative reproduction as far as the Kalanchoe genus, where the ability to sprout fully formed plantlets on living leaf tissue has evolved multiple times.</li>
-    <li>The plantlet strategy is called vivipary — literally &#x27;live birth&#x27; — and in K. delagoensis it operates at the leaf tips rather than the leaf margins (where the related &#x27;Mother of Thousands,&#x27; K. daigremontiana, carries its plantlets). That distinction is the easiest way to tell the two apart. In the wild, plantlets simply fall and root wherever they land; water, wind, and animals do the rest.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>In its native Madagascar, the orange-red flowers appear in winter and can attract nectar-feeding birds and insects, but Mother of Millions has no documented co-evolutionary history with Florida&#x27;s pollinators or fauna. It does not function as a larval host for local butterflies or moths.</p>
-      <p>The plant&#x27;s main ecological role in introduced areas tends to be competitive rather than supportive — its dense, fast-growing colonies can displace native groundcover species, particularly in coastal dune habitats. Visitors looking for the park&#x27;s best pollinator habitat will find it among the native plantings.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Reproduction</div><p>Mother of Millions reproduces primarily through vivipary — the production of tiny, already-rooted plantlets at the tips of its leaves. These drop to the ground and establish without any assistance. The plant can also set seed and be propagated by stem cuttings, but clonal plantlet dispersal is so efficient that sexual reproduction is rarely necessary.</p></div>
-<div class="repro-item"><div class="repro-label">Plantlets</div><p>Look at the tip of any mature leaf and you will find a cluster of small, spoon-shaped bulbils nestled among 3 to 9 pointed teeth. Each is a miniature plant in its own right, already carrying rudimentary roots. A single leaf tip may hold a dozen; a single parent plant can shed hundreds in a season.</p></div>
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Clusters of pendulous, tubular-bell-shaped flowers, orange to scarlet (sometimes pale pink or yellowish), dangle from the top of the stem in a loose chandelier arrangement — which gives the plant one of its common names. Flowers are 1 to 1.5 inches long and appear in late winter to early spring.</p><p>Because clonal reproduction is so effective, plants invest relatively little energy in flowering, and not every specimen blooms each year.</p></div>
-<div class="repro-item"><div class="repro-label">Leaves and Stem</div><p>Leaves are narrow, almost cylindrical, gray-green with reddish-brown spots, typically whorled in sets of three along the stem. They measure up to 6 inches long but are rarely more than half an inch wide. The stem is erect and unbranched, sometimes with short, sterile shoots near the base.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Start at the leaf tips: the cluster of tiny, tooth-flanked plantlets is the plant&#x27;s signature and easiest identifying feature. Each plantlet is a perfect miniature of the parent, complete with tiny leaves of its own. Look for the upright, unbranched gray-green stem, the whorled narrow leaves spotted with reddish-brown, and — in late winter — the chandelier of dangling orange bells at the very top.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item"><div class="data-label">Height</div><div class="data-value">2 to 4 feet</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">1 to 2 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">erect, unbranched or sparsely branched at base; upright single stem</div></div>
-    <div class="data-item"><div class="data-label">Growth rate</div><div class="data-value">fast</div></div>
-    <div class="data-item full-width"><div class="data-label">Texture</div><div class="data-value">fine to medium — narrow cylindrical leaves give a spiky, vertical look</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to part shade; grows most vigorously and flowers best in full sun</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">sand, loam, clay loam; well-drained is essential; tolerates a pH range of roughly 5.5 to 7.5</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">excellent — a true xeric succulent; overwatering is the primary cultural problem</div></div>
-    </div>
-  </div>
-  <div class="plant-toxic-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚠️</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>Do not eat any part of this plant. All parts of Kalanchoe delagoensis contain bufadienolide cardiac glycosides — the same class of compounds found in Bufo toad skin and the drug digoxin — which disrupt the electrical rhythm of the heart. Livestock deaths have been recorded in Australia and South Africa, and the flowers carry the highest concentration of toxins.</p><p>Dogs are reported to be particularly sensitive; ingestion can cause vomiting, diarrhea, abnormal heart rate, weakness, and collapse. The plant is also toxic to cats, horses, and children. Handling can cause skin irritation — gloves are a good idea.</p><p>If a pet or child has ingested any part of this plant, contact your veterinarian or the ASPCA Animal Poison Control Center at (888) 426-4435 immediately.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>The common name &#x27;Mother of Millions&#x27; is shared by at least three closely related plants: K. delagoensis, K. daigremontiana (Mother of Thousands), and their hybrid K. x houghtonii. The easiest way to distinguish K. delagoensis is by its narrow, nearly cylindrical leaves with plantlets clustered at the tips rather than along the leaf margins.</p>
-      <p>At Palma Sola Botanical Park this specimen is maintained as a teaching example of succulent adaptation and reproductive biology. The invasive risk it poses in the broader Florida landscape is part of the story — its biology is fascinating precisely because it is so effective.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602870058/large.jpg" loading="lazy" alt="Mother of Millions — photo by elurding"><div class="gal-credit" data-login="elurding">📷 elurding</div><div class="gal-date">📅 Dec 25, 2025</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602870079/large.jpg" loading="lazy" alt="Mother of Millions — photo by elurding"><div class="gal-credit" data-login="elurding">📷 elurding</div><div class="gal-date">📅 Dec 25, 2025</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/626741621/large.jpg" loading="lazy" alt="Mother of Millions — photo by jsea"><div class="gal-credit" data-login="jsea">📷 jsea</div><div class="gal-date">📅 Mar 20, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689677565/large.jpg" loading="lazy" alt="Mother of Millions — photo by Ruby Meador"><div class="gal-credit" data-login="ruby_meador">📷 Ruby Meador</div><div class="gal-date">📅 Jul 1, 2026</div></div><div class="gal-item" onclick="openLB(5)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689677623/large.jpg" loading="lazy" alt="Mother of Millions — photo by Ruby Meador"><div class="gal-credit" data-login="ruby_meador">📷 Ruby Meador</div><div class="gal-date">📅 Jul 1, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Chandelier Plant</span><span class="alias-tag">Devil&#x27;s Backbone</span><span class="alias-tag">Lizard Plant</span><span class="alias-tag">Mother-in-Law Plant</span><span class="alias-tag">Kalanchoe tubiflora</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Ruby Meador (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© elurding (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© jsea (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00601/689677618.jpg", "credit": "Ruby Meador", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/602870058/large.jpg", "credit": "elurding", "credit_login": "elurding", "license": "CC-BY-NC", "observed": "Dec 25, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/602870079/large.jpg", "credit": "elurding", "credit_login": "elurding", "license": "CC-BY-NC", "observed": "Dec 25, 2025"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/626741621/large.jpg", "credit": "jsea", "credit_login": "jsea", "license": "CC-BY-NC", "observed": "Mar 20, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689677565/large.jpg", "credit": "Ruby Meador", "credit_login": "ruby_meador", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689677623/large.jpg", "credit": "Ruby Meador", "credit_login": "ruby_meador", "license": "CC-BY-NC", "observed": "Jul 1, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>August 24, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#care">Take care</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>Each narrow leaf carries a cluster of tiny, fully formed plantlets at its tip — not seeds, but miniature plants complete with roots, ready to drop and grow the moment they touch soil. A single parent plant can shed hundreds of these in a season, which is exactly how the name came about.</li><li>The toxic compounds in this plant are chemically close cousins of the poisons found in the skin of Bufo toads — and they work by the same mechanism as the heart drug digoxin, disrupting the electrical rhythm of cardiac cells.</li><li>Despite its flamboyant reproductive strategy, Mother of Millions rarely bothers to flower. Plants reproduce so efficiently through plantlets that flowering is almost redundant — though a well-grown specimen that gets a dry winter rest can produce a striking chandelier of orange-red bells.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-fact"><div class="sp-fact-h">Worth knowing</div><p>The genus name Kalanchoe is thought to derive from a Chinese name that early European botanists recorded in the 1600s. The species epithet delagoensis refers to Delagoa Bay — the colonial name for what is now Maputo Bay in Mozambique — where specimens were collected in the 19th century, though the plant is a Madagascan native rather than an African one.</p></div><div class="sp-block"><p>Native to the arid savannas of southern and central Madagascar, where it grows in dry grasslands with sparse tree cover and long dry seasons. Like the continent-sized island itself, it evolved in isolation — and that evolutionary history left it with almost no natural checks on its spread once it was introduced elsewhere.</p></div><div class="sp-block"><p>It arrived in cultivation worldwide through the succulent and houseplant trade, valued for its unusual look and near-indestructibility. In Florida, escaped plants have established most readily along the east and south coasts, where warm winters and sandy, well-drained soils suit it perfectly.</p></div><div class="sp-block"><p>Mother of Millions belongs to the Crassulaceae — the stonecrop family — and shares its clade with jade plants, sedums, and echeverias. All members of this family are succulents built for water storage, but few have pushed vegetative reproduction as far as the Kalanchoe genus, where the ability to sprout fully formed plantlets on living leaf tissue has evolved multiple times.</p></div><div class="sp-block"><p>The plantlet strategy is called vivipary — literally &#x27;live birth&#x27; — and in K. delagoensis it operates at the leaf tips rather than the leaf margins (where the related &#x27;Mother of Thousands,&#x27; K. daigremontiana, carries its plantlets). That distinction is the easiest way to tell the two apart. In the wild, plantlets simply fall and root wherever they land; water, wind, and animals do the rest.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In its native Madagascar, the orange-red flowers appear in winter and can attract nectar-feeding birds and insects, but Mother of Millions has no documented co-evolutionary history with Florida&#x27;s pollinators or fauna. It does not function as a larval host for local butterflies or moths.</p></div><div class="sp-block"><p>The plant&#x27;s main ecological role in introduced areas tends to be competitive rather than supportive — its dense, fast-growing colonies can displace native groundcover species, particularly in coastal dune habitats. Visitors looking for the park&#x27;s best pollinator habitat will find it among the native plantings.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>No documented role as a larval host or notable nectar source for any butterfly or moth species; as a non-native invasive succulent from Madagascar it has no established relationship with North American Lepidoptera.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Plantlets</div><p>Look at the tip of any mature leaf and you will find a cluster of small, spoon-shaped bulbils nestled among 3 to 9 pointed teeth. Each is a miniature plant in its own right, already carrying rudimentary roots. A single leaf tip may hold a dozen; a single parent plant can shed hundreds in a season.</p></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Clusters of pendulous, tubular-bell-shaped flowers, orange to scarlet (sometimes pale pink or yellowish), dangle from the top of the stem in a loose chandelier arrangement — which gives the plant one of its common names. Flowers are 1 to 1.5 inches long and appear in late winter to early spring. Because clonal reproduction is so effective, plants invest relatively little energy in flowering, and not every specimen blooms each year.</p></div><div class="sp-block"><div class="sp-block-label">Leaves and Stem</div><p>Leaves are narrow, almost cylindrical, gray-green with reddish-brown spots, typically whorled in sets of three along the stem. They measure up to 6 inches long but are rarely more than half an inch wide. The stem is erect and unbranched, sometimes with short, sterile shoots near the base.</p></div><div class="sp-block"><p>Start at the leaf tips: the cluster of tiny, tooth-flanked plantlets is the plant&#x27;s signature and easiest identifying feature. Each plantlet is a perfect miniature of the parent, complete with tiny leaves of its own. Look for the upright, unbranched gray-green stem, the whorled narrow leaves spotted with reddish-brown, and — in late winter — the chandelier of dangling orange bells at the very top.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun to part shade; grows most vigorously and flowers best in full sun</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Sand, loam, clay loam; well-drained is essential; tolerates a pH range of roughly 5.5 to 7.5</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Excellent — a true xeric succulent; overwatering is the primary cultural problem</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>2 to 4 feet; 1 to 2 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Erect, unbranched or sparsely branched at base; upright single stem</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Fast</p></div><div class="sp-block"><div class="sp-block-label">It spreads</div><p>UF/IFAS assesses K. delagoensis as invasive in South Florida and does not recommend it for Florida landscapes. Its hybrid offspring K. x houghtonii — which shares the &#x27;Mother of Millions&#x27; common name — is listed as FISC Category II. Taxonomic overlap between the two makes field identification imprecise, but both are flagged as problems in Florida&#x27;s natural areas, particularly coastal dune habitats where they crowd out native species.</p></div></section><section class="sp-sec" id="care"><h2>Take care</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>Do not eat any part of this plant. All parts of Kalanchoe delagoensis contain bufadienolide cardiac glycosides — the same class of compounds found in Bufo toad skin and the drug digoxin — which disrupt the electrical rhythm of the heart. Livestock deaths have been recorded in Australia and South Africa, and the flowers carry the highest concentration of toxins.</p></div><div class="sp-block"><p>Dogs are reported to be particularly sensitive; ingestion can cause vomiting, diarrhea, abnormal heart rate, weakness, and collapse. The plant is also toxic to cats, horses, and children. Handling can cause skin irritation — gloves are a good idea.</p></div><div class="sp-block"><p>If a pet or child has ingested any part of this plant, contact your veterinarian or the ASPCA Animal Poison Control Center at (888) 426-4435 immediately.</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00601/689677618.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602870058/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/602870079/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/626741621/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="4"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689677565/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="5"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/689677623/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Chandelier Plant &middot; Devil&#x27;s Backbone &middot; Lizard Plant &middot; Mother-in-Law Plant &middot; Kalanchoe tubiflora</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00601/689677618.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/602870058/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/602870079/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/626741621/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689677565/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/689677623/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

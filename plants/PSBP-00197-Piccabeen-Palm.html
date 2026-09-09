@@ -1,129 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Piccabeen Palm · Palma Sola Botanical Park</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Piccabeen Palm (Archontophoenix cunninghamiana) — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link rel="apple-touch-icon" href="../images/favicon.png">
-<link rel="stylesheet" href="../css/site.css">
-<link rel="stylesheet" href="../css/plant-page.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
 </head>
-<body>
+<body data-bands="on">
 <div id="nav-placeholder"></div>
 
-<div class="plant-wrap">
-<div class="plant-hero">
-  <img style="cursor:pointer;object-position:50% 50%" src="../photos/PSBP-00197/697762603.jpg" alt="Piccabeen Palm at Palma Sola Botanical Park" loading="lazy" onclick="openLB(0)">
-  <div class="plant-hero-overlay">
-    <div class="plant-hero-category">Palm &amp; Cycad</div>
-    <div class="plant-hero-name">Piccabeen Palm</div>
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="../photos/PSBP-00197/697762603.jpg" alt="Piccabeen Palm at Palma Sola Botanical Park" style="object-position:50% 50%">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by"></span><span class="attr-date"><span class="attr-dot">&middot;</span> </span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span class="attr-src">via iNaturalist</span></span></div>
+  <div class="sp-strip" id="heroStrip"><button type="button" data-i="1" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697762604/large.jpg" alt=""></button><button type="button" data-i="2" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697764139/large.jpg" alt=""></button><button type="button" data-i="3" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697764141/large.jpg" alt=""></button><button type="button" data-i="4" aria-label="Photograph"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697764143/large.jpg" alt=""></button></div><button class="sp-herogal" id="heroGal" type="button" aria-label="Open the photograph gallery"><span>Gallery <span class="n">5</span></span></button>
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">Palm &amp; Cycad</div>
+    <h1 class="sp-name">Piccabeen Palm</h1>
+    <div class="sp-sci">Archontophoenix cunninghamiana</div>
   </div>
 </div>
-<div class="plant-sci-band">
-  <span class="plant-sci-name">Archontophoenix cunninghamiana</span>
-  <a class="plant-family-tag" href="../nature.html?family=Arecaceae">Arecaceae</a>
-</div>
-<div class="plant-credit">📷 Photo by <strong data-login="david_vanderbilt">David Vanderbilt</strong> · CC-BY-NC · via iNaturalist · 📅 Jul 14, 2026</div>
-<div class="plant-content">
-  <div class="plant-status-row">
-    
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-    <li>The flowers of this palm are unmistakably lavender — a soft purple-pink that sets it apart from every other Archontophoenix species, all of which produce white or cream flowers. It is the only member of the genus with this trait.</li>
-    <li>Both &#x27;Bangalow&#x27; and &#x27;Piccabeen&#x27; are words from Aboriginal languages of eastern Australia, each used by local peoples to refer to this palm. The name &#x27;Bangalow&#x27; specifically comes from the Dharawal language and refers to a water-carrying basket: the crownshaft can be folded and tucked into a watertight vessel, with the petiole serving as the handle.</li>
-    <li>Each frond carries a gentle half-twist along its length, so the leaflets at the outer tip rotate nearly vertical — a subtle but reliable field mark that helps distinguish this species from its close relative the Alexandra Palm (Archontophoenix alexandrae), whose fronds lie flat.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🌍</span><span class="plant-section-title">Origin</span></div>
-    <div class="plant-section-body"><p>The Piccabeen Palm is endemic to the east coast of Australia, ranging from around Mount Elliot near Townsville in Queensland south through coastal and near-coastal areas to Bateman&#x27;s Bay in southern New South Wales. In its home range it is a rainforest and wet-forest species, growing in colonies along stream banks, in gullies, and in swampy lowlands — wherever moisture is reliable.</p>
-      <p>It has been cultivated in warm-climate gardens worldwide since the 19th century and is now a well-established ornamental throughout central and southern Florida, valued for its fast growth, self-cleaning fronds, and graceful silhouette.</p></div>
-  </div>
-  <div class="plant-more-info">
-    <div class="plant-section-header"><span class="plant-section-icon">🔍</span><span class="plant-section-title">More Information</span></div>
-    <ul class="more-info-list">
-    <li>In its native Queensland and New South Wales, this palm typically grows as a rainforest understory or edge tree, reaching up to roughly 100 feet (about 98 feet) tall in ideal conditions. It tolerates deep shade when young — an adaptation to life beneath a forest canopy — but grows faster and develops a fuller crown in bright light as it matures.</li>
-    <li>The fronds are notably self-cleaning: when a frond dies, the whole leaf detaches neatly at the crownshaft and drops to the ground, leaving a clean ring scar on the trunk. There is no tattered skirt of dead fronds to prune, which is one reason this palm is so popular in managed landscapes.</li>
-    <li>Despite its refined appearance, the Bangalow Palm is a prolific seeder and has naturalized as an invasive weed in southern Brazil, where it has colonized Atlantic Forest fragments — a problem compounded by the fact that the ecologically similar native palm Euterpe edulis has been heavily over-harvested in the same region, leaving a niche the Piccabeen is quick to fill.</li>
-    <li>It is also a declared pest species in parts of New Zealand, where it competes directly with the native nikau palm for the same forest niches. In Florida it has not been documented as establishing in natural areas, but the lesson from elsewhere is worth keeping in mind.</li>
-    </ul>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🦋</span><span class="plant-section-title">Wildlife Value</span></div>
-    <div class="plant-section-body"><p>The inflorescences — branched panicles up to roughly five feet long that emerge just below the crownshaft — carry the palm&#x27;s distinctive lavender flowers and attract pollinating insects when in bloom. Because the palm is monoecious (male and female flowers on the same plant), every individual can set fruit without a separate pollen source nearby.</p>
-      <p>The bright red-orange drupes that follow are eagerly taken by birds, which disperse the seeds widely. In Australia, Rainbow Lorikeets and other frugivorous birds are regular visitors. In Florida, native birds that eat small palm fruits will similarly work through a fruiting cluster — the fruit is the primary wildlife draw this palm offers in a cultivated setting.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🔬</span><span class="plant-section-title">Reproduction &amp; Identification</span></div>
-    <div class="repro-list">
-<div class="repro-item"><div class="repro-label">Flowers</div><p>Branched panicles up to roughly 5 feet long arise from the base of the crownshaft. Flowers are lavender to pale purple — unusual and distinctive among palms. Both male and female flowers appear on the same plant (monoecious), so a single tree can set fruit without cross-pollination.</p></div>
-<div class="repro-item"><div class="repro-label">Fruit</div><p>Bright red-orange, roughly globose drupes about ½ inch in diameter, each containing a single seed. They ripen in hanging clusters below the crownshaft and are not edible. Birds disperse the seeds readily.</p></div>
-<div class="repro-item"><div class="repro-label">Fronds</div><p>Pinnately compound, typically about 10 to 15 feet (10 to 15 feet) long, with roughly 80 to 100 pairs of linear leaflets. Leaflets are green on both surfaces — no silver underside, which is one way to tell this species from its close relative Archontophoenix alexandrae. The whole frond often carries a gentle half-twist toward the tip, turning the outermost leaflets nearly vertical.</p><p>Fronds shed cleanly and completely when they die, leaving neat ring scars on the trunk.</p></div>
-<div class="repro-item"><div class="repro-label">Crownshaft and Trunk</div><p>The crownshaft is prominent — about 4½ feet tall, green to purplish-green, smooth, and slightly swollen at the base. The solitary trunk is gray-brown, ringed with leaf-scar bands, and slightly enlarged at the base; it reaches up to roughly 12 inches (12 inches) in diameter at maturity in the wild, typically less in cultivation.</p></div>
-<div class="repro-item"><div class="repro-label">What to Look For</div><p>Start at the crown: the smooth, greenish crownshaft is the structural landmark, sitting like a collar between the trunk and the arching fronds. If the palm is in bloom, look for the drooping lavender flower panicles emerging just below it — that purple color is a reliable field mark.</p><p>Check the leaflets: they are solid green on both sides, with no silvery underside. When in fruit, the clusters of small bright red-orange drupes hanging below the crownshaft are hard to miss. Finally, run your eye down the trunk: clean horizontal ring scars mark every spot where a frond once attached and fell away cleanly.</p></div>
-    </div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📐</span><span class="plant-section-title">Size &amp; Growing Conditions</span></div>
-    <div class="data-grid">
-    <div class="data-item full-width"><div class="data-label">Height</div><div class="data-value">up to roughly 40 feet in Florida landscapes; up to 98 feet in native Australian rainforest habitat</div></div>
-    <div class="data-item"><div class="data-label">Spread</div><div class="data-value">10 to 15 feet</div></div>
-    <div class="data-item full-width"><div class="data-label">Habit</div><div class="data-value">solitary trunk, arching crown of pinnate fronds; slender and upright; USDA Zone 9b to 11, tolerating brief dips to about 25°F (-3.8°C)</div></div>
-    <div class="data-item full-width"><div class="data-label">Growth rate</div><div class="data-value">moderate to fast for a palm in Florida&#x27;s subtropical climate</div></div>
-    <div class="data-item"><div class="data-label">Texture</div><div class="data-value">medium-fine</div></div>
-    <div class="data-item full-width"><div class="data-label">Light</div><div class="data-value">full sun to partial shade; tolerates deep shade when young, prefers bright light at maturity</div></div>
-    <div class="data-item full-width"><div class="data-label">Soil tolerances</div><div class="data-value">adaptable to a range of soil types including sand, loam, and clay; prefers moist, well-drained, organically rich soil; unlike many palms, it tolerates occasional wet feet without significant harm</div></div>
-    <div class="data-item full-width"><div class="data-label">Drought tolerance</div><div class="data-value">low to moderate; requires consistent moisture and does not perform well if allowed to dry out for extended periods</div></div>
-    </div>
-  </div>
-  <div class="plant-safe-section">
-    <div class="plant-section-header"><span class="plant-section-icon">✅</span><span class="plant-section-title">Edibility &amp; Toxicity</span></div>
-    <div class="plant-section-body"><p>This palm is not known to be toxic to people, dogs, or cats. The fruit is not a food source — the flesh is minimal and not eaten — but it is harmless. Otherwise this is a low-hazard plant with no significant safety concerns.</p></div>
-  </div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">📝</span><span class="plant-section-title">Notes</span></div>
-    <div class="plant-section-body"><p>In Florida&#x27;s nursery and landscape trade, &#x27;King Palm&#x27; is applied loosely to both this species and Archontophoenix alexandrae (the Alexandra Palm). The two look similar, but A. cunninghamiana is cooler-climate-tolerant (USDA Zone 9b), has green leaflets on both sides, and — most reliably — produces lavender flowers, while A. alexandrae has white flowers and a silvery leaflet underside.</p>
-      <p>The original species description was published by Hermann Wendland in 1858 under the name Ptychosperma cunninghamiana, placing it in the same genus as the Solitaire Palm (Ptychosperma elegans) also growing at this park. The two palms share a superficial resemblance — crownshaft, self-cleaning fronds, red fruit — but belong to separate genera and come from different parts of Australia.</p></div>
-  </div>
-  <div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Gallery</span></div>
-    <div class="gal-note">Photos contributed by park visitors and volunteers via iNaturalist</div>
-    <div class="gal-grid"><div class="gal-item" onclick="openLB(1)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697762604/large.jpg" loading="lazy" alt="Piccabeen Palm — photo by David Vanderbilt"><div class="gal-credit" data-login="david_vanderbilt">📷 David Vanderbilt</div><div class="gal-date">📅 Jul 14, 2026</div></div><div class="gal-item" onclick="openLB(2)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697764139/large.jpg" loading="lazy" alt="Piccabeen Palm — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jul 14, 2026</div></div><div class="gal-item" onclick="openLB(3)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697764141/large.jpg" loading="lazy" alt="Piccabeen Palm — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jul 14, 2026</div></div><div class="gal-item" onclick="openLB(4)"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697764143/large.jpg" loading="lazy" alt="Piccabeen Palm — photo by Randall Carter"><div class="gal-credit" data-login="randall_carter">📷 Randall Carter</div><div class="gal-date">📅 Jul 14, 2026</div></div></div></div>
-  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">🏷️</span><span class="plant-section-title">Also Known As</span></div>
-    <div class="alias-list"><span class="alias-tag">Bangalow Palm</span><span class="alias-tag">King Palm</span><span class="alias-tag">Illawarra Palm</span></div>
-  </div>
-<div class="plant-section"><div class="plant-section-header"><span class="plant-section-icon">📸</span><span class="plant-section-title">Photo Credits</span></div><ul style="list-style:none;padding:10px 16px"><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© David Vanderbilt (CC-BY-NC), via iNaturalist</li><li style="font-size:15px;line-height:1.65;color:var(--text-mid,#2e2e1e);padding:8px 0;border-bottom:1px solid rgba(90,122,74,0.12)">© Randall Carter (CC-BY-NC), via iNaturalist</li></ul></div>
-    <div class="lightbox" id="lb" onclick="closeLB(event)">
-      <div class="lb-inner">
-        <button class="lb-close" onclick="closeLB()">&times;</button>
-        <button class="lb-prev" onclick="stepLB(-1)">&#8249;</button>
-        <button class="lb-next" onclick="stepLB(1)">&#8250;</button>
-        <img class="lb-img" id="lbImg">
-        <div class="lb-credit" id="lbCredit"></div>
-        <div class="lb-counter" id="lbCounter"></div>
-      </div>
-    </div>
-    <script>
-    var lbData=[{"src": "../photos/PSBP-00197/697762603.jpg", "credit": "David Vanderbilt", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697762604/large.jpg", "credit": "David Vanderbilt", "credit_login": "david_vanderbilt", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697764139/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697764141/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697764143/large.jpg", "credit": "Randall Carter", "credit_login": "randall_carter", "license": "CC-BY-NC", "observed": "Jul 14, 2026"}];
-    var lbIdx=0;
-    function openLB(i){lbIdx=i;var d=lbData[i];document.getElementById('lbImg').src=d.src;var credit='📷 '+d.credit+' · '+d.license+' · via iNaturalist';if(d.observed)credit+=' · 📅 '+d.observed;document.getElementById('lbCredit').innerHTML=credit;document.getElementById('lbCounter').textContent=(i+1)+' / '+lbData.length;document.getElementById('lb').classList.add('active');document.body.style.overflow='hidden';}
-    function closeLB(e){if(e&&e.target!==document.getElementById('lb')&&!e.target.classList.contains('lb-close'))return;document.getElementById('lb').classList.remove('active');document.body.style.overflow='';}
-    function stepLB(dir){lbIdx=(lbIdx+dir+lbData.length)%lbData.length;openLB(lbIdx);}
-    document.addEventListener('keydown',function(e){if(!document.getElementById('lb').classList.contains('active'))return;if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')stepLB(1);if(e.key==='ArrowLeft')stepLB(-1);});
-    </script>
-  <a class="all-plants-link" href="../nature.html#plants">🌿 Explore More Plants</a>
-</div>
-</div><!-- /.plant-wrap -->
-<a class="plant-float-back" href="../nature.html#plants">🌿 All Plants</a>
 
-<div class="page-stamp">Page updated <strong>September 1, 2026</strong></div>
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div><a href="#glance" class="on">At a glance</a><a href="#from">Where it comes from</a><a href="#find">Where to find it here</a><a href="#does">What it does here</a><a href="#know">How to know it</a><a href="#grows">How it grows</a><a href="#photos">Photographs</a></aside>
+    <main><section class="sp-sec" id="glance"><h2>At a glance</h2><div class="sp-sec-rule"></div><div class="sp-quick"><ul><li>The flowers of this palm are unmistakably lavender — a soft purple-pink that sets it apart from every other Archontophoenix species, all of which produce white or cream flowers. It is the only member of the genus with this trait.</li><li>Both &#x27;Bangalow&#x27; and &#x27;Piccabeen&#x27; are words from Aboriginal languages of eastern Australia, each used by local peoples to refer to this palm. The name &#x27;Bangalow&#x27; specifically comes from the Dharawal language and refers to a water-carrying basket: the crownshaft can be folded and tucked into a watertight vessel, with the petiole serving as the handle.</li><li>Each frond carries a gentle half-twist along its length, so the leaflets at the outer tip rotate nearly vertical — a subtle but reliable field mark that helps distinguish this species from its close relative the Alexandra Palm (Archontophoenix alexandrae), whose fronds lie flat.</li></ul></div></section><section class="sp-sec" id="from"><h2>Where it comes from</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The Piccabeen Palm is endemic to the east coast of Australia, ranging from around Mount Elliot near Townsville in Queensland south through coastal and near-coastal areas to Bateman&#x27;s Bay in southern New South Wales. In its home range it is a rainforest and wet-forest species, growing in colonies along stream banks, in gullies, and in swampy lowlands — wherever moisture is reliable.</p></div><div class="sp-block"><p>It has been cultivated in warm-climate gardens worldwide since the 19th century and is now a well-established ornamental throughout central and southern Florida, valued for its fast growth, self-cleaning fronds, and graceful silhouette.</p></div><div class="sp-block"><p>In its native Queensland and New South Wales, this palm typically grows as a rainforest understory or edge tree, reaching up to roughly 100 feet (about 98 feet) tall in ideal conditions. It tolerates deep shade when young — an adaptation to life beneath a forest canopy — but grows faster and develops a fuller crown in bright light as it matures.</p></div><div class="sp-block"><p>The fronds are notably self-cleaning: when a frond dies, the whole leaf detaches neatly at the crownshaft and drops to the ground, leaving a clean ring scar on the trunk. There is no tattered skirt of dead fronds to prune, which is one reason this palm is so popular in managed landscapes.</p></div><div class="sp-block"><p>Despite its refined appearance, the Bangalow Palm is a prolific seeder and has naturalized as an invasive weed in southern Brazil, where it has colonized Atlantic Forest fragments — a problem compounded by the fact that the ecologically similar native palm Euterpe edulis has been heavily over-harvested in the same region, leaving a niche the Piccabeen is quick to fill.</p></div><div class="sp-block"><p>It is also a declared pest species in parts of New Zealand, where it competes directly with the native nikau palm for the same forest niches. In Florida it has not been documented as establishing in natural areas, but the lesson from elsewhere is worth keeping in mind.</p></div></section><section class="sp-sec" id="find"><h2>Where to find it here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>In the Shade Garden.</p></div></section><section class="sp-sec" id="does"><h2>What it does here</h2><div class="sp-sec-rule"></div><div class="sp-block"><p>The inflorescences — branched panicles up to roughly five feet long that emerge just below the crownshaft — carry the palm&#x27;s distinctive lavender flowers and attract pollinating insects when in bloom. Because the palm is monoecious (male and female flowers on the same plant), every individual can set fruit without a separate pollen source nearby.</p></div><div class="sp-block"><p>The bright red-orange drupes that follow are eagerly taken by birds, which disperse the seeds widely. In Australia, Rainbow Lorikeets and other frugivorous birds are regular visitors. In Florida, native birds that eat small palm fruits will similarly work through a fruiting cluster — the fruit is the primary wildlife draw this palm offers in a cultivated setting.</p></div><div class="sp-block"><div class="sp-block-label">Butterflies</div><p>No documented association between Archontophoenix cunninghamiana and butterfly or moth larval hosting was found in any Florida or broadly applicable Lepidoptera host-plant database returned by search. No sources identified it as a notable adult nectar source for butterflies. The inflorescence produces flowers that may attract generalist insects, but no named butterfly or moth species were linked to this palm in the literature retrieved.</p></div></section><section class="sp-sec" id="know"><h2>How to know it</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Flowers</div><p>Branched panicles up to roughly 5 feet long arise from the base of the crownshaft. Flowers are lavender to pale purple — unusual and distinctive among palms. Both male and female flowers appear on the same plant (monoecious), so a single tree can set fruit without cross-pollination.</p></div><div class="sp-block"><div class="sp-block-label">Fruit</div><p>Bright red-orange, roughly globose drupes about ½ inch in diameter, each containing a single seed. They ripen in hanging clusters below the crownshaft and are not edible. Birds disperse the seeds readily.</p></div><div class="sp-block"><div class="sp-block-label">Fronds</div><p>Pinnately compound, typically about 10 to 15 feet (10 to 15 feet) long, with roughly 80 to 100 pairs of linear leaflets. Leaflets are green on both surfaces — no silver underside, which is one way to tell this species from its close relative Archontophoenix alexandrae. The whole frond often carries a gentle half-twist toward the tip, turning the outermost leaflets nearly vertical. Fronds shed cleanly and completely when they die, leaving neat ring scars on the trunk.</p></div><div class="sp-block"><div class="sp-block-label">Crownshaft and Trunk</div><p>The crownshaft is prominent — about 4½ feet tall, green to purplish-green, smooth, and slightly swollen at the base. The solitary trunk is gray-brown, ringed with leaf-scar bands, and slightly enlarged at the base; it reaches up to roughly 12 inches (12 inches) in diameter at maturity in the wild, typically less in cultivation.</p></div><div class="sp-block"><p>Start at the crown: the smooth, greenish crownshaft is the structural landmark, sitting like a collar between the trunk and the arching fronds. If the palm is in bloom, look for the drooping lavender flower panicles emerging just below it — that purple color is a reliable field mark. Check the leaflets: they are solid green on both sides, with no silvery underside. When in fruit, the clusters of small bright red-orange drupes hanging below the crownshaft are hard to miss. Finally, run your eye down the trunk: clean horizontal ring scars mark every spot where a frond once attached and fell away cleanly.</p></div></section><section class="sp-sec" id="grows"><h2>How it grows</h2><div class="sp-sec-rule"></div><div class="sp-block"><div class="sp-block-label">Light</div><p>Full sun to partial shade; tolerates deep shade when young, prefers bright light at maturity</p></div><div class="sp-block"><div class="sp-block-label">Soil</div><p>Adaptable to a range of soil types including sand, loam, and clay; prefers moist, well-drained, organically rich soil; unlike many palms, it tolerates occasional wet feet without significant harm</p></div><div class="sp-block"><div class="sp-block-label">Drought</div><p>Low to moderate; requires consistent moisture and does not perform well if allowed to dry out for extended periods</p></div><div class="sp-block"><div class="sp-block-label">Size</div><p>up to roughly 40 feet in Florida landscapes; up to 98 feet in native Australian rainforest habitat; 10 to 15 feet</p></div><div class="sp-block"><div class="sp-block-label">Habit</div><p>Solitary trunk, arching crown of pinnate fronds; slender and upright; USDA Zone 9b to 11, tolerating brief dips to about 25°F (-3.8°C)</p></div><div class="sp-block"><div class="sp-block-label">Growth rate</div><p>Moderate to fast for a palm in Florida&#x27;s subtropical climate</p></div></section><section class="sp-sec" id="photos"><h2>Photographs</h2><div class="sp-sec-rule"></div><p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">Every one taken in this park, by the people who walk it.</p><div class="sp-gal" id="gal"><figure data-i="0"><div class="shot"><img src="../photos/PSBP-00197/697762603.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="1"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697762604/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="2"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697764139/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="3"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697764141/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure><figure data-i="4"><div class="shot"><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/697764143/large.jpg" alt="" loading="lazy"></div><figcaption><div class="credit-plate"><span class="credit-eyebrow">Photograph by</span><span class="credit-name"></span><span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term"></span></span><span></span><span class="sep">&middot;</span><span>iNaturalist</span></span></div></figcaption></figure></div></section><div class="sp-aka"><div class="sp-block-label">Also known as</div><p>Bangalow Palm &middot; King Palm &middot; Illawarra Palm</p></div></main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS=[{"src": "../photos/PSBP-00197/697762603.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697762604/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697764139/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697764141/large.jpg", "alt": "", "by": "", "date": ""}, {"src": "https://inaturalist-open-data.s3.amazonaws.com/photos/697764143/large.jpg", "alt": "", "by": "", "date": ""}];</script>
+<script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
-<script>
-injectShared({ inatBar: false });
-</script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 </body>
 </html>

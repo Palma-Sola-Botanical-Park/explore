@@ -114,6 +114,30 @@ def _drought_bucket(text):
     return ""
 
 
+def card_hits(species):
+    """The bullets the INDEX shows: authored `page.at_a_glance` if it exists,
+    otherwise the original `quick_hits`.
+
+    Same override the page generator uses, one level up. Randy, 2026-09-08:
+    "we keep it and shift to pages.ataglance when it is available. quick hit
+    would ONLY go to index if at a glance isn't populated of course."
+
+    Without this the card, the browse drawer and screen.html keep showing the
+    older draft while the page shows the authored one — 34 of 92 wildlife
+    species had already diverged that way before this was added.
+    """
+    pol = (species.get("page") or {}).get("at_a_glance")
+    if pol:
+        out = []
+        for b in pol:
+            t = b.get("text") if isinstance(b, dict) else b
+            if t:
+                out.append(str(t))
+        if out:
+            return out
+    return species.get("quick_hits") or []
+
+
 def build_plants_json_entry(species, hero):
     """Build one plants.json card entry from signage + hero photo."""
     pid = species["id"]
@@ -175,13 +199,20 @@ def build_plants_json_entry(species, hero):
         # The real array alongside the flattened `quick` search string — see the
         # note in wildlife_publisher.build_wildlife_json_entry. Retires
         # screen.html's fetch of plant_signage.json. Added 2026-09-07.
-        "quick_hits":   species.get("quick_hits") or [],
+        "quick_hits":   card_hits(species),
         "native": native,
         "butterfly": butterfly,             # larval OR nectar (rollup + back-compat)
         "larval_host": larval_host,         # filter: larval host plant
         "nectar": nectar,                   # filter: adult nectar source
         "larval_species": larval_species,   # named hosts, for the butterfly page
-        "watch_invasive": watch_invasive,   # filter: plants to watch / invasive (CANONICAL)
+        # `watch_invasive` is NOT emitted. Randy removed the "Watch — invasive" chip
+        # from the browse index 2026-09-01 because the flag is tripped by either a
+        # formal listing or observed behaviour and a reader cannot tell which —
+        # "invasive status is prose". Nothing has consumed it from this feed since,
+        # so it stopped being emitted 2026-09-08. It REMAINS on the source record in
+        # plant_signage.json: species_manager edits it, and the page mapper uses it
+        # to locate the prose in watch_invasive_notes (Air Potato's FISC Category I
+        # text lives only there). The flag finds the sentence; the sentence renders.
         "rare_fruit": rare_fruit,           # filter: rare-fruit collection
         "tags": tags,                       # facet: editorial tag chips (non-boolean)
         "photo": photo,
@@ -209,14 +240,14 @@ def build_plants_json_entry(species, hero):
         # searchable text: site.js has always scored matches against p.quick,
         # but nothing ever emitted it, so that branch compared against an empty
         # string on every plant. quick_hits is populated on all 230.
-        "quick":   " ".join(species.get("quick_hits") or []),
-        # facet: safe around a dog on a leash?  safe 143 / caution 50 / toxic 37
-        "dogs":    _safety_word((species.get("toxicity") or {}).get("dogs_level")),
-        # facet: can you eat it?                safe 114 / caution 81 / toxic 35
-        "edible":  _safety_word((species.get("edibility") or {}).get("level")),
-        # facet: how thirsty?                   high 100 / moderate 83 / low 19
-        "drought": _drought_bucket(
-            (species.get("growing_conditions") or {}).get("drought_tolerance")),
+        "quick":   " ".join(card_hits(species)),
+        # `dogs`, `edible` and `drought` are NOT emitted. They were added
+        # 2026-08-18 as browse facets; the toxicity chips they fed were removed
+        # from the index 2026-09-01 ("prose only, per Randy") and nothing has
+        # read them since — validated 2026-09-08 across all five files that load
+        # this feed. Safety detail lives in the plant page's Take care section,
+        # which carries species, symptoms and ASPCA sourcing rather than a
+        # two-word badge. The source fields are untouched.
     }
 
 # ── HTML page generator ────────────────────────────────────────────────────
@@ -1253,19 +1284,19 @@ def write_html(species, hero, gallery_photos=None, dry_run=False):
 
     # Render first with the date already on file, so the comparison below is
     # about content and nothing else.
-    html_content = generate_html(species, hero, gallery_photos, published_on=prev)
+    html_content = generate_html_v2(species, hero, gallery_photos, published_on=prev)
     if dry_run:
         return path, html_content
 
     if page_content_changed(path, html_content):
         stamp = today_iso()
         if stamp != prev:
-            html_content = generate_html(species, hero, gallery_photos,
+            html_content = generate_html_v2(species, hero, gallery_photos,
                                          published_on=stamp)
     else:
         stamp = prev or today_iso()
         if stamp != prev:
-            html_content = generate_html(species, hero, gallery_photos,
+            html_content = generate_html_v2(species, hero, gallery_photos,
                                          published_on=stamp)
 
     PLANTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -1856,7 +1887,7 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                 return
             hero = heroes.get(pid)
             # Generate preview with absolute image URLs (iNat) for browser viewing
-            preview_html = generate_html(species, hero, galleries.get(pid, []))
+            preview_html = generate_html_v2(species, hero, galleries.get(pid, []))
             # Replace relative photo paths with absolute iNat URLs for preview
             if hero and hero.get("photo_url"):
                 rel_path = f"../photos/{pid}/{hero['filename']}"

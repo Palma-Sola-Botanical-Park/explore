@@ -538,13 +538,22 @@ def _strip_tags(s):
 RAW={}
 
 def draft_from_page(pid):
-    """Best-effort draft copy pulled from the published plant page."""
+    """UNUSED since 2026-09-08 — see resolve_copy. Kept only because it also
+    populates RAW[pid]['_origin_paragraph'] for the audit report.
+
+    Was a best-effort draft scraped from the published plant page, which made
+    it quietly dependent on page markup: the v2 layout renamed the section and
+    the old pattern matched nothing, losing sign origins with no error."""
     origin=teaser=None
     hits=glob.glob(os.path.join(REPO,'plants',pid+'-*.html'))
     if not hits: return origin, teaser
     try: h=open(hits[0], encoding='utf-8').read()
     except Exception: return origin, teaser
-    m=re.search(r'Origin</span>.*?<p>(.*?)</p>', h, re.S)
+    # v2 pages (2026-09-08) renamed the section to 'Where it comes from' and
+    # dropped the <span> label, so the old v1 pattern silently matched nothing
+    # and eight plants lost their sign origin. Both markups are matched.
+    m=(re.search(r'id="from">.*?<p>(.*?)</p>', h, re.S)          # v2
+       or re.search(r'Origin</span>.*?<p>(.*?)</p>', h, re.S))    # v1
     if m:
         txt=_strip_tags(m.group(1))
         RAW.setdefault(pid,{})['_origin_paragraph']=txt
@@ -553,7 +562,8 @@ def draft_from_page(pid):
             place=re.sub(r'\s+',' ',n.group(1)).strip()
             place=re.sub(r'^(biome|region|coast|coastal plain) of ','',place,flags=re.I)
             origin=('Native to '+place) if len(place)<=13 else place
-    m=re.search(r'quick-hits-list">\s*<li>(.*?)</li>', h, re.S)
+    m=(re.search(r'sp-quick"><ul><li>(.*?)</li>', h, re.S)        # v2
+       or re.search(r'quick-hits-list">\s*<li>(.*?)</li>', h, re.S))  # v1
     if m:
         t=_strip_tags(m.group(1))
         RAW.setdefault(pid,{})['_first_quick_hit']=t
@@ -569,7 +579,17 @@ def clamp(s, n):
     return cut+'…', True
 
 def resolve_copy(pid, species, overrides):
-    """sign_copy.json wins, then plant_signage.json fields, then a page draft."""
+    """sign_copy.json wins, then plant_signage.json. NO SILENT FALLBACKS.
+
+    This used to fall back to quick_hits[0] and then to scraping the published
+    plant page. Both are gone — Randy, 2026-09-08: "I do not even need that
+    fallback. I want EVERY TEASER filled out and do not want a silent fallback.
+    That was a mistake and over-aggressive ... It's just a reprint if I see an
+    empty teaser."
+
+    He is right. A substituted teaser prints a sign nobody knows is wrong; a
+    blank one is visible and costs one reprint. Missing copy is now reported by
+    the caller, not papered over."""
     o=overrides.get(pid, {}) if isinstance(overrides, dict) else {}
     origin=o.get('origin'); teaser=o.get('teaser'); src='sign_copy.json'
     if not origin:
@@ -578,13 +598,8 @@ def resolve_copy(pid, species, overrides):
     if not teaser:
         for k in _TEASER_KEYS:
             if species.get(k): teaser=str(species[k]); src='plant_signage.json'; break
-        if not teaser:
-            qh=species.get('quick_hits') or species.get('quick_facts')
-            if isinstance(qh, list) and qh: teaser=str(qh[0]); src='plant_signage.json'
     if not origin or not teaser:
-        do,dt=draft_from_page(pid)
-        if not origin and do: origin=do; src='DRAFT (plant page)'
-        if not teaser and dt: teaser=dt; src='DRAFT (plant page)'
+        src='INCOMPLETE'
     origin,c1=clamp(origin, ORIGIN_MAX)
     teaser,c2=clamp(teaser, TEASER_MAX)
     return origin, teaser, src, (c1 or c2)
