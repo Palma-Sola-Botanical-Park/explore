@@ -1043,7 +1043,7 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
   </div>
 </div>
 
-<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+<a class="plant-float-back" href="../nature.html#plants">All plants</a>
 
 <div class="lb" id="lb" aria-hidden="true">
   <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
