@@ -923,6 +923,8 @@ def _v2_block_html(b, photo_index=None):
         r2 = dict(rec)
         if b.get("caption"):
             r2["note"] = b["caption"]
+        if b.get("focus"):
+            r2["focus"] = b["focus"]   # the crop that suits THIS caption
         return v2_inflow_figure(rec.get("psbp_id"), r2)
     return _v2_block(b.get("label") or "", b.get("text", ""))
 

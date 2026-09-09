@@ -513,6 +513,7 @@ def _v2_render_blocks(species, blocks, pid=None, photo_index=None):
                 r = dict(rec)
                 if b.get("caption"):     r["note"] = b["caption"]
                 if b.get("links"):       r["note_species"] = b["links"][0]
+                if b.get("focus"):       r["focus"] = b["focus"]   # this crop, for this caption
                 out.append(v2_inflow_figure(pid, r))
         elif b.get("similar"):
             out.append(v2_similar(species))
@@ -784,8 +785,15 @@ def v2_inflow_figure(pid, rec):
         page = _plant_page(link)
         if page:
             cap += f' <a href="../{h(page)}">See the plant</a>'
+    # The figure is 330px tall with object-fit:cover, so a portrait photo shows
+    # only its middle ~40%. Honour `focus` exactly as the hero does — otherwise
+    # a caption about the office porch or the root flare sits under a crop
+    # that cut both off. Randy, 2026-09-09: "both silk floss photos were
+    # cropped high ... Can't see the office well or the surface roots."
+    focus = (rec.get("focus") or "50% 50%").strip()
     return (f'<figure class="sp-figure"><img src="{h(_v2_photo_url(pid, rec))}" '
-            f'alt="{h(rec.get("alt") or "")}" loading="lazy">'
+            f'alt="{h(rec.get("alt") or "")}" loading="lazy" '
+            f'style="object-position:{h(focus)}">'
             f'<figcaption>{cap}</figcaption>{_v2_credit_plate_wide(rec)}</figure>')
 
 
