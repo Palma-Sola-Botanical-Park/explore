@@ -878,7 +878,36 @@ def v2_section_blocks(species, key, mapper):
 
 # ── v2 rendering ──────────────────────────────────────────────────────────
 
-def _v2_block_html(b):
+def _v2_inflow_figure(rec, caption):
+    """A photograph placed INSIDE the prose, with the wide credit plate.
+    Markup copied from a generated wildlife page — do not reconstruct it."""
+    c = resolve_hero_credit(rec) or {}
+    src = (f"../photos/{rec['psbp_id']}/{rec['filename']}"
+           if rec.get("filename") and (PHOTOS_DIR / rec["psbp_id"] / rec["filename"]).exists()
+           else rec.get("photo_url", ""))
+    cap = f"<figcaption>{h(str(caption))}</figcaption>" if caption else ""
+    return (f'<figure class="sp-figure"><img src="{h(src)}" alt="" loading="lazy">{cap}'
+            '<div class="credit-plate"><div class="credit-byline">'
+            '<span class="credit-eyebrow">Photograph by</span>'
+            f'<span class="credit-name">{h(c.get("display") or c.get("photographer") or "")}</span></div>'
+            '<div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span>'
+            f'<span class="cc-term">{h((c.get("license") or "").replace("CC-", ""))}</span></span>'
+            f'<span class="credit-src">{h(c.get("date") or "")} &middot; via iNaturalist</span>'
+            '</div></div></figure>')
+
+
+def _v2_block_html(b, photo_index=None):
+    """A block is prose, or a photograph placed in the flow.
+
+    ⚠ Photo blocks matter: contextual placement is the strongest feature of the
+    wildlife pages (the Osprey's nest material, the Bright Futures rocks). An
+    earlier version of this function ignored them and rendered an empty
+    paragraph — silently, which is the worst way to lose a photograph."""
+    if not isinstance(b, dict):
+        return f'<div class="sp-block"><p>{h(str(b))}</p></div>'
+    if b.get("photo"):
+        rec = (photo_index or {}).get(str(b["photo"]))
+        return _v2_inflow_figure(rec, b.get("caption")) if rec else ""
     label = b.get("label")
     lab = f'<div class="sp-block-label">{h(str(label))}</div>' if label else ""
     return f'<div class="sp-block">{lab}<p>{h(str(b.get("text","")))}</p></div>'
@@ -909,6 +938,11 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
 
     # A single cultural fact becomes a callout inside Where it comes from,
     # rather than a section with one paragraph in it.
+    photo_index = {}
+    for _p in ([hero] if hero else []) + list(gallery_photos):
+        if _p and _p.get("photo_id"):
+            photo_index[str(_p["photo_id"])] = _p
+
     cult_blocks, cult_authored = v2_section_blocks(
         species, "cultural_significance", v2_map_cultural_significance)
     single_fact = (len(cult_blocks) == 1 and not cult_authored)
@@ -926,7 +960,7 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
                      + "".join(f"<li>{h(str(b.get('text', b)))}</li>" for b in blocks)
                      + "</ul></div>")
         else:
-            inner = "".join(_v2_block_html(b) for b in blocks)
+            inner = "".join(_v2_block_html(b, photo_index) for b in blocks)
             if key == "where_it_comes_from" and single_fact:
                 inner = _v2_fact_html(cult_blocks[0].get("text", "")) + inner
         main.append(f'<section class="sp-sec" id="{anchor}"><h2>{h(title)}</h2>'
@@ -934,8 +968,19 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
 
     # ── photographs: a gallery of one is not a gallery ────────────────────
     strip = ""
+    photos_js = "[]"
     if len(gallery_photos) >= 2:
         creds = resolve_gallery_credits(gallery_photos)
+        _lb = []
+        for i, g in enumerate(gallery_photos):
+            c = creds[i] if i < len(creds) else {}
+            local = PHOTOS_DIR / pid / (g.get("filename") or "")
+            _lb.append({"src": (f"../photos/{pid}/{g['filename']}"
+                                if g.get("filename") and local.exists() else g.get("photo_url", "")),
+                        "alt": "",
+                        "by": c.get("display") or c.get("photographer") or "",
+                        "date": c.get("date") or ""})
+        photos_js = json.dumps(_lb, ensure_ascii=False)
         thumbs = "".join(
             f'<button type="button" data-i="{i}" aria-label="Photograph">'
             f'<img src="{h(g.get("photo_url",""))}" alt=""></button>'
@@ -1021,8 +1066,11 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
 </div>
 
 <div id="footer-placeholder"></div>
+
+<script>window.PHOTOS={photos_js};</script>
 <script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
+<script>if (typeof injectShared === 'function') {{ injectShared({{ inatBar: false }}); }}</script>
 </body>
 </html>"""
 

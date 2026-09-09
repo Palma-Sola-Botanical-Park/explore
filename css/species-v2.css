@@ -339,12 +339,12 @@ body[data-bands="on"] .sp-sec:nth-of-type(3n+3)::before{background:var(--sunk)}
 .sp-aka em{color:var(--ink-soft);font-style:normal}
 /* Floating route back — always visible, thumb-reachable, out of the reading
    column. Styled here because wildlife-page.css is not loaded by this page. */
-.wild-float-back{position:fixed;left:50%;transform:translateX(-50%);bottom:1.1rem;z-index:80;
+.wild-float-back,.all-plants-link{position:fixed;left:50%;transform:translateX(-50%);bottom:1.1rem;z-index:80;
   display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;border-radius:2rem;
   background:var(--green-ink);color:#fff;font-family:var(--sans);font-size:.88rem;
   font-weight:600;text-decoration:none;box-shadow:0 3px 14px rgba(20,30,20,.28)}
-.wild-float-back:hover{background:var(--green)}
-@media (min-width:900px){.wild-float-back{left:auto;right:1.4rem;transform:none}}
+.wild-float-back:hover,.all-plants-link:hover{background:var(--green)}
+@media (min-width:900px){.wild-float-back,.all-plants-link{left:auto;right:1.4rem;transform:none}}
 
 /* ── LIGHTBOX ───────────────────────────────────────────────────────────
    Built for a phone held in bright sun in the middle of the park, which is
