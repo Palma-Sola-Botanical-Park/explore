@@ -279,6 +279,18 @@ body[data-hero="strip"] .sp-herogal{display:none}
   text-transform:uppercase;font-weight:700;color:var(--ink-faint);margin-bottom:.45rem}
 .sp-similar p{margin:0;font-size:var(--t-base);line-height:1.7}
 .sp-similar a{color:var(--green);font-weight:600}
+/* ── ONE-OFF FACT — a plant with a single piece of cultural significance gets
+     a callout rather than a section of its own. Randy, 2026-09-08: "If there
+     is 1 cultural significance thing, it could be sidebar visually to stand
+     out ... People love the sidebar one-off facts, ya know."
+     This is the majority case, not an edge case: of the 120 plants carrying
+     any cultural material, 78 carry exactly one. Two or more and it earns the
+     full Cultural significance section instead. */
+.sp-fact{border:1px solid var(--rule-strong);border-left:4px solid var(--green-lift);
+  background:var(--wash);padding:1.15rem 1.3rem;margin:1.6rem 0;max-width:var(--col)}
+.sp-fact-h{font-family:var(--sans);font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;font-weight:700;color:var(--green);margin-bottom:.45rem}
+.sp-fact p{margin:0;font-size:var(--t-base);line-height:1.7}
 /* ── IN-FLOW PHOTOGRAPH — the main answer to "it's a wall of text".
      A species page had six photographs sitting in a pile at the end. Moving
      three of them INTO the prose breaks the column and puts the park's one

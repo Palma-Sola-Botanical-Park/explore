@@ -609,6 +609,424 @@ def render_gallery(species, gallery_photos, hero):
     return gallery_html, lightbox_html
 
 
+# ══════════════════════════════════════════════════════════════════════════
+# PLANT PAGE v2 — seven sections, with a page.* override
+#
+# Agreed with Randy 2026-09-08; full reasoning in park-library
+# system docs/PLANT_PAGE_PORT.md. The contract:
+#
+#     page.<section> present  ->  render it verbatim      (authored)
+#     page.<section> absent   ->  assemble from old fields (the mapping)
+#
+# So all 237 pages publish complete on day one and synthesis rolls out one
+# section at a time, with no flag day and NO mechanical relocation pass —
+# the mistake made on wildlife, where assembled text was copied into page.*
+# and had to be rewritten.
+#
+# A block is {"label": str|None, "text": str}. Position in the list is
+# position on the page.
+# ══════════════════════════════════════════════════════════════════════════
+
+V2_GROWS = {"reproduction", "propagation", "rhizomes", "pollination",
+            "growth", "life cycle"}
+
+# An entry that talks about THIS PARK belongs in What it does here, not in
+# Where it comes from. 96 entries across 68 plants route this way — and they
+# are the most distinctive content in the catalogue.
+V2_PARK_RE = re.compile(
+    r"\b(this park|at the park|the park(?:'s)?\b|our specimen|our own|visitors?\b"
+    r"|we suspect|we planted|elsewhere in the (?:park|collection)|this collection"
+    r"|side-by-side)\b", re.I)
+
+# Broader meaning to the world — use, commodity, tradition, national symbol.
+# Randy, 2026-09-08: "Id suggest a cultural significance sectino honestly ...
+# some words that suggest broader meaning to the world". 182 entries, 120 of
+# 237 plants (51%) — comparable coverage to Take care.
+V2_CULTURAL_RE = re.compile(
+    r"\b(used (?:to|for|as|in)|commercial|timber|lumber|rope|fib(?:re|er)|wax|oil"
+    r"|medicin\w*|dye|furniture|pillows|upholstery|industry|superfood|export|crop"
+    r"|harvest|tradition\w*|ritual|deity|temple|folklore|mytholog\w*|ceremon\w*"
+    r"|national (?:flower|tree)|coat of arms|historic\w*|colonial|indigenous|navy"
+    r"|ship|boat|carousel|cultur\w*)\b", re.I)
+
+V2_LOC_RE = re.compile(
+    r"[^.!?]*\b(office|steps|pavilion|butterfly garden|nursery|pond|gate|entrance"
+    r"|boardwalk|welcome island|driveway|shade garden)\b[^.!?]*[.!?]", re.I)
+
+
+def _v2_polished(species, key):
+    """The override. Returns authored blocks, or None to fall through."""
+    return (species.get("page") or {}).get(key) or None
+
+
+def _v2_lst(v):
+    if not v:
+        return []
+    return [str(x) for x in v] if isinstance(v, list) else [str(v)]
+
+
+def _v2_dict(x):
+    """`invasive` is a dict on 130 records, absent on 106 and a bare bool on 1.
+    Everything downstream assumes a mapping, so normalise here rather than
+    guarding at every call site."""
+    return x if isinstance(x, dict) else {}
+
+
+def _v2_level(x):
+    return str(_v2_dict(x).get("level", "") or "").lower()
+
+
+def _v2_zone(pid):
+    """Named placement zone(s) for a plant, e.g. 'Shade Garden'."""
+    zones = sorted({z for z in _plant_zones().get(str(pid), []) if z})
+    if not zones:
+        return None
+    return zones[0] if len(zones) == 1 else ", ".join(zones[:-1]) + " and " + zones[-1]
+
+
+_PLANT_ZONES = None
+
+
+def _plant_zones():
+    global _PLANT_ZONES
+    if _PLANT_ZONES is None:
+        _PLANT_ZONES = {}
+        try:
+            raw = load_json(SOURCES / "placements.json", [])
+            rows = raw if isinstance(raw, list) else (raw.get("placements") or raw.get("records") or [])
+            for r in rows or []:
+                if str(r.get("kind", "")).lower() != "species":
+                    continue
+                z = (r.get("area") or r.get("zone") or "").strip()
+                if r.get("subject_id") and z:
+                    _PLANT_ZONES.setdefault(str(r["subject_id"]), []).append(z)
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            # NOT a bare except. A bare one here silently swallowed a wrong
+            # path constant on 2026-09-08 and 'Where to find it here' quietly
+            # dropped from 67% of plants to 39% with no error anywhere.
+            print(f"  ⚠ placements unreadable, zones unavailable: {exc}")
+    return _PLANT_ZONES
+
+
+# ── the seven mapping rules ───────────────────────────────────────────────
+
+def v2_map_at_a_glance(sp):
+    return [{"text": t} for t in _v2_lst(sp.get("quick_hits"))]
+
+
+def v2_map_how_to_know_it(sp):
+    out = []
+    for b in (_v2_dict(sp.get("reproduction")).get("blocks") or []):
+        label = (b.get("label") or "").strip()
+        if label.lower() in V2_GROWS or not b.get("text"):
+            continue
+        out.append({"label": label or None, "text": b["text"]})
+    look = _v2_dict(sp.get("reproduction")).get("what_to_look_for")
+    if look:
+        out.append({"text": look})
+    return out
+
+
+def v2_map_where_to_find_it_here(sp):
+    """Placement zone, else a location the record's own prose names, else
+    NOTHING. Randy chose omission over a 'coming soon' placeholder."""
+    zone = _v2_zone(sp["id"])
+    if zone:
+        lead = "In" if zone.lower().startswith("the ") else "In the"
+        return [{"text": f"{lead} {zone}."}]
+    blob = " ".join(json.dumps(sp.get(k), ensure_ascii=False)
+                    for k in ("quick_hits", "more_information", "other_notes", "origin") if sp.get(k))
+    m = V2_LOC_RE.search(blob)
+    if m:
+        return [{"text": m.group(0).strip().strip('"')}]
+    return []
+
+
+def v2_map_what_it_does_here(sp):
+    """Value to wildlife AND to this park — widened 2026-09-08."""
+    out = [{"text": t} for t in _v2_lst(sp.get("wildlife_value"))]
+    notes = _v2_dict(sp.get("butterfly")).get("notes")
+    if notes:
+        out.append({"label": "Butterflies", "text": notes})
+    for m in _v2_lst(sp.get("more_information")):
+        if V2_PARK_RE.search(m):
+            out.append({"text": m})
+    return out
+
+
+def v2_map_where_it_comes_from(sp):
+    """Origin and how it got here. Park material goes to What it does here and
+    world-meaning material to Cultural significance, so this stays about
+    provenance instead of becoming the dumping ground it was in the first
+    mapping (249 words on Wild Lime against 55 authored)."""
+    out = [{"text": t} for t in _v2_lst(sp.get("origin"))]
+    for m in _v2_lst(sp.get("more_information")):
+        if V2_PARK_RE.search(m) or V2_CULTURAL_RE.search(m):
+            continue
+        out.append({"text": m})
+    return out
+
+
+def v2_map_cultural_significance(sp):
+    """What the plant has meant to people — use, commodity, tradition, symbol.
+    Live Oak built the USS Constitution; Gumbo Limbo made carousel horses;
+    Red Silk Cotton is planted at temples in India. Hidden when there is none."""
+    return [{"text": m} for m in _v2_lst(sp.get("more_information"))
+            if not V2_PARK_RE.search(m) and V2_CULTURAL_RE.search(m)]
+
+
+def v2_map_how_it_grows(sp):
+    """Conditions, rates, what it flourishes in — Randy's definition, which
+    reverses ChatGPT's 'not gardening requirements'. The note is prose and
+    leads; the ratings follow as labelled blocks. When this section is
+    authored, state a condition only where it explains something."""
+    out = []
+    gc = sp.get("growing_conditions") or {}
+    sz = sp.get("size") or {}
+    if gc.get("note"):
+        out.append({"text": gc["note"]})
+    for label, key in (("Light", "light"), ("Soil", "soil_tolerances"),
+                       ("Drought", "drought_tolerance"), ("Salt", "salt_tolerance"),
+                       ("Cold", "cold_tolerance")):
+        v = gc.get(key)
+        if v:
+            out.append({"label": label, "text": str(v)[:1].upper() + str(v)[1:]})
+    bits = [x for x in (sz.get("height"), sz.get("spread")) if x]
+    if bits:
+        out.append({"label": "Size", "text": "; ".join(str(b) for b in bits)})
+    for label, key in (("Habit", "habit"), ("Growth rate", "growth_rate")):
+        if sz.get(key):
+            out.append({"label": label, "text": str(sz[key])[:1].upper() + str(sz[key])[1:]})
+    inv = _v2_invasive_text(sp)
+    if inv:
+        out.append({"label": "It spreads", "text": inv})
+    return out
+
+
+def v2_map_take_care(sp):
+    """OMITTED unless something is actually Red or Yellow. A section saying
+    'nothing will happen' is worse than no section — the rule that removed 33
+    filler sections from the wildlife pages."""
+    # HAZARD ONLY. Invasive status is not a hazard to a visitor — Randy,
+    # 2026-09-08: "invasive info, if interesting goes at botom 'how it grows'.
+    # BORING". So it moved to the end of How it grows and this gate no longer
+    # reads `invasive` or `watch_invasive`.
+    if not any(_v2_level(sp.get(k)) in ("red", "yellow")
+               for k in ("toxicity", "edibility")):
+        return []
+    out, seen = [], []
+    for t in _v2_lst(_v2_dict(sp.get("toxicity")).get("people")):
+        out.append({"label": "The risk", "text": t})
+        seen.append(t)
+    for t in _v2_lst(sp.get("safety_note")):
+        # dedupe: safety_note routinely restates toxicity.people verbatim
+        if any(_v2_same(t, s) for s in seen):
+            continue
+        out.append({"text": t})
+        seen.append(t)
+    return out
+
+
+def _v2_invasive_text(sp):
+    """The spreading story, wherever it is stored.
+
+    Air Potato (PSBP-00561) has `invasive: true` — a bare bool where 130 other
+    records hold a dict — so its FISC Category I / Florida Noxious Weed status
+    lives only in `watch_invasive_notes`. Read both."""
+    # LEVEL-GATED. Without this every plant carrying "Native to Florida. Not
+    # invasive." got an "It spreads" block — 143 of them, which is exactly the
+    # says-nothing-will-happen filler the whole model exists to delete.
+    inv = (_v2_dict(sp.get("invasive")).get("notes")
+           if _v2_level(sp.get("invasive")) in ("red", "yellow") else None)
+    if not inv and sp.get("watch_invasive"):
+        inv = sp.get("watch_invasive_notes")
+    return inv
+
+
+def _v2_same(a, b):
+    """Near-duplicate test for the take_care dedupe."""
+    norm = lambda s: set(re.findall(r"[a-z]{4,}", str(s).lower()))
+    wa, wb = norm(a), norm(b)
+    if not wa or not wb:
+        return False
+    return len(wa & wb) / min(len(wa), len(wb)) > 0.6
+
+
+V2_SECTIONS = [
+    # Order set by Randy 2026-09-08, on interest rather than urgency.
+    # He rejected hoisting Take care for hazardous plants: "I do not find it
+    # persuasive that we could possibly prevent something from happening with
+    # our plant species page, so order should be based on interest, not safety."
+    ("glance",  "At a glance",           "at_a_glance",           v2_map_at_a_glance),
+    ("culture", "Cultural significance", "cultural_significance", v2_map_cultural_significance),
+    ("from",    "Where it comes from",   "where_it_comes_from",   v2_map_where_it_comes_from),
+    ("find",    "Where to find it here", "where_to_find_it_here", v2_map_where_to_find_it_here),
+    ("does",    "What it does here",     "what_it_does_here",     v2_map_what_it_does_here),
+    ("know",    "How to know it",        "how_to_know_it",        v2_map_how_to_know_it),
+    ("grows",   "How it grows",          "how_it_grows",          v2_map_how_it_grows),
+    ("care",    "Take care",             "take_care",             v2_map_take_care),
+]
+
+
+def v2_section_blocks(species, key, mapper):
+    """Authored blocks if present, else mapped. Returns (blocks, authored?)."""
+    pol = _v2_polished(species, key)
+    if pol:
+        return pol, True
+    return mapper(species), False
+
+
+# ── v2 rendering ──────────────────────────────────────────────────────────
+
+def _v2_block_html(b):
+    label = b.get("label")
+    lab = f'<div class="sp-block-label">{h(str(label))}</div>' if label else ""
+    return f'<div class="sp-block">{lab}<p>{h(str(b.get("text","")))}</p></div>'
+
+
+def _v2_fact_html(text):
+    """A single one-off fact gets a callout instead of a section of its own.
+    78 of the 120 plants carrying cultural material carry exactly one."""
+    return ('<div class="sp-fact"><div class="sp-fact-h">Worth knowing</div>'
+            f'<p>{h(str(text))}</p></div>')
+
+
+def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
+    """The seven-section plant page. See V2_SECTIONS for the order and the
+    mapping, and park-library system docs/PLANT_PAGE_PORT.md for the reasoning."""
+    pid    = species["id"]
+    common = species["common_name"]
+    sci    = species.get("botanical_name", "")
+    eyebrow = species.get("form") or (species.get("category") or "").replace(" and ", " & ")
+    gallery_photos = gallery_photos or []
+
+    focus = (hero.get("focus") if hero else None) or "50% 50%"
+    hero_src = f"../photos/{pid}/{hero['filename']}" if hero else ""
+    hc = resolve_hero_credit(hero) if hero else {}
+    hero_by  = hc.get("display") or hc.get("photographer") or ""
+    hero_date = hc.get("date") or ""
+    hero_lic  = (hc.get("license") or "").replace("CC-", "")
+
+    # A single cultural fact becomes a callout inside Where it comes from,
+    # rather than a section with one paragraph in it.
+    cult_blocks, cult_authored = v2_section_blocks(
+        species, "cultural_significance", v2_map_cultural_significance)
+    single_fact = (len(cult_blocks) == 1 and not cult_authored)
+
+    rail, main = [], []
+    for anchor, title, key, mapper in V2_SECTIONS:
+        if key == "cultural_significance" and single_fact:
+            continue                                   # rendered as a callout
+        blocks, _ = v2_section_blocks(species, key, mapper)
+        if not blocks:
+            continue                                   # conditional — omit, never apologise
+        rail.append(f'<a href="#{anchor}"{" class=\"on\"" if not rail else ""}>{h(title)}</a>')
+        if key == "at_a_glance":
+            inner = ('<div class="sp-quick"><ul>'
+                     + "".join(f"<li>{h(str(b.get('text', b)))}</li>" for b in blocks)
+                     + "</ul></div>")
+        else:
+            inner = "".join(_v2_block_html(b) for b in blocks)
+            if key == "where_it_comes_from" and single_fact:
+                inner = _v2_fact_html(cult_blocks[0].get("text", "")) + inner
+        main.append(f'<section class="sp-sec" id="{anchor}"><h2>{h(title)}</h2>'
+                    f'<div class="sp-sec-rule"></div>{inner}</section>')
+
+    # ── photographs: a gallery of one is not a gallery ────────────────────
+    strip = ""
+    if len(gallery_photos) >= 2:
+        creds = resolve_gallery_credits(gallery_photos)
+        thumbs = "".join(
+            f'<button type="button" data-i="{i}" aria-label="Photograph">'
+            f'<img src="{h(g.get("photo_url",""))}" alt=""></button>'
+            for i, g in enumerate(gallery_photos) if i > 0)
+        strip = (f'<div class="sp-strip" id="heroStrip">{thumbs}</div>'
+                 '<button class="sp-herogal" id="heroGal" type="button" '
+                 'aria-label="Open the photograph gallery">'
+                 f'<span>Gallery <span class="n">{len(gallery_photos)}</span></span></button>')
+        figs = ""
+        for i, g in enumerate(gallery_photos):
+            c = creds[i] if i < len(creds) else {}
+            local = PHOTOS_DIR / pid / (g.get("filename") or "")
+            src = f"../photos/{pid}/{g['filename']}" if g.get("filename") and local.exists() \
+                  else g.get("photo_url", "")
+            figs += (f'<figure data-i="{i}"><div class="shot">'
+                     f'<img src="{h(src)}" alt="" loading="lazy"></div>'
+                     '<figcaption><div class="credit-plate">'
+                     '<span class="credit-eyebrow">Photograph by</span>'
+                     f'<span class="credit-name">{h(c.get("display") or c.get("photographer") or "")}</span>'
+                     '<span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span>'
+                     f'<span class="cc-term">{h((c.get("license") or "").replace("CC-", ""))}</span></span>'
+                     f'<span>{h(c.get("date") or "")}</span><span class="sep">&middot;</span>'
+                     '<span>iNaturalist</span></span></div></figcaption></figure>')
+        rail.append('<a href="#photos">Photographs</a>')
+        main.append('<section class="sp-sec" id="photos"><h2>Photographs</h2>'
+                    '<div class="sp-sec-rule"></div>'
+                    '<p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">'
+                    'Every one taken in this park, by the people who walk it.</p>'
+                    f'<div class="sp-gal" id="gal">{figs}</div></section>')
+
+    aka = species.get("alternate_names") or []
+    aka_html = ('<div class="sp-aka"><div class="sp-block-label">Also known as</div>'
+                f'<p>{" &middot; ".join(h(a) for a in aka)}</p></div>') if aka else ""
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{h(common)} ({h(sci)}) — Palma Sola Botanical Park</title>
+<link rel="icon" type="image/png" href="../images/favicon.png">
+<link rel="apple-touch-icon" href="../images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/psbp.css">
+<link rel="stylesheet" href="../css/species-v2.css">
+</head>
+<body data-bands="on">
+<div id="nav-placeholder"></div>
+
+<div class="sp-hero">
+  <img class="sp-hero-fg" src="{h(hero_src)}" alt="{h(common)} at Palma Sola Botanical Park" style="object-position:{h(focus)}">
+  <div class="sp-hero-scrim"></div>
+  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by">{h(hero_by)}</span><span class="attr-date"><span class="attr-dot">&middot;</span> {h(hero_date)}</span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">{h(hero_lic)}</span></span><span class="attr-src">via iNaturalist</span></span></div>
+  {strip}
+  <div class="sp-hero-inner">
+    <div class="sp-eyebrow">{h(eyebrow)}</div>
+    <h1 class="sp-name">{h(common)}</h1>
+    <div class="sp-sci">{h(sci)}</div>
+  </div>
+</div>
+
+<div class="sp-herocap"><span class="cap"></span><span class="seqt" id="seq-top"></span></div>
+
+<div class="sp-wrap">
+  <div class="sp-cols">
+    <aside class="sp-rail"><div class="sp-rail-title">On this page</div>{''.join(rail)}</aside>
+    <main>{''.join(main)}{aka_html}</main>
+  </div>
+</div>
+
+<a class="all-plants-link" href="../nature.html#plants">All plants</a>
+
+<div class="lb" id="lb" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-foot"><div class="lb-cred"><div class="lb-eyebrow">Photograph by</div>
+  <div class="lb-name" id="lbName"></div><div class="lb-meta" id="lbMeta"></div></div>
+  <div class="lb-ctrls"><button class="lb-btn" id="lbPrev" aria-label="Previous photograph">&#8249;</button>
+  <span class="lb-count" id="lbCount"></span>
+  <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
+  <div class="lb-hint">Swipe to move between photographs</div></div>
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="../js/species-v2.js"></script>
+<script src="../js/site.js"></script>
+</body>
+</html>"""
+
+
 def generate_html(species, hero, gallery_photos=None, published_on=""):
     """Render the page.
 
