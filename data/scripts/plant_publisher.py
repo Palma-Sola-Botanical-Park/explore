@@ -42,6 +42,24 @@ from psbp_common import (
     delete_species_page,
 )
 
+# ── SHARED RENDERERS — imported, not reimplemented ────────────────────────
+# 2026-09-08: this module originally hand-wrote its own versions of the hero
+# credit, the gallery, the in-flow figure and the gallery button. Every one was
+# subtly different, and the credit blocks were written against invented key
+# names ("display", "date", "license") so EVERY credit on all 237 pages
+# rendered empty. Randy: "You did better on the demo HTML... We went through
+# every element on the wildlife HTML and you said you duplicated it."
+#
+# He was right. Checking that a class name matches is not the same as checking
+# that the thing inside it renders. These are now the SAME OBJECTS the wildlife
+# pages use, so the two corpora cannot drift again.
+from wildlife_publisher import (
+    _v2_section, _v2_block, _v2_photo_url, _v2_hero_gallery_cue,
+    _v2_credit_plate, _v2_credit_plate_wide, _v2_hero_attr,
+    v2_photographs, v2_inflow_figure, v2_also_known_as,
+    _V2_GAL_SVG,
+)
+
 PORT = 8701
 
 # ── Data loading (thin wrappers over psbp_common paths) ─────────────────────
@@ -911,74 +929,6 @@ def v2_section_blocks(species, key, mapper):
 
 # ── v2 rendering ──────────────────────────────────────────────────────────
 
-def _v2_inflow_figure(rec, caption):
-    """A photograph placed INSIDE the prose, with the wide credit plate.
-    Markup copied from a generated wildlife page — do not reconstruct it."""
-    src = (f"../photos/{rec['psbp_id']}/{rec['filename']}"
-           if rec.get("filename") and (PHOTOS_DIR / rec["psbp_id"] / rec["filename"]).exists()
-           else rec.get("photo_url", ""))
-    cap = f"<figcaption>{h(str(caption))}</figcaption>" if caption else ""
-    return (f'<figure class="sp-figure"><img src="{h(src)}" alt="" loading="lazy">{cap}'
-            + _v2_credit_plate_wide(rec) + '</figure>')
-
-
-# ── standard credit blocks — DO NOT hand-write these ──────────────────────
-# resolve_hero_credit() returns credit_login / credit_name / credit_license /
-# credit_line. I first wrote this renderer against invented keys ("display",
-# "date", "license"), so every credit on all 237 pages rendered empty and the
-# hero bar read "· cc · via iNaturalist". Randy caught it on sight. Same lesson
-# as wildlife_publisher._v2_credit_plate: never type a credit by hand.
-
-_V2_GAL_SVG = ('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" '
-               'stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
-               'stroke-linejoin="round" aria-hidden="true">'
-               '<rect x="7" y="3" width="14" height="14" rx="2"></rect>'
-               '<path d="M3 7v12a2 2 0 0 0 2 2h12"></path></svg>')
-
-
-def _v2_hero_attr(rec):
-    """The hero credit bar — identical structure to the wildlife pages."""
-    if not rec:
-        return ""
-    hc = resolve_hero_credit(rec)
-    date = _fmt_observed(rec.get("observed_on", ""))
-    lic = (hc.get("credit_license") or "").replace("CC-", "") or "BY-NC"
-    datespan = (f'<span class="attr-date"><span class="attr-dot">&middot;</span> {h(date)}</span>'
-                if date else "")
-    return ('<div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line">'
-            f'<span class="attr-credit"><span class="attr-by">{h(hc["credit_name"])}</span>'
-            f'{datespan}</span>'
-            '<span class="cc-badge"><span class="cc-mark">cc</span>'
-            f'<span class="cc-term">{h(lic)}</span></span>'
-            '<span class="attr-src">via iNaturalist</span></span></div>')
-
-
-def _v2_credit_plate(rec):
-    """Gallery credit plate — mirrors PSBPPhotos.creditPlate()."""
-    hc = resolve_hero_credit(rec)
-    date = _fmt_observed(rec.get("observed_on", ""))
-    return ('<div class="credit-plate">'
-            '<span class="credit-eyebrow">Photograph by</span>'
-            f'<span class="credit-name">{h(hc["credit_name"])}</span>'
-            '<span class="credit-meta">'
-            '<span class="cc-badge"><span class="cc-mark">cc</span>'
-            f'<span class="cc-term">{h((hc["credit_license"] or "CC").replace("CC-", ""))}</span></span>'
-            + (f'<span>{h(date)}</span><span class="sep">&middot;</span>' if date else '')
-            + '<span>iNaturalist</span></span></div>')
-
-
-def _v2_credit_plate_wide(rec):
-    """The wide plate used under an in-flow figure."""
-    hc = resolve_hero_credit(rec)
-    date = _fmt_observed(rec.get("observed_on", ""))
-    src = f'{h(date)} &middot; via iNaturalist' if date else 'via iNaturalist'
-    return ('<div class="credit-plate"><div class="credit-byline">'
-            '<span class="credit-eyebrow">Photograph by</span>'
-            f'<span class="credit-name">{h(hc["credit_name"])}</span></div>'
-            '<div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span>'
-            f'<span class="cc-term">{h((hc["credit_license"] or "CC").replace("CC-", ""))}</span></span>'
-            f'<span class="credit-src">{src}</span></div></div>')
-
 
 def _v2_block_html(b, photo_index=None):
     """A block is prose, or a photograph placed in the flow.
@@ -988,13 +938,16 @@ def _v2_block_html(b, photo_index=None):
     earlier version of this function ignored them and rendered an empty
     paragraph — silently, which is the worst way to lose a photograph."""
     if not isinstance(b, dict):
-        return f'<div class="sp-block"><p>{h(str(b))}</p></div>'
+        return _v2_block("", str(b))
     if b.get("photo"):
         rec = (photo_index or {}).get(str(b["photo"]))
-        return _v2_inflow_figure(rec, b.get("caption")) if rec else ""
-    label = b.get("label")
-    lab = f'<div class="sp-block-label">{h(str(label))}</div>' if label else ""
-    return f'<div class="sp-block">{lab}<p>{h(str(b.get("text","")))}</p></div>'
+        if not rec:
+            return ""
+        r2 = dict(rec)
+        if b.get("caption"):
+            r2["note"] = b["caption"]
+        return v2_inflow_figure(rec.get("psbp_id"), r2)
+    return _v2_block(b.get("label") or "", b.get("text", ""))
 
 
 def _v2_fact_html(text):
@@ -1044,8 +997,7 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
             inner = "".join(_v2_block_html(b, photo_index) for b in blocks)
             if key == "where_it_comes_from" and single_fact:
                 inner = _v2_fact_html(cult_blocks[0].get("text", "")) + inner
-        main.append(f'<section class="sp-sec" id="{anchor}"><h2>{h(title)}</h2>'
-                    f'<div class="sp-sec-rule"></div>{inner}</section>')
+        main.append(_v2_section(anchor, title, inner))
 
     # ── photographs: a gallery of one is not a gallery ────────────────────
     strip = ""
@@ -1066,27 +1018,14 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
             f'<img src="{h(g.get("photo_url",""))}" alt=""></button>'
             for i, g in enumerate(gallery_photos) if i > 0)
         strip = (f'<div class="sp-strip" id="heroStrip">{thumbs}</div>'
-                 '<button class="sp-herogal" id="heroGal" type="button" '
-                 'aria-label="Open the photograph gallery">' + _V2_GAL_SVG +
-                 f'<span><span class="n">{len(gallery_photos)}</span> photographs</span></button>')
-        figs = ""
-        for i, g in enumerate(gallery_photos):
-            local = PHOTOS_DIR / pid / (g.get("filename") or "")
-            src = f"../photos/{pid}/{g['filename']}" if g.get("filename") and local.exists() \
-                  else g.get("photo_url", "")
-            figs += (f'<figure data-i="{i}"><div class="shot">'
-                     f'<img src="{h(src)}" alt="" loading="lazy"></div>'
-                     f'<figcaption>{_v2_credit_plate(g)}</figcaption></figure>')
+                 + _v2_hero_gallery_cue(len(gallery_photos)))
         rail.append('<a href="#photos">Photographs</a>')
-        main.append('<section class="sp-sec" id="photos"><h2>Photographs</h2>'
-                    '<div class="sp-sec-rule"></div>'
-                    '<p style="color:var(--ink-soft);font-size:var(--t-sm);margin-bottom:1.2rem">'
-                    'Every one taken in this park, by the people who walk it.</p>'
-                    f'<div class="sp-gal" id="gal">{figs}</div></section>')
+        main.append(v2_photographs(pid, gallery_photos))
 
-    aka = species.get("alternate_names") or []
-    aka_html = ('<div class="sp-aka"><div class="sp-block-label">Also known as</div>'
-                f'<p>{" &middot; ".join(h(a) for a in aka)}</p></div>') if aka else ""
+    # v2_also_known_as reads `also_known_as` (the wildlife field name).
+    # Plants store the same thing in `alternate_names`, so pass a shim rather
+    # than fork the renderer — the markup then cannot drift.
+    aka_html = v2_also_known_as({"also_known_as": species.get("alternate_names") or []})
 
     return f"""<!DOCTYPE html>
 <html lang="en">
