@@ -914,19 +914,70 @@ def v2_section_blocks(species, key, mapper):
 def _v2_inflow_figure(rec, caption):
     """A photograph placed INSIDE the prose, with the wide credit plate.
     Markup copied from a generated wildlife page — do not reconstruct it."""
-    c = resolve_hero_credit(rec) or {}
     src = (f"../photos/{rec['psbp_id']}/{rec['filename']}"
            if rec.get("filename") and (PHOTOS_DIR / rec["psbp_id"] / rec["filename"]).exists()
            else rec.get("photo_url", ""))
     cap = f"<figcaption>{h(str(caption))}</figcaption>" if caption else ""
     return (f'<figure class="sp-figure"><img src="{h(src)}" alt="" loading="lazy">{cap}'
-            '<div class="credit-plate"><div class="credit-byline">'
+            + _v2_credit_plate_wide(rec) + '</figure>')
+
+
+# ── standard credit blocks — DO NOT hand-write these ──────────────────────
+# resolve_hero_credit() returns credit_login / credit_name / credit_license /
+# credit_line. I first wrote this renderer against invented keys ("display",
+# "date", "license"), so every credit on all 237 pages rendered empty and the
+# hero bar read "· cc · via iNaturalist". Randy caught it on sight. Same lesson
+# as wildlife_publisher._v2_credit_plate: never type a credit by hand.
+
+_V2_GAL_SVG = ('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" '
+               'stroke="currentColor" stroke-width="1.8" stroke-linecap="round" '
+               'stroke-linejoin="round" aria-hidden="true">'
+               '<rect x="7" y="3" width="14" height="14" rx="2"></rect>'
+               '<path d="M3 7v12a2 2 0 0 0 2 2h12"></path></svg>')
+
+
+def _v2_hero_attr(rec):
+    """The hero credit bar — identical structure to the wildlife pages."""
+    if not rec:
+        return ""
+    hc = resolve_hero_credit(rec)
+    date = _fmt_observed(rec.get("observed_on", ""))
+    lic = (hc.get("credit_license") or "").replace("CC-", "") or "BY-NC"
+    datespan = (f'<span class="attr-date"><span class="attr-dot">&middot;</span> {h(date)}</span>'
+                if date else "")
+    return ('<div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line">'
+            f'<span class="attr-credit"><span class="attr-by">{h(hc["credit_name"])}</span>'
+            f'{datespan}</span>'
+            '<span class="cc-badge"><span class="cc-mark">cc</span>'
+            f'<span class="cc-term">{h(lic)}</span></span>'
+            '<span class="attr-src">via iNaturalist</span></span></div>')
+
+
+def _v2_credit_plate(rec):
+    """Gallery credit plate — mirrors PSBPPhotos.creditPlate()."""
+    hc = resolve_hero_credit(rec)
+    date = _fmt_observed(rec.get("observed_on", ""))
+    return ('<div class="credit-plate">'
             '<span class="credit-eyebrow">Photograph by</span>'
-            f'<span class="credit-name">{h(c.get("display") or c.get("photographer") or "")}</span></div>'
+            f'<span class="credit-name">{h(hc["credit_name"])}</span>'
+            '<span class="credit-meta">'
+            '<span class="cc-badge"><span class="cc-mark">cc</span>'
+            f'<span class="cc-term">{h((hc["credit_license"] or "CC").replace("CC-", ""))}</span></span>'
+            + (f'<span>{h(date)}</span><span class="sep">&middot;</span>' if date else '')
+            + '<span>iNaturalist</span></span></div>')
+
+
+def _v2_credit_plate_wide(rec):
+    """The wide plate used under an in-flow figure."""
+    hc = resolve_hero_credit(rec)
+    date = _fmt_observed(rec.get("observed_on", ""))
+    src = f'{h(date)} &middot; via iNaturalist' if date else 'via iNaturalist'
+    return ('<div class="credit-plate"><div class="credit-byline">'
+            '<span class="credit-eyebrow">Photograph by</span>'
+            f'<span class="credit-name">{h(hc["credit_name"])}</span></div>'
             '<div class="credit-license"><span class="cc-badge"><span class="cc-mark">cc</span>'
-            f'<span class="cc-term">{h((c.get("license") or "").replace("CC-", ""))}</span></span>'
-            f'<span class="credit-src">{h(c.get("date") or "")} &middot; via iNaturalist</span>'
-            '</div></div></figure>')
+            f'<span class="cc-term">{h((hc["credit_license"] or "CC").replace("CC-", ""))}</span></span>'
+            f'<span class="credit-src">{src}</span></div></div>')
 
 
 def _v2_block_html(b, photo_index=None):
@@ -964,10 +1015,7 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
 
     focus = (hero.get("focus") if hero else None) or "50% 50%"
     hero_src = f"../photos/{pid}/{hero['filename']}" if hero else ""
-    hc = resolve_hero_credit(hero) if hero else {}
-    hero_by  = hc.get("display") or hc.get("photographer") or ""
-    hero_date = hc.get("date") or ""
-    hero_lic  = (hc.get("license") or "").replace("CC-", "")
+    hero_attr = _v2_hero_attr(hero)
 
     # A single cultural fact becomes a callout inside Where it comes from,
     # rather than a section with one paragraph in it.
@@ -1003,16 +1051,15 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
     strip = ""
     photos_js = "[]"
     if len(gallery_photos) >= 2:
-        creds = resolve_gallery_credits(gallery_photos)
         _lb = []
-        for i, g in enumerate(gallery_photos):
-            c = creds[i] if i < len(creds) else {}
+        for g in gallery_photos:
             local = PHOTOS_DIR / pid / (g.get("filename") or "")
+            _c = resolve_hero_credit(g)
             _lb.append({"src": (f"../photos/{pid}/{g['filename']}"
                                 if g.get("filename") and local.exists() else g.get("photo_url", "")),
                         "alt": "",
-                        "by": c.get("display") or c.get("photographer") or "",
-                        "date": c.get("date") or ""})
+                        "by": _c["credit_name"],
+                        "date": _fmt_observed(g.get("observed_on", ""))})
         photos_js = json.dumps(_lb, ensure_ascii=False)
         thumbs = "".join(
             f'<button type="button" data-i="{i}" aria-label="Photograph">'
@@ -1020,23 +1067,16 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
             for i, g in enumerate(gallery_photos) if i > 0)
         strip = (f'<div class="sp-strip" id="heroStrip">{thumbs}</div>'
                  '<button class="sp-herogal" id="heroGal" type="button" '
-                 'aria-label="Open the photograph gallery">'
-                 f'<span>Gallery <span class="n">{len(gallery_photos)}</span></span></button>')
+                 'aria-label="Open the photograph gallery">' + _V2_GAL_SVG +
+                 f'<span><span class="n">{len(gallery_photos)}</span> photographs</span></button>')
         figs = ""
         for i, g in enumerate(gallery_photos):
-            c = creds[i] if i < len(creds) else {}
             local = PHOTOS_DIR / pid / (g.get("filename") or "")
             src = f"../photos/{pid}/{g['filename']}" if g.get("filename") and local.exists() \
                   else g.get("photo_url", "")
             figs += (f'<figure data-i="{i}"><div class="shot">'
                      f'<img src="{h(src)}" alt="" loading="lazy"></div>'
-                     '<figcaption><div class="credit-plate">'
-                     '<span class="credit-eyebrow">Photograph by</span>'
-                     f'<span class="credit-name">{h(c.get("display") or c.get("photographer") or "")}</span>'
-                     '<span class="credit-meta"><span class="cc-badge"><span class="cc-mark">cc</span>'
-                     f'<span class="cc-term">{h((c.get("license") or "").replace("CC-", ""))}</span></span>'
-                     f'<span>{h(c.get("date") or "")}</span><span class="sep">&middot;</span>'
-                     '<span>iNaturalist</span></span></div></figcaption></figure>')
+                     f'<figcaption>{_v2_credit_plate(g)}</figcaption></figure>')
         rail.append('<a href="#photos">Photographs</a>')
         main.append('<section class="sp-sec" id="photos"><h2>Photographs</h2>'
                     '<div class="sp-sec-rule"></div>'
@@ -1067,7 +1107,7 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
 <div class="sp-hero">
   <img class="sp-hero-fg" src="{h(hero_src)}" alt="{h(common)} at Palma Sola Botanical Park" style="object-position:{h(focus)}">
   <div class="sp-hero-scrim"></div>
-  <div class="photo-attr photo-attr--muted sp-heroattr"><span class="attr-line"><span class="attr-credit"><span class="attr-by">{h(hero_by)}</span><span class="attr-date"><span class="attr-dot">&middot;</span> {h(hero_date)}</span></span><span class="cc-badge"><span class="cc-mark">cc</span><span class="cc-term">{h(hero_lic)}</span></span><span class="attr-src">via iNaturalist</span></span></div>
+  {hero_attr}
   {strip}
   <div class="sp-hero-inner">
     <div class="sp-eyebrow">{h(eyebrow)}</div>
