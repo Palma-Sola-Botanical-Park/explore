@@ -224,7 +224,9 @@ def build_plants_json_entry(species, hero):
         "credit": hero_credit["credit_login"],
         "credit_name": hero_credit["credit_name"],
         "credit_license": hero_credit["credit_license"],
-        "credit_line": hero_credit["credit_line"],
+        # `credit_line` is NOT emitted — the pre-joined string. Every consumer
+        # builds its own from credit_name + credit_license, so this was a third
+        # copy nothing read. Removed 2026-09-08.
         "focus": focus,
 
         # ── Added 2026-08-28 — the browse index orders on this. ──

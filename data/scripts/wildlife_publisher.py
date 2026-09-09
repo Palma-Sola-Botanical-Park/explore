@@ -138,7 +138,9 @@ def build_wildlife_json_entry(species, hero):
         "credit": hero_credit["credit_login"],
         "credit_name": hero_credit["credit_name"],
         "credit_license": hero_credit["credit_license"],
-        "credit_line": hero_credit["credit_line"],
+        # `credit_line` is NOT emitted — the pre-joined string. Every consumer
+        # builds its own from credit_name + credit_license, so this was a third
+        # copy nothing read. Removed 2026-09-08.
         "photo": photo,
         "focus": focus or "50% 50%",
         "page": f"wildlife/{page_filename(pid, species['common_name'])}",
@@ -174,8 +176,10 @@ def build_wildlife_json_entry(species, hero):
         # sentence, so the gap degrades gracefully.
         "quick_hits": card_hits(species),
         "teaser":     (species.get("teaser") or "").strip(),
-        # facet: safe around a dog?  mirrors "dogs" on the plant cards
-        "pets":   _safety_word((species.get("danger") or {}).get("pets_level")),
+        # `pets` is NOT emitted. It mirrored `dogs` on the plant cards, and both
+        # were removed 2026-09-08 — the toxicity chips they fed came off the index
+        # 2026-09-01 ("prose only, per Randy") and nothing read them afterwards.
+        # Safety detail lives in the page's Take care section. Source untouched.
         # facet: which months is it here? already a real int array, 90/90
         "months": (species.get("seasonality") or {}).get("months") or [],
     }
