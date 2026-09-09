@@ -614,6 +614,37 @@ def sci_name_of(species):
     return species.get("botanical_name") or species.get("scientific_name") or ""
 
 
+def card_hits(species):
+    """The bullets shown ANYWHERE OTHER THAN THE PAGE ITSELF: authored
+    `page.at_a_glance` if it exists, otherwise the original `quick_hits`.
+
+    Randy, 2026-09-08: "we keep it and shift to pages.ataglance when it is
+    available. quick hit would ONLY go to index if at a glance isn't populated
+    of course."
+
+    THIS LIVES HERE BECAUSE IT HAS THREE CALLERS, NOT TWO. Both publishers
+    stamp it into plants.json / wildlife.json (search cards, the nature.html
+    browse drawer, screen.html), and validate_promote.py stamps it onto the
+    Right Now cards on the home page. It was originally written twice, once
+    per publisher, and the Right Now path was missed entirely — so an authored
+    species showed its authored bullet on its own page and its superseded draft
+    on the home page. A single copy is what stops that recurring.
+
+    Reads `page.at_a_glance` blocks, which are {"text": ...} dicts, but
+    tolerates bare strings so a hand-edited record cannot blank a card.
+    """
+    pol = (species.get("page") or {}).get("at_a_glance")
+    if pol:
+        out = []
+        for b in pol:
+            t = b.get("text") if isinstance(b, dict) else b
+            if t:
+                out.append(str(t))
+        if out:
+            return out
+    return species.get("quick_hits") or []
+
+
 def credit_type(corpus):
     """Return 'Plant' or 'Wildlife' for tagging photo_credits entries."""
     return "Plant" if corpus == "plants" else "Wildlife"

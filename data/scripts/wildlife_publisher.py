@@ -36,6 +36,7 @@ from psbp_common import (
     display_name, build_credit_line,
     resolve_hero_credit, resolve_gallery_credits,
     delete_species_page,
+    card_hits,
     # Theme mapping lives in psbp_common — single source of truth for
     # animal_group → theme decisions. See ANIMAL GROUPS & THEMES there.
     theme_for, check_animal_group,
@@ -82,30 +83,6 @@ def _safety_word(level):
     return {"green": "safe", "yellow": "caution", "red": "toxic"}.get(
         (level or "").strip().lower(), ""
     )
-
-
-def card_hits(species):
-    """The bullets the INDEX shows: authored `page.at_a_glance` if it exists,
-    otherwise the original `quick_hits`.
-
-    Same override the page generator uses, one level up. Randy, 2026-09-08:
-    "we keep it and shift to pages.ataglance when it is available. quick hit
-    would ONLY go to index if at a glance isn't populated of course."
-
-    Without this the card, the browse drawer and screen.html keep showing the
-    older draft while the page shows the authored one — 34 of 92 wildlife
-    species had already diverged that way before this was added.
-    """
-    pol = (species.get("page") or {}).get("at_a_glance")
-    if pol:
-        out = []
-        for b in pol:
-            t = b.get("text") if isinstance(b, dict) else b
-            if t:
-                out.append(str(t))
-        if out:
-            return out
-    return species.get("quick_hits") or []
 
 
 def build_wildlife_json_entry(species, hero):

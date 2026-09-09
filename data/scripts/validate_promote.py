@@ -43,6 +43,15 @@ import os
 import re
 import sys
 
+# This script is normally run from the repo root as
+# `python3 data/scripts/validate_promote.py`, which puts its own directory on
+# sys.path automatically. The explicit insert makes the import work no matter
+# how it is invoked (cron, a wrapper, another cwd) rather than failing in the
+# one context nobody tests.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from psbp_common import card_hits
+
 STAGING = "data/staging"
 PUBLISHED = "data/published"
 SCHEMAS = "data/schemas"
@@ -426,7 +435,12 @@ def enrich_right_now(rows):
         if rec.get("status") != "html":
             continue                       # spotted/in-progress: no facts, no page
         row["has_page"] = True
-        fit = _fit_quick_hits(rec.get("quick_hits"))
+        # card_hits(), not rec["quick_hits"] — see psbp_common. An authored
+        # species carries `page.at_a_glance`, which SUPERSEDES quick_hits
+        # everywhere off the page itself. Reading the raw field here showed
+        # the superseded draft on the home page while the species page showed
+        # the authored bullet. Fixed 2026-09-08.
+        fit = _fit_quick_hits(card_hits(rec))
         if fit:
             row["quick_hits"] = fit
     return rows
