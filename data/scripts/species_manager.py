@@ -8033,8 +8033,13 @@ def render_publish():
                 html += `<div class="ai-line"><b>— Left alone:</b> ${{chips(res.left_alone, 'skip')}}</div>`;
             if (!(res.drafted && res.drafted.length) && !(res.changed && res.changed.length))
                 html += `<div class="ai-line ai-none">Nothing written — Claude found nothing to draft and nothing worth changing.</div>`;
-            if (res.low_confidence && res.low_confidence.length)
-                html += `<div class="ai-line"><b>⚠ Double-check these:</b> ${{chips(res.low_confidence, 'low')}}</div>`;
+            if (res.low_confidence && res.low_confidence.length) {{
+                // Field names become chips; a sentence or two reads as a paragraph.
+                const short = res.low_confidence.filter(s => s.length <= 40);
+                const long = res.low_confidence.filter(s => s.length > 40);
+                html += `<div class="ai-line"><b>⚠ Double-check these:</b> ${{chips(short, 'low')}}</div>` +
+                    long.map(s => `<div class="ai-line ai-muted">${{esc(s)}}</div>`).join('');
+            }}
             if (res.rejected_keys && res.rejected_keys.length)
                 html += `<div class="ai-line ai-muted">Ignored: ${{chips(res.rejected_keys, 'skip')}}</div>`;
             html += pubPageLine(res);
@@ -11368,8 +11373,15 @@ def ai_work_species(kingdom, species_id, notes="", allow_search=True):
 
     summary = draft.get("_summary", "")
     reasons = draft.get("_changes", {}) or {}
-    low_conf = [k for k in (draft.get("_low_confidence") or []) if isinstance(k, str)]
-    left_alone = [k for k in (draft.get("_left_alone") or []) if isinstance(k, str)]
+    def _str_list(v):
+        # The model may answer with one sentence instead of a list; a bare
+        # string must not be iterated character by character.
+        if isinstance(v, str):
+            return [v.strip()] if v.strip() else []
+        return [k for k in (v or []) if isinstance(k, str)] if isinstance(v, list) else []
+
+    low_conf = _str_list(draft.get("_low_confidence"))
+    left_alone = _str_list(draft.get("_left_alone"))
     clean, rejected = _ai_sanitize(draft, kingdom, True)
 
     data = _load(path)
@@ -11380,7 +11392,7 @@ def ai_work_species(kingdom, species_id, notes="", allow_search=True):
     # Snapshot, not alias: target["page"] is updated in the loop below.
     had_page = {k: list(v) for k, v in (target.get("page") or {}).items()
                 if isinstance(v, list) and v}
-    drafted, changed, empty_returned, photos_kept = [], [], [], []
+    drafted, changed, unchanged, empty_returned, photos_kept = [], [], [], [], []
     for k, v in clean.items():
         if not _is_filled(v):
             empty_returned.append(k)
@@ -11388,16 +11400,23 @@ def ai_work_species(kingdom, species_id, notes="", allow_search=True):
         if k == "page":
             photos_kept = _carry_photo_blocks(
                 {s: had_page.get(s) for s in v if s in had_page}, v)
-            target.setdefault("page", {}).update(v)
-            for s in v:
+            for s, blocks in v.items():
+                if had_page.get(s) == blocks:
+                    unchanged.append(f"page.{s}")     # returned verbatim
+                    continue
+                target.setdefault("page", {})[s] = blocks
                 (changed if had_page.get(s) else drafted).append(f"page.{s}")
+            continue
+        if _is_filled(target.get(k)) and target.get(k) == v:
+            unchanged.append(k)                       # "confirmed, as-is"
             continue
         (changed if _is_filled(target.get(k)) else drafted).append(k)
         target[k] = v
 
-    # Sections the model says it kept, restricted to ones that actually exist.
-    left_alone = sorted({f"page.{s.split('.', 1)[-1]}" for s in left_alone
-                         if s.split(".", 1)[-1] in had_page}
+    # Sections the model says it kept, restricted to ones that actually exist,
+    # plus anything it returned verbatim.
+    left_alone = sorted(({f"page.{s.split('.', 1)[-1]}" for s in left_alone
+                          if s.split(".", 1)[-1] in had_page} | set(unchanged))
                         - set(drafted) - set(changed))
 
     regen = None
