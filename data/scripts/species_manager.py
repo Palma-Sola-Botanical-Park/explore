@@ -105,7 +105,13 @@ INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
 # Scoped by taxon_id as well, so this can only ever return the species being
 # scanned. It cannot drag in someone's back garden.
 #
-# Keep this list short and current: the people who actively photograph in the park.
+# The roster is the project's own observer list, fetched live at scan time
+# (see _project_observers). Until 2026-09-09 it was three hand-typed logins,
+# which meant Coontie — obscured statewide, photographed by eleven different
+# people — never showed a single photo of theirs in the workbench.
+#
+# Set PSBP_OBSERVERS to a comma-separated list of logins to override the live
+# list (offline work, or to scan one person).
 #
 # ⚠ These are iNat LOGINS and must match exactly. David Vanderbilt has TWO
 #   accounts, made by accident and both live:
@@ -113,7 +119,17 @@ INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
 #       davidvanderbilt    computer — his IDENTIFICATIONS. Zero observations.
 #   Querying the second for photos returns nothing, silently.
 PARK_OBSERVERS = [o.strip() for o in os.environ.get(
-    "PSBP_OBSERVERS", "randall_carter,david_vanderbilt,ruby_meador").split(",") if o.strip()]
+    "PSBP_OBSERVERS", "").split(",") if o.strip()]
+ROSTER_MAX = 60   # observers to ask, most observations first
+
+# Asking by observer instead of by place means a visitor's Coontie in their own
+# garden would come back too. iNat scrambles an obscured pin within the
+# 0.2° × 0.2° cell that holds the true location, so the public pin is in the
+# park's cell or the observation is certainly not from the park. Anything
+# inside the cell (roughly Anna Maria to Sarasota) still goes through the
+# workbench for Randy's eyes — nothing is auto-accepted.
+PARK_CELL_LAT = 27.4   # cell holding 27.5137, -82.6600
+PARK_CELL_LNG = -82.8
 
 # Curated iNat place drawn for the park boundary (inaturalist.org/places/233156).
 # RETAINED FOR REFERENCE ONLY — the photo scan and intake check query the
@@ -809,6 +825,7 @@ def get_species_photos(species_id):
     Returns list sorted: hero first, then by photo_id.
     """
     photos_list = _get_photos_list(_load(PHOTO_CREDITS))
+    page_uses = _page_photo_uses(species_id)
     result = []
     for p in photos_list:
         if p.get("psbp_id") != species_id:
@@ -820,9 +837,61 @@ def get_species_photos(species_id):
             **p,
             "resolved_name": resolved,
             "thumb_url": _photo_thumb_url(p),
+            "page_uses": page_uses.get(str(p.get("photo_id", "")), []),
         })
     result.sort(key=lambda p: (not p.get("hero", False), p.get("photo_id", "")))
     return result
+
+
+# Section headings as the visitor sees them, keyed by the page.* key. Plants
+# come from the publisher's own table so the two can't drift; how_it_lives is
+# wildlife-only.
+def _page_section_titles():
+    titles = {"how_it_lives": "How it lives"}
+    if PUBLISHERS_OK:
+        titles.update({key: title for _a, title, key, _m in plant_publisher.V2_SECTIONS})
+    return titles
+
+
+def _page_photo_uses(psbp_id):
+    """Which photos the page prose has placed, and where.
+
+    An authored page (page.* on the species record) can put a photograph inside
+    a section: {"photo": "<id>", "caption": "..."}. The publisher renders that
+    block only while the photo still has a gallery role, and drops it silently
+    otherwise — so the Photos tab needs to know these ids before it lets one be
+    set aside or pulled from the gallery.
+
+    Returns {photo_id: [{"section": key, "title": "How to know it",
+                          "caption": "..."}]}; {} when the page is assembled.
+    """
+    titles = _page_section_titles()
+    uses = {}
+    for path in (PLANT_SIGNAGE, WILDLIFE_SIGNAGE):
+        for sp in _get_species_list(_load(path)):
+            if sp.get("id") != psbp_id:
+                continue
+            for key, blocks in (sp.get("page") or {}).items():
+                if not isinstance(blocks, list):
+                    continue
+                for b in blocks:
+                    if isinstance(b, dict) and b.get("photo"):
+                        uses.setdefault(str(b["photo"]), []).append({
+                            "section": key,
+                            "title": titles.get(key, key.replace("_", " ").capitalize()),
+                            "caption": (b.get("caption") or "").strip(),
+                        })
+            return uses
+    return uses
+
+
+def _page_use_error(psbp_id, photo_id):
+    """The refusal text when a write would break a photo the page cites, or ''."""
+    used = _page_photo_uses(psbp_id).get(str(photo_id))
+    if not used:
+        return ""
+    where = " and ".join(sorted({u["title"] for u in used}))
+    return f"This photo is used in {where} — remove it from the page first."
 
 
 # ── Hero swap pipeline helpers ────────────────────────────────────────────
@@ -1003,15 +1072,53 @@ def _inat_get(url):
     if token:
         headers["Authorization"] = token
     req = Request(url, headers=headers)
-    try:
-        with urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        print(f"    HTTP {e.code}: {e.read().decode('utf-8', errors='replace')[:160]}")
-        return None
-    except Exception as e:
-        print(f"    request failed: {e}")
-        return None
+    for attempt in range(3):
+        try:
+            with urlopen(req, timeout=30) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < 2:
+                # iNat's limit is per minute; wait it out rather than fail
+                # the species (a failed scan looks like an empty one).
+                wait = 20 * (attempt + 1)
+                print(f"    iNat rate limit — waiting {wait}s")
+                time.sleep(wait)
+                continue
+            print(f"    HTTP {e.code}: {e.read().decode('utf-8', errors='replace')[:160]}")
+            return None
+        except Exception as e:
+            print(f"    request failed: {e}")
+            return None
+
+
+_ROSTER_CACHE = None
+
+
+def _project_observers():
+    """The project's observers, most observations first, capped at ROSTER_MAX.
+    Fetched once per process. PSBP_OBSERVERS overrides it entirely."""
+    global _ROSTER_CACHE
+    if PARK_OBSERVERS:
+        return PARK_OBSERVERS
+    if _ROSTER_CACHE is None:
+        data = _inat_get("https://api.inaturalist.org/v1/observations/observers"
+                         f"?project_id={INAT_PROJECT_ID}&per_page={ROSTER_MAX}")
+        rows = (data or {}).get("results", [])
+        _ROSTER_CACHE = [r["user"]["login"] for r in rows
+                         if r.get("user", {}).get("login")]
+        if not _ROSTER_CACHE:
+            print("    [roster] could not fetch the project observer list")
+    return _ROSTER_CACHE
+
+
+def _in_park_cell(obs):
+    """True unless the public pin proves the observation is not from the park."""
+    geo = (obs.get("geojson") or {}).get("coordinates")
+    if not geo:
+        return True
+    lng, lat = geo
+    return (PARK_CELL_LAT <= lat < PARK_CELL_LAT + 0.2
+            and PARK_CELL_LNG <= lng < PARK_CELL_LNG + 0.2)
 
 
 def _inat_get_auth(url, token):
@@ -1171,7 +1278,7 @@ def _inat_observations(taxon_id, exclude_taxa=None):
         ids = ",".join(str(t) for t in exclude_taxa if t)
         if ids:
             excl = f"&without_taxon_id={ids}"
-    out, page = [], 1
+    out, page, project_ok = [], 1, False
     while True:
         url = ("https://api.inaturalist.org/v1/observations"
                f"?taxon_id={taxon_id}&project_id={INAT_PROJECT_ID}"
@@ -1181,6 +1288,7 @@ def _inat_observations(taxon_id, exclude_taxa=None):
         data = _inat_get(url)
         if not data:
             break
+        project_ok = True
         results = data.get("results", [])
         out.extend(results)
         if len(results) < 200:
@@ -1196,31 +1304,43 @@ def _inat_observations(taxon_id, exclude_taxa=None):
     # behave exactly as before. Photos found this way land in the same scan
     # cache and go through the same "View New Only" review — nothing is
     # auto-accepted.
-    if not out and PARK_OBSERVERS:
-        seen = set()
-        for who in PARK_OBSERVERS:
-            page = 1
-            while page <= 5:
-                url = ("https://api.inaturalist.org/v1/observations"
-                       f"?taxon_id={taxon_id}&user_login={who}"
-                       f"&per_page=200&page={page}&verifiable=any"
-                       f"{excl}"
-                       "&order=desc&order_by=created_at")
-                data = _inat_get(url)
-                if not data:
-                    break
-                results = data.get("results", [])
-                for o in results:
-                    if o.get("id") not in seen:
-                        seen.add(o["id"])
-                        out.append(o)
-                if len(results) < 200:
-                    break
-                page += 1
-                time.sleep(API_DELAY)
-        if out:
+    #
+    # One query for the whole roster — iNat takes user_login as a comma-
+    # separated list — so an obscured species costs one extra request, not
+    # one per observer. (Per-observer looping tripped the 429 rate limit on
+    # the second species; verified 2026-09-09.) A failed project query does
+    # NOT trigger this: a rate-limited Royal Poinciana must not be mistaken
+    # for an obscured one.
+    roster = _project_observers() if (project_ok and not out) else []
+    if roster:
+        via, elsewhere, page = [], 0, 1
+        while page <= 5:
+            url = ("https://api.inaturalist.org/v1/observations"
+                   f"?taxon_id={taxon_id}&user_login={','.join(roster)}"
+                   f"&per_page=200&page={page}&verifiable=any"
+                   f"{excl}"
+                   "&order=desc&order_by=created_at")
+            data = _inat_get(url)
+            if not data:
+                break
+            results = data.get("results", [])
+            for o in results:
+                if not _in_park_cell(o):
+                    elsewhere += 1
+                    continue
+                out.append(o)
+                who = (o.get("user") or {}).get("login", "?")
+                if who not in via:
+                    via.append(who)
+            if len(results) < 200:
+                break
+            page += 1
+            time.sleep(API_DELAY)
+        if out or elsewhere:
             print(f"    [roster] project found 0 for taxon {taxon_id}; "
-                  f"{len(out)} observation(s) via {', '.join(PARK_OBSERVERS)}")
+                  f"{len(out)} observation(s) via {', '.join(via) or 'nobody'}"
+                  + (f"; {elsewhere} skipped, pin outside the park's cell"
+                     if elsewhere else ""))
     return out
 
 
@@ -2539,6 +2659,10 @@ def handle_api_photos_update_roles(params):
     was, and forcing it would break that toggle.) Because dropping gallery
     changes what the page shows, the page is regenerated below; without that,
     the photo stays on the live page as an orphan with no registry role.
+
+    The one exception: a photo the authored page has placed in a section
+    (page.* block) needs its gallery role to render at all, so dropping
+    gallery is refused until the block is taken out of the page.
     """
     body = params.get("_body", {})
     psbp_id = body.get("psbp_id", "")
@@ -2546,6 +2670,11 @@ def handle_api_photos_update_roles(params):
     roles = body.get("roles", [])
     if not psbp_id or not photo_id:
         return {"error": "Missing psbp_id or photo_id"}
+
+    if "gallery" not in roles:
+        err = _page_use_error(psbp_id, photo_id)
+        if err:
+            return {"error": err}
 
     credits = _load(PHOTO_CREDITS)
     photos = credits.get("photos", [])
@@ -2582,12 +2711,19 @@ def handle_api_photos_trash(params):
     leave the photographer's work displayed with no credit record. That is
     precisely the PSBP-99996 failure. Crown a replacement hero first, or
     demote the page.
+
+    Also refuses a photo the authored page has placed in a section (page.*
+    block): the block would vanish from the page without a word.
     """
     body = params.get("_body", {})
     psbp_id = body.get("psbp_id", "")
     photo_id = str(body.get("photo_id", ""))
     if not psbp_id or not photo_id:
         return {"error": "Missing psbp_id or photo_id"}
+
+    err = _page_use_error(psbp_id, photo_id)
+    if err:
+        return {"error": err}
 
     credits = _load(PHOTO_CREDITS)
     photos = credits.get("photos", [])
@@ -4043,6 +4179,24 @@ main {
     font-size: 11px;
     color: var(--gray-400);
     margin-bottom: 6px;
+}
+/* Photo placed inside the page prose (a page.* block) — the page cites it,
+   so Set aside / Not in gallery refuse until the block is removed. */
+.photo-inpage {
+    font-size: 12px;
+    color: var(--green-deep);
+    background: #eef5ee;
+    border-left: 3px solid var(--green-mid);
+    padding: 4px 8px;
+    margin-bottom: 6px;
+    border-radius: 0 3px 3px 0;
+}
+.photo-inpage b { font-weight: 600; }
+.photo-inpage .inpage-caption {
+    display: block;
+    color: #666;
+    font-style: italic;
+    margin-top: 2px;
 }
 
 /* Role tags */
@@ -6721,8 +6875,12 @@ def render_photos():
             const roles = photo.role || [];
             const contentTags = roles.filter(r => r !== 'gallery');
             const license = (photo.license || '').toUpperCase();
+            // Sections of the authored page that place this photo (page.* blocks)
+            const pageUses = photo.page_uses || [];
+            const inPage = [...new Set(pageUses.map(u => u.title))].join(' and ');
 
-            html += `<div class="photo-card${{isHero ? ' is-hero' : ''}}" data-roles='${{JSON.stringify(roles)}}'>`;
+            html += `<div class="photo-card${{isHero ? ' is-hero' : ''}}" data-pid="${{pid}}"
+                          data-roles='${{JSON.stringify(roles)}}' data-inpage="${{esc(inPage)}}">`;
 
             // Thumbnail — use focus point for object-position if available
             const focus = photo.focus && photo.focus !== 'None' ? photo.focus : '50% 50%';
@@ -6763,12 +6921,23 @@ def render_photos():
                 html += `<div class="photo-date" title="Date observed on iNaturalist">📅 ${{dateTaken}}</div>`;
             }}
 
+            // Placed in the page prose — show where, and the caption it carries
+            for (const u of pageUses) {{
+                html += `<div class="photo-inpage" title="This photo sits inside the page text. Set aside and Not in gallery are refused until the block is removed from the page.">
+                    📝 In page — <b>${{esc(u.title)}}</b>
+                    ${{u.caption ? `<span class="inpage-caption">${{esc(u.caption)}}</span>` : ''}}
+                </div>`;
+            }}
+
             // Gallery toggle — structural, separate from content tags
             const inGallery = roles.includes('gallery');
+            const galleryTitle = (inGallery && inPage)
+                ? `Used in ${{inPage}} — remove it from the page first`
+                : (inGallery ? 'Photo appears in page gallery' : 'Photo is NOT in the page gallery');
             html += `<div class="gallery-toggle-row">
                 <button class="gallery-toggle ${{inGallery ? 'in' : 'out'}}"
                         onclick="toggleGallery(this, '${{speciesId}}', '${{pid}}')"
-                        title="${{inGallery ? 'Photo appears in page gallery' : 'Photo is NOT in the page gallery'}}">
+                        title="${{esc(galleryTitle)}}">
                     ${{inGallery ? '✓ In gallery' : '✗ Not in gallery'}}
                 </button>
             </div>`;
@@ -6799,7 +6968,7 @@ def render_photos():
                 </button>
                 <button class="photo-action-btn trash-btn"
                         onclick="trashPhoto('${{speciesId}}', '${{pid}}')"
-                        title="Set aside — moves to Find Photos">
+                        title="${{inPage ? esc(`Used in ${{inPage}} — remove it from the page first`) : 'Set aside — moves to Find Photos'}}">
                     ✕ Set aside
                 </button>
             </div>`;
@@ -6904,6 +7073,10 @@ def render_photos():
         const origRoles = JSON.parse(card.dataset.roles || '[]');
         let roles;
         const wasIn = origRoles.includes('gallery');
+        if (wasIn && card.dataset.inpage) {{
+            toast(`This photo is used in ${{card.dataset.inpage}} — remove it from the page first.`, true);
+            return;
+        }}
         if (wasIn) {{
             roles = origRoles.filter(r => r !== 'gallery');
         }} else {{
@@ -6933,6 +7106,11 @@ def render_photos():
     }}
 
     async function trashPhoto(speciesId, photoId) {{
+        const card = document.querySelector(`.photo-card[data-pid="${{photoId}}"]`);
+        if (card && card.dataset.inpage) {{
+            toast(`This photo is used in ${{card.dataset.inpage}} — remove it from the page first.`, true);
+            return;
+        }}
         if (!confirm('Set this photo aside? It leaves the gallery/hero and moves to Find Photos, where you can swap it back in another day. (File on disk is not deleted.)')) return;
         try {{
             const resp = await fetch('/api/photos/trash', {{
