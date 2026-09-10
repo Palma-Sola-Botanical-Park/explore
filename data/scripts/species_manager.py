@@ -10123,12 +10123,14 @@ _DRAFT_SPEC_PLANTS = {
 # model gets for each. Randy read and approved this wording 2026-09-09.
 _PLANT_PAGE_SECTIONS = [
     ("at_a_glance",
-     "four short facts, no labels; five only when the plant genuinely has a fifth that "
-     "would be a shame to lose. Each one a sentence, two at most. These are the things a "
-     "visitor would stop and tell a friend: vivid, specific, surprising. LEAN LOCAL where "
-     "the plant offers it — Florida, the Gulf coast, this park — but never manufacture a "
-     "local detail; a good general fact beats a thin local one. Lead with your best. Any "
-     "longer and it is not a glance."),
+     "three or four short facts, no labels; five only when the plant genuinely has a "
+     "fifth that would be a shame to lose. Each one a sentence, two at most. These are the "
+     "things a visitor would stop and tell a friend: vivid, specific, surprising. LEAN "
+     "LOCAL where the plant offers it — Florida, the Gulf coast, this park — but never "
+     "manufacture a local detail; a good general fact beats a thin local one. Lead with "
+     "your best. Do not spend one on the native range, mature size or growing conditions "
+     "when a section below carries it — three exceptional facts beat four. Any longer and "
+     "it is not a glance."),
     ("how_to_know_it",
      "how to tell it is THIS plant, written for somebody looking at it. Four blocks at "
      "most. At least one must NOT be an anatomical part: crush a leaf, shake a pod, step "
@@ -10138,14 +10140,22 @@ _PLANT_PAGE_SECTIONS = [
      "say what narrows it down AND what it does not settle; false confidence is worse than "
      "admitting the limit."),
     ("where_to_find_it_here",
-     "OMIT THIS SECTION. The park fills it from its own placement records; you cannot know "
-     "where the specimen is."),
+     "where the specimen stands, in one block, from what the PARK has told you only: the "
+     "editor's notes, the placements on file, or the existing section. Never from the web "
+     "and never guessed — if none of those says where it is, omit the section. Any sentence "
+     "whose main job is telling the visitor where the plant stands belongs here and nowhere "
+     "else. A second block labelled \"When\" may follow: what to look for and in which "
+     "months."),
     ("what_it_does_here",
      "what the plant does in THIS park: the butterflies and birds it feeds (name the larval "
      "hosts and nectar visitors as \"Common name (Scientific name)\"), what it contributes "
      "to the collection, what it does on a slope or a pond edge. This is the reason a "
      "botanical park publishes a plant, so give it real weight. Do not write a generic "
-     "food-web sentence; if you have nothing specific, keep it to one honest block."),
+     "food-web sentence; if you have nothing specific, keep it to one honest block. "
+     "Location is not significance: move any where-it-stands sentence to "
+     "where_to_find_it_here first, then ask whether what remains earns a block. Do not "
+     "manufacture ecological or aesthetic meaning — shade, \"visual weight\", buffering "
+     "the heat — to populate this section; one honest park-specific block, or none."),
     ("where_it_comes_from",
      "the native range and how it came to be grown in Florida, dated where a date exists "
      "(\"introduced to Florida by the 1880s\"). If people USE the plant — carnauba wax, "
@@ -10293,10 +10303,11 @@ AI_EXEMPLARS = {
 
 def _exemplar_page(page):
     """A page as the model should see it: no photo blocks (it cannot place
-    photographs) and no Where to find it here (it is told to omit that)."""
+    photographs). Where to find it here stays in, for its shape — the brief
+    tells the model it may only write one from what the park supplies."""
     out = {}
     for key, blocks in (page or {}).items():
-        if key == "where_to_find_it_here" or not isinstance(blocks, list):
+        if not isinstance(blocks, list):
             continue
         kept = [b for b in blocks if isinstance(b, dict) and not b.get("photo")]
         if kept:
@@ -10760,16 +10771,21 @@ def _deformat(value):
     return value
 
 
-def _sanitize_page(page):
+def _sanitize_page(page, allow_location=False):
     """The page.* shape, enforced: known section keys only, each a list of
     blocks; a block is {label?, text} or {photo, caption?, focus?}. Prose is
     deformatted like every other string leaf. Returns (clean_page, rejected)
-    where rejected names the sections or blocks that were dropped."""
+    where rejected names the sections or blocks that were dropped.
+
+    where_to_find_it_here is dropped unless the caller says the park gave the
+    model a location to work from (editor's notes or placements on file); the
+    model is never allowed to invent one."""
     clean, rejected = {}, []
     if not isinstance(page, dict):
         return clean, ["page"]
     for key, blocks in page.items():
-        if key not in _PLANT_PAGE_KEYS or key == "where_to_find_it_here":
+        if key not in _PLANT_PAGE_KEYS or (
+                key == "where_to_find_it_here" and not allow_location):
             rejected.append(f"page.{key}")
             continue
         if not isinstance(blocks, list):
@@ -10826,7 +10842,7 @@ def _carry_photo_blocks(old_page, new_page):
     return touched
 
 
-def _ai_sanitize(draft, kingdom, page_mode=None):
+def _ai_sanitize(draft, kingdom, page_mode=None, allow_location=False):
     """Keep only schema fields with the right top-level shape, coerce prose fields
     into paragraph lists, and strip stray inline markup / newlines from their
     string leaves. Returns (clean_dict, rejected_keys)."""
@@ -10838,7 +10854,7 @@ def _ai_sanitize(draft, kingdom, page_mode=None):
         if k.startswith("_"):
             continue
         if k == "page" and page_mode:
-            page, bad = _sanitize_page(v)
+            page, bad = _sanitize_page(v, allow_location=allow_location)
             rejected.extend(bad)
             if page:
                 clean["page"] = page
@@ -11270,7 +11286,29 @@ _WORK_RESEARCH_FIELDS = ("quick_hits", "origin", "more_information", "wildlife_v
                          "watch_invasive_notes")
 
 
-def _ai_build_work_messages(species, kingdom, notes):
+PLACEMENTS_FILE = os.path.join(REPO, "data", "sources", "placements.json")
+
+
+def _placements_on_file(species_id):
+    """Area names the park has pinned this species in, most-pinned first:
+    ["Big Pond ×2", "Butterfly Garden"]. Empty when nothing is pinned. This is
+    the only location the model may write from besides the editor's notes."""
+    if not os.path.exists(PLACEMENTS_FILE):
+        return []
+    doc = _load(PLACEMENTS_FILE)
+    rows = doc if isinstance(doc, list) else next(
+        (v for v in doc.values() if isinstance(v, list)), [])
+    counts = {}
+    for p in rows:
+        if p.get("subject_id") == species_id and p.get("kind", "species") == "species":
+            area = (p.get("area") or "").strip()
+            if area:
+                counts[area] = counts.get(area, 0) + 1
+    return [f"{a} ×{n}" if n > 1 else a
+            for a, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))]
+
+
+def _ai_build_work_messages(species, kingdom, notes, placements=None):
     """(system, user) for the one-button pass. Plants in page mode only."""
     spec = _draft_spec(kingdom, True)
     sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
@@ -11308,6 +11346,9 @@ def _ai_build_work_messages(species, kingdom, notes):
         f"{json.dumps(current, indent=2, ensure_ascii=False)}\n\n"
         + (f"{_WORK_RESEARCH_RULE}\n{json.dumps(research, indent=2, ensure_ascii=False)}\n\n"
            if research else "")
+        + "PLACEMENTS ON FILE — where the park has pinned this plant on its map, by area: "
+        + (", ".join(placements) if placements else "none")
+        + ". Park fact; the only location source besides the editor's notes.\n\n"
         + f"{_PLANT_PAGE_BRIEF}\n\n"
         "THE SECTIONS, in page order. Each lives under \"page\": {\"<key>\": [blocks]}.\n"
         f"{_plant_page_schema_text()}\n\n"
@@ -11358,7 +11399,8 @@ def ai_work_species(kingdom, species_id, notes="", allow_search=True):
     if not entry:
         return {"ok": False, "error": f"{species_id} not found in {kingdom} signage."}
 
-    system, user = _ai_build_work_messages(entry, kingdom, notes)
+    placements = _placements_on_file(species_id)
+    system, user = _ai_build_work_messages(entry, kingdom, notes, placements)
     try:
         api_resp = _anthropic_messages(system, user, web_search=bool(allow_search),
                                        max_uses=6)
@@ -11382,7 +11424,10 @@ def ai_work_species(kingdom, species_id, notes="", allow_search=True):
 
     low_conf = _str_list(draft.get("_low_confidence"))
     left_alone = _str_list(draft.get("_left_alone"))
-    clean, rejected = _ai_sanitize(draft, kingdom, True)
+    # A location may be written only when the park supplied one to write from.
+    had_location = bool((entry.get("page") or {}).get("where_to_find_it_here"))
+    allow_location = bool((notes or "").strip()) or bool(placements) or had_location
+    clean, rejected = _ai_sanitize(draft, kingdom, True, allow_location=allow_location)
 
     data = _load(path)
     target = next((s for s in _get_species_list(data) if s.get("id") == species_id), None)
