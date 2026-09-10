@@ -695,7 +695,12 @@ def _v2_credit_plate(rec):
 
 
 def _v2_photo_url(pid, rec):
-    return f"../photos/{pid}/{rec['filename']}" if rec.get("filename") else rec.get("photo_url", "")
+    # A former hero keeps its `filename` after the file is removed; use the
+    # local copy only when it is actually there, as the gallery strip does.
+    fn = rec.get("filename")
+    if fn and (PHOTOS_DIR / str(pid) / fn).exists():
+        return f"../photos/{pid}/{fn}"
+    return rec.get("photo_url", "")
 
 
 
