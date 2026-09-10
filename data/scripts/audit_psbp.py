@@ -302,7 +302,30 @@ def main():
                     f"{sp['id']} {sp.get('common_name')}: abbreviated unit "
                     f"(\u201c{a.group(0).strip()}\u201d) — spell out feet/inches")
 
-    # ── PHOTOS ────────────────────────────────────────────────────────────
+        # An authored `page` that leaves a section out does not leave it blank:
+        # the generator falls back to the old machine fields for that section.
+        # Dragon Fruit (2026-09-10) shipped "Bats and moths are the primary
+        # pollinators" that way, under a page written to say the opposite.
+        # Uses the generator's own mappers because the question is literally
+        # "what would the generator print here".
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            import plant_publisher as _pp
+            for sp in plants:
+                page = sp.get("page")
+                if not page or sp.get("status") != "html":
+                    continue
+                for _anchor, title, key, mapper in _pp.V2_SECTIONS:
+                    if key in page or not mapper(sp):
+                        continue
+                    add("CONTENT", "ERROR",
+                        f"{sp['id']} {sp.get('common_name')}: page has no "
+                        f"“{title}” but the old fields still render one "
+                        f"— write the section or clear the old text")
+        except Exception as e:                                # noqa: BLE001
+            add("CONTENT", "INFO", f"fallback-section check skipped ({e})")
+
+    # ── PHOTOS────────────────────────────────────────────────────────────
     if run("PHOTOS"):
         for p in photos:
             miss = PHOTO_FIELDS - set(p)
