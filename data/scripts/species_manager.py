@@ -3235,6 +3235,33 @@ def _publish_readiness(kingdom, species, hero):
     return checks, ready
 
 
+def _last_ai_pass(species_id):
+    """ISO timestamp of Claude's last Draft / Revise / Work on this species, from
+    its provenance file; None when Claude has never touched it. Pages written
+    by hand have no provenance at all, and that absence is the useful signal."""
+    try:
+        path = os.path.join(AI_PROVENANCE_DIR, f"{species_id}.json")
+        if not os.path.exists(path):
+            return None
+        doc = _load(path)
+        events = doc.get("events") if isinstance(doc, dict) else None
+        stamps = [e.get("ts") for e in (events or []) if isinstance(e, dict) and e.get("ts")]
+        return max(stamps) if stamps else None
+    except Exception:
+        return None
+
+
+def _page_state(species):
+    """What the page IS, for the Publish row: authored page.* or assembled from
+    the old fields, how many sections and placed photos, last Claude pass."""
+    page = species.get("page") or {}
+    sections = [k for k, v in page.items() if isinstance(v, list) and v]
+    photos = sum(1 for v in page.values() if isinstance(v, list)
+                 for b in v if isinstance(b, dict) and b.get("photo"))
+    return {"authored": bool(sections), "sections": len(sections), "photos": photos,
+            "last_ai": _last_ai_pass(species.get("id", ""))}
+
+
 def get_publish_list(kingdom):
     """Species list for the Publish tab: status, readiness, hero presence."""
     path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
@@ -3265,6 +3292,7 @@ def get_publish_list(kingdom):
             "animal_group_source": sp.get("animal_group_source") or "",
             "tags": sp.get("tags") or [],
             "aliases": sp.get("also_known_as") or sp.get("alternate_names") or [],
+            "page_state": _page_state(sp),
         })
     return result
 
@@ -4581,6 +4609,14 @@ main {
     border-color: #5c3a6b;
 }
 .pub-btn.airevise:hover { background: #6f4a80; }
+.pub-btn.aiwork {
+    background: #1a3a5c;
+    color: #fff;
+    border-color: #1a3a5c;
+}
+.pub-btn.aiwork:hover { background: #234d77; }
+.pub-pagestate { font-size: 12px; color: #4a5a6a; margin: 2px 0 4px; }
+.pub-pagestate b { color: var(--green-deep); font-weight: 600; }
 .rev-box { display: flex; flex-direction: column; gap: 8px; }
 .rev-label { font-size: 12px; color: #4a5a6a; }
 .rev-text { width: 100%; box-sizing: border-box; font: inherit; font-size: 13px;
@@ -7805,25 +7841,26 @@ def render_publish():
                <button class="pub-btn gaps" onclick="pubPreview('${{sp.id}}', 1)"
                        title="Preview with missing/thin fields flagged">⚠ Gaps</button>`
             : '';
+        const workBtn = `<button class="pub-btn aiwork" onclick="pubWorkOpen('${{sp.id}}')"
+                    title="Claude drafts what is missing, reviews what is there, and reads your notes first. The live page is rebuilt when it writes.">🤖 Work on this page</button>`;
         if (sp.status === 'spotted') {{
             const disabled = sp.ready ? '' : 'disabled';
             const title = sp.ready ? 'Generate page and publish' : 'Complete the checklist first';
-            actions = previewBtn +
+            /* Plants get ONE button — Work on this page — that drafts what is
+               missing and reviews what is there, notes first. Wildlife keeps
+               Draft + Revise until it goes page-first: every published animal
+               has an authored page.* and wildlife Revise still edits the old
+               fields underneath it, so the page would rebuild unchanged. */
+            const aiBtns = pubKingdom === 'plants' ? workBtn :
                 `<button class="pub-btn aidraft" onclick="pubAiDraft('${{sp.id}}')"
                           title="Have Claude research authoritative sources and draft the empty fields">🤖 Draft with Claude</button>` +
                 `<button class="pub-btn airevise" onclick="pubReviseOpen('${{sp.id}}')"
-                          title="Paste feedback (from Gemini, a person, your own notes) and have Claude revise">🔁 Revise with Claude</button>` +
+                          title="Paste feedback (from Gemini, a person, your own notes) and have Claude revise">🔁 Revise with Claude</button>`;
+            actions = previewBtn + aiBtns +
                 `<button class="pub-btn promote" ${{disabled}} title="${{title}}"
                           onclick="pubPromote('${{sp.id}}')">🚀 Publish</button>`;
         }} else if (sp.status === 'html') {{
-            /* Revise on a published page is plants-only for now: every published
-               animal has an authored page.*, and wildlife Revise still edits the
-               old fields underneath it — the page would rebuild unchanged. */
-            const reviseBtn = pubKingdom === 'plants'
-                ? `<button class="pub-btn airevise" onclick="pubReviseOpen('${{sp.id}}')"
-                        title="Paste feedback and have Claude revise — the live page is rebuilt when it writes">🔁 Revise with Claude</button>`
-                : '';
-            actions = previewBtn + reviseBtn + `
+            actions = previewBtn + (pubKingdom === 'plants' ? workBtn : '') + `
                 <button class="pub-btn regen" onclick="pubPromote('${{sp.id}}')"
                         title="Regenerate the page from current data">♻️ Regenerate</button>
                 <button class="pub-btn demote" onclick="pubDemote('${{sp.id}}')"
@@ -7848,6 +7885,7 @@ def render_publish():
                 </div>
                 <span class="status-pill ${{sp.status}}">${{sp.status === 'html' ? 'Published' : sp.status.charAt(0).toUpperCase()+sp.status.slice(1)}}</span>
             </div>
+            <div class="pub-pagestate">${{pubPageState(sp.page_state)}}</div>
             <div class="pub-checks">${{checksHtml}}</div>
             ${{tagsHtml}}
             <div class="pub-actions">${{actions}}</div>
@@ -7905,6 +7943,118 @@ def render_publish():
             btn.disabled = false;
             pubToast((d.rare_fruit ? 'Added to' : 'Removed from') + ' rare-fruit area — re-publish to update the page/filter.');
         }} catch (e) {{ pubToast(e.message, true); btn.disabled = false; }}
+    }}
+
+    /* What the page IS, before you press anything: authored page.* or
+       assembled from the old fields, sections, placed photos, last Claude pass.
+       "Never touched by Claude" on an authored page means a person wrote it. */
+    function pubPageState(st) {{
+        if (!st) return '';
+        const ago = (iso) => {{
+            const d = Math.round((Date.now() - new Date(iso).getTime()) / 86400000);
+            return d <= 0 ? 'today' : d === 1 ? 'yesterday' : d < 60 ? d + ' days ago' : iso.slice(0, 10);
+        }};
+        const parts = st.authored
+            ? ['<b>authored</b>', st.sections + ' section' + (st.sections === 1 ? '' : 's'),
+               st.photos ? st.photos + ' photo' + (st.photos === 1 ? '' : 's') + ' placed' : 'no photos placed']
+            : ['assembled from fields'];
+        parts.push(st.last_ai ? 'last Claude pass ' + ago(st.last_ai) : 'never touched by Claude');
+        return parts.join(' · ');
+    }}
+
+    /* Re-read one row's state line after a write, without re-rendering the
+       list — that would wipe the result panel the user is reading. */
+    async function pubRefreshState(id) {{
+        try {{
+            const resp = await fetch(`/api/publish/list?kingdom=${{pubKingdom}}`);
+            const data = await resp.json();
+            const sp = (data.species || []).find(s => s.id === id);
+            const el = document.querySelector(`#pubrow-${{id}} .pub-pagestate`);
+            if (sp && el) el.innerHTML = pubPageState(sp.page_state);
+            const i = pubAllSpecies.findIndex(s => s.id === id);
+            if (sp && i >= 0) pubAllSpecies[i] = sp;
+        }} catch (e) {{ /* cosmetic; the next tab load shows it */ }}
+    }}
+
+    function pubWorkOpen(id) {{
+        const panel = document.getElementById('ai-result-' + id);
+        panel.style.display = 'block';
+        panel.className = 'ai-result';
+        panel.innerHTML = `
+            <div class="rev-box">
+                <div class="rev-label">Notes for Claude — hints, stories, tone, what's in, what's out — or paste copy from anywhere.
+                    Leave it empty for a straight review: missing sections drafted, the rest checked and left alone if good.</div>
+                <textarea id="work-text-${{id}}" class="rev-text" rows="5"
+                    placeholder="e.g. The big one by the pond was planted in 1981. Warmer, less textbook. Drop the timber paragraph. — or paste a whole page here."></textarea>
+                <div class="rev-row">
+                    <label class="rev-check"><input type="checkbox" id="work-search-${{id}}" checked>
+                        let Claude web-search to confirm facts (uncheck for tone-only work — faster, cheaper)</label>
+                </div>
+                <div class="rev-row">
+                    <button class="pub-btn aiwork" onclick="pubWorkSubmit('${{id}}')">🤖 Work on it</button>
+                    <button class="pub-link-btn" onclick="document.getElementById('ai-result-${{id}}').style.display='none'">cancel</button>
+                </div>
+            </div>`;
+        const ta = document.getElementById('work-text-' + id);
+        if (ta) ta.focus();
+    }}
+
+    async function pubWorkSubmit(id) {{
+        const notes = (document.getElementById('work-text-' + id) || {{}}).value || '';
+        const allowSearch = (document.getElementById('work-search-' + id) || {{}}).checked;
+        const panel = document.getElementById('ai-result-' + id);
+        panel.className = 'ai-result working';
+        panel.innerHTML = '<span class="ai-spin">🤖</span> Claude is working on the page' +
+            (notes.trim() ? ', notes first' : '') + (allowSearch ? ', confirming facts as it goes' : '') +
+            '… this can take a minute or two.';
+        try {{
+            const resp = await fetch('/api/ai/work', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{kingdom: pubKingdom, id: id, notes: notes, allow_search: allowSearch}})
+            }});
+            const res = await resp.json();
+            if (!res.ok) {{
+                panel.className = 'ai-result error';
+                panel.innerHTML = '⚠️ ' + esc(res.error || 'Work failed') +
+                    (res.raw_tail ? `<pre class="ai-raw">${{esc(res.raw_tail)}}</pre>` : '');
+                return;
+            }}
+            const chips = (arr, cls) => (arr && arr.length)
+                ? arr.map(f => `<span class="ai-chip ${{cls}}">${{esc(f)}}</span>`).join('') : '';
+            const withReasons = (arr, cls) => arr.map(f =>
+                `<div class="ai-line ai-muted"><span class="ai-chip ${{cls}}">${{esc(f)}}</span> ${{esc((res.reasons && res.reasons[f]) || '')}}</div>`).join('');
+            let html = '';
+            if (res.summary) html += `<div class="ai-summary">${{esc(res.summary)}}</div>`;
+            if (res.drafted && res.drafted.length)
+                html += `<div class="ai-line"><b>✎ Drafted (${{res.drafted.length}}):</b></div>` + withReasons(res.drafted, 'ok');
+            if (res.changed && res.changed.length)
+                html += `<div class="ai-line"><b>✓ Changed (${{res.changed.length}}):</b></div>` + withReasons(res.changed, 'ok');
+            if (res.left_alone && res.left_alone.length)
+                html += `<div class="ai-line"><b>— Left alone:</b> ${{chips(res.left_alone, 'skip')}}</div>`;
+            if (!(res.drafted && res.drafted.length) && !(res.changed && res.changed.length))
+                html += `<div class="ai-line ai-none">Nothing written — Claude found nothing to draft and nothing worth changing.</div>`;
+            if (res.low_confidence && res.low_confidence.length)
+                html += `<div class="ai-line"><b>⚠ Double-check these:</b> ${{chips(res.low_confidence, 'low')}}</div>`;
+            if (res.rejected_keys && res.rejected_keys.length)
+                html += `<div class="ai-line ai-muted">Ignored: ${{chips(res.rejected_keys, 'skip')}}</div>`;
+            html += pubPageLine(res);
+            if (res.sources && res.sources.length) {{
+                const items = res.sources.slice(0, 12).map(s =>
+                    `<li><a href="${{esc(s.url)}}" target="_blank" rel="noopener">${{esc(s.title || s.url)}}</a></li>`).join('');
+                html += `<details class="ai-sources"><summary>📚 ${{res.sources.length}} source(s) · ${{res.searches || 0}} search(es)</summary><ul>${{items}}</ul></details>`;
+            }}
+            const inT = res.usage && res.usage.input_tokens, outT = res.usage && res.usage.output_tokens;
+            if (inT || outT) html += `<div class="ai-line ai-muted">${{res.model}} · ${{inT||0}} in / ${{outT||0}} out tokens</div>`;
+            html += `<div class="ai-line">
+                <button class="pub-btn preview" onclick="pubPreview('${{id}}', 0)">👁 Open Preview to review</button>
+                <button class="pub-btn aiwork" onclick="pubWorkOpen('${{id}}')">🤖 Another pass</button></div>`;
+            panel.className = 'ai-result done';
+            panel.innerHTML = html;
+            if (res.wrote) pubRefreshState(id);
+        }} catch (err) {{
+            panel.className = 'ai-result error';
+            panel.innerHTML = '⚠️ ' + esc(err.message);
+        }}
     }}
 
     /* One line on what happened to the live page after a Draft / Revise write:
@@ -10149,17 +10299,19 @@ def _exemplar_page(page):
     return out
 
 
-def _ai_exemplars(kingdom, n=2, page_mode=None):
+def _ai_exemplars(kingdom, n=2, page_mode=None, exclude=None):
     """Tone/structure references for the drafting call, trimmed to draftable keys.
 
     Pinned ids in AI_EXEMPLARS come first, in order; richness ranking tops up.
     In page mode an exemplar is its page plus the machinery fields, and only
-    species that HAVE a page qualify.
+    species that HAVE a page qualify. `exclude` keeps a species from being shown
+    its own page as the example to match.
     """
     path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
     page_mode = _page_mode(kingdom) if page_mode is None else page_mode
     spec = _draft_spec(kingdom, page_mode)
-    species = [s for s in _get_species_list(_load(path)) if s.get("status") == "html"]
+    species = [s for s in _get_species_list(_load(path))
+               if s.get("status") == "html" and s.get("id") != exclude]
     if page_mode:
         species = [s for s in species if s.get("page")]
     by_id = {s.get("id"): s for s in species}
@@ -11053,6 +11205,251 @@ def handle_api_ai_revise(params):
     return ai_revise_species(kingdom, species_id, feedback, allow_search=allow_search)
 
 
+# ── Work on this page: one pass that drafts what is missing, reviews what is
+# there, and reads the editor's notes first. Replaces Draft + Revise on plant
+# rows (2026-09-10, Randy: "why not just one button?"). Plants only until
+# wildlife goes page-first; wildlife rows keep the two older buttons.
+#
+# Randy read the prompt below as text and approved it before it was wired.
+# Edit the constants, not the assembly.
+
+_WORK_SYSTEM_BLOCK = (
+    "\n\nYOU ARE WORKING ON A PAGE THAT MAY BE EMPTY, PARTIAL, OR FINISHED. Draft "
+    "what is missing. Review what is there. Leave alone what is good. The editor's "
+    "notes below outrank everything except the house rules — if a note and a rule "
+    "collide, the rule wins and you say so in _summary.\n\n"
+    "THE CURRENT CONTENT MAY ALREADY REFLECT DELIBERATE EDITS — material that looks "
+    "missing was often removed on purpose. Do not restore or re-add anything unless "
+    "the notes ask for it."
+)
+
+_WORK_NOTES_RULES = (
+    "HOW TO READ THE NOTES.\n"
+    "A HINT OR A STORY (\"the big one by the pond was planted in 1981\", \"the Atala "
+    "came back after we planted these\") is a fact from the park. Build around it; do "
+    "not verify it away, hedge it, or attribute it to \"the park says\".\n"
+    "TONE (\"less textbook\", \"warmer\", \"this one is funny\") applies to every "
+    "section you touch.\n"
+    "IN / OUT (\"I want the kapok story\", \"drop the timber paragraph\", \"no keystone "
+    "claims\") is an instruction, not a suggestion. Something asked out stays out even "
+    "if it is true and interesting.\n"
+    "PASTED COPY — a section or a whole page written elsewhere — is material to work "
+    "FROM, not to summarise or restate. Keep its structure and its voice where they "
+    "are good. Fit it to the section shape. Override it only where it is wrong, breaks "
+    "a house rule, or the notes say otherwise. If the pasted copy is better than what "
+    "you would have written, use it; that is the point of it.\n"
+    "If the notes are empty, the standing review below is the whole job."
+)
+
+_WORK_STANDING_REVIEW = (
+    "THE STANDING REVIEW, applied to every section that exists:\n"
+    "Fix what is wrong. Tighten what is loose. Replace a laundry-list block with the "
+    "one thing worth saying. Add a section only where the page is genuinely missing "
+    "one that this plant deserves — not because the section exists in the list.\n"
+    "A SECTION THAT IS ALREADY GOOD COMES BACK UNCHANGED, which means you do not "
+    "return it at all. Returning an empty object is a valid answer, and on a finished "
+    "page it is the expected one. Rewording good prose so it reads more like yours is "
+    "the failure mode of this task, not the job."
+)
+
+_WORK_RESEARCH_RULE = (
+    "RESEARCH ON FILE — older fields on this record, gathered before the page "
+    "existed. Source material of uncertain quality: mine it for the good stories and "
+    "the specific facts, but it carries no authority. Never copy a laundry list from "
+    "it, and prefer what your searches confirm."
+)
+
+# Old prose fields that may hold research worth mining when the page is thin.
+_WORK_RESEARCH_FIELDS = ("quick_hits", "origin", "more_information", "wildlife_value",
+                         "reproduction", "other_notes", "safety_note", "native_notes",
+                         "watch_invasive_notes")
+
+
+def _ai_build_work_messages(species, kingdom, notes):
+    """(system, user) for the one-button pass. Plants in page mode only."""
+    spec = _draft_spec(kingdom, True)
+    sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
+    tax = species.get("taxonomy") or {}
+
+    page = species.get("page") or {}
+    current = {"page": page}
+    current.update({k: species[k] for k in spec if _is_filled(species.get(k))})
+
+    research = {}
+    for k in _WORK_RESEARCH_FIELDS:
+        v = species.get(k)
+        if _is_filled(v):
+            research[k] = v
+    gc = species.get("growing_conditions") or {}
+    if isinstance(gc, dict) and _is_filled(gc.get("notes")):
+        research["growing_conditions_notes"] = gc["notes"]
+
+    schema_lines = "\n".join(
+        f'  - "{f}" ({shape}): {instr}' for f, (shape, instr) in spec.items())
+    exemplars = _ai_exemplars(kingdom, 2, True, exclude=species.get("id"))
+
+    target = {"common_name": species.get("common_name", ""),
+              sci_field: species.get(sci_field, ""),
+              "family": tax.get("family", ""), "category": species.get("category", "")}
+
+    system = _HOUSE_RULES + _WORK_SYSTEM_BLOCK
+    notes = (notes or "").strip()
+
+    user = (
+        "Work on the visitor page for this plant:\n"
+        f"{json.dumps(target, indent=2, ensure_ascii=False)}\n\n"
+        "CURRENT CONTENT — the page sections that exist (some or none) and the machinery "
+        "fields:\n"
+        f"{json.dumps(current, indent=2, ensure_ascii=False)}\n\n"
+        + (f"{_WORK_RESEARCH_RULE}\n{json.dumps(research, indent=2, ensure_ascii=False)}\n\n"
+           if research else "")
+        + f"{_PLANT_PAGE_BRIEF}\n\n"
+        "THE SECTIONS, in page order. Each lives under \"page\": {\"<key>\": [blocks]}.\n"
+        f"{_plant_page_schema_text()}\n\n"
+        "PHOTO BLOCKS: a block of the form {\"photo\": \"…\", \"caption\": \"…\", "
+        "\"focus\": \"…\"} is a photograph the park placed by hand. Return it in its "
+        "place, unchanged, in any section you rewrite. Never drop, move, or recaption "
+        "one unless the notes ask for that exact photo. You never place new ones.\n\n"
+        "MACHINERY FIELDS the site still needs alongside the page. Fill any that are "
+        "empty; change one only if it is wrong. Shapes:\n"
+        f"{schema_lines}\n\n"
+        f"{_kingdom_block(kingdom, True)}\n\n"
+        + (f"Here are {len(exemplars)} existing published pages from this park, for TONE, "
+           "depth and structure only — match this quality; do NOT reuse their facts:\n"
+           f"{json.dumps(exemplars, indent=2, ensure_ascii=False)}\n\n" if exemplars else "")
+        + f"{_CRAFT_RULES_PLANT_PAGE}\n\n"
+        "EDITOR'S NOTES — read these before you write anything. They are from the person "
+        "who runs this park's pages and are the most important input you have:\n"
+        f"\"\"\"\n{notes}\n\"\"\"\n\n"
+        f"{_WORK_NOTES_RULES}\n\n"
+        f"{_WORK_STANDING_REVIEW}\n\n"
+        "Search the web where a fact needs confirming; for tone-only work, no search is "
+        "needed.\n\n"
+        "OUTPUT CONTRACT: return ONE JSON object with:\n"
+        "\"page\" — ONLY the sections you drafted or changed, each complete (a returned "
+        "section replaces that section in full, photo blocks in their places);\n"
+        "the machinery fields you filled or changed;\n"
+        "\"_changes\" — each drafted or changed section or field → one short reason "
+        "(\"drafted\", \"fixed the flowering month\", \"cut the generic wildlife "
+        "sentence\", \"used the pasted copy, trimmed to shape\");\n"
+        "\"_left_alone\" — sections you reviewed and kept as they were;\n"
+        "\"_summary\" — one or two sentences;\n"
+        "\"_low_confidence\" — anything to double-check.\n"
+        "Wrap it exactly between a line <<<JSON>>> and a line <<<END>>>, nothing after "
+        "<<<END>>>."
+    )
+    return system, user
+
+
+def ai_work_species(kingdom, species_id, notes="", allow_search=True):
+    """One pass: draft the missing, review the rest, notes first. Writes only the
+    sections and fields the model returns; a returned section replaces in full
+    with hand-placed photos carried; the live page is rebuilt."""
+    if kingdom != "plants":
+        return {"ok": False, "error": "Work on this page is plants-only for now."}
+    path = PLANT_SIGNAGE
+    entry = next((s for s in _get_species_list(_load(path))
+                  if s.get("id") == species_id), None)
+    if not entry:
+        return {"ok": False, "error": f"{species_id} not found in {kingdom} signage."}
+
+    system, user = _ai_build_work_messages(entry, kingdom, notes)
+    try:
+        api_resp = _anthropic_messages(system, user, web_search=bool(allow_search),
+                                       max_uses=6)
+    except RuntimeError as e:
+        return {"ok": False, "error": str(e)}
+
+    try:
+        draft = _ai_parse_json(_ai_response_text(api_resp))
+    except (ValueError, json.JSONDecodeError) as e:
+        return {"ok": False, "error": f"Could not parse the model's answer: {e}",
+                "raw_tail": _ai_response_text(api_resp)[-400:]}
+
+    summary = draft.get("_summary", "")
+    reasons = draft.get("_changes", {}) or {}
+    low_conf = [k for k in (draft.get("_low_confidence") or []) if isinstance(k, str)]
+    left_alone = [k for k in (draft.get("_left_alone") or []) if isinstance(k, str)]
+    clean, rejected = _ai_sanitize(draft, kingdom, True)
+
+    data = _load(path)
+    target = next((s for s in _get_species_list(data) if s.get("id") == species_id), None)
+    if not target:
+        return {"ok": False, "error": f"{species_id} disappeared before write."}
+
+    # Snapshot, not alias: target["page"] is updated in the loop below.
+    had_page = {k: list(v) for k, v in (target.get("page") or {}).items()
+                if isinstance(v, list) and v}
+    drafted, changed, empty_returned, photos_kept = [], [], [], []
+    for k, v in clean.items():
+        if not _is_filled(v):
+            empty_returned.append(k)
+            continue
+        if k == "page":
+            photos_kept = _carry_photo_blocks(
+                {s: had_page.get(s) for s in v if s in had_page}, v)
+            target.setdefault("page", {}).update(v)
+            for s in v:
+                (changed if had_page.get(s) else drafted).append(f"page.{s}")
+            continue
+        (changed if _is_filled(target.get(k)) else drafted).append(k)
+        target[k] = v
+
+    # Sections the model says it kept, restricted to ones that actually exist.
+    left_alone = sorted({f"page.{s.split('.', 1)[-1]}" for s in left_alone
+                         if s.split(".", 1)[-1] in had_page}
+                        - set(drafted) - set(changed))
+
+    regen = None
+    wrote = bool(drafted or changed)
+    if wrote:
+        data.setdefault("meta", {})["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
+        write_json_atomic(path, data)
+        regen = _regen_published_page(species_id, kingdom)
+
+    sources = _ai_response_sources(api_resp)
+    usage = api_resp.get("usage", {}) or {}
+    searches = _ai_response_searches(api_resp)
+
+    _ai_log_draft({
+        "ts": datetime.datetime.now().isoformat(timespec="seconds"),
+        "id": species_id, "kingdom": kingdom, "kind": "work",
+        "model": api_resp.get("model", AI_MODEL), "notes": (notes or "").strip()[:2000],
+        "drafted": drafted, "changed": changed, "left_alone": left_alone,
+        "summary": summary, "sources": sources, "usage": usage, "searches": searches,
+    })
+
+    def _reason(k):
+        short = k.split(".", 1)[-1]
+        nested = reasons.get("page") if isinstance(reasons.get("page"), dict) else {}
+        return reasons.get(k) or nested.get(short) or reasons.get(short) or ""
+
+    return {
+        "ok": True, "id": species_id, "kingdom": kingdom,
+        "model": api_resp.get("model", AI_MODEL),
+        "drafted": drafted, "changed": changed, "left_alone": left_alone,
+        "reasons": {k: _reason(k) for k in drafted + changed},
+        "low_confidence": low_conf,
+        "empty_returned": empty_returned, "rejected_keys": rejected,
+        "photos_kept": sorted(set(photos_kept)),
+        "summary": summary, "sources": sources, "searches": searches, "usage": usage,
+        "wrote": wrote, "page": regen,
+    }
+
+
+def handle_api_ai_work(params):
+    """POST /api/ai/work  body: {kingdom, id, notes?, allow_search?}"""
+    body = params.get("_body", {}) or {}
+    kingdom = body.get("kingdom", "plants")
+    species_id = body.get("id", "")
+    if kingdom not in ("plants", "wildlife"):
+        return {"ok": False, "error": f"bad kingdom: {kingdom}"}
+    if not species_id:
+        return {"ok": False, "error": "missing species id"}
+    return ai_work_species(kingdom, species_id, notes=body.get("notes", ""),
+                           allow_search=bool(body.get("allow_search", True)))
+
+
 # ════════════════════════════════════════════════════════════════════════════
 # PHENOLOGY — AI-inferred plant phenology from iNat photos
 #
@@ -11451,6 +11848,7 @@ API_ROUTES = {
     "/api/cultivated/preview": handle_api_cultivated_preview,
     "/api/ai/draft":          handle_api_ai_draft,
     "/api/ai/revise":         handle_api_ai_revise,
+    "/api/ai/work":           handle_api_ai_work,
     "/api/verify/fields":     handle_api_verify_fields,
     "/api/ai/verify":         handle_api_ai_verify,
     "/api/ai/verify/apply":   handle_api_ai_verify_apply,
