@@ -7816,7 +7816,14 @@ def render_publish():
                 `<button class="pub-btn promote" ${{disabled}} title="${{title}}"
                           onclick="pubPromote('${{sp.id}}')">🚀 Publish</button>`;
         }} else if (sp.status === 'html') {{
-            actions = previewBtn + `
+            /* Revise on a published page is plants-only for now: every published
+               animal has an authored page.*, and wildlife Revise still edits the
+               old fields underneath it — the page would rebuild unchanged. */
+            const reviseBtn = pubKingdom === 'plants'
+                ? `<button class="pub-btn airevise" onclick="pubReviseOpen('${{sp.id}}')"
+                        title="Paste feedback and have Claude revise — the live page is rebuilt when it writes">🔁 Revise with Claude</button>`
+                : '';
+            actions = previewBtn + reviseBtn + `
                 <button class="pub-btn regen" onclick="pubPromote('${{sp.id}}')"
                         title="Regenerate the page from current data">♻️ Regenerate</button>
                 <button class="pub-btn demote" onclick="pubDemote('${{sp.id}}')"
@@ -7900,6 +7907,21 @@ def render_publish():
         }} catch (e) {{ pubToast(e.message, true); btn.disabled = false; }}
     }}
 
+    /* One line on what happened to the live page after a Draft / Revise write:
+       rebuilt, not rebuilt (with the reason), or nothing to say (not published). */
+    function pubPageLine(res) {{
+        let html = '';
+        if (res.photos_kept && res.photos_kept.length)
+            html += `<div class="ai-line ai-muted">📷 Your placed photos were kept in: ${{esc(res.photos_kept.join(', '))}}</div>`;
+        const pg = res.page;
+        if (!pg) return html;
+        const why = pg.error || pg.reason || '';
+        if (pg.regenerated) html += `<div class="ai-line"><b>✓ Live page rebuilt.</b></div>`;
+        else if (why && why !== 'not published')
+            html += `<div class="ai-line ai-none">⚠ Live page NOT rebuilt: ${{esc(why)}} — use ♻️ Regenerate once that is fixed.</div>`;
+        return html;
+    }}
+
     function pubReviseOpen(id) {{
         const panel = document.getElementById('ai-result-' + id);
         panel.style.display = 'block';
@@ -7909,7 +7931,7 @@ def render_publish():
                 <div class="rev-label">Paste feedback for Claude — from Gemini, a person, or your own notes.
                     Tone, facts, formatting, anything. Claude changes only what you mention.</div>
                 <textarea id="rev-text-${{id}}" class="rev-text" rows="4"
-                    placeholder="e.g. Dave says it does clump here — fix the suckering claim. Also tighten More Information, it's a touch long."></textarea>
+                    placeholder="e.g. Dave says it does clump here — fix the suckering claim. Also tighten How it grows, it's a touch long."></textarea>
                 <div class="rev-row">
                     <label class="rev-check"><input type="checkbox" id="rev-search-${{id}}" checked>
                         let Claude web-search to verify facts (uncheck for tone/formatting-only — faster, cheaper)</label>
@@ -7952,6 +7974,7 @@ def render_publish():
             }} else {{
                 html += `<div class="ai-line ai-none">No fields changed — Claude didn't find anything in the feedback to act on, or couldn't verify a factual change.</div>`;
             }}
+            html += pubPageLine(res);
             if (res.sources && res.sources.length) {{
                 const items = res.sources.slice(0, 12).map(s =>
                     `<li><a href="${{esc(s.url)}}" target="_blank" rel="noopener">${{esc(s.title || s.url)}}</a></li>`).join('');
@@ -7974,7 +7997,8 @@ def render_publish():
         const panel = document.getElementById('ai-result-' + id);
         panel.style.display = 'block';
         panel.className = 'ai-result working';
-        panel.innerHTML = '<span class="ai-spin">🤖</span> Claude is researching authoritative sources and drafting the empty fields… this can take up to a minute.';
+        panel.innerHTML = '<span class="ai-spin">🤖</span> Claude is researching authoritative sources and drafting' +
+            (pubKingdom === 'plants' ? ' the page' : ' the empty fields') + '… this can take up to a minute.';
         try {{
             const resp = await fetch('/api/ai/draft', {{
                 method: 'POST', headers: {{'Content-Type': 'application/json'}},
@@ -8001,6 +8025,7 @@ def render_publish():
                 html += `<div class="ai-line"><b>⚠ Double-check these:</b> ${{chips(res.low_confidence,'low')}}</div>`;
             if (res.rejected_keys && res.rejected_keys.length)
                 html += `<div class="ai-line ai-muted">Ignored unknown fields: ${{chips(res.rejected_keys,'skip')}}</div>`;
+            html += pubPageLine(res);
             if (res.sources && res.sources.length) {{
                 const items = res.sources.slice(0, 12).map(s =>
                     `<li><a href="${{esc(s.url)}}" target="_blank" rel="noopener">${{esc(s.title || s.url)}}</a></li>`).join('');
@@ -9183,7 +9208,11 @@ VERIFY_BODY = r"""
       body:JSON.stringify({kingdom:vfKingdom(), id:VF_SELECTED, decisions:decisions})});
     const d=await r.json();
     if(!d.ok){ vfToast(d.error||'apply failed', true); return; }
-    vfToast('Wrote '+d.applied.length+' field(s): '+d.applied.join(', ')+'. Re-publish the page to push it live.');
+    const pg=d.page||{}, why=pg.error||pg.reason||'';
+    const tail=pg.regenerated ? ' Live page rebuilt.'
+             : (why && why!=='not published') ? ' Live page NOT rebuilt: '+why+'.'
+             : '';
+    vfToast('Wrote '+d.applied.length+' field(s): '+d.applied.join(', ')+'.'+tail);
     document.getElementById('vf-applyrow').style.display='none'; vfLoadFields();
   }
 
@@ -9483,7 +9512,8 @@ def apply_verify_decisions(kingdom, species_id, decisions):
                     fh.write(json.dumps(r, ensure_ascii=False) + "\n")
         except OSError:
             pass
-    return {"ok": True, "id": species_id, "applied": applied}
+    regen = _regen_published_page(species_id, kingdom) if applied else None
+    return {"ok": True, "id": species_id, "applied": applied, "page": regen}
 
 
 def handle_api_verify_fields(params):
@@ -9887,7 +9917,16 @@ AI_PROVENANCE_DIR  = os.path.join(REPO, "data", "sources", "provenance")
 # Field → (json-shape, instruction). This is the ONLY surface the AI may write.
 # Anything not listed here (id, names, taxonomy, status, photos, observation
 # stats, ID-linked similar_species/plant_links, internal_notes …) is protected.
-_DRAFT_SPEC_PLANTS = {
+#
+# PLANTS HAVE TWO SPECS since 2026-09-09. Draft now writes the visitor page
+# directly — `page.<section>` blocks, which the publisher renders verbatim —
+# plus the handful of short fields the site still reads off the record (the
+# sign's origin chip and teaser, the browse-card facets). The old prose fields
+# below (origin, more_information, wildlife_value, reproduction …) are no
+# longer drafted: on an authored page every one of them is dead. Randy:
+# "focus on what's consumed." They stay on the 264 mapped records untouched,
+# and Revise on one of THOSE still edits them through _DRAFT_SPEC_PLANTS_MAPPED.
+_DRAFT_SPEC_PLANTS_MAPPED = {
     "native":             ("bool", "true if native to Florida / SE United States; false if introduced or cultivated"),
     "native_notes":       ("str",  "ONLY if native status is genuinely contested or partial — a ONE-sentence 'our take' (e.g. 'Debated, but we treat it as a Florida native'). Do not rehash the debate. Omit if clearly native or clearly non-native."),
     "form":               ("str",  "growth form — EXACTLY one of: Tree | Shrub & Vine | Palm & Cycad | Groundcover & Wildflower | Foliage & Accent | Aquatic & Wetland"),
@@ -9908,6 +9947,126 @@ _DRAFT_SPEC_PLANTS = {
     "watch_invasive_notes": ("str",  "if watch_invasive is true: which list/category (e.g. 'FISC Category I') plus any caveat; omit if not flagged"),
     "other_notes":        ("list", "any extra noteworthy info as a list of paragraph strings — one item per paragraph, never newlines inside a string; or omit"),
 }
+
+# The machinery the site still reads off an AUTHORED plant record. Verified
+# field by field 2026-09-09: teaser + origin_short feed the sign and the browse
+# drawer; native / form / alternate_names / butterfly feed the card facets, the
+# hero eyebrow and the "Also known as" foot. Nothing else survives. Randy on the
+# edibility/toxicity colours: "why do we need [them]? I hate those" — dropped;
+# the hazard is prose in Take care or the section is omitted.
+_DRAFT_SPEC_PLANTS = {
+    "teaser":          ("str",  "one or two sentences, 120-175 characters, for the quick-view card — the first thing a visitor reads before choosing the page. Carry a DIFFERENT fact from at_a_glance[0], not the same fact reworded. Make somebody want the page; don't summarise it."),
+    "origin_short":    ("str",  "two to four words for the sign's origin chip — \"NW Argentina\", \"Florida native\", \"Madagascar\""),
+    "native":          ("bool", "true if native to Florida / the SE United States. If that is genuinely contested, give the park's take in one sentence inside where_it_comes_from and move on."),
+    "form":            ("str",  "EXACTLY one of: Tree | Shrub & Vine | Palm & Cycad | Groundcover & Wildflower | Foliage & Accent | Aquatic & Wetland"),
+    "alternate_names": ("list", "other common names in use — list of short strings"),
+    "butterfly":       ("dict", 'object {"larval_food":bool,"larval_species":[str],"adult_food":bool,"adult_species":[str],"notes":null} — documented larval HOST for named butterflies/moths as "Common (Scientific)"; adult_food for a notable nectar source (keep adult_species [] unless ONE specialist). The prose about them lives in what_it_does_here; these flags are for indexing.'),
+}
+
+# The page, section by section, in render order. Keys are the page.* keys the
+# publisher reads (plant_publisher.V2_SECTIONS); the text is the brief the
+# model gets for each. Randy read and approved this wording 2026-09-09.
+_PLANT_PAGE_SECTIONS = [
+    ("at_a_glance",
+     "four short facts, no labels; five only when the plant genuinely has a fifth that "
+     "would be a shame to lose. Each one a sentence, two at most. These are the things a "
+     "visitor would stop and tell a friend: vivid, specific, surprising. LEAN LOCAL where "
+     "the plant offers it — Florida, the Gulf coast, this park — but never manufacture a "
+     "local detail; a good general fact beats a thin local one. Lead with your best. Any "
+     "longer and it is not a glance."),
+    ("how_to_know_it",
+     "how to tell it is THIS plant, written for somebody looking at it. Four blocks at "
+     "most. At least one must NOT be an anatomical part: crush a leaf, shake a pod, step "
+     "back and read the silhouette, compare it with the look-alike beside it. The rest may "
+     "be the parts that actually settle it (Flowers, Leaves, Bark, Pods — only the ones "
+     "that identify it, not every part it has). If two species here are hard to separate, "
+     "say what narrows it down AND what it does not settle; false confidence is worse than "
+     "admitting the limit."),
+    ("where_to_find_it_here",
+     "OMIT THIS SECTION. The park fills it from its own placement records; you cannot know "
+     "where the specimen is."),
+    ("what_it_does_here",
+     "what the plant does in THIS park: the butterflies and birds it feeds (name the larval "
+     "hosts and nectar visitors as \"Common name (Scientific name)\"), what it contributes "
+     "to the collection, what it does on a slope or a pond edge. This is the reason a "
+     "botanical park publishes a plant, so give it real weight. Do not write a generic "
+     "food-web sentence; if you have nothing specific, keep it to one honest block."),
+    ("where_it_comes_from",
+     "the native range and how it came to be grown in Florida, dated where a date exists "
+     "(\"introduced to Florida by the 1880s\"). If people USE the plant — carnauba wax, "
+     "kapok in life jackets, timber, a fruit crop — that goes here as a labelled block with "
+     "a specific label, because for most plants the use IS the origin story."),
+    ("cultural_significance",
+     "ONLY if there is a real, sourced story: a festival, a city that has adopted the tree, "
+     "a craft, a name with a history. Omit the section entirely otherwise. Never pad this "
+     "with \"valued by many cultures\"."),
+    ("how_it_grows",
+     "the conditions it flourishes in, its pace, its seasons — but state a condition ONLY "
+     "where it explains something the visitor can see or do. Not \"drought tolerance: "
+     "high\" but \"once established it shrugs off drought, which is why it holds the dry "
+     "slope\". Not \"growth rate: fast\" but what fast means at this tree. Flowering and "
+     "fruiting timing belongs here (\"the violet display comes in spring, often on bare "
+     "branches\"). UNITS: rounded imperial, spelled out — \"about forty feet\", never "
+     "\"12 m\" or \"40 ft\"."),
+    ("take_care",
+     "ONLY if there is something real: toxic if eaten, a sap that burns, spines, pods that "
+     "litter a path, a plant that spreads into natural areas (FISC Category I or II — name "
+     "the list). Lead with the one that matters most, plainly. If the plant is harmless, "
+     "OMIT THE SECTION — a section that says nothing will happen is worse than none. Never "
+     "repeat a hazard already stated elsewhere."),
+]
+_PLANT_PAGE_KEYS = [k for k, _ in _PLANT_PAGE_SECTIONS]
+
+# The framing above the sections. Two readers, no length target, and the test
+# is against boring. Randy, 2026-09-09: "This is NOT strictly a quick read at a
+# plant. But that is why At A Glance is at the top" … "I do know boring, and
+# that is the laundry list, by rote recitation of obligatory information."
+_PLANT_PAGE_BRIEF = (
+    "You are writing THE PAGE, not a database record. It has two readers.\n\n"
+    "One is standing at the plant with a phone, having scanned the sign. They read At a "
+    "glance and maybe one more section. That is why At a glance comes first and must "
+    "stand on its own.\n\n"
+    "The other is at home, browsing from one plant to the next because the pages are "
+    "worth it — the writing, the placed photographs, the way it reads like someone who "
+    "knows this park talking to you. This is OUR content: our photographs, our stories, "
+    "what we see here. It is gleaned from the references but it is not the references. "
+    "Short, interesting bites — not lists of facts.\n\n"
+    "There is no length target. Some plants have far more worth telling than others, and "
+    "the page should be exactly as long as that. How to measure interesting is hard; "
+    "boring is easy to spot: the laundry list, the rote recitation of obligatory "
+    "information, the box being checked because the section exists. Never do that. A "
+    "reader should leave with something they have learned, and should be able to tell "
+    "that the people who wrote it care about this stuff — which shows in the specificity "
+    "and the choice of what to tell, not in exclamation points. The house voice rules "
+    "still hold.\n\n"
+    "Every section is a list of BLOCKS. A block is one short paragraph:\n"
+    '  {"label": "Flowers", "text": "…"}   a labelled paragraph\n'
+    '  {"text": "…"}                         an unlabelled one\n'
+    "Labels are optional and should be SPECIFIC (\"Carousel horses\", \"Flowers before "
+    "leaves\", \"Pods\"), never generic (\"Uses\", \"Description\", \"Notes\"). One to "
+    "three sentences per block, about 400 characters at most; no newlines inside a "
+    "string; plain prose, no markdown."
+)
+
+_PLANT_PAGE_PHOTOS_RULE = (
+    "PHOTOGRAPHS: you do not place photographs. The park does that by hand. Never write "
+    "a caption or refer to \"the photo above\"."
+)
+
+
+def _plant_page_schema_text():
+    return "\n".join(f'  "{key}" — {brief}' for key, brief in _PLANT_PAGE_SECTIONS)
+
+
+def _page_mode(kingdom, species=None):
+    """True when the AI works on page.* rather than the old prose fields.
+
+    Draft on a plant: always (a fresh species gets a page, never the old fields).
+    Revise on a plant: only if it already has a page — the 264 mapped plants keep
+    editing the fields their page is assembled from. Wildlife is untouched here."""
+    if kingdom != "plants":
+        return False
+    return species is None or bool(species.get("page"))
 
 _DRAFT_SPEC_WILDLIFE = {
     "native":           ("bool", "true if native to Florida; false if introduced"),
@@ -9941,8 +10100,13 @@ _SHAPE_CHECK = {
 }
 
 
-def _draft_spec(kingdom):
-    return _DRAFT_SPEC_PLANTS if kingdom == "plants" else _DRAFT_SPEC_WILDLIFE
+def _draft_spec(kingdom, page_mode=None):
+    """The field spec for a call. `page_mode` (see _page_mode) picks between the
+    two plant specs; None means the page-first one, which is also what the
+    intake/gap tooling wants when it asks 'what can the AI write?'."""
+    if kingdom != "plants":
+        return _DRAFT_SPEC_WILDLIFE
+    return _DRAFT_SPEC_PLANTS_MAPPED if page_mode is False else _DRAFT_SPEC_PLANTS
 
 
 # Hand-picked tone exemplars, by PSBP id, best first.
@@ -9963,23 +10127,47 @@ def _draft_spec(kingdom):
 # Keep this SHORT. One or two records, re-picked when a better one is written —
 # not a list that grows. Falls back to the old richness ranking to top up.
 AI_EXEMPLARS = {
-    "plants":   ["PSBP-00753", "PSBP-00729"],   # Scaly Tree Fern, Black-Fruit Cluster Palm
+    # Plants re-pinned 2026-09-09 to two AUTHORED pages (the old pins, Scaly
+    # Tree Fern and Black-Fruit Cluster Palm, have no page.* to show). Silk
+    # Floss carries both conditional sections; Jacaranda neither Take care.
+    "plants":   ["PSBP-00007", "PSBP-00004"],   # Jacaranda, Silk Floss Tree
+    "plants_mapped": ["PSBP-00753", "PSBP-00729"],   # for Revise on a mapped plant
     "wildlife": ["PSBP-90028"],     # Melon Aphid
 }
 
 
-def _ai_exemplars(kingdom, n=2):
+def _exemplar_page(page):
+    """A page as the model should see it: no photo blocks (it cannot place
+    photographs) and no Where to find it here (it is told to omit that)."""
+    out = {}
+    for key, blocks in (page or {}).items():
+        if key == "where_to_find_it_here" or not isinstance(blocks, list):
+            continue
+        kept = [b for b in blocks if isinstance(b, dict) and not b.get("photo")]
+        if kept:
+            out[key] = kept
+    return out
+
+
+def _ai_exemplars(kingdom, n=2, page_mode=None):
     """Tone/structure references for the drafting call, trimmed to draftable keys.
 
     Pinned ids in AI_EXEMPLARS come first, in order; richness ranking tops up.
+    In page mode an exemplar is its page plus the machinery fields, and only
+    species that HAVE a page qualify.
     """
     path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
-    spec = _draft_spec(kingdom)
+    page_mode = _page_mode(kingdom) if page_mode is None else page_mode
+    spec = _draft_spec(kingdom, page_mode)
     species = [s for s in _get_species_list(_load(path)) if s.get("status") == "html"]
+    if page_mode:
+        species = [s for s in species if s.get("page")]
     by_id = {s.get("id"): s for s in species}
 
+    pins = AI_EXEMPLARS.get("plants_mapped" if (kingdom == "plants" and not page_mode)
+                            else kingdom, [])
     chosen, seen = [], set()
-    for pid in AI_EXEMPLARS.get(kingdom, []):
+    for pid in pins:
         e = by_id.get(pid)
         if e and pid not in seen:
             chosen.append(e); seen.add(pid)
@@ -9993,7 +10181,13 @@ def _ai_exemplars(kingdom, n=2):
             if e.get("id") not in seen:
                 chosen.append(e); seen.add(e.get("id"))
 
-    return [{k: e[k] for k in spec if _is_filled(e.get(k))} for e in chosen[:n]]
+    out = []
+    for e in chosen[:n]:
+        rec = {k: e[k] for k in spec if _is_filled(e.get(k))}
+        if page_mode:
+            rec = {"page": _exemplar_page(e.get("page")), **rec}
+        out.append(rec)
+    return out
 
 
 # ── SHARED HOUSE RULES ────────────────────────────────────────────────────
@@ -10056,8 +10250,15 @@ _HOUSE_RULES = (
 #
 # Both builders now read these. One constant, one place to edit, no drift.
 
-def _kingdom_block(kingdom):
+def _kingdom_block(kingdom, page_mode=False):
     """Colour-level defaults, plus the rules unique to each kingdom."""
+    if kingdom == "plants" and page_mode:
+        # No colour fields are drafted on a page; the hazard is Take care prose.
+        return (
+            "BUTTERFLY: the butterfly booleans (larval_food, adult_food) are structured flags "
+            "for indexing — set them accurately, but don't narrate them as data. When a plant "
+            "has real butterfly, pollinator, or nectar value, that is what_it_does_here prose."
+        )
     if kingdom == "plants":
         return (
             "COLOR LEVELS (edibility, toxicity): Green is the DEFAULT for anything harmless — "
@@ -10090,14 +10291,49 @@ def _kingdom_block(kingdom):
 # REPETITION is the rule against exactly the redundancy the section redesign is
 # meant to prevent — an editing pass that has never been told it is the likeliest
 # place for duplication to creep back in.
-_CRAFT_RULES = (
+_CRAFT_REPETITION = (
     "REPETITION: a fact belongs in exactly ONE place. Quick Hits exist to catch the "
     "eye; a later section may revisit one only if it genuinely expands it. Restating a "
     "Quick Hit elsewhere without adding anything is the most common fault in these "
     "records.\n\n"
     "SELECTIVITY: do NOT assume a field must be filled just because it exists. Some "
     "fields should be quiet on a given species. Omit rather than pad — the database can "
-    "be comprehensive; the visitor page should be selective.\n\n"
+    "be comprehensive; the visitor page should be selective."
+)
+
+_CRAFT_CONFIDENCE = (
+    "CONFIDENCE MUST MATCH THE EVIDENCE. When species-level literature is thin, do NOT "
+    "fill the gap with family- or genus-level natural history written as though it were "
+    "established for this species. That is the most dangerous failure mode in this "
+    "database, because the prose erases the distinction and a visitor cannot tell which "
+    "sentences are load-bearing. If the sources describe crane flies generally, say "
+    "'crane flies'; if they describe THIS species, name it. Where the honest answer is "
+    "that something is not documented locally, WRITE THAT — 'the seasonal timing of this "
+    "species in southwest Florida is not well documented' is a better sentence than an "
+    "invented month range. A short, accurate record beats a full one built on "
+    "extrapolation, and a nearly-empty field is an acceptable outcome.\n\n"
+    "Two specific traps: (a) a record at FAMILY or GENUS rank covers many animals, so "
+    "hedge anything true of only some of them, and lead with what the visitor actually "
+    "encounters; (b) a look-alike section that implies confident field identification of "
+    "a hard-to-separate species is worse than admitting the limit. Say what narrows it "
+    "down and what it does not settle."
+)
+
+# The plant page gets the two general rules and the confidence rule; the field
+# rules (SOUNDS, SEASONALITY, PLANT_CONNECTIONS) are wildlife fields, and the
+# LENGTH rule is replaced by the brief — Randy: "No length criteria."
+_CRAFT_RULES_PLANT_PAGE = (
+    _CRAFT_REPETITION.replace("Quick Hits exist", "At a glance exists")
+                     .replace("Restating a Quick Hit", "Restating an At a glance fact")
+                     .replace("a field must be filled", "a section must be filled")
+                     .replace("Some fields should", "Some sections should")
+    + "\n\n" + _CRAFT_CONFIDENCE + "\n\n"
+    "LENGTH: as long as the plant deserves and no longer. Every interesting fact you "
+    "know is not an argument for including it, but a good one is."
+)
+
+_CRAFT_RULES = (
+    _CRAFT_REPETITION + "\n\n"
     "The four rules below are the same principle applied to the four fields that keep "
     "breaking it. They are not suggestions.\n\n"
     "SOUNDS may be EMPTY, and usually should be. If the animal makes no sound a visitor "
@@ -10120,21 +10356,7 @@ _CRAFT_RULES = (
     "create the conditions it needs. A generic food-web sentence in `ecological_role` is "
     "NOT a substitute. If you find yourself writing 'sits in the middle of the food web' "
     "while this field is empty, you have the priorities backwards.\n\n"
-    "CONFIDENCE MUST MATCH THE EVIDENCE. When species-level literature is thin, do NOT "
-    "fill the gap with family- or genus-level natural history written as though it were "
-    "established for this species. That is the most dangerous failure mode in this "
-    "database, because the prose erases the distinction and a visitor cannot tell which "
-    "sentences are load-bearing. If the sources describe crane flies generally, say "
-    "'crane flies'; if they describe THIS species, name it. Where the honest answer is "
-    "that something is not documented locally, WRITE THAT — 'the seasonal timing of this "
-    "species in southwest Florida is not well documented' is a better sentence than an "
-    "invented month range. A short, accurate record beats a full one built on "
-    "extrapolation, and a nearly-empty field is an acceptable outcome.\n\n"
-    "Two specific traps: (a) a record at FAMILY or GENUS rank covers many animals, so "
-    "hedge anything true of only some of them, and lead with what the visitor actually "
-    "encounters; (b) a look-alike section that implies confident field identification of "
-    "a hard-to-separate species is worse than admitting the limit. Say what narrows it "
-    "down and what it does not settle.\n\n"
+    + _CRAFT_CONFIDENCE + "\n\n"
     "LENGTH: aim for a page a visitor finishes in about ninety seconds — roughly 700 to "
     "900 words all told. Every interesting fact you know is not an argument for "
     "including it. Ask what the visitor is actually looking at, lead with that, and let "
@@ -10144,7 +10366,8 @@ _CRAFT_RULES = (
 
 def _ai_build_messages(species, kingdom):
     """Return (system, user_text) for the drafting call."""
-    spec = _draft_spec(kingdom)
+    page_mode = _page_mode(kingdom)
+    spec = _draft_spec(kingdom, page_mode)
     noun = "plant" if kingdom == "plants" else "animal"
     sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
     tax = species.get("taxonomy") or {}
@@ -10154,7 +10377,7 @@ def _ai_build_messages(species, kingdom):
     schema_lines = "\n".join(
         f'  - "{field}" ({shape}): {instr}' for field, (shape, instr) in spec.items()
     )
-    exemplars = _ai_exemplars(kingdom, 2)
+    exemplars = _ai_exemplars(kingdom, 2, page_mode)
     exemplar_json = json.dumps(exemplars, indent=2, ensure_ascii=False)
 
     target = {
@@ -10164,7 +10387,37 @@ def _ai_build_messages(species, kingdom):
         "category": species.get("category", ""),
     }
 
-    kingdom_block = _kingdom_block(kingdom)
+    kingdom_block = _kingdom_block(kingdom, page_mode)
+
+    if page_mode:
+        # The page-first plant prompt. Randy read this as text and approved it
+        # 2026-09-09 before it was wired; edit the constants, not this assembly.
+        user = (
+            f"Draft the visitor page for this {noun}:\n"
+            f"{json.dumps(target, indent=2, ensure_ascii=False)}\n\n"
+            f"{_PLANT_PAGE_BRIEF}\n\n"
+            "THE SECTIONS, in page order. Write each as \"page\": {\"<key>\": [blocks]}.\n"
+            f"{_plant_page_schema_text()}\n\n"
+            f"{_PLANT_PAGE_PHOTOS_RULE}\n\n"
+            "ALONGSIDE THE PAGE, the site still needs these short machinery fields. "
+            "Produce them exactly in the shapes shown:\n"
+            f"{schema_lines}\n\n"
+            f"{kingdom_block}\n\n"
+            f"Here are {len(exemplars)} existing published pages from this park, for TONE, "
+            "depth and structure only — match this quality; do NOT reuse their facts:\n"
+            f"{exemplar_json}\n\n"
+            f"{_CRAFT_RULES_PLANT_PAGE}\n\n"
+            "Do a few targeted web searches, then write. Solid and accurate. A true page "
+            "beats a fuller one built on extrapolation; an omitted section is an acceptable "
+            "outcome, a padded one is not.\n\n"
+            "OUTPUT CONTRACT: return a single JSON object with the key \"page\" (the "
+            "sections above, only the ones you are writing) and the machinery fields. You "
+            "may also include \"_summary\" (1-2 sentences on what you drafted and your "
+            "confidence) and \"_low_confidence\" (array of section or field names you are "
+            "least sure about). Wrap the JSON object exactly between a line containing "
+            "<<<JSON>>> and a line containing <<<END>>>, and output nothing after <<<END>>>."
+        )
+        return system, user
 
     user = (
         f"Draft first-cut signage content for this {noun}:\n"
@@ -10350,14 +10603,88 @@ def _deformat(value):
     return value
 
 
-def _ai_sanitize(draft, kingdom):
+def _sanitize_page(page):
+    """The page.* shape, enforced: known section keys only, each a list of
+    blocks; a block is {label?, text} or {photo, caption?, focus?}. Prose is
+    deformatted like every other string leaf. Returns (clean_page, rejected)
+    where rejected names the sections or blocks that were dropped."""
+    clean, rejected = {}, []
+    if not isinstance(page, dict):
+        return clean, ["page"]
+    for key, blocks in page.items():
+        if key not in _PLANT_PAGE_KEYS or key == "where_to_find_it_here":
+            rejected.append(f"page.{key}")
+            continue
+        if not isinstance(blocks, list):
+            rejected.append(f"page.{key}")
+            continue
+        kept = []
+        for b in blocks:
+            if not isinstance(b, dict):
+                rejected.append(f"page.{key}[]"); continue
+            if b.get("photo"):
+                nb = {"photo": str(b["photo"])}
+                if b.get("caption"): nb["caption"] = _deformat(str(b["caption"]))
+                if b.get("focus"):   nb["focus"] = str(b["focus"])
+                kept.append(nb)
+                continue
+            text = _deformat(str(b.get("text") or ""))
+            if not text:
+                continue
+            nb = {}
+            label = _deformat(str(b.get("label") or ""))
+            if label:
+                nb["label"] = label
+            nb["text"] = text
+            kept.append(nb)
+        if kept:
+            clean[key] = kept
+    return clean, rejected
+
+
+def _page_photo_blocks(page):
+    """{section: [photo blocks]} — the hand-placed photographs on a page."""
+    out = {}
+    for key, blocks in (page or {}).items():
+        if isinstance(blocks, list):
+            ph = [b for b in blocks if isinstance(b, dict) and b.get("photo")]
+            if ph:
+                out[key] = ph
+    return out
+
+
+def _carry_photo_blocks(old_page, new_page):
+    """Keep every photograph the old page had placed. A photo block missing from
+    the new version of its section is appended to that section (the section is
+    created if the new page dropped it). Photographs are placed by hand and are
+    never the model's to lose. Returns the list of sections touched."""
+    touched = []
+    for key, blocks in _page_photo_blocks(old_page).items():
+        sec = new_page.setdefault(key, [])
+        have = {str(b.get("photo")) for b in sec if isinstance(b, dict) and b.get("photo")}
+        for b in blocks:
+            if str(b["photo"]) not in have:
+                sec.append(dict(b))
+                touched.append(key)
+    return touched
+
+
+def _ai_sanitize(draft, kingdom, page_mode=None):
     """Keep only schema fields with the right top-level shape, coerce prose fields
     into paragraph lists, and strip stray inline markup / newlines from their
     string leaves. Returns (clean_dict, rejected_keys)."""
-    spec = _draft_spec(kingdom)
+    if page_mode is None:
+        page_mode = _page_mode(kingdom)
+    spec = _draft_spec(kingdom, page_mode)
     clean, rejected = {}, []
     for k, v in draft.items():
         if k.startswith("_"):
+            continue
+        if k == "page" and page_mode:
+            page, bad = _sanitize_page(v)
+            rejected.extend(bad)
+            if page:
+                clean["page"] = page
             continue
         if k not in spec or v is None:
             if k not in spec and not k.startswith("_"):
@@ -10448,7 +10775,8 @@ def ai_draft_species(kingdom, species_id, overwrite=False):
 
     summary = draft.get("_summary", "")
     low_conf = draft.get("_low_confidence", []) or []
-    clean, rejected = _ai_sanitize(draft, kingdom)
+    page_mode = _page_mode(kingdom)
+    clean, rejected = _ai_sanitize(draft, kingdom, page_mode)
 
     # Re-load immediately before writing so we never clobber a concurrent edit.
     data = _load(path)
@@ -10457,7 +10785,7 @@ def ai_draft_species(kingdom, species_id, overwrite=False):
     if not target:
         return {"ok": False, "error": f"{species_id} disappeared from signage before write."}
 
-    filled, skipped_existing, empty_from_ai = [], [], []
+    filled, skipped_existing, empty_from_ai, photos_kept = [], [], [], []
     for k, v in clean.items():
         if not _is_filled(v):
             empty_from_ai.append(k)
@@ -10465,12 +10793,21 @@ def ai_draft_species(kingdom, species_id, overwrite=False):
         if not overwrite and _is_filled(target.get(k)):
             skipped_existing.append(k)
             continue
+        if k == "page":
+            # The page is one unit: a re-draft replaces it, but the photographs
+            # the old page had placed by hand come along.
+            photos_kept = _carry_photo_blocks(target.get("page"), v)
+            target[k] = v
+            filled.extend(f"page.{s}" for s in v)
+            continue
         target[k] = v
         filled.append(k)
 
+    regen = None
     if filled:
         data.setdefault("meta", {})["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
         write_json_atomic(path, data)
+        regen = _regen_published_page(species_id, kingdom)
 
     sources = _ai_response_sources(api_resp)
     usage = api_resp.get("usage", {}) or {}
@@ -10492,12 +10829,14 @@ def ai_draft_species(kingdom, species_id, overwrite=False):
         "skipped_existing": skipped_existing,
         "empty_from_ai": empty_from_ai,
         "rejected_keys": rejected,
+        "photos_kept": sorted(set(photos_kept)),
         "summary": summary,
         "low_confidence": [k for k in low_conf if isinstance(k, str)],
         "sources": sources,
         "searches": searches,
         "usage": usage,
         "wrote": bool(filled),
+        "page": regen,
     }
 
 
@@ -10520,10 +10859,15 @@ def handle_api_ai_draft(params):
 # else byte-for-byte. Iterative by nature — each round sees the latest content.
 
 def _ai_build_revise_messages(species, kingdom, feedback):
-    spec = _draft_spec(kingdom)
+    page_mode = _page_mode(kingdom, species)
+    spec = _draft_spec(kingdom, page_mode)
     sci_field = "botanical_name" if kingdom == "plants" else "scientific_name"
     noun = "plant" if kingdom == "plants" else "animal"
     current = {k: species[k] for k in spec if _is_filled(species.get(k))}
+    if page_mode:
+        # The model edits the page it is shown, photo blocks included, so it can
+        # return a section whole with the photographs still in place.
+        current = {"page": species.get("page"), **current}
 
     system = _HOUSE_RULES + (
         "\n\nYOU ARE EDITING, NOT DRAFTING. Everything above still applies — the "
@@ -10543,6 +10887,38 @@ def _ai_build_revise_messages(species, kingdom, feedback):
 
     target = {"common_name": species.get("common_name", ""),
               sci_field: species.get(sci_field, "")}
+
+    if page_mode:
+        user = (
+            "Revise the visitor page for this plant: "
+            f"{json.dumps(target, ensure_ascii=False)}.\n\n"
+            "CURRENT CONTENT (JSON) — the page sections and the machinery fields:\n"
+            f"{json.dumps(current, indent=2, ensure_ascii=False)}\n\n"
+            f"{_PLANT_PAGE_BRIEF}\n\n"
+            "THE SECTIONS, in page order. Each lives under \"page\": {\"<key>\": [blocks]}.\n"
+            f"{_plant_page_schema_text()}\n\n"
+            "PHOTO BLOCKS: a block of the form {\"photo\": \"…\", \"caption\": \"…\", "
+            "\"focus\": \"…\"} is a photograph the park placed by hand. Return it in its "
+            "place, unchanged, in any section you rewrite. Never drop, move, or recaption "
+            "one unless the feedback asks for that exact photo.\n\n"
+            "MACHINERY FIELDS (shapes you must keep):\n"
+            f"{schema_lines}\n\n"
+            f"{_kingdom_block(kingdom, page_mode)}\n\n"
+            f"{_CRAFT_RULES_PLANT_PAGE}\n\n"
+            "REVIEWER FEEDBACK — apply this:\n"
+            f"\"\"\"\n{feedback.strip()}\n\"\"\"\n\n"
+            "OUTPUT CONTRACT: return a single JSON object containing ONLY the sections and "
+            "fields you are changing, each complete. Sections go under \"page\"; a section "
+            "you return REPLACES that section in full, so include every block of it, not "
+            "just the edited one. Do NOT include sections or fields you are leaving "
+            "unchanged. IF THE FEEDBACK WARRANTS NO CHANGES AT ALL, still return the JSON — "
+            "an empty object, with _summary explaining why nothing needed changing. Never "
+            "reply in prose instead of the contract. Also include \"_changes\" (an object "
+            "mapping each changed section or field to a short reason) and \"_summary\" "
+            "(1-2 sentences). Wrap the JSON exactly between a line <<<JSON>>> and a line "
+            "<<<END>>>, nothing after <<<END>>>."
+        )
+        return system, user
 
     user = (
         f"Revise the signage content for this {noun}: "
@@ -10598,7 +10974,8 @@ def ai_revise_species(kingdom, species_id, feedback, allow_search=True):
 
     summary = draft.get("_summary", "")
     reasons = draft.get("_changes", {}) or {}
-    clean, rejected = _ai_sanitize(draft, kingdom)
+    page_mode = _page_mode(kingdom, entry)
+    clean, rejected = _ai_sanitize(draft, kingdom, page_mode)
 
     # Re-load right before writing to avoid clobbering a concurrent edit.
     data = _load(path)
@@ -10606,17 +10983,28 @@ def ai_revise_species(kingdom, species_id, feedback, allow_search=True):
     if not target:
         return {"ok": False, "error": f"{species_id} disappeared before write."}
 
-    changed, empty_returned = [], []
+    changed, empty_returned, photos_kept = [], [], []
     for k, v in clean.items():
         if not _is_filled(v):
             empty_returned.append(k)   # don't blank a field on an empty value
             continue
+        if k == "page":
+            # Section-level replace. A returned section is complete by contract;
+            # any hand-placed photo it dropped anyway is put back at the end.
+            old_page = target.get("page") or {}
+            photos_kept = _carry_photo_blocks(
+                {s: old_page.get(s) for s in v if s in old_page}, v)
+            target.setdefault("page", {}).update(v)
+            changed.extend(f"page.{s}" for s in v)
+            continue
         target[k] = v
         changed.append(k)
 
+    regen = None
     if changed:
         data.setdefault("meta", {})["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
         write_json_atomic(path, data)
+        regen = _regen_published_page(species_id, kingdom)
 
     sources = _ai_response_sources(api_resp)
     usage = api_resp.get("usage", {}) or {}
@@ -10630,16 +11018,24 @@ def ai_revise_species(kingdom, species_id, feedback, allow_search=True):
         "usage": usage, "searches": searches,
     })
 
+    def _reason(k):
+        # The model may key a section reason as "page.x", "x", or under "page".
+        short = k.split(".", 1)[-1]
+        nested = reasons.get("page") if isinstance(reasons.get("page"), dict) else {}
+        return reasons.get(k) or nested.get(short) or reasons.get(short) or ""
+
     return {
         "ok": True, "id": species_id, "kingdom": kingdom,
         "model": api_resp.get("model", AI_MODEL),
         "changed": changed,
-        "reasons": {k: reasons.get(k, "") for k in changed},
+        "reasons": {k: _reason(k) for k in changed},
         "empty_returned": empty_returned,
         "rejected_keys": rejected,
         "summary": summary,
         "sources": sources, "searches": searches, "usage": usage,
         "wrote": bool(changed),
+        "photos_kept": sorted(set(photos_kept)),
+        "page": regen,
     }
 
 
