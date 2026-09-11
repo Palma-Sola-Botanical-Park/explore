@@ -1217,6 +1217,56 @@ def _photo_exclude_taxa(rec):
     return out
 
 
+def _photo_observations(rec):
+    """iNat observation ids to fetch DIRECTLY for this record, on top of the
+    taxon fetch — the override for observations a taxon query can never reach.
+
+    Two cases, both measured 2026-09-11 across the park's 160 palm observations
+    (22 sit above species; 21 of those are invisible to every record):
+
+      • The plant has no iNat taxon. Dypsis sp. 'Orange Crush' (obs 381376154)
+        exists only in Palmpedia; Dave's ID is genus Dypsis, so the record's
+        taxon is the genus and a genus fetch would sweep in the Triangle Palm's
+        observations while STILL missing this one, because its community taxon
+        is the tribe Areceae.
+      • Identifiers disagree, so the community taxon sits at genus or above.
+        Pindo Palm (Butia odorata) has three observations stuck at genus Butia
+        by capitata/odorata disagreement; a species-level record cannot fetch
+        a genus-level observation, ever.
+
+    Set `photo_observations: [obs_id, ...]` on the signage record. Randy:
+    "Kind of like a system override when I know what an observation is but I
+    just cannot get iNaturalist to get there." Additive: the normal taxon fetch
+    still runs, these are merged in, and every photo goes through the same
+    View New Only review. Nothing here changes an identification on iNat.
+    """
+    v = (rec or {}).get("photo_observations") or []
+    if isinstance(v, (int, str)):
+        v = [v]
+    out = []
+    for o in v:
+        try:
+            out.append(int(o))
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
+def _inat_observations_by_id(obs_ids):
+    """Fetch specific observations by id, regardless of taxon or project.
+    One request (iNat takes a comma-separated id list, 200 max)."""
+    ids = [str(o) for o in obs_ids if o]
+    if not ids:
+        return []
+    data = _inat_get("https://api.inaturalist.org/v1/observations"
+                     f"?id={','.join(ids[:200])}&per_page=200")
+    found = (data or {}).get("results", [])
+    missing = set(ids) - {str(o.get("id")) for o in found}
+    if missing:
+        print(f"    [photo_observations] not returned by iNat: {', '.join(sorted(missing))}")
+    return found
+
+
 def _inat_observations(taxon_id, exclude_taxa=None):
     """All park observations for one taxon, paginated.
 
@@ -1430,10 +1480,18 @@ def _scan_species(kingdom, species, decided=None, registry_ids=None):
     if not INAT_PROJECT_ID:
         return {"error": "INAT_PROJECT_ID is not set."}
     taxon_id = species.get("inat_taxon_id")
-    if not taxon_id:
+    pinned = _photo_observations(species)
+    if not taxon_id and not pinned:
         return {"error": f"{species.get('id')} has no inat_taxon_id in the signage JSON."}
-    obs = _inat_observations(_photo_taxa(species) or taxon_id,
-                             _photo_exclude_taxa(species))
+    obs = []
+    if taxon_id:
+        obs = _inat_observations(_photo_taxa(species) or taxon_id,
+                                 _photo_exclude_taxa(species))
+    if pinned:
+        # Merge, de-duplicated: a pinned observation the taxon fetch already
+        # found is not listed twice.
+        seen = {o.get("id") for o in obs}
+        obs.extend(o for o in _inat_observations_by_id(pinned) if o.get("id") not in seen)
     cc, non_cc = _cc_photos_from_observations(obs)
     payload = _write_cache(kingdom, species["id"], cc, non_cc)
     payload["new_count"] = _count_new_candidates(species["id"], cc, decided, registry_ids)
@@ -2351,10 +2409,12 @@ def handle_api_triage_scan_all(params):
 
     path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
     species_list = _get_species_list(_load(path))
+    def _scannable(s):
+        return bool(s.get("inat_taxon_id") or _photo_observations(s))
     targets = [s for s in species_list
-               if s.get("status") in ("html", "spotted") and s.get("inat_taxon_id")]
+               if s.get("status") in ("html", "spotted") and _scannable(s)]
     skipped_no_taxon = [s.get("id") for s in species_list
-                        if s.get("status") in ("html", "spotted") and not s.get("inat_taxon_id")]
+                        if s.get("status") in ("html", "spotted") and not _scannable(s)]
 
     if not targets:
         return {"ok": False, "error": "No scannable species (need html/spotted status + taxon ID).",
