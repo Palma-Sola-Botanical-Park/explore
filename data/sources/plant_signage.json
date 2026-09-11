@@ -5,7 +5,7 @@
     "species_count": 274,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-09-10T22:13:53",
+    "updated": "2026-09-10T22:39:10",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -8793,26 +8793,23 @@
       "alternate_names": [],
       "quick_hits": [
         "The name does what plant names rarely do — it tells you exactly what you will see. Callicarpa is Greek for beautiful fruit. When the berries are on, the name is self-evidently correct. Kids remember it.",
-        "Crush a leaf and rub it on your skin. The compound released — callicarpenal — is a documented mosquito repellent comparable in effectiveness to DEET. This was rural Southern folk knowledge for generations before the laboratory confirmed it.",
-        "Over 40 bird species eat the berries, including migratory thrushes and catbirds refueling in fall. The berries persist into winter when other food sources are gone.",
-        "Sits next to the Wax Myrtle and Fakahatchee Grass along the pond. Of the three, it is the one the kids remember."
+        "USDA researchers isolated compounds from the leaves that repelled ticks and mosquitoes in laboratory tests — purified compounds, not crushed leaves on skin. The folk use was Mississippi farmers tucking leaves under draft-animal harnesses.",
+        "Birds and small mammals eat the berries, which persist into the start of winter after the leaves drop.",
+        "Around the first of September the purple fruit appears and suddenly Beautyberry seems to be everywhere in the park — around Cypress Pond, around the office, and in spots nobody planted."
       ],
-      "teaser": "Crush a leaf and rub it on your arms. The compound it releases repels mosquitoes about as well as DEET — folk knowledge the laboratory later confirmed.",
+      "teaser": "In early September the purple fruit appears wrapped around the stems, and suddenly Beautyberry seems to be everywhere in the park. Edible, but tart — better as jelly.",
       "origin": [
-        "Native throughout Florida and the eastern United States from Maryland to Texas. Found naturally in hammocks, forest edges, and disturbed areas. Member of the mint family (Lamiaceae) — the same family as basil, rosemary, and the park's own Wax Myrtle."
+        "Native throughout Florida and much of the southeastern and central United States, plus Bermuda, the Bahamas and Cuba (Kew). Found naturally in hammocks, flatwoods, forest edges and near water. Member of the mint family (Lamiaceae)."
       ],
       "origin_short": "Native to Florida",
       "more_information": [
         "The berries are a saturated magenta-purple that reads as almost artificial, which is part of why they stop people. Dense clusters encircle the stems at leaf nodes, so a shrub in full berry looks like it has been decorated rather than grown that way. The effect is especially strong in fall after the leaves begin to drop.",
-        "The mosquito repellent use is the detail that tends to land hardest with visitors, particularly kids. The compound callicarpenal, found in the leaves, was long used by rural Southerners and Native Americans who crushed the leaves and rubbed them on skin and horses to repel biting insects. USDA research has since confirmed the effectiveness — comparable to DEET in laboratory testing.",
-        "The plant is right there. Crush a leaf and try it.",
-        "Beautyberry sits alongside the Wax Myrtle and Fakahatchee Grass near the pond. Ask a group of students to name the plants they learned that day, and Beautyberry is usually the one that comes back. Wax Myrtle and Fakahatchee Grass, despite being excellent plants, do not have that advantage.",
-        "At least 40 species of birds eat the berries, including mockingbirds, cardinals, brown thrashers, robins, and catbirds. Raccoons, foxes, and white-tailed deer also feed on them. The berries persist into winter, providing food when most other native shrubs have finished."
+        "The insect-repellent story: in Mississippi, crushed leaves were rubbed on draft animals and tucked under harnesses against flies and mosquitoes. USDA researchers (Cantrell, Carroll et al., 2005–2009) isolated callicarpenal and intermedeol and found repellent activity against mosquitoes and ticks in laboratory tests; on cloth, two compounds matched DEET against blacklegged tick nymphs. Purified compounds, not leaves on skin.",
+        "Birds and small mammals eat the berries (UF/IFAS FP090), which persist for several weeks after the leaves drop, into the start of winter."
       ],
       "wildlife_value": [
-        "One of the more productive wildlife shrubs in the Florida native plant palette. More than 40 bird species eat the berries — including migratory thrushes and catbirds passing through in fall — along with raccoons, foxes, and deer. The berries persist into winter, which matters when other food sources are depleted.",
-        "Summer flowers are small, tubular, and pink to lavender — attractive to bees and native pollinators. The arching branch structure provides cover and nesting opportunities for small birds.",
-        "The leaves are also directly useful to people: crushed and rubbed on skin, they release callicarpenal, a documented insect repellent. This is an interaction visitors can have with the plant on the spot."
+        "A productive wildlife shrub in the Florida native palette: the berries are a highly attractive food source for birds and small mammals and persist into the start of winter, when other food is scarce (UF/IFAS FP090).",
+        "Summer flowers are small, tubular, and pink to lavender — attractive to bees and native pollinators. The arching branch structure provides cover for small birds."
       ],
       "reproduction": {
         "blocks": [
@@ -8826,14 +8823,14 @@
           },
           {
             "label": "Leaves",
-            "text": "Opposite, ovate to elliptic with finely toothed margins. Light green, rough-textured, slightly fuzzy. Aromatic when crushed — releasing callicarpenal, a mosquito repellent compound. Stems are square in cross-section, the mint family signature."
+            "text": "Opposite, ovate to elliptic with finely toothed margins, 4 to 8 inches. Light green, coarse to fuzzy in texture. UF/IFAS describes them as fragrant when crushed; the park's own plants were not notably so."
           },
           {
             "label": "Form",
             "text": "Arching, multi-stemmed shrub, 3 to 8 feet tall and wide. Fast-growing. Deciduous, though in South Florida may retain leaves year-round."
           }
         ],
-        "what_to_look_for": "The berry clusters in fall are unmistakable — dense magenta-purple encircling the stems at regular intervals. Crush a leaf to confirm with the aromatic scent. Square stems are a reliable year-round ID feature shared with all mint family members."
+        "what_to_look_for": "The berry clusters in fall are unmistakable — dense magenta-purple wrapped around the stems at the leaf nodes, at regular intervals."
       },
       "seasonality": {
         "bloom_months": null,
@@ -8879,12 +8876,114 @@
         "larval_species": [],
         "adult_food": false,
         "adult_species": [],
-        "notes": "Prized mainly for its wildlife berries; not a significant butterfly plant. Set from standard references, not web-verified this pass."
+        "notes": "UF/IFAS FP090 lists it as a larval host for the Spring Azure butterfly and the Snowberry Clearwing moth. Neither seen on it here."
       },
       "safety_note": [
         "The berries are edible but astringent — better made into jelly than eaten raw — and the leaves are used as a spice. It isn't a significant food plant.",
         "It's low-toxicity to people and not listed as toxic to dogs or cats, though a large quantity of berries may cause mild stomach upset."
-      ]
+      ],
+      "page": {
+        "at_a_glance": [
+          {
+            "text": "Around the beginning of September, tight clusters of vivid purple fruit appear directly around the stems. At Palma Sola, that is when Beautyberry suddenly seems to be everywhere."
+          },
+          {
+            "text": "American Beautyberry is a Florida native. Ours grow around Cypress Pond and the office, and some appear to have seeded themselves into new spots."
+          },
+          {
+            "text": "The fruit is edible, though fresh Beautyberries are tart and not especially flavorful; they are more often made into jelly, with a lot of sugar."
+          },
+          {
+            "text": "Beautyberry really does contain compounds that repel some biting insects in laboratory tests. That is not the same thing as showing that rubbing crushed leaves on your skin works like commercial bug spray."
+          }
+        ],
+        "cultural_significance": [
+          {
+            "label": "The bug-repellent story",
+            "text": "Crushed Beautyberry leaves have a history of use against biting insects: in Mississippi, farmers rubbed them on draft animals and tucked them under harnesses to keep flies and mosquitoes off. USDA researchers later isolated compounds from the leaves, including callicarpenal and intermedeol, and found they repelled ticks and mosquitoes in laboratory tests; in one test, two of the isolated compounds matched DEET against tick nymphs on a piece of cloth. Those experiments tested purified compounds, not crushed leaves on skin."
+          }
+        ],
+        "where_it_comes_from": [
+          {
+            "label": "A Florida native",
+            "text": "American Beautyberry grows naturally throughout Florida and much of the southeastern and central United States, as well as Bermuda, the Bahamas and Cuba. In Florida it occurs in hammocks, flatwoods, woodland edges and ground near water."
+          }
+        ],
+        "where_to_find_it_here": [
+          {
+            "label": "You may find more than you expect",
+            "text": "Healthy Beautyberry shrubs grow around Cypress Pond, where many reach waist to shoulder height. Several also grow around the office, including one anchoring the sidewalk side of the same planting bed as our Giant Milkweed. Others seem to be turning up on their own, including a newer plant across the office sidewalk."
+          },
+          {
+            "photo": "731649080",
+            "focus": "35% 50%",
+            "caption": "Purple all the way down one stem, the second week of September."
+          },
+          {
+            "label": "When",
+            "text": "Look for small pinkish flowers during summer, but the plant becomes much easier to notice when the fruit ripens. In 2026 the purple clusters appeared around the first of September, almost at once. In Florida the fruit generally colors from August into October and can hang on well into winter if wildlife doesn't eat it first."
+          }
+        ],
+        "what_it_does_here": [
+          {
+            "label": "A native that moves around",
+            "text": "We didn't deliberately put every Beautyberry where you see one. Some appear to have arrived on their own from seed, gradually adding new shrubs around the park. One has even appeared across the sidewalk from the office planting bed, in a spot where there isn't much room for another shrub."
+          },
+          {
+            "label": "The berries get questions",
+            "text": "When the purple fruit appears, our high-school volunteers notice it, and regularly ask whether they can eat it. They can: Beautyberry fruit is edible, although the fresh fruit is tart and not especially flavorful. Birds and other wildlife are considerably more enthusiastic about it."
+          },
+          {
+            "photo": "723780282",
+            "focus": "50% 45%",
+            "caption": "The fruit the volunteers keep asking about: edible, tart, more colour than flavour."
+          },
+          {
+            "label": "We tried the leaves",
+            "text": "One buggy afternoon, when the bug spray couldn't be found, our high-school volunteers tried the often-repeated advice to crush Beautyberry leaves and rub them on exposed skin. The leaves were dry and not very aromatic, didn't provide much coverage, and we couldn't tell whether they actually helped. The underlying insect-repellent research is real; our experiment was a useful reminder that a laboratory result and a handful of crushed leaves are not the same thing."
+          }
+        ],
+        "how_to_know_it": [
+          {
+            "label": "Look along the stem",
+            "text": "The purple fruits don't hang in loose bunches from the ends of branches. Dense clusters wrap around the stem at the points where the leaves attach. That is the easiest Beautyberry clue once the fruit colors."
+          },
+          {
+            "photo": "702760352",
+            "focus": "50% 40%",
+            "caption": "One stem in July, three stages: green, then pink, then purple, each wrapped around a leaf node."
+          },
+          {
+            "label": "Before the purple",
+            "text": "Small pink to lavender flowers appear in the same positions from June into August. They are much easier to overlook than the fruit that follows."
+          },
+          {
+            "label": "Look at the whole shrub",
+            "text": "Beautyberry is usually a loose, arching, many-stemmed shrub rather than a compact hedge. Established plants can reach roughly eight feet high and wide, although many of ours around Cypress Pond are currently waist to shoulder height."
+          }
+        ],
+        "how_it_grows": [
+          {
+            "label": "Fruit comes on new growth",
+            "text": "Beautyberry flowers and fruits on the current year's growth. New stems produce small summer flowers, followed by the purple fruit clusters that become conspicuous toward fall."
+          },
+          {
+            "photo": "711514513",
+            "focus": "50% 50%",
+            "caption": "The leaves — coarse, a little fuzzy, four to eight inches — the ones the crew rubbed on their arms."
+          },
+          {
+            "label": "It's comfortable in very different places",
+            "text": "In the wild, American Beautyberry grows in wooded areas, open ground and near water. It tolerates both fairly dry conditions and wet soils, which helps explain why it can turn up successfully in different parts of the park."
+          }
+        ],
+        "take_care": [
+          {
+            "label": "Yes, the purple fruit is edible",
+            "text": "Beautyberries can be eaten, although the fresh fruit is tart and not especially flavorful and is more often used for jelly or preserves. As with any plant in the park, be certain of the identification rather than sampling an unfamiliar purple fruit."
+          }
+        ]
+      }
     },
     {
       "id": "PSBP-00060",
