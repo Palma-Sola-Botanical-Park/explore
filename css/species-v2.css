@@ -389,6 +389,11 @@ body[data-bands="on"] .sp-sec:nth-of-type(3n+3)::before{background:var(--sunk)}
 .lb-close:hover{background:rgba(255,255,255,.3)}
 .lb-hint{width:100%;font-family:var(--sans);font-size:.75rem;
   color:rgba(255,255,255,.45);text-align:center}
+/* A fast double tap on Next was Safari's double-tap-to-zoom: the stage already
+   refuses zoom gestures (pan-y, so swipes work), so the button strip was the
+   only zoomable part of the screen. `manipulation` keeps pinch, drops
+   double-tap zoom. Randy, 2026-09-11. */
+.lb-foot,.lb-close{touch-action:manipulation}
 @media (min-width:700px){.lb-hint{display:none}}
 @media (max-width:900px){
   .sp-cols{grid-template-columns:1fr;gap:0;padding-top:2rem}
