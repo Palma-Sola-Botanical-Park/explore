@@ -677,11 +677,6 @@ V2_CULTURAL_RE = re.compile(
     r"|national (?:flower|tree)|coat of arms|historic\w*|colonial|indigenous|navy"
     r"|ship|boat|carousel|cultur\w*)\b", re.I)
 
-V2_LOC_RE = re.compile(
-    r"[^.!?]*\b(office|steps|pavilion|butterfly garden|nursery|pond|gate|entrance"
-    r"|boardwalk|welcome island|driveway|shade garden)\b[^.!?]*[.!?]", re.I)
-
-
 def _v2_polished(species, key):
     """The override. Returns authored blocks, or None to fall through."""
     return (species.get("page") or {}).get(key) or None
@@ -756,17 +751,18 @@ def v2_map_how_to_know_it(sp):
 
 
 def v2_map_where_to_find_it_here(sp):
-    """Placement zone, else a location the record's own prose names, else
-    NOTHING. Randy chose omission over a 'coming soon' placeholder."""
+    """Placement zone, else NOTHING. Randy chose omission over a 'coming
+    soon' placeholder.
+
+    Until 2026-09-10 this also fished a sentence out of the record's prose
+    by keyword (office, pond, nursery...). 27 of the 37 pages it served
+    were wrong — "nursery trade", "pond edges" as habitat, a nursery near
+    London in 1826 — and the JSON punctuation leaked into the page. The
+    10 right ones were moved into page.where_to_find_it_here that day."""
     zone = _v2_zone(sp["id"])
     if zone:
         lead = "In" if zone.lower().startswith("the ") else "In the"
         return [{"text": f"{lead} {zone}."}]
-    blob = " ".join(json.dumps(sp.get(k), ensure_ascii=False)
-                    for k in ("quick_hits", "more_information", "other_notes", "origin") if sp.get(k))
-    m = V2_LOC_RE.search(blob)
-    if m:
-        return [{"text": m.group(0).strip().strip('"')}]
     return []
 
 

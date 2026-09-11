@@ -308,12 +308,18 @@ def main():
         # pollinators" that way, under a page written to say the opposite.
         # Uses the generator's own mappers because the question is literally
         # "what would the generator print here".
+        # Only a rewritten page (one with an authored At a glance) is held to
+        # this. A page holding just a hand-written "Where to find it here"
+        # (Beach Bean, 2026-09-10) is a spot fix on a machine page, and the
+        # other sections are meant to stay machine.
         try:
             sys.path.insert(0, str(Path(__file__).resolve().parent))
             import plant_publisher as _pp
             for sp in plants:
                 page = sp.get("page")
                 if not page or sp.get("status") != "html":
+                    continue
+                if "at_a_glance" not in page:
                     continue
                 for _anchor, title, key, mapper in _pp.V2_SECTIONS:
                     if key in page or not mapper(sp):
