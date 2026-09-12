@@ -505,6 +505,35 @@ def enrich_volunteer(rows):
     return rows, warnings
 
 
+VOLUNTEER_PHOTOS_DIR = "images/volunteers"
+VOLUNTEER_PHOTO_RE = re.compile(r"^(\d{4}-\d{2})_(.+)\.(jpe?g|png|webp)$", re.I)
+
+
+def publish_volunteer_photos():
+    """Write data/published/volunteer_photos.json — a manifest of the
+    Volunteer-of-the-Month photos in images/volunteers/, oldest first.
+
+    Not a sheet tab. The About page shows the newest few faces, and a static
+    site can't list a folder, so the folder is listed here at publish time.
+    Randy drops a photo in named `YYYY-MM_First-Last.jpg` and the next sync
+    picks it up; anything not in that shape is ignored rather than guessed at.
+    `first` is the first name for alt text — "and" keeps a pair as a pair.
+    """
+    if not os.path.isdir(VOLUNTEER_PHOTOS_DIR):
+        return
+    photos = []
+    for fname in sorted(os.listdir(VOLUNTEER_PHOTOS_DIR)):
+        m = VOLUNTEER_PHOTO_RE.match(fname)
+        if not m:
+            continue
+        month, slug = m.group(1), m.group(2)
+        name = slug.replace("-and-", " and ").replace("-", " ")
+        first = name if " and " in name else name.split(" ")[0]
+        photos.append({"month": month, "name": name, "first": first,
+                       "path": f"{VOLUNTEER_PHOTOS_DIR}/{fname}"})
+    write_json(os.path.join(PUBLISHED, "volunteer_photos.json"), photos)
+
+
 def process_tab(tab, refs, prev_health):
     schema = load_schema(tab)
     staging = load_json(os.path.join(STAGING, f"{tab}.json"), {"headers": [], "rows": []})
@@ -804,6 +833,9 @@ def main():
         feed, detail = process_tab(tab, refs, prev_health)
         feeds.append(feed)
         details.append(detail)
+
+    # Folder-derived, not sheet-derived — outside the gate and the health board.
+    publish_volunteer_photos()
 
     overall = ("blocked" if any(f["status"] == "red" for f in feeds)
                else "warn" if any(f["status"] == "amber" for f in feeds)

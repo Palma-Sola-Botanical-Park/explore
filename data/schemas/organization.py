@@ -5,6 +5,10 @@ Board members and front office staff. Always-on reference data — NO `display`
 column, no `status` column. Every row publishes; the page groups and renders by
 `type` (front office vs board).
 
+A third type, `volunteer`, is not a person: it is the one row whose `blurb` is
+the Volunteers paragraph on the About page, so Bev can edit that copy from the
+sheet. `**double asterisks**` in that cell render as bold. Added 2026-09-12.
+
 Columns: type | role | name | blurb
 
 volume_min is 1: an empty org list is almost certainly a broken fetch, not a
@@ -14,7 +18,7 @@ real edit. The park always has at least an executive director.
 PSBP_ARCHITECTURE_APPENDIX.md A6 "The schema contract".)
 """
 
-TYPE_VALUES = ["front office", "board"]
+TYPE_VALUES = ["front office", "board", "volunteer"]
 
 SCHEMA = {
     "tab": "organization",
@@ -43,6 +47,6 @@ SCHEMA = {
         # --- controlled vocab (warn) ------------------------------------------
         {"field": "type", "check": "in_vocab", "arg": TYPE_VALUES,
          "severity": "warn", "scope": "field",
-         "why": "Must be front office or board."},
+         "why": "Must be front office, board, or volunteer."},
     ],
 }
