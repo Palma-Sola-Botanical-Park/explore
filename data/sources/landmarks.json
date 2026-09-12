@@ -5,7 +5,7 @@
     "spec": "park-library/system docs/LANDMARKS.md",
     "count": 64,
     "note": "Seed file, 2026-08-25. Identity only — a landmark is WHAT a place is; WHERE it is lives in placements.json as one PLC- row with kind:'landmark', the same split species already use (plant_signage.json = what, placements.json = where). One placement per landmark: if a place needs two spots, make two records joined by `parent` (see Plumeria West / East), never two placements. Stories are records: text (required) + credit/year/prompted_by/trigger. Credit groups, never a minor's full name (Low #14). No QR signs. No water fountains in the park. APPEND-ONLY — never regenerate; ids are stable and stories accrete here.",
-    "updated": "2026-09-12T12:33:51"
+    "updated": "2026-09-12T12:47:04"
   },
   "landmarks": [
     {
@@ -540,7 +540,11 @@
       "year_built": null,
       "named_for": null,
       "stories": [],
-      "aliases": [],
+      "aliases": [
+        "event field",
+        "venue field",
+        "wedding field"
+      ],
       "area_aliases": [
         "Galleria Field"
       ],
@@ -555,7 +559,7 @@
       "public_page": false,
       "venue_ids": [],
       "photo": null,
-      "notes": "2026-09-09, Randy on site: the strip between the Galleria Deck (LND-004) and the field is planted with hibiscus, Weeping Bottlebrush and Southern Magnolia — a softening barrier between the open field and the decks around the buildings. Southern Magnolias here: 3 or 4, not yet pinned (see PLC-0244). Weeping Bottlebrush PLC-0081 is one of them. Hibiscus: all Chinese Hibiscus PSBP-00588, mostly the variegated 'Cooperi' (tricolor) run along the deck (edging pins), plus a double peach and a deep rose by the back stairs — see the placements with cultivar set."
+      "notes": "2026-09-09, Randy on site: the strip between the Galleria Deck (LND-004) and the field is planted with hibiscus, Weeping Bottlebrush and Southern Magnolia — a softening barrier between the open field and the decks around the buildings. Southern Magnolias here: 3 or 4, not yet pinned (see PLC-0244). Weeping Bottlebrush PLC-0081 is one of them. Hibiscus: all Chinese Hibiscus PSBP-00588, mostly the variegated 'Cooperi' (tricolor) run along the deck (edging pins), plus a double peach and a deep rose by the back stairs — see the placements with cultivar set. 2026-09-12 (Randy, on IMG_9576): the Galleria back stairs and the office back stairs both empty into this field at its southern end; Big Pond to the east; the field runs north to the Serenity Garden (LND-012), where the ceremonies are. Randy calls it the wedding / venue field; the stock-photo folder says 'event field'."
     },
     {
       "id": "LND-020",
@@ -566,8 +570,19 @@
       "status": "active",
       "year_built": null,
       "named_for": null,
-      "stories": [],
-      "aliases": [],
+      "stories": [
+        {
+          "text": "The Royal Palms here are the county nursery's leftovers. Manatee County grew street trees on this land and set the young palms out in rough rows, the way a nursery does. When the county decided to buy its trees instead of growing them, the palms were simply left where they stood; they outgrew their pots, rooted through, and became the two rows and the scattered giants that give Palm Alley its name.",
+          "kind": "origin",
+          "year": null,
+          "credit": null,
+          "prompted_by": null,
+          "trigger": "stop"
+        }
+      ],
+      "aliases": [
+        "the Royals"
+      ],
       "area_aliases": [],
       "accessible": null,
       "steps": null,
@@ -580,7 +595,7 @@
       "public_page": false,
       "venue_ids": [],
       "photo": null,
-      "notes": null
+      "notes": "The Royal Palm field north-east of the Galleria, entered through the Trellis (LND-043) off the driveway; Pavilion Gazebo to the left, the Royals straight ahead, the sidewalk right to the Pavilion, raised restrooms and Rare Fruit. Randy 2026-09-12: this is the ORIGINAL Palm Alley; Dave's row south of the Plumeria is not Palm Alley though some say so, and Dave's shade palms beyond the Royals at the NE tip need a name of their own. Dave's Areas 3A/3B."
     },
     {
       "id": "LND-021",
@@ -1213,7 +1228,10 @@
           "trigger": "passing"
         }
       ],
-      "aliases": [],
+      "aliases": [
+        "Palm Alley arbor",
+        "Palm Alley trellis"
+      ],
       "area_aliases": [],
       "accessible": null,
       "steps": null,
@@ -1226,7 +1244,7 @@
       "public_page": false,
       "venue_ids": [],
       "photo": null,
-      "notes": null
+      "notes": "White arbor with the direction signpost at the driveway entrance to Palm Alley (LND-020); stock photo IMG_9567, 27.51406, -82.65955 (iPhone GPS, 2026-06-28). Randy 2026-09-12: knocked down by storms, rebuilt by Bill, who also built the Butterfly Garden trellis (no landmark record for that one yet). Story year says 2023 / Hurricane Debby; Debby was August 2024 - confirm with Randy before either reaches a page."
     },
     {
       "id": "LND-044",
