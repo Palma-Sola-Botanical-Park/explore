@@ -100,8 +100,8 @@ def load(path, default=None):
 #    can never be fooled by a bug in the module it is auditing) ─────────────
 def display_name(names, login, raw=""):
     entry = names.get((login or "").lower())
-    if isinstance(entry, dict) and entry.get("display_name"):
-        return entry["display_name"]
+    if isinstance(entry, dict) and (entry.get("credit_as") or entry.get("display_name")):
+        return entry.get("credit_as") or entry["display_name"]
     if isinstance(entry, str):
         return entry
     return (raw or "").strip() or (login or "unknown")

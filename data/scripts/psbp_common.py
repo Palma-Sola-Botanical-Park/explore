@@ -410,9 +410,13 @@ def display_name(login, raw_name=""):
     """Resolve a photographer's display name for crediting.
 
     Priority order:
-      1. photographer_names.json  (our canonical real-name registry)
-      2. iNat real name            (from the API / stored in photographer_name)
-      3. iNat login handle         (last resort)
+      1. photographer_names.json  "credit_as"     (a stand-in the person is
+                                                   credited under instead of
+                                                   their name — delete the
+                                                   field to credit by name)
+      2. photographer_names.json  "display_name"  (our canonical real-name registry)
+      3. iNat real name            (from the API / stored in photographer_name)
+      4. iNat login handle         (last resort)
 
     This is the function that answers: "how do we credit this person?"
     Call it everywhere — never hand-format a credit.
@@ -423,7 +427,7 @@ def display_name(login, raw_name=""):
     if entry:
         # Entry can be a dict {"display_name": "..."} or a plain string
         if isinstance(entry, dict):
-            resolved = entry.get("display_name", "")
+            resolved = entry.get("credit_as", "") or entry.get("display_name", "")
             if resolved:
                 return resolved
         elif isinstance(entry, str):

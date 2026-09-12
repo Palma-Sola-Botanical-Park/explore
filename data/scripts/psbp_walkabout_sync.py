@@ -44,7 +44,8 @@ def build():
     wildlife = _rows("wildlife_signage.json")
     research = _rows("research.json")
 
-    names = {k: v["display_name"]
+    # credit_as wins over display_name, same rule as psbp_common.display_name()
+    names = {k: v.get("credit_as") or v["display_name"]
              for k, v in json.load(open(os.path.join(SRC, "photographer_names.json"),
                                         encoding="utf-8")).items()
              if k != "_note" and isinstance(v, dict) and v.get("display_name")}
