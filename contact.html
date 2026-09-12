@@ -16,77 +16,110 @@
      invisible: three of the six section changes could not be seen at all.
      Now light / tint / light, every transition Δ11 or better.
      ⚠ --wash (#f2f5ee, green) and --sunk (#f6f3ea, sand) differ by Δ0.9 and
-     must NEVER be adjacent — always put a light band between them. */
+     must NEVER be adjacent — always put a light band between them.
+     Re-toned again 2026-09-12 for the new order: story white → people sand →
+     mission white → partners wash → (pond photo) → film wash → ask white → deep. */
   #visit { scroll-margin-top: 90px; }
 
   /* Emoji icons removed — they rendered three different ways across
      platforms and undercut the Playfair. The old grid existed only to seat them. */
   .info-card > h3 { margin: 0 0 .35rem !important; }
 
-  /* ─────────── OUR PEOPLE ───────────
-     Replaces an 11-card board grid. The old layout printed the word "DIRECTOR"
-     five times down the page, which is what made it read as a spreadsheet
-     export. Names sit in --ink rather than --green-ink: a whole section of
-     dark-green serif on cream was too heavy. Green is reserved for the small
-     labels, so it marks structure instead of shouting. */
-  /* ── OUR PEOPLE — the roster ────────────────────────────────────────────
-     Replaced 2026-09-06 (was .office-strip + .boardA, a centred stack whose
-     officers sat in a bordered grid that read as a spreadsheet).
+  /* ─────────── OUR PEOPLE — cards on the sand band ───────────
+     Third pass, 2026-09-12. The labelled-rows version fixed the anchor problem
+     but the section still read as a list: the title sat centred on the page
+     while the names sat centred in the column beside their labels, so nothing
+     lined up, and there was no colour or picture anywhere in it. Now the
+     title, the tagline and the four cards share one LEFT edge, the 2/10/365
+     figures sit on the right of the same line, and each card gets a park
+     photo in the place a team page would put headshots — the office beside
+     the staff, the Galleria under the board, the Volunteers of the Month
+     beside the volunteer copy. Headshot circles come the day there are
+     consistent headshots to fill them; until then a thin green rule marks
+     each person and nothing sits empty. The italic taglines on the card
+     rules are deliberate — one short line per group says what the group is
+     for without a paragraph. */
+  .pp-head{display:grid;grid-template-columns:1fr auto;gap:1.5rem 3rem;align-items:end;
+    max-width:1100px;margin:0 auto 1.6rem}
+  .pp-head .label{display:block;text-align:left;margin-bottom:.35rem}
+  .pp-head h2{text-align:left;margin:0 0 .6rem}
+  .pp-head .pp-tag{font-family:var(--serif);font-size:1.35rem;line-height:1.35;color:var(--green-ink);margin:0;max-width:38ch}
+  /* Rings, not the bare .stats numerals: the figures need a little weight to
+     hold the right-hand side against a two-line title. */
+  .pp-stats{display:flex;gap:1.6rem;flex-wrap:wrap}
+  .pp-stat{display:flex;align-items:center;gap:.7rem}
+  .pp-stat .ring{width:58px;height:58px;border-radius:50%;background:var(--green-tint);
+    display:flex;align-items:center;justify-content:center;flex:0 0 58px}
+  .pp-stat svg{width:26px;height:26px;stroke:var(--green-ink);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .pp-stat strong{display:block;font-family:var(--serif);font-size:2rem;line-height:1;color:var(--green-ink)}
+  .pp-stat span{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
 
-     Randy's structure: the four group names run down a hard LEFT edge and the
-     people stay centred in the space beside them. The old version centred
-     everything, which left the eye no anchor — that was the actual complaint,
-     not a shortage of colour.
+  .pp-grid{display:grid;grid-template-columns:1fr 340px;gap:1.1rem;max-width:1100px;margin:0 auto}
+  .pp-card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;
+    padding:1.5rem 1.7rem 1.7rem;box-shadow:0 1px 3px rgba(0,0,0,.04);text-align:left}
+  .pp-ch{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.3rem}
+  .pp-ch h3{font-family:var(--serif);font-size:1.55rem;color:var(--green-ink);margin:0;white-space:nowrap}
+  .pp-ch .rule{flex:1;height:1px;background:rgba(197,146,42,.55)}
+  .pp-ch em{font-family:var(--serif);font-style:italic;font-size:1.05rem;color:var(--ink-soft);white-space:nowrap}
 
-     Volunteers is now a fourth labelled row instead of a paragraph trailing
-     underneath. They are a peer of the other three groups; setting them below
-     the roster quietly ranked them last, which is backwards for a park two
-     staff cannot run alone.
+  .pp-photo{margin:0;border-radius:14px;overflow:hidden;position:relative;min-height:220px;
+    border:1px solid var(--rule)}
+  .pp-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .pp-photo figcaption,.pp-board .band figcaption{position:absolute;left:0;right:0;bottom:0;
+    padding:1.6rem .9rem .6rem;font-size:.76rem;color:rgba(255,255,255,.9);
+    text-shadow:0 1px 3px rgba(0,0,0,.6);background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.45))}
 
-     Two choices, made by comparing them side by side rather than in the
-     abstract: staff carry more type than the board (they are the two people
-     here daily), and the row rules are gold — the one use the token permits,
-     since --gold-mark is "decorative only — rules, dots, never text". ── */
-  .org2{max-width:1040px;margin:0 auto}
-  .orow{display:grid;grid-template-columns:minmax(8rem,13rem) 1fr;gap:.9rem 2.5rem;
-    padding:2.1rem 0;align-items:start;border-top:1px solid rgba(197,146,42,.42)}
-  .orow:first-child{border-top:0;padding-top:.6rem}
-  .olabel{text-align:left;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;
-    font-weight:700;color:var(--green-ink);padding-top:.45rem;line-height:1.5}
-  .obody{text-align:center}
+  /* One person shape for staff, officers and directors, so they can't drift. */
+  .pp-people{display:grid;gap:1.4rem 2rem}
+  .pp-people.two{grid-template-columns:1fr 1fr}      /* wraps to 2×2 if staff grows */
+  .pp-people.four{grid-template-columns:repeat(4,1fr)}
+  .pp-people.four .n{font-size:1.22rem}
+  .pp-people .person{border-left:3px solid var(--green-tint);padding-left:.9rem}
+  .pp-people .r{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:700}
+  .pp-people .n{font-family:var(--serif);font-size:1.35rem;color:var(--ink);line-height:1.2;margin-top:.25rem}
+  .pp-staff .n{font-size:1.7rem}
+  .pp-people .b{font-size:var(--t-base);color:var(--ink-soft);line-height:1.6;margin-top:.4rem}
 
-  .plist{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem 2.6rem}
-  .person .r{font-size:.78rem;letter-spacing:.03em;color:var(--ink-soft)}
-  .person .n{font-family:var(--serif);font-size:1.3rem;color:var(--ink);margin-top:.2rem;line-height:1.25}
-  .person .b{font-family:var(--sans);font-size:.84rem;color:var(--ink-soft);margin-top:.15rem}
+  /* The board card is a flex column so the Galleria band fills whatever height
+     the Directors panel beside it sets — no empty white under four names.
+     Crop at 32% keeps the roof, the porch and the Voted Best Attraction banner. */
+  .pp-board{display:flex;flex-direction:column}
+  .pp-board .band{flex:1;min-height:150px;margin:1.5rem -1.7rem -1.7rem;border-radius:0 0 14px 14px;overflow:hidden;position:relative}
+  .pp-board .band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 32%}
 
-  /* Staff read larger, and their role becomes a small green cap rather than
-     grey body text — the two people you would actually phone. */
-  #rowStaff .person .n{font-size:1.72rem}
-  #rowStaff .person .r{font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;
-    color:var(--green-ink);font-weight:700}
-  #rowDirs .person .n{font-size:1.14rem}
+  .pp-dirs .dl{display:grid;gap:.45rem;margin-bottom:1.1rem}
+  .pp-dirs .dl .n{font-family:var(--serif);font-size:1.2rem;color:var(--ink);line-height:1.2}
+  .pp-dirs .dl .b{font-size:var(--t-base);color:var(--ink-soft);line-height:1.5;margin-top:.1rem}
+  .pp-dirs .spec2{background:var(--sunk);border-radius:10px;padding:.9rem 1rem;display:grid;gap:.6rem}
+  .pp-dirs .spec2 .r{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+  .pp-dirs .spec2 .n{font-family:var(--serif);font-size:1.1rem;color:var(--ink)}
 
-  /* Emeritus / Ex-Officio — present, but not competing with the roster. */
-  .spec{margin-top:1.3rem;font-size:.86rem;color:var(--ink-soft)}
-  .spec b{color:var(--ink);font-weight:600}
+  /* Volunteers: faces left, words middle, the door right. Square tiles cropped
+     toward the top for the same reason the Get Involved desk does it — these
+     are mostly standing portraits and the face is the part that matters. */
+  .pp-vol{grid-column:1 / -1}
+  .pp-vol .vgrid{display:grid;grid-template-columns:300px 1fr 250px;gap:1.8rem;align-items:center}
+  .pp-mosaic{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;border-radius:12px;overflow:hidden}
+  .pp-mosaic img{width:100%;aspect-ratio:1;object-fit:cover;object-position:50% 22%;display:block;background:var(--sand)}
+  .pp-mosaic-cap{font-size:.76rem;color:var(--ink-faint);margin-top:.5rem;letter-spacing:.04em}
+  .pp-vol p{font-size:var(--t-base);color:var(--ink-soft);line-height:1.75;margin:0;text-align:left}
+  .pp-vol p strong{color:var(--ink);font-weight:600}
+  .pp-door{background:var(--wash);border-radius:12px;padding:1.4rem 1.3rem;text-align:center}
+  .pp-door p{font-family:var(--serif);font-size:1.2rem;color:var(--green-ink);line-height:1.35;margin:0 0 1rem;text-align:center}
+  .pp-door .btn{width:100%}
 
-  @media (max-width:680px){
-    .orow{grid-template-columns:1fr;gap:.5rem;padding:1.7rem 0}
-    .olabel{padding-top:0}
+  @media(max-width:900px){
+    .pp-head{grid-template-columns:1fr}
+    .pp-grid{grid-template-columns:1fr}
+    .pp-photo{min-height:200px}
+    .pp-people.four{grid-template-columns:1fr 1fr}
+    .pp-vol .vgrid{grid-template-columns:1fr}
+    .pp-mosaic{max-width:340px}
   }
-
-  /* ── STAT BAND — the story's spine, in numerals ── */
-  /* NB: do NOT call this .facts — psbp.css already owns that class as a
-     two-column definition list, and it silently overrode this. */
-  .milestones{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-    gap:0;margin:2.75rem 0 0;border-top:1px solid var(--rule-strong)}
-  .ms{padding:1.4rem 1rem 1.5rem;border-right:1px solid var(--rule);text-align:center}
-  .ms:last-child{border-right:0}
-  .ms .big{font-family:var(--serif);font-size:2.6rem;line-height:1;color:var(--green-ink);letter-spacing:-.01em}
-  .ms .cap{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
-    margin-top:.55rem;line-height:1.5}
-  @media(max-width:640px){.ms .big{font-size:2rem}.ms{border-right:0;border-bottom:1px solid var(--rule)}}
+  @media(max-width:560px){
+    .pp-ch{flex-wrap:wrap}.pp-ch .rule{display:none}
+    .pp-people.two,.pp-people.four{grid-template-columns:1fr}
+  }
 
   /* ── PULL QUOTE — a second scale inside the prose ── */
   .pull{font-family:var(--serif);font-size:1.6rem;line-height:1.35;color:var(--green-ink);
@@ -220,19 +253,6 @@
      css/psbp.css on 2026-09-05 so visit.html can use the same one instead of a
      second copy. Randy on seeing it: "This one is CLEAN." */
 
-  /* Closes the roster with the people who are not on it. A list of fourteen
-     names is a list; the same list next to "and seventy-four others" is a
-     statement about how the park actually works.
-
-     2026-09-06: this now sits INSIDE the Volunteers row, so its old top rule
-     and top margin are gone — the row supplies the rule. Size was 1rem (16px),
-     under the 17px floor for anything a visitor reads; now on --t-base. */
-  .people-tail{max-width:62ch;margin:0 auto;text-align:center;
-    color:var(--ink-soft);line-height:1.8;font-size:var(--t-base)}
-  .people-tail strong{color:var(--ink);font-weight:600}
-  .people-tail a{color:var(--green);font-weight:600;text-decoration:none;white-space:nowrap}
-  .people-tail a:hover{text-decoration:underline}
-
   /* Grouped rather than one wall of sixteen. Chambers next to garden clubs
      next to a license plate reads as noise; labeled groups read as a list of
      relationships. Check the assignments — some are a judgement call. */
@@ -269,7 +289,7 @@
 </div>
 
 <!-- OUR STORY -->
-<section class="bg-wash">
+<section class="bg-white">
   <div class="section-inner">
     <div class="grid-2" style="gap:3rem;align-items:start">
       <div>
@@ -355,20 +375,85 @@
       </div>
     </div>
 
-    <div class="milestones">
-      <div class="ms"><div class="big">1990</div><div class="cap">Neighbors rallied<br>to save the site</div></div>
-      <div class="ms"><div class="big">1993</div><div class="cap">Incorporated as a<br>501(c)(3) nonprofit</div></div>
-      <div class="ms"><div class="big">Ten</div><div class="cap">Acres, in partnership<br>with Manatee County</div></div>
-      <div class="ms"><div class="big">365</div><div class="cap">Days a year,<br>no entrance fee</div></div>
-    </div>
   </div>
 </section>
 
-<!-- FULL-BLEED BREAK — one quiet moment between the history and the mission -->
-<div class="bleed" style="background-image:url('images/big-pond.jpg')">
-  <div class="line"><p>Ten acres of subtropical garden, kept open by the people who use it.</p></div>
-  <div class="cred">The Big Pond, looking toward the Galleria</div>
-</div>
+
+
+
+<!-- OUR PEOPLE -->
+
+
+<!-- SEE THE PARK — embedded videos + community submission invite.
+     Boehmig video = f3zfcUHm0k4 (from the live About page). Second view = dNZpiz7--V0.
+     Using youtube-nocookie embeds. Titles are placeholders — swap if you have the real ones. -->
+<!-- OUR PEOPLE — directly after the story: the neighbours who saved the site,
+     then the people who run it now. Reordered 2026-09-12. -->
+<section class="bg-sunk" id="organization">
+  <div class="section-inner">
+    <!-- Two paid people against ten acres, open every day: the ratio is the
+         story, so it stays in figures. The staff figure is filled from the
+         organization feed (front-office rows), not typed, so a new hire is a
+         new row in the sheet and nothing else. -->
+    <div class="pp-head">
+      <div>
+        <span class="label">Our People</span>
+        <h2 class="section-title">Who keeps it running</h2>
+        <p class="pp-tag">We're a small park with big plans and ambitions. Come join us.</p>
+      </div>
+      <div class="pp-stats">
+        <div class="pp-stat"><div class="ring"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.3c3 0 5 1.9 5 4.7"/></svg></div><div><strong id="statStaff">2</strong><span>Staff</span></div></div>
+        <div class="pp-stat"><div class="ring"><svg viewBox="0 0 24 24"><path d="M5 19C5 9 11 4 20 4c0 9-5 15-15 15z"/><path d="M5 19c3-5 7-8 11-11"/></svg></div><div><strong>10</strong><span>Acres</span></div></div>
+        <div class="pp-stat"><div class="ring"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></div><div><strong>365</strong><span>Days open a year</span></div></div>
+      </div>
+    </div>
+
+    <div class="pp-grid">
+      <div class="pp-card pp-staff">
+        <div class="pp-ch"><h3>Our Team</h3><span class="rule"></span><em>Different roles. A shared purpose.</em></div>
+        <div class="pp-people two" id="staffList"></div>
+      </div>
+      <figure class="pp-photo">
+        <img src="images/venue-office.jpg" alt="The park office">
+        <figcaption>The office, in the Baden building — where you'll find us.</figcaption>
+      </figure>
+
+      <div class="pp-card pp-board">
+        <div class="pp-ch"><h3>Board of Directors</h3><span class="rule"></span><em>Guidance for a healthy future.</em></div>
+        <div class="pp-people four" id="offList"></div>
+        <figure class="band"><img src="images/venue-galleria.jpg" alt="The Galleria">
+          <figcaption>The Galleria — where the board meets.</figcaption></figure>
+      </div>
+      <div class="pp-card pp-dirs">
+        <div class="pp-ch"><h3>Directors</h3><span class="rule"></span></div>
+        <div class="dl" id="dirList"></div>
+        <div class="spec2" id="specList"></div>
+      </div>
+
+      <!-- The paragraph is the fallback. The sheet's `volunteer` row in the
+           organization tab replaces it when Bev has written one, so this copy
+           is hers to change without a code edit. The faces are the newest
+           Volunteers of the Month from data/published/volunteer_photos.json,
+           which the sheet sync builds from images/volunteers/. -->
+      <div class="pp-card pp-vol">
+        <div class="pp-ch"><h3>Our Volunteers</h3><span class="rule"></span><em>The heart of the park.</em></div>
+        <div class="vgrid">
+          <div id="volFaces" hidden>
+            <div class="pp-mosaic" id="volMosaic"></div>
+            <div class="pp-mosaic-cap">Recent Volunteers of the Month</div>
+          </div>
+          <p id="volCopy">And everyone who turns up. <strong>Volunteers do nearly everything else</strong> —
+            the gardening and the nursery, the plant sales and holiday events, the parking at those events, the
+            repairs and the office work. Bright Futures students come every week.</p>
+          <div class="pp-door">
+            <p>There's room for you.</p>
+            <a class="btn btn-green" href="get-involved.html#volunteer">Get involved →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- OUR MISSION -->
 <section class="bg-white" id="mission">
@@ -413,73 +498,10 @@
   </div>
 </section>
 
-
-<!-- OUR PEOPLE -->
-<section class="bg-sunk" id="organization">
-  <div class="section-inner">
-    <div style="text-align:center;max-width:760px;margin:0 auto 2.4rem">
-      <span class="label">Our People</span>
-      <h2 class="section-title">Who keeps it running</h2>
-      <!-- The ratio IS the story here: two paid people against ten acres, open every
-           day of the year. It used to be a sentence inside the sub-head, where it
-           read as background detail and got skimmed. As figures it lands first and
-           the tail paragraph below explains it, so nothing is said twice.
-           Reuses the .stats component in psbp.css that was written for the
-           iNaturalist counts and had no page using it. The board is deliberately
-           NOT a numeral — it has eleven real names directly below, which carries
-           more than a digit does. Changed 2026-09-06. -->
-      <div class="stats stats--center">
-        <div class="stat"><strong>2</strong><span>Staff</span></div>
-        <div class="stat"><strong>10</strong><span>Acres</span></div>
-        <div class="stat"><strong>365</strong><span>Days open a year</span></div>
-      </div>
-    </div>
-
-    <div class="org2">
-      <div class="orow" id="rowStaff">
-        <div class="olabel">Staff</div>
-        <div class="obody"><div class="plist" id="staffList"></div></div>
-      </div>
-
-      <div class="orow" id="rowBoard">
-        <div class="olabel">Board of Directors</div>
-        <div class="obody"><div class="plist" id="offList"></div></div>
-      </div>
-
-      <div class="orow" id="rowDirs">
-        <div class="olabel">Directors</div>
-        <div class="obody">
-          <div class="plist" id="dirList"></div>
-          <div class="spec" id="specList"></div>
-        </div>
-      </div>
-
-      <!-- The volunteer copy used to lead on photo-contributor counts — 74 people,
-           20 of them Bright Futures students. Wrong on two counts: it measured only
-           the citizen-science slice, which is the newest and by far the smallest
-           part of volunteering here, and it carried an invented clause about field
-           guides that came from nowhere. Two staff for ten acres means volunteers do
-           nearly all of it, and the work is overwhelmingly gardening, nursery,
-           events and the jobs around them. Rewritten 2026-09-04 from Randy's own
-           account of who actually turns up; promoted from a trailing paragraph to a
-           labelled row 2026-09-06. -->
-      <div class="orow" id="rowVol">
-        <div class="olabel">Volunteers</div>
-        <div class="obody">
-          <p class="people-tail">And everyone who turns up. <strong>Volunteers do nearly everything else</strong> —
-            the gardening and the nursery, the plant sales and holiday events, the parking at those events, the
-            repairs and the office work. Bright Futures students come every week.
-            <a href="get-involved.html#volunteer">There's room for you →</a></p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- OUR PARTNERS — logo grid. Files live in images/partners/ (fetched from the WordPress media library).
      TODO (Randy): add Bishop Parker Foundation + Selby Foundation logos (and any others) to images/partners/,
      then drop matching <div class="partner-logo"> tiles below. -->
-<section class="bg-white" id="community-links">
+<section class="bg-wash" id="community-links">
   <div class="section-inner" style="text-align:center">
     <span class="label">Our Partners</span>
     <h2 class="section-title" style="margin-bottom:1rem">Supported by our community</h2>
@@ -516,9 +538,14 @@
 </div>
 </section>
 
-<!-- SEE THE PARK — embedded videos + community submission invite.
-     Boehmig video = f3zfcUHm0k4 (from the live About page). Second view = dNZpiz7--V0.
-     Using youtube-nocookie embeds. Titles are placeholders — swap if you have the real ones. -->
+<!-- FULL-BLEED BREAK — moved below the partner wall 2026-09-12. It used to sit
+     between the history and the mission; now the people follow the history
+     directly, and this is the breather between the logos and the films. -->
+<div class="bleed" style="background-image:url('images/big-pond.jpg')">
+  <div class="line"><p>Ten acres of subtropical garden, kept open by the people who use it.</p></div>
+  <div class="cred">The Big Pond, looking toward the Galleria</div>
+</div>
+
 <section class="bg-wash" id="youtube">
   <div class="section-inner">
     <div style="text-align:center;max-width:680px;margin:0 auto 2rem">
@@ -556,7 +583,7 @@
 </section>
 
 <!-- THE ASK — moved out of the gold banner and given room -->
-<section class="bg-sunk" id="support">
+<section class="bg-white" id="support">
   <div class="section-inner">
     <div class="ask">
       <span class="label">Support</span>
@@ -672,9 +699,8 @@ injectShared({ inatBar: false });
 
     var SHORT = {'Office Manager & Event Venue Rentals':'Office Manager & Venue Rentals'};
 
-    /* One card shape for every person, so Staff, Officers and Directors can
-       never drift apart again. showRole is off for Directors — they all hold
-       the same office, so printing "Member" five times says nothing. */
+    /* One card shape for every person, so Staff and Officers can never drift
+       apart. Directors print without a role — they all hold the same one. */
     function card(p, showRole){
       return '<div class="person">' +
         (showRole ? '<div class="r">'+esc(SHORT[p.role]||p.role)+'</div>' : '') +
@@ -687,14 +713,37 @@ injectShared({ inatBar: false });
     }
 
     fill('staffList', office.map(function(p){return card(p,true);}).join(''));
+    if (office.length) fill('statStaff', String(office.length));
     fill('offList',   offs.map(function(p){return card(p,true);}).join(''));
-    fill('dirList',   dirs.map(function(p){return card(p,false);}).join(''));
+    fill('dirList',   dirs.map(function(p){
+      return '<div><div class="n">'+esc(p.name)+'</div>'+(p.blurb?'<div class="b">'+esc(p.blurb)+'</div>':'')+'</div>';
+    }).join(''));
     fill('specList',  spec.map(function(p){
-      return esc(p.role)+' <b>'+esc(p.name)+'</b>';
-    }).join(' &nbsp;·&nbsp; '));
+      return '<div><div class="r">'+esc(p.role)+'</div><div class="n">'+esc(p.name)+'</div></div>';
+    }).join(''));
 
+    /* Volunteer copy from the sheet's `volunteer` row when Bev has written one.
+       The cell is escaped like every other cell; **double asterisks** are the
+       one mark-up allowed, and they become bold. */
+    var vol = org.filter(function(p){return p.type==='volunteer' && (p.blurb||'').trim();})[0];
+    if (vol) fill('volCopy', esc(vol.blurb).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'));
 
   } catch(e){ console.warn('Organization data unavailable:', e); }
+})();
+
+/* ── Volunteers of the Month — the newest eight faces from the folder manifest.
+      The block stays hidden until the photos are known, so a missing manifest
+      leaves the copy and the door alone instead of an empty grey grid. ── */
+(async function loadVolFaces() {
+  try {
+    var photos = await (await fetch('data/published/volunteer_photos.json')).json();
+    var recent = photos.slice(-8);
+    if (!recent.length) return;
+    document.getElementById('volMosaic').innerHTML = recent.map(function(p){
+      return '<img src="'+p.path+'" alt="'+p.first.replace(/"/g,'&quot;')+', Volunteer of the Month" loading="lazy" onerror="this.remove()">';
+    }).join('');
+    document.getElementById('volFaces').hidden = false;
+  } catch(e){ console.warn('Volunteer photos unavailable:', e); }
 })();
 </script>
 </body>
