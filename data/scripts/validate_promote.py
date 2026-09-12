@@ -786,10 +786,11 @@ def one_line_summary(health):
             parts.append(f"{f['tab']} initialized ({f['rows']})")
         elif edits_total(ch):
             bits = []
+            # Δ for edited rows — "~" was indistinguishable from "-" on the page
             if ch["added"]:   bits.append(f"+{ch['added']}")
-            if ch["changed"]: bits.append(f"~{ch['changed']}")
-            if ch["removed"]: bits.append(f"-{ch['removed']}")
-            parts.append(f"{f['tab']} {''.join(b for b in bits)}")
+            if ch["changed"]: bits.append(f"Δ{ch['changed']}")
+            if ch["removed"]: bits.append(f"−{ch['removed']}")
+            parts.append(f"{f['tab']} {' '.join(bits)}")
     return ", ".join(parts) if parts else "no changes"
 
 

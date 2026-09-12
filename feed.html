@@ -197,7 +197,7 @@ function render(d, pub, health){
   const tl = (d.timeline&&d.timeline.length)
     ? d.timeline.slice().reverse().map(t=>{
         const bits=[]; if(t.added)bits.push(`<span class="add">+${t.added}</span>`);
-        if(t.changed)bits.push(`<span class="chg">~${t.changed}</span>`);
+        if(t.changed)bits.push(`<span class="chg">Δ${t.changed}</span>`);
         if(t.removed)bits.push(`<span class="rem">−${t.removed}</span>`);
         return `<div class="tl"><span class="when">${relTime(t.at)}</span><span>${bits.join(" ")||"—"}</span></div>`;
       }).join("")
