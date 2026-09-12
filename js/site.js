@@ -2783,6 +2783,26 @@ async function loadRightNow(targetId, opts) {
               '<span class="seqt-dir">Next &rarr;</span>' +
               '<span class="seqt-name">' + String(s.names[next]) + '</span></a>'
           : '<span class="seqt-btn seqt-empty"></span>');
+
+      /* ON THE SAME ROW AS THE RAIL (2026-09-11). Randy: "raise the content on
+         the left side closer to the top nav bar ... visually I feel like top
+         is off kilter." The bar was alone on a row under the hero, right-
+         aligned, with nothing on the left; the rail and the first heading
+         began a full band below it. Plant pages never fill the caption span
+         beside it (wildlife pages do), so when that span is empty the bar
+         moves down into the reading column: rail title on the left, bar on
+         the right, same row, and the empty band goes away. Done here rather
+         than in the template so no page needs regenerating. */
+      try {
+        var cap  = top.parentNode && top.parentNode.querySelector('.cap');
+        var mainCol = document.querySelector('.sp-cols > main');
+        if (mainCol && cap && !cap.textContent.trim()) {
+          var row = top.parentNode;
+          mainCol.insertBefore(top, mainCol.firstChild);
+          top.classList.add('seqt-inmain');
+          if (!row.textContent.trim()) row.style.display = 'none';
+        }
+      } catch (e) {}
     }
 
     var anchor = document.querySelector('.all-plants-link, .all-wild-link');
@@ -2841,6 +2861,7 @@ async function loadRightNow(targetId, opts) {
       '.seqt-ctx{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;' +
         'color:var(--ink-faint,#8a8d82);font-weight:700;white-space:nowrap}' +
       '.seqt-back:hover .seqt-ctx{color:var(--green,#2d6a35)}' +
+      '.seqt-inmain{margin:0 0 1.6rem auto}' +
       '@media(max-width:820px){.seqt-name{display:none}.seqt>*{padding:.42rem .6rem}}' +
       '@media(max-width:640px){.seq-nav{grid-template-columns:1fr 1fr}' +
         '.seq-back{grid-column:1/-1;order:3;min-width:0;border-left:0;' +
