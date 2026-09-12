@@ -5,7 +5,7 @@
     "species_count": 274,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-09-11T20:08:56",
+    "updated": "2026-09-11T21:00:43",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -19673,8 +19673,8 @@
         "Illawarra Palm"
       ],
       "quick_hits": [
-        "The flowers of this palm are unmistakably lavender — a soft purple-pink that sets it apart from every other Archontophoenix species, all of which produce white or cream flowers. It is the only member of the genus with this trait.",
-        "Both 'Bangalow' and 'Piccabeen' are words from Aboriginal languages of eastern Australia, each used by local peoples to refer to this palm. The name 'Bangalow' specifically comes from the Dharawal language and refers to a water-carrying basket: the crownshaft can be folded and tucked into a watertight vessel, with the petiole serving as the handle.",
+        "The flowers of this palm are pink to lilac — unusual among palms, most of which flower white or cream, and a quick way to tell it from the similar Alexandra Palm.",
+        "Both 'Bangalow' and 'Piccabeen' are Australian common names for this palm, taken from Aboriginal languages of eastern Australia.",
         "Each frond carries a gentle half-twist along its length, so the leaflets at the outer tip rotate nearly vertical — a subtle but reliable field mark that helps distinguish this species from its close relative the Alexandra Palm (Archontophoenix alexandrae), whose fronds lie flat."
       ],
       "teaser": "Every other palm in its genus flowers white or cream. This one comes out lavender, a soft purple-pink found nowhere else in the group.",
@@ -19684,10 +19684,10 @@
       ],
       "origin_short": "Australia",
       "more_information": [
-        "In its native Queensland and New South Wales, this palm typically grows as a rainforest understory or edge tree, reaching up to roughly 100 feet (about 98 feet) tall in ideal conditions. It tolerates deep shade when young — an adaptation to life beneath a forest canopy — but grows faster and develops a fuller crown in bright light as it matures.",
+        "In its native Queensland and New South Wales, this palm typically grows as a rainforest understory or edge tree, reaching up to roughly 80 feet tall in ideal conditions. It tolerates deep shade when young — an adaptation to life beneath a forest canopy — but grows faster and develops a fuller crown in bright light as it matures.",
         "The fronds are notably self-cleaning: when a frond dies, the whole leaf detaches neatly at the crownshaft and drops to the ground, leaving a clean ring scar on the trunk. There is no tattered skirt of dead fronds to prune, which is one reason this palm is so popular in managed landscapes.",
         "Despite its refined appearance, the Bangalow Palm is a prolific seeder and has naturalized as an invasive weed in southern Brazil, where it has colonized Atlantic Forest fragments — a problem compounded by the fact that the ecologically similar native palm Euterpe edulis has been heavily over-harvested in the same region, leaving a niche the Piccabeen is quick to fill.",
-        "It is also a declared pest species in parts of New Zealand, where it competes directly with the native nikau palm for the same forest niches. In Florida it has not been documented as establishing in natural areas, but the lesson from elsewhere is worth keeping in mind."
+        "It is also a declared pest species in parts of New Zealand, where it competes directly with the native nikau palm for the same forest niches. It is not on Florida's invasive plant lists."
       ],
       "wildlife_value": [
         "The inflorescences — branched panicles up to roughly five feet long that emerge just below the crownshaft — carry the palm's distinctive lavender flowers and attract pollinating insects when in bloom. Because the palm is monoecious (male and female flowers on the same plant), every individual can set fruit without a separate pollen source nearby.",
@@ -19705,11 +19705,11 @@
           },
           {
             "label": "Fronds",
-            "text": "Pinnately compound, typically about 10 to 15 feet (10 to 15 feet) long, with roughly 80 to 100 pairs of linear leaflets. Leaflets are green on both surfaces — no silver underside, which is one way to tell this species from its close relative Archontophoenix alexandrae. The whole frond often carries a gentle half-twist toward the tip, turning the outermost leaflets nearly vertical. Fronds shed cleanly and completely when they die, leaving neat ring scars on the trunk."
+            "text": "Pinnately compound, typically about 10 to 15 feet long, with roughly 80 to 100 pairs of linear leaflets. Leaflets are green on both surfaces — no silver underside, which is one way to tell this species from its close relative Archontophoenix alexandrae. The whole frond often carries a gentle half-twist toward the tip, turning the outermost leaflets nearly vertical. Fronds shed cleanly and completely when they die, leaving neat ring scars on the trunk."
           },
           {
             "label": "Crownshaft and Trunk",
-            "text": "The crownshaft is prominent — about 4½ feet tall, green to purplish-green, smooth, and slightly swollen at the base. The solitary trunk is gray-brown, ringed with leaf-scar bands, and slightly enlarged at the base; it reaches up to roughly 12 inches (12 inches) in diameter at maturity in the wild, typically less in cultivation."
+            "text": "The crownshaft is prominent — about 4½ feet tall, green to purplish-green, smooth, and slightly swollen at the base. The solitary trunk is gray-brown, ringed with leaf-scar bands, and slightly enlarged at the base; it reaches up to roughly 12 inches in diameter at maturity in the wild, typically less in cultivation."
           }
         ],
         "what_to_look_for": "Start at the crown: the smooth, greenish crownshaft is the structural landmark, sitting like a collar between the trunk and the arching fronds. If the palm is in bloom, look for the drooping lavender flower panicles emerging just below it — that purple color is a reliable field mark. Check the leaflets: they are solid green on both sides, with no silvery underside. When in fruit, the clusters of small bright red-orange drupes hanging below the crownshaft are hard to miss. Finally, run your eye down the trunk: clean horizontal ring scars mark every spot where a frond once attached and fell away cleanly."
@@ -19744,7 +19744,92 @@
       "other_notes": [
         "In Florida's nursery and landscape trade, 'King Palm' is applied loosely to both this species and Archontophoenix alexandrae (the Alexandra Palm). The two look similar, but A. cunninghamiana is cooler-climate-tolerant (USDA Zone 9b), has green leaflets on both sides, and — most reliably — produces lavender flowers, while A. alexandrae has white flowers and a silvery leaflet underside.",
         "The original species description was published by Hermann Wendland in 1858 under the name Ptychosperma cunninghamiana, placing it in the same genus as the Solitaire Palm (Ptychosperma elegans) also growing at this park. The two palms share a superficial resemblance — crownshaft, self-cleaning fronds, red fruit — but belong to separate genera and come from different parts of Australia."
-      ]
+      ],
+      "page": {
+        "at_a_glance": [
+          {
+            "text": "A king palm from the wet forests of eastern Australia, where it grows along streams and in gullies from near Townsville south to Bateman's Bay."
+          },
+          {
+            "text": "The flowers are the giveaway: pink to lilac, when most palms flower white or cream. They come out in sprays below the crownshaft."
+          },
+          {
+            "text": "Its leaflets are green on both sides. The look-alike Alexandra Palm is silver underneath."
+          },
+          {
+            "text": "It grows at the bottom of the office steps, in the Shade Garden beside the ramp."
+          }
+        ],
+        "where_it_comes_from": [
+          {
+            "label": "Eastern Australia",
+            "text": "Piccabeen Palm is native to the east coast of Australia, from Mount Elliot near Townsville in Queensland south to Bateman's Bay in New South Wales. It is a palm of rainforest and wet forest, growing in colonies where water is reliable: along streams, in gullies and in swampy ground."
+          },
+          {
+            "label": "Two Australian names",
+            "text": "Bangalow and Piccabeen are both Australian names for it, taken from Aboriginal languages of the east coast. The German botanist Hermann Wendland described it in 1858, and in 1875 he and Oscar Drude gave it its own genus, Archontophoenix, chieftain palm. The species name honours Allan Cunningham, the botanist who explored eastern Australia in the 1820s."
+          }
+        ],
+        "where_to_find_it_here": [
+          {
+            "label": "Shade Garden",
+            "text": "Go down the steps from the office into the Shade Garden. The palm stands beside the ramp, its ringed trunk rising out of the ferns, with the crown above the white railing."
+          },
+          {
+            "photo": "697762604",
+            "focus": "50% 45%",
+            "caption": "July 2026: the crown above the ramp railing, in the Shade Garden."
+          }
+        ],
+        "what_it_does_here": [
+          {
+            "label": "The fourth king palm",
+            "text": "Three king palms stand in a row on the path inside the 17th Avenue fence: Purple King, Myola King and Peach River King, each from its own patch of Queensland rainforest. This is the fourth, and the one most people mean by king palm, the one Florida nurseries sell. It grows apart from the others, in the shade by the office, which suits a palm that starts life under a forest canopy."
+          }
+        ],
+        "how_to_know_it": [
+          {
+            "label": "Find the crownshaft",
+            "text": "A smooth green to purplish-green sleeve, the crownshaft, sits between the grey ringed trunk and the fronds."
+          },
+          {
+            "photo": "697764139",
+            "focus": "50% 50%",
+            "caption": "July 2026: a frond from below. The leaflets are green on this side too."
+          },
+          {
+            "label": "Look under a leaflet",
+            "text": "Turn a leaflet over: both faces are green. On the Alexandra Palm, the one it is most often confused with, the underside is silver."
+          },
+          {
+            "label": "Lilac flowers",
+            "text": "The flower sprays come out below the crownshaft, and the flowers are pink to lilac. No other common palm in Florida flowers that colour."
+          },
+          {
+            "label": "The twist in the frond",
+            "text": "Toward its tip a frond twists gently, so the outer leaflets stand at an angle instead of lying in one flat plane."
+          }
+        ],
+        "how_it_grows": [
+          {
+            "label": "A wet-forest palm",
+            "text": "At home it stands in wet forest, so it wants steady water. Young plants take deep shade; older ones grow faster and fuller in brighter light so long as the roots stay moist. In the wild it reaches 80 feet."
+          },
+          {
+            "photo": "697764143",
+            "focus": "50% 40%",
+            "caption": "July 2026: the trunk, ringed where old fronds have dropped."
+          },
+          {
+            "label": "It cleans its own trunk",
+            "text": "Old fronds let go at the crownshaft and fall whole, leaving a ring on the trunk. There is never a skirt of dead leaves."
+          },
+          {
+            "label": "Birds carry the seed",
+            "text": "The fruit are red, about half an inch across, and birds carry the seed. That is how it has gone wild in New Zealand and in southern Brazil. It is not on Florida's invasive plant lists."
+          }
+        ]
+      }
     },
     {
       "id": "PSBP-00198",
@@ -21614,28 +21699,28 @@
       ],
       "quick_hits": [
         "That ghostly white crownshaft is not fully white at first. Young plants wear a shaggy reddish-brown coat; the bright waxy white develops gradually as the palm matures — so what you see today may look quite different from what it looked like ten years ago.",
-        "This palm spent decades in botany under an entirely different genus name, Veillonia, honoring a French botanist who helped collect the original specimens. It was reclassified into Cyphophoenix only in 2008, when a Kew Bulletin revision reorganized New Caledonian palms based on structural details most of us would never notice.",
-        "In the wild, the entire known population grows on a single mountain massif — Mont Panié in northeastern New Caledonia, one of the most species-dense patches of forest in the Pacific. The palm has never been found anywhere else on Earth.",
-        "It is extraordinarily slow. Reports suggest this palm can take around 25 years to reach full maturity — which puts any specimen you see here in a very different category from most garden plants."
+        "This palm was first described as Veillonia alba, honouring a French botanist who collected the original specimens. A 2008 Kew Bulletin revision moved it into Cyphophoenix; a 2024 DNA study of New Caledonia's palms found it stands apart after all and revived Veillonia, so references now differ on which name to use.",
+        "In the wild it grows only in the northeast of Grande Terre, New Caledonia's main island, in humid forest on schist. It is locally common there — the local Red List assessed it as Least Concern in 2016 — but has never been found anywhere else on Earth.",
+        "It is slow. Growth is unhurried at every stage, which puts any specimen you see here in a very different category from most garden plants."
       ],
-      "teaser": "The entire known wild population grows on one mountain in New Caledonia and has never been found anywhere else. It takes about twenty-five years to mature.",
+      "teaser": "A palm from the humid forests of northeastern New Caledonia, found nowhere else. It is slow, and its seed is seldom offered, so it is rare even in collections.",
       "origin": [
-        "Cyphophoenix alba is endemic to the island of Grande Terre in New Caledonia, a French territory in the southwest Pacific roughly 750 miles east of Australia. Its entire wild range is confined to the Mont Panié massif in the island's northeastern corner — a mountain whose forests harbor 55 plant species found nowhere else on the planet.",
+        "Cyphophoenix alba is endemic to the island of Grande Terre in New Caledonia, a French territory in the southwest Pacific roughly 750 miles east of Australia. Its wild range is the northeastern part of the island, which includes the Mont Panié massif — a mountain whose forests harbor 55 plant species found nowhere else on the planet.",
         "The palm grows in moist rainforest on gneissic and schistose soils, generally between about 650 and 2,000 feet in elevation.",
         "It came to cultivation strictly through the interest of specialist palm collectors and botanical gardens, not the mainstream nursery trade. Seeds are seldom available and the plant grows very slowly, which keeps it genuinely rare even in collections that seek it out. Any specimen you encounter outside New Caledonia represents real horticultural patience."
       ],
       "origin_short": "New Caledonia",
       "more_information": [
-        "The crownshaft — the smooth, tubular column formed by the overlapping bases of the leaves just below the crown — is what makes this palm unmistakable. It is covered in a shiny white wax that contrasts sharply with reddish-brown, felt-like scales, especially toward the petioles.",
+        "The crownshaft — the smooth, tubular column formed by the overlapping bases of the leaves just below the crown — is what makes this palm unmistakable. It is covered in a shiny white waxy bloom that contrasts sharply with reddish-brown, felt-like scales, especially toward the petioles.",
         "The upper trunk develops a similar whitish waxy coating, while the lower trunk stays gray-brown and is marked by prominent, evenly spaced rings left by fallen leaves.",
-        "The inflorescence emerges below the crownshaft rather than within it — a characteristic of crownshaft palms generally. In bud it is entirely coated in white wax; as it matures it arches outward and becomes pendulous. The flowers are unisexual but borne on the same plant (monoecious), so a single specimen can set fruit.",
+        "The inflorescence emerges below the crownshaft rather than within it — a characteristic of crownshaft palms generally. In bud it is entirely coated in a white waxy bloom; as it matures it arches outward and becomes pendulous. The flowers are unisexual but borne on the same plant (monoecious), so a single specimen can set fruit.",
         "The brown, ellipsoid fruits are distinctive even among New Caledonian palms: their outer surface is minutely bumpy — papillate — a detail that helps separate this species from its closest relative, Burretiokentia.",
         "New Caledonia itself is a recognized global biodiversity hotspot, and Mont Panié is its most species-dense corner. The mountain's forests are home to 13 species of palms, and the entire genus Cyphophoenix — four species in all — is endemic to New Caledonia and found nowhere else on Earth.",
         "Habitat loss from mining and land clearance, which has eliminated roughly 70 percent of the island's original vegetation cover, makes wild populations of palms like this one increasingly vulnerable."
       ],
       "wildlife_value": [
         "In its native New Caledonian rainforest, palm fruits are important food resources for fruit-eating birds and bats, including the endemic New Caledonian Imperial Pigeon and flying foxes, which serve as key seed dispersers in these forests. The inflorescences of palms in this habitat are typically visited by insects attracted to pollen and any accessible floral resources.",
-        "In Florida cultivation this palm provides essentially no documented wildlife food value — it is too rare and slow-growing to function as a meaningful resource for local fauna. Its primary value here is as a living example of one of the world's most geographically restricted palm species."
+        "In Florida cultivation this palm provides essentially no documented wildlife food value — it is too rare and slow-growing to function as a meaningful resource for local fauna. Its value here is as a palm from a single island that is hardly ever seen in cultivation."
       ],
       "reproduction": {
         "blocks": [
@@ -21657,7 +21742,7 @@
           },
           {
             "label": "Propagation",
-            "text": "Reproduced by seed. Seeds are reported to germinate reasonably well, but subsequent growth is extremely slow — the plant may take 25 years or more to reach full maturity. Seeds are seldom available commercially, making this palm very difficult to obtain even through specialist channels."
+            "text": "Reproduced by seed. Seeds are reported to germinate reasonably well, but subsequent growth is slow. Seeds are seldom available commercially, making this palm very difficult to obtain even through specialist channels."
           }
         ],
         "what_to_look_for": "Start at the top: the crownshaft stops you first — a waxy, whitish-gray column trimmed in reddish-brown fuzz where the leaf bases begin, glowing faintly against the dark green fronds. Scan down the trunk and you will see clean, evenly spaced rings all the way to the slightly swollen base. Look below the crown for any arching, pendulous flower or fruit clusters — they emerge from the trunk beneath the crownshaft rather than from within it. Up close, check the ellipsoid brown fruits for their minutely bumpy surface texture, which feels almost like fine sandpaper."
@@ -21673,7 +21758,7 @@
         "height": "23 to 50 feet in habitat; most cultivated specimens remain well under 25 feet, often for many decades given the very slow growth rate",
         "spread": "moderate; upright crown of arching pinnate fronds, not a wide-spreading canopy",
         "habit": "solitary-trunked, upright; single stem, unarmed",
-        "growth_rate": "very slow — among the slowest of cultivated palms; reported to take approximately 25 years to reach maturity",
+        "growth_rate": "very slow — among the slowest of cultivated palms",
         "texture": "medium-fine; slender ringed trunk and horizontally held leaflets give an elegant, airy appearance"
       },
       "growing_conditions": {
@@ -21691,8 +21776,85 @@
       },
       "other_notes": [
         "The genus name Cyphophoenix translates roughly as 'humped palm,' likely a reference to the shape of the fruit or seed. The species epithet alba is Latin for white, taken directly from the characteristic white wax that covers the crownshaft, upper trunk, and inflorescence bracts.",
-        "C. alba was formally moved from the monotypic genus Veillonia into Cyphophoenix by Pintaud and W. J. Baker in a 2008 revision of New Caledonian palm genera published in Kew Bulletin. The former genus name honored botanist Jean-Marie Veillon of O.R.S.T.O.M. in Nouméa, who co-collected the type specimen."
-      ]
+        "C. alba was formally moved from the monotypic genus Veillonia into Cyphophoenix by Pintaud and W. J. Baker in a 2008 revision of New Caledonian palm genera published in Kew Bulletin. The former genus name honored botanist Jean-Marie Veillon of O.R.S.T.O.M. in Nouméa, who co-collected the type specimen. A 2024 study of the DNA of New Caledonia's palms revived Veillonia, and some references now list the palm as Veillonia alba again."
+      ],
+      "page": {
+        "at_a_glance": [
+          {
+            "text": "A rainforest palm from one corner of one island: the northeast of Grande Terre, the main island of New Caledonia in the southwest Pacific."
+          },
+          {
+            "text": "The name promises a white crownshaft. Ours is young and has not grown one yet; grey fibres wrap the stem where the white sleeve will be."
+          },
+          {
+            "text": "Botanists have moved it twice. Described as Veillonia alba, it went into Cyphophoenix in 2008; a 2024 DNA study put it back on its own."
+          },
+          {
+            "text": "Slow, and its seed is hardly ever offered, so it is rare even in collections."
+          }
+        ],
+        "where_it_comes_from": [
+          {
+            "label": "Northeastern New Caledonia",
+            "text": "This palm grows wild only in the northeast of Grande Terre, the long main island of New Caledonia, about 750 miles east of Australia. It stands in humid forest on schist, where it is locally common: the local Red List assessed it as Least Concern in 2016. Every palm in its genus is found only in New Caledonia."
+          },
+          {
+            "label": "Two names",
+            "text": "It was first named Veillonia alba, after Jean-Marie Veillon, the botanist at the French research station in Nouméa who collected it, and alba, white, for the crownshaft. A 2008 revision of New Caledonia's palms folded it into Cyphophoenix. In 2024 a study of the DNA of the island's palms found that it stands apart after all and revived Veillonia, so you may meet it under either name."
+          }
+        ],
+        "where_to_find_it_here": [
+          {
+            "label": "The palm row south of Cypress Pond",
+            "text": "Walk the row of palms along the south side of Cypress Pond, the row that starts with the Red Cabbage Palm at the west end. This is the seventh palm from that end, between the Pindo Palm and the Licury Palm, with a Plumeria beside it. There is no path along the row; you are welcome to walk across the grass."
+          },
+          {
+            "photo": "687995690",
+            "focus": "50% 50%",
+            "caption": "June 2026: a young palm in the row, the Plumeria behind it."
+          }
+        ],
+        "what_it_does_here": [
+          {
+            "label": "One of two Cyphophoenix",
+            "text": "The park grows two palms of this small New Caledonian genus: this one and the Lifou Palm, Cyphophoenix nucele, from an island off the coast. Both came here through a longtime volunteer who collects palms that are hardly grown anywhere. For now this one is a stiff green fountain in a row of larger palms; the white crownshaft is years away."
+          }
+        ],
+        "how_to_know_it": [
+          {
+            "label": "Now: stiff upright fronds",
+            "text": "Ours has no trunk yet. Look for stiff fronds held upright and arching, with the leaflets set horizontally along the stalk, each one firm and drawn to a point."
+          },
+          {
+            "photo": "687995685",
+            "focus": "50% 50%",
+            "caption": "June 2026: a frond from above, the leaflets firm and evenly set."
+          },
+          {
+            "label": "Later: the white crownshaft",
+            "text": "Grey fibres wrap the base of the stem. On an older palm they give way to a crownshaft about four feet long, coated in shiny white wax and shading into reddish-brown felt where the fronds join."
+          },
+          {
+            "label": "A whitened trunk",
+            "text": "The upper trunk of a mature palm goes whitish too, above a grey-brown lower trunk ringed with leaf scars about four inches apart."
+          }
+        ],
+        "how_it_grows": [
+          {
+            "label": "A forest palm, slowly",
+            "text": "A palm of humid forest, it wants steady water, shelter from wind and some shade while young. It grows slowly at every stage."
+          },
+          {
+            "photo": "697821630",
+            "focus": "50% 55%",
+            "caption": "July 2026: the base of the stem, wrapped in grey fibre."
+          },
+          {
+            "label": "Seed, seldom offered",
+            "text": "Male and female flowers share one spray below the crownshaft, so a lone palm can set fruit. The fruit are brown, egg-shaped and finely bumpy. Seed is seldom offered, which is the main reason the palm stays rare."
+          }
+        ]
+      }
     },
     {
       "id": "PSBP-00265",
@@ -21964,12 +22126,11 @@
       ],
       "origin_short": "Mascarene Is.",
       "more_information": [
-        "The Hurricane Palm is monoecious, meaning male and female flowers are borne on the same inflorescence — unlike dioecious palms where each individual tree is strictly one sex. Several horse-tail-like inflorescences, each up to roughly a meter long, emerge in a ring below the crownshaft.",
+        "The Hurricane Palm is monoecious, meaning male and female flowers are borne on the same inflorescence — unlike dioecious palms where each individual tree is strictly one sex. Several horse-tail-like inflorescences, each up to about three feet long, emerge in a ring below the crownshaft.",
         "The small white to yellowish-brown flowers are followed by ovoid fruits that ripen to purple or black, each containing a single seed.",
         "In its native Mascarenes the palm is a valued food plant: the apical bud — the heart — is edible cooked, and it has been harvested for this purpose for generations. That harvest is precisely what drove wild populations of the Mauritius and Réunion variety toward extinction, since removing the heart kills the palm.",
         "One variety — Dictyosperma album var. conjugatum, endemic to Round Island — was lost from the wild in late 2024. Its collapse was driven primarily by invasive rabbits and goats introduced in the 19th century, which consumed seedlings and stripped topsoil until natural regeneration became impossible.",
-        "Conservation teams had collected seeds from the last individuals in the early 1990s, so the genetic lineage survives in cultivation.",
-        "It is a reminder that 'common in gardens' and 'safe in nature' are very different things — and that cultivated material, while valuable, is not a substitute for a wild population with its full ecological context and genetic provenance."
+        "Conservation teams had collected seeds from the last individuals in the early 1990s, so the genetic lineage survives in cultivation."
       ],
       "wildlife_value": [
         "In the Hurricane Palm's native Mascarene Islands, the long-blooming inflorescences serve as a nectar resource for insects, and seeds are dispersed by birds and bats, linking the palm into the broader food web of its island ecosystem.",
@@ -21984,7 +22145,7 @@
           },
           {
             "label": "Flowers",
-            "text": "Several inflorescences per tree emerge in a ring below the crownshaft, each branching into a rooster-tail or horse-tail shape up to roughly a meter long. Individual flowers are small and white to yellowish-brown. Male flowers open before female flowers on the same inflorescence — a timing gap that reduces self-pollination."
+            "text": "Several inflorescences per tree emerge in a ring below the crownshaft, each branching into a rooster-tail or horse-tail shape up to about three feet long. Individual flowers are small and white to yellowish-brown. Male flowers open before female flowers on the same inflorescence — a timing gap that reduces self-pollination."
           },
           {
             "label": "Fruit",
@@ -22033,7 +22194,104 @@
         "These labels refer to subtle differences in crownshaft and new-leaf coloration — they are nursery trade shorthand, not universally accepted botanical terms, though all three are formally recognized as botanical varieties by Kew's Plants of the World Online.",
         "Bradenton is near the cooler edge of where this tropical palm can be grown reliably outdoors. It tolerates brief cool spells better than prolonged cold; extended periods of cool temperatures — particularly sustained nights below 40°F — can cause foliage to yellow and spot, and a hard frost will cause significant damage. Planting in a sheltered microclimate gives the best results at this latitude.",
         "The root system of established specimens is sensitive and does not transplant well; choose the planting site carefully and establish the palm in place from the start."
-      ]
+      ],
+      "page": {
+        "at_a_glance": [
+          {
+            "text": "From the Mascarene Islands, Mauritius, Réunion and Rodrigues, in the Indian Ocean east of Madagascar, and from nowhere else. It is the only species in its genus."
+          },
+          {
+            "text": "Ours is the golden form, var. aureum, from Rodrigues. Its crownshaft is tan to bronze rather than the white the name promises."
+          },
+          {
+            "text": "Named for standing up to cyclones: old fronds drop cleanly in a storm, and new ones come up as stiff spears."
+          },
+          {
+            "text": "In late 2024 a windstorm brought down the last wild tree of the Round Island form. The Mauritian Wildlife Foundation reported in February 2025 that it now survives only in cultivation."
+          }
+        ],
+        "cultural_significance": [
+          {
+            "label": "Palmiste blanc",
+            "text": "In the Mascarenes this is the palmiste blanc, the white palm, and its heart, the growing bud at the top of the trunk, was a food. Cutting the heart kills the palm, and that harvest, with the clearing of the islands' forests, left few wild palms standing. The heart is still eaten there, from palms grown for the purpose."
+          }
+        ],
+        "where_it_comes_from": [
+          {
+            "label": "The Mascarenes",
+            "text": "Hurricane Palm grows wild in the Mascarene Islands, a small volcanic group east of Madagascar: Mauritius, Réunion and Rodrigues, plus Round Island, an islet off Mauritius. Each island has its own variety, and all are rare in the wild after centuries of clearing and cutting for palm heart."
+          },
+          {
+            "label": "Net-seed, white",
+            "text": "Dictyosperma is Greek for net-seed, from the netted surface of the seed, and album is Latin for white, for the waxy crownshaft of the Mauritius form. Ours is the Rodrigues variety, aureum, golden, whose crownshaft and new leaves run to tan and bronze."
+          }
+        ],
+        "where_to_find_it_here": [
+          {
+            "label": "South side of Cypress Pond",
+            "text": "Walk the row of palms along the shell path on the south side of Cypress Pond. Coming from the Big Pond walkway, it is the third palm: first the Talipot, then the Lifou Palm, then this one, on the pond side of the path."
+          },
+          {
+            "photo": "697822338",
+            "focus": "50% 45%",
+            "caption": "July 2026, from the path: the ringed trunk and the tan crownshaft, with a Bismarck Palm behind."
+          }
+        ],
+        "what_it_does_here": [
+          {
+            "label": "Common here, rare at home",
+            "text": "Nurseries sell this palm all over South Florida, and in its home islands it is nearly gone from the wild: the Round Island form since 2024, the others long reduced to scattered trees. This one grows in the row of unusual palms planted by a longtime volunteer. It is also the palm to watch after a storm, to see what a clean-shedding crown looks like the morning after."
+          }
+        ],
+        "how_to_know_it": [
+          {
+            "label": "The crownshaft",
+            "text": "Ours has a tan to bronze crownshaft, the smooth sleeve of leaf bases above the trunk. The Mauritius form is white there, so do not go by colour alone."
+          },
+          {
+            "photo": "697822343",
+            "focus": "50% 50%",
+            "caption": "July 2026: the crownshaft, tan shading to bronze, and the base of the fronds."
+          },
+          {
+            "label": "The spear",
+            "text": "A new frond stands straight up from the crown as a stiff green spear before it opens. There is usually one showing."
+          },
+          {
+            "label": "A clean ringed trunk",
+            "text": "One grey trunk, ringed with old leaf scars and a little swollen at the base. No dead fronds hang from it."
+          },
+          {
+            "label": "Fruit in a ring",
+            "text": "Sprays of small flowers come out in a ring below the crownshaft and are followed by fruit about half to three-quarters of an inch long, purple to black when ripe."
+          }
+        ],
+        "how_it_grows": [
+          {
+            "label": "One growing point",
+            "text": "One trunk with one growing point at the top. It wants warmth, sun and steady water; Bradenton is near the cool edge of where it grows outdoors, and a hard freeze marks it."
+          },
+          {
+            "photo": "687994693",
+            "focus": "50% 50%",
+            "caption": "June 2026: the crown, with a new spear standing above the fronds."
+          },
+          {
+            "label": "Why it stands up to storms",
+            "text": "The crown holds 20 to 30 fronds. Old ones let go cleanly at the crownshaft, and in a high wind they go first, which leaves the storm less to pull on."
+          },
+          {
+            "label": "Seed",
+            "text": "Male and female flowers share each spray, the males opening first, so a lone palm sets fruit. Birds take the fruit and the seed comes up readily."
+          }
+        ],
+        "take_care": [
+          {
+            "label": "Fruit and heart",
+            "text": "The purple-black fruit are not for eating. The heart is a food in the Mascarenes, and cutting it kills the palm, so it stays in the tree."
+          }
+        ]
+      }
     },
     {
       "id": "PSBP-00273",
@@ -28193,14 +28451,14 @@
         "Kerpis Palm"
       ],
       "quick_hits": [
-        "The name has nothing to do with December. It comes from the fruit: the clusters of glossy red drupes that ripen in late fall and early winter make the tree look as though someone strung it with ornaments — check the March 2026 photo in the gallery to see just how striking they are. Time your visit right and you will see why the name stuck.",
+        "The name comes from the fruit. The oval fruit turn bright red from late fall through winter, hanging in clusters below the crownshaft, so the palm looks decorated at Christmas.",
         "The genus name Adonidia means 'little Adonis' — a nod to the palm's compact but handsome proportions, not a claim to mythological grandeur.",
         "The species epithet merrillii honors a monumental and tragic chapter in botanical history. Elmer Drew Merrill arrived in Manila in 1902 and spent twenty-two years building a herbarium of 275,000 specimens from nothing — only to have the entire collection destroyed during the Japanese occupation in World War II. His name survives in taxonomy on thousands of species, including this one.",
         "Often called the Dwarf Royal Palm, this species earns that nickname through a precise growth strategy: it shoots upward quickly to about six feet, then shifts into an exceptionally slow vertical crawl for the rest of its life. That early sprint followed by a near-halt is exactly what lets it hold the clean, upright proportions of a Royal Palm on a fraction of the footprint — for decades."
       ],
-      "teaser": "The name has nothing to do with December. It comes from the clusters of glossy red fruit that ripen in early winter, leaving the tree looking hung with ornaments.",
+      "teaser": "Named for its fruit: clusters of bright red fruit ripen in late fall and winter, and the palm looks decorated for the season.",
       "origin": [
-        "The Christmas Palm is endemic to the Philippines, where it grows in coastal and lowland tropical forest — it has been particularly documented from Palawan and nearby islands. It has been cultivated throughout the Philippine archipelago and across the world's tropics for many centuries, well before Western botanists formally named it.",
+        "The Christmas Palm is native to the Philippines, above all Palawan, where it grows on limestone near the coast, and to Sabah at the northern tip of Borneo. It is one of the most widely planted palms in the tropics and turns up far outside that native range.",
         "Italian botanist Odoardo Beccari first described the species in 1909, placing it in the genus Normanbya; he reclassified it into the monotypic genus Adonidia in 1919. It arrived in Florida horticulture as part of the broader 20th-century enthusiasm for tropical palms and is now one of the most commonly planted ornamental palms in South and Central Florida."
       ],
       "origin_short": "Philippines",
@@ -28208,7 +28466,6 @@
         "The species epithet merrillii is a tribute to Elmer Drew Merrill, who arrived in Manila in 1902 as botanist to the Philippine Bureau of Agriculture and spent twenty-two years there cataloging a flora that was barely known to science. When he left, the herbarium he had built from nothing held more than 275,000 mounted specimens.",
         "That collection was destroyed during World War II, but Merrill — by then at Harvard — worked to rebuild it from duplicates he had sent abroad.",
         "In Florida the Christmas Palm comes with a genuine caution for growers: lethal yellowing, a disease caused by a phytoplasma (a bacterium without a cell wall), has significantly reduced the popularity of this species in the state. The pathogen causes successive leaves to brown and die, working inward toward the growing tip until the palm is lost — usually within a few months of first symptoms.",
-        "The disease has historically been concentrated in South Florida, but UF/IFAS records its first appearance in Manatee County in 2007, which puts this park squarely within the zone where vigilance is warranted.",
         "Despite that vulnerability, the Christmas Palm remains a practical choice where space is tight. It is self-cleaning — dead fronds detach on their own — and it is well adapted to Florida's typically nutrient-poor sandy soils, requiring little supplemental fertilizer under normal conditions. Its moderate salt tolerance also suits it to coastal Central Florida landscapes like Bradenton's."
       ],
       "wildlife_value": [
@@ -28224,7 +28481,7 @@
           },
           {
             "label": "Fruit",
-            "text": "Clusters of ovoid drupes about one inch long that ripen from green to glossy scarlet in late fall and early winter, giving the tree its common name. Each fruit contains a single seed. The fruit is not edible."
+            "text": "Clusters of ovoid drupes about an inch and a half long that ripen from green to glossy scarlet in late fall and early winter, giving the tree its common name. Each fruit contains a single seed. The fruit is not edible."
           },
           {
             "label": "Fronds",
@@ -28265,10 +28522,99 @@
         "dogs_level": "Green"
       },
       "other_notes": [
-        "Gardeners in Manatee County and nearby areas should be aware of lethal yellowing disease, which was first recorded in Manatee County in 2007. The disease — caused by a phytoplasma spread by a planthopper insect — is incurable, and affected palms typically die within a few months of showing symptoms.",
+        "Gardeners in Manatee County and nearby areas should be aware of lethal yellowing disease, which has been recorded in the county. The disease — caused by a phytoplasma spread by a planthopper insect — is incurable, and affected palms typically die within a few months of showing symptoms.",
         "Preventive trunk injections of oxytetracycline are the standard management tool for high-value specimens; consult UF/IFAS Extension for current guidance.",
         "Container plants are commonly sold with two or three individual stems potted together, giving the impression of a naturally clustering palm. This is a nursery convention, not a growth form the species produces on its own — Adonidia merrillii is strictly single-trunked."
-      ]
+      ],
+      "page": {
+        "at_a_glance": [
+          {
+            "text": "Named for its fruit. Clusters of bright red fruit, each about an inch and a half long, ripen in late fall and winter, and the palm looks decorated."
+          },
+          {
+            "text": "From the Philippines, mainly Palawan, and the north of Borneo. Planted all over South Florida."
+          },
+          {
+            "text": "Fast to about six feet, then slow, and it tops out around 20 to 25 feet, which is why it fits small yards."
+          },
+          {
+            "text": "We have two plantings: one on the Big Pond walkway and one by the Joannis Palm near the Baobab."
+          }
+        ],
+        "where_it_comes_from": [
+          {
+            "label": "Palawan and Borneo",
+            "text": "Christmas Palm grows wild in the Philippines, above all on Palawan, on limestone near the coast, and across the water in Sabah at the north end of Borneo. It is also one of the most planted palms in the tropics, so it turns up far outside that range."
+          },
+          {
+            "label": "Merrill's palm",
+            "text": "The Italian botanist Odoardo Beccari described it in 1909 and named it for Elmer Drew Merrill, the American botanist who ran the botany of the Philippines from Manila for twenty years and built its herbarium. In 1919 Beccari moved it into a genus of its own, Adonidia, little Adonis, for the red fruit; Adonis, in the myth, is the youth whose blood became red flowers."
+          }
+        ],
+        "where_to_find_it_here": [
+          {
+            "label": "Big Pond, south walkway",
+            "text": "Take the walkway along the south side of Big Pond. Counting from the bridge into the Rare Fruit Garden at the southeast corner, the Christmas Palm is the eleventh palm, just past the Montgomery Palm, on the pond side. Two trunks grow together there, two palms planted in one hole, as nurseries often sell them."
+          },
+          {
+            "photo": "723663595",
+            "focus": "50% 45%",
+            "caption": "August 2026, from the walkway: two trunks planted together, over the pond."
+          },
+          {
+            "label": "By the Baobab",
+            "text": "A second Christmas Palm stands near the Joannis Palm, by the Baobab in the Serenity Garden."
+          }
+        ],
+        "what_it_does_here": [
+          {
+            "label": "The common cousin",
+            "text": "Botanists filed this palm under Veitchia for forty years, alongside Montgomery Palm next door and Joannis Palm by the Baobab, until a 1999 study gave it back its own genus. The three grow within a short walk of each other, and they are built the same way: one ringed trunk, a smooth green crownshaft, red fruit. This is the common one, the palm at the supermarket door; the other two you will rarely see outside a collection."
+          }
+        ],
+        "how_to_know_it": [
+          {
+            "label": "Green crownshaft",
+            "text": "A smooth bright green sleeve, the crownshaft, sits between the grey ringed trunk and the fronds. It is the same green as the leaves, not purple or white."
+          },
+          {
+            "photo": "626741716",
+            "focus": "50% 50%",
+            "caption": "March 2026: red fruit, about an inch and a half long, below the crownshaft."
+          },
+          {
+            "label": "Leaflets in a V",
+            "text": "The fronds arch and the leaflets stand up in a V from the stalk, so the frond looks pleated when you sight along it."
+          },
+          {
+            "label": "Red fruit",
+            "text": "The oval fruit hang in clusters below the crownshaft, green through summer and red from late fall through winter. Some are usually on the tree in any month."
+          },
+          {
+            "label": "Count the trunks",
+            "text": "Two or three trunks together are two or three palms. This species grows one trunk and never suckers; nurseries plant several in one pot for a fuller look."
+          }
+        ],
+        "how_it_grows": [
+          {
+            "label": "Fast, then slow",
+            "text": "It grows quickly to about six feet, then slows, and it rarely passes 25 feet. It takes full sun, tolerates some salt air, and wants water while young."
+          },
+          {
+            "photo": "723663590",
+            "focus": "50% 50%",
+            "caption": "August 2026: a flower spray opening below the crownshaft, with old fruit stalks beside it."
+          },
+          {
+            "label": "Flowers and rings",
+            "text": "Male and female flowers grow on the same spray, so a lone palm sets fruit, and it flowers most of the year. Old fronds fall away cleanly and leave the rings on the trunk."
+          },
+          {
+            "label": "In Florida",
+            "text": "This palm is one of the species that lethal yellowing, a disease spread by a small planthopper, can kill in South Florida. It is not on Florida's invasive plant lists."
+          }
+        ]
+      }
     },
     {
       "id": "PSBP-00506",
