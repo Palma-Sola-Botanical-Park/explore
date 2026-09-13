@@ -1,8 +1,8 @@
 {
   "tab": "organization",
   "human": "Board members and front office staff — one row per person.",
-  "generated_at": "2026-09-12T23:14:54+00:00",
-  "status": "green",
+  "generated_at": "2026-09-13T00:25:42+00:00",
+  "status": "amber",
   "published": true,
   "block_reason": null,
   "counts": {
@@ -11,7 +11,7 @@
     "published": 16,
     "dropped_display": 0,
     "quarantined": 0,
-    "warned": 0
+    "warned": 2
   },
   "volume_guard": {
     "min": 1,
@@ -61,11 +61,20 @@
       "why": "Must be front office, board, or volunteer.",
       "severity": "warn",
       "scope": "field",
-      "status": "green",
+      "status": "amber",
       "evaluated": 16,
-      "passed": 16,
-      "flagged": 0,
-      "examples": []
+      "passed": 14,
+      "flagged": 2,
+      "examples": [
+        {
+          "row": "row",
+          "reason": "'PLACEHOLDER' is not an allowed value"
+        },
+        {
+          "row": "row",
+          "reason": "'PLACEHOLDER' is not an allowed value"
+        }
+      ]
     }
   ],
   "dropped_rows": [],
@@ -98,6 +107,12 @@
       "at": "2026-09-12T23:14:54+00:00",
       "added": 0,
       "changed": 1,
+      "removed": 0
+    },
+    {
+      "at": "2026-09-13T00:25:42+00:00",
+      "added": 0,
+      "changed": 2,
       "removed": 0
     }
   ],
