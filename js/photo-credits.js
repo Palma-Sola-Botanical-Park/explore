@@ -261,8 +261,9 @@
         Object.keys(roster).forEach(function (login) {
           if (login.charAt(0) === '_') return;
           var entry = roster[login];
-          if (entry && entry.display_name) {
-            nm[login] = entry.display_name;
+          // credit_as wins over display_name — same rule as psbp_common.display_name()
+          if (entry && (entry.credit_as || entry.display_name)) {
+            nm[login] = entry.credit_as || entry.display_name;
           }
         });
 

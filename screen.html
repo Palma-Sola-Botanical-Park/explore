@@ -1611,7 +1611,10 @@ function slideCohort(){
     if(!mine.length) return;
     photos = photos.concat(mine);
     mine.forEach(function(p){ species[p.psbp_id] = 1; });
-    people.push((NAMES[login] && NAMES[login].display_name) || login);
+    /* credit_as ("Ruby M. – High School Volunteer") wins over the real name; the
+       slide already says "high-school volunteers", so keep just "Ruby M.". */
+    var e = NAMES[login] || {};
+    people.push(e.credit_as ? e.credit_as.split(' – ')[0] : (e.display_name || login));
   });
   if(people.length < 3 || photos.length < 5) return null;
 
