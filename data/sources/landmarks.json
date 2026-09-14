@@ -4,7 +4,7 @@
     "schema_version": 1,
     "spec": "park-library/system docs/LANDMARKS.md",
     "count": 64,
-    "note": "Seed file, 2026-08-25. Identity only — a landmark is WHAT a place is; WHERE it is lives in placements.json as one PLC- row with kind:'landmark', the same split species already use (plant_signage.json = what, placements.json = where). One placement per landmark: if a place needs two spots, make two records joined by `parent` (see Plumeria West / East), never two placements. Stories are records: text (required) + credit/year/prompted_by/trigger. Credit groups, never a minor's full name (Low #14). No QR signs. No water fountains in the park. APPEND-ONLY — never regenerate; ids are stable and stories accrete here.",
+    "note": "Seed file, 2026-08-25. Identity only — a landmark is WHAT a place is; WHERE it is lives in placements.json as one PLC- row with kind:'landmark', the same split species already use (plant_signage.json = what, placements.json = where). One placement per landmark: if a place needs two spots, make two records joined by `parent` (see Plumeria West / East), never two placements. Stories are records: text (required) + credit/year/prompted_by/trigger. Credit groups, never a minor's full name (Low #14). No QR signs. No water fountains in the park. APPEND-ONLY — never regenerate; ids are stable and stories accrete here. | 2026-09-14: removed LND-052 Galleria Ramp — Randy verified in the field that no such ramp exists; the Galleria has front and back stairs only.",
     "updated": "2026-09-12T12:47:04"
   },
   "landmarks": [
@@ -1447,33 +1447,8 @@
       "notes": null
     },
     {
-      "id": "LND-052",
-      "name": "Galleria Ramp",
-      "kind": "building",
-      "parent": "LND-001",
-      "role": "entry",
-      "status": "active",
-      "year_built": null,
-      "named_for": null,
-      "stories": [],
-      "aliases": [],
-      "area_aliases": [],
-      "accessible": true,
-      "steps": false,
-      "shade": null,
-      "seating": null,
-      "restroom": null,
-      "water": null,
-      "indoor": null,
-      "capacity": null,
-      "public_page": false,
-      "venue_ids": [],
-      "photo": null,
-      "notes": "Accessible ramp. Which side it sits on still to be confirmed on the map."
-    },
-    {
       "id": "LND-053",
-      "name": "Office Ramp",
+      "name": "Ramp to Office-Galleria",
       "kind": "building",
       "parent": "LND-005",
       "role": "entry",
@@ -1481,7 +1456,9 @@
       "year_built": null,
       "named_for": null,
       "stories": [],
-      "aliases": [],
+      "aliases": [
+        "Office Ramp"
+      ],
       "area_aliases": [],
       "accessible": true,
       "steps": false,
@@ -1494,7 +1471,7 @@
       "public_page": false,
       "venue_ids": [],
       "photo": null,
-      "notes": "Accessible ramp. Which side it sits on still to be confirmed on the map."
+      "notes": "The park's only ramp. It sits beside the Office front steps and climbs onto the shared deck; from there the deck carries on around the Office to the Galleria, so this ramp serves both buildings. Verified in the field 2026-09-14. The Office has front and back stairs, the Galleria has front and back stairs, and there is no second ramp — LND-052 'Galleria Ramp' was deleted the same day."
     },
     {
       "id": "LND-054",
@@ -1660,6 +1637,22 @@
       "venue_ids": [],
       "photo": null,
       "notes": "A book exchange box holding about 100 books, gifted by the Manatee High School Key Club in 2024 and being repainted by a Bright Futures student through 2026. LOCATION: on the sidewalk running from the Pavilion to the Butterfly Garden — a stretch of roughly ten yards — standing on the NORTH side of that path, on your left as you walk from the Pavilion toward the garden. No pin yet. ⚠ STILL TO CONFIRM: what Sofia is painting on it. ⚠ CREDIT: Low #14 says credit groups, not a student's full name. Named here deliberately, consistent with Randy's decision to credit her by name on four photo records so she would see her name on a sign. Confirm before this reaches a printed tour or a public page."
+    },
+    {
+      "id": "LND-065",
+      "name": "Bat House",
+      "kind": "structure",
+      "parent": null,
+      "role": null,
+      "status": "active",
+      "year_built": null,
+      "named_for": null,
+      "stories": [],
+      "connections": [],
+      "venue_ids": [],
+      "area_aliases": [],
+      "steps": null,
+      "notes": "Bat box on a tall post near the Rare Fruit bridge, with cut-out bat silhouettes climbing the post. Added 2026-09-14 from the field; Randy calls it the bat hotel."
     }
   ],
   "connections": []

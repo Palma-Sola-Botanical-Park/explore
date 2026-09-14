@@ -695,7 +695,10 @@ injectShared({ inatBar: false });
    level was purchased — set it to the tier name when you create it.
    ════════════════════════════════════════════════════════════════════ */
 const PAYPAL = {
-  acorn:          '',   // Acorn — Single — $50
+  // Subscription plans (yearly, auto-renew). The plan_id is what PayPal's
+  // button-factory code carries; this plain URL opens the same checkout the
+  // JavaScript embed would, without loading their SDK on the page.
+  acorn:          'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5WA08146LN043423YNKUBDAY',   // Acorn — Single — $50
   sapling:        '',   // Sapling — Dual — $100
   liveoak_family: '',   // Live Oak — Family — $150
   liveoak_large:  '',   // Live Oak — Large Family — $250
