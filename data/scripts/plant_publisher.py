@@ -678,8 +678,17 @@ V2_CULTURAL_RE = re.compile(
     r"|ship|boat|carousel|cultur\w*)\b", re.I)
 
 def _v2_polished(species, key):
-    """The override. Returns authored blocks, or None to fall through."""
-    return (species.get("page") or {}).get(key) or None
+    """The override. A present key — even `[]` — means an author decided
+    nothing goes here and the section should not render at all. An absent
+    key means nobody has looked, so fall through to the mapper. Returns
+    the authored list, or None to fall through.
+
+    Before 2026-09-14 `[]` and "absent" were indistinguishable (both fell
+    through), which is exactly the trap PAGE_COPY_FLAGS.md keeps warning
+    about — an author who wants a section gone has always had to fall back
+    to writing filler, because true suppression wasn't representable."""
+    page = species.get("page") or {}
+    return page[key] if key in page else None
 
 
 def _v2_lst(v):
@@ -893,9 +902,13 @@ V2_SECTIONS = [
 
 
 def v2_section_blocks(species, key, mapper):
-    """Authored blocks if present, else mapped. Returns (blocks, authored?)."""
+    """Authored blocks if present, else mapped. Returns (blocks, authored?).
+
+    `pol is not None` (not `if pol:`) on purpose — an authored `[]` must
+    win over the mapper, not be treated the same as an absent key. See
+    _v2_polished."""
     pol = _v2_polished(species, key)
-    if pol:
+    if pol is not None:
         return pol, True
     return mapper(species), False
 
