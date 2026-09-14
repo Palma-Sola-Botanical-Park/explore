@@ -2921,3 +2921,20 @@ async function loadRightNow(targetId, opts) {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
   else go();
 })();
+
+/* ============================================================
+   HERO ROTATE — pick one photo from a page's own small list and
+   drop it into .page-hero-bg / .page-hero-credit. No curation
+   rules, no fit checks: background-size:cover + the fixed
+   --hero-veil opacity handle any photo. Swap the array anytime;
+   sometimes a pick is a dud, that's fine.
+   Usage: heroRotate([{img:'photos/PSBP-00036/x.jpg', credit:'© Name (CC-BY-NC), via iNaturalist'}, ...])
+   ============================================================ */
+function heroRotate(pool) {
+  if (!pool || !pool.length) return;
+  var pick = pool[Math.floor(Math.random() * pool.length)];
+  var bg = document.querySelector('.page-hero-bg');
+  var credit = document.querySelector('.page-hero-credit');
+  if (bg) bg.style.backgroundImage = "url('" + pick.img + "')";
+  if (credit && pick.credit) credit.textContent = pick.credit;
+}

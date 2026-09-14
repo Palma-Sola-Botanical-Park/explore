@@ -159,11 +159,11 @@
      HERO  (unchanged)
 ============================================================ -->
 <div class="page-hero">
-  <!-- Local, landscape, and calm: the previous hero was a hotlinked iNaturalist
-       JPEG of orange flowers — busy behind centred type, and an external
-       dependency for the page's largest image. This one is 16:9, low-contrast
-       green, and has a park plant sign in it, which is what the copy is about. -->
-  <div class="page-hero-bg" style="background-image:url('photos/PSBP-00051/672127374.jpg')"></div>
+  <!-- Rotates on each load — heroRotate() in site.js, pool right below.
+       Swap/add/remove entries anytime, no curation rules: cover-crop +
+       the fixed --hero-veil opacity handle any photo. Worst case is a dud,
+       not broken. First entry is the known-good fallback. -->
+  <div class="page-hero-bg" style="background-image:url('photos/PSBP-00051/734023843.jpg')"></div>
   <div class="page-hero-content" style="text-align:center;margin:0 auto">
     <div class="label label-light">Plan Your Visit</div>
     <h1>Pull up and walk in.</h1>
@@ -578,6 +578,13 @@
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false });
+
+heroRotate([
+  { img: 'photos/PSBP-00051/734023843.jpg', credit: '© Randall Carter (CC-BY-NC), via iNaturalist' },
+  { img: 'photos/PSBP-00621/681678425.jpg', credit: '© Rob Carr (CC-BY-NC), via iNaturalist' },
+  { img: 'photos/PSBP-00072/703871348.jpg', credit: '© Rhonda Olschefskie (CC-BY-NC), via iNaturalist' },
+  { img: 'photos/PSBP-00476/723663668.jpg', credit: '© Randall Carter (CC-BY-NC), via iNaturalist' },
+]);
 
 // Announcements bar
 loadAnnouncements('announcementsList');
