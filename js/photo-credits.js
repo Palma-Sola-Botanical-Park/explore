@@ -54,6 +54,7 @@
 
   var _pool = null;             // shuffled, de-duplicated hero pool (Promise-cached)
   var _nameMap = null;          // login -> display name (Promise-cached)
+  var _photoCount = null;       // distinct photographs in photo_credits.json
 
   // ---- small utilities ----------------------------------------------------
   function shuffle(a) {
@@ -269,6 +270,13 @@
 
         _nameMap = nm;
 
+        // Distinct photographs, not rows: a few photos serve two species (one
+        // shot of a swallowtail on firebush sits on both pages), and a person
+        // reading "1,374 photographs" means pictures, not table rows.
+        var seen = {};
+        photos.forEach(function (p) { if (p.photo_id) seen[p.photo_id] = 1; });
+        _photoCount = Object.keys(seen).length;
+
         var heroes = photos.filter(usableHero);
         // interleave so plants and wildlife both surface near the top
         var plants = shuffle(heroes.filter(function (p) { return p.type === 'Plant'; }));
@@ -432,6 +440,12 @@
     return (_nameMap && _nameMap[login]) || login;
   }
 
+  // Call after loadPool() has resolved. Null until then, so callers should
+  // leave whatever number is already in the HTML rather than write a blank.
+  function photoCount() {
+    return _photoCount;
+  }
+
   window.PSBPPhotos = {
     attribution:        attribution,
     speciesTag:         speciesTag,
@@ -440,6 +454,7 @@
     fmtDate:            fmtDate,
     loadPool:           loadPool,
     displayName:        displayName,
+    photoCount:         photoCount,
     mountHeroSlideshow: mountHeroSlideshow,
     mountHeroGrid:      mountHeroGrid
   };

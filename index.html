@@ -345,7 +345,7 @@ section[id]{scroll-margin-top:78px}
 <!-- REMOVED 2026-09-06: "Help document the park".
      It made the iNaturalist invitation for the THIRD time in the last third of
      the page — after the "Share what you see" card below and before the closing
-     block, which says the same thing with 1,205 photographs standing behind it
+     block, which says the same thing with the whole photo count standing behind it
      and links to the same page. It was also the thinnest section here: a
      heading, three lines and a link beside a large empty half. Randy: "I'm ok
      with leaving the big punch til the end." -->
@@ -414,7 +414,7 @@ section[id]{scroll-margin-top:78px}
     <p class="cx-tally">How cool is this? So far, <b id="closeObservers">137</b> of you have
       recorded <b id="closeObs">1,815</b> observations of <b id="closeSpecies">568</b>
       species in this park on iNaturalist.</p>
-    <p>And the best part: <b>1,205</b> of those photographs are the images on this site —
+    <p>And the best part: <b id="closePhotos">1,374</b> of those photographs are the images on this site —
       including the one behind these words — and on the signs in the garden.
       We swap them out all the time.</p>
     <!-- The sentence IS the call to action. A gold button here said "Plan your
@@ -457,6 +457,14 @@ loadRightNow('rightNowStrip', { limit: 24, perPage: 3, rotateSeconds: 9,
 /* Random credited photograph for the closing block, from the shared pool. */
 if (window.PSBPPhotos && PSBPPhotos.loadPool) {
   PSBPPhotos.loadPool().then(pool => {
+    /* The photo count in that paragraph used to be typed in by hand, so it sat
+       at 1,205 while the collection grew past 1,370. photo_credits.json is
+       already downloaded for the slideshow above, so the real number costs
+       nothing. If it comes back null the printed fallback stands. */
+    const n = PSBPPhotos.photoCount && PSBPPhotos.photoCount();
+    const nEl = document.getElementById('closePhotos');
+    if (n && nEl) nEl.textContent = n.toLocaleString();
+
     if (!pool || !pool.length) return;
     const p = pool[Math.floor(Math.random() * pool.length)];
     const src = p.local || p.photo_url;
