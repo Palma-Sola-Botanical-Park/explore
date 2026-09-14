@@ -140,11 +140,17 @@
   function showSat(){
     loadLeaflet(function(){
       requestAnimationFrame(function(){requestAnimationFrame(function(){
+        var firstTime=!map;
         if(!map){
           map=L.map(sat,{scrollWheelZoom:false,attributionControl:false});
           L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",{maxZoom:22,maxNativeZoom:19}).addTo(map);
           L.control.attribution({prefix:false}).addAttribution("Imagery &copy; Esri, Maxar, Earthstar Geographics").addTo(map);
           map.on("click",function(){map.scrollWheelZoom.enable()});
+        }
+        map.invalidateSize();
+        var pts=DOTS.map(function(d){return [d.lat,d.lng]});
+        map.fitBounds(pts.length>1?pts:[[B.s,B.w],[B.n,B.e]],{padding:[40,40],maxZoom:19});
+        if(firstTime){
           DOTS.forEach(function(d){
             var m=L.circleMarker([d.lat,d.lng],{radius:11,color:"#fff",weight:3,fillColor:"#d1272b",fillOpacity:1}).addTo(map);
             m.bindPopup("<b>"+esc(d.area)+"</b>");
@@ -152,9 +158,6 @@
             markers[d.id]=m;
           });
         }
-        map.invalidateSize();
-        var pts=DOTS.map(function(d){return [d.lat,d.lng]});
-        map.fitBounds(pts.length>1?pts:[[B.s,B.w],[B.n,B.e]],{padding:[40,40],maxZoom:19});
       });});
     });
   }
