@@ -750,10 +750,17 @@ const PLACE_COLORS = ['var(--green-mid)', 'var(--gold)', '#9b7ab8', '#c87a5a', '
 function renderVolPlaces(rows) {
   const el = document.getElementById('volPlaces');
   if (!el || !rows.length) return;
+  /* link_url/link_text have sat unused in the Sheet schema since this was
+     built — the JSON carried them, nothing read them. Wired up 2026-09-15
+     so a row like "Events & Community" can point at something (e.g. the
+     Art in the Park artist-info PDF) without needing raw HTML typed into
+     a Sheet cell. Blank-safe: no link_url, no link line, cards render
+     exactly as before. */
   el.innerHTML = rows.map((r, i) =>
     `<div class="info-card" style="border-top-color:${PLACE_COLORS[i % PLACE_COLORS.length]}">
        <h3>${r.title || r.name || 'Volunteer'}</h3>
        <p>${r.body || r.blurb || ''}</p>
+       ${r.link_url ? `<a href="${r.link_url}" style="font-size:.9rem;font-weight:600;color:var(--green-mid)">${r.link_text || 'Learn more →'}</a>` : ''}
      </div>`).join('');
 }
 

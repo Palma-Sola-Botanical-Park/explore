@@ -227,7 +227,15 @@ def check_url_or_blank(val, **_):
     if v.startswith("/"):
         return (f"'{v[:30]}' starts with '/' — that drops the /explore/ base "
                 "and 404s; make it relative to the page")
-    if "/" in v and _ASSET_EXT.search(v):
+    # Strip a query string before checking the extension. viewer.html?url=...
+    # is the house pattern for linking a repo PDF/image through the site's own
+    # viewer (visit.html's tour brochures, Photo Policy, and get-involved.html's
+    # volunteer place-cards all use it) — a real, working relative link, but its
+    # own .html sits before the '?', not at the string's end, so the plain
+    # end-anchored check below always missed it. 2026-09-15, the exact false
+    # positive this function's own header comment already anticipated.
+    path = v.split("?", 1)[0]
+    if _ASSET_EXT.search(path):
         return None
     return f"'{v[:30]}' doesn't look like a URL or a file path"
 
