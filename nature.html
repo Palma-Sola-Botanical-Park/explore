@@ -685,7 +685,16 @@ const _filterParam = _urlParams.get('filter');
 if (_filterParam) {
   (function applyFilter(tries){
     var btn = document.querySelector('#panel-plants .filter-btn[data-filter="' + _filterParam + '"]');
-    if (btn && typeof toggleFilter === 'function') {
+    /* Must also wait for PLANTS itself — loadPlants() finishes fetching well
+       after these buttons exist in the static markup, and its own
+       renderPlants(PLANTS) call at the end is unconditional. Calling
+       toggleFilter() before that finishes toggled the button "on" and set
+       _activeFilters correctly, but the subsequent unconditional render then
+       overwrote it with the full unfiltered list — button showed selected,
+       grid showed all 235. 2026-09-15, caught live by Randy. */
+    var ready = btn && typeof toggleFilter === 'function'
+             && typeof PLANTS !== 'undefined' && PLANTS.length;
+    if (ready) {
       toggleFilter(_filterParam);
       setTimeout(function(){
         document.getElementById('plants')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -693,7 +702,7 @@ if (_filterParam) {
     } else if (tries > 0) {
       setTimeout(function(){ applyFilter(tries - 1); }, 150);
     }
-  })(20);
+  })(40);
 }
 
 if (_familyParam || _searchParam) {
