@@ -2139,7 +2139,13 @@ function buildDeck(){
   add('right_now',  D.right_now,              slideRightNow);
   add('event',      upcoming(D.events),       slideEvent);
   add('news',       D.news.slice().reverse(), slideNews);
-  add('klass_fitness', D.classes.filter(function(c){ return CLASS_CATS.fitness.indexOf(c.category) > -1; }), slideClass);
+  /* add()'s floor is Math.max(1, …) — with any fitness rows at all, PERIOD
+     alone can never bring it below one slide per cycle, however high it's
+     set. Randy, 2026-09-15, watching speed mode: "still popping up lots."
+     Halving it for real means skipping whole cycles, the same device
+     already used for cohort/photographer below — every OTHER cycle instead
+     of every one, which is the actual "half of what it is now." */
+  if(cycle % 2 === 0) add('klass_fitness', D.classes.filter(function(c){ return CLASS_CATS.fitness.indexOf(c.category) > -1; }), slideClass);
   add('klass_nature',  D.classes.filter(function(c){ return CLASS_CATS.nature.indexOf(c.category) > -1; }),  slideClass);
   add('klass',         D.classes.filter(function(c){ return CLASS_CATS.fitness.indexOf(c.category) < 0 && CLASS_CATS.nature.indexOf(c.category) < 0; }), slideClass);
   add('series',     D.series,                 slideSeries);
