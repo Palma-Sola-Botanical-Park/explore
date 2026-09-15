@@ -650,6 +650,15 @@ body{
 /* On an ask the QR belongs under the words, centered with them — the ask is the
    whole slide, so the code shouldn't hide in a corner. */
 .slide.ask .qr{position:static;transform:none;margin-top:3.4vmin}
+
+/* On a photographer spotlight the QR is a quiet secondary action, not
+   competing with the words for the same ground. Bottom-right, smaller, out
+   of the text column's way entirely — the photograph and her name stay the
+   whole point of the slide. */
+.slide.photog .qr{left:auto;right:calc(var(--frame) + var(--pad));transform:none;align-items:flex-end}
+.slide.photog .qr .cap{text-align:right}
+.slide.photog .qr-card img{width:9.5vmin;height:9.5vmin}
+.slide.photog.has-qr .copy{max-width:60vw}
 .slide.ask .qr-card img{width:17vmin;height:17vmin}
 
 
@@ -1726,19 +1735,27 @@ function slidePhotographer(p){
 
   var site = (p.site || '').trim();
   var firstName = String(p.name || '').trim().split(/\s+/)[0] || 'this photographer';
-  var label = 'High-res photos from '+firstName;
+  var label = "Explore "+firstName+"'s photos";
 
   return {
+    photog: true,
     /* `original` from iNaturalist, not the `large` photo_url — same
        reasoning as bigPhoto() for every other full-bleed slide. */
     bg: inatSize(ph.photo_url || '', 'original'),
     bgFallback: ph.photo_url || null,
     focus: ph.focus,
     seconds: Math.round(SECONDS * 1.2),
+    /* Redesigned 2026-09-14 from ChatGPT's critique, via Randy: the eye was
+       going bird → masthead → name → QR → paragraph, reading as an
+       informational card about a photographer rather than a spotlight ON
+       one. Dropped the specialty/`.latin` line entirely — it was clutter
+       competing with her name, not information anyone needed. The
+       hierarchy is now: photo, then her, then what she does, then a quiet
+       secondary call to action — never fighting the text for space (see
+       .slide.photog .qr in the CSS, bottom-right instead of center). */
     html:
-        '<div class="eyebrow"><span>A park photographer</span></div>'
+        '<div class="eyebrow"><span>Meet a park photographer</span></div>'
       + '<div class="headline">'+esc(p.name)+'</div>'
-      + (p.specialty?'<div class="latin">'+esc(p.specialty)+'</div>':'')
       + (p.blurb?'<div class="body">'+rich(p.blurb)+'</div>':'')
       + (site ? qrBlock({screen_qr:site}, label, site) : '')
   };
@@ -2186,7 +2203,8 @@ function render(s){
   var dur = s.seconds || SECONDS;
   var el=document.createElement('div');
   el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'')
-             +(s.ambient?' ambient':'')+(s.set?' set':'')+(s.week?' week-slide':'')+(s.pile?' pile-slide':'');
+             +(s.ambient?' ambient':'')+(s.set?' set':'')+(s.week?' week-slide':'')+(s.pile?' pile-slide':'')
+             +(s.photog?' photog':'');
 
   /* pick a motion, never the same one twice running */
   var moves = KB.filter(function(k){ return k!==lastKB; });
