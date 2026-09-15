@@ -203,6 +203,17 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 .tier-group{ font-family:'Playfair Display',serif; font-size:1.3rem;
   color:var(--green-deep); margin:2.25rem 0 0; }
 
+/* Volunteers of the Month — a purpose-built grid, not a stretch of the
+   About page's caption-less .pp-mosaic (which is a tight 4-across strip
+   made for 8 faces inside a card). This one names every face. */
+.vol-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1.5rem; }
+.vol-card{ text-align:center; }
+.vol-card img{ width:100%; aspect-ratio:1; object-fit:cover; object-position:50% 22%;
+  border-radius:12px; background:var(--sunk); display:block; box-shadow:var(--lift); }
+.vol-card .name{ margin-top:.6rem; font-weight:700; color:var(--green-deep); font-size:.95rem; line-height:1.3; }
+.vol-card .month{ font-size:.8rem; color:var(--text-soft); margin-top:.1rem; }
+.vol-card.vol-hidden{ display:none; }
+
 </style>
 </head>
 <body>
@@ -508,6 +519,23 @@ section[id], div[id]{ scroll-margin-top: 84px; }
           </div>
 
         </div>
+      </div>
+    </div>
+
+    <!-- ── Volunteers of the Month — full archive, expand-in-place ──────
+         Bev's reference point is the live site's "expanding gallery" at
+         palmasolabp.org/volunteer/. Shows the newest 8 by default (same
+         window the About page's mosaic uses — one manifest, two different
+         crops of it); "Show them all" reveals the rest of the 41-photo
+         archive without leaving the page. A standalone volunteers.html
+         page was built first and then folded into this instead — one
+         place to look, not two showing the same thing. 2026-09-15. -->
+    <div style="margin-top:3rem;padding-top:2.5rem;border-top:1px solid var(--rule)" id="volunteer-gallery">
+      <span class="label">Every one of them</span>
+      <h3 class="section-title" style="font-size:1.5rem;margin-bottom:1.2rem">Volunteers of the Month</h3>
+      <div class="vol-grid" id="volGalleryGrid"></div>
+      <div style="text-align:center;margin-top:1.5rem">
+        <button type="button" class="btn btn-outline" id="volGalleryToggle" style="display:none">Show them all →</button>
       </div>
     </div>
   </div>
@@ -866,6 +894,49 @@ async function loadVolDesk() {
 }
 
 loadVolDesk();
+
+/* Volunteers of the Month — full archive, expand-in-place. Same manifest
+   the About page's newest-8 mosaic reads (data/published/volunteer_photos.json,
+   built from images/volunteers/ at sync time) — this just shows more of it.
+   ?showvolunteers=1 (or #volunteer-gallery alone) auto-expands and scrolls,
+   so contact.html's "see them all" link can land here already open rather
+   than making someone click twice. */
+(async function(){
+  var grid = document.getElementById('volGalleryGrid');
+  var toggle = document.getElementById('volGalleryToggle');
+  if (!grid) return;
+  try {
+    var photos = await (await fetch('data/published/volunteer_photos.json')).json();
+    if (!photos.length) return;
+    var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var byNewest = photos.slice().reverse();
+    var VISIBLE = 8;
+    grid.innerHTML = byNewest.map(function(p, i){
+      var parts = (p.month || '').split('-');
+      var label = parts.length === 2 ? (MONTHS[parseInt(parts[1], 10) - 1] + ' ' + parts[0]) : p.month;
+      var hidden = i >= VISIBLE ? ' vol-hidden' : '';
+      return '<div class="vol-card' + hidden + '">'
+           +   '<img src="' + p.path + '" alt="' + p.name.replace(/"/g,'&quot;') + ', Volunteer of the Month" loading="lazy" onerror="this.closest(\'.vol-card\').remove()">'
+           +   '<div class="name">' + p.name + '</div>'
+           +   '<div class="month">' + label + '</div>'
+           + '</div>';
+    }).join('');
+
+    if (byNewest.length > VISIBLE && toggle) {
+      toggle.style.display = '';
+      toggle.addEventListener('click', function(){
+        grid.querySelectorAll('.vol-hidden').forEach(function(el){ el.classList.remove('vol-hidden'); });
+        toggle.style.display = 'none';
+      });
+    }
+
+    var params = new URLSearchParams(location.search);
+    if (params.get('showvolunteers') === '1' || location.hash === '#volunteer-gallery') {
+      if (toggle) toggle.click();
+      document.getElementById('volunteer-gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  } catch (e) { /* fail-soft — section just stays empty */ }
+})();
 </script>
 </body>
 </html>
