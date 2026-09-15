@@ -79,7 +79,9 @@
   ───────────────────────────────────────────────────────────────────────────
     data/published/*.json      Bev's Sheet, synced by a GitHub Action.
                                events, classes, series, news, newsletters,
-                               announcements, volunteer, right_now
+                               announcements, volunteer, right_now,
+                               photographers (display=screen/both only —
+                               see slidePhotographer())
     plants.json                the search index — light, has photo, focus,
     wildlife.json              page, credit, family, form, native, and the
                                boolean flags the collection slides group by
@@ -741,13 +743,14 @@ var AMBIENTS   = PROFILE === 'office' ? 1 : 2;
 var COLLECTIONS = 2;
 var WEEKVIEWS  = 1;      /* a summary — once a cycle is plenty */
 var COHORTS    = 1;
+var PHOTOGS    = 1;
 
 /* Types that LOOK alike, whatever their content. De-clumping works on these
    rather than on type, so a Blooming Now doesn't sit next to a collection
    photograph and read as two of the same slide. */
 var FAMILY = {
   right_now:'species', spotlight:'species',
-  ambient:'quiet', collection:'quiet', cohort:'quiet', week:'schedule',   /* both are photo-led breaks — keep
+  ambient:'quiet', collection:'quiet', cohort:'quiet', photographer:'quiet', week:'schedule',   /* both are photo-led breaks — keep
                                             them apart from each other too */
   event:'schedule', klass:'schedule', series:'schedule',
   news:'news', newsletter:'news',
@@ -762,7 +765,8 @@ function famOf(item){ return FAMILY[item.type] || item.type; }
    already exists in the Sheet.
    ═══════════════════════════════════════════════════════════════════════════ */
 var D = { right_now:[], events:[], classes:[], news:[], announcements:[],
-          volunteer:[], series:[], newsletters:[], plants:[], wildlife:[] };
+          volunteer:[], series:[], newsletters:[], plants:[], wildlife:[],
+          photographers:[] };
 
 /* `display` decides web vs screen. An optional `screen_where` decides WHICH
    screen — office, galleria, or blank for both.
@@ -805,7 +809,8 @@ function loadAll(){
     grab(BASE+'data/sources/photo_credits.json'),
     grab(BASE+'data/sources/plant_signage.json'),
     grab(BASE+'data/sources/wildlife_signage.json'),
-    grab(BASE+'data/sources/photographer_names.json')
+    grab(BASE+'data/sources/photographer_names.json'),
+    grab(FEEDS+'photographers.json')
   ]).then(function(r){
     D.right_now=onScreen(r[0]); D.events=onScreen(r[1]);
     D.classes=onScreen(r[2]);   D.news=onScreen(r[3]);
@@ -815,6 +820,7 @@ function loadAll(){
     indexCredits(r[10]);
     indexHits(r[11]); indexHits(r[12]);
     NAMES = r[13] || {};
+    D.photographers=onScreen(r[14]);
     if(!D.right_now.length && !D.plants.length) fallback();
   });
 }
@@ -847,7 +853,7 @@ function indexHits(blob){
 /* photo_id -> {observed_on, license, name}. The search index carries the
    photographer and license but not the date, so the credits master fills it in.
    Optional: if the file can't be reached the credit falls back to name + license. */
-var CREDITS = {}, BY_SHOOTER = {}, BY_SPECIES = {}, NAMES = {};
+var CREDITS = {}, BY_SHOOTER = {}, BY_SPECIES = {}, BY_NAME = {}, NAMES = {};
 function indexCredits(rows){
   var photos = (rows && rows.photos) || rows || [];
 
@@ -867,12 +873,20 @@ function indexCredits(rows){
      refresh, plants then wildlife, and uses assignment. Clearing at its top
      would make the wildlife pass erase the plants pass. */
   if(!photos.length) return;
-  CREDITS = {}; BY_SHOOTER = {}; BY_SPECIES = {};
+  CREDITS = {}; BY_SHOOTER = {}; BY_SPECIES = {}; BY_NAME = {};
 
   for(var i=0;i<photos.length;i++){
     var p=photos[i];
     if(p.photo_id) CREDITS[String(p.photo_id)] = p;
     if(p.photographer) (BY_SHOOTER[p.photographer] = BY_SHOOTER[p.photographer] || []).push(p);
+    /* Keyed by resolved display name, lowercased — the photographer-spotlight
+       slide links to a photographers.json profile, whose `id` slug does not
+       reliably match the iNat login BY_SHOOTER uses (helenL vs helen_lewis).
+       The display name is the one thing both sides carry in common. */
+    if(p.photographer_name){
+      var nk = String(p.photographer_name).toLowerCase();
+      (BY_NAME[nk] = BY_NAME[nk] || []).push(p);
+    }
     /* Gallery photographs, keyed by species. The screen used to show only the
        344 heroes — 31% of the library — so 765 published photographs never
        reached the wall. Heroes are skipped here because the species record
@@ -1658,6 +1672,63 @@ function slideCohort(){
   };
 }
 
+/* ── a photographer spotlight ────────────────────────────────────────────
+   Same instinct as the Bright Futures cohort slide — a photograph credit is
+   easy to walk past one at a time, and this makes the whole body of work
+   visible at once, as a fact about the park worth putting on a wall.
+
+   Sourced from data/published/photographers.json, the same Sheet-driven
+   feed photographers.html reads — Bev sets `display` to screen (or both)
+   to enable a profile here, exactly as the schema note anticipated. Linked
+   to their photographs by resolved display name (BY_NAME), because the
+   profile's `id` slug and the iNat login photo_credits keys on don't
+   reliably match (helenL vs helen_lewis) — the display name is the one
+   thing both sides carry, and propagate_names.py is what keeps it exact.
+
+   Heroes first, then anything else of theirs — a hero is a human pick for
+   "best shot of this species", so it's the closest thing to a curated
+   best-of without inventing a new ranking. */
+function slidePhotographer(p){
+  var key = String(p.name || '').toLowerCase();
+  var mine = (BY_NAME[key] || []).slice();
+  if(mine.length < 5) return null;
+
+  mine.sort(function(a,b){ return (b.hero?1:0) - (a.hero?1:0); });
+  var picks = shuffle(mine.slice(0, Math.min(mine.length, 16))).slice(0, 10);
+  if(picks.length < 5) return null;
+
+  var species = {};
+  picks.forEach(function(ph){ if(ph.psbp_id) species[ph.psbp_id] = 1; });
+
+  var pile = picks.map(function(ph, i){
+    var col = i % 4, row = Math.floor(i / 4);
+    return {
+      src:   ph.photo_url || '',
+      x:     40 + col * 14 + (Math.random()*7 - 3.5),
+      y:      8 + row * 27 + (Math.random()*9 - 4.5),
+      r:     (Math.random()*18 - 9).toFixed(1),
+      delay: ((0.7 + i * 0.34) / SPEED).toFixed(2)
+    };
+  });
+
+  var site = (p.site || '').trim();
+  var label = (p.site_label || '').trim() || 'See more of the collection';
+
+  return {
+    pile: pile,
+    seconds: Math.round(SECONDS * 1.6),
+    html:
+        '<div class="eyebrow"><span>A park photographer</span></div>'
+      + '<div class="headline">'+esc(p.name)+'</div>'
+      + (p.specialty?'<div class="latin">'+esc(p.specialty)+'</div>':'')
+      + (p.blurb?'<div class="body">'+rich(p.blurb)+'</div>':'')
+      + '<div class="shot">'+picks.length+' photographs shown here &middot; '
+      +   Object.keys(species).length+' species &middot; low-resolution — '
+      +   'full size at the link below</div>'
+      + (site ? qrBlock({screen_qr:site}, label, site) : '')
+  };
+}
+
 /* ── the week ────────────────────────────────────────────────────────────
    Merges one-off events with the recurring classes, which nothing else does:
    a class row says "every Monday", and this is the only place that turns that
@@ -1989,8 +2060,14 @@ function buildDeck(){
   for(i=0;i<COLLECTIONS;i++) pool.push({type:'collection',make:slideCollection});
   for(i=0;i<WEEKVIEWS;i++)   pool.push({type:'week',      make:slideWeek});
   /* Special slides lose their occasion if they turn up every seven minutes.
-     Once every third cycle is about twenty minutes apart. */
+     Once every third cycle is about twenty minutes apart. Cohort and
+     photographer land on different thirds of the cycle so the two
+     photo-credit slides don't compete for the same turn. */
   if(cycle % 3 === 1) for(i=0;i<COHORTS;i++) pool.push({type:'cohort', make:slideCohort});
+  if(cycle % 3 === 2 && D.photographers.length){
+    var who = takeFrom('photographer', D.photographers, PHOTOGS)[0];
+    if(who) pool.push({type:'photographer', make:slidePhotographer.bind(null, who)});
+  }
 
   pool = interleave(pool);
 
