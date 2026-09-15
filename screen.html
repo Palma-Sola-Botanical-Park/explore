@@ -572,7 +572,8 @@ body{
                              rgba(8,18,9,.10) 48%,rgba(8,18,9,0) 70%);
 }
 .slide.set .headline,.slide.set .count,
-.slide.set .roster,.slide.set .shot{text-shadow:0 2px 18px rgba(0,0,0,.85)}
+.slide.set .roster,.slide.set .shot,
+.slide.set .body{text-shadow:0 2px 18px rgba(0,0,0,.85)}
 .count{
   font-family:var(--serif);font-weight:700;line-height:.9;color:var(--gold);
   font-size:clamp(2.4rem,8.5vmin,7rem);letter-spacing:-.02em;margin-bottom:.6vmin;
@@ -721,17 +722,38 @@ var FEEDS   = BASE + 'data/published/';
 /* PERIOD: roughly how many cycles before a given row comes round again.
    Lower = more airtime per row. Slides per cycle = ceil(rows / period), so a
    feed that grows contributes more without anyone retuning anything. */
+/* CLASSES ARE SPLIT BY CATEGORY, NOT ONE POOL.
+   Bev, 2026-09-14: yoga and Zumba come up too often; she wants the mission
+   classes — talks, workshops, the UF/IFAS kind — favored instead. They don't
+   exist in the Sheet yet, but four of the five class rows today are Fitness &
+   Wellness, so an undifferentiated pool is ALREADY mostly yoga and Zumba by
+   sheer row count, no matter how the single `klass` weight is tuned. Splitting
+   into three pools with three periods is the actual fix; slideClass() itself
+   doesn't change, only which pool feeds it. See CLASS_CATS below and the
+   klass_fitness/klass_nature/klass split in buildDeck(). */
+/* Bev, 2026-09-14, same conversation: overall wants a bit MORE events,
+   announcements and donation/member asks — she is pro-promotion generally,
+   just wants the nature-mission content to win over yoga/Zumba specifically.
+   event's CAP nudged 4→5 and ask's PERIOD nudged down by one (more airtime)
+   under the pre-existing quarter-of-the-deck ceiling in buildDeck(), so this
+   can't run away even if the announcements feed grows. Randy: "at some point
+   we should look at the algorithm and decide what the rules are" — this is
+   the small, reversible nudge, not that review. */
 var PERIOD = {
-  event:      2,                            // timely, and the window already filters
-  news:       PROFILE === 'office' ? 2 : 3,
-  klass:      3,
-  series:     3,
-  volunteer:  PROFILE === 'office' ? 2 : 4,
-  newsletter: 4,
-  right_now:  2,                            // what to go look at, right now
-  ask:        PROFILE === 'office' ? 3 : 4
+  event:         2,                            // timely, and the window already filters
+  news:          PROFILE === 'office' ? 2 : 3,
+  klass_fitness: 6,                            // yoga, Zumba — toned down, not removed
+  klass_nature:  2,                            // talks, workshops — favored once they exist
+  klass:         3,                            // everything else: family, arts, community…
+  series:        3,
+  volunteer:     PROFILE === 'office' ? 2 : 4,
+  newsletter:    4,
+  right_now:     2,                            // what to go look at, right now
+  ask:           PROFILE === 'office' ? 2 : 3
 };
-var CAP = { event:4, news:2, klass:2, series:1, volunteer:2, newsletter:1, right_now:2 };
+var CAP = { event:5, news:2, klass_fitness:1, klass_nature:2, klass:2,
+            series:1, volunteer:2, newsletter:1, right_now:2 };
+var CLASS_CATS = { fitness:['Fitness & Wellness'], nature:['Talks & Learning','Workshops'] };
 
 /* The collection is the one pool with no feed behind it — 320 species, so it
    can't be periodised. A flat count, tuned against everything else. */
@@ -752,7 +774,7 @@ var FAMILY = {
   right_now:'species', spotlight:'species',
   ambient:'quiet', collection:'quiet', cohort:'quiet', photographer:'quiet', week:'schedule',   /* both are photo-led breaks — keep
                                             them apart from each other too */
-  event:'schedule', klass:'schedule', series:'schedule',
+  event:'schedule', klass:'schedule', klass_fitness:'schedule', klass_nature:'schedule', series:'schedule',
   news:'news', newsletter:'news',
   volunteer:'people', ask:'ask'
 };
@@ -1691,32 +1713,33 @@ function slideCohort(){
 function slidePhotographer(p){
   var key = String(p.name || '').toLowerCase();
   var mine = (BY_NAME[key] || []).filter(function(ph){ return ph.hero; });
-  if(mine.length < 5) return null;   /* heroes only — her own best pick per species,
-                                         not an even mix with a quick snapshot */
+  if(mine.length < 3) return null;
 
-  var shots = shuffle(mine.slice()).slice(0, 5);
-  if(shots.length < 5) return null;
+  /* ONE photo, full-bleed — same mechanism as Right Now and Spotlight, not
+     the panel grid. Randy, 2026-09-14, after seeing five macro crops sliced
+     into vertical ribbons: "that is a monstrosity" — "her art is meant to be
+     enjoyed as one piece." rotate() gives fair coverage across her whole
+     hero set over many appearances instead of showing the same shot, or
+     trying to cram several into one slide. */
+  var ph = rotate('photog:'+key, mine, 1)[0];
+  if(!ph) return null;
 
   var site = (p.site || '').trim();
-  var label = (p.site_label || '').trim() || 'See more of the collection';
+  var firstName = String(p.name || '').trim().split(/\s+/)[0] || 'this photographer';
+  var label = 'High-res photos from '+firstName;
 
   return {
-    set: true,
-    /* Same panel format as the "65 palms" collection slides — five tall
-       photographs read as a body of work; ten small tilted squares (the
-       Bright Futures pile) undersell work this composed. `original` from
-       iNaturalist, not the `large` photo_url — a wall wants full
-       resolution, same reasoning as bigPhoto() for full-bleed slides. */
-    grid: shots.map(function(ph){
-      return { src: inatSize(ph.photo_url || '', 'original'), focus: ph.focus || null };
-    }),
-    seconds: Math.round(SECONDS * 1.3),
+    /* `original` from iNaturalist, not the `large` photo_url — same
+       reasoning as bigPhoto() for every other full-bleed slide. */
+    bg: inatSize(ph.photo_url || '', 'original'),
+    bgFallback: ph.photo_url || null,
+    focus: ph.focus,
+    seconds: Math.round(SECONDS * 1.2),
     html:
         '<div class="eyebrow"><span>A park photographer</span></div>'
       + '<div class="headline">'+esc(p.name)+'</div>'
       + (p.specialty?'<div class="latin">'+esc(p.specialty)+'</div>':'')
       + (p.blurb?'<div class="body">'+rich(p.blurb)+'</div>':'')
-      + '<div class="shot">Shown here at low resolution — full size at the link below</div>'
       + (site ? qrBlock({screen_qr:site}, label, site) : '')
   };
 }
@@ -1868,7 +1891,15 @@ function buildGroups(){
   function by(field, fmt, sub){
     var m = {};
     all.forEach(function(x){ var k=x[field]; if(k) (m[k]=m[k]||[]).push(x); });
-    for(var k in m){ var label = fmt(k); if(label) add(label, sub, m[k]); }
+    for(var k in m){
+      /* `cat`/`category` are raw field values with no allow-list, unlike
+         `form` (filtered through FORM_LABEL). Randy, 2026-09-14, on seeing an
+         auto-generated "5 invasives" slide: "YUCK" — a collection count
+         celebrates a group, and an invasive-species tally is the one thing on
+         this screen that should never read as something to be proud of. */
+      if(/invasive/i.test(k)) continue;
+      var label = fmt(k); if(label) add(label, sub, m[k]);
+    }
   }
 
   /* family — common name where we have one, and the Latin as the subtitle */
@@ -1909,17 +1940,34 @@ function slideCollection(){
     if(n && who.indexOf(n) < 0) who.push(n);
   });
 
+  /* Wildlife IDs start with a 9 (PSBP-9xxxx) — the whole ID band rule, per
+     PSBP_ARCHITECTURE.md §3.1. A family/category group is effectively always
+     one kingdom or the other, so the first row is a reliable enough check.
+     Randy, 2026-09-14: on a wildlife group specifically — things that move,
+     that a visitor might spot and we haven't — invite them to go look and
+     add it, same voice as the line already on visit.html. Plant groups (the
+     palm count, the natives count) don't get this; a shrub isn't going
+     anywhere and "keep an eye out" doesn't fit it. */
+  var first = g.rows[0];
+  var isWildlife = !!(first && /^PSBP-9/.test(first.id || ''));
+  var invite = isWildlife
+    ? "See one we haven't got yet? Snap it and add it to our iNaturalist project — that's how this list grows."
+    : '';
+
   return {
     set:true,
     /* a fifth of the frame each — `large` is already more pixels than the
        panel can show, and five originals would be 20MB of wall */
     grid: shots.map(function(x){ return { src: fallbackPhoto(x) || BASE+x.photo, focus: x.focus }; }),
-    seconds: Math.round(SECONDS * 1.15),
+    seconds: Math.round(SECONDS * (isWildlife ? 1.4 : 1.15)),
     html:
         '<div class="count">'+g.rows.length+'<small>'+esc(g.sub)+'</small></div>'
       + '<div class="headline">'+esc(g.label)+'</div>'
       + (names.length?'<div class="roster">'+esc(names.join('  ·  '))+'</div>':'')
       + (who.length?'<div class="shot">Photographs by '+esc(who.join(', '))+'</div>':'')
+      + (invite?'<div class="body">'+invite+'</div>':'')
+      + (invite?qrBlock({screen_qr:'https://www.inaturalist.org/projects/palma-sola-botanical-park'},
+                        'Scan to join the project'):'')
   };
 }
 
@@ -2043,7 +2091,9 @@ function buildDeck(){
   add('right_now',  D.right_now,              slideRightNow);
   add('event',      upcoming(D.events),       slideEvent);
   add('news',       D.news.slice().reverse(), slideNews);
-  add('klass',      D.classes,                slideClass);
+  add('klass_fitness', D.classes.filter(function(c){ return CLASS_CATS.fitness.indexOf(c.category) > -1; }), slideClass);
+  add('klass_nature',  D.classes.filter(function(c){ return CLASS_CATS.nature.indexOf(c.category) > -1; }),  slideClass);
+  add('klass',         D.classes.filter(function(c){ return CLASS_CATS.fitness.indexOf(c.category) < 0 && CLASS_CATS.nature.indexOf(c.category) < 0; }), slideClass);
   add('series',     D.series,                 slideSeries);
   add('volunteer',  D.volunteer,              slideVolunteer);
   add('newsletter', D.newsletters,            slideNewsletter);
