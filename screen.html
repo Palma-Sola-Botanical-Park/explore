@@ -1690,41 +1690,33 @@ function slideCohort(){
    best-of without inventing a new ranking. */
 function slidePhotographer(p){
   var key = String(p.name || '').toLowerCase();
-  var mine = (BY_NAME[key] || []).slice();
-  if(mine.length < 5) return null;
+  var mine = (BY_NAME[key] || []).filter(function(ph){ return ph.hero; });
+  if(mine.length < 5) return null;   /* heroes only — her own best pick per species,
+                                         not an even mix with a quick snapshot */
 
-  mine.sort(function(a,b){ return (b.hero?1:0) - (a.hero?1:0); });
-  var picks = shuffle(mine.slice(0, Math.min(mine.length, 16))).slice(0, 10);
-  if(picks.length < 5) return null;
-
-  var species = {};
-  picks.forEach(function(ph){ if(ph.psbp_id) species[ph.psbp_id] = 1; });
-
-  var pile = picks.map(function(ph, i){
-    var col = i % 4, row = Math.floor(i / 4);
-    return {
-      src:   ph.photo_url || '',
-      x:     40 + col * 14 + (Math.random()*7 - 3.5),
-      y:      8 + row * 27 + (Math.random()*9 - 4.5),
-      r:     (Math.random()*18 - 9).toFixed(1),
-      delay: ((0.7 + i * 0.34) / SPEED).toFixed(2)
-    };
-  });
+  var shots = shuffle(mine.slice()).slice(0, 5);
+  if(shots.length < 5) return null;
 
   var site = (p.site || '').trim();
   var label = (p.site_label || '').trim() || 'See more of the collection';
 
   return {
-    pile: pile,
-    seconds: Math.round(SECONDS * 1.6),
+    set: true,
+    /* Same panel format as the "65 palms" collection slides — five tall
+       photographs read as a body of work; ten small tilted squares (the
+       Bright Futures pile) undersell work this composed. `original` from
+       iNaturalist, not the `large` photo_url — a wall wants full
+       resolution, same reasoning as bigPhoto() for full-bleed slides. */
+    grid: shots.map(function(ph){
+      return { src: inatSize(ph.photo_url || '', 'original'), focus: ph.focus || null };
+    }),
+    seconds: Math.round(SECONDS * 1.3),
     html:
         '<div class="eyebrow"><span>A park photographer</span></div>'
       + '<div class="headline">'+esc(p.name)+'</div>'
       + (p.specialty?'<div class="latin">'+esc(p.specialty)+'</div>':'')
       + (p.blurb?'<div class="body">'+rich(p.blurb)+'</div>':'')
-      + '<div class="shot">'+picks.length+' photographs shown here &middot; '
-      +   Object.keys(species).length+' species &middot; low-resolution — '
-      +   'full size at the link below</div>'
+      + '<div class="shot">Shown here at low resolution — full size at the link below</div>'
       + (site ? qrBlock({screen_qr:site}, label, site) : '')
   };
 }
