@@ -140,6 +140,15 @@ body {
   padding-top: var(--nav-h);
   -webkit-font-smoothing: antialiased;
 }
+/* Every #anchor jump site-wide lands under the fixed nav with no breathing
+   room by default — the browser scrolls the target flush to the viewport
+   top, and --nav-h worth of fixed nav then covers it. One rule, on every
+   element with an id, fixes every nav dropdown link and #anchor at once
+   instead of hand-patching each section's own padding (species-v2.css
+   already uses this same nav-h + 1.5rem convention for plant/wildlife
+   pages — this brings the rest of the site in line). 2026-09-15. */
+[id] { scroll-margin-top: calc(var(--nav-h) + 1.5rem); }
+
 img, svg, video { max-width: 100%; display: block; }
 a { color: var(--green); text-decoration: none; }
 a:hover { text-decoration: underline; }
