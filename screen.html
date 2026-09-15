@@ -1798,6 +1798,24 @@ function weekAhead(){
   return days;
 }
 
+/* Randy, 2026-09-14: the week board had no image at all — a deliberate
+   "visual break" that read as boring rather than restful, sitting on the
+   left with open space on the right. Wants it filled with a random shot
+   from the park's three named photographers specifically, both to spice up
+   the slide and to give them a bit more exposure — their depth of work is
+   the point, not just their curated heroes.
+
+   HARDCODED FOR NOW, on purpose — a LOW-PRIORITY follow-up is to drive this
+   list from photographers.json's `display` column (screen/both) the same
+   way slidePhotographer() sources its pool, instead of these three logins,
+   so a new profile going "live" adds itself here with no code change. */
+var WEEK_ATMOS_LOGINS = ['helen_lewis','robcarr52','rhonda_olschefskie'];
+function weekAtmosPhoto(){
+  var pool = [];
+  WEEK_ATMOS_LOGINS.forEach(function(login){ pool = pool.concat(BY_SHOOTER[login] || []); });
+  return pool.length ? pick(pool) : null;
+}
+
 function slideWeek(){
   var days = weekAhead();
   var total = days.reduce(function(n,x){ return n + x.items.length; }, 0);
@@ -1834,9 +1852,22 @@ function slideWeek(){
     body = '<div class="week">'+days.map(dayHtml).join('')+'</div>';
   }
 
+  var rec = weekAtmosPhoto();
+  var credit = (rec && rec.photographer_name) ? {
+    name: rec.photographer_name,
+    terms: [(rec.license || '').replace(/^CC-/,'CC ').replace(/_/g,' '),
+            rec.observed_on ? new Date(rec.observed_on+'T12:00')
+              .toLocaleDateString('en-US',{month:'long',year:'numeric'}) : '']
+           .filter(Boolean).join('  ·  ')
+  } : null;
+
   return {
     week:true,
-    bg:null, credit:null,
+    atmos: !!rec,
+    bg: rec ? inatSize(rec.photo_url || '', 'original') : null,
+    bgFallback: rec ? (rec.photo_url || null) : null,
+    focus: rec && rec.focus,
+    credit: credit,
     seconds: Math.round(SECONDS * (dense ? 2.0 : 1.5)),
     html:
         '<div class="eyebrow"><span>This week at the park</span></div>'
