@@ -84,6 +84,12 @@
   display:flex; flex-direction:column; transition:transform .15s, box-shadow .15s;
 }
 .area-card:hover { transform:translateY(-4px); box-shadow:0 10px 26px rgba(0,0,0,.13); text-decoration:none; }
+/* No lead-in page exists yet for these spaces — cursor stays default and the
+   card doesn't lift on hover, so it doesn't invite a click that goes nowhere.
+   Medium action item logged: build lead-in pages for these (and maybe all
+   Areas cards, for consistency) so this modifier goes away. */
+.area-card--static { cursor:default; }
+.area-card--static:hover { transform:none; box-shadow:0 2px 10px rgba(0,0,0,.07); }
 .area-photo { height:170px; background-size:cover; background-position:center; background-color:var(--sand); position:relative; }
 .area-num {
   position:absolute; top:.6rem; left:.6rem;
@@ -295,7 +301,7 @@
       </div>
       <div class="area-grid">
 
-        <a class="area-card" href="#rarefruit">
+        <a class="area-card" href="nature.html?filter=rare_fruit">
           <div class="area-photo" style="background-image:url('images/venue-rare-fruit-card.jpg')"><div class="area-num">1</div></div>
           <div class="area-body">
             <h3>Rare Fruit Trail</h3>
@@ -304,34 +310,31 @@
           </div>
         </a>
 
-        <a class="area-card" href="#" onclick="return false">
+        <div class="area-card area-card--static">
           <div class="area-photo" style="background-image:url('images/photo-coming-soon-card.jpg')"><div class="area-num">2</div></div>
           <div class="area-body">
             <h3>Butterfly Garden</h3>
             <p>Nectar and host plants chosen to pull butterflies through the season — and feed the caterpillars that become them. Best on a warm, still morning.</p>
-            <span class="area-link">Learn more →</span>
           </div>
-        </a>
+        </div>
 
-        <a class="area-card" href="#" onclick="return false">
+        <div class="area-card area-card--static">
           <div class="area-photo" style="background-image:url('images/venue-serenity-garden-card.jpg')"><div class="area-num">3</div></div>
           <div class="area-body">
             <h3>Serenity Garden</h3>
             <p>A quiet, shaded corner built for sitting still — benches, soft planting, and a pond just beyond. The place to slow down mid-walk.</p>
-            <span class="area-link">Learn more →</span>
           </div>
-        </a>
+        </div>
 
-        <a class="area-card" href="#" onclick="return false">
+        <div class="area-card area-card--static">
           <div class="area-photo" style="background-image:url('images/venue-plumeria-palm-card.jpg')"><div class="area-num">4</div></div>
           <div class="area-body">
             <h3>Rare Palms &amp; Plumeria</h3>
             <p>Specimen palms you won't find in a typical yard, paired with fragrant plumeria that perfume the path in summer.</p>
-            <span class="area-link">Learn more →</span>
           </div>
-        </a>
+        </div>
 
-        <a class="area-card" href="#" onclick="return false">
+        <a class="area-card" href="viewer.html?url=images%2Fevents%2Fartinthepark.png&amp;title=Art+in+the+Park&amp;back=visit.html">
           <div class="area-photo" style="background-image:url('images/venue-galleria-card.jpg')"><div class="area-num">5</div></div>
           <div class="area-body">
             <h3>Art in the Park at the Galleria</h3>
@@ -344,7 +347,7 @@
           <div class="area-photo" style="background-image:url('images/nursery-1-card.jpg')"><div class="area-num">6</div></div>
           <div class="area-body">
             <h3>Hidden Garden Nursery</h3>
-            <p>Volunteer-run, near the west entrance. Plants propagated straight from the collection — including Florida natives you won't find at a box store. Open Oct–May, Tue &amp; Sat, 9am–Noon.</p>
+            <p>Volunteer-run, near the back gate. Plants propagated straight from the collection — including Florida natives you won't find at a box store. Open Oct–May, Tue &amp; Sat, 9am–Noon.</p>
             <span class="area-link">Hours &amp; details →</span>
           </div>
         </a>
@@ -556,14 +559,14 @@
       </div>
       <div>
         <span class="label">Hidden Garden Nursery</span>
-        <h2 class="section-title">Plants grown right here</h2>
+        <h2 class="section-title">We sell some of our favorites</h2>
         <p style="color:var(--text-soft);line-height:1.75;margin-bottom:1.25rem">
-          Tucked near the west entrance, our volunteer-run nursery carries plants propagated directly from the collection.
-          Reasonable prices. 100% of sales benefit the park.
+          Tucked near the back gate, our volunteer-run nursery offers an ever-changing assortment of plants,
+          many propagated right here at the park. Prices are reasonable, and 100% of sales benefit the park.
         </p>
         <p style="color:var(--text-soft);line-height:1.75;margin-bottom:1.5rem">
-          Looking for something specific? Call ahead. Volunteers know exactly what's rooted and ready —
-          including Florida natives you won't find at a box store.
+          What's available depends on what our volunteers have growing and ready to go. Stop by and have
+          a look — you may find a Florida native, a familiar favorite, or something you weren't expecting.
         </p>
         <div class="info-card">
           <h3>Nursery Hours</h3>

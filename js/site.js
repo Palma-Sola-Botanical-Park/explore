@@ -374,6 +374,7 @@ const NAV_HTML = `
     <li class="has-sub">
       <a href="index.html">Home</a>
       <ul class="subnav">
+        <li><a href="index.html">Welcome</a></li>
         <li><a href="index.html#happening">What's On</a></li>
         <li><a href="index.html#whatsHere">What's Here</a></li>
         <li><a href="index.html#rightNowSection">Right Now</a></li>
@@ -416,11 +417,11 @@ const NAV_HTML = `
     <li class="has-sub">
       <a href="contact.html">About</a>
       <ul class="subnav">
-        <li><a href="contact.html#mission">Mission</a></li>
-        <li><a href="contact.html#organization">Organization</a></li>
-        <li><a href="contact.html#community-links">Community Links</a></li>
-        <li><a href="contact.html#youtube">YouTube videos</a></li>
-        <li><a href="contact.html#visit">Contact</a></li>
+        <li><a href="contact.html#story">Our Story</a></li>
+        <li><a href="contact.html#organization">Our People</a></li>
+        <li><a href="contact.html#mission">Our Mission</a></li>
+        <li><a href="contact.html#community-links">Our Partners</a></li>
+        <li><a href="contact.html#visit">Contact Us</a></li>
       </ul>
     </li>
   </ul>
@@ -433,6 +434,7 @@ const NAV_HTML = `
 </nav>
 <div class="nav-mobile" id="navMobile">
   <a href="index.html" class="nm-top">Home</a>
+  <a href="index.html" class="nm-sub">Welcome</a>
   <a href="index.html#happening" class="nm-sub">What's On</a>
   <a href="index.html#whatsHere" class="nm-sub">What's Here</a>
   <a href="index.html#rightNowSection" class="nm-sub">Right Now</a>
@@ -455,11 +457,11 @@ const NAV_HTML = `
   <a href="get-involved.html#volunteer" class="nm-sub">Volunteering</a>
   <a href="get-involved.html#citizen-science" class="nm-sub">Citizen Science</a>
   <a href="contact.html" class="nm-top">About</a>
-  <a href="contact.html#mission" class="nm-sub">Mission</a>
-  <a href="contact.html#organization" class="nm-sub">Organization</a>
-  <a href="contact.html#community-links" class="nm-sub">Community Links</a>
-  <a href="contact.html#youtube" class="nm-sub">YouTube videos</a>
-  <a href="contact.html#visit" class="nm-sub">Contact</a>
+  <a href="contact.html#story" class="nm-sub">Our Story</a>
+  <a href="contact.html#organization" class="nm-sub">Our People</a>
+  <a href="contact.html#mission" class="nm-sub">Our Mission</a>
+  <a href="contact.html#community-links" class="nm-sub">Our Partners</a>
+  <a href="contact.html#visit" class="nm-sub">Contact Us</a>
 </div>`;
 
 // ── FOOTER HTML ───────────────────────────────────────────────

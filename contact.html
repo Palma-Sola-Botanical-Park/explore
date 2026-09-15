@@ -289,7 +289,7 @@
 </div>
 
 <!-- OUR STORY -->
-<section class="bg-white">
+<section class="bg-white" id="story">
   <div class="section-inner">
     <div class="grid-2" style="gap:3rem;align-items:start">
       <div>
@@ -655,6 +655,12 @@
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false });
+
+heroRotate([
+  { img: 'photos/PSBP-00005/662740624.jpg', credit: '© Franky McArthur (CC-BY-NC), via iNaturalist' },
+  { img: 'photos/PSBP-00621/681678425.jpg', credit: '© Rob Carr (CC-BY-NC), via iNaturalist' },
+  { img: 'photos/PSBP-00072/703871348.jpg', credit: '© Rhonda Olschefskie (CC-BY-NC), via iNaturalist' },
+]);
 
 // Cross-page anchor fix: the team + board grids render async from
 // organization.json and grow the section above #community-links, so arriving

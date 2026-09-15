@@ -675,6 +675,27 @@ const _familyParam = _urlParams.get('family');
 const _searchParam = _urlParams.get('search');
 const _wFamilyParam = _urlParams.get('wfamily');
 const _wSearchParam = _urlParams.get('wsearch');
+const _filterParam = _urlParams.get('filter');
+
+// Check for ?filter= — pre-check a facet button (e.g. nature.html?filter=rare_fruit
+// from visit.html's Rare Fruit Trail card). Polls because toggleFilter() needs
+// PLANTS loaded and the facet buttons painted, both of which happen async in
+// loadPlants()/refresh() — a plain setTimeout(…, 800) like the family/search
+// case above isn't reliable here since the facet buttons repaint after load.
+if (_filterParam) {
+  (function applyFilter(tries){
+    var btn = document.querySelector('#panel-plants .filter-btn[data-filter="' + _filterParam + '"]');
+    if (btn && typeof toggleFilter === 'function') {
+      toggleFilter(_filterParam);
+      setTimeout(function(){
+        document.getElementById('plants')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
+    } else if (tries > 0) {
+      setTimeout(function(){ applyFilter(tries - 1); }, 150);
+    }
+  })(20);
+}
+
 if (_familyParam || _searchParam) {
   const searchEl = document.getElementById('plantSearch');
   if (searchEl) {
