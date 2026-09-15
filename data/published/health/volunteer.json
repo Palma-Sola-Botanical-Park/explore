@@ -1,8 +1,8 @@
 {
   "tab": "volunteer",
   "human": "Volunteer spotlight cards — one row per person.",
-  "generated_at": "2026-09-15T05:22:24+00:00",
-  "status": "green",
+  "generated_at": "2026-09-15T22:52:44+00:00",
+  "status": "amber",
   "published": true,
   "block_reason": null,
   "counts": {
@@ -11,7 +11,7 @@
     "published": 9,
     "dropped_display": 8,
     "quarantined": 0,
-    "warned": 0
+    "warned": 1
   },
   "volume_guard": {
     "min": 1,
@@ -62,11 +62,16 @@
       "why": "If set, must be a link or a file path in the repo like images/events/x.jpg.",
       "severity": "warn",
       "scope": "field",
-      "status": "green",
+      "status": "amber",
       "evaluated": 9,
-      "passed": 9,
-      "flagged": 0,
-      "examples": []
+      "passed": 8,
+      "flagged": 1,
+      "examples": [
+        {
+          "row": "Events & Community",
+          "reason": "'viewer.html?url=docs%2Fget-inv' doesn't look like a URL or a file path"
+        }
+      ]
     }
   ],
   "dropped_rows": [],
@@ -124,6 +129,12 @@
       "added": 1,
       "changed": 3,
       "removed": 1
+    },
+    {
+      "at": "2026-09-15T22:52:44+00:00",
+      "added": 0,
+      "changed": 1,
+      "removed": 0
     }
   ],
   "schema": {
