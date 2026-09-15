@@ -302,12 +302,14 @@ section[id], div[id]{ scroll-margin-top: 84px; }
   ║  near the bottom of this file. Until a tier's link is filled in, its      ║
   ║  button falls back to "Call us to join" (contact page) — never a dead end.║
   ║                                                                            ║
-  ║  BUTTON TYPE PER TIER (decided 2026-09-04):                                ║
-  ║   • Acorn / Sapling / Live Oak ×2  → Subscribe (recurring, auto-renew)     ║
-  ║   • Oak Hammock Donor $1,000       → Buy Now (one-time; renewal is a call) ║
-  ║   • Oak Hammock Legacy $10,000     → no PayPal button at all. Processing   ║
-  ║     fees on a gift that size are real money, and a donor at that level     ║
-  ║     expects a conversation. Its card points at contact.html by design.     ║
+  ║  BUTTON TYPE PER TIER (decided 2026-09-04; REVISED 2026-09-15):            ║
+  ║   • All six tiers, Acorn through Oak Hammock Legacy → Subscribe            ║
+  ║     (recurring, auto-renew). Bev's call, relayed by Randy: she wants       ║
+  ║     Donor and Legacy on the same subscription rail as everything else —   ║
+  ║     she expects it to be rare at that price, not that it shouldn't exist.  ║
+  ║     (Superseded: Donor was Buy Now/one-time, Legacy had no PayPal button   ║
+  ║     at all and pointed at contact.html — processing-fee-on-a-large-gift    ║
+  ║     reasoning no longer applies now that it's Bev's explicit choice.)      ║
   ║                                                                            ║
   ║  PayPal dashboard → Pay & Get Paid → PayPal Buttons → create the button,   ║
   ║  set Item name = the tier name (this is what tells the office which level  ║
@@ -404,7 +406,7 @@ section[id], div[id]{ scroll-margin-top: 84px; }
           <li>Lifetime Reciprocal Admissions cards</li>
           <li>Unlimited admission to Members-Only Events</li>
         </ul>
-        <a class="tier-join" href="contact.html#visit">Talk to us about Legacy →</a>
+        <a class="tier-join" data-tier="oak_legacy">Join as Legacy →</a>
       </div>
     </div>
 
@@ -706,10 +708,10 @@ const PAYPAL = {
   // JavaScript embed would, without loading their SDK on the page.
   acorn:          'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5WA08146LN043423YNKUBDAY',   // Acorn — Single — $50
   sapling:        'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-8H713714KM662334HNKU4CPY',   // Sapling — Dual — $100
-  liveoak_family: '',   // Live Oak — Family — $150
-  liveoak_large:  '',   // Live Oak — Large Family — $250
-  oak_donor:      '',   // Oak Hammock — Donor — $1,000
-  oak_legacy:     ''    // Oak Hammock — Legacy — $10,000
+  liveoak_family: 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-1HJ865133W816203CNKU4IWI',   // Live Oak — Family — $150
+  liveoak_large:  'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-3U0831681R868320ENKU4MIY',   // Live Oak — Large Family — $250
+  oak_donor:      'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-2K857658ED782991XNKU4O4Y',   // Oak Hammock — Donor — $1,000
+  oak_legacy:     'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5GW31005XU779752JNKU4QGI'    // Oak Hammock — Legacy — $10,000
 };
 
 (function wireMembershipButtons(){
