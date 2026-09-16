@@ -47,6 +47,7 @@ html,body{height:100%;overflow:hidden;background:var(--ground)}
 body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
 
 .frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
+.logo-mark{position:fixed;bottom:calc(var(--frame) + 1.6vmin);right:calc(var(--frame) + 1.8vmin);height:5.2vmin;width:auto;opacity:.78;z-index:41;pointer-events:none}
 
 .deck{position:fixed;inset:0}
 .slide{
@@ -64,6 +65,13 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 .slide.anec .veil{background:var(--ground)}
 
 .name{font-family:var(--serif);font-weight:700;font-size:clamp(2.4rem,7vmin,6rem);line-height:1.08;color:var(--paper)}
+/* Welcome slide runs bigger than anecdotes — it's the one people should be
+   able to read from across the room. Randy: "make it bigger." */
+.slide.welcome .label{font-size:2.1vmin}
+.slide.welcome .name{font-size:clamp(3.4rem,10vmin,8.5rem)}
+.slide.welcome .dates{font-size:clamp(1.5rem,3.6vmin,2.9rem);margin-top:2.4vmin}
+.slide.welcome .who{font-size:clamp(1.3rem,2.9vmin,2rem);margin-top:2vmin}
+.slide.welcome .veil{background:linear-gradient(180deg,rgba(8,18,9,.55),rgba(8,18,9,.84))}
 .name em{font-style:italic;color:var(--gold);font-weight:400}
 .dates{margin-top:1.6vmin;font-family:var(--serif);font-style:italic;font-size:clamp(1.1rem,2.6vmin,2.1rem);color:var(--gold)}
 .rule{width:5vmin;height:1px;background:var(--gold-deep);margin:3vmin auto}
@@ -173,7 +181,7 @@ var deck = document.getElementById('deck');
 SLIDES.forEach(function(entry, i){
   var s = entry.slide;
   var el = document.createElement('div');
-  el.className = 'slide' + (entry.anec ? ' anec' : '');
+  el.className = 'slide' + (entry.anec ? ' anec' : ' welcome');
   var inner = '';
   if (s.bg) inner += '<div class="bg" style="background-image:url(\'' + s.bg + '\')"></div><div class="veil"></div>';
   inner += s.html;
