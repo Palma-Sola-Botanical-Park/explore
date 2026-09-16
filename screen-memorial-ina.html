@@ -91,7 +91,10 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 .slide.welcome .name{font-size:clamp(4.2rem,13vmin,10.5rem)}
 .slide.welcome .dates{font-size:clamp(1.8rem,4.4vmin,3.4rem);margin-top:2.6vmin}
 .slide.welcome .who{font-size:clamp(1.5rem,3.3vmin,2.3rem);margin-top:2vmin}
-.slide.welcome .veil{background:linear-gradient(180deg,rgba(8,18,9,.5),rgba(8,18,9,.8))}
+/* Darker than the earlier park-landscape version — a face photo carries far
+   more visual detail than a garden scene, and the text needs to win
+   clearly against it, not compete with it. */
+.slide.welcome .veil{background:linear-gradient(180deg,rgba(8,18,9,.62),rgba(8,18,9,.86))}
 .name em{font-style:italic;color:var(--gold);font-weight:400}
 .dates{margin-top:1.8vmin;font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,3.1vmin,2.5rem);color:var(--gold)}
 .rule{width:6vmin;height:1px;background:var(--gold-deep);margin:3.5vmin auto}
@@ -156,7 +159,11 @@ var PHOTO_URL = 'images/memorial-ina-baden.jpg'; // Ina herself — from her own
    below, not hardcoded as one long sequence. */
 var WELCOME = {
   bg: PHOTO_URL || null,
-  credit: PHOTO_URL ? { name: 'elurding', date: 'Dec 25, 2025' } : null,
+  // No credit line here on purpose — this is Ina's own photo, from the
+  // family's obituary, not a park photo from photo_credits.json. The
+  // photographer/date pair used to belong to the bottlebrush placeholder
+  // this replaced; leaving it in would have misattributed her own portrait.
+  credit: null,
   html:
       '<div class="label">Welcome to the Celebration of Life for</div>'
     + '<div class="name">Mary <em>Ina</em> Baden</div>'
