@@ -115,90 +115,146 @@ var WELCOME = {
     + '<div class="who">&ldquo;Niny&rdquo;</div>'
 };
 
-/* ANECDOTES — each a short, single-idea slide. Kept brief on purpose: this
-   is a room full of people talking, not a reading. */
-var ANECDOTES = [
-  {
-    html:
-        '<div class="label">Her Greeting</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">She greeted everyone the same way &mdash; &ldquo;Hey, Darlin&rsquo;&rdquo; &mdash; and meant it every single time.</div>'
-  },
-  {
-    bg: 'photos/PSBP-00621/681678425.jpg',
-    html:
-        '<div class="label">Her Park</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Ina spent her later years working here at Palma Sola, and loved nothing more than walking these grounds.</div>'
-  },
-  {
-    bg: 'photos/PSBP-00121/673659284.jpg',
-    html:
-        '<div class="label">A Family Rooted Here</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">The Baden building carries her family&rsquo;s name. The Amazon Lily blooming on Bird of Paradise Island has been passed down through the Baden family since the late 1800s &mdash; still growing, the same way her story keeps going.</div>'
-  },
-  {
-    html:
-        '<div class="label">Before the Park</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">An LPN at Manatee Memorial Hospital, she went on to build Manatee Blood Bank&rsquo;s mobile donation bus program &mdash; bringing the blood drive to people, instead of the other way around.</div>'
-  },
-  {
-    bg: 'photos/PSBP-00072/703871348.jpg',
-    html:
+/* VIGNETTES — every one sourced directly from the family obituary, per
+   ChatGPT's review (relayed by Randy). Each carries a `weight` — how many
+   copies go in the shuffle bag, so light/warm ones surface more often and
+   the heavier ones (The White Bed, A Life of Service) surface rarely
+   without ever being excluded. `seconds` overrides the default dwell;
+   PALMA SOLA runs longer since the room is full of people who knew her
+   through this place specifically. */
+var VIGNETTES = [
+  { weight: 3, html:
         '<div class="label">Her Hobbies</div>'
       + '<div class="rule"></div>'
-      + '<div class="body">Rose gardening. Shell collecting. Piano. Scuba diving. Horseback riding. Harley riding. She did not do things by half measures.</div>'
-  },
-  {
-    html:
-        '<div class="label">The Story She Told</div>'
+      + '<div class="body">Rose gardening. Shell collecting. Piano. Scuba diving. Horseback riding. Harley riding. Ina found plenty of ways to fill a life.</div>' },
+
+  { weight: 3, html:
+        '<div class="label">&ldquo;Hey, Darlin&rsquo;&rdquo;</div>'
       + '<div class="rule"></div>'
-      + '<div class="body">By her own telling, Elvis once kissed her at a concert &mdash; and if you knew her, you believed it.</div>'
-  },
-  {
-    bg: 'photos/PSBP-00476/723663668.jpg',
-    html:
-        '<div class="label">In Lieu of Flowers</div>'
+      + '<div class="body">Ina greeted people with &ldquo;Hey, Darlin&rsquo;,&rdquo; usually followed by a hug and a kiss. And she rarely let anyone leave without hearing, &ldquo;I love you.&rdquo;</div>' },
+
+  { weight: 3, html:
+        '<div class="label">President of Your Fan Club</div>'
       + '<div class="rule"></div>'
-      + '<div class="body">Donations are welcome to Palma Sola Botanical Park &mdash; the place she loved walking, in her name.</div>'
-  }
+      + '<div class="body">Ina had a way of making people feel like they were her favorite. She often told them, &ldquo;I&rsquo;m the president of your fan club.&rdquo;</div>' },
+
+  { weight: 3, html:
+        '<div class="label">Elvis</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">As a teenager, Ina went to an Elvis Presley concert. Her favorite part of the story: Elvis kissed her. She told that one for the rest of her life.</div>' },
+
+  { weight: 3, html:
+        '<div class="label">Adventure</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">She traveled to nearly every continent, scuba dived, rode horses, and took road trips on her big Harley.</div>' },
+
+  { weight: 2, html:
+        '<div class="label">The Class of &rsquo;58</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina graduated from Manatee High School in 1958 and could still recite the motto: &ldquo;Always ready, never late. We&rsquo;re the class of &rsquo;58!&rdquo;</div>' },
+
+  { weight: 2, html:
+        '<div class="label">On the Road</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina earned her commercial driver&rsquo;s license and helped launch the Manatee Blood Bank&rsquo;s mobile donation program &mdash; then drove the bus around town herself.</div>' },
+
+  { weight: 2, bg: 'photos/PSBP-00072/703871348.jpg', html:
+        '<div class="label">The Rose Garden</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina loved her roses and proudly showed off her garden. She also collected shells from around the world, and thousands of photographs from a life well traveled.</div>' },
+
+  { weight: 2, html:
+        '<div class="label">The Piano</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina learned to play piano and kept playing throughout her life &mdash; one interest among many she never seemed too old to begin, or continue.</div>' },
+
+  { weight: 2, html:
+        '<div class="label">Scrabble</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Even in later years, Ina remained competitive. One of her favorite pursuits was beating family and friends at online Scrabble.</div>' },
+
+  { weight: 1, html:
+        '<div class="label">A Life of Service</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Nurse. Blood-bank worker. Home-health caregiver. Hospice volunteer. And, for many happy years, a familiar face here at Palma Sola Botanical Park.</div>' },
+
+  { weight: 1, html:
+        '<div class="label">The White Bed</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">When someone was frightened, overwhelmed, or simply needed comfort, Ina had a standing invitation: &ldquo;Come get in the white bed.&rdquo; For generations of her family, it became a place of refuge.</div>' },
+
+  { weight: 2, seconds: 19, bg: 'photos/PSBP-00621/681678425.jpg', html:
+        '<div class="label">Palma Sola</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>' }
 ];
 
-var SECONDS = 14; // dwell per slide — slower than the regular screen on purpose
+var WELCOME_SECONDS  = 50;
+var VIGNETTE_SECONDS = 14; // default; a vignette's own `seconds` overrides this
 
-/* Build the actual rotation: WELCOME, anecdote 1, WELCOME, anecdote 2, …
-   Randy's "come back to that one a lot" — welcome appears as often as any
-   single anecdote, not once per full lap. */
-var SLIDES = [];
-ANECDOTES.forEach(function(a){
-  SLIDES.push({ slide: WELCOME, anec: false });
-  SLIDES.push({ slide: a, anec: true });
-});
+/* Weighted, no-repeat-until-exhausted shuffle bag: each vignette appears
+   `weight` times in the bag, the bag is shuffled once, and drawn from in
+   order — reshuffled only once empty. That's what gives light/warm stories
+   more air time than the heavier ones without ever fully excluding them,
+   per ChatGPT's guidance (relayed by Randy) on how the obituary material
+   should be weighted. */
+var bag = [];
+function refillBag(){
+  var pool = [];
+  VIGNETTES.forEach(function(v){
+    for (var i = 0; i < v.weight; i++) pool.push(v);
+  });
+  // Fisher–Yates
+  for (var i = pool.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+  }
+  bag = pool;
+}
+function nextVignette(){
+  if (!bag.length) refillBag();
+  return bag.pop();
+}
 
 var deck = document.getElementById('deck');
-SLIDES.forEach(function(entry, i){
-  var s = entry.slide;
+var liveEl = null; // the currently-shown slide element, if any
+
+/* A real crossfade, not a swap: the new slide is appended at opacity 0,
+   forced to reflow so the browser registers that starting state, then both
+   old-fades-out and new-fades-in fire together via the .on toggle — the
+   same device screen.html's own multi-slide deck uses, just with only ever
+   two elements in the DOM at once here instead of the whole deck. */
+function renderSlide(entry){
   var el = document.createElement('div');
-  el.className = 'slide' + (entry.anec ? ' anec' : ' welcome');
+  el.className = 'slide' + (entry.welcome ? ' welcome' : ' anec');
   var inner = '';
-  if (s.bg) inner += '<div class="bg" style="background-image:url(\'' + s.bg + '\')"></div><div class="veil"></div>';
-  inner += s.html;
+  if (entry.bg) inner += '<div class="bg" style="background-image:url(\'' + entry.bg + '\')"></div><div class="veil"></div>';
+  inner += entry.html;
   el.innerHTML = inner;
   deck.appendChild(el);
-});
+  void el.offsetWidth; // force reflow before adding .on, or the transition won't fire
 
-var slides = deck.querySelectorAll('.slide');
-var cur = 0;
-function show(i){
-  slides.forEach(function(el, j){ el.classList.toggle('on', j === i); });
+  var prev = liveEl;
+  el.classList.add('on');
+  if (prev) prev.classList.remove('on');
+  liveEl = el;
+
+  if (prev) setTimeout(function(){ prev.remove(); }, 2200); // a bit past --fade
 }
-show(0);
-setInterval(function(){
-  cur = (cur + 1) % slides.length;
-  show(cur);
-}, SECONDS * 1000);
+
+/* Randy: welcome should dominate ("come back to that one a lot"); ChatGPT's
+   structure (relayed): welcome ~50s, one vignette ~14s (or its own
+   override), back to welcome, repeat — never two vignettes back to back.
+   That puts welcome at roughly 75–80% of total screen time. */
+function loop(){
+  renderSlide({ welcome: true, bg: WELCOME.bg, html: WELCOME.html });
+  setTimeout(function(){
+    var v = nextVignette();
+    renderSlide({ welcome: false, bg: v.bg, html: v.html });
+    setTimeout(loop, (v.seconds || VIGNETTE_SECONDS) * 1000);
+  }, WELCOME_SECONDS * 1000);
+}
+loop();
 </script>
 </body>
 </html>
