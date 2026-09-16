@@ -11,9 +11,9 @@
    MEMORIAL SLIDE — Mary Ina Baden ("Niny"), 1940–2026
    ----------------------------------------------------------------------------
    NOT the regular screen.html. A separate, standalone file — deliberately
-   simple, no feed machinery, no rotation logic, just five hardcoded slides on
-   a timer. Built as a DEMO for Randy to review before anything goes live;
-   nothing here has been pushed to the office/galleria kiosks yet.
+   simple, no feed machinery. Built as a DEMO for Randy to review before
+   anything goes live; nothing here has been pushed to the office/galleria
+   kiosks yet.
 
    Same visual language as screen.html (--ground, --gold, --paper, Playfair +
    Source Sans) so it still reads as "this park," just hushed: long dwells,
@@ -25,11 +25,23 @@
    kiosk (just a browser pointed at that URL) picks it up on its own with no
    need to touch the machine. Reverting later is restoring the backup.
 
-   No photo of her exists in photo_credits.json / photographer_names.json —
-   she was never a photo contributor, so PHOTO_URL below is empty by design.
-   Drop a real photo path in and slide 1 uses it automatically; until then it
-   runs as a clean type-only slide, which is a fine, dignified default on its
-   own.
+   Rotation: WELCOME (the "home base," ~50s) alternates with one VIGNETTE
+   (~14s, or its own `seconds` override) drawn from a weighted, no-repeat-
+   until-exhausted shuffle bag — see VIGNETTES below for the full chart.
+   3 of 12 vignettes carry a faint park photo (welcome always does); the
+   rest stay on the plain dark field, weighted toward the more intimate/
+   emotional stories per ChatGPT's review (relayed by Randy). Every photo
+   slide carries its own small bottom-left credit (name/date/license, real
+   data from photo_credits.json); the first photo vignette shown each
+   session also gets a one-time explanatory note about where the photos
+   came from.
+
+   No photo of Ina herself exists in the catalog — she was never a photo
+   contributor there — so every background here is a park scene, not her.
+   PHOTO_URL below can be swapped for a real photo of her if one turns up.
+
+   ?speed=10 (or any number) previews the whole flow fast, same convention
+   as screen.html's own ?speed= param.
 ============================================================================ */
 :root{
   --ground:#0c1a10; --ground-2:#122316;
