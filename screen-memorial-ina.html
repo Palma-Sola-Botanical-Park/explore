@@ -105,6 +105,9 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 .quote{max-width:78vmin;margin-top:2.6vmin;font-family:var(--serif);font-style:italic;font-weight:400;
   font-size:clamp(2.3rem,5.6vmin,4.4rem);line-height:1.3;color:var(--paper)}
 .who{margin-top:1.7vmin;font-family:var(--serif);font-style:italic;color:var(--ink-quiet);font-size:clamp(1.1rem,2.5vmin,1.7rem)}
+/* "— Name" byline under a guestbook quote — smaller and quieter than
+   .who, since the quote itself is already the point of the slide. */
+.attrib{margin-top:2vmin;font-size:clamp(1rem,2.2vmin,1.5rem);color:var(--gold);font-weight:600;letter-spacing:.02em}
 
 /* The one-time photo NOTE (not a byline) — a small, quiet explanatory line
    under the first photo vignette shown each session, never repeated.
@@ -226,7 +229,43 @@ var VIGNETTES = [
   { weight: 2, seconds: 19, bg: 'photos/PSBP-00621/681678425.jpg', credit: { name: 'Rob Carr', date: 'Mar 31, 2023' }, html:
         '<div class="label">Palma Sola</div>'
       + '<div class="rule"></div>'
-      + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>' }
+      + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>' },
+
+  /* Guestbook notes — real, verbatim messages left on her obituary pages
+     (legacy.com and Shannon Funeral Homes), relayed by Randy via screenshot.
+     Randy: "Each one of those could be a nice page that sprinkles in on
+     rotation. more rather than less." Quoted faithfully; Pam Hartnagle's
+     note had one broken trailing clause ("She was a very to me") — trimmed
+     to the clean, complete sentences rather than guessing the missing word. */
+  { weight: 2, html:
+        '<div class="label">In Her Friends&rsquo; Words</div>'
+      + '<div class="rule"></div>'
+      + '<div class="quote">&ldquo;Niny, Baby A, Baby B and Baby C bonded us together for life! Your earthly watch is over and I&rsquo;ll continue it as long as God wills it. So many memories you&rsquo;ve given, so many as treasures to guide them.&rdquo;</div>'
+      + '<div class="attrib">&mdash; Carol Couchois, &ldquo;Nana&rdquo;</div>' },
+
+  { weight: 2, html:
+        '<div class="label">In Her Friends&rsquo; Words</div>'
+      + '<div class="rule"></div>'
+      + '<div class="quote">&ldquo;I am heartbroken. Ina and I spent many times remembering the past. I will miss her more than anything.&rdquo;</div>'
+      + '<div class="attrib">&mdash; Pam Hartnagle</div>' },
+
+  { weight: 2, bg: 'photos/PSBP-00072/703871348.jpg', credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
+        '<div class="label">In Her Friends&rsquo; Words</div>'
+      + '<div class="rule"></div>'
+      + '<div class="quote">&ldquo;Ina, it was such a pleasure knowing you for so many years. You treated my father and myself more like family than friends. I always loved your rose garden and the wonderful fragrance.&rdquo;</div>'
+      + '<div class="attrib">&mdash; Carl Williams</div>' },
+
+  { weight: 2, html:
+        '<div class="label">In Her Friends&rsquo; Words</div>'
+      + '<div class="rule"></div>'
+      + '<div class="quote">&ldquo;I cannot ask for a better best friend. Ina was always there for me. We had some wonderful adventures! It&rsquo;s true she made everyone feel special. I will carry her in my heart forever.&rdquo;</div>'
+      + '<div class="attrib">&mdash; Ann Graham</div>' },
+
+  { weight: 1, html:
+        '<div class="label">In Her Friends&rsquo; Words</div>'
+      + '<div class="rule"></div>'
+      + '<div class="quote">&ldquo;Our sincere condolences to the family, classmates, and friends of our Manatee County High School Class of 1958 alumna.&rdquo;</div>'
+      + '<div class="attrib">&mdash; Manatee High School Alumni Association</div>' }
 ];
 
 /* ?speed=10 previews the whole flow fast — same convention as screen.html.
