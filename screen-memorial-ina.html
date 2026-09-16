@@ -98,11 +98,21 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 .service .big{font-family:var(--serif);font-weight:700;font-size:clamp(1.6rem,3.9vmin,3rem)}
 .service .small{font-size:clamp(1rem,2.3vmin,1.5rem);color:var(--ink-quiet);font-weight:300}
 
-/* The one-time photo credit — a small, quiet line under the first photo
-   vignette shown each session, never repeated. Deliberately far smaller
-   than .body; it's an acknowledgment, not content. */
-.photo-credit{max-width:64vmin;margin-top:2.8vmin;font-size:clamp(.8rem,1.6vmin,1.05rem);
+/* The one-time photo NOTE (not a byline) — a small, quiet explanatory line
+   under the first photo vignette shown each session, never repeated.
+   Deliberately far smaller than .body; it's an acknowledgment, not content. */
+.photo-note{max-width:64vmin;margin-top:2.8vmin;font-size:clamp(.8rem,1.6vmin,1.05rem);
   line-height:1.5;color:var(--ink-quiet);font-weight:300;font-style:italic}
+
+/* Per-photo credit — bottom-left, tiny, on EVERY slide that carries a park
+   photo (welcome included). Randy: "a 'tiny' readable but 'tiny' credit
+   line... Name Date CC-BY-NC, taken here in the park Ina was such an
+   integral part of." Same photographer/license/date convention the rest of
+   the site already uses (photo_credits.json) — reused here, not reinvented. */
+.photo-cred{position:absolute;left:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 1.6vmin);
+  z-index:2;font-size:clamp(.62rem,1.1vmin,.82rem);letter-spacing:.03em;color:rgba(253,252,248,.5);
+  text-align:left;line-height:1.4}
+.photo-cred b{color:rgba(253,252,248,.68);font-weight:600}
 
 @media (max-width:900px){ .body{max-width:88vmin} }
 </style>
@@ -289,20 +299,29 @@ function renderSlide(entry){
    photo-based vignette." Tracked with a flag rather than a fixed 13th
    slide, since the weighted bag means it's unpredictable which vignette
    that actually is. */
-var photoCreditShown = false;
-var PHOTO_CREDIT_HTML =
-  '<div class="photo-credit">The garden photographs throughout this tribute were taken here at Palma Sola Botanical Park &mdash; a place Ina loved &mdash; by friends and visitors who shared that love of the gardens.</div>';
+var photoNoteShown = false;
+var PHOTO_NOTE_HTML =
+  '<div class="photo-note">The garden photographs throughout this tribute were taken here at Palma Sola Botanical Park &mdash; a place Ina loved &mdash; by friends and visitors who shared that love of the gardens.</div>';
+
+/* Small per-photo byline, bottom-left, on every slide carrying a park
+   photo — same photographer/date/license shape the rest of the site uses. */
+function photoCredHtml(c){
+  if (!c) return '';
+  return '<div class="photo-cred"><b>' + c.name + '</b> &middot; ' + c.date
+       + ' &middot; CC BY-NC<br>Taken here in the park Ina was such an integral part of</div>';
+}
 
 /* Randy: welcome should dominate ("come back to that one a lot"); ChatGPT's
    structure (relayed): welcome ~50s, one vignette ~14s (or its own
    override), back to welcome, repeat — never two vignettes back to back.
    That puts welcome at roughly 75–80% of total screen time. */
 function loop(){
-  renderSlide({ welcome: true, bg: WELCOME.bg, html: WELCOME.html });
+  renderSlide({ welcome: true, bg: WELCOME.bg, html: WELCOME.html + photoCredHtml(WELCOME.credit) });
   setTimeout(function(){
     var v = nextVignette();
     var html = v.html;
-    if (v.bg && !photoCreditShown) { html += PHOTO_CREDIT_HTML; photoCreditShown = true; }
+    if (v.bg && !photoNoteShown) { html += PHOTO_NOTE_HTML; photoNoteShown = true; }
+    html += photoCredHtml(v.credit);
     renderSlide({ welcome: false, bg: v.bg, html: html });
     setTimeout(loop, (v.seconds ? v.seconds / SPEED : VIGNETTE_SECONDS) * 1000);
   }, WELCOME_SECONDS * 1000);
