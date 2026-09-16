@@ -268,6 +268,16 @@ function renderSlide(entry){
   if (prev) setTimeout(function(){ prev.remove(); }, 2200); // a bit past --fade
 }
 
+/* One-time photo credit — the first photo-carrying vignette the session
+   ever shows gets a small line appended, then never again. Per spec:
+   "somewhere early in the rotation... as a small line on the first
+   photo-based vignette." Tracked with a flag rather than a fixed 13th
+   slide, since the weighted bag means it's unpredictable which vignette
+   that actually is. */
+var photoCreditShown = false;
+var PHOTO_CREDIT_HTML =
+  '<div class="photo-credit">The garden photographs throughout this tribute were taken here at Palma Sola Botanical Park &mdash; a place Ina loved &mdash; by friends and visitors who shared that love of the gardens.</div>';
+
 /* Randy: welcome should dominate ("come back to that one a lot"); ChatGPT's
    structure (relayed): welcome ~50s, one vignette ~14s (or its own
    override), back to welcome, repeat — never two vignettes back to back.
@@ -276,7 +286,9 @@ function loop(){
   renderSlide({ welcome: true, bg: WELCOME.bg, html: WELCOME.html });
   setTimeout(function(){
     var v = nextVignette();
-    renderSlide({ welcome: false, bg: v.bg, html: v.html });
+    var html = v.html;
+    if (v.bg && !photoCreditShown) { html += PHOTO_CREDIT_HTML; photoCreditShown = true; }
+    renderSlide({ welcome: false, bg: v.bg, html: html });
     setTimeout(loop, (v.seconds ? v.seconds / SPEED : VIGNETTE_SECONDS) * 1000);
   }, WELCOME_SECONDS * 1000);
 }
