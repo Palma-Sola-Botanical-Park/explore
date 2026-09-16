@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In Loving Memory · Mary Ina Baden</title>
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   MEMORIAL SLIDE — Mary Ina Baden ("Niny"), 1940–2026
+   ----------------------------------------------------------------------------
+   NOT the regular screen.html. A separate, standalone file — deliberately
+   simple, no feed machinery, no rotation logic, just five hardcoded slides on
+   a timer. Built as a DEMO for Randy to review before anything goes live;
+   nothing here has been pushed to the office/galleria kiosks yet.
+
+   Same visual language as screen.html (--ground, --gold, --paper, Playfair +
+   Source Sans) so it still reads as "this park," just hushed: long dwells,
+   slow fades, no eyebrows/badges/gold "NEW" flourishes — every device that
+   normally signals "look, something's happening!" is deliberately absent.
+
+   Swap-in plan (not done yet): save the current screen.html as
+   screen-normal.html, then this file's content replaces screen.html so the
+   kiosk (just a browser pointed at that URL) picks it up on its own with no
+   need to touch the machine. Reverting later is restoring the backup.
+
+   No photo of her exists in photo_credits.json / photographer_names.json —
+   she was never a photo contributor, so PHOTO_URL below is empty by design.
+   Drop a real photo path in and slide 1 uses it automatically; until then it
+   runs as a clean type-only slide, which is a fine, dignified default on its
+   own.
+============================================================================ */
+:root{
+  --ground:#0c1a10; --ground-2:#122316;
+  --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
+  --ink-invert:rgba(253,252,248,.82); --ink-quiet:rgba(253,252,248,.58);
+  --rule:rgba(234,188,90,.34);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
+  --fade:1.8s;      /* slower than the regular screen — this one shouldn't rush */
+  --frame:2.6vmin;
+  --pad:5vmin;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--ground)}
+body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
+
+.frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
+
+.deck{position:fixed;inset:0}
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:0 8vmin;
+  opacity:0;transition:opacity var(--fade) ease;
+}
+.slide.on{opacity:1;z-index:1}
+.slide .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:-1}
+.slide .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,18,9,.35),rgba(8,18,9,.72));z-index:-1}
+/* Anecdote slides: a park photo as a barely-there texture, not a real
+   photograph competing with the words — the ground color still does almost
+   all the work. Randy: "very faint backgrounds." */
+.slide.anec .bg{opacity:.16;filter:saturate(.7)}
+.slide.anec .veil{background:var(--ground)}
+
+.name{font-family:var(--serif);font-weight:700;font-size:clamp(2.4rem,7vmin,6rem);line-height:1.08;color:var(--paper)}
+.name em{font-style:italic;color:var(--gold);font-weight:400}
+.dates{margin-top:1.6vmin;font-family:var(--serif);font-style:italic;font-size:clamp(1.1rem,2.6vmin,2.1rem);color:var(--gold)}
+.rule{width:5vmin;height:1px;background:var(--gold-deep);margin:3vmin auto}
+.label{font-size:1.6vmin;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:1.6vmin}
+.body{max-width:64vmin;font-size:clamp(1.05rem,2.5vmin,1.8rem);line-height:1.65;color:var(--ink-invert);font-weight:300}
+.body + .body{margin-top:2vmin}
+.who{margin-top:1.5vmin;font-family:var(--serif);font-style:italic;color:var(--ink-quiet);font-size:clamp(.95rem,2.1vmin,1.4rem)}
+
+.service{margin-top:3.5vmin;display:flex;flex-direction:column;gap:.6vmin;color:var(--gold)}
+.service .big{font-family:var(--serif);font-weight:700;font-size:clamp(1.3rem,3.2vmin,2.4rem)}
+.service .small{font-size:clamp(.85rem,1.9vmin,1.2rem);color:var(--ink-quiet);font-weight:300}
+
+@media (max-width:900px){ .body{max-width:88vmin} }
+</style>
+</head>
+<body>
+
+<div class="frame"></div>
+<div class="deck" id="deck"></div>
+
+<script>
+/* PHOTO_URL: leave blank for the clean type-only version of the welcome
+   slide. To add a photo later, set this to a path (e.g.
+   'images/ina-baden.jpg') and the welcome slide uses it as a full-bleed
+   background automatically. */
+var PHOTO_URL = 'photos/PSBP-00051/734023843.jpg'; // mocked in for the demo — swap for a real photo of Ina if one turns up
+
+/* WELCOME is the "home base" slide — office monitor, meant to spark
+   conversation among people milling around before/during the service.
+   Randy: "The most in rotation just say welcome... Come back to that one a
+   lot but intersperse some tasteful anecdotes." So the rotation isn't a
+   flat loop — it alternates WELCOME, anecdote, WELCOME, anecdote... built
+   below, not hardcoded as one long sequence. */
+var WELCOME = {
+  bg: PHOTO_URL || null,
+  html:
+      '<div class="label">Welcome to the Celebration of Life for</div>'
+    + '<div class="name">Mary <em>Ina</em> Baden</div>'
+    + '<div class="dates">September 21, 1940 &ndash; September 8, 2026</div>'
+    + '<div class="who">&ldquo;Niny&rdquo;</div>'
+};
+
+/* ANECDOTES — each a short, single-idea slide. Kept brief on purpose: this
+   is a room full of people talking, not a reading. */
+var ANECDOTES = [
+  {
+    html:
+        '<div class="label">Her Greeting</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">She greeted everyone the same way &mdash; &ldquo;Hey, Darlin&rsquo;&rdquo; &mdash; and meant it every single time.</div>'
+  },
+  {
+    bg: 'photos/PSBP-00621/681678425.jpg',
+    html:
+        '<div class="label">Her Park</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina spent her later years working here at Palma Sola, and loved nothing more than walking these grounds.</div>'
+  },
+  {
+    bg: 'photos/PSBP-00121/673659284.jpg',
+    html:
+        '<div class="label">A Family Rooted Here</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">The Baden building carries her family&rsquo;s name. The Amazon Lily blooming on Bird of Paradise Island has been passed down through the Baden family since the late 1800s &mdash; still growing, the same way her story keeps going.</div>'
+  },
+  {
+    html:
+        '<div class="label">Before the Park</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">An LPN at Manatee Memorial Hospital, she went on to build Manatee Blood Bank&rsquo;s mobile donation bus program &mdash; bringing the blood drive to people, instead of the other way around.</div>'
+  },
+  {
+    bg: 'photos/PSBP-00072/703871348.jpg',
+    html:
+        '<div class="label">Her Hobbies</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Rose gardening. Shell collecting. Piano. Scuba diving. Horseback riding. Harley riding. She did not do things by half measures.</div>'
+  },
+  {
+    html:
+        '<div class="label">The Story She Told</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">By her own telling, Elvis once kissed her at a concert &mdash; and if you knew her, you believed it.</div>'
+  },
+  {
+    bg: 'photos/PSBP-00476/723663668.jpg',
+    html:
+        '<div class="label">In Lieu of Flowers</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Donations are welcome to Palma Sola Botanical Park &mdash; the place she loved walking, in her name.</div>'
+  }
+];
+
+var SECONDS = 14; // dwell per slide — slower than the regular screen on purpose
+
+/* Build the actual rotation: WELCOME, anecdote 1, WELCOME, anecdote 2, …
+   Randy's "come back to that one a lot" — welcome appears as often as any
+   single anecdote, not once per full lap. */
+var SLIDES = [];
+ANECDOTES.forEach(function(a){
+  SLIDES.push({ slide: WELCOME, anec: false });
+  SLIDES.push({ slide: a, anec: true });
+});
+
+var deck = document.getElementById('deck');
+SLIDES.forEach(function(entry, i){
+  var s = entry.slide;
+  var el = document.createElement('div');
+  el.className = 'slide' + (entry.anec ? ' anec' : '');
+  var inner = '';
+  if (s.bg) inner += '<div class="bg" style="background-image:url(\'' + s.bg + '\')"></div><div class="veil"></div>';
+  inner += s.html;
+  el.innerHTML = inner;
+  deck.appendChild(el);
+});
+
+var slides = deck.querySelectorAll('.slide');
+var cur = 0;
+function show(i){
+  slides.forEach(function(el, j){ el.classList.toggle('on', j === i); });
+}
+show(0);
+setInterval(function(){
+  cur = (cur + 1) % slides.length;
+  show(cur);
+}, SECONDS * 1000);
+</script>
+</body>
+</html>
