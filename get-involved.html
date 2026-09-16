@@ -910,7 +910,7 @@ loadVolDesk();
     if (!photos.length) return;
     var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     var byNewest = photos.slice().reverse();
-    var VISIBLE = 8;
+    var VISIBLE = 12; // a full year at a glance — the About page's mosaic stays at 8
     grid.innerHTML = byNewest.map(function(p, i){
       var parts = (p.month || '').split('-');
       var label = parts.length === 2 ? (MONTHS[parseInt(parts[1], 10) - 1] + ' ' + parts[0]) : p.month;
