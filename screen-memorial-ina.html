@@ -74,13 +74,6 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 }
 .slide.on{opacity:1;z-index:1}
 .slide .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:-1}
-/* Ina's portrait is a tall (819×1024) source photo cover-cropped onto a
-   wide screen — centered vertically, that cut off the top of her head and
-   left most of the visible frame as shirt. Shifting the crop window toward
-   the top of the source photo instead (a low Y%) keeps her whole face and
-   hair in frame, in roughly the upper-middle third. Tune this one number if
-   it needs further adjustment — nothing else about the layout depends on it. */
-.slide.welcome .bg{background-position:50% 8%}
 /* Photo template: the dark green overlay sits OVER the photo — it must stay
    translucent (rgba, not a solid var(--ground)) or the photo underneath
    never shows at all. That was a real bug in the first pass: an opaque
@@ -88,16 +81,37 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
    one alpha value on the veil now controls "how much park shows through,"
    rather than fighting with a second opacity on the image itself. */
 .slide .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,18,9,.35),rgba(8,18,9,.72));z-index:-1}
+
+/* ── Welcome: asymmetric split, not centered-over-photo ────────────────────
+   Ina's portrait is a tall (819×1024) source photo — full-bleed `cover` on
+   a landscape screen forced a brutal, unstable crop no Y-position tuning
+   fixed well, and centering the typography over her face literally put
+   words on top of the person being honored. ChatGPT's review (relayed by
+   Randy): "Ina's face is the visual subject. Stop putting words on her."
+
+   Fix: her photo only occupies the left ~46% of the screen (a column much
+   closer to her own portrait aspect ratio, so the crop is gentle rather
+   than extreme), the text stack lives entirely in the right ~54%, and a
+   directional (left-to-right) gradient keeps her bright/recognizable on the
+   left while darkening steeply under the text on the right — rather than
+   the uniform top-to-bottom veil every other slide uses. */
+.slide.welcome{flex-direction:row;justify-content:flex-end;align-items:center;padding:0 7vmin}
+.slide.welcome .bg{left:0;right:auto;width:46%;background-position:50% 12%}
+.slide.welcome .veil{background:linear-gradient(90deg,rgba(8,18,9,.1) 0%,rgba(8,18,9,.3) 34%,rgba(8,18,9,.86) 53%,rgba(8,18,9,.92) 100%)}
+.welcome-text{width:53%;text-align:center}
 .slide.anec .bg{filter:saturate(.55)}
 .slide.anec .veil{background:rgba(9,20,12,.89)}
 
 .name{font-family:var(--serif);font-weight:700;font-size:clamp(3.2rem,9.5vmin,7.5rem);line-height:1.06;color:var(--paper)}
 /* Welcome runs larger still — it's the "home base" slide, on screen most
    of the time and meant to be readable across the room. */
-.slide.welcome .label{font-size:2.6vmin}
-.slide.welcome .name{font-size:clamp(4.2rem,13vmin,10.5rem)}
-.slide.welcome .dates{font-size:clamp(1.8rem,4.4vmin,3.4rem);margin-top:2.6vmin}
-.slide.welcome .who{font-size:clamp(1.5rem,3.3vmin,2.3rem);margin-top:2vmin}
+/* Sized down from the earlier full-width version — "Mary Ina Baden" now
+   has to fit inside a 53%-wide column, not the whole screen, without
+   wrapping awkwardly or crowding the frame edge. */
+.slide.welcome .label{font-size:2.2vmin}
+.slide.welcome .name{font-size:clamp(3rem,7.4vmin,6.2rem)}
+.slide.welcome .dates{font-size:clamp(1.5rem,3.4vmin,2.6rem);margin-top:2.6vmin}
+.slide.welcome .who{font-size:clamp(1.3rem,2.7vmin,1.9rem);margin-top:2vmin}
 /* Darker than the earlier park-landscape version — a face photo carries far
    more visual detail than a garden scene, and the text needs to win
    clearly against it, not compete with it. */
@@ -171,11 +185,15 @@ var WELCOME = {
   // photographer/date pair used to belong to the bottlebrush placeholder
   // this replaced; leaving it in would have misattributed her own portrait.
   credit: null,
+  // Wrapped in .welcome-text so it lives in the right-hand column instead
+  // of centering across the whole screen (and across her face).
   html:
-      '<div class="label">Welcome to the Celebration of Life for</div>'
+      '<div class="welcome-text">'
+    + '<div class="label">Welcome to the Celebration of Life for</div>'
     + '<div class="name">Mary <em>Ina</em> Baden</div>'
     + '<div class="dates">September 21, 1940 &ndash; September 8, 2026</div>'
     + '<div class="who">&ldquo;Niny&rdquo;</div>'
+    + '</div>'
 };
 
 /* VIGNETTES — every one sourced directly from the family obituary, per
