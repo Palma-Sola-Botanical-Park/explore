@@ -61,7 +61,7 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 /* Anecdote slides: a park photo as a barely-there texture, not a real
    photograph competing with the words — the ground color still does almost
    all the work. Randy: "very faint backgrounds." */
-.slide.anec .bg{opacity:.16;filter:saturate(.7)}
+.slide.anec .bg{opacity:.09;filter:saturate(.6)}
 .slide.anec .veil{background:var(--ground)}
 
 .name{font-family:var(--serif);font-weight:700;font-size:clamp(2.4rem,7vmin,6rem);line-height:1.08;color:var(--paper)}
@@ -189,8 +189,13 @@ var VIGNETTES = [
       + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>' }
 ];
 
-var WELCOME_SECONDS  = 50;
-var VIGNETTE_SECONDS = 14; // default; a vignette's own `seconds` overrides this
+/* ?speed=10 previews the whole flow fast — same convention as screen.html.
+   Divides every duration (welcome, default vignette, and any vignette's own
+   `seconds` override) by this factor. */
+var SPEED = Math.max(0.1, Math.min(20, +(new URLSearchParams(location.search).get('speed') || 1) || 1));
+
+var WELCOME_SECONDS  = 50 / SPEED;
+var VIGNETTE_SECONDS = 14 / SPEED; // default; a vignette's own `seconds` overrides this
 
 /* Weighted, no-repeat-until-exhausted shuffle bag: each vignette appears
    `weight` times in the bag, the bag is shuffled once, and drawn from in
@@ -251,7 +256,7 @@ function loop(){
   setTimeout(function(){
     var v = nextVignette();
     renderSlide({ welcome: false, bg: v.bg, html: v.html });
-    setTimeout(loop, (v.seconds || VIGNETTE_SECONDS) * 1000);
+    setTimeout(loop, (v.seconds ? v.seconds / SPEED : VIGNETTE_SECONDS) * 1000);
   }, WELCOME_SECONDS * 1000);
 }
 loop();
