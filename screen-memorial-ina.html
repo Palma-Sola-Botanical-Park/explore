@@ -74,6 +74,13 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 }
 .slide.on{opacity:1;z-index:1}
 .slide .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:-1}
+/* Ina's portrait is a tall (819×1024) source photo cover-cropped onto a
+   wide screen — centered vertically, that cut off the top of her head and
+   left most of the visible frame as shirt. Shifting the crop window toward
+   the top of the source photo instead (a low Y%) keeps her whole face and
+   hair in frame, in roughly the upper-middle third. Tune this one number if
+   it needs further adjustment — nothing else about the layout depends on it. */
+.slide.welcome .bg{background-position:50% 8%}
 /* Photo template: the dark green overlay sits OVER the photo — it must stay
    translucent (rgba, not a solid var(--ground)) or the photo underneath
    never shows at all. That was a real bug in the first pass: an opaque
