@@ -108,6 +108,13 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 /* "— Name" byline under a guestbook quote — smaller and quieter than
    .who, since the quote itself is already the point of the slide. */
 .attrib{margin-top:2vmin;font-size:clamp(1rem,2.2vmin,1.5rem);color:var(--gold);font-weight:600;letter-spacing:.02em}
+/* Guestbook notes get their own recognizable template — ChatGPT's review
+   (relayed by Randy): "don't give these the gold vignette heading treatment
+   exactly as-is... guests subconsciously understand: these are someone
+   else's words." Same green/gold system, but a big decorative opening
+   quotation mark instead of the usual small-caps label + rule. */
+.note-mark{font-family:var(--serif);font-size:11vmin;line-height:.6;color:var(--gold-deep);opacity:.6;margin-bottom:.5vmin}
+.note-from{font-size:1.9vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:1.8vmin;font-weight:600}
 
 /* The one-time photo NOTE (not a byline) — a small, quiet explanatory line
    under the first photo vignette shown each session, never repeated.
@@ -139,7 +146,7 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
    slide. To add a photo later, set this to a path (e.g.
    'images/ina-baden.jpg') and the welcome slide uses it as a full-bleed
    background automatically. */
-var PHOTO_URL = 'photos/PSBP-00002/602872039.jpg'; // Weeping Bottlebrush — everyone recognizes it as Palma Sola. Swap for a real photo of Ina if one turns up
+var PHOTO_URL = 'images/memorial-ina-baden.jpg'; // Ina herself — from her own obituary photo, smiling by the water
 
 /* WELCOME is the "home base" slide — office monitor, meant to spark
    conversation among people milling around before/during the service.
@@ -237,35 +244,29 @@ var VIGNETTES = [
      rotation. more rather than less." Quoted faithfully; Pam Hartnagle's
      note had one broken trailing clause ("She was a very to me") — trimmed
      to the clean, complete sentences rather than guessing the missing word. */
-  { weight: 2, html:
-        '<div class="label">In Her Friends&rsquo; Words</div>'
-      + '<div class="rule"></div>'
-      + '<div class="quote">&ldquo;Niny, Baby A, Baby B and Baby C bonded us together for life! Your earthly watch is over and I&rsquo;ll continue it as long as God wills it. So many memories you&rsquo;ve given, so many as treasures to guide them.&rdquo;</div>'
+  { weight: 1, seconds: 19, html:
+        '<div class="note-mark">&ldquo;</div>'
+      + '<div class="note-from">From Carol</div>'
+      + '<div class="quote">Niny, Baby A, Baby B and Baby C bonded us together for life! Your earthly watch is over and I&rsquo;ll continue it as long as God wills it. So many memories you&rsquo;ve given, so many as treasures to guide them.</div>'
       + '<div class="attrib">&mdash; Carol Couchois, &ldquo;Nana&rdquo;</div>' },
 
-  { weight: 2, html:
-        '<div class="label">In Her Friends&rsquo; Words</div>'
-      + '<div class="rule"></div>'
-      + '<div class="quote">&ldquo;I am heartbroken. Ina and I spent many times remembering the past. I will miss her more than anything.&rdquo;</div>'
+  { weight: 1, html:
+        '<div class="note-mark">&ldquo;</div>'
+      + '<div class="note-from">From Pam</div>'
+      + '<div class="quote">I am heartbroken. Ina and I spent many times remembering the past. I will miss her more than anything.</div>'
       + '<div class="attrib">&mdash; Pam Hartnagle</div>' },
 
-  { weight: 2, bg: 'photos/PSBP-00072/703871348.jpg', credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
-        '<div class="label">In Her Friends&rsquo; Words</div>'
-      + '<div class="rule"></div>'
-      + '<div class="quote">&ldquo;Ina, it was such a pleasure knowing you for so many years. You treated my father and myself more like family than friends. I always loved your rose garden and the wonderful fragrance.&rdquo;</div>'
+  { weight: 1, bg: 'photos/PSBP-00072/703871348.jpg', credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
+        '<div class="note-mark">&ldquo;</div>'
+      + '<div class="note-from">From Carl</div>'
+      + '<div class="quote">Ina, it was such a pleasure knowing you for so many years. You treated my father and myself more like family than friends. I always loved your rose garden and the wonderful fragrance.</div>'
       + '<div class="attrib">&mdash; Carl Williams</div>' },
 
-  { weight: 2, html:
-        '<div class="label">In Her Friends&rsquo; Words</div>'
-      + '<div class="rule"></div>'
-      + '<div class="quote">&ldquo;I cannot ask for a better best friend. Ina was always there for me. We had some wonderful adventures! It&rsquo;s true she made everyone feel special. I will carry her in my heart forever.&rdquo;</div>'
-      + '<div class="attrib">&mdash; Ann Graham</div>' },
-
   { weight: 1, html:
-        '<div class="label">In Her Friends&rsquo; Words</div>'
-      + '<div class="rule"></div>'
-      + '<div class="quote">&ldquo;Our sincere condolences to the family, classmates, and friends of our Manatee County High School Class of 1958 alumna.&rdquo;</div>'
-      + '<div class="attrib">&mdash; Manatee High School Alumni Association</div>' }
+        '<div class="note-mark">&ldquo;</div>'
+      + '<div class="note-from">From Ann</div>'
+      + '<div class="quote">I cannot ask for a better best friend. Ina was always there for me. We had some wonderful adventures! It&rsquo;s true she made everyone feel special. I will carry her in my heart forever.</div>'
+      + '<div class="attrib">&mdash; Ann Graham</div>' }
 ];
 
 /* ?speed=10 previews the whole flow fast — same convention as screen.html.
