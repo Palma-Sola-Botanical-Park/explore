@@ -225,6 +225,7 @@ var VIGNETTE_SECONDS = 14 / SPEED; // default; a vignette's own `seconds` overri
    per ChatGPT's guidance (relayed by Randy) on how the obituary material
    should be weighted. */
 var bag = [];
+var lastDrawn = null; // guards the refill seam below
 function refillBag(){
   var pool = [];
   VIGNETTES.forEach(function(v){
@@ -235,11 +236,25 @@ function refillBag(){
     var j = Math.floor(Math.random() * (i + 1));
     var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
   }
+  /* nextVignette() pops from the END, so pool's LAST element is drawn
+     FIRST from this fresh bag. If a shuffle happens to put the same
+     vignette that just finished the old bag right back at that spot, two
+     vignette turns in a row show the same story — which is exactly what
+     Randy caught live ("two screens in a row that said 'Ina spent many
+     years working here'"). Swap it out for a different slot when that
+     happens, rather than reshuffling the whole bag again (which could
+     just recreate the same collision). */
+  var lastIdx = pool.length - 1;
+  if (lastIdx > 0 && pool[lastIdx] === lastDrawn) {
+    var swapWith = Math.floor(Math.random() * lastIdx); // any earlier slot
+    var t2 = pool[lastIdx]; pool[lastIdx] = pool[swapWith]; pool[swapWith] = t2;
+  }
   bag = pool;
 }
 function nextVignette(){
   if (!bag.length) refillBag();
-  return bag.pop();
+  lastDrawn = bag.pop();
+  return lastDrawn;
 }
 
 var deck = document.getElementById('deck');
