@@ -307,8 +307,7 @@ var VIGNETTES = [
   { weight: 3, html:
         '<div class="label">President of Your Fan Club</div>'
       + '<div class="rule"></div>'
-      + '<div class="body">Ina had a way of making people feel like they were her favorite.</div>'
-      + '<div class="quote">&ldquo;I&rsquo;m the president of your fan club.&rdquo;</div>' },
+      + '<div class="body">Ina had a way of making people feel like they were her favorite. She often told them, &ldquo;I&rsquo;m the president of your fan club.&rdquo;</div>' },
 
   { weight: 3, html:
         '<div class="label">Elvis</div>'
@@ -727,11 +726,15 @@ var PHOTO_NOTE_HTML =
   '<div class="photo-note">The garden photographs throughout this tribute were taken here, in the park Ina loved, by others who stopped to notice what was growing.</div>';
 
 /* Small per-photo byline, bottom-left, on every slide carrying a park
-   photo — same photographer/date/license shape the rest of the site uses. */
+   photo — same photographer/date/license shape the rest of the site uses.
+   Used to also repeat "Taken here in the park Ina was such an integral
+   part of" underneath every one, on top of the once-per-session
+   PHOTO_NOTE_HTML above that already explains the photos in full — once a
+   visitor has seen that, a bare name/date/license is enough; the repeated
+   line was explaining meaning that's already been established. */
 function photoCredHtml(c){
   if (!c) return '';
-  return '<div class="photo-cred"><b>' + c.name + '</b> &middot; ' + c.date
-       + ' &middot; CC BY-NC<br>Taken here in the park Ina was such an integral part of</div>';
+  return '<div class="photo-cred"><b>' + c.name + '</b> &middot; ' + c.date + ' &middot; CC BY-NC</div>';
 }
 
 /* Randy: welcome should dominate ("come back to that one a lot"); ChatGPT's
