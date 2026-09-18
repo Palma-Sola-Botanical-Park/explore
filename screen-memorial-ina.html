@@ -184,7 +184,7 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
    own already-shrunk box). Let both portrait flyers use the room they
    have; the row's own gap/centering keeps them from ever overlapping. */
 .event-card img{display:block;height:78vmin;width:auto;object-fit:contain;
-  border-radius:.35vmin;box-shadow:0 .8vmin 2.6vmin rgba(0,0,0,.55),0 0 0 .3vmin rgba(253,252,248,.14)}
+  box-shadow:0 .8vmin 2.6vmin rgba(0,0,0,.55)}
 
 /* "A Thank You In Flowers" — the one vignette here that talks to real data
    instead of carrying its own hardcoded copy: pulls every photo tagged
@@ -521,58 +521,74 @@ var MIN_GAP = 5; // no two turns of the same vignette within this many draws
    next: still "a repeat," just not literally back-to-back. */
 var recentHistory = [];
 
-/* Smallest gap between two turns of the SAME vignette, scoring `pool`
-   against `history` as if they were one continuous sequence (history first,
-   pool after) — Infinity if nothing repeats. Only gaps landing inside pool
-   are counted, since history already happened and can't be changed. */
-function minRepeatGap(pool, history){
-  var lastIdx = new Map();
-  for (var h = 0; h < history.length; h++) lastIdx.set(history[h], h - history.length);
-  var min = Infinity;
-  for (var i = 0; i < pool.length; i++) {
-    if (lastIdx.has(pool[i])) min = Math.min(min, i - lastIdx.get(pool[i]));
-    lastIdx.set(pool[i], i);
-  }
-  return min;
-}
-function shuffleInPlace(pool){
-  for (var i = pool.length - 1; i > 0; i--) {
+function shuffleInPlace(a){
+  for (var i = a.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
-    var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+    var t = a[i]; a[i] = a[j]; a[j] = t;
   }
+  return a;
+}
+/* Nearest empty slot to `ideal` (searching outward, alternating sides) that
+   is at least MIN_GAP away from every position in `avoid`. `avoid` mixes
+   real indices (this vignette's own earlier copies, placed earlier in this
+   same refill) with negative "virtual" indices for its occurrences in
+   recentHistory, exactly like a negative index means "that many turns
+   before this bag started." */
+function findSlot(slots, ideal, avoid){
+  for (var r = 0; r < slots.length; r++) {
+    var cands = r === 0 ? [ideal] : [ideal - r, ideal + r];
+    for (var c = 0; c < cands.length; c++) {
+      var p = cands[c];
+      if (p < 0 || p >= slots.length || slots[p] !== null) continue;
+      if (avoid.every(function(q){ return Math.abs(p - q) >= MIN_GAP; })) return p;
+    }
+  }
+  for (var p2 = 0; p2 < slots.length; p2++) if (slots[p2] === null) return p2; // shouldn't happen; never leave a slot unfilled
 }
 function refillBag(){
-  var pool = [];
+  var groupMap = new Map(); // vignette -> its N copies (for weight N)
   VIGNETTES.forEach(function(v){
     // Skip the Flowers vignette until real data has actually loaded —
     // never show it with an empty/broken right panel.
     if (v.special === 'flowerGrid' && FLOWER_PHOTOS.length < 5) return;
-    for (var i = 0; i < v.weight; i++) pool.push(v);
+    groupMap.set(v, v.weight);
   });
+  var n = 0;
+  groupMap.forEach(function(w){ n += w; });
+  var slots = new Array(n).fill(null);
 
-  /* A plain Fisher–Yates only guarantees the bag is random, not that a
-     weight-2/3 vignette's copies land far apart — Randy caught the SAME
-     anecdote twice within a handful of turns on the live screen, not
-     back-to-back, just close enough together to read as a repeat.
-     Reshuffle (rejection sampling) until every same-vignette pair — INCLUDING
-     against what was just drawn from the previous bag — is at least
-     MIN_GAP turns apart, or give up after a bounded number of tries and
-     keep the best attempt seen. The bag is small (a few dozen slots), so
-     this converges almost immediately in practice. */
-  var best = pool.slice(), bestGap = -1;
-  for (var attempt = 0; attempt < 60; attempt++) {
-    shuffleInPlace(pool);
-    var gap = minRepeatGap(pool, recentHistory);
-    if (gap > bestGap) { bestGap = gap; best = pool.slice(); }
-    if (gap >= MIN_GAP) break;
-  }
-  bag = best;
+  /* A plain shuffle only guarantees the bag is random, not that a weight-2/3
+     vignette's copies land far apart from each other — Randy caught the
+     SAME anecdote twice within a handful of turns on the live screen, not
+     back-to-back, just close enough together to read as a repeat (rejection-
+     sampling a full reshuffle to fix this turned out to fail ~80% of the
+     time here and silently fall back to a worse shuffle — not good enough
+     for something running unattended for hours). This instead PLACES each
+     vignette's copies directly, evenly spread (with a little jitter so
+     repeated refills don't all look identical) across the bag, hardest
+     (most-copies) vignettes first while the most room is open — the same
+     order-of-operations idea as bin-packing the biggest items first. */
+  var groups = shuffleInPlace(Array.from(groupMap.entries())) // random among ties
+    .sort(function(a, b){ return b[1] - a[1]; }); // then most-copies first
+  groups.forEach(function(entry){
+    var v = entry[0], copies = entry[1];
+    var avoid = [];
+    for (var h = 0; h < recentHistory.length; h++) {
+      if (recentHistory[h] === v) avoid.push(h - recentHistory.length);
+    }
+    for (var c = 0; c < copies; c++) {
+      var ideal = Math.round((c + 0.5) * n / copies);
+      ideal += Math.round((Math.random() - 0.5) * (n / copies) * 0.5); // jitter
+      var pos = findSlot(slots, ideal, avoid);
+      slots[pos] = v;
+      avoid.push(pos);
+    }
+  });
+  bag = slots;
 }
 function nextVignette(){
   if (!bag.length) refillBag();
-  // shift(), not pop(): minRepeatGap scores index 0 as drawn first, so the
-  // draw order has to read the bag front-to-back to match what it optimized.
-  var v = bag.shift();
+  var v = bag.shift(); // front-to-back, matching how refillBag() laid out ideal positions
   recentHistory.push(v);
   if (recentHistory.length > MIN_GAP) recentHistory.shift();
   return v;
