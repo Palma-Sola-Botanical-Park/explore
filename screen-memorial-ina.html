@@ -164,8 +164,14 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
   box-shadow:0 0 0 .55vmin var(--paper),0 .6vmin 1.6vmin rgba(0,0,0,.45)}
 .qr-label{margin-top:1.6vmin;font-family:var(--serif);font-style:italic;font-weight:400;
   color:var(--gold);font-size:clamp(1.15rem,2.7vmin,1.9rem)}
-.qr-url{margin-top:.5vmin;max-width:24vmin;font-size:clamp(.6rem,1.05vmin,.78rem);
-  color:var(--ink-quiet);letter-spacing:.01em;word-break:break-word}
+/* Event flyers — shown whole, full color, no saturation/veil treatment (the
+   .anec dimming only ever targets .bg/.veil, which this slide doesn't use).
+   Deliberately NOT tied to Ina in the copy: a park-events slide doesn't need
+   a memorial angle, and forcing one risks landing corny. The plain label
+   just orients the viewer after a slide's worth of her own story. */
+.event-row{display:flex;gap:4.5vmin;justify-content:center;align-items:flex-end;margin-top:1vmin}
+.event-card img{display:block;height:56vmin;width:auto;max-width:36vmin;object-fit:contain;
+  border-radius:.35vmin;box-shadow:0 .6vmin 2.2vmin rgba(0,0,0,.55),0 0 0 .25vmin rgba(253,252,248,.14)}
 
 @media (max-width:900px){ .body{max-width:88vmin} }
 </style>
@@ -276,14 +282,26 @@ var VIGNETTES = [
       + '<div class="rule"></div>'
       + '<div class="body">When someone was frightened, overwhelmed, or simply needed comfort, Ina had a standing invitation: &ldquo;Come get in the white bed.&rdquo; For generations of her family, it became a place of refuge.</div>' },
 
-  { weight: 2, seconds: 30, bg: 'photos/PSBP-00621/681678425.jpg', credit: { name: 'Rob Carr', date: 'Mar 31, 2023' }, html:
+  { weight: 2, seconds: 30, bg: 'photos/PSBP-00621/681678425.jpg', credit: { name: 'Rob Carr', date: 'Mar 31, 2023' }, noPhotoNote: true, html:
         '<div class="label">Palma Sola</div>'
       + '<div class="rule"></div>'
       + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>'
       + '<div class="give-lead">If you\'d like to help carry that forward, here are two easy ways to give.</div>'
       + '<div class="qr-row">'
       +   '<div class="qr-card"><img src="images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One&#8209;Time Gift</div></div>'
-      +   '<div class="qr-card"><img src="images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div><div class="qr-url">palma-sola-botanical-park.github.io/explore/get-involved.html#member</div></div>'
+      +   '<div class="qr-card"><img src="images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div></div>'
+      + '</div>' },
+
+  /* Park events, shown plain — deliberately not framed as anything to do
+     with Ina. Kept rare (weight 1) so it's a light touch in the rotation,
+     not a promo break. Full color, longer dwell since there's more to read
+     on two dense flyers. */
+  { weight: 1, seconds: 20, html:
+        '<div class="label">Coming Up at the Park</div>'
+      + '<div class="rule"></div>'
+      + '<div class="event-row">'
+      +   '<div class="event-card"><img src="images/events/fallplant.jpg" alt="Fall Plant and Garden Festival flyer, Sunday October 4, 10am to 3pm"></div>'
+      +   '<div class="event-card"><img src="images/events/groovin-2026.jpg" alt="Groovin in the Gardens flyer, Sunday October 18, 4 to 6pm"></div>'
       + '</div>' },
 
   /* Guestbook notes — real, verbatim messages left on her obituary pages
@@ -417,7 +435,7 @@ function loop(){
   setTimeout(function(){
     var v = nextVignette();
     var html = v.html;
-    if (v.bg && !photoNoteShown) { html += PHOTO_NOTE_HTML; photoNoteShown = true; }
+    if (v.bg && !photoNoteShown && !v.noPhotoNote) { html += PHOTO_NOTE_HTML; photoNoteShown = true; }
     html += photoCredHtml(v.credit);
     renderSlide({ welcome: false, bg: v.bg, html: html });
     setTimeout(loop, (v.seconds ? v.seconds / SPEED : VIGNETTE_SECONDS) * 1000);
