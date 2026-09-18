@@ -177,9 +177,14 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
    Deliberately NOT tied to Ina in the copy: a park-events slide doesn't need
    a memorial angle, and forcing one risks landing corny. The plain label
    just orients the viewer after a slide's worth of her own story. */
-.event-row{display:flex;gap:4.5vmin;justify-content:center;align-items:flex-end;margin-top:1vmin}
-.event-card img{display:block;height:56vmin;width:auto;max-width:36vmin;object-fit:contain;
-  border-radius:.35vmin;box-shadow:0 .6vmin 2.2vmin rgba(0,0,0,.55),0 0 0 .25vmin rgba(253,252,248,.14)}
+.event-row{display:flex;gap:3.5vmin;justify-content:center;align-items:center;margin-top:1.5vmin}
+/* height alone drives size — no max-width cap fighting it (that was the
+   bug: 36vmin was quietly overriding the 56vmin height's own natural
+   width, so object-fit:contain shrank the actual image again inside its
+   own already-shrunk box). Let both portrait flyers use the room they
+   have; the row's own gap/centering keeps them from ever overlapping. */
+.event-card img{display:block;height:78vmin;width:auto;object-fit:contain;
+  border-radius:.35vmin;box-shadow:0 .8vmin 2.6vmin rgba(0,0,0,.55),0 0 0 .3vmin rgba(253,252,248,.14)}
 
 /* "A Thank You In Flowers" — the one vignette here that talks to real data
    instead of carrying its own hardcoded copy: pulls every photo tagged
