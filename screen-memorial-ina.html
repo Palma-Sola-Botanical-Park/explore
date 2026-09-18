@@ -59,6 +59,14 @@ html,body{height:100%;overflow:hidden;background:var(--ground)}
 body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
 
 .frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
+
+/* Progress hairline — same device as screen-park.html's #bar (width
+   animated from 0 to 100% over the current slide's dwell time), but kept
+   quieter to match this file's hushed tone: thinner, dimmer, and the same
+   muted gold as .rule/.frame rather than a bright gradient. Still legible
+   up close if someone wants to know how long a slide has left. */
+#bar{position:fixed;left:0;bottom:0;height:1px;width:0;z-index:45;
+  background:var(--gold-deep);opacity:.55;pointer-events:none}
 .logo-mark{position:fixed;bottom:calc(var(--frame) + 1.6vmin);right:calc(var(--frame) + 1.8vmin);height:5.2vmin;width:auto;opacity:.78;z-index:41;pointer-events:none}
 
 .deck{position:fixed;inset:0}
@@ -215,6 +223,7 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 <div class="frame"></div>
 <img class="logo-mark" src="images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
 <div class="deck" id="deck"></div>
+<div id="bar"></div>
 
 <script>
 /* PHOTO_URL: leave blank for the clean type-only version of the welcome
@@ -500,6 +509,23 @@ function startFlowerVignette(slideEl, totalMs){
    should be weighted. */
 var bag = [];
 var lastDrawn = null; // guards the refill seam below
+
+/* Smallest gap, anywhere in the pool, between two turns of the SAME
+   vignette (Infinity if every vignette in this pool only appears once). */
+function minRepeatGap(pool){
+  var lastIdx = new Map(), min = Infinity;
+  for (var i = 0; i < pool.length; i++) {
+    if (lastIdx.has(pool[i])) min = Math.min(min, i - lastIdx.get(pool[i]));
+    lastIdx.set(pool[i], i);
+  }
+  return min;
+}
+function shuffleInPlace(pool){
+  for (var i = pool.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+  }
+}
 function refillBag(){
   var pool = [];
   VIGNETTES.forEach(function(v){
@@ -508,19 +534,32 @@ function refillBag(){
     if (v.special === 'flowerGrid' && FLOWER_PHOTOS.length < 5) return;
     for (var i = 0; i < v.weight; i++) pool.push(v);
   });
-  // Fisher–Yates
-  for (var i = pool.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+
+  /* A plain Fisher–Yates only guarantees the bag is random, not that a
+     weight-2/3 vignette's copies land far apart within it — Randy caught
+     the SAME anecdote twice within a handful of turns, not back-to-back,
+     just close enough together on the live screen to read as a repeat.
+     Reshuffle (rejection sampling) until every same-vignette pair is at
+     least MIN_GAP turns apart, or give up after a bounded number of tries
+     and keep the best attempt seen — the bag is small (a few dozen slots)
+     so this converges almost immediately in practice. */
+  var MIN_GAP = 5;
+  var best = pool.slice(), bestGap = -1;
+  for (var attempt = 0; attempt < 60; attempt++) {
+    shuffleInPlace(pool);
+    var gap = minRepeatGap(pool);
+    if (gap > bestGap) { bestGap = gap; best = pool.slice(); }
+    if (gap >= MIN_GAP) break;
   }
+  pool = best;
+
   /* nextVignette() pops from the END, so pool's LAST element is drawn
-     FIRST from this fresh bag. If a shuffle happens to put the same
-     vignette that just finished the old bag right back at that spot, two
-     vignette turns in a row show the same story — which is exactly what
+     FIRST from this fresh bag. If the winning shuffle happens to put the
+     same vignette that just finished the OLD bag right back at that seam,
+     two vignette turns in a row show the same story — the original bug
      Randy caught live ("two screens in a row that said 'Ina spent many
      years working here'"). Swap it out for a different slot when that
-     happens, rather than reshuffling the whole bag again (which could
-     just recreate the same collision). */
+     happens, rather than reshuffling the whole bag again. */
   var lastIdx = pool.length - 1;
   if (lastIdx > 0 && pool[lastIdx] === lastDrawn) {
     var swapWith = Math.floor(Math.random() * lastIdx); // any earlier slot
@@ -535,7 +574,20 @@ function nextVignette(){
 }
 
 var deck = document.getElementById('deck');
+var bar = document.getElementById('bar');
 var liveEl = null; // the currently-shown slide element, if any
+
+/* Same device as screen-park.html's #bar: snap width back to 0 with no
+   transition, then (next frame, so the browser registers that reset)
+   animate it to 100% linearly over the slide's actual dwell time. */
+function runBar(seconds){
+  bar.style.transition = 'none';
+  bar.style.width = '0';
+  requestAnimationFrame(function(){
+    bar.style.transition = 'width ' + seconds + 's linear';
+    bar.style.width = '100%';
+  });
+}
 
 /* A real crossfade, not a swap: the new slide is appended at opacity 0,
    forced to reflow so the browser registers that starting state, then both
@@ -584,6 +636,7 @@ function photoCredHtml(c){
    That puts welcome at roughly 75–80% of total screen time. */
 function loop(){
   renderSlide({ welcome: true, bg: WELCOME.bg, html: WELCOME.html + photoCredHtml(WELCOME.credit) });
+  runBar(WELCOME_SECONDS);
   setTimeout(function(){
     var v = nextVignette();
     var html = v.html;
@@ -591,6 +644,7 @@ function loop(){
     html += photoCredHtml(v.credit);
     renderSlide({ welcome: false, bg: v.bg, html: html });
     var dwellMs = (v.seconds ? v.seconds / SPEED : VIGNETTE_SECONDS) * 1000;
+    runBar(dwellMs / 1000);
     if (v.special === 'flowerGrid') startFlowerVignette(liveEl, dwellMs);
     setTimeout(loop, dwellMs);
   }, WELCOME_SECONDS * 1000);
