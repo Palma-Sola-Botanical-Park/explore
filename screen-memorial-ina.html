@@ -25,8 +25,8 @@
    kiosk (just a browser pointed at that URL) picks it up on its own with no
    need to touch the machine. Reverting later is restoring the backup.
 
-   Rotation: WELCOME (the "home base," ~38s, ~70% of total screen time given
-   the current vignette mix) alternates with one VIGNETTE (~14s, or its own
+   Rotation: WELCOME (the "home base," ~38s, roughly two-thirds of total
+   screen time given the current vignette mix) alternates with one VIGNETTE (~14s, or its own
    `seconds` override) drawn from a weighted, no-repeat-within-MIN_GAP-turns
    shuffle bag — see VIGNETTES below for the full chart (17 as of this
    writing). 3 of them carry a faint park photo (welcome always does); the
@@ -342,7 +342,7 @@ var VIGNETTES = [
   { weight: 2, html:
         '<div class="label">The Piano</div>'
       + '<div class="rule"></div>'
-      + '<div class="body">Ina learned to play piano and kept playing throughout her life &mdash; one interest among many she never seemed too old to begin, or continue.</div>' },
+      + '<div class="body">Ina learned to play piano and kept playing throughout her life. It was one of many interests she carried with her through the years.</div>' },
 
   { weight: 2, html:
         '<div class="label">Scrabble</div>'
@@ -367,8 +367,8 @@ var VIGNETTES = [
       +   '<div class="flower-left">'
       +     '<div class="label">A Thank You In Flowers</div>'
       +     '<div class="rule"></div>'
-      +     '<div class="body">Ina worked hard to preserve this park for those who would come after her. They have &mdash; students, volunteers, visitors and photographers, discovering its plants and sharing what they find.</div>'
-      +     '<div class="body">These photographs were all taken here, in the park she loved. They are a small glimpse of what continues to grow because people like Ina cared enough to keep it growing.</div>'
+      +     '<div class="body">Ina worked hard to preserve this park for those who would come after her. Today, students, volunteers, visitors and photographers are among those carrying that work forward.</div>'
+      +     '<div class="body">Every photograph here was taken at Palma Sola, by someone who stopped to notice what was growing. Together, they make a fitting thank you to Ina.</div>'
       +   '</div>'
       +   '<div class="flower-right"></div>'
       + '</div>' },
@@ -377,7 +377,7 @@ var VIGNETTES = [
         '<div class="label">Palma Sola</div>'
       + '<div class="rule"></div>'
       + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>'
-      + '<div class="give-lead">Two easy ways to give.</div>'
+      + '<div class="give-lead">Here&rsquo;s how to give.</div>'
       + '<div class="qr-row">'
       +   '<div class="qr-card"><img src="images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One&#8209;Time Gift</div></div>'
       +   '<div class="qr-card"><img src="images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div></div>'
@@ -442,7 +442,7 @@ var VIGNETTES = [
    `seconds` override) by this factor. */
 var SPEED = Math.max(0.1, Math.min(20, +(new URLSearchParams(location.search).get('speed') || 1) || 1));
 
-var WELCOME_SECONDS  = 38 / SPEED; // ~70% of total screen time given the current vignette mix — see loop() below
+var WELCOME_SECONDS  = 38 / SPEED; // roughly two-thirds of total screen time given the current vignette mix — see loop() below
 var VIGNETTE_SECONDS = 14 / SPEED; // default; a vignette's own `seconds` overrides this
 
 /* ── The Flowers vignette: real data, not hardcoded copy ───────────────────
@@ -514,27 +514,34 @@ function buildMosaicEl(picks){
   });
   return el;
 }
-/* Runs for as long as this vignette is on screen: draws a fresh shuffled
-   pool so a showing never repeats a photo across its own sets, then
-   crossfades through a few (SETS) random mosaics before the outer loop()
-   moves on to the next vignette. */
+/* Shuffled pool without replacement — module-level, not reset per showing.
+   With 98 photos across 33 photographers, resetting the shuffle every time
+   this vignette comes up would let one photo repeat across two showings
+   while dozens of others still hadn't appeared all session — the opposite
+   of the point (showing the breadth of who's participating). This instead
+   drains the WHOLE catalog once, in random order, across every showing for
+   the whole session, before any photo repeats, and only reshuffles once
+   truly exhausted. */
+var flowerPool = [], flowerCursor = 0;
+function nextFlowerPicks(n){
+  if (flowerCursor + n > flowerPool.length) { flowerPool = shuffleCopy(FLOWER_PHOTOS); flowerCursor = 0; }
+  var picks = flowerPool.slice(flowerCursor, flowerCursor + n);
+  flowerCursor += n;
+  return picks;
+}
+/* Runs for as long as this vignette is on screen: crossfades through a few
+   (SETS) random mosaics, drawn from the pool above, before the outer
+   loop() moves on to the next vignette. */
 function startFlowerVignette(slideEl, totalMs){
   var right = slideEl && slideEl.querySelector('.flower-right');
   if (!right || !FLOWER_PHOTOS.length) return;
-  var pool = shuffleCopy(FLOWER_PHOTOS), cursor = 0;
-  function nextPicks(n){
-    if (cursor + n > pool.length) { pool = shuffleCopy(FLOWER_PHOTOS); cursor = 0; }
-    var picks = pool.slice(cursor, cursor + n);
-    cursor += n;
-    return picks;
-  }
   var SETS = 3; // "a couple sets" each time this vignette comes up
   var FADE = 1800 / SPEED;
   var perSet = Math.max(4500 / SPEED, (totalMs - FADE) / SETS);
   var live = null;
   function showSet(i){
     if (i >= SETS || !right.isConnected) return;
-    var el = buildMosaicEl(nextPicks(Math.random() < 0.5 ? 5 : 6));
+    var el = buildMosaicEl(nextFlowerPicks(Math.random() < 0.5 ? 5 : 6));
     right.appendChild(el);
     void el.offsetWidth; // force reflow before the fade-in, same device as renderSlide()
     var prev = live;
@@ -691,7 +698,7 @@ function renderSlide(entry){
    that actually is. */
 var photoNoteShown = false;
 var PHOTO_NOTE_HTML =
-  '<div class="photo-note">The garden photographs throughout this tribute were taken here at Palma Sola Botanical Park &mdash; a place Ina loved &mdash; by friends and visitors who shared that love of the gardens.</div>';
+  '<div class="photo-note">The garden photographs throughout this tribute were taken here, in the park Ina loved, by others who stopped to notice what was growing.</div>';
 
 /* Small per-photo byline, bottom-left, on every slide carrying a park
    photo — same photographer/date/license shape the rest of the site uses. */
@@ -704,8 +711,8 @@ function photoCredHtml(c){
 /* Randy: welcome should dominate ("come back to that one a lot"); ChatGPT's
    structure (relayed): welcome, one vignette (~14s, or its own override),
    back to welcome, repeat — never two vignettes back to back. WELCOME_SECONDS
-   (38s) puts welcome at ~70% of total screen time given the current
-   vignette mix — nudged down from an original ~75–80% on request. */
+   (38s) puts welcome at roughly two-thirds of total screen time given the
+   current vignette mix — nudged down from an original ~75–80% on request. */
 function loop(){
   renderSlide({ welcome: true, bg: WELCOME.bg, html: WELCOME.html + photoCredHtml(WELCOME.credit) });
   runBar(WELCOME_SECONDS);
