@@ -28,7 +28,7 @@
    Rotation: WELCOME (the "home base," ~38s, roughly two-thirds of total
    screen time given the current vignette mix) alternates with one VIGNETTE (~14s, or its own
    `seconds` override) drawn from a weighted, no-repeat-within-MIN_GAP-turns
-   shuffle bag — see VIGNETTES below for the full chart (17 as of this
+   shuffle bag — see VIGNETTES below for the full chart (18 as of this
    writing). 3 of them carry a faint park photo (welcome always does); the
    rest stay on the plain dark field, weighted toward the more intimate/
    emotional stories per ChatGPT's review (relayed by Randy). Every photo
@@ -162,6 +162,12 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 .nc-date{font-family:var(--sans);color:rgba(36,28,18,.52);font-size:clamp(.65rem,1.2vmin,.82rem)}
 .nc-quote{font-family:var(--serif);font-style:italic;font-weight:400;color:#2a2116;
   font-size:clamp(.92rem,1.85vmin,1.3rem);line-height:1.45}
+
+/* One card — Randy's own — carries a photo. Every other note card is
+   text-only; this is a deliberate one-off, not a new standard pattern. */
+.note-card.with-photo{padding:0;overflow:hidden}
+.note-card.with-photo .nc-photo{width:100%;height:22vmin;object-fit:cover;display:block}
+.note-card.with-photo .nc-body{padding:2.2vmin 2.4vmin}
 
 /* The one-time photo NOTE (not a byline) — a small, quiet explanatory line
    under the first photo vignette shown each session, never repeated.
@@ -433,6 +439,26 @@ var VIGNETTES = [
       +       '<div class="nc-quote">I cannot ask for a better best friend. Ina was always there for me. We had some wonderful adventures! She was devoted to every family member. It&rsquo;s true she made everyone feel special. I will carry her in my heart forever.</div></div>'
       +     '<div class="note-card wide"><div class="nc-head"><span class="nc-name">Carol Couchois</span><span class="nc-date">Sep 14, 2026</span></div>'
       +       '<div class="nc-quote">Niny, Baby A, Baby B and Baby C bonded us together for life! Your earthly watch is over and I&rsquo;ll continue it as long as God wills it. Your heavenly job is just beginning and I know for a fact you&rsquo;ll watch over your family as they grieve. So many memories you&rsquo;ve given, so many as treasures to guide them!</div></div>'
+      +   '</div>'
+      + '</div>' },
+
+  /* Randy's own submission to legacy.com, added after the fact — same
+     "In Their Own Words" family as the pages above, just a solo card
+     since there's only one quote, and the one card in this whole set
+     that carries a photo (the park's only surviving photo of the actual
+     Amazon Lily, which is who this note is about). */
+  { weight: 1, seconds: 26, html:
+        '<div class="notes-slide">'
+      +   '<div class="label">In Their Own Words</div>'
+      +   '<div class="rule"></div>'
+      +   '<div class="notes-grid cols-2">'
+      +     '<div class="note-card wide with-photo">'
+      +       '<img class="nc-photo" src="photos/PSBP-00121/673659284.jpg" alt="The Baden family&rsquo;s Amazon Lily on Bird of Paradise Island">'
+      +       '<div class="nc-body">'
+      +         '<div class="nc-head"><span class="nc-name">Randall Carter</span><span class="nc-date">Sep 17, 2026</span></div>'
+      +         '<div class="nc-quote">Ina, as a volunteer here who works alongside our high school volunteers, I promise we&rsquo;ll help carry your legacy forward. We&rsquo;ll give special care to your family&rsquo;s Amazon lily on Bird of Paradise Island. It was knocked back hard by saltwater from the bay a couple of years ago, but we&rsquo;ll make it our mission to see it continue its comeback. We&rsquo;ll remember you.</div>'
+      +       '</div>'
+      +     '</div>'
       +   '</div>'
       + '</div>' }
 ];
