@@ -25,10 +25,11 @@
    kiosk (just a browser pointed at that URL) picks it up on its own with no
    need to touch the machine. Reverting later is restoring the backup.
 
-   Rotation: WELCOME (the "home base," ~50s) alternates with one VIGNETTE
-   (~14s, or its own `seconds` override) drawn from a weighted, no-repeat-
-   until-exhausted shuffle bag — see VIGNETTES below for the full chart.
-   3 of 12 vignettes carry a faint park photo (welcome always does); the
+   Rotation: WELCOME (the "home base," ~38s, ~70% of total screen time given
+   the current vignette mix) alternates with one VIGNETTE (~14s, or its own
+   `seconds` override) drawn from a weighted, no-repeat-within-MIN_GAP-turns
+   shuffle bag — see VIGNETTES below for the full chart (19 as of this
+   writing). 4 of them carry a faint park photo (welcome always does); the
    rest stay on the plain dark field, weighted toward the more intimate/
    emotional stories per ChatGPT's review (relayed by Randy). Every photo
    slide carries its own small bottom-left credit (name/date/license, real
@@ -338,7 +339,8 @@ var VIGNETTES = [
       +   '<div class="flower-left">'
       +     '<div class="label">A Thank You In Flowers</div>'
       +     '<div class="rule"></div>'
-      +     '<div class="body">Ina worked hard to keep this park alive. Here&rsquo;s some of what&rsquo;s blooming because of it &mdash; photographed by high school volunteers, regular visitors with a phone in hand, and photographers who&rsquo;ve spent years chasing this kind of shot.</div>'
+      +     '<div class="body">Ina worked hard to preserve this park for those who would come after her. They have &mdash; students, volunteers, visitors and photographers, discovering its plants and sharing what they find.</div>'
+      +     '<div class="body">These photographs were all taken here, in the park she loved. They are a small glimpse of what continues to grow because people like Ina cared enough to keep it growing.</div>'
       +   '</div>'
       +   '<div class="flower-right"></div>'
       + '</div>' },
@@ -347,7 +349,7 @@ var VIGNETTES = [
         '<div class="label">Palma Sola</div>'
       + '<div class="rule"></div>'
       + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>'
-      + '<div class="give-lead">If you\'d like to help carry that forward, here are two easy ways to give.</div>'
+      + '<div class="give-lead">Two easy ways to give.</div>'
       + '<div class="qr-row">'
       +   '<div class="qr-card"><img src="images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One&#8209;Time Gift</div></div>'
       +   '<div class="qr-card"><img src="images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div></div>'
@@ -401,7 +403,7 @@ var VIGNETTES = [
    `seconds` override) by this factor. */
 var SPEED = Math.max(0.1, Math.min(20, +(new URLSearchParams(location.search).get('speed') || 1) || 1));
 
-var WELCOME_SECONDS  = 50 / SPEED;
+var WELCOME_SECONDS  = 38 / SPEED; // ~70% of total screen time given the current vignette mix — see loop() below
 var VIGNETTE_SECONDS = 14 / SPEED; // default; a vignette's own `seconds` overrides this
 
 /* ── The Flowers vignette: real data, not hardcoded copy ───────────────────
@@ -521,69 +523,78 @@ var MIN_GAP = 5; // no two turns of the same vignette within this many draws
    next: still "a repeat," just not literally back-to-back. */
 var recentHistory = [];
 
-function shuffleInPlace(a){
-  for (var i = a.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = a[i]; a[i] = a[j]; a[j] = t;
-  }
-  return a;
-}
-/* Nearest empty slot to `ideal` (searching outward, alternating sides) that
-   is at least MIN_GAP away from every position in `avoid`. `avoid` mixes
-   real indices (this vignette's own earlier copies, placed earlier in this
-   same refill) with negative "virtual" indices for its occurrences in
-   recentHistory, exactly like a negative index means "that many turns
-   before this bag started." */
-function findSlot(slots, ideal, avoid){
-  for (var r = 0; r < slots.length; r++) {
-    var cands = r === 0 ? [ideal] : [ideal - r, ideal + r];
-    for (var c = 0; c < cands.length; c++) {
-      var p = cands[c];
-      if (p < 0 || p >= slots.length || slots[p] !== null) continue;
-      if (avoid.every(function(q){ return Math.abs(p - q) >= MIN_GAP; })) return p;
-    }
-  }
-  for (var p2 = 0; p2 < slots.length; p2++) if (slots[p2] === null) return p2; // shouldn't happen; never leave a slot unfilled
-}
+/* Builds the bag one slot at a time, left to right. At each slot, a
+   vignette is only ELIGIBLE if placing it there wouldn't put it within
+   MIN_GAP of its own last placement — including a placement from the
+   previous bag, via recentHistory. Pick is random among whatever's
+   eligible. This can't silently violate the spacing the way a "shuffle and
+   hope" or "aim for an ideal spot" approach can: a violation is only ever
+   possible in the one genuinely-infeasible edge case (checked below), not
+   as a quiet fallback taken because a bounded search or a shared "ideal"
+   target for same-weight vignettes happened not to work out. (Both of
+   those were tried first and, instrumented, actually violated MIN_GAP a
+   meaningful fraction of the time — not good enough for something running
+   unattended for hours.) */
 function refillBag(){
-  var groupMap = new Map(); // vignette -> its N copies (for weight N)
+  var remaining = new Map(); // vignette -> copies left to place
   VIGNETTES.forEach(function(v){
     // Skip the Flowers vignette until real data has actually loaded —
     // never show it with an empty/broken right panel.
     if (v.special === 'flowerGrid' && FLOWER_PHOTOS.length < 5) return;
-    groupMap.set(v, v.weight);
+    remaining.set(v, v.weight);
   });
   var n = 0;
-  groupMap.forEach(function(w){ n += w; });
-  var slots = new Array(n).fill(null);
+  remaining.forEach(function(w){ n += w; });
 
-  /* A plain shuffle only guarantees the bag is random, not that a weight-2/3
-     vignette's copies land far apart from each other — Randy caught the
-     SAME anecdote twice within a handful of turns on the live screen, not
-     back-to-back, just close enough together to read as a repeat (rejection-
-     sampling a full reshuffle to fix this turned out to fail ~80% of the
-     time here and silently fall back to a worse shuffle — not good enough
-     for something running unattended for hours). This instead PLACES each
-     vignette's copies directly, evenly spread (with a little jitter so
-     repeated refills don't all look identical) across the bag, hardest
-     (most-copies) vignettes first while the most room is open — the same
-     order-of-operations idea as bin-packing the biggest items first. */
-  var groups = shuffleInPlace(Array.from(groupMap.entries())) // random among ties
-    .sort(function(a, b){ return b[1] - a[1]; }); // then most-copies first
-  groups.forEach(function(entry){
-    var v = entry[0], copies = entry[1];
-    var avoid = [];
-    for (var h = 0; h < recentHistory.length; h++) {
-      if (recentHistory[h] === v) avoid.push(h - recentHistory.length);
+  var lastPos = new Map(); // vignette -> most recent position, real or (negative) historical
+  recentHistory.forEach(function(v, h){ lastPos.set(v, h - recentHistory.length); });
+
+  var slots = [];
+  for (var pos = 0; pos < n; pos++) {
+    var eligible = [];
+    remaining.forEach(function(copiesLeft, v){
+      if (copiesLeft <= 0) return;
+      var last = lastPos.has(v) ? lastPos.get(v) : -Infinity;
+      if (pos - last >= MIN_GAP) eligible.push(v);
+    });
+    if (!eligible.length) {
+      // Genuinely infeasible (shouldn't happen at this bag size/MIN_GAP):
+      // take whichever remaining vignette has gone longest without a turn,
+      // the smallest violation available rather than an arbitrary one.
+      remaining.forEach(function(copiesLeft, v){ if (copiesLeft > 0) eligible.push(v); });
+      eligible.sort(function(a, b){
+        return (lastPos.has(a) ? lastPos.get(a) : -Infinity) - (lastPos.has(b) ? lastPos.get(b) : -Infinity);
+      });
+      eligible = [eligible[0]];
     }
-    for (var c = 0; c < copies; c++) {
-      var ideal = Math.round((c + 0.5) * n / copies);
-      ideal += Math.round((Math.random() - 0.5) * (n / copies) * 0.5); // jitter
-      var pos = findSlot(slots, ideal, avoid);
-      slots[pos] = v;
-      avoid.push(pos);
-    }
-  });
+    /* Plain random choice among `eligible` isn't enough on its own: a
+       weight-3 item's 3rd copy can need one of only a few remaining valid
+       slots, and random luck can fill every one of them with OTHER picks
+       first — even a "wait until it's actually forced" version of this
+       still fails when two vignettes hit their deadline on the same turn,
+       since delaying whichever one loses the tie can leave it with no
+       feasible spot at all a few turns later. Real earliest-deadline-first
+       avoids that: a vignette with `copiesLeft` copies remaining needs
+       (copiesLeft-1)*MIN_GAP more slots after this one to fit the rest
+       properly spaced, so ALWAYS placing whichever eligible vignette has
+       the least slack before that deadline (ties broken randomly, for
+       variety) is what actually guarantees a valid full arrangement
+       whenever one exists — reacting only once slack hits zero is not
+       the same guarantee. */
+    var minSlack = Infinity;
+    eligible.forEach(function(v){
+      var deadline = (n - 1) - (remaining.get(v) - 1) * MIN_GAP;
+      minSlack = Math.min(minSlack, deadline - pos);
+    });
+    var mostUrgent = eligible.filter(function(v){
+      var deadline = (n - 1) - (remaining.get(v) - 1) * MIN_GAP;
+      return (deadline - pos) === minSlack;
+    });
+    var pick = mostUrgent[Math.floor(Math.random() * mostUrgent.length)];
+    slots.push(pick);
+    remaining.set(pick, remaining.get(pick) - 1);
+    lastPos.set(pick, pos);
+  }
   bag = slots;
 }
 function nextVignette(){
@@ -652,9 +663,10 @@ function photoCredHtml(c){
 }
 
 /* Randy: welcome should dominate ("come back to that one a lot"); ChatGPT's
-   structure (relayed): welcome ~50s, one vignette ~14s (or its own
-   override), back to welcome, repeat — never two vignettes back to back.
-   That puts welcome at roughly 75–80% of total screen time. */
+   structure (relayed): welcome, one vignette (~14s, or its own override),
+   back to welcome, repeat — never two vignettes back to back. WELCOME_SECONDS
+   (38s) puts welcome at ~70% of total screen time given the current
+   vignette mix — nudged down from an original ~75–80% on request. */
 function loop(){
   renderSlide({ welcome: true, bg: WELCOME.bg, html: WELCOME.html + photoCredHtml(WELCOME.credit) });
   runBar(WELCOME_SECONDS);
