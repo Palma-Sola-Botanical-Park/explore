@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In Loving Memory · Mary Ina Baden — Donate</title>
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   MEMORIAL SLIDE — Mary Ina Baden ("Niny"), 1940–2026
+   ----------------------------------------------------------------------------
+   NOT the regular screen.html. A separate, standalone file — deliberately
+   simple, no feed machinery. Built as a DEMO for Randy to review before
+   anything goes live; nothing here has been pushed to the office/galleria
+   kiosks yet.
+
+   Same visual language as screen.html (--ground, --gold, --paper, Playfair +
+   Source Sans) so it still reads as "this park," just hushed: long dwells,
+   slow fades, no eyebrows/badges/gold "NEW" flourishes — every device that
+   normally signals "look, something's happening!" is deliberately absent.
+
+   Swap-in plan (not done yet): save the current screen.html as
+   screen-normal.html, then this file's content replaces screen.html so the
+   kiosk (just a browser pointed at that URL) picks it up on its own with no
+   need to touch the machine. Reverting later is restoring the backup.
+
+   Rotation: WELCOME (the "home base," ~38s, roughly two-thirds of total
+   screen time given the current vignette mix) alternates with one VIGNETTE
+   (~14s, or its own `seconds` override), in a FIXED order — no randomness
+   (Randy/Bev: the randomized version wasn't working; this deck is locked
+   in, spaced and paced deliberately). See VIGNETTES below for the full,
+   in-order chart (18 as of this writing) — it plays top to bottom and
+   loops. 3 of them carry a faint park photo (welcome always does). Every photo
+   slide carries its own small bottom-left credit (name/date/license, real
+   data from photo_credits.json); the first photo vignette shown each
+   session also gets a one-time explanatory note about where the photos
+   came from.
+
+   No photo of Ina herself exists in the catalog — she was never a photo
+   contributor there — so every background here is a park scene, not her.
+   PHOTO_URL below can be swapped for a real photo of her if one turns up.
+
+   ?speed=10 (or any number) previews the whole flow fast, same convention
+   as screen.html's own ?speed= param.
+============================================================================ */
+:root{
+  --ground:#0c1a10; --ground-2:#122316;
+  --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
+  --ink-invert:rgba(253,252,248,.82); --ink-quiet:rgba(253,252,248,.58);
+  --rule:rgba(234,188,90,.34);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
+  --fade:1.8s;      /* slower than the regular screen — this one shouldn't rush */
+  --frame:2.6vmin;
+  --pad:5vmin;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--ground)}
+body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
+
+.frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
+
+/* Progress hairline — same device as screen-park.html's #bar (width
+   animated from 0 to 100% over the current slide's dwell time), but kept
+   quieter to match this file's hushed tone: thinner, dimmer, and the same
+   muted gold as .rule/.frame rather than a bright gradient. Still legible
+   up close if someone wants to know how long a slide has left. */
+#bar{position:fixed;left:0;bottom:0;height:1px;width:0;z-index:45;
+  background:var(--gold-deep);opacity:.55;pointer-events:none}
+.logo-mark{position:fixed;bottom:calc(var(--frame) + 1.6vmin);right:calc(var(--frame) + 1.8vmin);height:5.2vmin;width:auto;opacity:.78;z-index:41;pointer-events:none}
+
+.deck{position:fixed;inset:0}
+/* Signage, not a webpage — ChatGPT's review (relayed by Randy): "someone
+   standing 15-20 feet away" should read this comfortably, and the content
+   should fill the middle third-to-half of the screen, not float as a small
+   card. The padding-bottom > padding-top asymmetry nudges the vertically-
+   centered content block upward, per "move the text block upward slightly." */
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:2vmin 9vmin 9vmin;
+  opacity:0;transition:opacity var(--fade) ease;
+}
+.slide.on{opacity:1;z-index:1}
+.slide .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:-1}
+/* Photo template: the dark green overlay sits OVER the photo — it must stay
+   translucent (rgba, not a solid var(--ground)) or the photo underneath
+   never shows at all. That was a real bug in the first pass: an opaque
+   veil painted on top of the (already-faint) .bg fully hid it. Fixed here —
+   one alpha value on the veil now controls "how much park shows through,"
+   rather than fighting with a second opacity on the image itself. */
+.slide .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,18,9,.35),rgba(8,18,9,.72));z-index:-1}
+
+/* ── Welcome: asymmetric split, not centered-over-photo ────────────────────
+   Ina's portrait is a tall (819×1024) source photo — full-bleed `cover` on
+   a landscape screen forced a brutal, unstable crop no Y-position tuning
+   fixed well, and centering the typography over her face literally put
+   words on top of the person being honored. ChatGPT's review (relayed by
+   Randy): "Ina's face is the visual subject. Stop putting words on her."
+
+   Fix: her photo only occupies the left ~46% of the screen (a column much
+   closer to her own portrait aspect ratio, so the crop is gentle rather
+   than extreme), the text stack lives entirely in the right ~54%, and a
+   directional (left-to-right) gradient keeps her bright/recognizable on the
+   left while darkening steeply under the text on the right — rather than
+   the uniform top-to-bottom veil every other slide uses. */
+.slide.welcome{flex-direction:row;justify-content:flex-end;align-items:center;padding:0 7vmin}
+.slide.welcome .bg{left:0;right:auto;width:46%;background-position:50% 12%}
+.slide.welcome .veil{background:linear-gradient(90deg,rgba(8,18,9,.02) 0%,rgba(8,18,9,.18) 34%,rgba(8,18,9,.84) 53%,rgba(8,18,9,.9) 100%)}
+.welcome-text{width:53%;text-align:center}
+.slide.anec .bg{filter:saturate(.55)}
+.slide.anec .veil{background:rgba(9,20,12,.89)}
+
+.name{font-family:var(--serif);font-weight:700;font-size:clamp(3.2rem,9.5vmin,7.5rem);line-height:1.06;color:var(--paper)}
+/* Welcome runs larger still — it's the "home base" slide, on screen most
+   of the time and meant to be readable across the room. */
+/* Sized down from the earlier full-width version — "Mary Ina Baden" now
+   has to fit inside a 53%-wide column, not the whole screen, without
+   wrapping awkwardly or crowding the frame edge. */
+.slide.welcome .label{font-size:2.2vmin}
+.slide.welcome .name{font-size:clamp(3rem,7.4vmin,6.2rem)}
+.slide.welcome .dates{font-size:clamp(1.5rem,3.4vmin,2.6rem);margin-top:2.6vmin}
+.slide.welcome .who{font-size:clamp(1.3rem,2.7vmin,1.9rem);margin-top:2vmin}
+.name em{font-style:italic;color:var(--gold);font-weight:400}
+.dates{margin-top:1.8vmin;font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,3.1vmin,2.5rem);color:var(--gold)}
+.rule{width:6vmin;height:1px;background:var(--gold-deep);margin:3.5vmin auto}
+.label{font-size:2.2vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:2.2vmin;font-weight:600}
+.body{max-width:82vmin;font-size:clamp(1.9rem,4.6vmin,3.6rem);line-height:1.5;color:var(--ink-invert);font-weight:300}
+.body + .body{margin-top:2.4vmin}
+/* A pull-quote line — its own visual moment, larger and in the serif, so a
+   quote (e.g. "I'm the president of your fan club") doesn't bury inside a
+   paragraph. ChatGPT: "give the quote its own visual moment." Optional —
+   only vignettes that include one get the html for it. */
+.quote{max-width:78vmin;margin-top:2.6vmin;font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:clamp(2.3rem,5.6vmin,4.4rem);line-height:1.3;color:var(--paper)}
+.who{margin-top:1.7vmin;font-family:var(--serif);font-style:italic;color:var(--ink-quiet);font-size:clamp(1.1rem,2.5vmin,1.7rem)}
+/* "— Name" byline under a guestbook quote — smaller and quieter than
+   .who, since the quote itself is already the point of the slide. */
+.attrib{margin-top:2vmin;font-size:clamp(1rem,2.2vmin,1.5rem);color:var(--gold);font-weight:600;letter-spacing:.02em}
+
+/* Guestbook notes, v2 — real cream note cards (Randy: "an interface like
+   that seems ok"), replacing the old dark-field/decorative-quote-mark
+   treatment. A literal card reads as "someone else's words" even more
+   plainly than a quote mark did, and it's what actually holds up with
+   several notes on screen together. */
+/* Side padding matches the base .slide's own 9vmin (was 6vmin — Randy:
+   the left text sat too close to the frame edge, "crammed"). */
+.pair-slide{position:absolute;inset:0;display:flex;flex-direction:row;align-items:center;padding:0 9vmin}
+.pair-left{width:42%;text-align:left;padding-right:4vmin}
+.pair-left .rule{margin-left:0;margin-right:auto}
+.pair-left .body{max-width:none;font-size:clamp(1.4rem,3.15vmin,2.4rem)}
+.pair-right{width:58%;display:flex;justify-content:center}
+
+.notes-slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vmin 6vmin}
+.notes-slide .label,.notes-slide .rule{flex:0 0 auto}
+.notes-grid{display:grid;gap:2.6vmin;width:100%;max-width:92vmin;margin-top:1vmin}
+.notes-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.notes-grid.cols-2{grid-template-columns:1fr 1fr}
+.note-card{background:var(--paper);border-radius:.8vmin;padding:2.2vmin 2.4vmin;
+  box-shadow:0 .6vmin 2vmin rgba(0,0,0,.5);display:flex;flex-direction:column;text-align:left}
+.note-card.wide{grid-column:1 / -1;max-width:58vmin;margin:0 auto}
+.nc-head{display:flex;align-items:baseline;gap:1.1vmin;margin-bottom:1.1vmin;flex-wrap:wrap}
+.nc-name{font-family:var(--sans);font-weight:700;color:#241c12;font-size:clamp(.82rem,1.6vmin,1.1rem)}
+.nc-date{font-family:var(--sans);color:rgba(36,28,18,.52);font-size:clamp(.65rem,1.2vmin,.82rem)}
+.nc-quote{font-family:var(--serif);font-style:italic;font-weight:400;color:#2a2116;
+  font-size:clamp(.92rem,1.85vmin,1.3rem);line-height:1.45}
+
+/* One card — Randy's own — carries a photo. Every other note card is
+   text-only; this is a deliberate one-off, not a new standard pattern. */
+.note-card.with-photo{padding:0;overflow:hidden}
+.note-card.with-photo .nc-photo{width:100%;height:22vmin;object-fit:cover;display:block}
+.note-card.with-photo .nc-body{padding:2.2vmin 2.4vmin}
+
+/* The one-time photo NOTE (not a byline) — a small, quiet explanatory line
+   under the first photo vignette shown each session, never repeated.
+   Deliberately far smaller than .body; it's an acknowledgment, not content. */
+.photo-note{max-width:64vmin;margin-top:2.8vmin;font-size:clamp(.8rem,1.6vmin,1.05rem);
+  line-height:1.5;color:var(--ink-quiet);font-weight:300;font-style:italic}
+
+/* Per-photo credit — bottom-left, tiny, on EVERY slide that carries a park
+   photo (welcome included). Randy: "a 'tiny' readable but 'tiny' credit
+   line... Name Date CC-BY-NC, taken here in the park Ina was such an
+   integral part of." Same photographer/license/date convention the rest of
+   the site already uses (photo_credits.json) — reused here, not reinvented. */
+.photo-cred{position:absolute;left:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 1.6vmin);
+  z-index:2;font-size:clamp(.62rem,1.1vmin,.82rem);letter-spacing:.03em;color:rgba(253,252,248,.5);
+  text-align:left;line-height:1.4}
+.photo-cred b{color:rgba(253,252,248,.68);font-weight:600}
+
+/* Quiet transition line into the QR row — deliberately smaller/softer than
+   .body and in the serif italic (like .who), so it reads as a gentle aside
+   rather than a continuation of Ina's own story. */
+.give-lead{max-width:78vmin;margin-top:2.2vmin;font-family:var(--serif);font-style:italic;
+  font-weight:400;color:var(--ink-quiet);font-size:clamp(1.3rem,3vmin,2.2rem)}
+
+.qr-row{display:flex;gap:6vmin;justify-content:center;margin-top:3vmin}
+.qr-card{display:flex;flex-direction:column;align-items:center}
+.qr-card img{width:13vmin;height:13vmin;display:block;border-radius:.5vmin;
+  box-shadow:0 0 0 .55vmin var(--paper),0 .6vmin 1.6vmin rgba(0,0,0,.45)}
+.qr-label{margin-top:1.6vmin;font-family:var(--serif);font-style:italic;font-weight:400;
+  color:var(--gold);font-size:clamp(1.15rem,2.7vmin,1.9rem)}
+/* Event flyers — shown whole, full color, no saturation/veil treatment (the
+   .anec dimming only ever targets .bg/.veil, which this slide doesn't use).
+   Deliberately NOT tied to Ina in the copy: a park-events slide doesn't need
+   a memorial angle, and forcing one risks landing corny. The plain label
+   just orients the viewer after a slide's worth of her own story. */
+.event-row{display:flex;gap:3.5vmin;justify-content:center;align-items:center;margin-top:1.5vmin}
+/* height alone drives size — no max-width cap fighting it (that was the
+   bug: 36vmin was quietly overriding the 56vmin height's own natural
+   width, so object-fit:contain shrank the actual image again inside its
+   own already-shrunk box). Let both portrait flyers use the room they
+   have; the row's own gap/centering keeps them from ever overlapping. */
+.event-card img{display:block;height:78vmin;width:auto;object-fit:contain;
+  box-shadow:0 .8vmin 2.6vmin rgba(0,0,0,.55)}
+
+/* "A Thank You In Flowers" — the one vignette here that talks to real data
+   instead of carrying its own hardcoded copy: pulls every photo tagged
+   role:"flower" from data/sources/photo_credits.json, at random, redrawn a
+   couple of times each time this slide comes up. Split screen: the tribute
+   text stays put on the left; an irregular mosaic on the right cross-fades
+   between sets. Deliberately NOT a uniform grid — see .flower-mosaic. */
+.slide .flower-slide{position:absolute;inset:0;display:flex;flex-direction:row;
+  align-items:center;padding:0 6vmin}
+.flower-left{width:38%;text-align:left;padding-right:4vmin}
+.flower-left .rule{margin-left:0;margin-right:auto}
+.flower-left .body{max-width:none;font-size:clamp(1.4rem,3.15vmin,2.4rem)}
+.flower-right{position:relative;width:62%;height:76vmin}
+
+/* Two crossfading mosaic layers can be in the DOM at once (old fading out,
+   new fading in) — same device as the main .slide/.on crossfade, just
+   scoped to this one panel instead of the whole screen. */
+.flower-mosaic{position:absolute;inset:0;display:grid;gap:.9vmin;opacity:0;
+  transition:opacity 1.8s ease}
+.flower-mosaic.on{opacity:1;z-index:1}
+.flower-tile{position:relative;overflow:hidden;border-radius:.5vmin;
+  box-shadow:0 0 0 1px rgba(234,188,90,.22)}
+.flower-tile img{width:100%;height:100%;object-fit:cover;display:block}
+/* Credit stacks Name then "MM/YYYY · Species" on one line, in that order on
+   purpose: single-line ellipsis truncation eats from the right, so on a
+   tile too small to fit everything, species drops before the date does. */
+/* Taller scrim than before, with the gradient starting higher and ramping
+   more gradually — Randy: the photographer name (the top line, sitting
+   right at the scrim's own top edge) was landing where the gradient was
+   still nearly transparent, so it read poorly against a busy photo, while
+   the peak darkness below it was more than needed. */
+.flower-cred{position:absolute;left:0;right:0;bottom:0;padding:2.8vmin 1.3vmin .9vmin;
+  background:linear-gradient(180deg,rgba(8,18,9,0) 0%,rgba(7,16,9,.32) 30%,rgba(6,14,8,.62) 65%,rgba(6,14,8,.7) 100%)}
+.fc-name{font-family:var(--serif);font-style:italic;color:var(--gold);
+  font-size:clamp(.72rem,1.4vmin,1.05rem);line-height:1.25;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-meta{margin-top:.15vmin;color:rgba(253,252,248,.7);
+  font-size:clamp(.6rem,1.1vmin,.82rem);line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+@media (max-width:900px){ .body{max-width:88vmin} }
+
+</style>
+</head>
+<body>
+
+<div class="frame"></div>
+<img class="logo-mark" src="images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
+<div class="deck" id="deck">
+<div class="slide anec on"><div class="bg" style="background-image:url('photos/PSBP-00001/681679773.jpg')"></div><div class="veil"></div><div class="label">Palma Sola</div><div class="rule"></div><div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div><div class="give-lead">Here&rsquo;s how to give.</div><div class="qr-row"><div class="qr-card"><img src="images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One&#8209;Time Gift</div></div><div class="qr-card"><img src="images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div></div></div><div class="photo-cred"><b>Rob Carr</b> &middot; May 28, 2023 &middot; CC BY-NC</div></div>
+</div>
+
+</body>
+</html>
