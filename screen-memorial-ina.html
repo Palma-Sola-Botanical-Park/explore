@@ -173,6 +173,40 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 .event-card img{display:block;height:56vmin;width:auto;max-width:36vmin;object-fit:contain;
   border-radius:.35vmin;box-shadow:0 .6vmin 2.2vmin rgba(0,0,0,.55),0 0 0 .25vmin rgba(253,252,248,.14)}
 
+/* "A Thank You In Flowers" — the one vignette here that talks to real data
+   instead of carrying its own hardcoded copy: pulls every photo tagged
+   role:"flower" from data/sources/photo_credits.json, at random, redrawn a
+   couple of times each time this slide comes up. Split screen: the tribute
+   text stays put on the left; an irregular mosaic on the right cross-fades
+   between sets. Deliberately NOT a uniform grid — see .flower-mosaic. */
+.slide .flower-slide{position:absolute;inset:0;display:flex;flex-direction:row;
+  align-items:center;padding:0 6vmin}
+.flower-left{width:38%;text-align:left;padding-right:4vmin}
+.flower-left .rule{margin-left:0;margin-right:auto}
+.flower-left .body{max-width:none;font-size:clamp(1.4rem,3.15vmin,2.4rem)}
+.flower-right{position:relative;width:62%;height:76vmin}
+
+/* Two crossfading mosaic layers can be in the DOM at once (old fading out,
+   new fading in) — same device as the main .slide/.on crossfade, just
+   scoped to this one panel instead of the whole screen. */
+.flower-mosaic{position:absolute;inset:0;display:grid;gap:.9vmin;opacity:0;
+  transition:opacity 1.8s ease}
+.flower-mosaic.on{opacity:1;z-index:1}
+.flower-tile{position:relative;overflow:hidden;border-radius:.5vmin;
+  box-shadow:0 0 0 1px rgba(234,188,90,.22)}
+.flower-tile img{width:100%;height:100%;object-fit:cover;display:block}
+/* Credit stacks Name then "MM/YYYY · Species" on one line, in that order on
+   purpose: single-line ellipsis truncation eats from the right, so on a
+   tile too small to fit everything, species drops before the date does. */
+.flower-cred{position:absolute;left:0;right:0;bottom:0;padding:1.1vmin 1.3vmin .9vmin;
+  background:linear-gradient(180deg,rgba(8,18,9,0),rgba(6,14,8,.88) 60%)}
+.fc-name{font-family:var(--serif);font-style:italic;color:var(--gold);
+  font-size:clamp(.72rem,1.4vmin,1.05rem);line-height:1.25;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-meta{margin-top:.15vmin;color:rgba(253,252,248,.7);
+  font-size:clamp(.6rem,1.1vmin,.82rem);line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 @media (max-width:900px){ .body{max-width:88vmin} }
 </style>
 </head>
@@ -282,6 +316,19 @@ var VIGNETTES = [
       + '<div class="rule"></div>'
       + '<div class="body">When someone was frightened, overwhelmed, or simply needed comfort, Ina had a standing invitation: &ldquo;Come get in the white bed.&rdquo; For generations of her family, it became a place of refuge.</div>' },
 
+  /* The one vignette that talks to real data — see FLOWER_PHOTOS / MOSAIC
+     TEMPLATES / startFlowerVignette below. Excludes itself from the draw
+     (in refillBag) if the fetch hasn't landed or came back thin. */
+  { weight: 2, seconds: 34, special: 'flowerGrid', html:
+        '<div class="flower-slide">'
+      +   '<div class="flower-left">'
+      +     '<div class="label">A Thank You In Flowers</div>'
+      +     '<div class="rule"></div>'
+      +     '<div class="body">Ina worked hard to keep this park alive. Here&rsquo;s some of what&rsquo;s blooming because of it &mdash; photographed by high school volunteers, regular visitors with a phone in hand, and photographers who&rsquo;ve spent years chasing this kind of shot.</div>'
+      +   '</div>'
+      +   '<div class="flower-right"></div>'
+      + '</div>' },
+
   { weight: 2, seconds: 30, bg: 'photos/PSBP-00621/681678425.jpg', credit: { name: 'Rob Carr', date: 'Mar 31, 2023' }, noPhotoNote: true, html:
         '<div class="label">Palma Sola</div>'
       + '<div class="rule"></div>'
@@ -343,6 +390,108 @@ var SPEED = Math.max(0.1, Math.min(20, +(new URLSearchParams(location.search).ge
 var WELCOME_SECONDS  = 50 / SPEED;
 var VIGNETTE_SECONDS = 14 / SPEED; // default; a vignette's own `seconds` overrides this
 
+/* ── The Flowers vignette: real data, not hardcoded copy ───────────────────
+   Every photo in the catalog tagged role:"flower" (i.e. primarily a flower
+   shot), pulled at runtime from the same source the rest of the site
+   publishes from. Loaded once, up front; if the fetch fails or comes back
+   thin, refillBag() below excludes this vignette from the draw entirely
+   rather than showing a broken/empty panel. */
+var FLOWER_PHOTOS = [];
+fetch('data/sources/photo_credits.json').then(function(r){ return r.json(); }).then(function(d){
+  FLOWER_PHOTOS = (d.photos || []).filter(function(p){
+    return p.publish_ok && Array.isArray(p.role) && p.role.indexOf('flower') !== -1;
+  }).map(function(p){
+    // Mirrors the site's own convention (see any plant page's window.PHOTOS):
+    // a locally-mirrored file if one exists, else the iNaturalist original.
+    var src = p.filename ? ('photos/' + p.psbp_id + '/' + p.filename) : p.photo_url;
+    var date = '';
+    var m = /^(\d{4})-(\d{2})-\d{2}$/.exec(p.observed_on || '');
+    if (m) date = m[2] + '/' + m[1]; // MM/YYYY
+    return { src: src, name: p.photographer_name || p.photographer || '',
+             species: p.common_name || '', date: date };
+  }).filter(function(p){ return p.src; });
+}).catch(function(){ /* FLOWER_PHOTOS stays empty; vignette excludes itself */ });
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function shuffleCopy(arr){
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* Deliberately not a squared-off grid: each template covers a 4x3 (for 6
+   photos) or 3x3 (for 5) area with one big cell and several smaller ones of
+   mixed shape. Two variants per count so back-to-back sets don't always
+   look identical in outline, only in content. */
+var MOSAIC_TEMPLATES = {
+  6: [
+    { cols: 4, rows: 3, areas: ['a a b b', 'a a c d', 'e e c f'] },
+    { cols: 4, rows: 3, areas: ['b b a a', 'd c a a', 'f c e e'] }
+  ],
+  5: [
+    { cols: 3, rows: 3, areas: ['a a b', 'a a c', 'd e c'] },
+    { cols: 3, rows: 3, areas: ['b a a', 'c a a', 'c e d'] }
+  ]
+};
+function buildMosaicEl(picks){
+  var n = picks.length;
+  var tmpl = MOSAIC_TEMPLATES[n][Math.floor(Math.random() * MOSAIC_TEMPLATES[n].length)];
+  var el = document.createElement('div');
+  el.className = 'flower-mosaic';
+  el.style.gridTemplateColumns = 'repeat(' + tmpl.cols + ',1fr)';
+  el.style.gridTemplateRows = 'repeat(' + tmpl.rows + ',1fr)';
+  el.style.gridTemplateAreas = tmpl.areas.map(function(r){ return '"' + r + '"'; }).join(' ');
+  'abcdef'.slice(0, n).split('').forEach(function(letter, i){
+    var p = picks[i];
+    var meta = [p.date, p.species].filter(Boolean).join(' &middot; '); // date first: see .fc-meta note
+    var tile = document.createElement('div');
+    tile.className = 'flower-tile';
+    tile.style.gridArea = letter;
+    tile.innerHTML = '<img src="' + p.src + '" alt="' + escapeHtml(p.species || 'A flower in the park') + '">'
+      + '<div class="flower-cred"><div class="fc-name">' + escapeHtml(p.name) + '</div>'
+      + (meta ? '<div class="fc-meta">' + meta + '</div>' : '') + '</div>';
+    el.appendChild(tile);
+  });
+  return el;
+}
+/* Runs for as long as this vignette is on screen: draws a fresh shuffled
+   pool so a showing never repeats a photo across its own sets, then
+   crossfades through a few (SETS) random mosaics before the outer loop()
+   moves on to the next vignette. */
+function startFlowerVignette(slideEl, totalMs){
+  var right = slideEl && slideEl.querySelector('.flower-right');
+  if (!right || !FLOWER_PHOTOS.length) return;
+  var pool = shuffleCopy(FLOWER_PHOTOS), cursor = 0;
+  function nextPicks(n){
+    if (cursor + n > pool.length) { pool = shuffleCopy(FLOWER_PHOTOS); cursor = 0; }
+    var picks = pool.slice(cursor, cursor + n);
+    cursor += n;
+    return picks;
+  }
+  var SETS = 3; // "a couple sets" each time this vignette comes up
+  var FADE = 1800 / SPEED;
+  var perSet = Math.max(4500 / SPEED, (totalMs - FADE) / SETS);
+  var live = null;
+  function showSet(i){
+    if (i >= SETS || !right.isConnected) return;
+    var el = buildMosaicEl(nextPicks(Math.random() < 0.5 ? 5 : 6));
+    right.appendChild(el);
+    void el.offsetWidth; // force reflow before the fade-in, same device as renderSlide()
+    var prev = live;
+    el.classList.add('on');
+    if (prev) prev.classList.remove('on');
+    live = el;
+    if (prev) (function(p){ setTimeout(function(){ p.remove(); }, FADE + 300); })(prev);
+    if (i + 1 < SETS) setTimeout(function(){ showSet(i + 1); }, perSet);
+  }
+  showSet(0);
+}
+
 /* Weighted, no-repeat-until-exhausted shuffle bag: each vignette appears
    `weight` times in the bag, the bag is shuffled once, and drawn from in
    order — reshuffled only once empty. That's what gives light/warm stories
@@ -354,6 +503,9 @@ var lastDrawn = null; // guards the refill seam below
 function refillBag(){
   var pool = [];
   VIGNETTES.forEach(function(v){
+    // Skip the Flowers vignette until real data has actually loaded —
+    // never show it with an empty/broken right panel.
+    if (v.special === 'flowerGrid' && FLOWER_PHOTOS.length < 5) return;
     for (var i = 0; i < v.weight; i++) pool.push(v);
   });
   // Fisher–Yates
@@ -438,7 +590,9 @@ function loop(){
     if (v.bg && !photoNoteShown && !v.noPhotoNote) { html += PHOTO_NOTE_HTML; photoNoteShown = true; }
     html += photoCredHtml(v.credit);
     renderSlide({ welcome: false, bg: v.bg, html: html });
-    setTimeout(loop, (v.seconds ? v.seconds / SPEED : VIGNETTE_SECONDS) * 1000);
+    var dwellMs = (v.seconds ? v.seconds / SPEED : VIGNETTE_SECONDS) * 1000;
+    if (v.special === 'flowerGrid') startFlowerVignette(liveEl, dwellMs);
+    setTimeout(loop, dwellMs);
   }, WELCOME_SECONDS * 1000);
 }
 loop();
