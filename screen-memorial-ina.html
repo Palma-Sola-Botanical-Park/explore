@@ -152,6 +152,21 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
   text-align:left;line-height:1.4}
 .photo-cred b{color:rgba(253,252,248,.68);font-weight:600}
 
+/* Quiet transition line into the QR row — deliberately smaller/softer than
+   .body and in the serif italic (like .who), so it reads as a gentle aside
+   rather than a continuation of Ina's own story. */
+.give-lead{max-width:78vmin;margin-top:2.2vmin;font-family:var(--serif);font-style:italic;
+  font-weight:400;color:var(--ink-quiet);font-size:clamp(1.3rem,3vmin,2.2rem)}
+
+.qr-row{display:flex;gap:6vmin;justify-content:center;margin-top:3vmin}
+.qr-card{display:flex;flex-direction:column;align-items:center}
+.qr-card img{width:13vmin;height:13vmin;display:block;border-radius:.5vmin;
+  box-shadow:0 0 0 .55vmin var(--paper),0 .6vmin 1.6vmin rgba(0,0,0,.45)}
+.qr-label{margin-top:1.6vmin;font-family:var(--serif);font-style:italic;font-weight:400;
+  color:var(--gold);font-size:clamp(1.15rem,2.7vmin,1.9rem)}
+.qr-url{margin-top:.5vmin;max-width:24vmin;font-size:clamp(.6rem,1.05vmin,.78rem);
+  color:var(--ink-quiet);letter-spacing:.01em;word-break:break-word}
+
 @media (max-width:900px){ .body{max-width:88vmin} }
 </style>
 </head>
@@ -261,10 +276,15 @@ var VIGNETTES = [
       + '<div class="rule"></div>'
       + '<div class="body">When someone was frightened, overwhelmed, or simply needed comfort, Ina had a standing invitation: &ldquo;Come get in the white bed.&rdquo; For generations of her family, it became a place of refuge.</div>' },
 
-  { weight: 2, seconds: 19, bg: 'photos/PSBP-00621/681678425.jpg', credit: { name: 'Rob Carr', date: 'Mar 31, 2023' }, html:
+  { weight: 2, seconds: 30, bg: 'photos/PSBP-00621/681678425.jpg', credit: { name: 'Rob Carr', date: 'Mar 31, 2023' }, html:
         '<div class="label">Palma Sola</div>'
       + '<div class="rule"></div>'
-      + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>' },
+      + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>'
+      + '<div class="give-lead">If you\'d like to help carry that forward, here are two easy ways to give.</div>'
+      + '<div class="qr-row">'
+      +   '<div class="qr-card"><img src="images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One&#8209;Time Gift</div></div>'
+      +   '<div class="qr-card"><img src="images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div><div class="qr-url">palma-sola-botanical-park.github.io/explore/get-involved.html#member</div></div>'
+      + '</div>' },
 
   /* Guestbook notes — real, verbatim messages left on her obituary pages
      (legacy.com and Shannon Funeral Homes), relayed by Randy via screenshot.
