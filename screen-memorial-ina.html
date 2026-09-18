@@ -28,8 +28,8 @@
    Rotation: WELCOME (the "home base," ~38s, ~70% of total screen time given
    the current vignette mix) alternates with one VIGNETTE (~14s, or its own
    `seconds` override) drawn from a weighted, no-repeat-within-MIN_GAP-turns
-   shuffle bag — see VIGNETTES below for the full chart (19 as of this
-   writing). 4 of them carry a faint park photo (welcome always does); the
+   shuffle bag — see VIGNETTES below for the full chart (17 as of this
+   writing). 3 of them carry a faint park photo (welcome always does); the
    rest stay on the plain dark field, weighted toward the more intimate/
    emotional stories per ChatGPT's review (relayed by Randy). Every photo
    slide carries its own small bottom-left credit (name/date/license, real
@@ -137,13 +137,31 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 /* "— Name" byline under a guestbook quote — smaller and quieter than
    .who, since the quote itself is already the point of the slide. */
 .attrib{margin-top:2vmin;font-size:clamp(1rem,2.2vmin,1.5rem);color:var(--gold);font-weight:600;letter-spacing:.02em}
-/* Guestbook notes get their own recognizable template — ChatGPT's review
-   (relayed by Randy): "don't give these the gold vignette heading treatment
-   exactly as-is... guests subconsciously understand: these are someone
-   else's words." Same green/gold system, but a big decorative opening
-   quotation mark instead of the usual small-caps label + rule. */
-.note-mark{font-family:var(--serif);font-size:11vmin;line-height:.6;color:var(--gold-deep);opacity:.6;margin-bottom:.5vmin}
-.note-from{font-size:1.9vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:1.8vmin;font-weight:600}
+
+/* Guestbook notes, v2 — real cream note cards (Randy: "an interface like
+   that seems ok"), replacing the old dark-field/decorative-quote-mark
+   treatment. A literal card reads as "someone else's words" even more
+   plainly than a quote mark did, and it's what actually holds up with
+   several notes on screen together. */
+.pair-slide{position:absolute;inset:0;display:flex;flex-direction:row;align-items:center;padding:0 6vmin}
+.pair-left{width:46%;text-align:left;padding-right:4vmin}
+.pair-left .rule{margin-left:0;margin-right:auto}
+.pair-left .body{max-width:none;font-size:clamp(1.4rem,3.15vmin,2.4rem)}
+.pair-right{width:54%;display:flex;justify-content:center}
+
+.notes-slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vmin 6vmin}
+.notes-slide .label,.notes-slide .rule{flex:0 0 auto}
+.notes-grid{display:grid;gap:2.6vmin;width:100%;max-width:92vmin;margin-top:1vmin}
+.notes-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.notes-grid.cols-2{grid-template-columns:1fr 1fr}
+.note-card{background:var(--paper);border-radius:.8vmin;padding:2.2vmin 2.4vmin;
+  box-shadow:0 .6vmin 2vmin rgba(0,0,0,.5);display:flex;flex-direction:column;text-align:left}
+.note-card.wide{grid-column:1 / -1;max-width:58vmin;margin:0 auto}
+.nc-head{display:flex;align-items:baseline;gap:1.1vmin;margin-bottom:1.1vmin;flex-wrap:wrap}
+.nc-name{font-family:var(--sans);font-weight:700;color:#241c12;font-size:clamp(.82rem,1.6vmin,1.1rem)}
+.nc-date{font-family:var(--sans);color:rgba(36,28,18,.52);font-size:clamp(.65rem,1.2vmin,.82rem)}
+.nc-quote{font-family:var(--serif);font-style:italic;font-weight:400;color:#2a2116;
+  font-size:clamp(.92rem,1.85vmin,1.3rem);line-height:1.45}
 
 /* The one-time photo NOTE (not a byline) — a small, quiet explanatory line
    under the first photo vignette shown each session, never repeated.
@@ -296,10 +314,20 @@ var VIGNETTES = [
       + '<div class="rule"></div>'
       + '<div class="body">She traveled to nearly every continent, scuba dived, rode horses, and took road trips on her big Harley.</div>' },
 
-  { weight: 2, html:
-        '<div class="label">The Class of &rsquo;58</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Ina graduated from Manatee High School in 1958 and could still recite the motto: &ldquo;Always ready, never late. We&rsquo;re the class of &rsquo;58!&rdquo;</div>' },
+  { weight: 2, seconds: 22, html:
+        '<div class="pair-slide">'
+      +   '<div class="pair-left">'
+      +     '<div class="label">The Class of &rsquo;58</div>'
+      +     '<div class="rule"></div>'
+      +     '<div class="body">Ina graduated from Manatee High School in 1958 and could still recite the motto: &ldquo;Always ready, never late. We&rsquo;re the class of &rsquo;58!&rdquo;</div>'
+      +   '</div>'
+      +   '<div class="pair-right">'
+      +     '<div class="note-card" style="max-width:40vmin">'
+      +       '<div class="nc-head"><span class="nc-name">Manatee High Alumni Association</span><span class="nc-date">Sep 15, 2026</span></div>'
+      +       '<div class="nc-quote">Our sincere condolences to the family, classmates, and friends of our Manatee County High School Class of 1958 alumna.</div>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>' },
 
   { weight: 2, html:
         '<div class="label">On the Road</div>'
@@ -367,35 +395,46 @@ var VIGNETTES = [
       +   '<div class="event-card"><img src="images/events/groovin-2026.jpg" alt="Groovin in the Gardens flyer, Sunday October 18, 4 to 6pm"></div>'
       + '</div>' },
 
-  /* Guestbook notes — real, verbatim messages left on her obituary pages
-     (legacy.com and Shannon Funeral Homes), relayed by Randy via screenshot.
-     Randy: "Each one of those could be a nice page that sprinkles in on
-     rotation. more rather than less." Quoted faithfully; Pam Hartnagle's
-     note had one broken trailing clause ("She was a very to me") — trimmed
-     to the clean, complete sentences rather than guessing the missing word. */
-  { weight: 1, seconds: 19, html:
-        '<div class="note-mark">&ldquo;</div>'
-      + '<div class="note-from">From Carol</div>'
-      + '<div class="quote">Niny, Baby A, Baby B and Baby C bonded us together for life! Your earthly watch is over and I&rsquo;ll continue it as long as God wills it. So many memories you&rsquo;ve given, so many as treasures to guide them.</div>'
-      + '<div class="attrib">&mdash; Carol Couchois, &ldquo;Nana&rdquo;</div>' },
+  /* Guestbook notes, v2 — real cream note cards instead of one-at-a-time
+     dark-field quotes. All verbatim messages left on her obituary pages
+     (legacy.com and Shannon Funeral Homes). Two corrections from a fuller
+     re-read of the source: Carol's was missing a whole sentence ("Your
+     heavenly job is just beginning...") and Ann's was missing one ("She
+     was devoted to every family member.") — both restored here. Pam's
+     still drops one broken trailing clause ("She was a very to me") that's
+     genuinely how it reads on legacy.com, not a transcription error.
+     Charlene Neal's note (addressed directly to "Taylor," about someone
+     named "Daisy") was deliberately left out — a private message to a
+     specific family member with no context for a park visitor, unlike
+     every other note here. Grouped shorter-together/longer-together across
+     two pages so no card ends up looking empty next to a dense one. */
+  { weight: 1, seconds: 22, html:
+        '<div class="notes-slide">'
+      +   '<div class="label">In Their Own Words</div>'
+      +   '<div class="rule"></div>'
+      +   '<div class="notes-grid cols-3">'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Pam Hartnagle</span><span class="nc-date">Sep 14, 2026</span></div>'
+      +       '<div class="nc-quote">I am heartbroken. Ina and I spent many times remembering the past. I will miss her more than anything.</div></div>'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Gene Gallo</span><span class="nc-date">Sep 16, 2026</span></div>'
+      +       '<div class="nc-quote">I am so sorry to hear this news. I have great memories with her. She was such a sweet person. Blessings to her family.</div></div>'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Carl Williams</span><span class="nc-date">Sep 15, 2026</span></div>'
+      +       '<div class="nc-quote">Ina, it was such a pleasure knowing you for so many years. You treated my father and myself more like family than friends. I always loved your rose garden and the wonderful fragrance.</div></div>'
+      +   '</div>'
+      + '</div>' },
 
-  { weight: 1, html:
-        '<div class="note-mark">&ldquo;</div>'
-      + '<div class="note-from">From Pam</div>'
-      + '<div class="quote">I am heartbroken. Ina and I spent many times remembering the past. I will miss her more than anything.</div>'
-      + '<div class="attrib">&mdash; Pam Hartnagle</div>' },
-
-  { weight: 1, bg: 'photos/PSBP-00072/703871348.jpg', credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
-        '<div class="note-mark">&ldquo;</div>'
-      + '<div class="note-from">From Carl</div>'
-      + '<div class="quote">Ina, it was such a pleasure knowing you for so many years. You treated my father and myself more like family than friends. I always loved your rose garden and the wonderful fragrance.</div>'
-      + '<div class="attrib">&mdash; Carl Williams</div>' },
-
-  { weight: 1, html:
-        '<div class="note-mark">&ldquo;</div>'
-      + '<div class="note-from">From Ann</div>'
-      + '<div class="quote">I cannot ask for a better best friend. Ina was always there for me. We had some wonderful adventures! It&rsquo;s true she made everyone feel special. I will carry her in my heart forever.</div>'
-      + '<div class="attrib">&mdash; Ann Graham</div>' }
+  { weight: 1, seconds: 30, html:
+        '<div class="notes-slide">'
+      +   '<div class="label">In Their Own Words</div>'
+      +   '<div class="rule"></div>'
+      +   '<div class="notes-grid cols-2">'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Nancy Beal</span><span class="nc-date">Sep 16, 2026</span></div>'
+      +       '<div class="nc-quote">Ina was a dear friend. I will fondly remember her joyous spirit, her kindness, and her humor. Her stories about growing up in Bradenton were always a highlight of visits with her. My love and condolences to her family.</div></div>'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Ann Graham</span><span class="nc-date">Sep 15, 2026</span></div>'
+      +       '<div class="nc-quote">I cannot ask for a better best friend. Ina was always there for me. We had some wonderful adventures! She was devoted to every family member. It&rsquo;s true she made everyone feel special. I will carry her in my heart forever.</div></div>'
+      +     '<div class="note-card wide"><div class="nc-head"><span class="nc-name">Carol Couchois</span><span class="nc-date">Sep 14, 2026</span></div>'
+      +       '<div class="nc-quote">Niny, Baby A, Baby B and Baby C bonded us together for life! Your earthly watch is over and I&rsquo;ll continue it as long as God wills it. Your heavenly job is just beginning and I know for a fact you&rsquo;ll watch over your family as they grieve. So many memories you&rsquo;ve given, so many as treasures to guide them!</div></div>'
+      +   '</div>'
+      + '</div>' }
 ];
 
 /* ?speed=10 previews the whole flow fast — same convention as screen.html.
