@@ -508,12 +508,22 @@ function startFlowerVignette(slideEl, totalMs){
    per ChatGPT's guidance (relayed by Randy) on how the obituary material
    should be weighted. */
 var bag = [];
-var lastDrawn = null; // guards the refill seam below
+var MIN_GAP = 5; // no two turns of the same vignette within this many draws
+/* The last MIN_GAP vignettes actually drawn, oldest first — carried across
+   bag refills so the spacing guarantee below holds AT the boundary between
+   one bag and the next, not just inside a single bag. Without this, a
+   vignette near the end of one bag could still land near the start of the
+   next: still "a repeat," just not literally back-to-back. */
+var recentHistory = [];
 
-/* Smallest gap, anywhere in the pool, between two turns of the SAME
-   vignette (Infinity if every vignette in this pool only appears once). */
-function minRepeatGap(pool){
-  var lastIdx = new Map(), min = Infinity;
+/* Smallest gap between two turns of the SAME vignette, scoring `pool`
+   against `history` as if they were one continuous sequence (history first,
+   pool after) — Infinity if nothing repeats. Only gaps landing inside pool
+   are counted, since history already happened and can't be changed. */
+function minRepeatGap(pool, history){
+  var lastIdx = new Map();
+  for (var h = 0; h < history.length; h++) lastIdx.set(history[h], h - history.length);
+  var min = Infinity;
   for (var i = 0; i < pool.length; i++) {
     if (lastIdx.has(pool[i])) min = Math.min(min, i - lastIdx.get(pool[i]));
     lastIdx.set(pool[i], i);
@@ -536,41 +546,31 @@ function refillBag(){
   });
 
   /* A plain Fisher–Yates only guarantees the bag is random, not that a
-     weight-2/3 vignette's copies land far apart within it — Randy caught
-     the SAME anecdote twice within a handful of turns, not back-to-back,
-     just close enough together on the live screen to read as a repeat.
-     Reshuffle (rejection sampling) until every same-vignette pair is at
-     least MIN_GAP turns apart, or give up after a bounded number of tries
-     and keep the best attempt seen — the bag is small (a few dozen slots)
-     so this converges almost immediately in practice. */
-  var MIN_GAP = 5;
+     weight-2/3 vignette's copies land far apart — Randy caught the SAME
+     anecdote twice within a handful of turns on the live screen, not
+     back-to-back, just close enough together to read as a repeat.
+     Reshuffle (rejection sampling) until every same-vignette pair — INCLUDING
+     against what was just drawn from the previous bag — is at least
+     MIN_GAP turns apart, or give up after a bounded number of tries and
+     keep the best attempt seen. The bag is small (a few dozen slots), so
+     this converges almost immediately in practice. */
   var best = pool.slice(), bestGap = -1;
   for (var attempt = 0; attempt < 60; attempt++) {
     shuffleInPlace(pool);
-    var gap = minRepeatGap(pool);
+    var gap = minRepeatGap(pool, recentHistory);
     if (gap > bestGap) { bestGap = gap; best = pool.slice(); }
     if (gap >= MIN_GAP) break;
   }
-  pool = best;
-
-  /* nextVignette() pops from the END, so pool's LAST element is drawn
-     FIRST from this fresh bag. If the winning shuffle happens to put the
-     same vignette that just finished the OLD bag right back at that seam,
-     two vignette turns in a row show the same story — the original bug
-     Randy caught live ("two screens in a row that said 'Ina spent many
-     years working here'"). Swap it out for a different slot when that
-     happens, rather than reshuffling the whole bag again. */
-  var lastIdx = pool.length - 1;
-  if (lastIdx > 0 && pool[lastIdx] === lastDrawn) {
-    var swapWith = Math.floor(Math.random() * lastIdx); // any earlier slot
-    var t2 = pool[lastIdx]; pool[lastIdx] = pool[swapWith]; pool[swapWith] = t2;
-  }
-  bag = pool;
+  bag = best;
 }
 function nextVignette(){
   if (!bag.length) refillBag();
-  lastDrawn = bag.pop();
-  return lastDrawn;
+  // shift(), not pop(): minRepeatGap scores index 0 as drawn first, so the
+  // draw order has to read the bag front-to-back to match what it optimized.
+  var v = bag.shift();
+  recentHistory.push(v);
+  if (recentHistory.length > MIN_GAP) recentHistory.shift();
+  return v;
 }
 
 var deck = document.getElementById('deck');
