@@ -14,7 +14,6 @@ Sections
   CREDITS    photographer name / credit_line drift
   LINK       photo_credits <-> signage cross-references
   DISK       hero files that should exist on disk
-  PUBLISH    published pages vs. the data they were built from
   INDEX      plants.json / wildlife.json hero paths
   FK         placements / phenology / workbench foreign keys
   TAXA       duplicate species across signage + research
@@ -55,7 +54,6 @@ RESEARCH       = SOURCES / "research.json"
 PLACEMENTS     = SOURCES / "placements.json"
 LANDMARKS      = REPO / "data" / "sources" / "landmarks.json"
 PHENOLOGY      = SOURCES / "phenology.json"
-PUBLISH_STATE  = SOURCES / "publish_state.json"
 PLANTS_JSON    = REPO / "plants.json"
 WILDLIFE_JSON  = REPO / "wildlife.json"
 PLANTS_DIR     = REPO / "plants"
@@ -112,43 +110,6 @@ def build_credit_line(name, lic):
     if lic and lic != "NAN":
         return f"\u00a9 {name} ({lic}), via iNaturalist"
     return f"\u00a9 {name}, via iNaturalist"
-
-
-# ═══════════════════════════════════════════════════════════════════════════
-# ── publish-state fingerprints ──────────────────────────────────────────────
-# MIRRORS psbp_common.compute_input_hash / generator_fingerprint. Kept local so
-# this audit stays dependency-free and can run against a half-broken repo.
-#
-# If either function changes in psbp_common, bump HASH_VERSION there. This
-# audit checks the version recorded in publish_state.json and refuses to
-# compare when it doesn't recognise it — a drifted copy reports "cannot
-# compare" instead of confidently wrong staleness.
-HASH_VERSION = 1
-
-
-def _canonical(obj):
-    return json.dumps(obj, sort_keys=True, separators=(",", ":"),
-                      ensure_ascii=False, default=str)
-
-
-def _input_hash(species, hero, gallery_photos):
-    """Fingerprint of the inputs that produce a page. Gallery rows are sorted
-    by photo_id so registry reordering isn't mistaken for a content change."""
-    import hashlib
-    gal = sorted((p for p in (gallery_photos or [])),
-                 key=lambda p: str(p.get("photo_id", "")))
-    payload = _canonical({"species": species, "hero": hero, "gallery": gal})
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
-
-
-def _generator_fingerprint(corpus):
-    """Hash of the publisher module source, read as a plain file (no import)."""
-    import hashlib
-    name = "plant_publisher.py" if corpus == "plants" else "wildlife_publisher.py"
-    try:
-        return hashlib.sha256((HERE.parent / name).read_bytes()).hexdigest()[:16]
-    except Exception:                                          # noqa: BLE001
-        return ""
 
 
 def main():
@@ -474,128 +435,6 @@ def main():
                 f"repo reads or writes it — it is a stale snapshot; consider deleting "
                 f"the key or regenerating it at hero-swap time")
 
-    # ── PUBLISH  (was: HTML — see the note below) ─────────────────────────
-    #
-    # This section used to parse every rendered page: pull image srcs out with
-    # a regex, extract iNat photo IDs from those URLs, re-parse the lbData
-    # JSON, and grep for photographer names. It answered four questions —
-    #
-    #   * does the page render a photo with no credit record?  (the Gallinule)
-    #   * is a gallery-role photo missing from the page?
-    #   * does the local hero image match the registry?
-    #   * is every credited name actually printed?
-    #
-    # — all of which are the SAME question wearing four hats: does this page
-    # still match what the generator would produce from the current JSON?
-    #
-    # Scraping our own output to ask that was always backwards. It was done
-    # because nothing recorded what a page had been built from. publish_state
-    # .json now does, so comparing two fingerprints answers all four at once —
-    # and unlike the regexes, it cannot drift out of sync with the template.
-    #
-    # The file-level checks below never needed HTML parsing and are unchanged.
-    # For byte-exact verification — catching hand-edited pages, which no
-    # fingerprint can detect — run psbp_page_drift.py.
-    if run("PUBLISH"):
-        state = load(PUBLISH_STATE, {}) or {}
-        recs = state.get("species", {}) if isinstance(state, dict) else {}
-        ver = (state.get("meta", {}) or {}).get("hash_version")
-
-        can_compare = True
-        if not recs:
-            add("PUBLISH", "INFO",
-                "publish_state.json is empty or absent — run "
-                "psbp_seed_publish_state.py, then regenerate. Staleness cannot "
-                "be computed until pages record what they were built from.")
-            can_compare = False
-        elif ver != HASH_VERSION:
-            add("PUBLISH", "INFO",
-                f"publish_state.json uses hash_version {ver!r}, this audit "
-                f"understands {HASH_VERSION}. Declining to compare rather than "
-                f"reporting wrong answers.")
-            can_compare = False
-
-        for corpus, d, ids in (("plants", PLANTS_DIR, plant_ids),
-                               ("wildlife", WILDLIFE_DIR, wild_ids)):
-            if not d.is_dir():
-                add("PUBLISH", "ERROR", f"{d} does not exist")
-                continue
-
-            # ── file-level checks (no HTML is read) ──
-            seen_pages = set()
-            for f in sorted(d.glob("PSBP-*.html")):
-                m = re.match(r"(PSBP-\d{5})", f.name)
-                if not m:
-                    add("PUBLISH", "ERROR", f"{f.name}: cannot parse a PSBP id")
-                    continue
-                sid = m.group(1)
-                seen_pages.add(sid)
-                if sid not in ids:
-                    add("PUBLISH", "ERROR",
-                        f"{f.name}: page exists but {sid} is not in the "
-                        f"{corpus} signage master")
-                    continue
-                if sign_by_id[sid].get("status") != "html":
-                    add("PUBLISH", "ERROR",
-                        f"{f.name}: page exists but status="
-                        f"{sign_by_id[sid].get('status')!r} — should have been "
-                        f"deleted on demotion")
-
-            for sid in sorted(ids):
-                if sign_by_id[sid].get("status") == "html" and sid not in seen_pages:
-                    add("PUBLISH", "ERROR",
-                        f"{sid} {sign_by_id[sid].get('common_name')}: status=html "
-                        f"but no page in {corpus}/")
-
-            if not can_compare:
-                continue
-
-            # ── fingerprint comparison (replaces all the scraping) ──
-            generator = _generator_fingerprint(corpus)
-            old_generator = 0
-            for sid in sorted(ids):
-                sp = sign_by_id[sid]
-                if sp.get("status") != "html":
-                    if sid in recs:
-                        add("PUBLISH", "WARN",
-                            f"{sid} {sp.get('common_name')}: status="
-                            f"{sp.get('status')!r} but still has a publish record")
-                    continue
-
-                rec = recs.get(sid)
-                if not rec:
-                    add("PUBLISH", "WARN",
-                        f"{sid} {sp.get('common_name')}: published page with no "
-                        f"publish record — regenerate to stamp it")
-                    continue
-
-                hero = heroes.get(sid)
-                if not hero:
-                    continue          # already reported by DISK / LINK
-                want = _input_hash(sp, hero, gallery.get(sid, []))
-
-                if rec.get("input_hash") != want:
-                    add("PUBLISH", "ERROR",
-                        f"{sid} {sp.get('common_name')}: page was built from "
-                        f"different data than the JSON now holds — STALE, "
-                        f"regenerate (last published "
-                        f"{rec.get('last_published', '?')})")
-                elif generator and rec.get("generator") != generator:
-                    # Counted, not listed. The publisher file changing does NOT
-                    # mean the OUTPUT changed — a comment or a CLI tweak moves
-                    # this fingerprint while every page renders identically.
-                    # One aggregate line, and psbp_page_drift.py gives the
-                    # exact answer.
-                    old_generator += 1
-
-            if old_generator:
-                add("PUBLISH", "INFO",
-                    f"{old_generator} {corpus} page(s) were published by an "
-                    f"older {corpus} publisher. That often means nothing — "
-                    f"comments and CLI edits move this fingerprint without "
-                    f"changing any page. Run psbp_page_drift.py for the exact "
-                    f"answer, and regenerate if it reports drift.")
-
     # ── INDEX ─────────────────────────────────────────────────────────────
     if run("INDEX"):
         for label, path, ids in (("plants.json", PLANTS_JSON, plant_ids),
@@ -762,7 +601,7 @@ def main():
     # a silently truncated feed would show "27 photo warnings" next to a list
     # of 15 and look like a bug in the page.
     if args.json:
-        order_j = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK", "PUBLISH",
+        order_j = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK",
                    "INDEX", "FK", "TAXA", "META"]
         secs = []
         for sec in order_j:
@@ -793,7 +632,7 @@ def main():
     #   add() fills `findings`, but only sections named here are printed or
     #   counted. CONTENT was added 2026-08-28 and cost twenty minutes of
     #   debugging a check that was working perfectly.
-    order = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK", "PUBLISH", "INDEX",
+    order = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK", "INDEX",
              "FK", "TAXA", "META"]
     if not args.quiet:
         for sec in order:
