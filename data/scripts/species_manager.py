@@ -9912,21 +9912,23 @@ def render_health():
       DISK:    ['Image files on disk',  'Hero files present, and stale leftovers beside them'],
       CONTENT: ['Sign vs page wording', 'Where the printed teaser repeats the first line of the page'],
       TAXA:    ['Duplicate names',      'Two records sharing a name or an iNaturalist taxon id'],
-      PUBLISH: ['Page freshness',       'Pages built by an older publisher than the current one'],
       INDEX:   ['Browse indexes',       'plants.json and wildlife.json against the signage masters'],
-      FK:      ['Placements',           'Map placements pointing at species that actually exist'],
-      META:    ['File self-description','What a file claims about itself vs what it holds']
+      FK:      ['Placements',           'Map placements pointing at species that actually exist']
     };
     // Grouped so related checks read together instead of in audit order.
+    // PUBLISH ("Page freshness") and META ("File self-description") were
+    // removed 2026-09-19 at Randy's request — regenerating stale pages and
+    // drifted meta counters is routine, non-stop upkeep here, not an error
+    // worth a red dot. See audit_psbp.py for the full removal.
     var H_GROUPS = [
       ['Photographs', 'Every check that touches an image, its credit, or its file.',
        ['PHOTOS','CREDITS','LINK','DISK'], true],
       ['Species content', 'What the signs and pages actually say.',
        ['CONTENT','TAXA'], false],
       ['Pages and indexes', 'What has been built, and whether the browse lists agree with it.',
-       ['PUBLISH','INDEX'], false],
-      ['Data files', 'The records underneath: references, and files describing themselves.',
-       ['FK','META'], false]
+       ['INDEX'], false],
+      ['Data files', 'The records underneath: references this repo depends on.',
+       ['FK'], false]
     ];
     var H_COUNTS = {
       signage_species: 'Species records',

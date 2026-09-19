@@ -17,7 +17,6 @@ Sections
   INDEX      plants.json / wildlife.json hero paths
   FK         placements / phenology / workbench foreign keys
   TAXA       duplicate species across signage + research
-  META       meta counters that have drifted from reality
 
 Every finding is one of:
   ERROR  something a visitor could see, or data loss waiting to happen
@@ -349,7 +348,13 @@ def main():
 
     # ── CREDITS ───────────────────────────────────────────────────────────
     if run("CREDITS"):
-        unregistered = Counter()
+        # Bare, unregistered handles are expected, not a problem — the whole
+        # point of the iNat project is that people Randy has never met submit
+        # observations to it. One consolidated line instead of one per handle
+        # (used to be dozens): handle + their most recent observation date,
+        # newest first, so a quick skim catches this season's new students
+        # without wading through a wall of near-identical INFO lines.
+        unregistered_latest = {}
         for p in photos:
             login = (p.get("photographer") or "").lower()
             resolved = display_name(names, login, p.get("photographer_name", ""))
@@ -364,11 +369,18 @@ def main():
                     f"{p.get('psbp_id')} / {p.get('photo_id')}: photographer_name "
                     f"{p.get('photographer_name')!r} != registry {resolved!r}")
             if login and login not in names:
-                unregistered[login] += 1
-        for login, n in unregistered.most_common():
+                d = p.get("observed_on") or ""
+                if d > unregistered_latest.get(login, ""):
+                    unregistered_latest[login] = d
+        if unregistered_latest:
+            ordered = sorted(unregistered_latest.items(),
+                             key=lambda kv: kv[1], reverse=True)
+            listing = ", ".join(f"{login} ({date or 'no date'})"
+                                for login, date in ordered)
             add("CREDITS", "INFO",
-                f"{login}: {n} photo(s) credited by bare iNat handle — no entry in "
-                f"photographer_names.json")
+                f"{len(ordered)} photographer(s) with no photographer_names.json "
+                f"entry — expected, anyone can submit to the iNat project. Most "
+                f"recent observation first, to spot for new students: {listing}")
 
     # ── LINK ──────────────────────────────────────────────────────────────
     if run("LINK"):
@@ -597,7 +609,7 @@ def main():
     #   counted. CONTENT was added 2026-08-28 and cost twenty minutes of
     #   debugging a check that was working perfectly.
     order = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK", "INDEX",
-             "FK", "TAXA", "META"]
+             "FK", "TAXA"]
     if not args.quiet:
         for sec in order:
             rows = [f for f in findings if f[0] == sec]
