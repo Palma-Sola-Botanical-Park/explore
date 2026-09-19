@@ -555,42 +555,6 @@ def main():
                 add("TAXA", "WARN",
                     f"inat_taxon_id {tid} used by {len(recs)} records — {_fmt(recs)}")
 
-    # ── META ──────────────────────────────────────────────────────────────
-    if run("META"):
-        checks = [
-            (PHOTO_CREDITS, "photo_count", len(photos)),
-            (PLANT_SIGNAGE, "species_count", len(plants)),
-            (PLACEMENTS, "placement_count",
-             len((load(PLACEMENTS, {}) or {}).get("placements", []))),
-            (RESEARCH, "species_count", len(research)),
-        ]
-        for path, key, actual in checks:
-            doc = load(path, {}) or {}
-            declared = (doc.get("meta") or {}).get(key)
-            if declared is not None and declared != actual:
-                add("META", "WARN",
-                    f"{Path(path).name}: meta.{key}={declared} but the file holds "
-                    f"{actual}")
-        rmeta = ((load(RESEARCH, {}) or {}).get("meta") or {})
-        # The meta.status_counts check was removed 2026-09-03 with the field it
-        # watched. It duplicated a fact the records already carry, drifted when a
-        # write path forgot it, and nothing read it — so this check existed only
-        # to report on the problem the field created. Don't reinstate either.
-        nums = [int(s["id"].split("-")[1]) for s in plants + wild + research
-                if re.match(r"PSBP-\d+$", s.get("id", ""))]
-        if nums:
-            pmax = max(n for n in nums if n < 90000)
-            wmin = min((n for n in nums if n >= 90000), default=None)
-            add("META", "INFO",
-                f"id allocation in fact: plants used up to PSBP-{pmax:05d}; "
-                f"wildlife band occupies "
-                f"PSBP-{wmin:05d}..PSBP-{max(n for n in nums if n >= 90000):05d}")
-            alloc = rmeta.get("id_allocation") or {}
-            if alloc:
-                add("META", "INFO",
-                    f"research.json meta.id_allocation says {alloc} — compare with "
-                    f"the line above and correct if it has drifted")
-
     # ── JSON out ──────────────────────────────────────────────────────────
     # Added 2026-08-28 for the species data-integrity health page (Medium #1).
     # Shape deliberately mirrors psbp_orphan_audit.py --json so one board can
@@ -602,7 +566,7 @@ def main():
     # of 15 and look like a bug in the page.
     if args.json:
         order_j = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK",
-                   "INDEX", "FK", "TAXA", "META"]
+                   "INDEX", "FK", "TAXA"]
         secs = []
         for sec in order_j:
             rows = [(l, m) for s_, l, m in findings if s_ == sec]

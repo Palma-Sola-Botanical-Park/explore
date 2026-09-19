@@ -10001,12 +10001,16 @@ def render_health():
       else {
         h += '<div class="h-list">';
         rows.forEach(function(r){
+          // Each bit is escaped BEFORE joining with the (intentionally raw,
+          // not re-escaped) &middot; separator — joining first and escaping
+          // the whole string double-escaped the entity itself, so it showed
+          // up as the literal text "&middot;" on screen instead of a dot.
           var bits = [r.id, r.name, r.photographer ? '(c) ' + r.photographer : null,
-                      r.photo_id ? 'photo ' + r.photo_id : null].filter(Boolean);
+                      r.photo_id ? 'photo ' + r.photo_id : null].filter(Boolean).map(hEsc);
           h += '<div class="h-item"><span class="h-lvl ' + (r.hero ? 'WARN' : 'INFO') + '">' +
-            (r.hero ? 'HERO' : 'gallery') + '</span><span>' + hEsc(bits.join(' &middot; ')) +
-            (r.hero ? ' &mdash; resized locally, needs a decision'
-                    : ' &mdash; hot-linked, untouched') + '</span></div>';
+            (r.hero ? 'HERO' : 'gallery') + '</span><span>' + bits.join(' &middot; ') +
+            (r.hero ? ' &mdash; used as the hero photo, downloaded and resized locally — a No-Derivatives licence forbids that, needs a decision'
+                    : ' &mdash; gallery photo only, linked straight to iNaturalist and never downloaded or modified, so no licence concern') + '</span></div>';
         });
         h += '</div>';
       }
