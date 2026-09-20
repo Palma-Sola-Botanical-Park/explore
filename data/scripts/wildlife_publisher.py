@@ -498,7 +498,18 @@ def _v2_section(anchor_id, title, inner, band=False):
 #   }
 
 def _v2_polished(species, key):
-    return (species.get("page") or {}).get(key) or None
+    """The override. A present key — even `[]` — means an author decided
+    nothing goes here and the section should not render at all. An absent
+    key means nobody has looked, so fall through to the assembler. Returns
+    the authored list, or None to fall through.
+
+    Brought into line with plant_publisher on 2026-09-20. The old one-liner
+    was `.get(key) or None`, which collapsed `[]` and "absent" into the same
+    answer — so an author who wanted a section GONE had no way to say it and
+    had to write filler instead. Callers must test `is not None`, not
+    truthiness, or the empty-means-suppress case falls through again."""
+    page = species.get("page") or {}
+    return page[key] if key in page else None
 
 
 def _v2_render_blocks(species, blocks, pid=None, photo_index=None):
@@ -524,7 +535,7 @@ def _v2_render_blocks(species, blocks, pid=None, photo_index=None):
 
 def v2_at_a_glance(species):
     pol = _v2_polished(species, "at_a_glance")
-    if pol:
+    if pol is not None:
         return _v2_section("glance", "At a glance",
                            '<div class="sp-quick"><ul>'
                            + "".join(f"<li>{_allow_bold(str(b.get('text', b) if isinstance(b, dict) else b))}</li>" for b in pol)
@@ -569,7 +580,7 @@ def v2_how_to_know_it(species, photos_by_id=None):
     identification fact, and on the anole "you will never hear one" is one of
     the most useful lines on the page. v1 buried it inside the same list."""
     pol = _v2_polished(species, "how_to_know_it")
-    if pol:
+    if pol is not None:
         return _v2_section("know", "How to know it",
                            _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     ident = species.get("identification") or {}
@@ -599,7 +610,7 @@ def v2_where_to_find_it(species, photos_by_id=None):
     of year. Empty is a legitimate outcome — better a missing section than
     'found throughout Florida'."""
     pol = _v2_polished(species, "where_to_find_it_here")
-    if pol:
+    if pol is not None:
         return _v2_section("find", "Where to find it here",
                            _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     seas = species.get("seasonality") or {}
@@ -611,7 +622,7 @@ def v2_where_to_find_it(species, photos_by_id=None):
 def v2_how_it_lives(species, photos_by_id=None):
     """Behaviour first, then diet as behaviour rather than a list."""
     pol = _v2_polished(species, "how_it_lives")
-    if pol:
+    if pol is not None:
         return _v2_section("lives", "How it lives",
                            _v2_render_blocks(species, pol, species.get("id"), photos_by_id), band=True)
     return _v2_section("lives", "How it lives",
@@ -624,7 +635,7 @@ def v2_what_it_does_here(species, photos_by_id=None):
     introduced — for a native, 'it is from here' is not a story, and opening
     with range would bury the ecology behind a non-fact."""
     pol = _v2_polished(species, "what_it_does_here")
-    if pol:
+    if pol is not None:
         return _v2_section("does", "What it does here",
                            _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     inv = species.get("invasive") or {}
@@ -652,7 +663,7 @@ def v2_take_care(species, photos_by_id=None):
     worse than none. Safety is the exception to brevity, so where the hazard is
     real it is stated plainly and not trimmed."""
     pol = _v2_polished(species, "take_care")
-    if pol:
+    if pol is not None:
         return _v2_section("care", "Take care",
                            _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     dang = species.get("danger") or {}

@@ -7906,21 +7906,21 @@ def render_publish():
         if (sp.status === 'spotted') {{
             const disabled = sp.ready ? '' : 'disabled';
             const title = sp.ready ? 'Generate page and publish' : 'Complete the checklist first';
-            /* Plants get ONE button — Work on this page — that drafts what is
-               missing and reviews what is there, notes first. Wildlife keeps
-               Draft + Revise until it goes page-first: every published animal
-               has an authored page.* and wildlife Revise still edits the old
-               fields underneath it, so the page would rebuild unchanged. */
-            const aiBtns = pubKingdom === 'plants' ? workBtn :
-                `<button class="pub-btn aidraft" onclick="pubAiDraft('${{sp.id}}')"
-                          title="Have Claude research authoritative sources and draft the empty fields">🤖 Draft with Claude</button>` +
-                `<button class="pub-btn airevise" onclick="pubReviseOpen('${{sp.id}}')"
-                          title="Paste feedback (from Gemini, a person, your own notes) and have Claude revise">🔁 Revise with Claude</button>`;
+            /* BOTH kingdoms now get ONE button — Work on this page — that drafts
+               what is missing and reviews what is there, notes first.
+
+               Wildlife joined on 2026-09-20. It previously kept Draft + Revise
+               because those wrote only the legacy prose fields, while every
+               published animal already had an authored page.* that the publisher
+               prefers — so a wildlife revise rebuilt the page unchanged and the
+               edit silently did nothing. Wildlife is page-first now, so the two
+               old buttons would edit fields nothing renders. */
+            const aiBtns = workBtn;
             actions = previewBtn + aiBtns +
                 `<button class="pub-btn promote" ${{disabled}} title="${{title}}"
                           onclick="pubPromote('${{sp.id}}')">🚀 Publish</button>`;
         }} else if (sp.status === 'html') {{
-            actions = previewBtn + (pubKingdom === 'plants' ? workBtn : '') + `
+            actions = previewBtn + workBtn + `
                 <button class="pub-btn regen" onclick="pubPromote('${{sp.id}}')"
                         title="Regenerate the page from current data">♻️ Regenerate</button>
                 <button class="pub-btn demote" onclick="pubDemote('${{sp.id}}')"
@@ -8045,7 +8045,9 @@ def render_publish():
                 <div class="rev-label">Notes for Claude — hints, stories, tone, what's in, what's out — or paste copy from anywhere.
                     Leave it empty for a straight review: missing sections drafted, the rest checked and left alone if good.</div>
                 <textarea id="work-text-${{id}}" class="rev-text" rows="5"
-                    placeholder="e.g. The big one by the pond was planted in 1981. Warmer, less textbook. Drop the timber paragraph. — or paste a whole page here."></textarea>
+                    placeholder="${{pubKingdom === 'plants'
+                        ? `e.g. The big one by the pond was planted in 1981. Warmer, less textbook. Drop the timber paragraph. — or paste a whole page here.`
+                        : `e.g. They nest in the cavity on the dead oak by Big Pond. Show up in October and gone by March. Less textbook. — or paste a whole page here.`}}"></textarea>
                 <div class="rev-row">
                     <label class="rev-check"><input type="checkbox" id="work-search-${{id}}" checked>
                         let Claude web-search to confirm facts (uncheck for tone-only work — faster, cheaper)</label>
@@ -10211,7 +10213,10 @@ _PLANT_PAGE_SECTIONS = [
      "and never guessed — if none of those says where it is, omit the section. Any sentence "
      "whose main job is telling the visitor where the plant stands belongs here and nowhere "
      "else. A second block labelled \"When\" may follow: what to look for and in which "
-     "months."),
+     "months. Write it from the direction visitors actually arrive, which the editor's "
+     "notes will tell you. Anchor on a landmark or an immediate neighbour. Nobody counts "
+     "past two or three, so never route a reader down a numbered row — \"the fifteenth "
+     "palm along\" is not a direction."),
     ("what_it_does_here",
      "what the plant does in THIS park: the butterflies and birds it feeds (name the larval "
      "hosts and nectar visitors as \"Common name (Scientific name)\"), what it contributes "
@@ -10221,7 +10226,13 @@ _PLANT_PAGE_SECTIONS = [
      "Location is not significance: move any where-it-stands sentence to "
      "where_to_find_it_here first, then ask whether what remains earns a block. Do not "
      "manufacture ecological or aesthetic meaning — shade, \"visual weight\", buffering "
-     "the heat — to populate this section; one honest park-specific block, or none."),
+     "the heat — to populate this section; one honest park-specific block, or none. THE "
+     "PARK'S OWN WORK WITH THE PLANT IS SOME OF THE BEST MATERIAL AVAILABLE: how we "
+     "propagate it, why it was put where it is, what it screens or holds together, what it "
+     "takes to keep. \"We grow these from cuttings and they start as a bare stem with a "
+     "tuft on top\", or \"volunteers cut the sea fig back off it each year\", is worth more "
+     "than any general fact. Use it whenever the editor's notes give it to you. Never "
+     "invent it."),
     ("where_it_comes_from",
      "the native range and how it came to be grown in Florida, dated where a date exists "
      "(\"introduced to Florida by the 1880s\"). If people USE the plant — carnauba wax, "
@@ -10248,6 +10259,121 @@ _PLANT_PAGE_SECTIONS = [
 ]
 _PLANT_PAGE_KEYS = [k for k, _ in _PLANT_PAGE_SECTIONS]
 
+
+# ── WILDLIFE PAGE SECTIONS ────────────────────────────────────────────────
+# Added 2026-09-20, bringing wildlife to parity with plants. Six sections, not
+# eight: wildlife has no `cultural_significance` and NO ORIGIN SECTION.
+#
+# Randy's call on the origin question: "animals that are here are basically
+# from here, and some are migratory. If one is migratory, that'll show up
+# somewhere. I'm fine with that." So `range_and_origin` stays raw material.
+# Where it genuinely matters — an introduced animal — it belongs inside
+# what_it_does_here, which is exactly what the publisher's assembler already
+# does (wildlife_publisher.v2_what_it_does_here).
+#
+# `how_it_lives` is the wildlife-only section; it has no plant equivalent, so a
+# page object is NOT portable between kingdoms.
+_WILDLIFE_PAGE_SECTIONS = [
+    ("at_a_glance",
+     "three or four short facts, no labels; four only when the animal genuinely has a "
+     "fourth worth keeping. Each one a sentence, two at most. These are the things a "
+     "visitor would stop and tell a friend: vivid, specific, surprising. LEAN LOCAL where "
+     "the animal offers it — Florida, the Gulf coast, this park — but never manufacture a "
+     "local detail. Lead with your best. If the animal is migratory, that is usually one of "
+     "the most interesting things about it and belongs here or in where_to_find_it_here — "
+     "not as a statement of origin, but as a fact about when you will see it."),
+    ("how_to_know_it",
+     "how to tell it is THIS animal, written for somebody watching one. Four or five blocks "
+     "at most. At least one must NOT be a body part: the voice, the way it moves, the "
+     "silhouette in flight, what it does that nothing else here does. The rest may be size, "
+     "markings, juveniles, or the feature that actually settles it. Where a look-alike "
+     "shares this park, say what narrows it down AND what it does not settle; false "
+     "confidence is worse than admitting the limit."),
+    ("where_to_find_it_here",
+     "ANIMALS MOVE. Never give a fixed spot for one. This section is WHERE TO LOOK and "
+     "WHEN: the habitat to scan, the time of day, the season, the behaviour that gives it "
+     "away. \"Around shallow pond edges where trees stand close to the water, most often "
+     "early and late\" is right. \"By the third palm on your left\" is wrong — the animal "
+     "will not be there. A block labelled \"When\" may carry the season or the hours. Use "
+     "only what the park has told you plus the animal's real habits; never invent a park "
+     "sighting."),
+    ("how_it_lives",
+     "how the animal actually gets through its day and its year: what it eats and how it "
+     "goes about getting it, whether it is social or solitary, how it nests or shelters, "
+     "when it is active. Write diet as behaviour, not as a list of foods. This is the "
+     "section where an animal becomes a character rather than a specimen."),
+    ("what_it_does_here",
+     "the animal's effect on THIS place: what it eats and what eats it, what it pollinates, "
+     "spreads, builds or damages, and which plants in the collection it depends on (name "
+     "them). If the animal is INTRODUCED, how it got here and what that has meant belongs "
+     "here — but for a native, \"it is from here\" is not a story and should not open the "
+     "section. THE PARK'S OWN EXPERIENCE OF THE ANIMAL IS SOME OF THE BEST MATERIAL "
+     "AVAILABLE: what it has learned to exploit here, what it does to the place, what staff "
+     "and volunteers have noticed. Use it whenever the editor's notes give it to you. Never "
+     "invent it."),
+    ("take_care",
+     "ONLY if there is something real: a sting, a bite, venom, a disease risk, a nest that "
+     "will be defended, an animal that should not be fed or handled, or a species on a "
+     "Florida invasive list (name the list). Lead with the one that matters most, plainly. "
+     "If the animal is harmless, OMIT THE SECTION — generic \"do not approach wildlife\" "
+     "boilerplate is worse than nothing."),
+]
+_WILDLIFE_PAGE_KEYS = [k for k, _ in _WILDLIFE_PAGE_SECTIONS]
+
+
+_WILDLIFE_PAGE_BRIEF = (
+    "You are writing THE PAGE, not a database record. It has two readers.\n\n"
+    "One has just seen the animal and pulled out a phone. They read At a glance and How to "
+    "know it, and they want to settle what they just saw. That is why At a glance comes "
+    "first and must stand on its own.\n\n"
+    "The other is at home, browsing from one animal to the next because the pages are worth "
+    "it — the writing, the placed photographs, the way it reads like someone who knows this "
+    "park talking to you. This is OUR content: our photographs, what we see here. It is "
+    "gleaned from the references but it is not the references. Short, interesting bites — "
+    "not lists of facts.\n\n"
+    "There is no length target. Some animals have far more worth telling than others, and "
+    "the page should be exactly as long as that. How to measure interesting is hard; boring "
+    "is easy to spot: the laundry list, the rote recitation of obligatory information, the "
+    "box being checked because the section exists. Never do that.\n\n"
+    "BORING IS NOT THE SAME AS UNREMARKABLE. If the honest answer is that this is a common, "
+    "ordinary animal getting on with its life, say that plainly and say it well — that is a "
+    "real page. Never inflate a modest subject, and never manufacture significance to fill "
+    "a section.\n\n"
+    "A GOOD FACT DOES NOT BELONG IN EVERY SECTION. Where-to-look is where-to-look: do not "
+    "decorate it with colour that belongs in At a glance. A fact doing the wrong job reads "
+    "as clutter no matter how good the fact is.\n\n"
+    "A SINGLE INVITATION IS WELCOME where there is a real one — something a visitor can "
+    "watch for, or something worth telling us if they see it. One per page at most, "
+    "anchored in something specific and genuinely uncertain about this animal here. NEVER "
+    "invite anyone to approach, handle, feed or disturb an animal, or to go looking for one "
+    "that could hurt them. Skip it rather than force one.\n\n"
+    "LEAVE THE PARK'S INTERNAL ARRANGEMENTS OUT OF IT. Who manages which area, "
+    "partnerships, why signage works the way it does, what is planned — none of that is "
+    "visitor copy. Describe what a visitor sees and let it stand.\n\n"
+    "THE PAGE SECTIONS ARE THE PUBLISHED CONTENT. Write the words a visitor will read "
+    "inside the block itself. A block must never point at one of the old research fields "
+    "to supply its prose — if something in the research belongs on the page, write it "
+    "into the block. The only things a block may hold as a bare reference are ids: a "
+    "photo id and a species id point at records that live elsewhere and must not be "
+    "copied, because a credit or a link would drift from its source.\n\n"
+    "Every section is a list of BLOCKS. A block is one short paragraph:\n"
+    '  {"label": "Voice", "text": "…"}        a labelled paragraph\n'
+    '  {"text": "…"}                            an unlabelled one\n'
+    "Labels are optional and should be SPECIFIC (\"Voice\", \"In flight\", \"Juveniles\"), "
+    "never generic (\"Description\", \"Notes\"). One to three sentences per block, about "
+    "400 characters at most; no newlines inside a string; plain prose, no markdown."
+)
+
+_WILDLIFE_PAGE_PHOTOS_RULE = (
+    "PHOTOGRAPHS: you do not place photographs. The park does that by hand. A photo block "
+    "may already sit inside a section you are given — return it in its place, unchanged. "
+    "Never write a caption or refer to \"the photo above\"."
+)
+
+
+def _wildlife_page_schema_text():
+    return "\n".join(f'  "{key}" — {brief}' for key, brief in _WILDLIFE_PAGE_SECTIONS)
+
 # The framing above the sections. Two readers, no length target, and the test
 # is against boring. Randy, 2026-09-09: "This is NOT strictly a quick read at a
 # plant. But that is why At A Glance is at the top" … "I do know boring, and
@@ -10270,6 +10396,26 @@ _PLANT_PAGE_BRIEF = (
     "that the people who wrote it care about this stuff — which shows in the specificity "
     "and the choice of what to tell, not in exclamation points. The house voice rules "
     "still hold.\n\n"
+    "BORING IS NOT THE SAME AS UNREMARKABLE. Boring is the laundry list and the box being "
+    "checked. If the honest answer is that this is a dependable, ordinary thing doing a "
+    "steady job, say that plainly and say it well — that is a real page. Never inflate a "
+    "modest subject, and never manufacture significance to fill a section.\n\n"
+    "A GOOD FACT DOES NOT BELONG IN EVERY SECTION. Directions are directions: do not "
+    "decorate them with colour that belongs in At a glance. A fact doing the wrong job "
+    "reads as clutter no matter how good the fact is.\n\n"
+    "A SINGLE INVITATION IS WELCOME where there is a real one — something a visitor can go "
+    "and check, or something worth telling us if they see it. One per page at most, "
+    "anchored in something specific and genuinely uncertain about this plant here. Never "
+    "invite anything that damages the plant. Skip it rather than force one.\n\n"
+    "LEAVE THE PARK'S INTERNAL ARRANGEMENTS OUT OF IT. Who manages which area, "
+    "partnerships, why signage works the way it does, what is planned — none of that is "
+    "visitor copy. Describe what a visitor sees and let it stand.\n\n"
+    "THE PAGE SECTIONS ARE THE PUBLISHED CONTENT. Write the words a visitor will read "
+    "inside the block itself. A block must never point at one of the old research fields "
+    "to supply its prose — if something in the research belongs on the page, write it "
+    "into the block. The only things a block may hold as a bare reference are ids: a "
+    "photo id and a species id point at records that live elsewhere and must not be "
+    "copied, because a credit or a link would drift from its source.\n\n"
     "Every section is a list of BLOCKS. A block is one short paragraph:\n"
     '  {"label": "Flowers", "text": "…"}   a labelled paragraph\n'
     '  {"text": "…"}                         an unlabelled one\n'
@@ -10294,7 +10440,20 @@ def _page_mode(kingdom, species=None):
 
     Draft on a plant: always (a fresh species gets a page, never the old fields).
     Revise on a plant: only if it already has a page — the 264 mapped plants keep
-    editing the fields their page is assembled from. Wildlife is untouched here."""
+    editing the fields their page is assembled from.
+
+    WILDLIFE STAYS FALSE HERE, deliberately, even though Work went page-first for
+    animals on 2026-09-20. This flag is read only by the OLD Draft and Revise
+    paths (_ai_build_messages, _ai_build_revise_messages, ai_draft_species,
+    ai_revise_species, _ai_exemplars), and every one of those hard-codes the
+    PLANT brief, schema and craft rules on its page-mode branch. Returning True
+    for wildlife would feed an animal the plant prompt.
+
+    Work does not consult this at all — it passes page mode explicitly as True
+    and picks its briefs by kingdom. So wildlife is page-first through Work
+    without this needing to move. If the old paths are ever taught the wildlife
+    briefs, this can return `species is None or bool(species.get("page"))` for
+    both kingdoms and the two will converge."""
     if kingdom != "plants":
         return False
     return species is None or bool(species.get("page"))
@@ -10331,12 +10490,24 @@ _SHAPE_CHECK = {
 }
 
 
+_DRAFT_SPEC_WILDLIFE_PAGE = {
+    "teaser":        _DRAFT_SPEC_WILDLIFE["teaser"],
+    "native":        _DRAFT_SPEC_WILDLIFE["native"],
+    "also_known_as": _DRAFT_SPEC_WILDLIFE["also_known_as"],
+}
+# The wildlife page-mode machinery, deliberately tiny — the mirror of
+# _DRAFT_SPEC_PLANTS. Everything else in _DRAFT_SPEC_WILDLIFE is either prose
+# that now lives in page.* (behavior, diet, habitat, sounds, identification…)
+# or a colour dict, and plants already established that colour levels are not
+# drafted on a page: the hazard belongs in Take care prose instead.
+
+
 def _draft_spec(kingdom, page_mode=None):
     """The field spec for a call. `page_mode` (see _page_mode) picks between the
-    two plant specs; None means the page-first one, which is also what the
-    intake/gap tooling wants when it asks 'what can the AI write?'."""
+    mapped and page-first specs; None means the page-first one, which is also what
+    the intake/gap tooling wants when it asks 'what can the AI write?'."""
     if kingdom != "plants":
-        return _DRAFT_SPEC_WILDLIFE
+        return _DRAFT_SPEC_WILDLIFE if page_mode is False else _DRAFT_SPEC_WILDLIFE_PAGE
     return _DRAFT_SPEC_PLANTS_MAPPED if page_mode is False else _DRAFT_SPEC_PLANTS
 
 
@@ -10530,7 +10701,14 @@ def _kingdom_block(kingdom, page_mode=False):
 # meant to prevent — an editing pass that has never been told it is the likeliest
 # place for duplication to creep back in.
 _CRAFT_REPETITION = (
-    "REPETITION: a fact belongs in exactly ONE place. Quick Hits exist to catch the "
+    "REPETITION: check for it every single time, before you return anything. Read what "
+    "you are about to send against the rest of what is already there.\n"
+    "  - The same fact stated twice inside ONE block is always an error.\n"
+    "  - Twice in one section is almost always an error.\n"
+    "  - Across two different sections it is sometimes RIGHT: a good fact can earn a "
+    "second mention where the context genuinely differs. Use judgement there rather than "
+    "a rule — but never let it happen by accident.\n"
+    "Quick Hits exist to catch the "
     "eye; a later section may revisit one only if it genuinely expands it. Restating a "
     "Quick Hit elsewhere without adding anything is the most common fault in these "
     "records.\n\n"
@@ -10567,6 +10745,37 @@ _CRAFT_RULES_PLANT_PAGE = (
                      .replace("Some fields should", "Some sections should")
     + "\n\n" + _CRAFT_CONFIDENCE + "\n\n"
     "LENGTH: as long as the plant deserves and no longer. Every interesting fact you "
+    "know is not an argument for including it, but a good one is."
+)
+
+_CRAFT_RULES_WILDLIFE_PAGE = (
+    _CRAFT_REPETITION.replace("Quick Hits exist", "At a glance exists")
+                     .replace("Restating a Quick Hit", "Restating an At a glance fact")
+                     .replace("a field must be filled", "a section must be filled")
+                     .replace("Some fields should", "Some sections should")
+    + "\n\n"
+    # The three rules below are the page-mode form of the field rules in
+    # _CRAFT_RULES. They broke often enough on the old wildlife fields to be
+    # worth restating against the sections that now carry the same content.
+    "SILENCE IS NOT A TOPIC. If the animal makes no sound a visitor would hear, say "
+    "nothing about sound at all. Never write 'essentially silent' or 'no calls or "
+    "vocalizations' — a sentence explaining an absence is padding. Do not reach for "
+    "ultrasound or echolocation frequencies to give yourself something to say; that is "
+    "laboratory detail, not what someone on a path can hear.\n\n"
+    "DO NOT MANUFACTURE SEASONAL PRECISION. Name months only when the animal is "
+    "genuinely seasonal here — a migrant, or an insect with a real flight season. For a "
+    "year-round animal say 'warm days', 'after rain', 'through the summer' and leave it "
+    "there. An invented month range is worse than no answer, because a visitor cannot "
+    "tell the difference.\n\n"
+    "THE PLANT RELATIONSHIP IS THE POINT. This is a BOTANICAL park, and the usual reason "
+    "to publish an animal at all is what it does with a plant — a larval host, a nectar "
+    "source, a roost tree, plant material it collects, or plants that make the conditions "
+    "it needs. That belongs in what_it_does_here and should be specific: name the plant. "
+    "A generic food-web sentence is not a substitute. If you find yourself writing 'sits "
+    "in the middle of the food web' with no plant named, you have the priorities "
+    "backwards.\n\n"
+    + _CRAFT_CONFIDENCE + "\n\n"
+    "LENGTH: as long as the animal deserves and no longer. Every interesting fact you "
     "know is not an argument for including it, but a good one is."
 )
 
@@ -10841,7 +11050,7 @@ def _deformat(value):
     return value
 
 
-def _sanitize_page(page, allow_location=False):
+def _sanitize_page(page, allow_location=False, kingdom="plants"):
     """The page.* shape, enforced: known section keys only, each a list of
     blocks; a block is {label?, text} or {photo, caption?, focus?}. Prose is
     deformatted like every other string leaf. Returns (clean_page, rejected)
@@ -10849,12 +11058,17 @@ def _sanitize_page(page, allow_location=False):
 
     where_to_find_it_here is dropped unless the caller says the park gave the
     model a location to work from (editor's notes or placements on file); the
-    model is never allowed to invent one."""
+    model is never allowed to invent one.
+
+    The section whitelist is per kingdom (2026-09-20): plants have eight keys,
+    wildlife six, and `how_it_lives` exists only on animals, so a page object is
+    not portable between them."""
+    keys = _PLANT_PAGE_KEYS if kingdom == "plants" else _WILDLIFE_PAGE_KEYS
     clean, rejected = {}, []
     if not isinstance(page, dict):
         return clean, ["page"]
     for key, blocks in page.items():
-        if key not in _PLANT_PAGE_KEYS or (
+        if key not in keys or (
                 key == "where_to_find_it_here" and not allow_location):
             rejected.append(f"page.{key}")
             continue
@@ -10885,28 +11099,39 @@ def _sanitize_page(page, allow_location=False):
     return clean, rejected
 
 
+def _curated_block_key(b):
+    """The identity of a hand-placed block, or None if it is ordinary prose.
+    Photographs are placed by hand and are never the model's to lose."""
+    if not isinstance(b, dict):
+        return None
+    if b.get("photo"):
+        return ("photo", str(b["photo"]))
+    return None
+
+
 def _page_photo_blocks(page):
     """{section: [photo blocks]} — the hand-placed photographs on a page."""
     out = {}
     for key, blocks in (page or {}).items():
         if isinstance(blocks, list):
-            ph = [b for b in blocks if isinstance(b, dict) and b.get("photo")]
+            ph = [b for b in blocks if _curated_block_key(b)]
             if ph:
                 out[key] = ph
     return out
 
 
 def _carry_photo_blocks(old_page, new_page):
-    """Keep every photograph the old page had placed. A photo block missing from
-    the new version of its section is appended to that section (the section is
-    created if the new page dropped it). Photographs are placed by hand and are
-    never the model's to lose. Returns the list of sections touched."""
+    """Keep every hand-placed block the old page had. One missing from the new
+    version of its section is appended to that section (the section is created
+    if the new page dropped it). Returns the list of sections touched.
+
+"""
     touched = []
     for key, blocks in _page_photo_blocks(old_page).items():
         sec = new_page.setdefault(key, [])
-        have = {str(b.get("photo")) for b in sec if isinstance(b, dict) and b.get("photo")}
+        have = {_curated_block_key(b) for b in sec if _curated_block_key(b)}
         for b in blocks:
-            if str(b["photo"]) not in have:
+            if _curated_block_key(b) not in have:
                 sec.append(dict(b))
                 touched.append(key)
     return touched
@@ -10924,7 +11149,8 @@ def _ai_sanitize(draft, kingdom, page_mode=None, allow_location=False):
         if k.startswith("_"):
             continue
         if k == "page" and page_mode:
-            page, bad = _sanitize_page(v, allow_location=allow_location)
+            page, bad = _sanitize_page(v, allow_location=allow_location,
+                                       kingdom=kingdom)
             rejected.extend(bad)
             if page:
                 clean["page"] = page
@@ -11355,6 +11581,17 @@ _WORK_RESEARCH_FIELDS = ("quick_hits", "origin", "more_information", "wildlife_v
                          "reproduction", "other_notes", "safety_note", "native_notes",
                          "watch_invasive_notes")
 
+# The wildlife equivalent. These are the legacy prose fields the old Draft and
+# Revise used to write; in page mode they become source material for the page
+# and nothing more. `plant_connections` is listed first on purpose — it is the
+# field the craft rules call the reason to publish an animal at all, and it is
+# the one most often left empty.
+_WORK_RESEARCH_FIELDS_WILDLIFE = ("plant_connections", "quick_hits", "range_and_origin",
+                                  "more_information", "identification", "diet",
+                                  "behavior", "sounds", "ecological_role", "habitat",
+                                  "where_to_look", "when_to_see", "similar_species",
+                                  "conservation", "invasive")
+
 
 PLACEMENTS_FILE = os.path.join(REPO, "data", "sources", "placements.json")
 
@@ -11389,13 +11626,15 @@ def _ai_build_work_messages(species, kingdom, notes, placements=None):
     current.update({k: species[k] for k in spec if _is_filled(species.get(k))})
 
     research = {}
-    for k in _WORK_RESEARCH_FIELDS:
+    for k in (_WORK_RESEARCH_FIELDS if kingdom == "plants"
+              else _WORK_RESEARCH_FIELDS_WILDLIFE):
         v = species.get(k)
         if _is_filled(v):
             research[k] = v
-    gc = species.get("growing_conditions") or {}
-    if isinstance(gc, dict) and _is_filled(gc.get("notes")):
-        research["growing_conditions_notes"] = gc["notes"]
+    if kingdom == "plants":
+        gc = species.get("growing_conditions") or {}
+        if isinstance(gc, dict) and _is_filled(gc.get("notes")):
+            research["growing_conditions_notes"] = gc["notes"]
 
     schema_lines = "\n".join(
         f'  - "{f}" ({shape}): {instr}' for f, (shape, instr) in spec.items())
@@ -11409,31 +11648,36 @@ def _ai_build_work_messages(species, kingdom, notes, placements=None):
     notes = (notes or "").strip()
 
     user = (
-        "Work on the visitor page for this plant:\n"
+        f"Work on the visitor page for this {'plant' if kingdom == 'plants' else 'animal'}:\n"
         f"{json.dumps(target, indent=2, ensure_ascii=False)}\n\n"
         "CURRENT CONTENT — the page sections that exist (some or none) and the machinery "
         "fields:\n"
         f"{json.dumps(current, indent=2, ensure_ascii=False)}\n\n"
         + (f"{_WORK_RESEARCH_RULE}\n{json.dumps(research, indent=2, ensure_ascii=False)}\n\n"
            if research else "")
-        + "PLACEMENTS ON FILE — where the park has pinned this plant on its map, by area: "
-        + (", ".join(placements) if placements else "none")
-        + ". Park fact; the only location source besides the editor's notes.\n\n"
-        + f"{_PLANT_PAGE_BRIEF}\n\n"
+        + ("PLACEMENTS ON FILE — where the park has pinned this plant on its map, by area: "
+           + (", ".join(placements) if placements else "none")
+           + ". Park fact; the only location source besides the editor's notes.\n\n"
+           if kingdom == "plants" else
+           "THIS IS AN ANIMAL. It is not pinned to a spot and it does not stay put. The "
+           "only location material you have is the editor's notes plus the species' real "
+           "habits — habitat, season, time of day. Never write a fixed position for it.\n\n")
+        + f"{_PLANT_PAGE_BRIEF if kingdom == 'plants' else _WILDLIFE_PAGE_BRIEF}\n\n"
         "THE SECTIONS, in page order. Each lives under \"page\": {\"<key>\": [blocks]}.\n"
-        f"{_plant_page_schema_text()}\n\n"
-        "PHOTO BLOCKS: a block of the form {\"photo\": \"…\", \"caption\": \"…\", "
-        "\"focus\": \"…\"} is a photograph the park placed by hand. Return it in its "
-        "place, unchanged, in any section you rewrite. Never drop, move, or recaption "
-        "one unless the notes ask for that exact photo. You never place new ones.\n\n"
-        "MACHINERY FIELDS the site still needs alongside the page. Fill any that are "
+        f"{_plant_page_schema_text() if kingdom == 'plants' else _wildlife_page_schema_text()}\n\n"
+        + ("PHOTO BLOCKS: a block of the form {\"photo\": \"…\", \"caption\": \"…\", "
+           "\"focus\": \"…\"} is a photograph the park placed by hand. Return it in its "
+           "place, unchanged, in any section you rewrite. Never drop, move, or recaption "
+           "one unless the notes ask for that exact photo. You never place new ones.\n\n"
+           if kingdom == "plants" else f"{_WILDLIFE_PAGE_PHOTOS_RULE}\n\n")
+        + "MACHINERY FIELDS the site still needs alongside the page. Fill any that are "
         "empty; change one only if it is wrong. Shapes:\n"
         f"{schema_lines}\n\n"
         f"{_kingdom_block(kingdom, True)}\n\n"
         + (f"Here are {len(exemplars)} existing published pages from this park, for TONE, "
            "depth and structure only — match this quality; do NOT reuse their facts:\n"
            f"{json.dumps(exemplars, indent=2, ensure_ascii=False)}\n\n" if exemplars else "")
-        + f"{_CRAFT_RULES_PLANT_PAGE}\n\n"
+        + f"{_CRAFT_RULES_PLANT_PAGE if kingdom == 'plants' else _CRAFT_RULES_WILDLIFE_PAGE}\n\n"
         "EDITOR'S NOTES — read these before you write anything. They are from the person "
         "who runs this park's pages and are the most important input you have:\n"
         f"\"\"\"\n{notes}\n\"\"\"\n\n"
@@ -11461,9 +11705,9 @@ def ai_work_species(kingdom, species_id, notes="", allow_search=True):
     """One pass: draft the missing, review the rest, notes first. Writes only the
     sections and fields the model returns; a returned section replaces in full
     with hand-placed photos carried; the live page is rebuilt."""
-    if kingdom != "plants":
-        return {"ok": False, "error": "Work on this page is plants-only for now."}
-    path = PLANT_SIGNAGE
+    if kingdom not in ("plants", "wildlife"):
+        return {"ok": False, "error": f"Unknown kingdom {kingdom!r}."}
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
     entry = next((s for s in _get_species_list(_load(path))
                   if s.get("id") == species_id), None)
     if not entry:
