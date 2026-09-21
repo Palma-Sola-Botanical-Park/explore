@@ -25,6 +25,7 @@ Every finding is one of:
 """
 
 import argparse
+import html as _html
 import json
 import os
 import re
@@ -231,36 +232,56 @@ def main():
         # precision — "49 to 66 feet" is a arithmetic conversion of a round
         # 15-to-20-metre estimate, and implies a survey nobody did.
         #
-        # internal_notes is EXEMPT: it cites sources, and sources are metric.
-        _METRIC = re.compile(r"\b\d[\d.,]*\s?(?:mm|cm|millimet(?:er|re)s?|centimet(?:er|re)s?|met(?:er|re)s?)\b"
-                             r"|\b\d\s?m\b(?!\w)", re.I)
+        # SCOPE, changed 2026-09-21 (Randy): this used to scan every field on
+        # every record, so background prose nobody reads generated warnings —
+        # "I don't give a SHIT if it is in background fields. That's clutter on
+        # my warning system." It now reads the GENERATED PAGE, so a warning
+        # means a visitor can actually see the unit. A record still holding
+        # metric stays silent until that text reaches a page, and a species
+        # whose page.* overrides a metric legacy field is correctly quiet.
+        # Unpublished species have no page and are skipped.
+        #
+        # The pattern widened at the same time. The old one needed a digit
+        # against the unit, so it caught "30 meters" but sailed past "two
+        # meters", "a kilogram", "475 km" and every hectare — four of the six
+        # species this now finds were invisible to it.
+        _METRIC = re.compile(
+            r"\b\d[\d.,]*\s?(?:mm|cm|kg|km|ml|millimet(?:er|re)s?|centimet(?:er|re)s?|"
+            r"kilomet(?:er|re)s?|met(?:er|re)s?|hectares?|kilograms?|lit(?:er|re)s?)\b"
+            r"|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|several|a|"
+            r"hundreds?\sof|thousands?\sof|millions?\sof)\s(?:square\s)?"
+            r"(?:millimet(?:er|re)s?|centimet(?:er|re)s?|kilomet(?:er|re)s?|met(?:er|re)s?|"
+            r"hectares?|kilograms?|lit(?:er|re)s?)\b"
+            r"|\b\d\s?m\b(?!\w)", re.I)
         _ABBREV = re.compile(r"(?<=[\d\s])\bft\b|(?<=\d)\s*\bin\.(?=\s+[a-z])")
 
-        def _visible(sp):
-            out = []
-            def w(v):
-                if isinstance(v, str):
-                    out.append(v)
-                elif isinstance(v, list):
-                    for x in v: w(x)
-                elif isinstance(v, dict):
-                    for k, x in v.items():
-                        if k != "internal_notes": w(x)
-            w({k: v for k, v in sp.items() if k != "internal_notes"})
-            return " ".join(out)
+        def _page_text(sid):
+            """What the generated page actually shows, tags stripped."""
+            for d in ("plants", "wildlife"):
+                for f in sorted((REPO / d).glob(f"{sid}-*.html")):
+                    raw = f.read_text(encoding="utf-8", errors="replace")
+                    raw = re.sub(r"<script.*?</script>", " ", raw, flags=re.S | re.I)
+                    raw = re.sub(r"<style.*?</style>", " ", raw, flags=re.S | re.I)
+                    raw = re.sub(r"<[^>]+>", " ", raw)
+                    return re.sub(r"\s+", " ", _html.unescape(raw))
+            return None
 
         for sp in plants + wild:
-            t = _visible(sp)
+            if sp.get("status") != "html":
+                continue
+            t = _page_text(sp["id"])
+            if not t:
+                continue
             m = _METRIC.search(t)
             if m:
                 add("CONTENT", "WARN",
-                    f"{sp['id']} {sp.get('common_name')}: metric in visitor prose "
-                    f"(\u201c{m.group(0)}\u201d) — convert to imperial and round it")
+                    f"{sp['id']} {sp.get('common_name')}: metric on the page "
+                    f"(\u201c{m.group(0)}\u201d) \u2014 convert to imperial and round it")
             a = _ABBREV.search(t)
             if a:
                 add("CONTENT", "WARN",
-                    f"{sp['id']} {sp.get('common_name')}: abbreviated unit "
-                    f"(\u201c{a.group(0).strip()}\u201d) — spell out feet/inches")
+                    f"{sp['id']} {sp.get('common_name')}: abbreviated unit on the page "
+                    f"(\u201c{a.group(0).strip()}\u201d) \u2014 spell out feet/inches")
 
         # An authored `page` that leaves a section out does not leave it blank:
         # the generator falls back to the old machine fields for that section.
