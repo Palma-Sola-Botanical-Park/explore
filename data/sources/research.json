@@ -2,9 +2,9 @@
   "meta": {
     "generated": "2026-06-23",
     "description": "Staging file for species under research — not yet promoted to spotted or html. Plants and wildlife coexist, distinguished by the 'type' field.",
-    "species_count": 494,
-    "plant_count": 453,
-    "wildlife_count": 41,
+    "species_count": 501,
+    "plant_count": 455,
+    "wildlife_count": 46,
     "id_allocation": {
       "plants": "PSBP-00001 upward (next available: PSBP-00788)",
       "wildlife": "PSBP-90000–99999 band. Two blocks are in use: 99887–99999 (allocated downward from the ceiling, historically) and 90001–90016. The allocator computes max(band)+1, which overflows the 99999 ceiling, so it now gap-fills upward from the low block (next available: PSBP-90017).",
@@ -12637,6 +12637,44 @@
       "inat_obs_count": 1
     },
     {
+      "id": "PSBP-00804",
+      "common_name": "Amaryllis",
+      "botanical_name": "Amaryllis",
+      "inat_taxon_id": 61828,
+      "inat_rank": "genus",
+      "taxonomy": {
+        "family": "Amaryllidaceae",
+        "genus": "Amaryllis",
+        "species": "",
+        "class": "Liliopsida",
+        "order": "Asparagales"
+      },
+      "type": "plant",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1
+    },
+    {
+      "id": "PSBP-00805",
+      "common_name": "Chrysalidocarpus plumosus",
+      "botanical_name": "Chrysalidocarpus plumosus",
+      "inat_taxon_id": 1687871,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Arecaceae",
+        "genus": "Chrysalidocarpus",
+        "species": "plumosus",
+        "class": "Liliopsida",
+        "order": "Arecales"
+      },
+      "type": "plant",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1
+    },
+    {
       "id": "PSBP-90003",
       "common_name": "Mydas Flies",
       "scientific_name": "Mydidae",
@@ -12993,6 +13031,111 @@
         "family": "Araneidae",
         "genus": "Gasteracantha",
         "species": "cancriformis",
+        "class": "Arachnida",
+        "order": "Araneae"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Spider",
+      "animal_group_source": "derived: class Arachnida"
+    },
+    {
+      "id": "PSBP-90047",
+      "common_name": "Great Southern White",
+      "scientific_name": "Ascia monuste",
+      "inat_taxon_id": 51536,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Pieridae",
+        "genus": "Ascia",
+        "species": "monuste",
+        "class": "Insecta",
+        "order": "Lepidoptera"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Butterfly",
+      "animal_group_source": "derived: superfamily Papilionoidea"
+    },
+    {
+      "id": "PSBP-90048",
+      "common_name": "Red Cornsnake",
+      "scientific_name": "Pantherophis guttatus",
+      "inat_taxon_id": 73887,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Colubridae",
+        "genus": "Pantherophis",
+        "species": "guttatus",
+        "class": "Reptilia",
+        "order": "Squamata"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Snake",
+      "animal_group_source": "derived: suborder Serpentes"
+    },
+    {
+      "id": "PSBP-90049",
+      "common_name": "Orange-barred Sulphur",
+      "scientific_name": "Phoebis philea",
+      "inat_taxon_id": 133416,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Pieridae",
+        "genus": "Phoebis",
+        "species": "philea",
+        "class": "Insecta",
+        "order": "Lepidoptera"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": "Butterfly",
+      "animal_group_source": "derived: superfamily Papilionoidea"
+    },
+    {
+      "id": "PSBP-90050",
+      "common_name": "Blackchin Tilapia",
+      "scientific_name": "Sarotherodon melanotheron",
+      "inat_taxon_id": 230431,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Cichlidae",
+        "genus": "Sarotherodon",
+        "species": "melanotheron",
+        "class": "Actinopterygii",
+        "order": "Cichliformes"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": null,
+      "animal_group_source": "undetermined: class Actinopterygii has no mapping"
+    },
+    {
+      "id": "PSBP-90051",
+      "common_name": "Golden Silk Spider",
+      "scientific_name": "Trichonephila clavipes",
+      "inat_taxon_id": 904336,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Nephilidae",
+        "genus": "Trichonephila",
+        "species": "clavipes",
         "class": "Arachnida",
         "order": "Araneae"
       },
