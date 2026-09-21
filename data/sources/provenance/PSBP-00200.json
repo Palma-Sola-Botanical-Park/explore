@@ -1,0 +1,104 @@
+{
+  "psbp_id": "PSBP-00200",
+  "kingdom": "plants",
+  "events": [
+    {
+      "ts": "2026-09-21T16:48:39",
+      "id": "PSBP-00200",
+      "kingdom": "plants",
+      "kind": "work",
+      "model": "claude-sonnet-4-6",
+      "notes": "I will research where this on is in the park, but please give us your best draft to start from.",
+      "drafted": [
+        "page.at_a_glance",
+        "page.how_to_know_it",
+        "page.where_it_comes_from",
+        "page.how_it_grows",
+        "page.what_it_does_here",
+        "teaser",
+        "origin_short",
+        "alternate_names"
+      ],
+      "changed": [],
+      "left_alone": [
+        "butterfly",
+        "form",
+        "native"
+      ],
+      "summary": "Full page drafted from a blank. No placement is on file and the editor has flagged they will research location, so where_to_find_it_here is omitted. What_it_does_here is kept to one honest block — no butterfly, bird, or nectar data could be sourced for this species specifically.",
+      "sources": [
+        "https://garden.org/plants/view/120268/King-Palm-Archontophoenix-tuckeri-Peach-River/",
+        "https://www.palmpedia.net/palmsforcal/Archontophoenix_tuckeri",
+        "https://www.rarepalmseeds.com/archontophoenix-tuckeri",
+        "https://apps.lucidcentral.org/rainforest/text/entities/archontophoenix_tuckeri.htm",
+        "https://www.monaconatureencyclopedia.com/archontophoenix-tuckeri/?lang=en",
+        "https://en.wikipedia.org/wiki/Archontophoenix_tuckeri",
+        "https://davesgarden.com/guides/pf/go/66283",
+        "https://junglemusic.com/2024/11/archontophoenix-tuckeri-rare-australian-type-of-king-palm-13/",
+        "https://palmpedia.net/wiki/Archontophoenix_tuckeri",
+        "https://en.wikipedia.org/wiki/Archontophoenix",
+        "https://powo.science.kew.org/taxon/979674-1",
+        "https://inaturalist.ala.org.au/taxa/364206-Archontophoenix-tuckeri",
+        "https://apps.des.qld.gov.au/species-search/details/?id=6524",
+        "https://en.wikipedia.org/wiki/Archontophoenix_alexandrae",
+        "https://en.wikipedia.org/wiki/Archontophoenix_maxima",
+        "https://www.gbif.org/species/2732627",
+        "http://www.worldfloraonline.org/taxon/wfo-0000260992",
+        "https://species.wikimedia.org/wiki/Archontophoenix_tuckeri",
+        "https://www.wikidata.org/wiki/Q4787339",
+        "https://www.florida-palm-trees.com/king-palm-tree/",
+        "https://www.gardenia.net/plant/archontophoenix-alexandrae-king-palm",
+        "https://www.florida-palm-trees.com/purple-king-palm-tree/",
+        "https://davesgarden.com/guides/pf/go/51655",
+        "https://www.allaboutpalmtrees.com/king-palm-tree",
+        "https://www.viriar.com/blogs/palms-tree-encyklopedia/archontophoenix-cunninghamiana-a-comprehensive-study",
+        "https://davesgarden.com/guides/pf/go/59732",
+        "https://en.wikipedia.org/wiki/Sabal_palmetto",
+        "https://greg.app/king-palm-hardiness-zone/"
+      ],
+      "searches": 4
+    },
+    {
+      "ts": "2026-09-21T16:52:51",
+      "id": "PSBP-00200",
+      "kingdom": "plants",
+      "kind": "work",
+      "model": "claude-sonnet-4-6",
+      "notes": "Claude found some good material, and I think the best version is a merge rather than picking one draft. **Its strongest additions are the juvenile-ID honesty, the formal 1994 naming story, and the fruit-fiber detail. Mine had the better “Peach River is a real place” hook and a cleaner visitor-facing structure.**\n\nA few factual notes first. *Archontophoenix tuckeri* is accepted by Kew and was formally published in 1994. Lucid gives the type locality as Upper Peach River, Bonanza Creek, collected in 1948, and describes a palm to about 20 m / 65 ft with new leaves often bronze-red, a waxy light- to lime-green crownshaft, and silvery-scaled leaflet undersides. ([Plants of the World Online][1])\n\nI would **keep “Peach River” front and center**. That is more relatable than “named for Robert Tucker” as an early-page fact. The naming story is interesting, but it is secondary.\n\nThe current teaser:\n\n> Its new fronds flush pink to bronze before greening — and the lime crownshaft that replaces them is like nothing else in the palm family.\n\nI would change. “Like nothing else in the palm family” is much too strong, and crownshafts are common across palms. Better:\n\n> **The “Peach River” in the name is a real place: the specimen used to describe this species was collected beside Upper Peach River in far northern Queensland.**\n\nThat is distinctive, true, and different from the first At a Glance.\n\nFor `at_a_glance`, I’d merge our two drafts into something like:\n\n```xml\n<at_a_glance>\n  <block>\n    <text>New leaves often emerge bronze, reddish or pink before maturing to deep green. The colour is brief, so catching one at its best is partly luck.</text>\n  </block>\n\n  <block>\n    <text>Turn over a leaflet and the green disappears: the underside is silver-grey from a dense layer of tiny scales.</text>\n  </block>\n\n  <block>\n    <text>The species was only formally named in 1994, even though the specimen that anchors the name had been collected beside Upper Peach River in 1948.</text>\n  </blo",
+      "drafted": [
+        "page.cultural_significance"
+      ],
+      "changed": [
+        "page.at_a_glance",
+        "page.how_to_know_it",
+        "page.where_it_comes_from",
+        "page.how_it_grows",
+        "page.what_it_does_here",
+        "teaser"
+      ],
+      "left_alone": [],
+      "summary": "Executed the editor's merge instructions across all sections: replaced at_a_glance, how_to_know_it, where_it_comes_from, how_it_grows, what_it_does_here, and teaser with the editor's preferred drafts, tightened to house rules; added cultural_significance for Robert Tucker as directed. The mesocarp-fiber block and the 'underplanted in Florida collections' language are both out.",
+      "sources": [
+        "https://www.rarepalmseeds.com/archontophoenix-tuckeri",
+        "https://garden.org/plants/view/120268/King-Palm-Archontophoenix-tuckeri-Peach-River/",
+        "https://www.monaconatureencyclopedia.com/archontophoenix-tuckeri/?lang=en",
+        "https://palmpedia.net/wiki/Archontophoenix_tuckeri",
+        "https://davesgarden.com/guides/pf/go/66283",
+        "https://junglemusic.com/2024/11/archontophoenix-tuckeri-rare-australian-type-of-king-palm-13/",
+        "https://projectpalm.net/shop/palms/archontophoenix-tuckeri-peach-creek-palm",
+        "https://www.viriar.com/products/rocky-river-palm-archontophoenix-tuckeri-20-30-cm",
+        "https://www.palmpedia.net/palmsforcal/Archontophoenix_tuckeri",
+        "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:134734-3",
+        "https://en.wikipedia.org/wiki/Archontophoenix",
+        "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:979672-1",
+        "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:979673-1",
+        "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:31093-1",
+        "https://species.wikimedia.org/wiki/Archontophoenix_purpurea",
+        "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:979671-1",
+        "https://en.wikipedia.org/wiki/Archontophoenix_maxima",
+        "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:664083-1"
+      ],
+      "searches": 2
+    }
+  ]
+}
