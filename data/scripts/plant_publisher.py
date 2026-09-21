@@ -956,7 +956,9 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
 
     focus = (hero.get("focus") if hero else None) or "50% 50%"
     hero_src = f"../photos/{pid}/{hero['filename']}" if hero else ""
-    hero_attr = _v2_hero_attr(hero)
+    # Source once per page: the Photographs roll below carries it for every
+    # photograph when it renders, so the hero bar drops it. See _v2_hero_attr.
+    hero_attr = _v2_hero_attr(hero, show_source=len(gallery_photos) < 2)
 
     # A single cultural fact becomes a callout inside Where it comes from,
     # rather than a section with one paragraph in it.

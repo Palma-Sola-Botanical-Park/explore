@@ -29,13 +29,20 @@ function paintLb(){
   lbName.textContent=p.by;
   lbMeta.innerHTML = p.date + ' &middot; CC-BY-NC, via iNaturalist';
   lbCount.textContent=(cur+1)+' / '+PHOTOS.length;
-  lbPrev.disabled = cur===0; lbNext.disabled = cur===PHOTOS.length-1;
 }
 function openLb(i){ cur=i; paintLb(); lb.classList.add('on'); lb.setAttribute('aria-hidden','false');
   document.body.style.overflow='hidden'; }
 function closeLb(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true');
   document.body.style.overflow=''; cur=-1; }
-function stepLb(d){ var j=cur+d; if(j<0||j>=PHOTOS.length) return; cur=j; paintLb(); }
+/* WRAPS. Past the last photograph you land back on the first, and before the
+   first you land on the last. Randy, 2026-09-21: "loop from the last gallery
+   photo back to the 1/x photo if you keep clicking or swiping same direction".
+   It previously dead-ended — stepLb returned early at either end and paintLb
+   disabled the arrow you had just run out of road on. Outdoors, on a phone,
+   that reads as the page having frozen rather than as having reached the end;
+   the counter (3 / 6) is what tells you where you are, not a greyed arrow.
+   Clicks, swipes and arrow keys all route through here, so they wrap together. */
+function stepLb(d){ cur=(cur+d+PHOTOS.length)%PHOTOS.length; paintLb(); }
 
 /* Apply the stored focus point to every photograph that has one. In the real
    publisher this is written server-side from photo_credits.json; done here at

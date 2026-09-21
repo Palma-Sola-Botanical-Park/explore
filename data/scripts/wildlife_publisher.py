@@ -859,13 +859,24 @@ def v2_eyebrow(species):
 
 
 
-def _v2_hero_attr(rec):
+def _v2_hero_attr(rec, show_source=True):
     """The hero's credit bar — the site-standard .photo-attr / .attr-line
     structure that PSBPPhotos.attribution() emits on index.html, so a
     photographer is credited identically everywhere.
 
     I built this string in the first cut and never put it in the template, so
-    91 pages shipped with an uncredited hero. Randy caught it on sight."""
+    91 pages shipped with an uncredited hero. Randy caught it on sight.
+
+    `show_source` controls the trailing "via iNaturalist" only. THE RULE, set
+    with Randy 2026-09-21: the source appears ONCE per page, never twice. When
+    the Photographs roll renders it credits every photograph including the hero,
+    so repeating the source up here is noise — and on a phone it is the line
+    that wrapped and pushed the photographer's name up through the title.
+    Pass False in that case. Pass True when the roll is omitted, which happens
+    on the 34 single-photo species, where this bar is the only credit on the
+    page. The photographer and the licence NEVER depend on this flag: those are
+    the attribution the licence actually requires. "via iNaturalist" is
+    provenance."""
     if not rec:
         return ""
     hc = resolve_hero_credit(rec)
@@ -878,7 +889,8 @@ def _v2_hero_attr(rec):
             f'{datespan}</span>'
             '<span class="cc-badge"><span class="cc-mark">cc</span>'
             f'<span class="cc-term">{h(lic)}</span></span>'
-            '<span class="attr-src">via iNaturalist</span></span></div>')
+            + ('<span class="attr-src">via iNaturalist</span>' if show_source else '')
+            + '</span></div>')
 
 
 _V2_GAL_SVG = ('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
@@ -964,7 +976,9 @@ def generate_html_v2(species, hero, gallery_photos, published_on=""):
     hero_focus = (hero.get("focus") if hero else None) or "50% 50%"
 
     hero_note  = (hero.get("note") or "").strip() if hero else ""
-    hero_attr  = _v2_hero_attr(hero)
+    # Source once per page — v2_photographs omits the roll below 2 photos,
+    # and in that case this bar is the only credit. See _v2_hero_attr.
+    hero_attr  = _v2_hero_attr(hero, show_source=len(photos) < 2)
     gal_cue    = _v2_hero_gallery_cue(len(photos))
 
     strip = ""
