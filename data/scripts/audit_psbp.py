@@ -312,6 +312,86 @@ def main():
         except Exception as e:                                # noqa: BLE001
             add("CONTENT", "INFO", f"fallback-section check skipped ({e})")
 
+    # ── PAGE ──────────────────────────────────────────────────────────────
+    # The page.* block contract, locked 2026-09-21 at Randy's instruction:
+    # "since we created the page.* thing ourselves- LET'S SET THE RULES NOW."
+    # Full spec in park-library/system docs/PAGE_BLOCK_CONTRACT.md.
+    #
+    # Why this section exists: _v2_block_html tests `if b.get("photo")` first,
+    # renders the figure and returns, so ANY text on that same block is thrown
+    # away without a word. Eight blocks were authored that way on 2026-09-21 and
+    # every one wiped its own directions off the live page. Randy spotted it
+    # from a screenshot, which is not a quality system. A block is prose OR a
+    # photograph; these rules make "both" impossible to ship quietly.
+    if run("PAGE"):
+        _PLANT_SECS = {"at_a_glance", "cultural_significance", "where_it_comes_from",
+                       "where_to_find_it_here", "what_it_does_here", "how_to_know_it",
+                       "how_it_grows", "take_care"}
+        _WILD_SECS  = {"at_a_glance", "how_to_know_it", "where_to_find_it_here",
+                       "how_it_lives", "what_it_does_here", "take_care"}
+        _BLOCK_KEYS = {"label", "text", "photo", "focus", "caption", "links"}
+
+        for sp, valid, king in ([(s, _PLANT_SECS, "plant") for s in plants]
+                                + [(s, _WILD_SECS, "wild") for s in wild]):
+            page = sp.get("page")
+            if page is None:
+                continue
+            sid, cn = sp["id"], sp.get("common_name")
+            if not isinstance(page, dict):
+                add("PAGE", "ERROR", f"{sid} {cn}: page is {type(page).__name__}, expected an object")
+                continue
+            # photos this species can actually render: hero + gallery
+            showable = {str(p.get("photo_id")) for p in by_species.get(sid, [])
+                        if p.get("publish_ok") and (p.get("hero") or "gallery" in (p.get("role") or []))}
+            for sec, blocks in page.items():
+                if sec not in valid:
+                    add("PAGE", "ERROR",
+                        f"{sid} {cn}: unknown {king} section \u201c{sec}\u201d — the publisher ignores it")
+                    continue
+                if not isinstance(blocks, list):
+                    add("PAGE", "ERROR",
+                        f"{sid} {cn}: {sec} is {type(blocks).__name__}, expected a list of blocks")
+                    continue
+                if not blocks:
+                    continue                      # [] is deliberate suppression
+                seen_prose = False
+                for i, b in enumerate(blocks):
+                    if not isinstance(b, dict):
+                        add("PAGE", "ERROR", f"{sid} {cn}: {sec}[{i}] is {type(b).__name__}, expected an object")
+                        continue
+                    has_txt = bool((b.get("text") or "").strip() or (b.get("label") or "").strip())
+                    if b.get("photo"):
+                        if has_txt:
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: {sec}[{i}] has a photo AND text — "
+                                f"the text is DISCARDED; split into two blocks")
+                        if str(b["photo"]) not in showable:
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: {sec}[{i}] photo {b['photo']} is not a publishable "
+                                f"hero/gallery photo — the figure renders as nothing")
+                        if sec == "at_a_glance":
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: at_a_glance[{i}] holds a photo — it renders a raw object")
+                        if not seen_prose:
+                            add("PAGE", "WARN",
+                                f"{sid} {cn}: {sec} opens with a photo — a photo follows the prose "
+                                f"it illustrates")
+                    else:
+                        if not (b.get("text") or "").strip():
+                            add("PAGE", "ERROR", f"{sid} {cn}: {sec}[{i}] has no text and no photo")
+                        else:
+                            seen_prose = True
+                        if sec == "at_a_glance" and (b.get("label") or "").strip():
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: at_a_glance[{i}] has a label — bullets drop it")
+                    extra = set(b) - _BLOCK_KEYS
+                    if extra:
+                        add("PAGE", "ERROR",
+                            f"{sid} {cn}: {sec}[{i}] unexpected key(s) {sorted(extra)}")
+                if not seen_prose:
+                    add("PAGE", "ERROR",
+                        f"{sid} {cn}: {sec} is photographs only — a section needs prose")
+
     # ── PHOTOS────────────────────────────────────────────────────────────
     if run("PHOTOS"):
         for p in photos:
@@ -598,7 +678,7 @@ def main():
     # a silently truncated feed would show "27 photo warnings" next to a list
     # of 15 and look like a bug in the page.
     if args.json:
-        order_j = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK",
+        order_j = ["PHOTOS", "CREDITS", "CONTENT", "PAGE", "LINK", "DISK",
                    "INDEX", "FK", "TAXA"]
         secs = []
         for sec in order_j:
@@ -629,7 +709,7 @@ def main():
     #   add() fills `findings`, but only sections named here are printed or
     #   counted. CONTENT was added 2026-08-28 and cost twenty minutes of
     #   debugging a check that was working perfectly.
-    order = ["PHOTOS", "CREDITS", "CONTENT", "LINK", "DISK", "INDEX",
+    order = ["PHOTOS", "CREDITS", "CONTENT", "PAGE", "LINK", "DISK", "INDEX",
              "FK", "TAXA"]
     if not args.quiet:
         for sec in order:
