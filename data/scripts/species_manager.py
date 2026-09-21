@@ -8047,6 +8047,12 @@ def render_publish():
                 html += `<div class="ai-line"><b>— Left alone:</b> ${{chips(res.left_alone, 'skip')}}</div>`;
             if (!(res.drafted && res.drafted.length) && !(res.changed && res.changed.length))
                 html += `<div class="ai-line ai-none">Nothing written — Claude found nothing to draft and nothing worth changing.</div>`;
+            /* Counted, not judged — repeated phrasing and overlapping blocks that
+               a model reviewing its own prose reliably misses, plus a note when
+               the location section was dropped for want of a location. */
+            if (res.selfcheck && res.selfcheck.length)
+                html += `<div class="ai-line"><b>⚠ Worth a look:</b></div>` +
+                    res.selfcheck.map(s => `<div class="ai-line ai-muted">${{esc(s)}}</div>`).join('');
             if (res.low_confidence && res.low_confidence.length) {{
                 // Field names become chips; a sentence or two reads as a paragraph.
                 const short = res.low_confidence.filter(s => s.length <= 40);
@@ -10368,6 +10374,12 @@ _PLANT_PAGE_BRIEF = (
     "into the block. The only things a block may hold as a bare reference are ids: a "
     "photo id and a species id point at records that live elsewhere and must not be "
     "copied, because a credit or a link would drift from its source.\n\n"
+    "OURS IS OFTEN NOT THE PLANT IN THE BOOKS — YET. A specimen here may be young, cut "
+    "back, or years away from what the species becomes. Say so, and say it forward: not "
+    "\"it falls short\", but \"it is not much to look at now, and here is what it is going "
+    "to be\". A page that promises a twelve-foot palm to somebody standing over a knee-high "
+    "plant has misled them. One that says the thin ringed cane and the corn-cob fruit are "
+    "still ahead of it has given them a reason to come back.\n\n"
     "Every section is a list of BLOCKS. A block is one short paragraph:\n"
     '  {"label": "Flowers", "text": "…"}   a labelled paragraph\n'
     '  {"text": "…"}                         an unlabelled one\n'
@@ -10664,6 +10676,11 @@ _CRAFT_REPETITION = (
     "eye; a later section may revisit one only if it genuinely expands it. Restating a "
     "Quick Hit elsewhere without adding anything is the most common fault in these "
     "records.\n\n"
+    "DO NOT REUSE A DISTINCTIVE PHRASE. Ordinary words recur and that is fine — water, "
+    "perch, bank, leaf. But a turn of phrase YOU constructed — \"pounds the fish against "
+    "the branch\", \"a clear view down to the surface\" — should appear once. If it turns "
+    "up twice, that is a signal that one of the two blocks is not earning its place. If "
+    "both genuinely need the idea, the second one says it differently, or not at all.\n\n"
     "SELECTIVITY: do NOT assume a field must be filled just because it exists. Some "
     "fields should be quiet on a given species. Omit rather than pad — the database can "
     "be comprehensive; the visitor page should be selective."
@@ -11653,6 +11670,55 @@ def _ai_build_work_messages(species, kingdom, notes, placements=None):
     return system, user
 
 
+def _work_selfcheck(page, kingdom, wrote_location):
+    """What the model cannot see about its own output. Returns a list of short
+    strings for the Work panel — advisory only, nothing is blocked or retried.
+
+    Added 2026-09-20. The repetition rule has been in the brief since that
+    morning and still did not land: three passes over one page left "pounds the
+    fish against the branch" told twice, almost word for word, and a phrase
+    about a perch over water said ten times. A model reviewing its own prose is
+    the wrong instrument for this; counting is."""
+    out = []
+    blocks = [(sec, b.get("label") or "", b.get("text") or "")
+              for sec, bl in (page or {}).items()
+              if isinstance(bl, list)
+              for b in bl if isinstance(b, dict) and b.get("text")]
+
+    def words(t):
+        return re.sub(r"[^a-z0-9 ]", " ", t.lower()).split()
+
+    # Repeated constructed phrases: 5-word shingles appearing in two blocks.
+    seen = {}
+    for i, (sec, lab, txt) in enumerate(blocks):
+        w = words(txt)
+        for n in range(len(w) - 4):
+            sh = " ".join(w[n:n + 5])
+            seen.setdefault(sh, set()).add(i)
+    dupes = sorted({sh for sh, where in seen.items() if len(where) > 1},
+                   key=len, reverse=True)[:3]
+    for sh in dupes:
+        out.append(f'repeated phrase — "{sh}…" appears in 2 blocks')
+
+    # Blocks that overlap heavily on word content.
+    for i in range(len(blocks)):
+        for j in range(i + 1, len(blocks)):
+            a, b = set(words(blocks[i][2])), set(words(blocks[j][2]))
+            if not a or not b:
+                continue
+            ov = len(a & b) / len(a | b) * 100
+            if ov >= 30:
+                out.append(
+                    f"{blocks[i][0]} and {blocks[j][0]} overlap {ov:.0f}% "
+                    f"({blocks[i][1] or 'unlabelled'} / {blocks[j][1] or 'unlabelled'})")
+    # One pair is a nudge; a page full of them is noise.
+    out = out[:5]
+
+    if not wrote_location:
+        out.append("left out Where to find it — you did not tell me where it is")
+    return out
+
+
 def ai_work_species(kingdom, species_id, notes="", allow_search=True):
     """One pass: draft the missing, review the rest, notes first. Writes only the
     sections and fields the model returns; a returned section replaces in full
@@ -11764,6 +11830,10 @@ def ai_work_species(kingdom, species_id, notes="", allow_search=True):
         "photos_kept": sorted(set(photos_kept)),
         "summary": summary, "sources": sources, "searches": searches, "usage": usage,
         "wrote": wrote, "page": regen,
+        "selfcheck": _work_selfcheck(
+            (entry.get("page") or {}),
+            kingdom,
+            bool((entry.get("page") or {}).get("where_to_find_it_here"))),
     }
 
 
