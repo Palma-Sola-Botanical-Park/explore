@@ -3018,58 +3018,6 @@ def _gaps_overlay_html(findings):
     )
 
 
-def _flags_strip_html(species):
-    """A preview-only strip showing the index booleans + color levels that DON'T
-    appear on the public page — so they can be reviewed before publishing. Never
-    published (injected into the in-memory preview only)."""
-    def boolrow(label, val):
-        mark = '<span style="color:#5fd47a;">✓ yes</span>' if val else '<span style="opacity:.55;">— no</span>'
-        return (f'<div style="display:flex;gap:6px;margin:3px 0;"><span>{label}</span>'
-                f'<span style="margin-left:auto;">{mark}</span></div>')
-    def lvlrow(label, level):
-        c = {"Green": "#5fd47a", "Yellow": "#ffd24a", "Red": "#ff6b6b"}.get(level, "#888")
-        return (f'<div style="display:flex;gap:6px;margin:3px 0;"><span>{label}</span>'
-                f'<span style="margin-left:auto;"><span style="color:{c};">●</span> {level or "—"}</span></div>')
-
-    rows = ""
-    if "native" in species:
-        rows += boolrow("Native", bool(species.get("native")))
-        nn = species.get("native_notes")
-        if nn:
-            rows += f'<div style="font-size:11px;opacity:.7;margin:-1px 0 4px;">↳ {_esc_html(nn)}</div>'
-    if "watch_invasive" in species:
-        rows += boolrow("Watch / invasive", bool(species.get("watch_invasive")))
-    bf = species.get("butterfly")
-    if isinstance(bf, dict):
-        rows += boolrow("Larval host", bool(bf.get("larval_food")))
-        rows += boolrow("Nectar", bool(bf.get("adult_food")))
-    if "rare_fruit" in species:
-        rows += boolrow("Rare-fruit area", bool(species.get("rare_fruit")))
-    if species.get("form"):
-        rows += (f'<div style="display:flex;gap:6px;margin:3px 0;"><span>Form</span>'
-                 f'<span style="margin-left:auto;opacity:.85;">{_esc_html(species["form"])}</span></div>')
-    ed = species.get("edibility")
-    if isinstance(ed, dict):
-        rows += lvlrow("Edibility box", ed.get("level"))
-    tx = species.get("toxicity")
-    if isinstance(tx, dict):
-        rows += lvlrow("Toxicity (people)", tx.get("level"))
-        if tx.get("dogs_level"):
-            rows += lvlrow("Toxicity (dogs)", tx.get("dogs_level"))
-    if not rows:
-        return ""
-    return (
-        '<div id="index-flags" style="position:fixed;left:16px;bottom:16px;width:236px;'
-        'z-index:99998;background:#22303a;color:#fff;border-radius:10px;padding:12px 14px;'
-        'font:13px system-ui;box-shadow:0 4px 20px rgba(0,0,0,.3);max-height:72vh;overflow:auto;">'
-        '<strong style="display:block;margin-bottom:8px;">🔖 Index flags <span style="opacity:.6;font-weight:400;">(preview only)</span></strong>'
-        f'{rows}'
-        '<div style="margin-top:9px;font-size:11px;opacity:.65;line-height:1.4;">'
-        'These power the browse filters and the color box — not shown on the public page. '
-        'Give them a glance before publishing.</div></div>'
-    )
-
-
 def _esc_html(s):
     return (str(s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
@@ -3184,10 +3132,14 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
             html = html.replace(f'{q}../css/', f'{q}/css-file/')
             html = html.replace(f'{q}css/',    f'{q}/css-file/')
 
-        # Gaps overlay panel (only in gaps mode) + the index-flags strip (always).
-        # Both are preview-only and never touch the published page.
+        # Gaps overlay panel — only when the Gaps view is deliberately asked for.
+        # Preview-only; never touches the published page.
+        #
+        # The index-flags strip that used to ride along on EVERY preview was
+        # removed 2026-09-20. Randy: "I'd rather just look at the page. Over time
+        # I'll get a feel for what is thin and what is missing." A checklist
+        # pinned over the page is not how he wants to read his own work.
         overlay = (_gaps_overlay_html(audit_gaps(kingdom, species)) if gaps_mode else "")
-        overlay += _flags_strip_html(species)
 
         # Inject banner + overlay right after <body>
         if "<body" in html:
