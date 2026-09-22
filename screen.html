@@ -3,686 +3,2506 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>In Loving Memory · Mary Ina Baden</title>
+<title>Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="images/favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  screen.html — the display on the galleria / office TV
+  ═══════════════════════════════════════════════════════════════════════════
+
+  READ SCREEN.md FIRST if you want the manual: Sheet columns, slide formats,
+  tuning dials, kiosk setup. This header is the orientation for someone about
+  to edit this file.
+
+  ───────────────────────────────────────────────────────────────────────────
+  WHAT IT IS
+  ───────────────────────────────────────────────────────────────────────────
+  One HTML file, no build step, no dependencies beyond two Google fonts. Open
+  it full-screen on a TV and leave it. It reads the same published JSON feeds
+  that drive the website, filtered to display ∈ {screen, both}, and rotates
+  through them. Data refreshes every 10 minutes; the page hard-reloads at 4am.
+
+      screen.html                   galleria (default)
+      screen.html?mode=office       office mix
+      screen.html?mode=anything     a new screen; own routing, galleria mix
+      screen.html?speed=5           five times faster, for reviewing
+      screen.html?seconds=24        override the per-slide dwell
+
+  ───────────────────────────────────────────────────────────────────────────
+  THE THREE IDEAS IT IS BUILT ON
+  ───────────────────────────────────────────────────────────────────────────
+  1. A SCREEN HAS NO VIEWER. Nobody is watching when the slide changes; they
+     glance up mid-rotation. Every slide is complete on its own — no build-up,
+     no callback, no punchline that depends on the slide before. Fewer words,
+     much bigger, readable across a room.
+
+  2. THE TEST FOR SCREEN CONTENT: does this only make sense because you are
+     standing in the park? `right_now.area` rides in the eyebrow as
+     "BLOOMING NOW → SERENITY GARDEN" — a label on the web, an instruction to
+     walk here. Anything that reads the same from a sofa in Ohio belongs on
+     the website.
+
+  3. THE ASK IS OCCASIONAL. The screen is mostly beauty and interest; a
+     donation slide every third turn is how you lose people. Asks are capped at
+     a quarter of the deck and spaced.
+
+  ───────────────────────────────────────────────────────────────────────────
+  HOW THE ROTATION IS BUILT  (buildDeck → interleave → next)
+  ───────────────────────────────────────────────────────────────────────────
+  Four constraints that actively fight each other, each handled separately:
+
+    COMPLETENESS   every announcement seen, every quick hit used
+                   → rotating queues (takeFrom, rotate)
+    PROPORTION     one news item must not outplay fourteen announcements
+                   → PERIOD: "each row of this feed comes round every N cycles",
+                     so slides-per-cycle = ceil(rows / period), capped by CAP
+    DISTRIBUTION   no clumping, no family stranded at the end of the deck
+                   → interleave(): every family gets evenly spaced ideal
+                     positions across the WHOLE deck. Note: an earlier greedy
+                     version avoided adjacency but front-loaded the largest
+                     family and pushed small ones to the tail. Avoiding
+                     adjacency and spreading out are different problems.
+    SURPRISE       the visitor should not be able to predict what is next
+                   → shuffling within all of the above
+
+  Structure decides what is in the deck and roughly where; randomness decides
+  which ones and in what order. Neither alone works — pure randomness clumps,
+  pure structure becomes a pattern.
+
+  ───────────────────────────────────────────────────────────────────────────
+  WHERE THE DATA COMES FROM
+  ───────────────────────────────────────────────────────────────────────────
+    data/published/*.json      Bev's Sheet, synced by a GitHub Action.
+                               events, classes, series, news, newsletters,
+                               announcements, volunteer, right_now,
+                               photographers (display=screen/both only —
+                               see slidePhotographer())
+    plants.json                the search index — light, has photo, focus,
+    wildlife.json              page, credit, family, form, native, and the
+                               boolean flags the collection slides group by
+    data/sources/
+      photo_credits.json       photographer, license, observed_on, and (since
+                               08-21) w / h / orient
+      plant_signage.json       the QUICK HITS come from here, not from the
+      wildlife_signage.json    index — see the note at hitsOf()
+      photographer_names.json  display names + the `note` field, which is how
+                               the Bright Futures cohort slide finds its crew
+
+  ───────────────────────────────────────────────────────────────────────────
+  DECISIONS WORTH NOT RE-LITIGATING
+  ───────────────────────────────────────────────────────────────────────────
+  · NO QR ON SPECIES SLIDES. The reader is standing in front of the plant;
+    sending them to a web page about it is worse than looking up. QRs are for
+    registration, articles, flyers.
+  · QUICK HITS COME FROM THE SIGNAGE MASTERS. The search index flattens the
+    array into one space-joined string for search scoring, and 47% of hits run
+    to more than one sentence — splitting on sentences tore them in half.
+  · BLUR WAS REJECTED for text legibility. A softened photograph reads as a
+    mistake; darkening reads as a shadow. See .veil.
+  · ONE HORIZONTAL DARKENER PER SLIDE. Two stacked gradients multiply and turn
+    the first panel black. .veil owns the horizontal, .scrim owns the vertical.
+  · PORTRAITS TO TALL PANELS, LANDSCAPES TO WIDE SLIDES. 846 of the photos are
+    portrait against a 16:9 screen. See preferOrient().
+  · FULL-BLEED SLIDES PULL `original` FROM iNATURALIST. The local hero files
+    are deliberately shrunk for page weight; a wall wants the opposite.
+
+  ───────────────────────────────────────────────────────────────────────────
+  THE TRAP THAT COST AN EVENING
+  ───────────────────────────────────────────────────────────────────────────
+  next() catches exceptions per slide, so one broken format cannot take the
+  whole wall down. That is right — but it means a builder that throws is
+  indistinguishable from one that simply has nothing to show. A missing helper
+  function silently removed SIX of the thirteen formats, and the symptom was
+  "the mix feels event-heavy," not a crash.
+
+  Failures now log to the console with the slide type. IF THE ROTATION LOOKS
+  WRONG, OPEN THE CONSOLE BEFORE TOUCHING ANY WEIGHTS.
+
+  ───────────────────────────────────────────────────────────────────────────
+  ADDING A SLIDE FORMAT
+  ───────────────────────────────────────────────────────────────────────────
+  1. Write slideThing() returning {html, bg?, poster?, grid?, pile?, credit?,
+     seconds?} or null when it has nothing to show.
+  2. Add it to PERIOD/CAP (feed-driven) or push a fixed count in buildDeck().
+  3. Give it a FAMILY — formats that LOOK alike share one, so they never sit
+     adjacent. ambient and collection are both 'quiet'.
+  4. If it consumes more than one row, the period accounting does not apply;
+     handle it like slideWeek() does.
+  ═══════════════════════════════════════════════════════════════════════════
+-->
 <style>
-/* ============================================================================
-   MEMORIAL SLIDE — Mary Ina Baden ("Niny"), 1940–2026
-   ----------------------------------------------------------------------------
-   NOT the regular screen.html. A separate, standalone file — deliberately
-   simple, no feed machinery. Built as a DEMO for Randy to review before
-   anything goes live; nothing here has been pushed to the office/galleria
-   kiosks yet.
-
-   Same visual language as screen.html (--ground, --gold, --paper, Playfair +
-   Source Sans) so it still reads as "this park," just hushed: long dwells,
-   slow fades, no eyebrows/badges/gold "NEW" flourishes — every device that
-   normally signals "look, something's happening!" is deliberately absent.
-
-   Swap-in plan (not done yet): save the current screen.html as
-   screen-normal.html, then this file's content replaces screen.html so the
-   kiosk (just a browser pointed at that URL) picks it up on its own with no
-   need to touch the machine. Reverting later is restoring the backup.
-
-   Rotation: WELCOME (the "home base," ~38s, roughly two-thirds of total
-   screen time given the current vignette mix) alternates with one VIGNETTE
-   (~14s, or its own `seconds` override), in a FIXED order — no randomness
-   (Randy/Bev: the randomized version wasn't working; this deck is locked
-   in, spaced and paced deliberately). See VIGNETTES below for the full,
-   in-order chart (18 as of this writing) — it plays top to bottom and
-   loops. 3 of them carry a faint park photo (welcome always does). Every photo
-   slide carries its own small bottom-left credit (name/date/license, real
-   data from photo_credits.json); the first photo vignette shown each
-   session also gets a one-time explanatory note about where the photos
-   came from.
-
-   No photo of Ina herself exists in the catalog — she was never a photo
-   contributor there — so every background here is a park scene, not her.
-   PHOTO_URL below can be swapped for a real photo of her if one turns up.
-
-   ?speed=10 (or any number) previews the whole flow fast, same convention
-   as screen.html's own ?speed= param.
-============================================================================ */
 :root{
-  --ground:#0c1a10; --ground-2:#122316;
+  /* Ground — a botanical dark, not a tech dark. Pulled from --green-ink and
+     deepened, so it still reads as the park's green under a lit room. */
+  --ground:#0c1a10; --ground-2:#122316; --veil:rgba(8,18,9,.55);
+  /* Inherited from psbp.css, unchanged */
   --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
-  --ink-invert:rgba(253,252,248,.82); --ink-quiet:rgba(253,252,248,.58);
+  --ink-invert:rgba(253,252,248,.78); --ink-quiet:rgba(253,252,248,.52);
   --rule:rgba(234,188,90,.34);
   --serif:'Playfair Display',Georgia,serif;
   --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
-  --fade:1.8s;      /* slower than the regular screen — this one shouldn't rush */
-  --frame:2.6vmin;
-  --pad:5vmin;
+  --fade:1.1s;              /* cross-fade between slides — scaled by ?speed */
+  --turn:.85s;              /* beat turn within a slide */
+  --frame:2.6vmin;          /* inset of the gold frame */
+  --pad:4.4vmin;            /* everything inside it shares this margin, so the
+                               wordmark, the copy, the credit and the poster
+                               all sit on the same two lines */
 }
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;background:var(--ground)}
-body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
-
-.frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
-
-/* Progress hairline — same device as screen-park.html's #bar (width
-   animated from 0 to 100% over the current slide's dwell time), but kept
-   quieter to match this file's hushed tone: thinner, dimmer, and the same
-   muted gold as .rule/.frame rather than a bright gradient. Still legible
-   up close if someone wants to know how long a slide has left. */
-#bar{position:fixed;left:0;bottom:0;height:1px;width:0;z-index:45;
-  background:var(--gold-deep);opacity:.55;pointer-events:none}
-.logo-mark{position:fixed;bottom:calc(var(--frame) + 1.6vmin);right:calc(var(--frame) + 1.8vmin);height:5.2vmin;width:auto;opacity:.78;z-index:41;pointer-events:none}
-
-.deck{position:fixed;inset:0}
-/* Signage, not a webpage — ChatGPT's review (relayed by Randy): "someone
-   standing 15-20 feet away" should read this comfortably, and the content
-   should fill the middle third-to-half of the screen, not float as a small
-   card. The padding-bottom > padding-top asymmetry nudges the vertically-
-   centered content block upward, per "move the text block upward slightly." */
-.slide{
-  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;text-align:center;padding:2vmin 9vmin 9vmin;
-  opacity:0;transition:opacity var(--fade) ease;
+body{
+  font-family:var(--sans);color:var(--paper);
+  cursor:none;                       /* kiosk: no pointer on a wall display */
+  -webkit-font-smoothing:antialiased;
 }
-.slide.on{opacity:1;z-index:1}
-.slide .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:-1}
-/* Photo template: the dark green overlay sits OVER the photo — it must stay
-   translucent (rgba, not a solid var(--ground)) or the photo underneath
-   never shows at all. That was a real bug in the first pass: an opaque
-   veil painted on top of the (already-faint) .bg fully hid it. Fixed here —
-   one alpha value on the veil now controls "how much park shows through,"
-   rather than fighting with a second opacity on the image itself. */
-.slide .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,18,9,.35),rgba(8,18,9,.72));z-index:-1}
 
-/* ── Welcome: asymmetric split, not centered-over-photo ────────────────────
-   Ina's portrait is a tall (819×1024) source photo — full-bleed `cover` on
-   a landscape screen forced a brutal, unstable crop no Y-position tuning
-   fixed well, and centering the typography over her face literally put
-   words on top of the person being honored. ChatGPT's review (relayed by
-   Randy): "Ina's face is the visual subject. Stop putting words on her."
+/* ── the frame ───────────────────────────────────────────────────────────
+   One device, drawn once, persists across every slide. */
+.frame{
+  position:fixed;inset:var(--frame);border:1px solid var(--rule);
+  pointer-events:none;z-index:40;
+}
+.wordmark{
+  position:fixed;top:calc(var(--frame) - .95em);left:calc(var(--frame) + var(--pad));
+  z-index:41;background:var(--ground);padding:0 1.8vmin;
+  font-size:2.5vmin;font-weight:700;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--gold);white-space:nowrap;
+}
+.clock{
+  position:fixed;top:calc(var(--frame) - .95em);right:calc(var(--frame) + var(--pad));
+  z-index:41;background:var(--ground);padding:0 1.8vmin;
+  font-size:2.5vmin;font-weight:600;letter-spacing:.16em;
+  color:var(--paper);white-space:nowrap;
+}
+/* The date earns its place: it's what tells a visitor that TODAY and TOMORROW
+   on an event slide mean what they say. Set quieter than the time, which is
+   the thing anyone actually glances up for. */
+.clock .day{opacity:.6;text-transform:uppercase;letter-spacing:.2em;font-size:.86em}
+.clock .sep{color:var(--gold);opacity:.55;margin:0 .7em}
+/* Attribution is solidarity — so it gets real size, a name in paper white, and
+   the license and date underneath. Sits inside the frame rather than breaking
+   the rule, because it is now three lines rather than a caption. */
+.credit{
+  position:fixed;right:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 3.2vmin);
+  z-index:41;text-align:right;opacity:0;transition:opacity .8s;
+  text-shadow:0 1px 14px rgba(0,0,0,.6);
+}
+.credit.on{opacity:1}
+.credit .lbl{
+  display:block;font-size:1.25vmin;font-weight:700;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:.35vmin;
+}
+.credit .who{
+  display:block;font-family:var(--serif);font-size:2.6vmin;font-weight:700;
+  line-height:1.1;color:var(--paper);
+}
+.credit .terms{
+  display:block;font-size:1.4vmin;font-weight:600;letter-spacing:.14em;
+  color:var(--ink-quiet);margin-top:.5vmin;
+}
 
-   Fix: her photo only occupies the left ~46% of the screen (a column much
-   closer to her own portrait aspect ratio, so the crop is gentle rather
-   than extreme), the text stack lives entirely in the right ~54%, and a
-   directional (left-to-right) gradient keeps her bright/recognizable on the
-   left while darkening steeply under the text on the right — rather than
-   the uniform top-to-bottom veil every other slide uses. */
-.slide.welcome{flex-direction:row;justify-content:flex-end;align-items:center;padding:0 7vmin}
-.slide.welcome .bg{left:0;right:auto;width:46%;background-position:50% 12%}
-.slide.welcome .veil{background:linear-gradient(90deg,rgba(8,18,9,.02) 0%,rgba(8,18,9,.18) 34%,rgba(8,18,9,.84) 53%,rgba(8,18,9,.9) 100%)}
-.welcome-text{width:53%;text-align:center}
-.slide.anec .bg{filter:saturate(.55)}
-.slide.anec .veil{background:rgba(9,20,12,.89)}
+/* ── stage ───────────────────────────────────────────────────────────────── */
+#stage{position:fixed;inset:0;z-index:1}
+.slide{
+  position:absolute;inset:0;opacity:0;transition:opacity var(--fade) ease;
+  display:flex;align-items:flex-end;
+}
+.slide.on{opacity:1}
 
-.name{font-family:var(--serif);font-weight:700;font-size:clamp(3.2rem,9.5vmin,7.5rem);line-height:1.06;color:var(--paper)}
-/* Welcome runs larger still — it's the "home base" slide, on screen most
-   of the time and meant to be readable across the room. */
-/* Sized down from the earlier full-width version — "Mary Ina Baden" now
-   has to fit inside a 53%-wide column, not the whole screen, without
-   wrapping awkwardly or crowding the frame edge. */
-.slide.welcome .label{font-size:2.2vmin}
-.slide.welcome .name{font-size:clamp(3rem,7.4vmin,6.2rem)}
-.slide.welcome .dates{font-size:clamp(1.5rem,3.4vmin,2.6rem);margin-top:2.6vmin}
-.slide.welcome .who{font-size:clamp(1.3rem,2.7vmin,1.9rem);margin-top:2vmin}
-.name em{font-style:italic;color:var(--gold);font-weight:400}
-.dates{margin-top:1.8vmin;font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,3.1vmin,2.5rem);color:var(--gold)}
-.rule{width:6vmin;height:1px;background:var(--gold-deep);margin:3.5vmin auto}
-.label{font-size:2.2vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:2.2vmin;font-weight:600}
-.body{max-width:82vmin;font-size:clamp(1.9rem,4.6vmin,3.6rem);line-height:1.5;color:var(--ink-invert);font-weight:300}
-.body + .body{margin-top:2.4vmin}
-/* A pull-quote line — its own visual moment, larger and in the serif, so a
-   quote (e.g. "I'm the president of your fan club") doesn't bury inside a
-   paragraph. ChatGPT: "give the quote its own visual moment." Optional —
-   only vignettes that include one get the html for it. */
-.quote{max-width:78vmin;margin-top:2.6vmin;font-family:var(--serif);font-style:italic;font-weight:400;
-  font-size:clamp(2.3rem,5.6vmin,4.4rem);line-height:1.3;color:var(--paper)}
-.who{margin-top:1.7vmin;font-family:var(--serif);font-style:italic;color:var(--ink-quiet);font-size:clamp(1.1rem,2.5vmin,1.7rem)}
-/* "— Name" byline under a guestbook quote — smaller and quieter than
-   .who, since the quote itself is already the point of the slide. */
-.attrib{margin-top:2vmin;font-size:clamp(1rem,2.2vmin,1.5rem);color:var(--gold);font-weight:600;letter-spacing:.02em}
+.bg{position:absolute;inset:0;overflow:hidden;background:var(--ground-2)}
+/* Ken Burns, six ways.
+   object-position carries the curated `focus` point from the search index, so
+   the motion never drifts off the interesting part of the plant — the
+   Madagascar Palm problem is a focus problem, not a crop problem. Translations
+   stay under 2% for the same reason. */
+.bg img{
+  width:100%;height:100%;object-fit:cover;
+  will-change:transform;
+}
+.slide.on .bg img{ animation-duration:var(--kb,24s); animation-timing-function:linear;
+                   animation-fill-mode:both; }
+.slide.on .bg img.kb-in     { animation-name:kbIn }
+.slide.on .bg img.kb-out    { animation-name:kbOut }
+.slide.on .bg img.kb-left   { animation-name:kbLeft }
+.slide.on .bg img.kb-right  { animation-name:kbRight }
+.slide.on .bg img.kb-rise   { animation-name:kbRise }
+.slide.on .bg img.kb-settle { animation-name:kbSettle }
+@keyframes kbIn     { from{transform:scale(1.04)} to{transform:scale(1.13)} }
+@keyframes kbOut    { from{transform:scale(1.13)} to{transform:scale(1.04)} }
+@keyframes kbLeft   { from{transform:scale(1.10) translateX(1.6%)}  to{transform:scale(1.10) translateX(-1.6%)} }
+@keyframes kbRight  { from{transform:scale(1.10) translateX(-1.6%)} to{transform:scale(1.10) translateX(1.6%)} }
+@keyframes kbRise   { from{transform:scale(1.11) translateY(1.8%)}  to{transform:scale(1.11) translateY(-1.8%)} }
+@keyframes kbSettle { from{transform:scale(1.11) translateY(-1.8%)} to{transform:scale(1.11) translateY(1.8%)} }
+.scrim{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to top,rgba(8,18,9,.94) 0%,rgba(8,18,9,.72) 26%,
+                    rgba(8,18,9,.30) 56%,rgba(8,18,9,.06) 80%),
+    linear-gradient(to right,rgba(8,18,9,.72) 0%,rgba(8,18,9,.10) 55%,transparent 78%);
+}
 
-/* Guestbook notes, v2 — real cream note cards (Randy: "an interface like
-   that seems ok"), replacing the old dark-field/decorative-quote-mark
-   treatment. A literal card reads as "someone else's words" even more
-   plainly than a quote mark did, and it's what actually holds up with
-   several notes on screen together. */
-/* Side padding matches the base .slide's own 9vmin (was 6vmin — Randy:
-   the left text sat too close to the frame edge, "crammed"). */
-.pair-slide{position:absolute;inset:0;display:flex;flex-direction:row;align-items:center;padding:0 9vmin}
-.pair-left{width:42%;text-align:left;padding-right:4vmin}
-.pair-left .rule{margin-left:0;margin-right:auto}
-.pair-left .body{max-width:none;font-size:clamp(1.4rem,3.15vmin,2.4rem)}
-.pair-right{width:58%;display:flex;justify-content:center}
+.copy{
+  position:relative;z-index:3;
+  padding:0 0 8.5vmin calc(var(--frame) + var(--pad));
+  max-width:72vw;
+}
+/* The eyebrow carries the location now. Splitting "Blooming now" from "Near
+   Office" put the two halves of one thought at opposite ends of the screen,
+   and both ended up too small to read across a room. One line, bigger. */
+.eyebrow{
+  font-size:clamp(1.15rem,3.1vmin,2.6rem);font-weight:700;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:1.8vmin;
+  display:flex;align-items:baseline;flex-wrap:wrap;gap:0 1.1em;
+}
+.eyebrow .where{color:var(--gold);opacity:.92;white-space:nowrap}
+.eyebrow .where::before{content:'→';margin-right:.42em;opacity:.75}
+.eyebrow .where.plain::before{content:'·';opacity:.5}
+.headline{
+  font-family:var(--serif);font-weight:700;line-height:1.02;
+  font-size:clamp(2.6rem,7.4vmin,7rem);letter-spacing:-.012em;
+  text-shadow:0 2px 26px rgba(0,0,0,.45);
+  /* Break display type into even lines rather than filling each one to the
+     edge. "Fall Plant & Garden / Festival" becomes "Fall Plant & / Garden
+     Festival". Ignored by browsers that don't know it, which just fall back
+     to the ragged break. */
+  text-wrap:balance;
+}
+.subhead{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(1.05rem,2.85vmin,2.3rem);color:var(--paper);
+  margin-top:1vmin;max-width:40ch;line-height:1.25;
+}
+.latin{
+  font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:clamp(1.1rem,2.9vmin,2.4rem);color:var(--ink-invert);
+  margin-top:.7vmin;
+}
+/* The body arrives after the name has had a moment alone. On a screen nobody
+   is watching at the cut — the late reveal gives the eye a second reason to
+   come back to a slide it has already glanced at.
 
-.notes-slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vmin 6vmin}
-.notes-slide .label,.notes-slide .rule{flex:0 0 auto}
-.notes-grid{display:grid;gap:2.6vmin;width:100%;max-width:92vmin;margin-top:1vmin}
-.notes-grid.cols-3{grid-template-columns:repeat(3,1fr)}
-.notes-grid.cols-2{grid-template-columns:1fr 1fr}
-.note-card{background:var(--paper);border-radius:.8vmin;padding:2.2vmin 2.4vmin;
-  box-shadow:0 .6vmin 2vmin rgba(0,0,0,.5);display:flex;flex-direction:column;text-align:left}
-.note-card.wide{grid-column:1 / -1;max-width:58vmin;margin:0 auto}
-.nc-head{display:flex;align-items:baseline;gap:1.1vmin;margin-bottom:1.1vmin;flex-wrap:wrap}
-.nc-name{font-family:var(--sans);font-weight:700;color:#241c12;font-size:clamp(.82rem,1.6vmin,1.1rem)}
-.nc-date{font-family:var(--sans);color:rgba(36,28,18,.52);font-size:clamp(.65rem,1.2vmin,.82rem)}
-.nc-quote{font-family:var(--serif);font-style:italic;font-weight:400;color:#2a2116;
-  font-size:clamp(.92rem,1.85vmin,1.3rem);line-height:1.45}
+   Sizing: the copy block bottom-aligns, so anything too tall overflows off the
+   TOP and gets clipped. Rather than truncate a quick hit — they're the best
+   writing in the whole catalog — the text steps down a size as it gets longer,
+   and the measure widens so long hits use the room instead of stacking. */
+.body{
+  font-size:clamp(1rem,2.6vmin,2.05rem);line-height:1.5;font-weight:300;
+  color:var(--ink-invert);margin-top:2.4vmin;max-width:52ch;
+  /* No reserved height. The element sits in the layout whether or not it has
+     faded in, so nothing below it moves — and reserving three lines for a
+     one-line description punched a visible hole above the meta row. The beats
+     container still reserves height, because ITS children are absolute. */
+  opacity:0;transform:translateY(1.1vmin);
+  transition:opacity 1.15s ease,transform 1.15s ease;
+}
+.body.len-2{font-size:clamp(.95rem,2.3vmin,1.8rem);max-width:58ch}
+.body.len-3{font-size:clamp(.9rem,2.05vmin,1.6rem);max-width:64ch;line-height:1.45}
+.slide.reveal .body:not(.beat){opacity:1;transform:none}
+.slide.reveal .body:not(.beat) .w{opacity:1;transform:none}
 
-/* One card — Randy's own — carries a photo. Every other note card is
-   text-only; this is a deliberate one-off, not a new standard pattern. */
-.note-card.with-photo{padding:0;overflow:hidden}
-.note-card.with-photo .nc-photo{width:100%;height:22vmin;object-fit:cover;display:block}
-.note-card.with-photo .nc-body{padding:2.2vmin 2.4vmin}
+/* TWO BEATS
+   A Right Now slide has two things to say and they are not the same kind of
+   thing. The note is us talking about this week — timely, particular, written
+   by a person who just walked past it. The quick hit is the catalog talking —
+   durable, factual, and there are three or four of them, so the slide says
+   something different every time it comes round.
 
-/* The one-time photo NOTE (not a byline) — a small, quiet explanatory line
-   under the first photo vignette shown each session, never repeated.
-   Deliberately far smaller than .body; it's an acknowledgment, not content. */
-.photo-note{max-width:64vmin;margin-top:2.8vmin;font-size:clamp(.8rem,1.6vmin,1.05rem);
-  line-height:1.5;color:var(--ink-quiet);font-weight:300;font-style:italic}
+   Beat one holds. Beat two turns over it. The hairline marks the change of
+   voice: no rule is us, gold rule is the catalog. */
+.beats{position:relative}
+.beat{
+  position:absolute;left:0;top:0;right:0;
+  opacity:0;transform:translateY(1.2vmin);
+  transition:opacity var(--turn) ease,transform var(--turn) ease;
+}
+.beat.on{opacity:1;transform:none}
+.beat.spent{
+  opacity:0;transform:translateY(-1.4vmin) scale(.985);filter:blur(5px);
+  transition:opacity var(--turn) ease,transform var(--turn) ease,filter var(--turn) ease;
+}
+.beat.fact{
+  padding-left:2.2vmin;border-left:2px solid var(--gold);
+  margin-left:-2.4vmin;                 /* rule sits outside the text column */
+}
+.beats .beat{min-height:0}
 
-/* Per-photo credit — bottom-left, tiny, on EVERY slide that carries a park
-   photo (welcome included). Randy: "a 'tiny' readable but 'tiny' credit
-   line... Name Date CC-BY-NC, taken here in the park Ina was such an
-   integral part of." Same photographer/license/date convention the rest of
-   the site already uses (photo_credits.json) — reused here, not reinvented. */
-.photo-cred{position:absolute;left:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 1.6vmin);
-  z-index:2;font-size:clamp(.62rem,1.1vmin,.82rem);letter-spacing:.03em;color:rgba(253,252,248,.5);
-  text-align:left;line-height:1.4}
-.photo-cred b{color:rgba(253,252,248,.68);font-weight:600}
+/* LINE CASCADE
+   Words are wrapped and grouped by the line they landed on, then each line
+   gets a delay. The paragraph writes itself on rather than appearing whole.
 
-/* Quiet transition line into the QR row — deliberately smaller/softer than
-   .body and in the serif italic (like .who), so it reads as a gentle aside
-   rather than a continuation of Ina's own story. */
-.give-lead{max-width:78vmin;margin-top:2.2vmin;font-family:var(--serif);font-style:italic;
-  font-weight:400;color:var(--ink-quiet);font-size:clamp(1.3rem,3vmin,2.2rem)}
+   Deliberately quick — about half a second between lines. A reader finishes a
+   line in roughly a second, so a slow drip leaves them waiting on an unfinished
+   sentence, which reads as being held up rather than as movement. The cascade
+   is there to catch the eye, not to set the reading pace. */
+.w{
+  display:inline-block;opacity:0;transform:translateY(.6vmin);
+  transition:opacity calc(.55s / var(--sp,1)) ease,transform calc(.55s / var(--sp,1)) ease;
+}
+.on .w,.body.shown .w{opacity:1;transform:none}
 
-.qr-row{display:flex;gap:6vmin;justify-content:center;margin-top:3vmin}
-.qr-card{display:flex;flex-direction:column;align-items:center}
-.qr-card img{width:13vmin;height:13vmin;display:block;border-radius:.5vmin;
-  box-shadow:0 0 0 .55vmin var(--paper),0 .6vmin 1.6vmin rgba(0,0,0,.45)}
-.qr-label{margin-top:1.6vmin;font-family:var(--serif);font-style:italic;font-weight:400;
-  color:var(--gold);font-size:clamp(1.15rem,2.7vmin,1.9rem)}
-/* Event flyers — shown whole, full color, no saturation/veil treatment (the
-   .anec dimming only ever targets .bg/.veil, which this slide doesn't use).
-   Deliberately NOT tied to Ina in the copy: a park-events slide doesn't need
-   a memorial angle, and forcing one risks landing corny. The plain label
-   just orients the viewer after a slide's worth of her own story. */
-.event-row{display:flex;gap:3.5vmin;justify-content:center;align-items:center;margin-top:1.5vmin}
-/* height alone drives size — no max-width cap fighting it (that was the
-   bug: 36vmin was quietly overriding the 56vmin height's own natural
-   width, so object-fit:contain shrank the actual image again inside its
-   own already-shrunk box). Let both portrait flyers use the room they
-   have; the row's own gap/centering keeps them from ever overlapping. */
-.event-card img{display:block;height:78vmin;width:auto;object-fit:contain;
-  box-shadow:0 .8vmin 2.6vmin rgba(0,0,0,.55)}
+/* A long hit also wants a little of the bottom padding back. */
+.copy.tall{padding-bottom:6vmin}
+.slide.ask .body{min-height:0}
+.body b,.body strong{font-weight:600;color:var(--paper)}
+.meta{
+  display:flex;gap:3.4vmin;flex-wrap:wrap;margin-top:3vmin;
+  font-size:1.95vmin;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--gold);
+}
+.meta span{white-space:nowrap}
 
-/* "A Thank You In Flowers" — the one vignette here that talks to real data
-   instead of carrying its own hardcoded copy: pulls every photo tagged
-   role:"flower" from data/sources/photo_credits.json, at random, redrawn a
-   couple of times each time this slide comes up. Split screen: the tribute
-   text stays put on the left; an irregular mosaic on the right cross-fades
-   between sets. Deliberately NOT a uniform grid — see .flower-mosaic. */
-.slide .flower-slide{position:absolute;inset:0;display:flex;flex-direction:row;
-  align-items:center;padding:0 6vmin}
-.flower-left{width:38%;text-align:left;padding-right:4vmin}
-.flower-left .rule{margin-left:0;margin-right:auto}
-.flower-left .body{max-width:none;font-size:clamp(1.4rem,3.15vmin,2.4rem)}
-.flower-right{position:relative;width:62%;height:76vmin}
+/* ── the date stamp ──────────────────────────────────────────────────────
+   An event's most characteristic fact is WHEN, and a wall of title-plus-
+   paragraph never says it loudly. The stamp is a calendar tear-off: the day
+   carried at display size with the weekday and month set against it. TODAY and
+   TOMORROW replace the numeral outright, because on a screen in the park those
+   are the only two words that change what somebody does next. */
+.stamp{display:flex;align-items:center;gap:2vmin;margin-bottom:3.4vmin}
+.stamp .num{
+  font-family:var(--serif);font-weight:700;line-height:.86;
+  font-size:clamp(2.6rem,9.5vmin,8rem);color:var(--gold);
+  letter-spacing:-.02em;
+}
+.stamp .num.word{font-size:clamp(1.8rem,6.4vmin,5rem);letter-spacing:-.01em}
+.stamp .when{display:flex;flex-direction:column;gap:.35vmin}
+.stamp .dow{
+  font-size:clamp(1rem,2.7vmin,2.2rem);font-weight:700;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--paper);
+}
+.stamp .sub{
+  font-size:clamp(.85rem,2.1vmin,1.7rem);font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-quiet);
+}
 
-/* Two crossfading mosaic layers can be in the DOM at once (old fading out,
-   new fading in) — same device as the main .slide/.on crossfade, just
-   scoped to this one panel instead of the whole screen. */
-.flower-mosaic{position:absolute;inset:0;display:grid;gap:.9vmin;opacity:0;
-  transition:opacity 1.8s ease}
-.flower-mosaic.on{opacity:1;z-index:1}
-.flower-tile{position:relative;overflow:hidden;border-radius:.5vmin;
-  box-shadow:0 0 0 1px rgba(234,188,90,.22)}
-.flower-tile img{width:100%;height:100%;object-fit:cover;display:block}
-/* Credit stacks Name then "MM/YYYY · Species" on one line, in that order on
-   purpose: single-line ellipsis truncation eats from the right, so on a
-   tile too small to fit everything, species drops before the date does. */
-/* Taller scrim than before, with the gradient starting higher and ramping
-   more gradually — Randy: the photographer name (the top line, sitting
-   right at the scrim's own top edge) was landing where the gradient was
-   still nearly transparent, so it read poorly against a busy photo, while
-   the peak darkness below it was more than needed. */
-.flower-cred{position:absolute;left:0;right:0;bottom:0;padding:2.8vmin 1.3vmin .9vmin;
-  background:linear-gradient(180deg,rgba(8,18,9,0) 0%,rgba(7,16,9,.32) 30%,rgba(6,14,8,.62) 65%,rgba(6,14,8,.7) 100%)}
-.fc-name{font-family:var(--serif);font-style:italic;color:var(--gold);
-  font-size:clamp(.72rem,1.4vmin,1.05rem);line-height:1.25;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fc-meta{margin-top:.15vmin;color:rgba(253,252,248,.7);
-  font-size:clamp(.6rem,1.1vmin,.82rem);line-height:1.2;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Atmosphere, not illustration. When a slide has no picture of its own, a
+   photograph from the collection sits behind it — blurred and dimmed enough to
+   read as texture rather than as a claim about the subject. Still credited. */
+.slide.atmos .bg img{opacity:.52;filter:blur(2px) saturate(.78)}
+/* Darken hard where the words are, then let go. A flat veil across the whole
+   frame was what made these read as black rectangles — the photo needs
+   somewhere to actually be seen. */
+.slide.atmos .scrim{
+  background:
+    linear-gradient(to top,rgba(8,18,9,.90) 0%,rgba(8,18,9,.62) 32%,
+                    rgba(8,18,9,.28) 68%,rgba(8,18,9,.14) 100%),
+    linear-gradient(to right,rgba(8,18,9,.74) 0%,rgba(8,18,9,.20) 50%,
+                    rgba(8,18,9,0) 74%);
+}
 
-@media (max-width:900px){ .body{max-width:88vmin} }
+/* ── POSTER ──────────────────────────────────────────────────────────────
+   A flyer is not a background. It is portrait, it is dense, and every fact is
+   already set into it — crop it to 16:9 and the pricing strip falls off the
+   bottom. So it is shown WHOLE, as an object hung beside the text, and the
+   copy column narrows to make room. The screen supplies only what a poster
+   can't: how soon it is, and something to scan. */
+/* Both halves are content, so lay them out as a pair rather than pinning one
+   to each edge. Anchored to opposite margins, a short headline and a
+   height-limited poster left a hole down the middle; centered with a fixed gap,
+   they close on each other symmetrically. */
+.slide.poster{
+  display:flex;align-items:center;justify-content:center;gap:5.5vmin;
+  padding:calc(var(--frame) + 3.4vmin) calc(var(--frame) + var(--pad));
+}
+.slide.poster .copy{
+  position:relative;flex:0 1 auto;max-width:44vw;padding:0;
+}
+.slide.week-slide .copy{max-width:82vw}
+.poster-art{
+  position:absolute;z-index:4;
+  right:calc(var(--frame) + var(--pad));top:calc(var(--frame) + 3vmin);
+  bottom:calc(var(--frame) + 3vmin);
+  /* width:auto — a fixed-width panel leaves empty box either side of a
+     portrait image, and the left-hand emptiness reads as a gap in the middle
+     of the screen. Letting the panel be exactly as wide as the image puts the
+     poster's real edge against the frame. */
+  width:auto;max-width:44vw;
+  display:flex;align-items:center;justify-content:flex-end;
+}
+.poster-art img{
+  height:100%;width:auto;max-width:100%;object-fit:contain;
+  border-radius:.8vmin;box-shadow:0 1.4vmin 5vmin rgba(0,0,0,.6);
+}
+/* the QR lives under the words on a poster slide, not in the corner —
+   the poster owns the right-hand side */
+.slide.poster .poster-art{
+  position:static;flex:0 0 auto;height:100%;width:auto;max-width:44vw;
+}
+.slide.poster .qr{position:static;transform:none;margin-top:3vmin;align-items:flex-start}
+.slide.poster .qr .cap{text-align:left}
+
+/* ── ask slides: centered, quiet, no photograph competing ─────────────────
+   An ask should read as a breath in the rotation, not a shout. */
+.slide.ask{align-items:center;justify-content:center}
+/* An ask is a moment, not a notice — the photograph is doing persuasive work
+   (the room, the light, the garden), so it needs to be seen. Darkened behind
+   the words by the radial and no further. */
+.slide.ask .bg img{opacity:.42;filter:saturate(.8)}
+.slide.ask .scrim{background:radial-gradient(ellipse at center,
+  rgba(8,18,9,.78) 0%,rgba(8,18,9,.66) 45%,rgba(8,18,9,.42) 100%)}
+.slide.ask .copy{
+  padding:0 8vmin;max-width:none;text-align:center;
+  display:flex;flex-direction:column;align-items:center;
+}
+.slide.ask .body{max-width:34ch}
+.slide.ask .emoji{font-size:7vmin;line-height:1;margin-bottom:2vmin}
+
+/* Type over five bright photographs needs something under it, but BLUR was the
+   wrong answer — a softened photograph reads as a mistake, as though the
+   picture were out of focus. Darkening is honest: it looks like a shadow
+   falling across the left of the frame, which is a thing that happens. */
+.veil{
+  position:absolute;inset:0;z-index:2;pointer-events:none;
+  /* The ONLY horizontal darkener on these slides. It used to sit on top of a
+     second left-to-right gradient in the scrim, and two of them multiplied:
+     the first panel went nearly black while the last got nothing, so five
+     photographs read as a brightness ramp instead of five photographs.
+
+     Now: a gentler start on the left, a longer falloff so there's no step
+     between panels, and a floor on the right so the last one is seated rather
+     than blazing. */
+  background:linear-gradient(to right,
+    rgba(6,14,8,.82) 0%,  rgba(6,14,8,.76) 18%, rgba(6,14,8,.62) 34%,
+    rgba(6,14,8,.44) 50%, rgba(6,14,8,.31) 66%, rgba(6,14,8,.23) 84%,
+    rgba(6,14,8,.20) 100%);
+}
+
+/* ── THE POLAROID STACK ──────────────────────────────────────────────────
+   For the students' slide the subject IS the volume. A tidy grid of five is
+   the one arrangement that hides how much there is. So ten of them fall onto
+   the screen one after another, slightly crooked, overlapping — a pile of
+   photographs on a table rather than a layout.
+
+   It breaks the rules elsewhere on this screen on purpose: this is the only
+   slide about people rather than plants. */
+.pile{position:absolute;inset:0;z-index:1;overflow:hidden}
+.pola{
+  position:absolute;background:var(--paper);
+  padding:1.1vmin 1.1vmin 3.6vmin;border-radius:.3vmin;
+  box-shadow:0 1.2vmin 4vmin rgba(0,0,0,.55);
+  opacity:0;animation:drop .85s cubic-bezier(.18,.86,.28,1) both;
+}
+.pola img{display:block;width:21vmin;height:21vmin;object-fit:cover;background:var(--ground-2)}
+@keyframes drop{
+  from{opacity:0;transform:translateY(-14vmin) scale(1.14) rotate(calc(var(--r) * 2.4))}
+  55% {opacity:1}
+  to  {opacity:1;transform:translateY(0) scale(1) rotate(var(--r))}
+}
+.slide.pile-slide .scrim{
+  background:
+    linear-gradient(to top,rgba(8,18,9,.92) 0%,rgba(8,18,9,.70) 34%,rgba(8,18,9,.30) 70%,rgba(8,18,9,.12) 100%),
+    linear-gradient(to right,rgba(8,18,9,.93) 0%,rgba(8,18,9,.72) 30%,rgba(8,18,9,.22) 52%,rgba(8,18,9,0) 70%);
+}
+.slide.pile-slide .copy{max-width:44vw}
+
+/* ── THE WEEK ────────────────────────────────────────────────────────────
+   A schedule is SCANNED, not read — nobody reads a timetable end to end, they
+   look for their own day. So the whole week goes up at once where it fits, and
+   a visitor finds Saturday without waiting for Saturday to come round.
+
+   Empty days are simply absent. A park with events on three days should not
+   show four blank rows to prove it. */
+.week{display:flex;flex-direction:column;gap:1.9vmin;margin-top:1.2vmin}
+.week-day{display:grid;grid-template-columns:15vmin 1fr;gap:2.2vmin;align-items:baseline}
+.week-day .dw{
+  font-size:clamp(.95rem,2.5vmin,2rem);font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-quiet);white-space:nowrap;
+}
+.week-day.today .dw{color:var(--gold);opacity:1}
+.week-day.today .ev{color:var(--paper)}
+.week-item{display:flex;gap:1.6vmin;align-items:baseline;margin-bottom:.5vmin}
+.week-item .tm{
+  font-size:clamp(.85rem,2.1vmin,1.7rem);font-weight:700;letter-spacing:.06em;
+  color:var(--gold);opacity:.85;white-space:nowrap;min-width:11vmin;
+}
+.week-item .ev{
+  font-family:var(--serif);font-size:clamp(1rem,2.9vmin,2.4rem);
+  font-weight:400;line-height:1.2;color:var(--ink-invert);
+}
+
+/* ── AMBIENT ─────────────────────────────────────────────────────────────
+   A photograph and nothing else. No eyebrow, no name, no fact — just the
+   frame, the credit, and ten seconds of quiet.
+
+   This is a rhythm device, not a content type. Every other slide asks the
+   visitor to read something; a room where the screen never stops talking is
+   exhausting to sit in. The gap is the point. */
+/* Ambient slides carry no words, so the motion is the only thing happening —
+   it can afford to be more than a drift. Roughly double the travel of a normal
+   slide, and slower, so it reads as deliberate rather than restless. */
+.slide.ambient.on .bg img{animation-duration:calc(var(--kb,24s) * 1.5)}
+.slide.ambient.on .bg img.kb-in     { animation-name:kbInBig }
+.slide.ambient.on .bg img.kb-out    { animation-name:kbOutBig }
+.slide.ambient.on .bg img.kb-left   { animation-name:kbLeftBig }
+.slide.ambient.on .bg img.kb-right  { animation-name:kbRightBig }
+.slide.ambient.on .bg img.kb-rise   { animation-name:kbRiseBig }
+.slide.ambient.on .bg img.kb-settle { animation-name:kbSettleBig }
+@keyframes kbInBig     { from{transform:scale(1.02)} to{transform:scale(1.24)} }
+@keyframes kbOutBig    { from{transform:scale(1.24)} to{transform:scale(1.02)} }
+@keyframes kbLeftBig   { from{transform:scale(1.16) translateX(3.4%)}  to{transform:scale(1.16) translateX(-3.4%)} }
+@keyframes kbRightBig  { from{transform:scale(1.16) translateX(-3.4%)} to{transform:scale(1.16) translateX(3.4%)} }
+@keyframes kbRiseBig   { from{transform:scale(1.18) translateY(3.8%)}  to{transform:scale(1.18) translateY(-3.8%)} }
+@keyframes kbSettleBig { from{transform:scale(1.18) translateY(-3.8%)} to{transform:scale(1.18) translateY(3.8%)} }
+
+.slide.ambient .copy{display:none}
+.slide.ambient .scrim{
+  background:linear-gradient(to top,rgba(8,18,9,.55) 0%,rgba(8,18,9,.16) 34%,
+                             rgba(8,18,9,0) 62%);
+}
+
+/* ── COLLECTION ──────────────────────────────────────────────────────────
+   Five photographs as vertical panels, one grouping, one count. Every other
+   slide shows ONE thing; this one shows that the one thing belongs to a set —
+   sixty-five palms, fifty-six Florida natives, ten butterflies. It's the only
+   format that lets the collection read as a collection. */
+.collection{position:absolute;inset:0;z-index:1;display:grid;
+            grid-template-columns:repeat(5,1fr);gap:.35vmin}
+.collection div{overflow:hidden;background:var(--ground-2)}
+.collection img{width:100%;height:100%;object-fit:cover;transform:scale(1.05)}
+.slide.on .collection img{animation:kbIn var(--kb,24s) linear both}
+.slide.set .scrim{
+  /* Vertical only — the horizontal half moved to .veil, where it belongs.
+     This just seats the bottom edge so the credit line has ground under it. */
+  background:linear-gradient(to top,rgba(8,18,9,.72) 0%,rgba(8,18,9,.40) 22%,
+                             rgba(8,18,9,.10) 48%,rgba(8,18,9,0) 70%);
+}
+.slide.set .headline,.slide.set .count,
+.slide.set .roster,.slide.set .shot,
+.slide.set .body{text-shadow:0 2px 18px rgba(0,0,0,.85)}
+.count{
+  font-family:var(--serif);font-weight:700;line-height:.9;color:var(--gold);
+  font-size:clamp(2.4rem,8.5vmin,7rem);letter-spacing:-.02em;margin-bottom:.6vmin;
+}
+.count small{
+  display:block;font-family:var(--sans);font-size:2vmin;font-weight:700;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--gold);opacity:.85;
+  margin-top:.9vmin;
+}
+.roster{
+  font-size:clamp(.95rem,2.35vmin,1.8rem);line-height:1.5;font-weight:400;
+  color:var(--paper);opacity:.88;margin-top:2.4vmin;max-width:44ch;
+}
+.shot{
+  margin-top:2.6vmin;font-size:1.6vmin;font-weight:700;letter-spacing:.12em;
+  color:var(--gold);opacity:.9;
+}
+
+/* ── PARTNER LOGOS ───────────────────────────────────────────────────────
+   A partner logo is a CREDIT, not a takeover. On an event or a class the
+   organisation is teaching or hosting, not sponsoring the screen — so the mark
+   sits at the foot of the text column at credit scale, under a small label,
+   exactly like the photographer credit. On an announcement it takes the
+   emoji's place instead, because there it IS the slide's icon.
+
+   The white plate is not decoration: most organisational logos are dark-on-
+   transparent and would vanish on this ground. Plating every one of them means
+   any logo dropped in the folder works without special-casing. */
+.logo{display:flex;flex-direction:column;gap:1vmin;margin-top:3.4vmin}
+.logo .lbl{
+  font-size:1.4vmin;font-weight:700;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);
+}
+.logo-plate{
+  background:var(--paper);border-radius:.7vmin;padding:1.2vmin 1.8vmin;
+  align-self:flex-start;line-height:0;
+  box-shadow:0 .4vmin 2vmin rgba(0,0,0,.45);
+}
+.logo-plate img{display:block;width:auto;height:auto;max-width:26vmin;max-height:6.5vmin}
+
+/* On an ask it stands in for the emoji — bigger, centered, above the headline */
+.slide.ask .logo{align-items:center;margin:0 0 2.4vmin}
+.slide.ask .logo .lbl{margin-bottom:.4vmin}
+.slide.ask .logo-plate{align-self:center;padding:1.8vmin 2.6vmin}
+.slide.ask .logo-plate img{max-width:38vmin;max-height:11vmin}
+
+/* ── QR ──────────────────────────────────────────────────────────────────
+   A screen can't be clicked, so any slide whose value is a link needs a code
+   or it shouldn't be there. The white card is not decoration — a QR needs a
+   quiet zone and hard contrast to scan from across a room. */
+/* Bottom CENTER, not the corner. The photographer credit already owns the
+   bottom right, and stacking the two there made them read as one item — as
+   though the code led to the photographer. Three zones now: words left,
+   code center, credit right. */
+.qr{
+  position:absolute;left:50%;transform:translateX(-50%);
+  bottom:calc(var(--frame) + 3.2vmin);
+  z-index:5;display:flex;flex-direction:column;align-items:center;gap:1.1vmin;
+}
+/* keep the words clear of the centered code */
+.slide.has-qr .copy{max-width:52vw}
+.qr-card{
+  background:var(--paper);padding:1.5vmin;border-radius:1vmin;
+  box-shadow:0 .6vmin 3vmin rgba(0,0,0,.5);line-height:0;
+}
+.qr-card img{width:12.5vmin;height:12.5vmin;display:block}
+.qr .cap{
+  font-size:1.5vmin;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold);text-align:center;max-width:22vmin;line-height:1.4;
+}
+/* the printed URL, shown only if the code fails to load */
+.qr .raw{font-size:1.3vmin;color:var(--ink-quiet);word-break:break-all;max-width:24vmin;text-align:center}
+
+/* On an ask the QR belongs under the words, centered with them — the ask is the
+   whole slide, so the code shouldn't hide in a corner. */
+.slide.ask .qr{position:static;transform:none;margin-top:3.4vmin}
+
+/* On a photographer spotlight the QR is a quiet secondary action, not
+   competing with the words for the same ground. Bottom-right, smaller, out
+   of the text column's way entirely — the photograph and her name stay the
+   whole point of the slide. */
+.slide.photog .qr{left:auto;right:calc(var(--frame) + var(--pad));transform:none;align-items:flex-end}
+.slide.photog .qr .cap{text-align:right}
+.slide.photog .qr-card img{width:9.5vmin;height:9.5vmin}
+.slide.photog.has-qr .copy{max-width:60vw}
+.slide.ask .qr-card img{width:17vmin;height:17vmin}
+
+
+/* ── progress hairline ───────────────────────────────────────────────────── */
+#bar{
+  position:fixed;left:0;bottom:0;height:2px;width:0;z-index:45;
+  background:linear-gradient(90deg,var(--gold-deep),var(--gold));
+}
+
+/* Not the target device, but Randy checks it on a phone and the wordmark and
+   the date collide at that width. The date and time are the useful half. */
+@media (max-width:760px){
+  .wordmark{display:none}
+  .clock{font-size:1.6vmax}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .slide{transition:opacity .25s}
+  .bg img,.slide.on .bg img{transform:none;transition:none;animation:none}
+  .body,.slide.reveal .body{opacity:1;transform:none;transition:none}
+  .beat{position:static;opacity:1;transform:none;transition:none}
+  .w{opacity:1 !important;transform:none !important;transition:none !important}
+  .beat.spent{display:none}
+  .beats{min-height:0 !important}
+  #bar{transition:none}
+}
 </style>
 </head>
 <body>
 
 <div class="frame"></div>
-<img class="logo-mark" src="images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
-<div class="deck" id="deck"></div>
+<div class="wordmark">Palma Sola Botanical Park</div>
+<div class="clock" id="clock"></div>
+<div class="credit" id="credit"></div>
+
+<div id="stage"></div>
 <div id="bar"></div>
 
 <script>
-/* PHOTO_URL: leave blank for the clean type-only version of the welcome
-   slide. To add a photo later, set this to a path (e.g.
-   'images/ina-baden.jpg') and the welcome slide uses it as a full-bleed
-   background automatically. */
-var PHOTO_URL = 'images/memorial-ina-baden.jpg'; // Ina herself — from her own obituary photo, smiling by the water
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONFIG
+   ═══════════════════════════════════════════════════════════════════════════ */
+var Q       = new URLSearchParams(location.search);
+/* Any name works: ?mode=galleria (default), ?mode=office, ?mode=bathroom.
+   MODE does two jobs — it picks a mix profile, and it decides which rows a
+   screen accepts via the optional `screen_where` column. A name with no mix
+   profile of its own falls back to the galleria mix but keeps its own
+   identity for routing, so a new screen can be added by plugging in a stick
+   and pointing it at a URL. */
+var MODE    = (Q.get('mode') || 'galleria').trim().toLowerCase() || 'galleria';
+var PROFILE = (MODE === 'office') ? 'office' : 'galleria';
+var SECONDS = +(Q.get('seconds') || 0) || 18;   // lingers; 14 read as rushed on the wall
 
-/* WELCOME is the "home base" slide — office monitor, meant to spark
-   conversation among people milling around before/during the service.
-   Randy: "The most in rotation just say welcome... Come back to that one a
-   lot but intersperse some tasteful anecdotes." So the rotation isn't a
-   flat loop — it alternates WELCOME, anecdote, WELCOME, anecdote... built
-   below, not hardcoded as one long sequence. */
-var WELCOME = {
-  bg: PHOTO_URL || null,
-  // No credit line here on purpose — this is Ina's own photo, from the
-  // family's obituary, not a park photo from photo_credits.json. The
-  // photographer/date pair used to belong to the bottlebrush placeholder
-  // this replaced; leaving it in would have misattributed her own portrait.
-  credit: null,
-  // Wrapped in .welcome-text so it lives in the right-hand column instead
-  // of centering across the whole screen (and across her face).
-  html:
-      '<div class="welcome-text">'
-    + '<div class="label">Welcome to the Celebration of Life for</div>'
-    + '<div class="name">Mary <em>Ina</em> Baden</div>'
-    + '<div class="dates">September 21, 1940 &ndash; September 8, 2026</div>'
-    + '<div class="who">&ldquo;Niny&rdquo;</div>'
+/* ?speed=5 runs the whole thing five times faster — slide durations, beat
+   turns, line cascades, Ken Burns and cross-fades all together, so the timing
+   stays in proportion. For reviewing a full rotation in a couple of minutes
+   rather than half an hour. Not for the wall. */
+var SPEED = Math.max(0.1, Math.min(20, +(Q.get('speed') || 1) || 1));
+SECONDS = SECONDS / SPEED;
+var BASE    = Q.get('base') || '';           // '' when served from repo root
+var FEEDS   = BASE + 'data/published/';
+
+
+/* How much of the deck each type gets. Weights, not counts — a type with fewer
+   rows than its weight simply contributes fewer slides.
+
+   Note that right_now and spotlight are BOTH full-bleed species photographs.
+   Their weights add up as far as the eye is concerned, so keep the pair in
+   check rather than tuning either alone. */
+/* PERIOD: roughly how many cycles before a given row comes round again.
+   Lower = more airtime per row. Slides per cycle = ceil(rows / period), so a
+   feed that grows contributes more without anyone retuning anything. */
+/* CLASSES ARE SPLIT BY CATEGORY, NOT ONE POOL.
+   Bev, 2026-09-14: yoga and Zumba come up too often; she wants the mission
+   classes — talks, workshops, the UF/IFAS kind — favored instead. They don't
+   exist in the Sheet yet, but four of the five class rows today are Fitness &
+   Wellness, so an undifferentiated pool is ALREADY mostly yoga and Zumba by
+   sheer row count, no matter how the single `klass` weight is tuned. Splitting
+   into three pools with three periods is the actual fix; slideClass() itself
+   doesn't change, only which pool feeds it. See CLASS_CATS below and the
+   klass_fitness/klass_nature/klass split in buildDeck(). */
+/* Bev, 2026-09-14, same conversation: overall wants a bit MORE events,
+   announcements and donation/member asks — she is pro-promotion generally,
+   just wants the nature-mission content to win over yoga/Zumba specifically.
+   event's CAP nudged 4→5 and ask's PERIOD nudged down by one (more airtime)
+   under the pre-existing quarter-of-the-deck ceiling in buildDeck(), so this
+   can't run away even if the announcements feed grows. Randy: "at some point
+   we should look at the algorithm and decide what the rules are" — this is
+   the small, reversible nudge, not that review. */
+var PERIOD = {
+  event:         2,                            // timely, and the window already filters
+  news:          PROFILE === 'office' ? 2 : 3,
+  klass_fitness: 6,                            // yoga, Zumba — toned down, not removed
+  klass_nature:  2,                            // talks, workshops — favored once they exist
+  klass:         3,                            // everything else: family, arts, community…
+  series:        3,
+  volunteer:     PROFILE === 'office' ? 2 : 4,
+  newsletter:    4,
+  right_now:     2,                            // what to go look at, right now
+  ask:           PROFILE === 'office' ? 2 : 3
+};
+var CAP = { event:5, news:2, klass_fitness:1, klass_nature:2, klass:2,
+            series:1, volunteer:2, newsletter:1, right_now:2 };
+var CLASS_CATS = { fitness:['Fitness & Wellness'], nature:['Talks & Learning','Workshops'] };
+
+/* The collection is the one pool with no feed behind it — 320 species, so it
+   can't be periodised. A flat count, tuned against everything else. */
+var SPOTLIGHTS = PROFILE === 'office' ? 4 : 5;
+
+/* Two per cycle each — enough to change the rhythm, not enough to become the
+   rhythm. The point of both is that they are a break from the pattern. */
+var AMBIENTS   = PROFILE === 'office' ? 1 : 2;
+var COLLECTIONS = 2;
+var WEEKVIEWS  = 1;      /* a summary — once a cycle is plenty */
+var COHORTS    = 1;
+var PHOTOGS    = 1;
+
+/* Types that LOOK alike, whatever their content. De-clumping works on these
+   rather than on type, so a Blooming Now doesn't sit next to a collection
+   photograph and read as two of the same slide. */
+var FAMILY = {
+  right_now:'species', spotlight:'species',
+  ambient:'quiet', collection:'quiet', cohort:'quiet', photographer:'quiet', week:'schedule',   /* both are photo-led breaks — keep
+                                            them apart from each other too */
+  event:'schedule', klass:'schedule', klass_fitness:'schedule', klass_nature:'schedule', series:'schedule',
+  news:'news', newsletter:'news',
+  volunteer:'people', ask:'ask'
+};
+function famOf(item){ return FAMILY[item.type] || item.type; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DATA
+   Every feed row is filtered to display ∈ {screen, both}. A row marked "web"
+   never reaches this screen — that's the whole routing mechanism, and it
+   already exists in the Sheet.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var D = { right_now:[], events:[], classes:[], news:[], announcements:[],
+          volunteer:[], series:[], newsletters:[], plants:[], wildlife:[],
+          photographers:[] };
+
+/* `display` decides web vs screen. An optional `screen_where` decides WHICH
+   screen — office, galleria, or blank for both.
+
+   The filter is here so the column can be added to the Sheet the day it's
+   needed and not before. Blank means everywhere, so an unused column costs
+   Bev nothing and costs the screen nothing. */
+function onScreen(rows){
+  return (rows || []).filter(function(r){
+    var d = (r.display || 'web').toLowerCase();
+    if(d !== 'screen' && d !== 'both') return false;
+    var where = (r.screen_where || r.screen_location || '').trim().toLowerCase();
+    return !where || where === 'both' || where === MODE;
+  });
+}
+
+/* `cache: no-store` matters more than the ten-minute timer.
+   GitHub Pages sends cache headers, so a browser left running all day will
+   happily re-serve the same JSON it fetched at nine in the morning — the timer
+   fires, the fetch "succeeds", and the wall shows yesterday's content. This
+   forces every refresh to actually reach the network. */
+function grab(url){
+  return fetch(url, { cache:'no-store' })
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .catch(function(){
+      /* some older TV browsers reject the option outright */
+      return fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + 'v=' + Date.now())
+        .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+        .catch(function(){ return null; });
+    });
+}
+
+function loadAll(){
+  return Promise.all([
+    grab(FEEDS+'right_now.json'), grab(FEEDS+'events.json'),
+    grab(FEEDS+'classes.json'),   grab(FEEDS+'news.json'),
+    grab(FEEDS+'announcements.json'), grab(FEEDS+'volunteer.json'),
+    grab(FEEDS+'series.json'),    grab(FEEDS+'newsletters.json'),
+    grab(BASE+'plants.json'),     grab(BASE+'wildlife.json'),
+    grab(BASE+'data/sources/photo_credits.json'),
+    grab(BASE+'data/sources/plant_signage.json'),
+    grab(BASE+'data/sources/wildlife_signage.json'),
+    grab(BASE+'data/sources/photographer_names.json'),
+    grab(FEEDS+'photographers.json')
+  ]).then(function(r){
+    D.right_now=onScreen(r[0]); D.events=onScreen(r[1]);
+    D.classes=onScreen(r[2]);   D.news=onScreen(r[3]);
+    D.announcements=onScreen(r[4]); D.volunteer=onScreen(r[5]);
+    D.series=onScreen(r[6]);    D.newsletters=onScreen(r[7]);
+    D.plants=r[8]||[];          D.wildlife=r[9]||[];
+    indexCredits(r[10]);
+    indexHits(r[11]); indexHits(r[12]);
+    NAMES = r[13] || {};
+    D.photographers=onScreen(r[14]);
+    if(!D.right_now.length && !D.plants.length) fallback();
+  });
+}
+
+/* QUICK HITS COME FROM THE SIGNAGE MASTERS, NOT THE SEARCH INDEX.
+   The index flattens the quick_hits array into one space-joined string for
+   search scoring, which is right for search and useless here — there is no way
+   to tell where one hit ends, so the screen was splitting on sentences and
+   tearing hits in half ("Florida got this species by accident." and then the
+   rest of it, lost).
+
+   The signage files are the source of truth and carry the array intact. They
+   are large (2.8 MB together) but this is a wired-in TV on purpose-built wifi,
+   and only the quick_hits are kept — everything else is dropped the moment it
+   is parsed, so the resident cost is small. It also means an edit reaches the
+   wall as soon as the file is saved, with no republish in between.
+
+   If the publisher ever emits a real `quick_hits` array in the index, that is
+   preferred automatically and these two fetches can be deleted. */
+var HITS = {};
+function indexHits(blob){
+  var rows = (blob && blob.species) || blob || [];
+  for(var i=0;i<rows.length;i++){
+    var r = rows[i];
+    if(r && r.id && r.quick_hits && r.quick_hits.length) HITS[r.id] = r.quick_hits;
+  }
+  /* `rows` goes out of scope here; only the arrays above are retained. */
+}
+
+/* photo_id -> {observed_on, license, name}. The search index carries the
+   photographer and license but not the date, so the credits master fills it in.
+   Optional: if the file can't be reached the credit falls back to name + license. */
+var CREDITS = {}, BY_SHOOTER = {}, BY_SPECIES = {}, BY_NAME = {}, NAMES = {};
+function indexCredits(rows){
+  var photos = (rows && rows.photos) || rows || [];
+
+  /* REBUILT EACH REFRESH, NOT APPENDED.
+     BY_SHOOTER used push(), and the feeds are re-read every ten minutes, so
+     every refresh added all 1,046 photos again. The cohort slide sums those
+     arrays: 298 photographs on first load, 596 ten minutes later, 894 after
+     twenty, and roughly 43,000 by the 4am reload. The species count stayed
+     right the whole time because it is a dict keyed by psbp_id and duplicates
+     collapse — which is what made the photo count obviously wrong.
+
+     Guarded: an empty or failed fetch must not wipe what is already loaded.
+     The credits master is optional here (see the note above), and losing it
+     mid-day would strip dates and orientation off every slide.
+
+     Deliberately NOT done to indexHits() below — that one is called twice per
+     refresh, plants then wildlife, and uses assignment. Clearing at its top
+     would make the wildlife pass erase the plants pass. */
+  if(!photos.length) return;
+  CREDITS = {}; BY_SHOOTER = {}; BY_SPECIES = {}; BY_NAME = {};
+
+  for(var i=0;i<photos.length;i++){
+    var p=photos[i];
+    if(p.photo_id) CREDITS[String(p.photo_id)] = p;
+    if(p.photographer) (BY_SHOOTER[p.photographer] = BY_SHOOTER[p.photographer] || []).push(p);
+    /* Keyed by resolved display name, lowercased — the photographer-spotlight
+       slide links to a photographers.json profile, whose `id` slug does not
+       reliably match the iNat login BY_SHOOTER uses (helenL vs helen_lewis).
+       The display name is the one thing both sides carry in common. */
+    if(p.photographer_name){
+      var nk = String(p.photographer_name).toLowerCase();
+      (BY_NAME[nk] = BY_NAME[nk] || []).push(p);
+    }
+    /* Gallery photographs, keyed by species. The screen used to show only the
+       344 heroes — 31% of the library — so 765 published photographs never
+       reached the wall. Heroes are skipped here because the species record
+       already carries one. */
+    if(p.psbp_id && p.photo_id && !p.hero &&
+       (p.role||[]).indexOf('gallery') > -1 && p.photo_url){
+      (BY_SPECIES[p.psbp_id] = BY_SPECIES[p.psbp_id] || []).push(p);
+    }
+  }
+}
+
+/* Expand a list of species into one entry per publishable photograph.
+   Every helper here — orientOf, bigEnough, creditFor, bigPhoto — resolves a
+   species through CREDITS[photoIdOf(sp.photo)], so a shallow copy with `photo`
+   repointed behaves exactly like a species whose hero is that photograph. The
+   credit line follows too, because creditFor() reads the SAME record. Nothing
+   downstream needs to know this happened.
+
+   The synthesised path is never fetched: bigPhoto() finds a credit record and
+   returns the iNaturalist original. It exists so photoIdOf() can read the id
+   back out of it, which is the convention the rest of this file already uses. */
+function withGallery(rows){
+  var out = [];
+  for(var i=0;i<rows.length;i++){
+    var sp = rows[i];
+    if(sp.photo) out.push(sp);
+    var extra = BY_SPECIES[sp.id] || [];
+    for(var j=0;j<extra.length;j++){
+      var g = extra[j], c = {};
+      for(var k in sp) c[k] = sp[k];
+      c.photo = 'photos/' + sp.id + '/' + g.photo_id + '.jpg';
+      c._gallery = true;
+      out.push(c);
+    }
+  }
+  return out;
+}
+
+/* Everyone whose registry note marks them as part of a named program.
+   `photographer_names.json` already records this — the note field is doing
+   real work, not just sitting there as a comment. */
+function cohort(match){
+  var logins = [];
+  for(var login in NAMES){
+    var n = (NAMES[login] && NAMES[login].note) || '';
+    if(n.toLowerCase().indexOf(match.toLowerCase()) > -1) logins.push(login);
+  }
+  return logins;
+}
+function photoIdOf(path){
+  var m = /\/(\d+)\.jpe?g$/i.exec(path||'');
+  return m ? m[1] : null;
+}
+
+/* RESOLUTION
+   iNaturalist serves square / small / medium / large / original. The credits
+   file stores `large` — 1024px on the long edge, fine for a web page and soft
+   stretched across a 4K panel. Extensions vary (52 of the rows are .jpeg), so
+   only the size segment is swapped. `original` isn't guaranteed to exist, so
+   anything using it carries a fallback. */
+function inatSize(url, size){
+  if(!url) return url;
+  return url.replace(/\/(square|small|medium|large|original)(\.\w+)$/i, '/'+size+'$2');
+}
+
+/* Local hero files are deliberately shrunk for page weight; the screen wants
+   the opposite. Where a local photo came from iNaturalist, go back to source. */
+function bigPhoto(sp){
+  if(!sp) return null;
+  var rec = CREDITS[photoIdOf(sp.photo)];
+  if(rec && rec.photo_url) return inatSize(rec.photo_url, 'original');
+  return sp.photo ? BASE + sp.photo : null;
+}
+function fallbackPhoto(sp){
+  var rec = sp && CREDITS[photoIdOf(sp.photo)];
+  return (rec && rec.photo_url) || (sp && sp.photo ? BASE + sp.photo : '');
+}
+
+/* ORIENTATION
+   Four photographs in five are portrait — the catalog is shot on phones and
+   the screen is 16:9 — so formats and library have to be matched up: wide
+   slides want the 192 landscapes, vertical panels want the 846 portraits.
+   With dimensions absent everything stays eligible, so this degrades to the
+   old behavior rather than emptying out. */
+function orientOf(sp){
+  var rec = sp && CREDITS[photoIdOf(sp.photo)];
+  return (rec && rec.orient) || null;
+}
+function preferOrient(rows, want, floor){
+  if(!rows || !rows.length) return rows || [];
+  var hit = rows.filter(function(x){
+    var o = orientOf(x);
+    return o === want || (want === 'portrait' && o === 'square');
+  });
+  return hit.length >= (floor || 8) ? hit : rows;
+}
+
+/* Enough pixels for the region it must fill. A 1152x2048 phone photo is
+   perfect in a fifth-of-the-frame panel and soft across a 4K width. */
+function bigEnough(sp, minWidth){
+  var rec = sp && CREDITS[photoIdOf(sp.photo)];
+  if(!rec || !rec.w) return true;          /* unknown — don't exclude it */
+  return rec.w >= minWidth;
+}
+function creditFor(sp){
+  if(!sp) return null;
+  var rec = CREDITS[photoIdOf(sp.photo)] || {};
+  var name = rec.photographer_name || sp.credit_name || sp.credit || '';
+  if(!name) return null;
+  var lic  = (rec.license || sp.credit_license || '').replace(/^CC-/,'CC ').replace(/_/g,' ');
+  var when = rec.observed_on
+    ? new Date(rec.observed_on+'T12:00').toLocaleDateString('en-US',{month:'long',year:'numeric'})
+    : '';
+  return { name:name, terms:[lic, when].filter(Boolean).join('  ·  ') };
+}
+
+/* Standalone sample so the file opens and animates off a laptop with no repo.
+   Deliberately tiny — this is a smoke test, not a demo reel. */
+function fallback(){
+  D.right_now=[{common_name:'Turks Turban',scientific_name:'Clerodendrum indicum',
+    kind:'blooming',area:'Near Office',display:'screen',
+    note:'Very cool red stars topped with a blueberry. Gotta check that out',
+    quick_hits:['The real attraction is not the flower but what follows it — a large, waxy, <b>inflated calyx</b> in deep red-purple that persists and swells as the fruit develops inside.']}];
+  D.announcements=[{emoji:'🌿',title:'This park is free, every day',
+    body:'Open 365 days a year, kept going by members and donors.',
+    link_text:'Ask at the office about becoming a member',display:'screen'}];
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+var esc = function(s){ return String(s==null?'':s)
+  .replace(/&(?!(amp|lt|gt|quot|#\d+);)/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;'); };
+/* quick_hits and aside carry deliberate <b> from the Sheet — keep those. */
+var rich = function(s){ return String(s==null?'':s)
+  .replace(/<(?!\/?(b|strong|i|em)\b)[^>]*>/gi,''); };
+var pick = function(a){ return a[Math.floor(Math.random()*a.length)]; };
+var shuffle = function(a){
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1));
+    var t=a[i]; a[i]=a[j]; a[j]=t; } return a; };
+
+var ABBR = /^(Dr|Mr|Mrs|Ms|St|Mt|Ft|vs|var|cv|subsp|ssp|spp|sp|approx|ca|cf|Fig|No|Inc|Co|etc|e\.g|i\.e|U\.S|U\.K)$/i;
+
+/* Split prose into sentences without a lookbehind — old TV browsers don't all
+   support variable-length lookbehind, and the naive /(?<=[.!?]) +/ breaks on
+   every botanical abbreviation: "(S. cayennensis)" became its own "sentence".
+   A period only ends a sentence when the word before it isn't an abbreviation
+   or a single-letter initial, AND the next sentence starts with a capital. */
+function sentences(text){
+  if(!text) return [];
+  var s = String(text), out = [], buf = '', i = 0;
+  while(i < s.length){
+    var ch = s[i]; buf += ch;
+    if(ch === '.' || ch === '!' || ch === '?'){
+      while(i+1 < s.length && /[)\]"'\u201d\u2019]/.test(s[i+1])) buf += s[++i];
+      var j = i+1;
+      while(j < s.length && /\s/.test(s[j])) j++;
+      if(j > i+1 || j >= s.length){
+        var m = /([A-Za-z.]+)[.!?][)\]"'\u201d\u2019]*$/.exec(buf);
+        var word = m ? m[1] : '';
+        var isAbbr = (word.length === 1 && /[A-Za-z]/.test(word)) || ABBR.test(word);
+        var startsNew = j < s.length && /[A-Z"'\u201c\u2018(]/.test(s[j]);
+        if(!isAbbr && (startsNew || j >= s.length)){
+          out.push(buf.trim()); buf = ''; i = j - 1;
+        }
+      }
+    }
+    i++;
+  }
+  if(buf.trim()) out.push(buf.trim());
+  return out;
+}
+
+/* `quick` in the search index is the quick-hits array joined into one string.
+   A hit is a written unit — 47% of them run to two or three sentences — so
+   splitting on sentence boundaries tears them apart and produces fragments
+   that read as continuations ("The founding group is believed to have…").
+   That was the cause of most of the non-standalone lines on screen; the
+   writing was fine.
+
+   If the index supplies a delimiter, honor it. Sentence-splitting is only the
+   fallback for the old format. See plant_publisher.py line ~184: joining with
+   " || " instead of " " restores the boundaries and costs nothing. */
+function hitsOf(sp){
+  if(!sp) return [];
+  /* 1. the index already carries the array (publisher updated) */
+  if(sp.quick_hits && sp.quick_hits.length) return sp.quick_hits.slice();
+  /* 2. the signage master, loaded above — the normal path today */
+  if(sp.id && HITS[sp.id]) return HITS[sp.id].slice();
+  /* 3. a delimited string */
+  var t = String(sp.quick || '');
+  if(t.indexOf('||') > -1){
+    return t.split('||').map(function(x){ return x.trim(); })
+            .filter(function(x){ return x.length > 25; });
+  }
+  /* 4. last resort: split the flattened string and accept the seams */
+  return sentences(t).filter(function(x){ return x.trim().length>25; });
+}
+
+/* Two of them, different from each other, in random order — and different from
+   whatever this species said last time. A plant that comes round again should
+   be telling you something new, not repeating itself, so each species keeps a
+   short memory of the hits it has already used and works through the rest
+   before any come back. With a median of five or six hits per species that's
+   ten to fifteen distinct pairings before anything repeats. */
+function twoHits(sp){
+  return rotate('sp:'+(sp.id || sp.common || '?'), hitsOf(sp), 2);
+}
+
+/* NOT CURRENTLY CALLED — twoHits() superseded it. Kept because a one-beat
+   variant is the obvious thing to want back. If you revive it, note that the
+   empty case used to read `return String(text)`, referencing a variable that
+   does not exist in this scope: it threw a ReferenceError for any species with
+   no quick hits, and next() would have swallowed it as "nothing to show". */
+function oneHit(sp){
+  var parts = hitsOf(sp);
+  if(!parts.length) return '';
+  var s = pick(parts);
+  /* a very short hit reads thin on a big screen — pair it with its neighbor */
+  if(s.length < 90){
+    var i = parts.indexOf(s);
+    var joined = parts[i+1] ? s+' '+parts[i+1]
+               : (parts[i-1] ? parts[i-1]+' '+s : s);
+    if(joined.length <= 300) s = joined;   /* pair a short hit, but not into a wall of text */
+  }
+  return s;
+}
+
+function speciesById(id){
+  for(var i=0;i<D.plants.length;i++)   if(D.plants[i].id===id)   return D.plants[i];
+  for(var j=0;j<D.wildlife.length;j++) if(D.wildlife[j].id===id) return D.wildlife[j];
+  return null;
+}
+
+function niceDate(iso){
+  if(!iso) return '';
+  var d=new Date(midnight(iso)), days=daysUntil(iso);
+  if(days<=0) return 'Today';
+  if(days===1) return 'Tomorrow';
+  if(days<7)  return d.toLocaleDateString('en-US',{weekday:'long'});
+  return d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'});
+}
+
+/* WHEN AN EVENT REACHES THE SCREEN
+   Ordinary events show inside a 28-day window — beyond that, "coming in three
+   months" is noise to somebody standing in the garden today.
+
+   Three ways to override, in order of precedence:
+     screen_from   an explicit YYYY-MM-DD. Absolute control.
+     save_the_date "Yes" opens the window to a full year. The flag already
+                   exists in the events tab and already means exactly this.
+     closes_park   "Yes" also gets the long window — a closure is something
+                   visitors need warning about, not news on the day.
+*/
+var NEAR_DAYS = 28, FAR_DAYS = 365;
+
+/* Calendar days apart, not milliseconds apart.
+   Parsing the date at noon and comparing it to local midnight gave 0.5 for
+   today, and Math.round(0.5) is 1 — so every same-day event announced itself
+   as TOMORROW in display type. Both sides are now local midnight, which also
+   makes this DST-proof. */
+function midnight(iso){
+  var p = String(iso).split('-');
+  return new Date(+p[0], (+p[1]||1)-1, +p[2]||1).getTime();
+}
+function daysUntil(iso){
+  var now=new Date(); now.setHours(0,0,0,0);
+  return Math.round((midnight(iso) - now.getTime())/864e5);
+}
+function yes(v){ return String(v||'').trim().toLowerCase() === 'yes'; }
+
+function eventWindow(e){
+  if(!e.date) return false;
+  var d = daysUntil(e.date);
+  if(d < 0) return false;
+  var from = (e.screen_from || '').trim();
+  if(from) return daysUntil(from) <= 0 && d <= FAR_DAYS;
+  if(yes(e.save_the_date) || yes(e.closes_park)) return d <= FAR_DAYS;
+  return d <= NEAR_DAYS;
+}
+
+function upcoming(rows){
+  return rows.filter(eventWindow)
+             .sort(function(a,b){ return a.date<b.date?-1:1; });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SLIDE BUILDERS
+   Each returns {bg, focus, credit, html, ask} or null.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var KIND_LABEL = { blooming:'Blooming now', budding:'About to bloom',
+  fruiting:'Fruiting now', fading:'Last chance', sighting:'Seen recently' };
+
+/* ROTATION, not random-with-one-step-memory.
+   Avoiding only the previous pick still lets one hit surface again and again
+   while another goes months unseen — with four hits that is a one-in-three
+   chance every appearance, which is exactly why Beautyberry kept opening with
+   the same line. This works through everything a species has before any of it
+   comes back. Shared by Right Now and the collection spotlights. */
+var usedHits = {};
+function rotate(key, list, n){
+  if(!list || !list.length) return [];
+  n = Math.min(n || 1, list.length);
+  var used = usedHits[key] || (usedHits[key] = []);
+  var out = [];
+  while(out.length < n){
+    var fresh = list.filter(function(h){ return used.indexOf(h) < 0 && out.indexOf(h) < 0; });
+    if(!fresh.length){ used.length = 0; fresh = list.filter(function(h){ return out.indexOf(h) < 0; }); }
+    if(!fresh.length) break;
+    var h = pick(fresh);
+    out.push(h); used.push(h);
+  }
+  /* keep the memory just short of the pool so there's always something fresh */
+  while(used.length > list.length - 1) used.shift();
+  return out;
+}
+
+function freshHit(id, hits){ return rotate('rn:'+id, hits, 1)[0] || ''; }
+
+function slideRightNow(r){
+  var sp = r.psbp_id ? speciesById(r.psbp_id) : null;
+  var note = (r.note || '').trim();
+  /* quick_hits ride along in the right_now feed; fall back to the species
+     record's joined `quick` string if the row hasn't got them. */
+  var hits = (r.quick_hits && r.quick_hits.length) ? r.quick_hits
+           : hitsOf(sp);
+  var fact = freshHit(r.psbp_id || r.common_name, hits);
+
+  var list = [note, fact].filter(Boolean);
+  var body = beatsMarkup(list, list.length>1 ? 1 : null);
+
+  return {
+    bg: bigPhoto(sp), bgFallback: fallbackPhoto(sp),
+    focus: sp && sp.focus,
+    credit: creditFor(sp),
+    html:
+      '<div class="eyebrow"><span>'+esc(KIND_LABEL[r.kind]||'Right now')+'</span>'
+    + (r.area?'<span class="where">'+esc(r.area)+'</span>':'')+'</div>'
+    + '<div class="headline">'+esc(r.common_name)+'</div>'
+    + (r.scientific_name?'<div class="latin">'+esc(r.scientific_name)+'</div>':'')
+    + body
+    /* No default QR here: a species page is a link to the thing the reader is
+       already standing next to. Bev can still force one with screen_qr. */
+    + qrBlock(r, 'Scan for the full story')
+  };
+}
+
+var seenSpecies = [];      /* short memory, so the same plant doesn't come round twice in an hour */
+function slideSpotlight(){
+  var all = D.plants.concat(D.wildlife).filter(function(s){ return s.photo; });
+  if(!all.length) return null;
+  var pool = all.filter(function(s){ return seenSpecies.indexOf(s.id) < 0; });
+  if(!pool.length){ seenSpecies = []; pool = all; }
+  var s = pick(pool);
+  seenSpecies.push(s.id);
+  /* NO CAP — see the reset three lines above, which this used to make
+     unreachable.
+
+     It previously read:
+       if(seenSpecies.length > Math.floor(all.length * 0.6)) seenSpecies.shift();
+     which held seenSpecies at 192 of 320, so `pool` never emptied and the
+     reset never fired. Every pick was uniform-random over whichever 128
+     species happened to be outside the window — so one plant could come
+     round again while a hundred others had never been shown at all. It read
+     on the wall as some species appearing constantly and some never.
+
+     Now seenSpecies grows until every species has been shown, the reset
+     fires, and the pool refills: sampling WITHOUT replacement across the
+     whole catalog. At 4 spotlights a cycle a full pass takes ~80 cycles.
+
+     Same principle as takeFrom() for the feeds and rotate() for the quick
+     hits — everything gets its turn before anything gets a second. */
+  var hits = twoHits(s);
+  return {
+    bg: bigPhoto(s), bgFallback: fallbackPhoto(s), focus: s.focus,
+    credit: creditFor(s),
+    html:
+      '<div class="eyebrow">From the collection</div>'
+    + '<div class="headline">'+esc(s.common)+'</div>'
+    + (s.sci?'<div class="latin">'+esc(s.sci)+'</div>':'')
+    + beatsMarkup(hits)   /* no QR — same reasoning as Right Now */
+  };
+}
+
+function slideEvent(e){
+  var bits=[];
+  if(e.time) bits.push(e.time);
+  if(e.cost) bits.push(e.cost);
+  if(e.kid_friendly==='Yes') bits.push('Kids welcome');
+  var far = daysUntil(e.date) > NEAR_DAYS;
+  var art = artFor(e);
+  return fromArt(art, {
+    html:
+      dateStamp(e.date, e.date_end)
+    + (far || e.series
+        ? '<div class="eyebrow">'
+          + (far?'<span>'+(yes(e.closes_park)?'Park closed':'Save the date')+'</span>':'')
+          + (e.series?'<span class="where plain" style="color:var(--ink-invert)">'+esc(e.series)+'</span>':'')
+          + '</div>'
+        : '')
+    + '<div class="headline">'+esc(e.title)+'</div>'
+    + (e.description?'<div class="body">'+rich(e.description)+'</div>':'')
+    + (bits.length?'<div class="meta"><span>'+bits.map(esc).join('</span><span>')+'</span></div>':'')
+    + logoBlock(e, 'With')
+    + qrBlock(e, e.registration_url ? 'Scan to register' : 'Scan for details', e.registration_url || e.link_url)
+  });
+}
+
+var DOW = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',
+           Fri:'Friday',Sat:'Saturday',Sun:'Sunday'};
+function slideClass(c){
+  var art = artFor(c);
+  var day = DOW[c.weekday] || c.weekday || 'Weekly';
+  return fromArt(art, {
+    html:
+      '<div class="stamp">'
+    +   '<span class="num word">Every</span>'
+    +   '<span class="when"><span class="dow">'+esc(day)+'</span>'
+    +   (c.time?'<span class="sub">'+esc(c.time)+'</span>':'')+'</span>'
     + '</div>'
-};
-
-/* VIGNETTES — every one sourced directly from the family obituary, per
-   ChatGPT's review (relayed by Randy). FIXED ORDER, not random: Randy/Bev
-   found the randomized weighted rotation wasn't working for them ("let's
-   not leave to chance") — this array IS the play order now, top to bottom,
-   looping back to the start when it reaches the end. See nextVignette()
-   below: it just walks this array in order. `id` on the first 12 matches
-   the standalone screen-ina-frozen-vignetteNN.html files (see below in
-   this file's header comment for the full frozen-page list) — those pages
-   render one one of these entries statically, no rotation machinery at
-   all. `seconds` overrides the default dwell; PALMA SOLA and the flower
-   mosaic run longer since there's more to read/watch on each. */
-var VIGNETTES = [
-  { id: 'vignette01', html:
-        '<div class="label">Her Hobbies</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Rose gardening. Shell collecting. Piano. Scuba diving. Horseback riding. Harley riding. Ina found plenty of ways to fill a life.</div>' },
-
-  { id: 'vignette02', html:
-        '<div class="label">&ldquo;Hey, Darlin&rsquo;&rdquo;</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Ina greeted people with &ldquo;Hey, Darlin&rsquo;,&rdquo; usually followed by a hug and a kiss. And she rarely let anyone leave without hearing, &ldquo;I love you.&rdquo;</div>' },
-
-  { id: 'vignette03', html:
-        '<div class="label">Elvis</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">As a teenager, Ina went to an Elvis Presley concert. Her favorite part of the story: Elvis kissed her. She told that one for the rest of her life.</div>' },
-
-  { id: 'vignette04', html:
-        '<div class="label">President of Your Fan Club</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Ina had a way of making people feel like they were her favorite. She often told them, &ldquo;I&rsquo;m the president of your fan club.&rdquo;</div>' },
-
-  { id: 'vignette05', bg: 'https://inaturalist-open-data.s3.amazonaws.com/photos/733826471/large.jpg', credit: { name: 'Helen Lewis', date: 'Sep 13, 2026' }, html:
-        '<div class="label">Adventure</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">She traveled to nearly every continent, scuba dived, rode horses, and took road trips on her big Harley.</div>' },
-
-  { id: 'vignette06', seconds: 22, html:
-        '<div class="pair-slide">'
-      +   '<div class="pair-left">'
-      +     '<div class="label">The Class of &rsquo;58</div>'
-      +     '<div class="rule"></div>'
-      +     '<div class="body">Ina graduated from Manatee High School in 1958 and could still recite the motto: &ldquo;Always ready, never late. We&rsquo;re the class of &rsquo;58!&rdquo;</div>'
-      +   '</div>'
-      +   '<div class="pair-right">'
-      +     '<div class="note-card" style="max-width:46vmin">'
-      +       '<div class="nc-head"><span class="nc-name">Manatee High Alumni Association</span><span class="nc-date">Sep 15, 2026</span></div>'
-      +       '<div class="nc-quote">Our sincere condolences to the family, classmates, and friends of our Manatee County High School Class of 1958 alumna.</div>'
-      +     '</div>'
-      +   '</div>'
-      + '</div>' },
-
-  { id: 'vignette07', html:
-        '<div class="label">On the Road</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Ina earned her commercial driver&rsquo;s license and helped launch the Manatee Blood Bank&rsquo;s mobile donation program &mdash; then drove the bus around town herself.</div>' },
-
-  { id: 'vignette08', bg: 'photos/PSBP-00072/703871348.jpg', credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
-        '<div class="label">The Rose Garden</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Ina loved her roses and proudly showed off her garden. She also collected shells from around the world, and thousands of photographs from a life well traveled.</div>' },
-
-  { id: 'vignette09', html:
-        '<div class="label">The Piano</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Ina learned to play piano and kept playing throughout her life. It was one of many interests she carried with her through the years.</div>' },
-
-  { id: 'vignette10', html:
-        '<div class="label">Scrabble</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Even in later years, Ina remained competitive. One of her favorite pursuits was beating family and friends at online Scrabble.</div>' },
-
-  { id: 'vignette11', html:
-        '<div class="label">A Life of Service</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Nurse. Blood-bank worker. Home-health caregiver. Hospice volunteer. And, for many happy years, a familiar face here at Palma Sola Botanical Park.</div>' },
-
-  { id: 'vignette12', html:
-        '<div class="label">The White Bed</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">When someone was frightened, overwhelmed, or simply needed comfort, Ina had a standing invitation: &ldquo;Come get in the white bed.&rdquo; For generations of her family, it became a place of refuge.</div>' },
-
-  /* The one vignette that talks to real data — see FLOWER_PHOTOS / MOSAIC
-     TEMPLATES / startFlowerVignette below. */
-  { id: 'flowers', seconds: 34, special: 'flowerGrid', html:
-        '<div class="flower-slide">'
-      +   '<div class="flower-left">'
-      +     '<div class="label">A Thank You In Flowers</div>'
-      +     '<div class="rule"></div>'
-      +     '<div class="body">Ina worked hard to preserve this park for those who would come after her. Today, students, volunteers, visitors and photographers are among those carrying that work forward.</div>'
-      +     '<div class="body">Every photograph here was taken at Palma Sola, by someone who stopped to notice what was growing. Together, they make a fitting thank you to Ina.</div>'
-      +   '</div>'
-      +   '<div class="flower-right"></div>'
-      + '</div>' },
-
-  { id: 'donate', seconds: 30, bg: 'photos/PSBP-00001/681679773.jpg', credit: { name: 'Rob Carr', date: 'May 28, 2023' }, noPhotoNote: true, html:
-        '<div class="label">Palma Sola</div>'
-      + '<div class="rule"></div>'
-      + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>'
-      + '<div class="give-lead">Here&rsquo;s how to give.</div>'
-      + '<div class="qr-row">'
-      +   '<div class="qr-card"><img src="images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One&#8209;Time Gift</div></div>'
-      +   '<div class="qr-card"><img src="images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div></div>'
-      + '</div>' },
-
-  /* Guestbook notes — real cream note cards, all verbatim messages left on
-     her obituary pages (legacy.com and Shannon Funeral Homes). Two
-     corrections from a fuller re-read of the source: Carol's was missing a
-     whole sentence ("Your heavenly job is just beginning...") and Ann's
-     was missing one ("She was devoted to every family member.") — both
-     restored here. Pam's still drops one broken trailing clause ("She was
-     a very to me") that's genuinely how it reads on legacy.com, not a
-     transcription error. Charlene Neal's note (addressed directly to
-     "Taylor," about someone named "Daisy") was deliberately left out — a
-     private message to a specific family member with no context for a
-     park visitor, unlike every other note here. Grouped shorter-together/
-     longer-together across two pages so no card ends up looking empty
-     next to a dense one. Extras beyond the numbered 12, not frozen pages
-     of their own (Randy: keep the 12 pure-anecdote, add these on top). */
-  { id: 'guestbook1', seconds: 22, html:
-        '<div class="notes-slide">'
-      +   '<div class="label">In Their Own Words</div>'
-      +   '<div class="rule"></div>'
-      +   '<div class="notes-grid cols-3">'
-      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Pam Hartnagle</span><span class="nc-date">Sep 14, 2026</span></div>'
-      +       '<div class="nc-quote">I am heartbroken. Ina and I spent many times remembering the past. I will miss her more than anything.</div></div>'
-      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Gene Gallo</span><span class="nc-date">Sep 16, 2026</span></div>'
-      +       '<div class="nc-quote">I am so sorry to hear this news. I have great memories with her. She was such a sweet person. Blessings to her family.</div></div>'
-      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Carl Williams</span><span class="nc-date">Sep 15, 2026</span></div>'
-      +       '<div class="nc-quote">Ina, it was such a pleasure knowing you for so many years. You treated my father and myself more like family than friends. I always loved your rose garden and the wonderful fragrance.</div></div>'
-      +   '</div>'
-      + '</div>' },
-
-  { id: 'events', seconds: 20, html:
-        '<div class="label">Coming Up at the Park</div>'
-      + '<div class="rule"></div>'
-      + '<div class="event-row">'
-      +   '<div class="event-card"><img src="images/events/fallplant.jpg" alt="Fall Plant and Garden Festival flyer, Sunday October 4, 10am to 3pm"></div>'
-      +   '<div class="event-card"><img src="images/events/groovin-2026.jpg" alt="Groovin in the Gardens flyer, Sunday October 18, 4 to 6pm"></div>'
-      + '</div>' },
-
-  { id: 'guestbook2', seconds: 30, html:
-        '<div class="notes-slide">'
-      +   '<div class="label">In Their Own Words</div>'
-      +   '<div class="rule"></div>'
-      +   '<div class="notes-grid cols-2">'
-      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Nancy Beal</span><span class="nc-date">Sep 16, 2026</span></div>'
-      +       '<div class="nc-quote">Ina was a dear friend. I will fondly remember her joyous spirit, her kindness, and her humor. Her stories about growing up in Bradenton were always a highlight of visits with her. My love and condolences to her family.</div></div>'
-      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Ann Graham</span><span class="nc-date">Sep 15, 2026</span></div>'
-      +       '<div class="nc-quote">I cannot ask for a better best friend. Ina was always there for me. We had some wonderful adventures! She was devoted to every family member. It&rsquo;s true she made everyone feel special. I will carry her in my heart forever.</div></div>'
-      +     '<div class="note-card wide"><div class="nc-head"><span class="nc-name">Carol Couchois</span><span class="nc-date">Sep 14, 2026</span></div>'
-      +       '<div class="nc-quote">Niny, Baby A, Baby B and Baby C bonded us together for life! Your earthly watch is over and I&rsquo;ll continue it as long as God wills it. Your heavenly job is just beginning and I know for a fact you&rsquo;ll watch over your family as they grieve. So many memories you&rsquo;ve given, so many as treasures to guide them!</div></div>'
-      +   '</div>'
-      + '</div>' },
-
-  /* Randy's own submission to legacy.com, added after the fact — same
-     "In Their Own Words" family as the pages above, just a solo card
-     since there's only one quote, and the one card in this whole set
-     that carries a photo (the park's only surviving photo of the actual
-     Amazon Lily, which is who this note is about). Closes the loop before
-     it wraps back around to vignette01. */
-  { id: 'randynote', seconds: 26, html:
-        '<div class="notes-slide">'
-      +   '<div class="label">In Their Own Words</div>'
-      +   '<div class="rule"></div>'
-      +   '<div class="notes-grid cols-2">'
-      +     '<div class="note-card wide with-photo">'
-      +       '<img class="nc-photo" src="photos/PSBP-00121/673659284.jpg" alt="The Baden family&rsquo;s Amazon Lily on Bird of Paradise Island">'
-      +       '<div class="nc-body">'
-      +         '<div class="nc-head"><span class="nc-name">Randall Carter</span><span class="nc-date">Sep 17, 2026</span></div>'
-      +         '<div class="nc-quote">Ina, as a volunteer here who works alongside our high school volunteers, I promise we&rsquo;ll help carry your legacy forward. We&rsquo;ll give special care to your family&rsquo;s Amazon lily on Bird of Paradise Island. It was knocked back hard by saltwater from the bay a couple of years ago, but we&rsquo;ll make it our mission to see it continue its comeback. We&rsquo;ll remember you.</div>'
-      +       '</div>'
-      +     '</div>'
-      +   '</div>'
-      + '</div>' }
-];
-
-/* ?speed=10 previews the whole flow fast — same convention as screen.html.
-   Divides every duration (welcome, default vignette, and any vignette's own
-   `seconds` override) by this factor. */
-var SPEED = Math.max(0.1, Math.min(20, +(new URLSearchParams(location.search).get('speed') || 1) || 1));
-
-var WELCOME_SECONDS  = 38 / SPEED; // roughly two-thirds of total screen time given the current vignette mix — see loop() below
-var VIGNETTE_SECONDS = 14 / SPEED; // default; a vignette's own `seconds` overrides this
-
-/* ── The Flowers vignette: real data, not hardcoded copy ───────────────────
-   Every photo in the catalog tagged role:"flower" (i.e. primarily a flower
-   shot), pulled at runtime from the same source the rest of the site
-   publishes from. Loaded once, up front. With a fixed play order this
-   vignette's turn only comes up well after several other slides have
-   already played, so in practice the fetch has always long since finished
-   by then; startFlowerVignette() below still no-ops safely (just the left
-   text shows, no mosaic) in the unlikely case it hasn't. */
-var FLOWER_PHOTOS = [];
-fetch('data/sources/photo_credits.json').then(function(r){ return r.json(); }).then(function(d){
-  FLOWER_PHOTOS = (d.photos || []).filter(function(p){
-    return p.publish_ok && Array.isArray(p.role) && p.role.indexOf('flower') !== -1;
-  }).map(function(p){
-    // Mirrors the site's own convention (see any plant page's window.PHOTOS):
-    // a locally-mirrored file if one exists, else the iNaturalist original.
-    var src = p.filename ? ('photos/' + p.psbp_id + '/' + p.filename) : p.photo_url;
-    var date = '';
-    var m = /^(\d{4})-(\d{2})-\d{2}$/.exec(p.observed_on || '');
-    if (m) date = m[2] + '/' + m[1]; // MM/YYYY
-    return { src: src, name: p.photographer_name || p.photographer || '',
-             species: p.common_name || '', date: date };
-  }).filter(function(p){ return p.src; });
-}).catch(function(){ /* FLOWER_PHOTOS stays empty; vignette excludes itself */ });
-
-function escapeHtml(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function shuffleCopy(arr){
-  var a = arr.slice();
-  for (var i = a.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = a[i]; a[i] = a[j]; a[j] = t;
-  }
-  return a;
-}
-
-/* Deliberately not a squared-off grid: each template covers a 4x3 (for 6
-   photos) or 3x3 (for 5) area with one big cell and several smaller ones of
-   mixed shape. Two variants per count so back-to-back sets don't always
-   look identical in outline, only in content. */
-var MOSAIC_TEMPLATES = {
-  6: [
-    { cols: 4, rows: 3, areas: ['a a b b', 'a a c d', 'e e c f'] },
-    { cols: 4, rows: 3, areas: ['b b a a', 'd c a a', 'f c e e'] }
-  ],
-  5: [
-    { cols: 3, rows: 3, areas: ['a a b', 'a a c', 'd e c'] },
-    { cols: 3, rows: 3, areas: ['b a a', 'c a a', 'c e d'] }
-  ]
-};
-function buildMosaicEl(picks){
-  var n = picks.length;
-  var tmpl = MOSAIC_TEMPLATES[n][Math.floor(Math.random() * MOSAIC_TEMPLATES[n].length)];
-  var el = document.createElement('div');
-  el.className = 'flower-mosaic';
-  el.style.gridTemplateColumns = 'repeat(' + tmpl.cols + ',1fr)';
-  el.style.gridTemplateRows = 'repeat(' + tmpl.rows + ',1fr)';
-  el.style.gridTemplateAreas = tmpl.areas.map(function(r){ return '"' + r + '"'; }).join(' ');
-  'abcdef'.slice(0, n).split('').forEach(function(letter, i){
-    var p = picks[i];
-    var meta = [p.date, p.species].filter(Boolean).join(' &middot; '); // date first: see .fc-meta note
-    var tile = document.createElement('div');
-    tile.className = 'flower-tile';
-    tile.style.gridArea = letter;
-    tile.innerHTML = '<img src="' + p.src + '" alt="' + escapeHtml(p.species || 'A flower in the park') + '">'
-      + '<div class="flower-cred"><div class="fc-name">' + escapeHtml(p.name) + '</div>'
-      + (meta ? '<div class="fc-meta">' + meta + '</div>' : '') + '</div>';
-    el.appendChild(tile);
+    + (c.category?'<div class="eyebrow"><span>'+esc(c.category)+'</span></div>':'')
+    + '<div class="headline">'+esc(c.title)+'</div>'
+    + (c.description?'<div class="body">'+rich(c.description)+'</div>':'')
+    + '<div class="meta">'
+    + (c.instructor?'<span>'+esc(c.instructor)+'</span>':'')
+    + (c.cost?'<span>'+esc(c.cost)+'</span>':'')+'</div>'
+    + logoBlock(c, 'With')
+    + qrBlock(c, 'Scan for details', c.registration_url || c.link_url)
   });
-  return el;
 }
-/* Shuffled pool without replacement — module-level, not reset per showing.
-   With 98 photos across 33 photographers, resetting the shuffle every time
-   this vignette comes up would let one photo repeat across two showings
-   while dozens of others still hadn't appeared all session — the opposite
-   of the point (showing the breadth of who's participating). This instead
-   drains the WHOLE catalog once, in random order, across every showing for
-   the whole session, before any photo repeats, and only reshuffles once
-   truly exhausted. */
-var flowerPool = [], flowerCursor = 0;
-function nextFlowerPicks(n){
-  if (flowerCursor + n > flowerPool.length) { flowerPool = shuffleCopy(FLOWER_PHOTOS); flowerCursor = 0; }
-  var picks = flowerPool.slice(flowerCursor, flowerCursor + n);
-  flowerCursor += n;
-  return picks;
+
+function slideNews(n){
+  /* Headline and subhead hold still — they're the identity of the story.
+     Blurb, intro and body2 take turns underneath. */
+  var beats = beatsFrom([n.blurb, n.intro, n.body2], 3);
+  var art = artFor(n, n.hero_image ? BASE+n.hero_image : null);
+  return fromArt(art, {
+    /* Set here, so fromArt() leaves it alone: a story with three turns needs
+       longer than a species photo. */
+    seconds: art.poster ? Math.round(SECONDS * 1.6)
+           : (beats.length > 1 ? Math.round(SECONDS * (1 + 0.45*(beats.length-1))) : SECONDS),
+    html:
+      '<div class="eyebrow"><span>Park news</span></div>'
+    + '<div class="headline">'+esc(n.headline)+'</div>'
+    + (n.subhead?'<div class="subhead">'+rich(n.subhead)+'</div>':'')
+    + beatsMarkup(beats)
+    + logoBlock(n, 'With thanks to')
+    + qrBlock(n, 'Scan to read the story', n.link_url)
+  });
 }
-/* Runs for as long as this vignette is on screen: crossfades through a few
-   (SETS) random mosaics, drawn from the pool above, before the outer
-   loop() moves on to the next vignette. */
-function startFlowerVignette(slideEl, totalMs){
-  var right = slideEl && slideEl.querySelector('.flower-right');
-  if (!right || !FLOWER_PHOTOS.length) return;
-  var SETS = 3; // "a couple sets" each time this vignette comes up
-  var FADE = 1800 / SPEED;
-  var perSet = Math.max(4500 / SPEED, (totalMs - FADE) / SETS);
-  var live = null;
-  function showSet(i){
-    if (i >= SETS || !right.isConnected) return;
-    var el = buildMosaicEl(nextFlowerPicks(Math.random() < 0.5 ? 5 : 6));
-    right.appendChild(el);
-    void el.offsetWidth; // force reflow before the fade-in, same device as renderSlide()
-    var prev = live;
+
+function slideSeries(s){
+  var art = artFor(s);
+  return fromArt(art, {
+    html:
+      '<div class="eyebrow">'+esc(s.category||'Series')+'</div>'
+    + '<div class="headline">'+esc(s.name)+'</div>'
+    + (s.blurb?'<div class="body">'+rich(s.blurb)+'</div>':'')
+    + logoBlock(s, 'In partnership with')
+    /* link_url is the name going forward; flyer_url is the series tab's old
+       spelling for the same thing. Read both so renaming the column cannot
+       silently kill this QR — no series is screen-bound today, so a break
+       here would go unnoticed until one was. */
+    + qrBlock(s, 'Scan for the schedule', s.link_url || s.flyer_url)
+  });
+}
+
+function slideVolunteer(v){
+  var vArt = artFor(v, v.photo_url
+    ? (/^https?:/.test(v.photo_url) ? v.photo_url : BASE+v.photo_url.replace(/^\//,''))
+    : null);
+  return fromArt(vArt, {
+    html:
+      '<div class="eyebrow">'+esc(v.role||'Volunteer')+'</div>'
+    + '<div class="headline">'+esc(v.title)+'</div>'
+    + (v.body?'<div class="body">'+rich(v.body)+'</div>':'')
+    + logoBlock(v, 'With')
+    /* Caption comes from the Sheet's link_text, falling back to the old wording.
+       "Scan to sign up" was hardcoded, and it was right while this tab held only
+       recruitment — orientations, workdays, "the nursery needs people". It is a
+       general volunteer channel now (people, thank-yous, event recaps), so a link
+       is no longer necessarily a signup: the first row to carry one pointed at an
+       iNaturalist explainer under a QR reading "Scan to sign up". Blank link_text
+       keeps the previous behavior. */
+    + qrBlock(v, (v.link_text || '').trim() || 'Scan to sign up', v.link_url)
+  });
+}
+
+function slideNewsletter(n){
+  var art = artFor(n);
+  return fromArt(art, {
+    html:
+      '<div class="eyebrow">Newsletter · '+esc(niceDate(n.date)||n.title)+'</div>'
+    + '<div class="headline">'+esc(n.title)+'</div>'
+    + (n.description?'<div class="body">'+rich(n.description)+'</div>':'')
+    + (qrUrlOf(n, n.link_url)?'':'<div class="meta"><span>Pick one up at the office</span></div>')
+    + qrBlock(n, 'Scan to read it', n.link_url)
+  });
+}
+
+/* Turn a set of Sheet fields into readable beats.
+   The long fields carry "||" paragraph markers (and sometimes <br><br>), so
+   split on those first — a whole `intro` is far too much for one turn. Empty
+   fields simply don't produce a beat, so a half-filled row still works.
+   Duplicates are dropped: at least one live news story repeats a paragraph
+   verbatim between `intro` and itself. */
+function beatsFrom(fields, cap){
+  var out=[], seen={};
+  for(var i=0;i<fields.length;i++){
+    var raw = (fields[i]||'').trim();
+    if(!raw) continue;
+    var paras = raw.split(/\|\||<br\s*\/?>\s*<br\s*\/?>/i);
+    for(var p=0;p<paras.length;p++){
+      var t = paras[p].replace(/<br\s*\/?>/gi,' ').trim();
+      if(t.length < 30) continue;
+      /* trim an over-long paragraph back to whole sentences */
+      if(t.length > 330){
+        var sent = sentences(t), acc='';
+        for(var q=0;q<sent.length;q++){
+          if((acc+' '+sent[q]).length > 330) break;
+          acc = acc ? acc+' '+sent[q] : sent[q];
+        }
+        t = acc || t.slice(0,330);
+      }
+      var key = t.slice(0,60).toLowerCase();
+      if(seen[key]) continue;
+      seen[key]=1;
+      out.push(t);
+      if(out.length >= (cap||4)) return out;
+    }
+  }
+  return out;
+}
+
+function beatsMarkup(list, factFrom){
+  if(!list.length) return '';
+  if(list.length === 1) return '<div class="body">'+rich(list[0])+'</div>';
+  var h='<div class="beats">';
+  for(var i=0;i<list.length;i++)
+    h += '<div class="beat body'+(factFrom!=null && i>=factFrom?' fact':'')+'">'+rich(list[i])+'</div>';
+  return h+'</div>';
+}
+
+/* An optional Sheet column: a picture for this row, when a generic backdrop
+   won't do. Accepts a repo path or a full URL. */
+function screenImage(row){
+  var v = (row.screen_image || row.screen_img || row.image_url || '').trim();
+  if(!v) return null;
+  return /^https?:/i.test(v) ? v : BASE + v.replace(/^\//,'');
+}
+
+/* SIZING LOGOS BY AREA, NOT BY HEIGHT OR WIDTH
+   Real organisational logos run from about 2:1 to 7:1. Cap them all by height
+   and the wide ones sprawl; cap by width and the squarish ones shrink to
+   nothing. Neither looks deliberate when two appear on consecutive slides.
+
+   So each is scaled to roughly the same PRINTED AREA — width = √(area × ratio),
+   height = √(area ÷ ratio) — which is how the eye judges "same size" across
+   different shapes. Measured after load, since the ratio isn't known until the
+   image arrives. Max-width and max-height still act as a backstop. */
+function sizeLogos(el){
+  var imgs = el.querySelectorAll('.logo-plate img');
+  for(var i=0;i<imgs.length;i++){
+    (function(img){
+      var isAsk = !!img.closest('.slide.ask');
+      var area  = isAsk ? 150 : 62;        /* vmin² */
+      function apply(){
+        var r = img.naturalWidth / img.naturalHeight;
+        if(!r || !isFinite(r)) return;
+        img.style.width  = Math.sqrt(area * r).toFixed(2) + 'vmin';
+        img.style.height = 'auto';
+      }
+      if(img.complete && img.naturalWidth) apply();
+      else img.addEventListener('load', apply);
+    })(imgs[i]);
+  }
+}
+
+/* A partner or sponsor mark. Repo path or full URL, same as the others. */
+function logoBlock(row, defaultLabel){
+  var v = (row.screen_logo || row.logo_url || row.partner_logo || '').trim();
+  if(!v) return '';
+  var src = /^https?:/i.test(v) ? v : BASE + v.replace(/^\//,'');
+  var label = (row.logo_label || defaultLabel || '').trim();
+  return '<div class="logo">'
+    + (label?'<span class="lbl">'+esc(label)+'</span>':'')
+    + '<span class="logo-plate"><img alt="" src="'+src+'"></span>'
+    + '</div>';
+}
+
+/* A flyer or poster: shown whole rather than cropped as a backdrop. */
+function posterImage(row){
+  var v = (row.poster || row.screen_poster || row.poster_url || row.flyer_image || '').trim();
+  if(!v) return null;
+  return /^https?:/i.test(v) ? v : BASE + v.replace(/^\//,'');
+}
+
+/* One resolver for all three image columns, so every slide type behaves the
+   same way: a poster wins, then the row's own backdrop, then a photograph from
+   the collection as atmosphere. Returns the fields a slide needs.
+   `fallback` lets a slide keep its existing default (news hero_image,
+   volunteer photo_url) ahead of the atmospheric pick. */
+/* ALL THREE BRANCHES RETURN THE SAME KEYS. Two of them used to omit
+   `bgFallback` rather than setting it null, which made it easy to miss that
+   the third computes one — see fromArt() below. */
+function artFor(row, fallback){
+  var poster = posterImage(row);
+  if(poster) return { poster:poster, bg:null, bgFallback:null,
+                      focus:null, atmos:false, credit:null };
+  var own = screenImage(row) || fallback || null;
+  if(own) return { poster:null, bg:own, bgFallback:null,
+                   focus:null, atmos:false, credit:null };
+  var atm = atmosPhoto();
+  return { poster:null, bg: atm ? bigPhoto(atm) : null,
+           bgFallback: atm ? fallbackPhoto(atm) : null,
+           focus: atm && atm.focus, atmos: !!atm, credit: creditFor(atm) };
+}
+
+/* Forward what artFor() found onto the slide, in ONE place.
+   Every feed builder used to hand-copy five properties into its return
+   literal, and `bgFallback` was in none of the six — so an atmosphere photo,
+   which is pulled at `original` resolution from iNaturalist and is NOT
+   guaranteed to exist, had no fallback and rendered as an empty background.
+   That is the common path, not an edge case: most feed rows carry no
+   screen_image or screen_poster of their own.
+
+   Copying once means a new art property reaches every feed slide by itself.
+   `slide` carries what is distinctive about the format; anything it has
+   already set is left alone, which is how slideNews keeps its own dwell. */
+function fromArt(art, slide){
+  slide.bg         = art.bg;
+  slide.bgFallback = art.bgFallback || null;
+  slide.focus      = art.focus;
+  slide.atmos      = art.atmos;
+  slide.poster     = art.poster;
+  slide.credit     = art.credit;
+  /* a poster is read, not glanced at — give it longer */
+  if(slide.seconds === undefined)
+    slide.seconds = art.poster ? Math.round(SECONDS * 1.6) : null;
+  return slide;
+}
+
+/* A photograph from the collection, for slides with nothing of their own. */
+function atmosPhoto(){
+  var all = withGallery(D.plants.concat(D.wildlife).filter(function(s){ return s.photo; }));
+  var pool = preferOrient(all, 'landscape', 12);
+  return pool.length ? pick(pool) : (all.length ? pick(all) : null);
+}
+
+/* The calendar tear-off. */
+function dateStamp(iso, endIso){
+  if(!iso) return '';
+  var d = new Date(midnight(iso)), days = daysUntil(iso);
+
+  /* A run of days is one event, not four — say so, or "17" under-sells a
+     four-night festival and misleads anyone planning around a closure. */
+  if(endIso && endIso !== iso){
+    var e = new Date(midnight(endIso));
+    var sameMonth = e.getMonth() === d.getMonth();
+    return '<div class="stamp">'
+      + '<span class="num word">'+d.getDate()+'&ndash;'+e.getDate()+'</span>'
+      + '<span class="when">'
+      +   '<span class="dow">'+d.toLocaleDateString('en-US',{month:'long'})
+      +     (sameMonth?'':' &ndash; '+e.toLocaleDateString('en-US',{month:'long'}))+'</span>'
+      +   '<span class="sub">'+d.toLocaleDateString('en-US',{weekday:'short'})
+      +     ' to '+e.toLocaleDateString('en-US',{weekday:'short'})+'</span>'
+      + '</span></div>';
+  }
+
+  var num, word = false;
+  if(days === 0){ num = 'Today'; word = true; }
+  else if(days === 1){ num = 'Tomorrow'; word = true; }
+  else num = d.getDate();
+  return '<div class="stamp">'
+    + '<span class="num'+(word?' word':'')+'">'+num+'</span>'
+    + '<span class="when">'
+    +   '<span class="dow">'+d.toLocaleDateString('en-US',{weekday:'long'})+'</span>'
+    +   '<span class="sub">'+d.toLocaleDateString('en-US',{month:'long'})
+    +     (word?' '+d.getDate():'')+'</span>'
+    + '</span></div>';
+}
+
+/* QR
+   The Sheet column holds the DESTINATION URL, not an image — Bev pastes a
+   normal link and never thinks about QR codes. The image is rendered by a
+   public generator; if it can't be reached the slide prints the URL instead,
+   so the slide is never silently useless.
+   Accepts screen_qr / screen_QRcode / qr_url so the column can be named
+   whichever way it ends up in the Sheet. */
+function qrUrlOf(row, fallback){
+  return (row.screen_qr || row.screen_QRcode || row.screen_qrcode || row.qr_url
+          || fallback || '').trim();
+}
+
+/* A QR has to carry somewhere a phone can actually go, so repo-relative paths
+   like "docs/news/Hort_Magazine.pdf" get resolved against the page's own URL
+   before they're encoded. */
+function absUrl(u){
+  if(!u) return '';
+  if(/^https?:/i.test(u)) return u;
+  try { return new URL(u.replace(/^\//,''), location.href).href; }
+  catch(e){ return u; }
+}
+
+function qrBlock(row, caption, fallback){
+  var url = absUrl(qrUrlOf(row, fallback));
+  if(!url) return '';
+  var src = 'https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=0&ecc=M&data='
+          + encodeURIComponent(url);
+  var pretty = url.replace(/^https?:\/\//,'').replace(/\/$/,'');
+  return '<div class="qr">'
+    + '<div class="qr-card"><img alt="" src="'+src+'" '
+    + 'onerror="this.parentNode.style.display=\'none\';'
+    + 'this.closest(\'.qr\').querySelector(\'.raw\').style.display=\'block\'"></div>'
+    + (caption?'<div class="cap">'+esc(caption)+'</div>':'')
+    + '<div class="raw" style="display:none">'+esc(pretty)+'</div>'
+    + '</div>';
+}
+
+/* ── a cohort shout-out ──────────────────────────────────────────────────
+   The Bright Futures crew has put 300-odd photographs of 117 species into this
+   catalog. Individually that is a credit line under a photo somebody has to
+   go looking for. Together it is a fact about the park worth putting on a wall.
+
+   This is also the RIGHT way to recognize students: a group, on a screen in
+   the park, transient and local — not a permanent indexed page per child.
+   Their names already appear as photo credits, so nothing new is exposed. */
+function slideCohort(){
+  var logins = cohort('Bright Futures');
+  if(!logins.length) return null;
+
+  var photos = [], species = {}, people = [];
+  logins.forEach(function(login){
+    var mine = BY_SHOOTER[login] || [];
+    if(!mine.length) return;
+    photos = photos.concat(mine);
+    mine.forEach(function(p){ species[p.psbp_id] = 1; });
+    /* credit_as ("Ruby M. – High School Volunteer") wins over the real name; the
+       slide already says "high-school volunteers", so keep just "Ruby M.". */
+    var e = NAMES[login] || {};
+    people.push(e.credit_as ? e.credit_as.split(' – ')[0] : (e.display_name || login));
+  });
+  if(people.length < 3 || photos.length < 5) return null;
+
+  /* Round-robin the students so the pile shows the crew, not whoever shot the
+     most — one has 116 photographs and would otherwise fill the table. */
+  var byPerson = {};
+  photos.forEach(function(p){ (byPerson[p.photographer] = byPerson[p.photographer] || []).push(p); });
+  var keys = shuffle(Object.keys(byPerson)), picks = [], round = 0;
+  while(picks.length < 10 && round < 4){
+    for(var k=0; k<keys.length && picks.length<10; k++){
+      var mine = byPerson[keys[k]];
+      if(mine[round]) picks.push(mine[round]);
+    }
+    round++;
+  }
+  if(picks.length < 6) return null;
+
+  /* Scattered across the right-hand two thirds, tilted, dropped in one after
+     another. Positions are jittered per render, so the pile falls differently
+     every time it comes round. */
+  var pile = picks.map(function(p, i){
+    var col = i % 4, row = Math.floor(i / 4);
+    return {
+      src:   p.photo_url || '',
+      x:     40 + col * 14 + (Math.random()*7 - 3.5),
+      y:      8 + row * 27 + (Math.random()*9 - 4.5),
+      r:     (Math.random()*18 - 9).toFixed(1),
+      delay: ((0.7 + i * 0.34) / SPEED).toFixed(2)
+    };
+  });
+
+  return {
+    pile: pile,
+    seconds: Math.round(SECONDS * 1.6),
+    html:
+        '<div class="count">'+photos.length+'<small>photographs, by students</small></div>'
+      + '<div class="headline">The Bright Futures crew</div>'
+      + '<div class="roster">'+esc(shuffle(people).join('  ·  '))+'</div>'
+      + '<div class="shot">'+people.length+' high-school volunteers &middot; '
+      +   Object.keys(species).length+' species documented</div>'
+  };
+}
+
+/* ── a photographer spotlight ────────────────────────────────────────────
+   Same instinct as the Bright Futures cohort slide — a photograph credit is
+   easy to walk past one at a time, and this makes the whole body of work
+   visible at once, as a fact about the park worth putting on a wall.
+
+   Sourced from data/published/photographers.json, the same Sheet-driven
+   feed photographers.html reads — Bev sets `display` to screen (or both)
+   to enable a profile here, exactly as the schema note anticipated. Linked
+   to their photographs by resolved display name (BY_NAME), because the
+   profile's `id` slug and the iNat login photo_credits keys on don't
+   reliably match (helenL vs helen_lewis) — the display name is the one
+   thing both sides carry, and propagate_names.py is what keeps it exact.
+
+   Heroes first, then anything else of theirs — a hero is a human pick for
+   "best shot of this species", so it's the closest thing to a curated
+   best-of without inventing a new ranking. */
+function slidePhotographer(p){
+  var key = String(p.name || '').toLowerCase();
+  var mine = (BY_NAME[key] || []).filter(function(ph){ return ph.hero; });
+  if(mine.length < 3) return null;
+
+  /* ONE photo, full-bleed — same mechanism as Right Now and Spotlight, not
+     the panel grid. Randy, 2026-09-14, after seeing five macro crops sliced
+     into vertical ribbons: "that is a monstrosity" — "her art is meant to be
+     enjoyed as one piece." rotate() gives fair coverage across her whole
+     hero set over many appearances instead of showing the same shot, or
+     trying to cram several into one slide. */
+  var ph = rotate('photog:'+key, mine, 1)[0];
+  if(!ph) return null;
+
+  var site = (p.site || '').trim();
+  var firstName = String(p.name || '').trim().split(/\s+/)[0] || 'this photographer';
+  var label = "Explore "+firstName+"'s photos";
+
+  return {
+    photog: true,
+    /* `original` from iNaturalist, not the `large` photo_url — same
+       reasoning as bigPhoto() for every other full-bleed slide. */
+    bg: inatSize(ph.photo_url || '', 'original'),
+    bgFallback: ph.photo_url || null,
+    focus: ph.focus,
+    seconds: Math.round(SECONDS * 1.2),
+    /* Redesigned 2026-09-14 from ChatGPT's critique, via Randy: the eye was
+       going bird → masthead → name → QR → paragraph, reading as an
+       informational card about a photographer rather than a spotlight ON
+       one. Dropped the specialty/`.latin` line entirely — it was clutter
+       competing with her name, not information anyone needed. The
+       hierarchy is now: photo, then her, then what she does, then a quiet
+       secondary call to action — never fighting the text for space (see
+       .slide.photog .qr in the CSS, bottom-right instead of center). */
+    html:
+        '<div class="eyebrow"><span>Meet a park photographer</span></div>'
+      + '<div class="headline">'+esc(p.name)+'</div>'
+      + (p.blurb?'<div class="body">'+rich(p.blurb)+'</div>':'')
+      + (site ? qrBlock({screen_qr:site}, label, site) : '')
+  };
+}
+
+/* ── the week ────────────────────────────────────────────────────────────
+   Merges one-off events with the recurring classes, which nothing else does:
+   a class row says "every Monday", and this is the only place that turns that
+   into "Monday the 24th, 4PM". Trimmed to time and title — instructor, cost
+   and series belong on the slide for that one thing, not on a timetable. */
+function startHour(t){
+  var m = /(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i.exec(t || '');
+  if(!m) return 99;
+  var h = +m[1] % 12;
+  if(/pm/i.test(m[3])) h += 12;
+  return h + (+(m[2]||0))/60;
+}
+
+function weekAhead(){
+  var days = [], now = new Date(); now.setHours(0,0,0,0);
+  var DOWK = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  for(var d=0; d<7; d++){
+    var when = new Date(now.getTime() + d*864e5);
+    var iso  = when.getFullYear() + '-' + ('0'+(when.getMonth()+1)).slice(-2)
+             + '-' + ('0'+when.getDate()).slice(-2);
+    var items = [];
+
+    D.events.forEach(function(e){
+      if(e.date === iso) items.push({ time:e.time, title:e.title });
+    });
+    D.classes.forEach(function(c){
+      if(DOWK[when.getDay()] === c.weekday) items.push({ time:c.time, title:c.title });
+    });
+
+    if(!items.length) continue;                       /* blank days don't appear */
+    items.sort(function(a,b){ return startHour(a.time) - startHour(b.time); });
+    days.push({ d:d, when:when, items:items });
+  }
+  return days;
+}
+
+/* Randy, 2026-09-14: the week board had no image at all — a deliberate
+   "visual break" that read as boring rather than restful, sitting on the
+   left with open space on the right. Wants it filled with a random shot
+   from the park's three named photographers specifically, both to spice up
+   the slide and to give them a bit more exposure — their depth of work is
+   the point, not just their curated heroes.
+
+   HARDCODED FOR NOW, on purpose — a LOW-PRIORITY follow-up is to drive this
+   list from photographers.json's `display` column (screen/both) the same
+   way slidePhotographer() sources its pool, instead of these three logins,
+   so a new profile going "live" adds itself here with no code change. */
+var WEEK_ATMOS_LOGINS = ['helen_lewis','robcarr52','rhonda_olschefskie'];
+function weekAtmosPhoto(){
+  var pool = [];
+  WEEK_ATMOS_LOGINS.forEach(function(login){ pool = pool.concat(BY_SHOOTER[login] || []); });
+  return pool.length ? pick(pool) : null;
+}
+
+function slideWeek(){
+  var days = weekAhead();
+  var total = days.reduce(function(n,x){ return n + x.items.length; }, 0);
+  if(total < 3) return null;                          /* the solo slides cover it */
+
+  var last = new Date(Date.now() + 6*864e5);
+  var range = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric'})
+            + ' – ' + last.toLocaleDateString('en-US',
+                {month: last.getMonth()!==new Date().getMonth() ? 'long' : undefined,
+                 day:'numeric'});
+
+  /* A dense week goes day by day; a light one goes up whole. Same beat
+     machinery either way — no second layout. */
+  var dense = total > 7;
+
+  function dayHtml(x){
+    return '<div class="week-day'+(x.d===0?' today':'')+'">'
+      + '<span class="dw">'+(x.d===0?'Today':x.when.toLocaleDateString('en-US',{weekday:'long'}))+'</span>'
+      + '<span>'+x.items.map(function(it){
+          return '<span class="week-item">'
+               + '<span class="tm">'+esc(it.time||'')+'</span>'
+               + '<span class="ev">'+esc(it.title)+'</span></span>';
+        }).join('')+'</span></div>';
+  }
+
+  var body;
+  if(dense){
+    var chunks = [], per = Math.ceil(days.length / Math.ceil(total/6));
+    for(var i=0;i<days.length;i+=per) chunks.push(days.slice(i,i+per));
+    body = '<div class="beats">' + chunks.map(function(c){
+      return '<div class="beat"><div class="week">'+c.map(dayHtml).join('')+'</div></div>';
+    }).join('') + '</div>';
+  } else {
+    body = '<div class="week">'+days.map(dayHtml).join('')+'</div>';
+  }
+
+  var rec = weekAtmosPhoto();
+  var credit = (rec && rec.photographer_name) ? {
+    name: rec.photographer_name,
+    terms: [(rec.license || '').replace(/^CC-/,'CC ').replace(/_/g,' '),
+            rec.observed_on ? new Date(rec.observed_on+'T12:00')
+              .toLocaleDateString('en-US',{month:'long',year:'numeric'}) : '']
+           .filter(Boolean).join('  ·  ')
+  } : null;
+
+  return {
+    week:true,
+    atmos: !!rec,
+    bg: rec ? inatSize(rec.photo_url || '', 'original') : null,
+    bgFallback: rec ? (rec.photo_url || null) : null,
+    focus: rec && rec.focus,
+    credit: credit,
+    seconds: Math.round(SECONDS * (dense ? 2.0 : 1.5)),
+    html:
+        '<div class="eyebrow"><span>This week at the park</span></div>'
+      + '<div class="headline">'+esc(range)+'</div>'
+      + body
+  };
+}
+
+/* ── ambient ─────────────────────────────────────────────────────────────── */
+function slideAmbient(){
+  var pool = withGallery(D.plants.concat(D.wildlife).filter(function(x){ return x.photo; }));
+  /* No text to carry the slide, so the crop has to be right: wide photographs
+     with the pixels to fill a 4K width. */
+  pool = preferOrient(pool, 'landscape', 12)
+           .filter(function(x){ return bigEnough(x, 1800); });
+  if(!pool.length) pool = D.plants.concat(D.wildlife).filter(function(x){ return x.photo; });
+  if(!pool.length) return null;
+  var s = pick(pool);
+  return {
+    bg: bigPhoto(s), bgFallback: fallbackPhoto(s), focus: s.focus, ambient:true,
+    credit: creditFor(s),
+    seconds: Math.round(SECONDS * 0.65),   /* a breath, not a dwell */
+    html: ''
+  };
+}
+
+/* ── collection ──────────────────────────────────────────────────────────
+   Groupings are built from fields the search index already carries, so this
+   needs no new data at all. A group qualifies at six species — below that the
+   count isn't impressive and the montage looks thin. */
+/* Explicit labels. Machine pluralisation put "Butterflys" and "Others" on the
+   wall — a lesson about generating display text from field values. Anything
+   without a label here simply doesn't become a slide. */
+var FORM_LABEL = {
+  'Tree':'Trees',
+  'Palm & Cycad':'Palms and cycads',
+  'Shrub & Vine':'Shrubs and vines',
+  'Groundcover & Wildflower':'Groundcovers and wildflowers',
+  'Foliage & Accent':'Foliage and accent plants',
+  'Aquatic & Wetland':'Aquatic and wetland plants'
+};
+
+/* "The palm family" reads on a wall; "The Arecaceae family" reads in a
+   herbarium. The Latin rides along underneath. */
+var FAMILY_NAME = {
+  Arecaceae:'palm', Fabaceae:'pea', Euphorbiaceae:'spurge', Asteraceae:'daisy',
+  Malvaceae:'mallow', Apocynaceae:'dogbane', Rubiaceae:'coffee', Ardeidae:'heron',
+  Myrtaceae:'myrtle', Moraceae:'fig', Bromeliaceae:'bromeliad', Araceae:'arum',
+  Acanthaceae:'acanthus', Lamiaceae:'mint', Anacardiaceae:'cashew',
+  Annonaceae:'custard apple', Sapindaceae:'soapberry', Verbenaceae:'verbena',
+  Cactaceae:'cactus', Zingiberaceae:'ginger', Musaceae:'banana', Poaceae:'grass',
+  Nymphaeaceae:'water lily', Cycadaceae:'cycad', Zamiaceae:'zamia',
+  Amaryllidaceae:'amaryllis', Bignoniaceae:'trumpet-vine', Rutaceae:'citrus',
+  Solanaceae:'nightshade', Passifloraceae:'passionflower', Nymphalidae:'brush-footed butterfly',
+  Anatidae:'duck', Accipitridae:'hawk', Picidae:'woodpecker', Emberizidae:'sparrow'
+};
+
+var GROUPS = null;
+function buildGroups(){
+  var all = D.plants.concat(D.wildlife).filter(function(x){ return x.photo; });
+  var g = [];
+
+  function add(label, sub, rows){
+    if(!label || rows.length < 6) return;
+    /* the same set can arrive from two fields — keep the first label only */
+    for(var i=0;i<g.length;i++) if(g[i].label === label) return;
+    g.push({ label:label, sub:sub, rows:rows });
+  }
+  function by(field, fmt, sub){
+    var m = {};
+    all.forEach(function(x){ var k=x[field]; if(k) (m[k]=m[k]||[]).push(x); });
+    for(var k in m){
+      /* `cat`/`category` are raw field values with no allow-list, unlike
+         `form` (filtered through FORM_LABEL). Randy, 2026-09-14, on seeing an
+         auto-generated "5 invasives" slide: "YUCK" — a collection count
+         celebrates a group, and an invasive-species tally is the one thing on
+         this screen that should never read as something to be proud of. */
+      if(/invasive/i.test(k)) continue;
+      var label = fmt(k); if(label) add(label, sub, m[k]);
+    }
+  }
+
+  /* family — common name where we have one, and the Latin as the subtitle */
+  var fams = {};
+  all.forEach(function(x){ if(x.family) (fams[x.family]=fams[x.family]||[]).push(x); });
+  for(var f in fams){
+    var common = FAMILY_NAME[f];
+    add(common ? 'The ' + common + ' family' : 'The ' + f + ' family',
+        common ? f : 'in the collection', fams[f]);
+  }
+
+  by('form',     function(k){ return FORM_LABEL[k] || null; }, 'in the collection');
+  by('cat',      function(k){ return k; }, 'in the collection');
+  by('category', function(k){ return k; }, 'recorded here');
+
+  add('Florida natives', 'growing here', all.filter(function(x){ return x.native; }));
+  add('Nectar plants', 'for butterflies and bees', all.filter(function(x){ return x.nectar; }));
+  add('Butterfly host plants', 'where caterpillars feed', all.filter(function(x){ return x.larval_host; }));
+  add('Rare fruit', 'from the Rare Fruit Trail', all.filter(function(x){ return x.rare_fruit; }));
+  return g;
+}
+
+function slideCollection(){
+  if(!GROUPS) GROUPS = buildGroups();
+  if(!GROUPS.length) return null;
+  var g = takeFrom('collection', GROUPS, 1)[0];
+  if(!g) return null;
+
+  /* the panels are a fifth as wide as they are tall — exactly what a phone
+     photograph is, and there are 846 of them */
+  var shots = shuffle(preferOrient(g.rows, 'portrait', 8).slice()).slice(0,5);
+  if(shots.length < 5) shots = shuffle(g.rows.slice()).slice(0,5);
+  var names = shuffle(g.rows.slice()).slice(0,4)
+                .map(function(x){ return x.common; }).filter(Boolean);
+  var who = [];
+  shots.forEach(function(x){
+    var n = x.credit_name || x.credit;
+    if(n && who.indexOf(n) < 0) who.push(n);
+  });
+
+  /* Wildlife IDs start with a 9 (PSBP-9xxxx) — the whole ID band rule, per
+     PSBP_ARCHITECTURE.md §3.1. A family/category group is effectively always
+     one kingdom or the other, so the first row is a reliable enough check.
+     Randy, 2026-09-14: on a wildlife group specifically — things that move,
+     that a visitor might spot and we haven't — invite them to go look and
+     add it, same voice as the line already on visit.html. Plant groups (the
+     palm count, the natives count) don't get this; a shrub isn't going
+     anywhere and "keep an eye out" doesn't fit it. */
+  var first = g.rows[0];
+  var isWildlife = !!(first && /^PSBP-9/.test(first.id || ''));
+  var invite = isWildlife
+    ? "See one we haven't got yet? Snap it and add it to our iNaturalist project — that's how this list grows."
+    : '';
+
+  return {
+    set:true,
+    /* a fifth of the frame each — `large` is already more pixels than the
+       panel can show, and five originals would be 20MB of wall */
+    grid: shots.map(function(x){ return { src: fallbackPhoto(x) || BASE+x.photo, focus: x.focus }; }),
+    seconds: Math.round(SECONDS * (isWildlife ? 1.4 : 1.15)),
+    html:
+        '<div class="count">'+g.rows.length+'<small>'+esc(g.sub)+'</small></div>'
+      + '<div class="headline">'+esc(g.label)+'</div>'
+      + (names.length?'<div class="roster">'+esc(names.join('  ·  '))+'</div>':'')
+      + (who.length?'<div class="shot">Photographs by '+esc(who.join(', '))+'</div>':'')
+      + (invite?'<div class="body">'+invite+'</div>':'')
+      + (invite?qrBlock({screen_qr:'https://www.inaturalist.org/projects/palma-sola-botanical-park'},
+                        'Scan to join the project'):'')
+  };
+}
+
+/* Asks get the centered treatment and a dimmed photograph behind. */
+function slideAsk(a){
+  var pool = D.plants.filter(function(s){ return s.photo; });
+  return {
+    ask: !posterImage(a),
+    poster: posterImage(a),
+    bg: posterImage(a) ? null : (screenImage(a) || (pool.length ? BASE+pick(pool).photo : null)),
+    credit:'',
+    html:
+      (logoBlock(a, a.logo_label || '') || (a.emoji?'<div class="emoji">'+a.emoji+'</div>':''))
+    + '<div class="headline">'+esc(a.title)+'</div>'
+    + (a.body?'<div class="body">'+rich(a.body)+'</div>':'')
+    + (a.link_text?'<div class="meta"><span>'+esc(a.link_text)+'</span></div>':'')
+    + qrBlock(a, 'Scan to open', a.link_url)
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE DECK
+   Weighted, shuffled, no two consecutive slides of the same type, and an ask
+   Feeds contribute by PERIOD, families are interleaved so none sit adjacent,
+   and asks are spaced through. Rebuilt when exhausted, so the mix changes
+   shape through the day rather than looping identically.
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* FAIRNESS WITHIN A FEED
+   Random sampling each cycle means a row can go unseen for a long stretch
+   purely by luck. Every feed instead keeps a shuffled queue that is consumed
+   in order and reshuffled only once exhausted, so every row gets its turn
+   before any row gets a second.
+
+   FAIRNESS BETWEEN FEEDS is the weights' job, and the weights are set as a
+   PERIOD instead: "each row of this feed should come round about every N
+   cycles". A feed with four rows and a period of four contributes one slide
+   per cycle; fourteen announcements on the same period contribute three or
+   four. That is what stops a lone news item outplaying every announcement. */
+var queues = {};
+function takeFrom(name, rows, n){
+  if(!rows || !rows.length) return [];
+  var q = queues[name];
+  if(!q || q.at >= q.list.length) q = queues[name] = { list: shuffle(rows.slice()), at: 0 };
+  var out = [];
+  while(out.length < n){
+    if(q.at >= q.list.length) q = queues[name] = { list: shuffle(rows.slice()), at: 0 };
+    out.push(q.list[q.at++]);
+    if(out.length >= rows.length) break;      /* never repeat inside one cycle */
+  }
+  return out;
+}
+function nextAsk(){ return takeFrom('ask', D.announcements, 1)[0]; }
+
+/* SPREADING THE FAMILIES
+   Take whichever family has the most left, and the LARGEST family gets placed
+   first and most often — so it front-loads the deck and the smallest families
+   pile up at the end. With eight schedule slides and four quiet ones, the
+   opening ran event, something, event, something, and the ambient and
+   collection slides never arrived until the tail. Avoiding adjacency is not
+   the same as spreading out.
+
+   So: give every family evenly-spaced ideal positions across the whole deck —
+   a family with n slides in a deck of N wants positions (i + ½)·N/n — and
+   settle each into the nearest free slot. Large or small, every family is now
+   distributed across the entire rotation rather than clustered in part of it. */
+function interleave(items){
+  var buckets = {}, k, i;
+  for(i=0;i<items.length;i++){
+    k = famOf(items[i]);
+    (buckets[k] = buckets[k] || []).push(items[i]);
+  }
+  for(k in buckets) shuffle(buckets[k]);
+
+  var N = items.length, slots = new Array(N);
+  /* biggest first: it has the least room to move, so let it claim its ideal
+     positions before the smaller families fill in around it */
+  var keys = Object.keys(buckets).sort(function(a,b){
+    return buckets[b].length - buckets[a].length;
+  });
+
+  keys.forEach(function(key){
+    var rows = buckets[key], n = rows.length;
+    rows.forEach(function(item, idx){
+      var ideal = Math.floor((idx + 0.5) * N / n);
+      var at = -1;
+      for(var d=0; d<N; d++){                     /* nearest free slot, either way */
+        if(ideal-d >= 0 && !slots[ideal-d]){ at = ideal-d; break; }
+        if(ideal+d <  N && !slots[ideal+d]){ at = ideal+d; break; }
+      }
+      if(at >= 0) slots[at] = item;
+    });
+  });
+
+  var out = slots.filter(Boolean);
+
+  /* an even spread can still leave the odd neighbouring pair — nudge those */
+  for(i=1;i<out.length;i++){
+    if(famOf(out[i]) !== famOf(out[i-1])) continue;
+    for(var j=i+2;j<out.length;j++){
+      if(famOf(out[j]) === famOf(out[i-1])) continue;
+      if(j+1 < out.length && famOf(out[j+1]) === famOf(out[i])) continue;
+      if(famOf(out[j-1]) === famOf(out[i])) continue;
+      var t = out[i]; out[i] = out[j]; out[j] = t; break;
+    }
+  }
+  return out;
+}
+
+var cycle = 0;
+function buildDeck(){
+  cycle++;
+  var pool=[], i;
+  function add(type,rows,fn){
+    if(!rows || !rows.length) return;
+    var n = Math.ceil(rows.length / (PERIOD[type] || 3));
+    n = Math.max(1, Math.min(n, CAP[type] || 3, rows.length));
+    var picks = takeFrom(type, rows, n);
+    for(var p=0;p<picks.length;p++) pool.push({type:type,make:fn.bind(null,picks[p])});
+  }
+
+  add('right_now',  D.right_now,              slideRightNow);
+  add('event',      upcoming(D.events),       slideEvent);
+  add('news',       D.news.slice().reverse(), slideNews);
+  /* add()'s floor is Math.max(1, …) — with any fitness rows at all, PERIOD
+     alone can never bring it below one slide per cycle, however high it's
+     set. Randy, 2026-09-15, watching speed mode: "still popping up lots."
+     Halving it for real means skipping whole cycles, the same device
+     already used for cohort/photographer below — every OTHER cycle instead
+     of every one, which is the actual "half of what it is now." */
+  if(cycle % 2 === 0) add('klass_fitness', D.classes.filter(function(c){ return CLASS_CATS.fitness.indexOf(c.category) > -1; }), slideClass);
+  add('klass_nature',  D.classes.filter(function(c){ return CLASS_CATS.nature.indexOf(c.category) > -1; }),  slideClass);
+  add('klass',         D.classes.filter(function(c){ return CLASS_CATS.fitness.indexOf(c.category) < 0 && CLASS_CATS.nature.indexOf(c.category) < 0; }), slideClass);
+  add('series',     D.series,                 slideSeries);
+  add('volunteer',  D.volunteer,              slideVolunteer);
+  add('newsletter', D.newsletters,            slideNewsletter);
+  for(i=0;i<SPOTLIGHTS;i++)  pool.push({type:'spotlight', make:slideSpotlight});
+  for(i=0;i<AMBIENTS;i++)    pool.push({type:'ambient',   make:slideAmbient});
+  for(i=0;i<COLLECTIONS;i++) pool.push({type:'collection',make:slideCollection});
+  for(i=0;i<WEEKVIEWS;i++)   pool.push({type:'week',      make:slideWeek});
+  /* Special slides lose their occasion if they turn up every seven minutes.
+     Once every third cycle is about twenty minutes apart. Cohort and
+     photographer land on different thirds of the cycle so the two
+     photo-credit slides don't compete for the same turn. */
+  if(cycle % 3 === 1) for(i=0;i<COHORTS;i++) pool.push({type:'cohort', make:slideCohort});
+  if(cycle % 3 === 2 && D.photographers.length){
+    var who = takeFrom('photographer', D.photographers, PHOTOGS)[0];
+    if(who) pool.push({type:'photographer', make:slidePhotographer.bind(null, who)});
+  }
+
+  pool = interleave(pool);
+
+  /* Asks, spaced evenly through the deck.
+     Count is proportional, never zero — a fixed "every 7th slide" silently
+     produced NO asks whenever the deck was shorter than 7, which is exactly
+     what happens when most Sheet rows are marked web-only. */
+  if(D.announcements.length){
+    var want = Math.max(1, Math.min(
+      Math.ceil(D.announcements.length / (PERIOD.ask || 4)),
+      Math.ceil(pool.length / 4)));   /* never more than a quarter of the deck —
+                                         the screen is mostly beauty, and an ask
+                                         every third slide is how you lose people */
+    var gap  = Math.max(1, Math.floor(pool.length / want));
+    var out=[];
+    for(i=0;i<pool.length;i++){
+      out.push(pool[i]);
+      if((i+1) % gap === 0 && out.filter(function(x){return x.type==='ask';}).length < want){
+        out.push({type:'ask', make:slideAsk.bind(null, nextAsk())});
+      }
+    }
+    pool=out;
+  }
+  return pool.length ? pool : [{type:'spotlight',make:slideSpotlight}];
+}
+
+/* Wrap every word in its own span, measure which rendered line each landed on,
+   then stagger by line. Walking text nodes rather than rewriting innerHTML
+   keeps the <b> emphasis the writers put in the quick hits. */
+var LINE_STEP = 0.42 / SPEED;   /* seconds between lines */
+var LINE_LEAD = 0.25 / SPEED;   /* before the first one */
+
+function cascade(el){
+  if(!el) return;
+  var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+  var nodes = [], n;
+  while((n = walker.nextNode())) if(n.nodeValue.trim()) nodes.push(n);
+
+  for(var i=0;i<nodes.length;i++){
+    var frag = document.createDocumentFragment();
+    var parts = nodes[i].nodeValue.split(/(\s+)/);
+    for(var j=0;j<parts.length;j++){
+      if(!parts[j]) continue;
+      if(/^\s+$/.test(parts[j])){ frag.appendChild(document.createTextNode(parts[j])); }
+      else {
+        var w = document.createElement('span');
+        w.className='w'; w.textContent=parts[j];
+        frag.appendChild(w);
+      }
+    }
+    nodes[i].parentNode.replaceChild(frag, nodes[i]);
+  }
+
+  /* group by vertical position — that's what a "line" actually is */
+  var words = el.querySelectorAll('.w'), line = -1, top = null;
+  for(var k=0;k<words.length;k++){
+    var t = words[k].offsetTop;
+    if(top === null || Math.abs(t - top) > 4){ line++; top = t; }
+    words[k].style.transitionDelay = (LINE_LEAD + line*LINE_STEP).toFixed(2)+'s';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLAYER
+   ═══════════════════════════════════════════════════════════════════════════ */
+var stage=document.getElementById('stage'), bar=document.getElementById('bar');
+var credEl=document.getElementById('credit');
+var deck=[], at=0, cur=null, timer=null, revealTimer=null, beatTimers=[];
+
+var KB = ['kb-in','kb-out','kb-left','kb-right','kb-rise','kb-settle'];
+var lastKB = '';
+
+function render(s){
+  var dur = s.seconds || SECONDS;
+  var el=document.createElement('div');
+  el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'')
+             +(s.ambient?' ambient':'')+(s.set?' set':'')+(s.week?' week-slide':'')+(s.pile?' pile-slide':'')
+             +(s.photog?' photog':'');
+
+  /* pick a motion, never the same one twice running */
+  var moves = KB.filter(function(k){ return k!==lastKB; });
+  var kb = pick(moves); lastKB = kb;
+
+  /* the curated focus point, straight from the search index */
+  var pos = s.focus ? ' style="object-position:'+s.focus.replace(/"/g,'')+'"' : '';
+
+  var grid = '';
+  if(s.grid){
+    grid = '<div class="collection">';
+    for(var gi=0; gi<s.grid.length; gi++){
+      grid += '<div><img alt="" src="'+s.grid[gi].src+'"'
+            + (s.grid[gi].focus?' style="object-position:'+s.grid[gi].focus.replace(/"/g,'')+'"':'')
+            + '></div>';
+    }
+    grid += '</div>';
+  }
+
+  var pile = '';
+  if(s.pile){
+    pile = '<div class="pile">';
+    for(var pi=0; pi<s.pile.length; pi++){
+      var c = s.pile[pi];
+      pile += '<div class="pola" style="left:'+c.x+'%;top:'+c.y+'%;--r:'+c.r+'deg;'
+            + 'z-index:'+(10+pi)+';animation-delay:'+c.delay+'s">'
+            + '<img alt="" src="'+c.src+'"></div>';
+    }
+    pile += '</div>';
+  }
+
+  el.innerHTML = grid + pile
+    + (s.grid ? '<div class="veil"></div>' : '')
+    + '<div class="bg">'+(s.bg
+        ? '<img class="'+kb+'" alt=""'+pos+' src="'+s.bg+'"'
+          + (s.bgFallback && s.bgFallback !== s.bg
+              ? ' data-fb="'+s.bgFallback+'" onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.dataset.fb=\'\'}"'
+              : '') + '>'
+        : '')+'</div>'
+    + '<div class="scrim"></div>'
+    + '<div class="copy">'+s.html+'</div>'
+    + (s.poster?'<div class="poster-art"><img alt="" src="'+s.poster+'"></div>':'');
+
+  /* .copy is position:relative, so a QR left inside it anchors to the text
+     column and lands mid-paragraph. Lift it out to sit against the slide.
+     On an ask it belongs in the flow, centered under the words — leave it. */
+  var qrNode = el.querySelector('.qr');
+  if(qrNode && !s.ask && !s.poster){ el.appendChild(qrNode); el.classList.add('has-qr'); }
+  el.style.setProperty('--kb', (dur+3)+'s');
+
+  /* step each body down by length so nothing is ever clipped */
+  var bodies = el.querySelectorAll('.body'), longest = 0, bi;
+  for(bi=0;bi<bodies.length;bi++){
+    var n = (bodies[bi].textContent||'').length;
+    if(n > 300)      bodies[bi].classList.add('len-3');
+    else if(n > 175) bodies[bi].classList.add('len-2');
+    if(n > longest) longest = n;
+  }
+  if(longest > 175 && el.querySelector('.copy')) el.querySelector('.copy').classList.add('tall');
+
+  stage.appendChild(el);
+
+  /* Beats are absolutely stacked, so the container has to reserve the height of
+     the taller one or the slide jumps at the turn. Measure after append. */
+  var beats = el.querySelector('.beats');
+  if(beats){
+    var kids = beats.querySelectorAll('.beat'), h = 0, k;
+    for(k=0;k<kids.length;k++) h = Math.max(h, kids[k].offsetHeight);
+    beats.style.minHeight = Math.max(h, 1) + 'px';
+  }
+
+  sizeLogos(el);
+
+  /* split into lines once the type has actually laid out */
+  var texts = el.querySelectorAll('.body');
+  for(var ti=0; ti<texts.length; ti++) cascade(texts[ti]);
+
+  /* let the browser paint at opacity 0 before fading in */
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
     el.classList.add('on');
-    if (prev) prev.classList.remove('on');
-    live = el;
-    if (prev) (function(p){ setTimeout(function(){ p.remove(); }, FADE + 300); })(prev);
-    if (i + 1 < SETS) setTimeout(function(){ showSet(i + 1); }, perSet);
+  });});
+
+  /* Timing. One body: it arrives a little under halfway.
+     Two beats: the note lands early, the fact turns over it past the middle,
+     leaving each with room to be read rather than glimpsed. */
+  clearTimeout(revealTimer); beatTimers.forEach(clearTimeout); beatTimers=[];
+  var beatEls = el.querySelectorAll('.beat');
+  if(beatEls.length > 1){
+    /* Beats share the slide evenly after a short lead. Two on a Right Now,
+       three or four on a news story — same mechanism either way. */
+    var lead = 1400 / SPEED;
+    var share = Math.max(2600 / SPEED, (dur*1000 - lead) / beatEls.length);
+    revealTimer = setTimeout(function(){ el.classList.add('reveal'); }, lead);
+    (function(){
+      for(var bn=0; bn<beatEls.length; bn++){
+        beatTimers.push(setTimeout((function(idx){ return function(){
+          for(var q=0;q<beatEls.length;q++){
+            if(q < idx){ beatEls[q].classList.remove('on'); beatEls[q].classList.add('spent'); }
+            else if(q === idx){ beatEls[q].classList.remove('spent'); beatEls[q].classList.add('on'); }
+          }
+        };})(bn), lead + bn*share));
+      }
+    })();
+  } else {
+    revealTimer = setTimeout(function(){ el.classList.add('reveal'); }, 1400 / SPEED);
   }
-  showSet(0);
-}
 
-/* Fixed sequence, no randomness — Randy/Bev: the randomized weighted
-   rotation "isn't working," they want a locked deck with deliberate
-   spacing and pacing, not left to chance. VIGNETTES above IS the play
-   order; this just walks it and wraps back to the start. (The old
-   shuffle-bag / earliest-deadline-first machinery that used to live here
-   is gone — with a fixed order there's nothing left to schedule.) */
-var deckIndex = -1;
-function nextVignette(){
-  deckIndex = (deckIndex + 1) % VIGNETTES.length;
-  return VIGNETTES[deckIndex];
-}
+  if(cur){
+    var old=cur; old.classList.remove('on');
+    setTimeout(function(){ old.remove(); }, 1400 / SPEED);
+  }
+  cur=el;
 
-var deck = document.getElementById('deck');
-var bar = document.getElementById('bar');
-var liveEl = null; // the currently-shown slide element, if any
+  if(s.credit && s.credit.name){
+    credEl.innerHTML =
+        '<span class="lbl">Photograph</span>'
+      + '<span class="who">'+esc(s.credit.name)+'</span>'
+      + (s.credit.terms?'<span class="terms">'+esc(s.credit.terms)+'</span>':'');
+    credEl.classList.add('on');
+  } else {
+    credEl.classList.remove('on');
+  }
 
-/* Same device as screen-park.html's #bar: snap width back to 0 with no
-   transition, then (next frame, so the browser registers that reset)
-   animate it to 100% linearly over the slide's actual dwell time. */
-function runBar(seconds){
-  bar.style.transition = 'none';
-  bar.style.width = '0';
+  bar.style.transition='none'; bar.style.width='0';
   requestAnimationFrame(function(){
-    bar.style.transition = 'width ' + seconds + 's linear';
-    bar.style.width = '100%';
+    bar.style.transition='width '+dur+'s linear';
+    bar.style.width='100%';
   });
+  return dur;
 }
 
-/* A real crossfade, not a swap: the new slide is appended at opacity 0,
-   forced to reflow so the browser registers that starting state, then both
-   old-fades-out and new-fades-in fire together via the .on toggle — the
-   same device screen.html's own multi-slide deck uses, just with only ever
-   two elements in the DOM at once here instead of the whole deck. */
-function renderSlide(entry){
-  var el = document.createElement('div');
-  el.className = 'slide' + (entry.welcome ? ' welcome' : ' anec');
-  var inner = '';
-  if (entry.bg) inner += '<div class="bg" style="background-image:url(\'' + entry.bg + '\')"></div><div class="veil"></div>';
-  inner += entry.html;
-  el.innerHTML = inner;
-  deck.appendChild(el);
-  void el.offsetWidth; // force reflow before adding .on, or the transition won't fire
+/* A LOOP, NOT RECURSION.
+   Skipping an empty slide used to be `return next()`, which is fine while
+   something in the deck still builds — but if EVERY builder returns null the
+   deck is walked, rebuilt, and walked again with nothing to stop it, so the
+   stack overflows and the wall goes black. It takes a narrow state to reach:
+   no species carrying a photo AND every feed empty or web-only, which slips
+   past fallback() because that only fires when right_now and plants are BOTH
+   empty. Narrow, but the failure is total, on a screen nobody is watching.
 
-  var prev = liveEl;
-  el.classList.add('on');
-  if (prev) prev.classList.remove('on');
-  liveEl = el;
-
-  if (prev) setTimeout(function(){ prev.remove(); }, 2200); // a bit past --fade
+   So: iterate, allow one rebuild, and if a whole fresh deck yields nothing,
+   hold what is on screen and try again on the next turn. The feeds reload
+   every ten minutes, so a transient outage recovers by itself and the worst
+   case is a stale slide rather than a dead one. */
+function next(){
+  var s = null, item = null, rebuilds = 0;
+  while(s === null){
+    if(at >= deck.length){
+      if(++rebuilds > 1){
+        console.error('screen.html: no slide could be built from a full deck — '
+                    + 'holding, will retry. Check the feeds loaded.');
+        timer = setTimeout(next, SECONDS * 1000);
+        return;
+      }
+      deck = buildDeck(); at = 0;
+    }
+    item = deck[at++];
+    try{ s = item.make(); }
+    catch(e){
+      /* A builder that throws used to be indistinguishable from one that had
+         nothing to show, so a broken slide type vanished from the rotation in
+         silence — every species slide disappeared for a whole evening that way.
+         Skip it, but say so. */
+      console.error('screen.html: ' + item.type + ' slide failed —', e && e.message, e);
+      s = null;
+    }
+  }
+  var dur = render(s);
+  timer=setTimeout(next, dur*1000);
 }
 
-/* One-time photo credit — the first photo-carrying vignette the session
-   ever shows gets a small line appended, then never again. Per spec:
-   "somewhere early in the rotation... as a small line on the first
-   photo-based vignette." With the fixed order that's always vignette05
-   (Adventure) — still tracked with a flag rather than hardcoded there,
-   so the logic keeps working correctly if the order ever changes. */
-var photoNoteShown = false;
-var PHOTO_NOTE_HTML =
-  '<div class="photo-note">The garden photographs throughout this tribute were taken here, in the park Ina loved, by others who stopped to notice what was growing.</div>';
-
-/* Small per-photo byline, bottom-left, on every slide carrying a park
-   photo — same photographer/date/license shape the rest of the site uses.
-   Used to also repeat "Taken here in the park Ina was such an integral
-   part of" underneath every one, on top of the once-per-session
-   PHOTO_NOTE_HTML above that already explains the photos in full — once a
-   visitor has seen that, a bare name/date/license is enough; the repeated
-   line was explaining meaning that's already been established. */
-function photoCredHtml(c){
-  if (!c) return '';
-  return '<div class="photo-cred"><b>' + c.name + '</b> &middot; ' + c.date + ' &middot; CC BY-NC</div>';
+function tickClock(){
+  var d=new Date();
+  document.getElementById('clock').innerHTML =
+      '<span class="day">'
+    + d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})
+    + '</span><span class="sep">&middot;</span>'
+    + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
 }
 
-/* Randy: welcome should dominate ("come back to that one a lot"); ChatGPT's
-   structure (relayed): welcome, one vignette (~14s, or its own override),
-   back to welcome, repeat — never two vignettes back to back. WELCOME_SECONDS
-   (38s) puts welcome at roughly two-thirds of total screen time given the
-   current vignette mix — nudged down from an original ~75–80% on request. */
-function loop(){
-  renderSlide({ welcome: true, bg: WELCOME.bg, html: WELCOME.html + photoCredHtml(WELCOME.credit) });
-  runBar(WELCOME_SECONDS);
-  setTimeout(function(){
-    var v = nextVignette();
-    var html = v.html;
-    if (v.bg && !photoNoteShown && !v.noPhotoNote) { html += PHOTO_NOTE_HTML; photoNoteShown = true; }
-    html += photoCredHtml(v.credit);
-    renderSlide({ welcome: false, bg: v.bg, html: html });
-    var dwellMs = (v.seconds ? v.seconds / SPEED : VIGNETTE_SECONDS) * 1000;
-    runBar(dwellMs / 1000);
-    if (v.special === 'flowerGrid') startFlowerVignette(liveEl, dwellMs);
-    setTimeout(loop, dwellMs);
-  }, WELCOME_SECONDS * 1000);
+/* ── kiosk housekeeping ──────────────────────────────────────────────────
+   Refresh the data every 10 minutes so a Sheet edit reaches the wall without
+   anyone touching the TV, and do a hard reload in the small hours to clear
+   any long-running drift. */
+function start(){
+  var root = document.documentElement.style;
+  root.setProperty('--sp', SPEED);
+  root.setProperty('--fade', (1.1 / SPEED).toFixed(3) + 's');
+  root.setProperty('--turn', (0.85 / SPEED).toFixed(3) + 's');
+  if(SPEED !== 1) console.log('screen.html running at ' + SPEED + '× — ' + SECONDS.toFixed(1) + 's per slide');
+
+  deck=buildDeck(); at=0; next();
+  tickClock(); setInterval(tickClock, 20000);
+
+  /* SCALED BY SPEED, so ?speed= is a time warp and not just a fast-forward.
+     Everything else already divides by SPEED — SECONDS, the beat cascade, the
+     slide turn — but this timer was hardcoded, so a fast run could exercise the
+     ROTATION and never the RELOAD.
+
+     That gap is exactly what hid the BY_SHOOTER accumulation bug: on a fast run
+     the cohort slide reported 298 photographs every time and looked right,
+     because a second fetch never happened. It only misbehaved on a wall that
+     had been up for twenty real minutes.
+
+     At speed=1 (the TV) this is unchanged at ten minutes. At speed=10 the feeds
+     reload every minute, so a five-minute test covers five refresh cycles. Do
+     not leave a high speed running against GitHub Pages for long — fourteen
+     files per cycle adds up.
+
+     To check an accumulator by hand instead, in the console:
+       loadAll().then(function(){ console.log(
+         Object.values(BY_SHOOTER).reduce(function(n,a){return n+a.length},0)); });
+     Run it twice. 1046 both times is correct; 2092 on the second is a leak.
+
+     NOT scaled: the 4am reload below, which is gated on the real wall clock. */
+  setInterval(function(){
+    loadAll().then(function(){
+      /* derived from the feeds, so they go stale with them */
+      GROUPS = null;
+      queues = {};
+    }).catch(function(){});
+  }, (10*60*1000) / SPEED);
+
+  /* THE NIGHTLY RELOAD — two guards, both learned the hard way rather than seen.
+
+     navigator.onLine: every FETCH here fails soft, but a reload throws away a
+     working page and asks for a fresh one. With the network down at 4am — and
+     consumer routers commonly reboot on a nightly schedule — the browser lands
+     on its offline error page and STAYS THERE until a human walks past. A black
+     wall from 4am, intermittent, and near-impossible to diagnose after the fact.
+     onLine only reports the link layer, so it is not a perfect test, but it
+     catches the common case and can never make things worse: if it reads false
+     we simply skip the reload and keep running on the last good page.
+
+     The day-stamp: this interval is 30 minutes and the hour test is true for TWO
+     consecutive checks, so the old version reloaded twice every night — it fired,
+     restarted its own interval, and half an hour later the hour was still 4.
+     In-memory state cannot fix that because the reload wipes it, so the stamp
+     goes in localStorage. It is written only when we actually reload, so an
+     offline 4am doesn't burn the day: the 4:45 check still gets its chance. */
+  setInterval(function(){
+    var d = new Date();
+    if(d.getHours() !== 4 || !navigator.onLine) return;
+    try {
+      if(localStorage.getItem('psbp:lastReload') === d.toDateString()) return;
+      localStorage.setItem('psbp:lastReload', d.toDateString());
+    } catch(e){ /* storage blocked — fall through; worst case is the old twice */ }
+    location.reload();
+  }, 30*60*1000);
+
+  /* keep the display awake where the browser allows it */
+  if('wakeLock' in navigator){
+    navigator.wakeLock.request('screen').catch(function(){});
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState==='visible')
+        navigator.wakeLock.request('screen').catch(function(){});
+    });
+  }
 }
-loop();
+
+loadAll().then(start).catch(function(){ fallback(); start(); });
 </script>
 </body>
 </html>
