@@ -52,7 +52,10 @@ section[id]{scroll-margin-top:78px}
 @media(min-width:900px){.cx-hero{grid-template-columns:1.05fr 1fr}}
 .cx-hero-txt{padding:3.5rem 1.75rem 3rem;max-width:640px;margin-left:auto}
 .cx-eyebrow{font-size:var(--t-cap);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
-.cx-h1{font-family:var(--serif);font-size:clamp(2.6rem,6vw,3.9rem);line-height:1.03;color:var(--green-ink);margin:.5rem 0 0}
+/* Sized so the first sentence breaks as "There’s always / more to discover."
+   and the italic line never wraps — down to a 360px phone (8.2em of italic at
+   2.3rem is 302px). `balance` keeps desktop from breaking greedily after "more". */
+.cx-h1{font-family:var(--serif);font-size:clamp(2.3rem,5vw,3.4rem);line-height:1.06;text-wrap:balance;color:var(--green-ink);margin:.5rem 0 0}
 .cx-h1 em{display:block;font-style:italic;color:var(--gold)}
 .cx-lede{font-size:1.2rem;line-height:1.6;color:var(--ink);margin:1.1rem 0 0;max-width:34em}
 .cx-hero-img{min-height:340px;background:center/cover no-repeat}
