@@ -580,6 +580,8 @@ def _auto_import_hero(species_id, kingdom, common_name, scientific_name, taxon_i
         "obs_id":            best.get("obs_id", ""),
         "observed_on":       best.get("observed_on"),
         "shared_on":         best.get("shared_on"),
+        "w":                 best.get("w"),
+        "h":                 best.get("h"),
     }
     res = _apply_triage_decision(payload)
     if res.get("ok") and res.get("is_hero"):
@@ -1412,6 +1414,12 @@ def _cc_photos_from_observations(obs_list):
                 non_cc += 1
                 continue
             base_url = p.get("url", "") or ""
+            # iNat sends the pixel size on the observation photo; keep it so
+            # promote can stamp w/h/orient onto the credit row (2026-09-22).
+            # Before this, the numbers were fetched here, discarded, and
+            # re-fetched later by psbp_photo_dimensions.py — which nobody
+            # remembered to run after a photo batch (452 rows missing).
+            dim = p.get("original_dimensions") or {}
             cc.append({
                 "photo_id":          str(p.get("id", "")),
                 "obs_id":            obs_id,
@@ -1423,6 +1431,8 @@ def _cc_photos_from_observations(obs_list):
                 "observed_on":       observed_on,
                 "shared_on":         shared_on,
                 "source_url":        src,
+                "w":                 dim.get("width"),
+                "h":                 dim.get("height"),
             })
     return cc, non_cc
 
@@ -1623,6 +1633,8 @@ def _build_triage_view(kingdom, species_id, mode="new"):
                 "observed_on":       dec.get("observed_on"),
                 "shared_on":         dec.get("shared_on"),
                 "source_url":        dec.get("source_url", ""),
+                "w":                 dec.get("w"),
+                "h":                 dec.get("h"),
                 "state":             "skipped",
             })
             seen.add(pid)
@@ -1631,6 +1643,19 @@ def _build_triage_view(kingdom, species_id, mode="new"):
     return {"photos": out, "scanned": scanned or mode == "skipped",
             "scanned_at": cache.get("scanned_at") if cache else None,
             "non_cc": cache.get("non_cc_count", 0) if cache else 0}
+
+
+def _photo_orient(w, h):
+    """landscape | portrait | square from pixel size, or None if unknown.
+    Same thresholds as psbp_photo_dimensions.py — keep them in step."""
+    try:
+        w, h = int(w or 0), int(h or 0)
+    except (TypeError, ValueError):
+        return None
+    if not w or not h:
+        return None
+    ratio = w / h
+    return "landscape" if ratio > 1.15 else "portrait" if ratio < 0.87 else "square"
 
 
 def _apply_triage_decision(payload):
@@ -1672,6 +1697,10 @@ def _apply_triage_decision(payload):
             filename = None  # virtual — served from iNat CDN
 
         ctype = "Plant" if kingdom == "plants" else "Wildlife"
+        # Pixel size travels with the scan row (see _cc_photos_from_observations);
+        # the screen reads `orient` to route portraits to tall panels. Missing
+        # here means an old scan cache — psbp_photo_dimensions.py backfills.
+        _w, _h = payload.get("w"), payload.get("h")
         entry = {
             "psbp_id":           psbp_id,
             "type":              payload.get("type", ctype),
@@ -1697,6 +1726,9 @@ def _apply_triage_decision(payload):
             "filename":          filename,
             "used_by":           [],
             "virtual":           not is_hero,
+            "w":                 _w,
+            "h":                 _h,
+            "orient":            _photo_orient(_w, _h),
         }
         credits["photos"].append(entry)
         credits.setdefault("meta", {})["photo_count"] = len(credits["photos"])
@@ -1719,6 +1751,8 @@ def _apply_triage_decision(payload):
         "thumb_url":         payload.get("thumb_url", ""),
         "large_url":         payload.get("large_url", ""),
         "source_url":        payload.get("source_url", ""),
+        "w":                 payload.get("w"),
+        "h":                 payload.get("h"),
         "note":              "",
     }
     write_json_atomic(PHOTO_WORKBENCH, wb)
@@ -7391,6 +7425,8 @@ def render_photos():
             license: p.license,
             observed_on: p.observed_on,
             shared_on: p.shared_on,
+            w: p.w,
+            h: p.h,
             common_name: sp.common_name,
             scientific_name: sp.scientific_name,
             type: currentKingdom === 'plants' ? 'Plant' : 'Wildlife',

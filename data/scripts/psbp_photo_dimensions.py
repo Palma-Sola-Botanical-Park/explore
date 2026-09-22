@@ -24,6 +24,11 @@ Adds three fields to each row of photo_credits.json:
 Nothing else is touched. Rows that already have w/h are skipped, so it is safe
 to re-run whenever new photos are promoted — it only fetches what is missing.
 
+Since 2026-09-22 the Photos tab writes w/h/orient itself when a photo is
+promoted (species_manager.py: _cc_photos_from_observations keeps iNat's
+original_dimensions, _apply_triage_decision stamps them). This script is now
+the BACKFILL for rows that predate that, or came in through a stale scan cache.
+
 It does NOT set the `screen` opt-out flag. That is a judgement about whether a
 photograph is worth showing eight feet tall, and a script has no business
 making it. What it will do is print a CANDIDATES list at the end — photos whose
