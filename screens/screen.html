@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Palma Sola Botanical Park</title>
-<link rel="icon" type="image/png" href="images/favicon.png">
-<link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="icon" type="image/png" href="../images/favicon.png">
+<link rel="apple-touch-icon" href="../images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -718,7 +718,14 @@ var SECONDS = +(Q.get('seconds') || 0) || 18;   // lingers; 14 read as rushed on
    rather than half an hour. Not for the wall. */
 var SPEED = Math.max(0.1, Math.min(20, +(Q.get('speed') || 1) || 1));
 SECONDS = SECONDS / SPEED;
-var BASE    = Q.get('base') || '';           // '' when served from repo root
+var BASE    = Q.get('base') || (function(){
+  // Moved into screens/ on 2026-09-23. Every feed and photo path is
+  // repo-relative, so climb back to the repo root from wherever this file
+  // is served: '' at the root, '../' in screens/, '../../' in screens/events/.
+  var after = location.pathname.split('/screens/')[1];
+  if(!after) return '';
+  return new Array(after.split('/').length + 1).join('../');
+})();
 var FEEDS   = BASE + 'data/published/';
 
 

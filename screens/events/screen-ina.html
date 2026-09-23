@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>In Loving Memory · Mary Ina Baden</title>
-<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="icon" type="image/png" href="../../images/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 /* ============================================================================
@@ -258,16 +258,16 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
 <body>
 
 <div class="frame"></div>
-<img class="logo-mark" src="images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
+<img class="logo-mark" src="../../images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
 <div class="deck" id="deck"></div>
 <div id="bar"></div>
 
 <script>
 /* PHOTO_URL: leave blank for the clean type-only version of the welcome
    slide. To add a photo later, set this to a path (e.g.
-   'images/ina-baden.jpg') and the welcome slide uses it as a full-bleed
+   '../../images/ina-baden.jpg') and the welcome slide uses it as a full-bleed
    background automatically. */
-var PHOTO_URL = 'images/memorial-ina-baden.jpg'; // Ina herself — from her own obituary photo, smiling by the water
+var PHOTO_URL = '../../images/memorial-ina-baden.jpg'; // Ina herself — from her own obituary photo, smiling by the water
 
 /* WELCOME is the "home base" slide — office monitor, meant to spark
    conversation among people milling around before/during the service.
@@ -350,7 +350,7 @@ var VIGNETTES = [
       + '<div class="rule"></div>'
       + '<div class="body">Ina earned her commercial driver&rsquo;s license and helped launch the Manatee Blood Bank&rsquo;s mobile donation program &mdash; then drove the bus around town herself.</div>' },
 
-  { id: 'vignette08', bg: 'photos/PSBP-00072/703871348.jpg', credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
+  { id: 'vignette08', bg: '../../photos/PSBP-00072/703871348.jpg', credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
         '<div class="label">The Rose Garden</div>'
       + '<div class="rule"></div>'
       + '<div class="body">Ina loved her roses and proudly showed off her garden. She also collected shells from around the world, and thousands of photographs from a life well traveled.</div>' },
@@ -388,14 +388,14 @@ var VIGNETTES = [
       +   '<div class="flower-right"></div>'
       + '</div>' },
 
-  { id: 'donate', seconds: 30, bg: 'photos/PSBP-00001/681679773.jpg', credit: { name: 'Rob Carr', date: 'May 28, 2023' }, noPhotoNote: true, html:
+  { id: 'donate', seconds: 30, bg: '../../photos/PSBP-00001/681679773.jpg', credit: { name: 'Rob Carr', date: 'May 28, 2023' }, noPhotoNote: true, html:
         '<div class="label">Palma Sola</div>'
       + '<div class="rule"></div>'
       + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>'
       + '<div class="give-lead">Here&rsquo;s how to give.</div>'
       + '<div class="qr-row">'
-      +   '<div class="qr-card"><img src="images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One&#8209;Time Gift</div></div>'
-      +   '<div class="qr-card"><img src="images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div></div>'
+      +   '<div class="qr-card"><img src="../../images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One&#8209;Time Gift</div></div>'
+      +   '<div class="qr-card"><img src="../../images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div></div>'
       + '</div>' },
 
   /* Guestbook notes — real cream note cards, all verbatim messages left on
@@ -430,8 +430,8 @@ var VIGNETTES = [
         '<div class="label">Coming Up at the Park</div>'
       + '<div class="rule"></div>'
       + '<div class="event-row">'
-      +   '<div class="event-card"><img src="images/events/fallplant.jpg" alt="Fall Plant and Garden Festival flyer, Sunday October 4, 10am to 3pm"></div>'
-      +   '<div class="event-card"><img src="images/events/groovin-2026.jpg" alt="Groovin in the Gardens flyer, Sunday October 18, 4 to 6pm"></div>'
+      +   '<div class="event-card"><img src="../../images/events/fallplant.jpg" alt="Fall Plant and Garden Festival flyer, Sunday October 4, 10am to 3pm"></div>'
+      +   '<div class="event-card"><img src="../../images/events/groovin-2026.jpg" alt="Groovin in the Gardens flyer, Sunday October 18, 4 to 6pm"></div>'
       + '</div>' },
 
   { id: 'guestbook2', seconds: 30, html:
@@ -487,13 +487,13 @@ var VIGNETTE_SECONDS = 14 / SPEED; // default; a vignette's own `seconds` overri
    by then; startFlowerVignette() below still no-ops safely (just the left
    text shows, no mosaic) in the unlikely case it hasn't. */
 var FLOWER_PHOTOS = [];
-fetch('data/sources/photo_credits.json').then(function(r){ return r.json(); }).then(function(d){
+fetch('../../data/sources/photo_credits.json').then(function(r){ return r.json(); }).then(function(d){
   FLOWER_PHOTOS = (d.photos || []).filter(function(p){
     return p.publish_ok && Array.isArray(p.role) && p.role.indexOf('flower') !== -1;
   }).map(function(p){
     // Mirrors the site's own convention (see any plant page's window.PHOTOS):
     // a locally-mirrored file if one exists, else the iNaturalist original.
-    var src = p.filename ? ('photos/' + p.psbp_id + '/' + p.filename) : p.photo_url;
+    var src = p.filename ? ('../../photos/' + p.psbp_id + '/' + p.filename) : p.photo_url;
     var date = '';
     var m = /^(\d{4})-(\d{2})-\d{2}$/.exec(p.observed_on || '');
     if (m) date = m[2] + '/' + m[1]; // MM/YYYY

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Groovin' in the Gardens — Palma Sola Botanical Park</title>
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   EVENT SCREEN — Groovin' in the Gardens
+   ----------------------------------------------------------------------------
+   A standalone welcome screen for one event day: no feeds, no rotation, no
+   machinery. Same furniture as screens/screen.html (gold frame, clock, logo,
+   --ground / --gold / Playfair + Source Sans) so it reads as the park.
+   Point a kiosk at this file on the day; point it back at screen.html after.
+   Mockup, 2026-09-23. Facts from the park's own event page and the poster.
+============================================================================ */
+:root{
+  --ground:#0c1a10; --ground-2:#122316;
+  --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
+  --ink-invert:rgba(253,252,248,.82); --ink-quiet:rgba(253,252,248,.58);
+  --rule:rgba(234,188,90,.34);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
+  --frame:2.6vmin; --pad:4.4vmin;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--ground)}
+body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
+.frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
+.clock{position:fixed;top:calc(var(--frame) + 1.4vmin);right:calc(var(--frame) + var(--pad));z-index:41;
+  font-family:var(--serif);font-size:2.6vmin;color:var(--ink-quiet);letter-spacing:.04em}
+.logo-mark{position:fixed;bottom:calc(var(--frame) + 1.6vmin);right:calc(var(--frame) + 1.8vmin);height:5.2vmin;width:auto;opacity:.78;z-index:41}
+.eyebrow-fixed{position:fixed;top:calc(var(--frame) + 1.6vmin);left:calc(var(--frame) + var(--pad));z-index:41;
+  font-size:2vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:600}
+
+/* The stage: text left, poster right — the poster is shown WHOLE, never
+   cropped (same rule as screen_poster in the main deck: anything with words
+   baked into the image hangs on the right and the text column narrows). */
+.stage{position:fixed;inset:0;display:flex;align-items:center;padding:0 calc(var(--frame) + var(--pad));gap:6vmin}
+.bg{position:absolute;inset:0;background:radial-gradient(120vmin 80vmin at 30% 40%, #1a3a1f 0%, var(--ground) 70%);z-index:-1}
+.copy{flex:1 1 0;min-width:0;padding-left:1vmin}
+.poster{flex:0 0 auto;height:74vmin;display:flex;align-items:center}
+.poster img{height:100%;width:auto;display:block;border-radius:.6vmin;box-shadow:0 1.2vmin 4vmin rgba(0,0,0,.55)}
+
+.welcome{font-size:2.3vmin;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:2.4vmin}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(3rem,8.2vmin,7rem);line-height:1.04;color:var(--paper)}
+h1 em{font-style:italic;font-weight:400;color:var(--gold)}
+.when{margin-top:3vmin;font-family:var(--serif);font-size:clamp(1.6rem,4.2vmin,3.4rem);color:var(--gold);line-height:1.2}
+.when small{display:block;font-family:var(--sans);font-size:2.3vmin;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-quiet);margin-top:1vmin;font-weight:600}
+.rule{width:7vmin;height:1px;background:var(--gold-deep);margin:3.4vmin 0}
+.lines{list-style:none;font-size:clamp(1.4rem,3.3vmin,2.7rem);line-height:1.55;color:var(--ink-invert);font-weight:300}
+.lines li+li{margin-top:.4vmin}
+.foot{margin-top:3.6vmin;font-size:clamp(1.2rem,2.7vmin,2.1rem);color:var(--gold);font-weight:600}
+.foot span{display:block;color:var(--ink-quiet);font-weight:300;font-size:clamp(1rem,2.2vmin,1.6rem);margin-top:.6vmin}
+</style>
+</head>
+<body>
+<div class="frame"></div>
+<div class="eyebrow-fixed">Palma Sola Botanical Park</div>
+<div class="clock" id="clock"></div>
+<img class="logo-mark" src="../../images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
+
+<div class="stage">
+  <div class="bg"></div>
+  <div class="copy">
+    <div class="welcome">Welcome to</div>
+    <h1>Groovin’<br><em>in the Gardens</em></h1>
+    <div class="when">Sunday, October 18<small>4 – 6 pm · 2026</small></div>
+    <div class="rule"></div>
+    <ul class="lines">
+      <li>An afternoon of live jazz in the gardens</li>
+      <li>The Pops Orchestra Jazz Combo</li>
+      <li>Wine, beer, soda and food available</li>
+      <li>Bring a chair or a blanket</li>
+    </ul>
+    <div class="foot">With The Pops Orchestra of Bradenton &amp; Sarasota<span>Sponsored by the Manatee Community Foundation · ThePopsOrchestra.org</span></div>
+  </div>
+  <div class="poster"><img src="../../images/events/groovin-2026.jpg" alt="Groovin' in the Gardens poster"></div>
+</div>
+
+<script>
+(function(){
+  var el = document.getElementById('clock');
+  function tick(){
+    var d = new Date(), h = d.getHours(), m = d.getMinutes();
+    el.textContent = ((h % 12) || 12) + ':' + (m < 10 ? '0' : '') + m + (h < 12 ? ' am' : ' pm');
+  }
+  tick(); setInterval(tick, 15000);
+})();
+</script>
+</body>
+</html>
