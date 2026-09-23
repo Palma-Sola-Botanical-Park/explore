@@ -3,92 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fall Plant & Garden Festival — Palma Sola Botanical Park</title>
+<title>Fall Plant & Garden Festival — in-event screen</title>
 <link rel="icon" type="image/png" href="../../images/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-/* ============================================================================
-   EVENT SCREEN — Fall Plant & Garden Festival
-   ----------------------------------------------------------------------------
-   A standalone welcome screen for one event day: no feeds, no rotation, no
-   machinery. Same furniture as screens/screen.html (gold frame, clock, logo,
-   --ground / --gold / Playfair + Source Sans) so it reads as the park.
-   Point a kiosk at this file on the day; point it back at screen.html after.
-   Mockup, 2026-09-23. Facts from the park's own event page and the poster.
-============================================================================ */
-:root{
-  --ground:#0c1a10; --ground-2:#122316;
-  --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
-  --ink-invert:rgba(253,252,248,.82); --ink-quiet:rgba(253,252,248,.58);
-  --rule:rgba(234,188,90,.34);
-  --serif:'Playfair Display',Georgia,serif;
-  --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
-  --frame:2.6vmin; --pad:4.4vmin;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:var(--ground)}
-body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
-.frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
-.clock{position:fixed;top:calc(var(--frame) + 1.4vmin);right:calc(var(--frame) + var(--pad));z-index:41;
-  font-family:var(--serif);font-size:2.6vmin;color:var(--ink-quiet);letter-spacing:.04em}
-.logo-mark{position:fixed;bottom:calc(var(--frame) + 1.6vmin);right:calc(var(--frame) + 1.8vmin);height:5.2vmin;width:auto;opacity:.78;z-index:41}
-.eyebrow-fixed{position:fixed;top:calc(var(--frame) + 1.6vmin);left:calc(var(--frame) + var(--pad));z-index:41;
-  font-size:2vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:600}
-
-/* The stage: text left, poster right — the poster is shown WHOLE, never
-   cropped (same rule as screen_poster in the main deck: anything with words
-   baked into the image hangs on the right and the text column narrows). */
-.stage{position:fixed;inset:0;display:flex;align-items:center;padding:0 calc(var(--frame) + var(--pad));gap:6vmin}
-.bg{position:absolute;inset:0;background:radial-gradient(120vmin 80vmin at 30% 40%, #1a3a1f 0%, var(--ground) 70%);z-index:-1}
-.copy{flex:1 1 0;min-width:0;padding-left:1vmin}
-.poster{flex:0 0 auto;height:74vmin;display:flex;align-items:center}
-.poster img{height:100%;width:auto;display:block;border-radius:.6vmin;box-shadow:0 1.2vmin 4vmin rgba(0,0,0,.55)}
-
-.welcome{font-size:2.3vmin;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:2.4vmin}
-h1{font-family:var(--serif);font-weight:700;font-size:clamp(3rem,8.2vmin,7rem);line-height:1.04;color:var(--paper)}
-h1 em{font-style:italic;font-weight:400;color:var(--gold)}
-.when{margin-top:3vmin;font-family:var(--serif);font-size:clamp(1.6rem,4.2vmin,3.4rem);color:var(--gold);line-height:1.2}
-.when small{display:block;font-family:var(--sans);font-size:2.3vmin;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-quiet);margin-top:1vmin;font-weight:600}
-.rule{width:7vmin;height:1px;background:var(--gold-deep);margin:3.4vmin 0}
-.lines{list-style:none;font-size:clamp(1.4rem,3.3vmin,2.7rem);line-height:1.55;color:var(--ink-invert);font-weight:300}
-.lines li+li{margin-top:.4vmin}
-.foot{margin-top:3.6vmin;font-size:clamp(1.2rem,2.7vmin,2.1rem);color:var(--gold);font-weight:600}
-.foot span{display:block;color:var(--ink-quiet);font-weight:300;font-size:clamp(1rem,2.2vmin,1.6rem);margin-top:.6vmin}
-</style>
+<link rel="stylesheet" href="event-deck.css">
+<!-- In-event deck for the Fall Plant & Garden Festival. The visitor is already here. [Bracketed gold] text is a fact Randy or Bev still has to supply. Poster is Bev's (fallplant.jpg). -->
 </head>
 <body>
 <div class="frame"></div>
 <div class="eyebrow-fixed">Palma Sola Botanical Park</div>
 <div class="clock" id="clock"></div>
 <img class="logo-mark" src="../../images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
-
-<div class="stage">
-  <div class="bg"></div>
-  <div class="copy">
-    <div class="welcome">Welcome to the</div>
-    <h1>Fall Plant &amp;<br><em>Garden Festival</em></h1>
-    <div class="when">Sunday, October 4<small>10 am – 3 pm · 2026</small></div>
-    <div class="rule"></div>
-    <ul class="lines">
-      <li>A huge variety of plants for sale</li>
-      <li>Artisans, music and food</li>
-      <li>Bring a wagon — and a friend</li>
-    </ul>
-    <div class="foot">Free admission<span>Donations appreciated — every purchase supports the park</span></div>
-  </div>
-  <div class="poster"><img src="../../images/events/fallplant-3.jpg" alt="Fall Plant & Garden Festival poster"></div>
-</div>
-
+<div class="deck"></div>
+<div id="bar"></div>
 <script>
-(function(){
-  var el = document.getElementById('clock');
-  function tick(){
-    var d = new Date(), h = d.getHours(), m = d.getMinutes();
-    el.textContent = ((h % 12) || 12) + ':' + (m < 10 ? '0' : '') + m + (h < 12 ? ' am' : ' pm');
-  }
-  tick(); setInterval(tick, 15000);
-})();
+window.SLIDES = [
+  { id: 'welcome', html:
+    '<div class="copy"><div class="label">Welcome to the</div><h1>Fall Plant &amp;<br><em>Garden Festival</em></h1><div class="rule"></div><ul class="lines"><li>You made it. The plants are outside — this room is for cooling off.</li><li>Free admission, all day. Every purchase supports the park.</li><li>Bring a wagon — and a friend.</li></ul></div><div class="poster"><img src="../../images/events/fallplant.jpg" alt="Fall Plant &amp; Garden Festival poster"></div>' },
+  { id: 'where', html:
+    '<div class="copy"><div class="label">Where to find things today</div><div class="where"><div><b>Plant vendors</b><span class="todo">[which lawn / field — Bev]</span></div><div><b>Artisans</b><span class="todo">[where the artisan booths are]</span></div><div><b>Food</b><span class="todo">[food trucks / tent location]</span></div><div><b>Music</b><span class="todo">[stage or deck]</span></div><div><b>Restrooms</b><span>Inside the Galleria, and the ramped building by the Pavilion</span></div><div><b>Checkout &amp; donations</b><span class="todo">[table location]</span></div></div></div>' },
+  { id: 'signs', html:
+    '<div class="copy"><div class="label">While you are here</div><h2>Scan a sign.<br><em>Meet the plant.</em></h2><div class="rule"></div><div class="body">More than a hundred plants in the park carry a small laminated sign with a QR code. Scan one with your phone and you get that plant\'s own page: where it comes from, how to know it, and photographs taken right here by the people who walk this park.</div><div class="foot">Every photograph on those pages was taken in this park.<span>Most on phones. A few on serious cameras.</span></div></div>' },
+  { id: 'rarefruit', html:
+    '<div class="copy"><div class="label">Don\'t miss</div><h2>The Rare Fruit Garden</h2><div class="rule"></div><div class="body">Past the Pavilion and the raised restrooms, a garden of tropical fruit trees planted and tended by the Manatee Rare Fruit Council — jackfruit, black sapote, longan, mango and more, each with its own big sign.</div><div class="body">Walk in at the big Rare Fruit Garden sign and follow the trail south to the bridge.</div></div>' },
+  { id: 'support', html:
+    '<div class="copy"><div class="label">Free to visit, funded by you</div><h2>Take a plant home.<br><em>Take the park with it.</em></h2><div class="rule"></div><div class="body">There is no entrance fee here, and no government money. Members and donors keep the gates open 365 days a year. A plant from a vendor today, a membership, or a one-time gift all do the same job.</div><div class="qr-row"><div class="qr-card"><img src="../../images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One-time gift</div></div><div class="qr-card"><img src="../../images/qr-membership.png" alt="QR code to join as a member"><div class="qr-label">Membership</div></div></div></div>' },
+  { id: 'inat', html:
+    '<div class="copy"><div class="label">Curious about the wildlife here?</div><h2>Photograph it.<br><em>We\'ll find out what it is.</em></h2><div class="rule"></div><div class="body">Every plant and animal page on our website started as a photograph someone posted to iNaturalist from inside this park. Ask a volunteer how — it takes a phone and a minute.</div></div>' }
+];
 </script>
+<script src="event-deck.js"></script>
 </body>
 </html>

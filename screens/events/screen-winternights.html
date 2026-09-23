@@ -3,93 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Winter Nights under the Lights — Palma Sola Botanical Park</title>
+<title>Winter Nights under the Lights — in-event screen</title>
 <link rel="icon" type="image/png" href="../../images/favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-/* ============================================================================
-   EVENT SCREEN — Winter Nights under the Lights
-   ----------------------------------------------------------------------------
-   A standalone welcome screen for one event day: no feeds, no rotation, no
-   machinery. Same furniture as screens/screen.html (gold frame, clock, logo,
-   --ground / --gold / Playfair + Source Sans) so it reads as the park.
-   Point a kiosk at this file on the day; point it back at screen.html after.
-   Mockup, 2026-09-23. Facts from the park's own event page and the poster.
-============================================================================ */
-:root{
-  --ground:#0c1a10; --ground-2:#122316;
-  --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
-  --ink-invert:rgba(253,252,248,.82); --ink-quiet:rgba(253,252,248,.58);
-  --rule:rgba(234,188,90,.34);
-  --serif:'Playfair Display',Georgia,serif;
-  --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
-  --frame:2.6vmin; --pad:4.4vmin;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:var(--ground)}
-body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
-.frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
-.clock{position:fixed;top:calc(var(--frame) + 1.4vmin);right:calc(var(--frame) + var(--pad));z-index:41;
-  font-family:var(--serif);font-size:2.6vmin;color:var(--ink-quiet);letter-spacing:.04em}
-.logo-mark{position:fixed;bottom:calc(var(--frame) + 1.6vmin);right:calc(var(--frame) + 1.8vmin);height:5.2vmin;width:auto;opacity:.78;z-index:41}
-.eyebrow-fixed{position:fixed;top:calc(var(--frame) + 1.6vmin);left:calc(var(--frame) + var(--pad));z-index:41;
-  font-size:2vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:600}
-
-/* The stage: text left, poster right — the poster is shown WHOLE, never
-   cropped (same rule as screen_poster in the main deck: anything with words
-   baked into the image hangs on the right and the text column narrows). */
-.stage{position:fixed;inset:0;display:flex;align-items:center;padding:0 calc(var(--frame) + var(--pad));gap:6vmin}
-.bg{position:absolute;inset:0;background:radial-gradient(120vmin 80vmin at 30% 40%, #14261a 0%, var(--ground) 70%);z-index:-1}
-.copy{flex:1 1 0;min-width:0;padding-left:1vmin}
-.poster{flex:0 0 auto;height:74vmin;display:flex;align-items:center}
-.poster img{height:100%;width:auto;display:block;border-radius:.6vmin;box-shadow:0 1.2vmin 4vmin rgba(0,0,0,.55)}
-
-.welcome{font-size:2.3vmin;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:2.4vmin}
-h1{font-family:var(--serif);font-weight:700;font-size:clamp(3rem,8.2vmin,7rem);line-height:1.04;color:var(--paper)}
-h1 em{font-style:italic;font-weight:400;color:var(--gold)}
-.when{margin-top:3vmin;font-family:var(--serif);font-size:clamp(1.6rem,4.2vmin,3.4rem);color:var(--gold);line-height:1.2}
-.when small{display:block;font-family:var(--sans);font-size:2.3vmin;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-quiet);margin-top:1vmin;font-weight:600}
-.rule{width:7vmin;height:1px;background:var(--gold-deep);margin:3.4vmin 0}
-.lines{list-style:none;font-size:clamp(1.4rem,3.3vmin,2.7rem);line-height:1.55;color:var(--ink-invert);font-weight:300}
-.lines li+li{margin-top:.4vmin}
-.foot{margin-top:3.6vmin;font-size:clamp(1.2rem,2.7vmin,2.1rem);color:var(--gold);font-weight:600}
-.foot span{display:block;color:var(--ink-quiet);font-weight:300;font-size:clamp(1rem,2.2vmin,1.6rem);margin-top:.6vmin}
-</style>
+<link rel="stylesheet" href="event-deck.css">
+<!-- In-event deck for Winter Nights. Poster is Bev's (winternights.jpg — NOT the -2/-3 files, which are AI mockups). [Bracketed gold] text is a fact still to supply. -->
 </head>
 <body>
 <div class="frame"></div>
 <div class="eyebrow-fixed">Palma Sola Botanical Park</div>
 <div class="clock" id="clock"></div>
 <img class="logo-mark" src="../../images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
-
-<div class="stage">
-  <div class="bg"></div>
-  <div class="copy">
-    <div class="welcome">Welcome to</div>
-    <h1>Winter Nights<br><em>under the Lights</em></h1>
-    <div class="when">December 17 – 20<small>Thursday to Sunday · 6 – 9:30 pm · 2026</small></div>
-    <div class="rule"></div>
-    <ul class="lines">
-      <li>Acres of lights · Santa &amp; Mrs. Claus</li>
-      <li>Food trucks, gift market and hot cider</li>
-      <li>Live holiday music and decorated trees</li>
-      <li>Crafts and Toys for Tots</li>
-    </ul>
-    <div class="foot">Free admission<span>Donations appreciated — we are a non-profit park</span></div>
-  </div>
-  <div class="poster"><img src="../../images/events/winternights-3.jpg" alt="Winter Nights under the Lights poster"></div>
-</div>
-
+<div class="deck"></div>
+<div id="bar"></div>
 <script>
-(function(){
-  var el = document.getElementById('clock');
-  function tick(){
-    var d = new Date(), h = d.getHours(), m = d.getMinutes();
-    el.textContent = ((h % 12) || 12) + ':' + (m < 10 ? '0' : '') + m + (h < 12 ? ' am' : ' pm');
-  }
-  tick(); setInterval(tick, 15000);
-})();
+window.SLIDES = [
+  { id: 'welcome', html:
+    '<div class="copy"><div class="label">Welcome to</div><h1>Winter Nights<br><em>under the Lights</em></h1><div class="rule"></div><ul class="lines"><li>Warm up in here, then go back out — the lights are the point.</li><li>Free admission. Donations keep the park open all year.</li><li>Four nights only, Thursday to Sunday.</li></ul></div><div class="poster"><img src="../../images/events/winternights.jpg" alt="Winter Nights under the Lights poster"></div>' },
+  { id: 'tonight', html:
+    '<div class="copy"><div class="label">Tonight</div><div class="where"><div><b>Santa &amp; Mrs. Claus</b><span class="todo">[where they sit, and until when]</span></div><div><b>Gift market</b><span class="todo">[location]</span></div><div><b>Food trucks</b><span class="todo">[location]</span></div><div><b>Hot cider &amp; cocoa</b><span class="todo">[location]</span></div><div><b>Live holiday music</b><span class="todo">[where, and who\'s on tonight]</span></div><div><b>Children\'s crafts</b><span class="todo">[location]</span></div></div></div>' },
+  { id: 'toys', html:
+    '<div class="copy"><div class="label">Toys for Tots</div><h2>Bring a toy,<br><em>make a kid\'s December.</em></h2><div class="rule"></div><div class="body">New, unwrapped toys are being collected all four nights for Toys for Tots. The drop box is <span class="todo">[location]</span>.</div></div>' },
+  { id: 'trees', html:
+    '<div class="copy"><div class="label">The decorated trees</div><h2>Pick a favourite.</h2><div class="rule"></div><div class="body">Local groups, businesses and families decorate the trees along the lit walk. <span class="todo">[How the voting or judging works, if there is one this year.]</span></div><div class="body">The big one at the first curve of the drive, by the Front Pond, is a Royal Poinciana — the high-school volunteers light that one every year.</div></div>' },
+  { id: 'practical', html:
+    '<div class="copy"><div class="label">Good to know</div><div class="where"><div><b>Restrooms</b><span>Inside the Galleria, and the ramped building by the Pavilion</span></div><div><b>Step-free routes</b><span>The Galleria and the office both have ramps as well as stairs</span></div><div><b>Lost &amp; found</b><span class="todo">[the office / a table]</span></div><div><b>First aid</b><span class="todo">[where]</span></div></div></div>' },
+  { id: 'support', html:
+    '<div class="copy"><div class="label">Free to visit, funded by you</div><h2>The lights are free.<br><em>The park runs on you.</em></h2><div class="rule"></div><div class="body">No entrance fee, no government money. Members and donors keep this park open every day of the year, lights or no lights.</div><div class="qr-row"><div class="qr-card"><img src="../../images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One-time gift</div></div><div class="qr-card"><img src="../../images/qr-membership.png" alt="QR code to join as a member"><div class="qr-label">Membership</div></div></div></div>' }
+];
 </script>
+<script src="event-deck.js"></script>
 </body>
 </html>

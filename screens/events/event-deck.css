@@ -1,0 +1,68 @@
+/* ============================================================================
+   EVENT DECK — shared look for the in-event screens in screens/events/.
+   Same furniture as screens/screen.html (frame, clock, logo, --ground/--gold,
+   Playfair + Source Sans). The visitor is ALREADY HERE — so no dates, no
+   directions to the park, no "save the date". Every slide answers "what do I
+   do now that I'm standing in this air-conditioned room?"
+   2026-09-23, mockup.
+============================================================================ */
+:root{
+  --ground:#0c1a10; --ground-2:#122316;
+  --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
+  --ink-invert:rgba(253,252,248,.84); --ink-quiet:rgba(253,252,248,.58);
+  --rule:rgba(234,188,90,.34);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
+  --fade:1.2s; --frame:2.6vmin; --pad:4.4vmin;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--ground)}
+body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
+.frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
+.eyebrow-fixed{position:fixed;top:calc(var(--frame) + 1.6vmin);left:calc(var(--frame) + var(--pad));z-index:41;
+  font-size:2vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:600}
+.clock{position:fixed;top:calc(var(--frame) + 1.4vmin);right:calc(var(--frame) + var(--pad));z-index:41;
+  font-family:var(--serif);font-size:2.6vmin;color:var(--ink-quiet);letter-spacing:.04em}
+.logo-mark{position:fixed;bottom:calc(var(--frame) + 1.6vmin);right:calc(var(--frame) + 1.8vmin);height:5.2vmin;width:auto;opacity:.78;z-index:41}
+#bar{position:fixed;left:0;bottom:0;height:.4vmin;width:0;z-index:45;background:var(--gold-deep);opacity:.7}
+#bar.run{transition:width linear}
+
+.deck{position:fixed;inset:0}
+.slide{position:absolute;inset:0;display:flex;align-items:center;gap:6vmin;
+  padding:0 calc(var(--frame) + var(--pad));opacity:0;transition:opacity var(--fade) ease}
+.slide.on{opacity:1;z-index:1}
+.slide .bg{position:absolute;inset:0;z-index:-1;background:radial-gradient(120vmin 80vmin at 30% 40%, #1a3a1f 0%, var(--ground) 70%)}
+.slide .bg.photo{background-size:cover;background-position:center;filter:brightness(.42) saturate(.85)}
+
+.copy{flex:1 1 0;min-width:0}
+.poster{flex:0 0 auto;height:74vmin}
+.poster img{height:100%;width:auto;display:block;border-radius:.6vmin;box-shadow:0 1.2vmin 4vmin rgba(0,0,0,.55)}
+.photo-col{flex:0 0 44%;height:70vmin;border-radius:.8vmin;overflow:hidden;box-shadow:0 1.2vmin 4vmin rgba(0,0,0,.55);background:var(--ground-2)}
+.photo-col img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-col .placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:4vmin;color:var(--ink-quiet);font-style:italic;font-size:2.4vmin;border:1px dashed var(--rule)}
+
+.label{font-size:2.3vmin;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:2.2vmin}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(3rem,8.2vmin,7rem);line-height:1.04}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(2.4rem,6.4vmin,5.4rem);line-height:1.06}
+h1 em,h2 em{font-style:italic;font-weight:400;color:var(--gold)}
+.rule{width:7vmin;height:1px;background:var(--gold-deep);margin:3.2vmin 0}
+.lines{list-style:none;font-size:clamp(1.4rem,3.3vmin,2.7rem);line-height:1.55;color:var(--ink-invert);font-weight:300}
+.lines li+li{margin-top:.5vmin}
+.lines b{color:var(--paper);font-weight:600}
+.body{max-width:84vmin;font-size:clamp(1.5rem,3.4vmin,2.8rem);line-height:1.5;color:var(--ink-invert);font-weight:300}
+.body+.body{margin-top:2vmin}
+.foot{margin-top:3.4vmin;font-size:clamp(1.2rem,2.7vmin,2.1rem);color:var(--gold);font-weight:600}
+.foot span{display:block;color:var(--ink-quiet);font-weight:300;font-size:clamp(1rem,2.2vmin,1.6rem);margin-top:.6vmin}
+.todo{color:var(--gold-deep);font-style:italic}   /* [square brackets] = a fact Randy/Bev still has to supply */
+
+/* "Where things are" — a plain two-column list, big enough to read across a room */
+.where{display:grid;grid-template-columns:1fr 1fr;gap:1.6vmin 6vmin;font-size:clamp(1.4rem,3.1vmin,2.5rem);line-height:1.4}
+.where div{padding:1.6vmin 0;border-bottom:1px solid var(--rule)}
+.where b{display:block;color:var(--gold);font-family:var(--serif);font-weight:700;font-size:clamp(1.6rem,3.6vmin,3rem)}
+.where span{color:var(--ink-invert);font-weight:300}
+
+.qr-row{display:flex;gap:6vmin;margin-top:3vmin}
+.qr-card{display:flex;flex-direction:column;align-items:center}
+.qr-card img{width:16vmin;height:16vmin;display:block;border-radius:.5vmin;box-shadow:0 0 0 .55vmin var(--paper),0 .6vmin 1.6vmin rgba(0,0,0,.45)}
+.qr-label{margin-top:1.4vmin;font-family:var(--serif);font-style:italic;color:var(--gold);font-size:2.4vmin}
