@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screens — Palma Sola Botanical Park</title>
+<link rel="icon" type="image/png" href="../images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* A launch page for Bev: every screen and event deck in one place. Demo only —
+   the real way to choose what plays on which TV will be the phone controller. */
+:root{
+  --green:#2d6a35; --green-ink:#1a3a1f; --gold:#c5922a; --paper:#fdfcf8; --sunk:#f6f3ea;
+  --ink:#241c12; --ink-soft:#5c554a; --rule:#e2ddd0;
+  --serif:'Playfair Display',Georgia,serif; --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);font-size:1.125rem;line-height:1.55;color:var(--ink);background:var(--paper)}
+.wrap{max-width:860px;margin:0 auto;padding:2.5rem 1.25rem 4rem}
+.eyebrow{font-size:.85rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
+h1{font-family:var(--serif);font-size:2.4rem;line-height:1.1;color:var(--green-ink);margin:.4rem 0 1rem}
+.notice{background:#fff7e6;border:1px solid #f0d9a3;border-left:5px solid var(--gold);border-radius:8px;padding:1.1rem 1.3rem;margin:0 0 2.2rem}
+.notice b{color:var(--green-ink)}
+h2{font-family:var(--serif);font-size:1.5rem;color:var(--green-ink);margin:2.2rem 0 .3rem}
+.sub{color:var(--ink-soft);margin-bottom:1rem}
+.cards{display:grid;gap:.9rem;grid-template-columns:1fr}
+@media(min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+a.card{display:block;background:#fff;border:1px solid var(--rule);border-top:4px solid var(--green);border-radius:8px;
+  padding:1rem 1.1rem 1.05rem;text-decoration:none;color:var(--ink)}
+a.card:hover{border-top-color:var(--gold)}
+a.card b{display:block;font-family:var(--serif);font-size:1.3rem;color:var(--green-ink);margin-bottom:.25rem}
+a.card span{display:block;color:var(--ink-soft);font-size:1.05rem}
+a.card.event{border-top-color:var(--gold)}
+.tips{background:var(--sunk);border-radius:8px;padding:1.1rem 1.3rem;margin-top:2.4rem}
+.tips ul{margin:.4rem 0 0 1.2rem}
+.tips li+li{margin-top:.35rem}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.95em;background:#fff;border:1px solid var(--rule);border-radius:4px;padding:0 .3em}
+.foot{margin-top:2.5rem;color:var(--ink-soft);font-size:1rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Palma Sola Botanical Park</div>
+  <h1>The screens</h1>
+
+  <div class="notice">
+    <b>Bev — this page is only a simple demo, a proof of concept.</b> Each link below opens one screen in your
+    browser so you can see it. The real way to run the TVs will be a <b>phone controller</b>: you pick which
+    event or screen goes onto the <b>Office</b> TV or the <b>Galleria</b> TV — each on its own, or both at once.
+    That controller is coming; until then, this page is just for looking.
+  </div>
+
+  <h2>The everyday screens</h2>
+  <p class="sub">What the TVs show on a normal day — events, classes, news, the plants and wildlife, all from the Google Sheet and the catalog.</p>
+  <div class="cards">
+    <a class="card" href="screen-galleria.html"><b>Galleria screen</b><span>The main rotation — species, Right Now, events, classes, news, a few asks.</span></a>
+    <a class="card" href="screen-office.html"><b>Office screen</b><span>Same deck, tuned for the office — a little more news, volunteering and asks.</span></a>
+  </div>
+
+  <h2>Event screens</h2>
+  <p class="sub">For the day of an event, in the air-conditioned room. The visitor is already here, so these welcome them and tell them where things are.</p>
+  <div class="cards">
+    <a class="card event" href="events/screen-plantsale.html"><b>Fall Plant &amp; Garden Festival</b><span>Sunday, October 4 — welcome, where to find things, the signs, support.</span></a>
+    <a class="card event" href="events/screen-groovin.html"><b>Groovin’ in the Gardens</b><span>Sunday, October 18 — welcome, The Pops Orchestra, tonight’s practicals.</span></a>
+    <a class="card event" href="events/screen-winternights.html"><b>Winter Nights under the Lights</b><span>December 17–20 — welcome, tonight, Toys for Tots, the trees.</span></a>
+    <a class="card event" href="events/screen-ina.html"><b>In Loving Memory · Mary Ina Baden</b><span>The memorial deck from September 18.</span></a>
+  </div>
+
+  <div class="tips">
+    <b>Looking at a screen</b>
+    <ul>
+      <li>Every screen is meant to fill a TV. In a browser, press <b>F11</b> (Windows) or <b>Control-Command-F</b> (Mac) for full screen; press it again to come back.</li>
+      <li>They change slides slowly on purpose. To see a whole rotation quickly, add <code>?speed=5</code> to the end of the address.</li>
+      <li>Gold text in <i>[square brackets]</i> on an event screen is a detail still to be filled in — where the vendors are, where Santa sits. Tell Randy and it goes in.</li>
+    </ul>
+  </div>
+
+  <p class="foot">The everyday screens read the Google Sheet every ten minutes, so an edit there reaches the TV within about an hour. The event screens are fixed pages and change only when someone edits them.</p>
+</div>
+</body>
+</html>
