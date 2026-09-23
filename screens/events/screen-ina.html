@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In Loving Memory · Mary Ina Baden</title>
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   MEMORIAL SLIDE — Mary Ina Baden ("Niny"), 1940–2026
+   ----------------------------------------------------------------------------
+   NOT the regular screen.html. A separate, standalone file — deliberately
+   simple, no feed machinery. Built as a DEMO for Randy to review before
+   anything goes live; nothing here has been pushed to the office/galleria
+   kiosks yet.
+
+   Same visual language as screen.html (--ground, --gold, --paper, Playfair +
+   Source Sans) so it still reads as "this park," just hushed: long dwells,
+   slow fades, no eyebrows/badges/gold "NEW" flourishes — every device that
+   normally signals "look, something's happening!" is deliberately absent.
+
+   Swap-in plan (not done yet): save the current screen.html as
+   screen-normal.html, then this file's content replaces screen.html so the
+   kiosk (just a browser pointed at that URL) picks it up on its own with no
+   need to touch the machine. Reverting later is restoring the backup.
+
+   Rotation: WELCOME (the "home base," ~38s, roughly two-thirds of total
+   screen time given the current vignette mix) alternates with one VIGNETTE
+   (~14s, or its own `seconds` override), in a FIXED order — no randomness
+   (Randy/Bev: the randomized version wasn't working; this deck is locked
+   in, spaced and paced deliberately). See VIGNETTES below for the full,
+   in-order chart (18 as of this writing) — it plays top to bottom and
+   loops. 3 of them carry a faint park photo (welcome always does). Every photo
+   slide carries its own small bottom-left credit (name/date/license, real
+   data from photo_credits.json); the first photo vignette shown each
+   session also gets a one-time explanatory note about where the photos
+   came from.
+
+   No photo of Ina herself exists in the catalog — she was never a photo
+   contributor there — so every background here is a park scene, not her.
+   PHOTO_URL below can be swapped for a real photo of her if one turns up.
+
+   ?speed=10 (or any number) previews the whole flow fast, same convention
+   as screen.html's own ?speed= param.
+============================================================================ */
+:root{
+  --ground:#0c1a10; --ground-2:#122316;
+  --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
+  --ink-invert:rgba(253,252,248,.82); --ink-quiet:rgba(253,252,248,.58);
+  --rule:rgba(234,188,90,.34);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
+  --fade:1.8s;      /* slower than the regular screen — this one shouldn't rush */
+  --frame:2.6vmin;
+  --pad:5vmin;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--ground)}
+body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothing:antialiased}
+
+.frame{position:fixed;inset:var(--frame);border:1px solid var(--rule);pointer-events:none;z-index:40}
+
+/* Progress hairline — same device as screen-park.html's #bar (width
+   animated from 0 to 100% over the current slide's dwell time), but kept
+   quieter to match this file's hushed tone: thinner, dimmer, and the same
+   muted gold as .rule/.frame rather than a bright gradient. Still legible
+   up close if someone wants to know how long a slide has left. */
+#bar{position:fixed;left:0;bottom:0;height:1px;width:0;z-index:45;
+  background:var(--gold-deep);opacity:.55;pointer-events:none}
+.logo-mark{position:fixed;bottom:calc(var(--frame) + 1.6vmin);right:calc(var(--frame) + 1.8vmin);height:5.2vmin;width:auto;opacity:.78;z-index:41;pointer-events:none}
+
+.deck{position:fixed;inset:0}
+/* Signage, not a webpage — ChatGPT's review (relayed by Randy): "someone
+   standing 15-20 feet away" should read this comfortably, and the content
+   should fill the middle third-to-half of the screen, not float as a small
+   card. The padding-bottom > padding-top asymmetry nudges the vertically-
+   centered content block upward, per "move the text block upward slightly." */
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:2vmin 9vmin 9vmin;
+  opacity:0;transition:opacity var(--fade) ease;
+}
+.slide.on{opacity:1;z-index:1}
+.slide .bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:-1}
+/* Photo template: the dark green overlay sits OVER the photo — it must stay
+   translucent (rgba, not a solid var(--ground)) or the photo underneath
+   never shows at all. That was a real bug in the first pass: an opaque
+   veil painted on top of the (already-faint) .bg fully hid it. Fixed here —
+   one alpha value on the veil now controls "how much park shows through,"
+   rather than fighting with a second opacity on the image itself. */
+.slide .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,18,9,.35),rgba(8,18,9,.72));z-index:-1}
+
+/* ── Welcome: asymmetric split, not centered-over-photo ────────────────────
+   Ina's portrait is a tall (819×1024) source photo — full-bleed `cover` on
+   a landscape screen forced a brutal, unstable crop no Y-position tuning
+   fixed well, and centering the typography over her face literally put
+   words on top of the person being honored. ChatGPT's review (relayed by
+   Randy): "Ina's face is the visual subject. Stop putting words on her."
+
+   Fix: her photo only occupies the left ~46% of the screen (a column much
+   closer to her own portrait aspect ratio, so the crop is gentle rather
+   than extreme), the text stack lives entirely in the right ~54%, and a
+   directional (left-to-right) gradient keeps her bright/recognizable on the
+   left while darkening steeply under the text on the right — rather than
+   the uniform top-to-bottom veil every other slide uses. */
+.slide.welcome{flex-direction:row;justify-content:flex-end;align-items:center;padding:0 7vmin}
+.slide.welcome .bg{left:0;right:auto;width:46%;background-position:50% 12%}
+.slide.welcome .veil{background:linear-gradient(90deg,rgba(8,18,9,.02) 0%,rgba(8,18,9,.18) 34%,rgba(8,18,9,.84) 53%,rgba(8,18,9,.9) 100%)}
+.welcome-text{width:53%;text-align:center}
+.slide.anec .bg{filter:saturate(.55)}
+.slide.anec .veil{background:rgba(9,20,12,.89)}
+
+.name{font-family:var(--serif);font-weight:700;font-size:clamp(3.2rem,9.5vmin,7.5rem);line-height:1.06;color:var(--paper)}
+/* Welcome runs larger still — it's the "home base" slide, on screen most
+   of the time and meant to be readable across the room. */
+/* Sized down from the earlier full-width version — "Mary Ina Baden" now
+   has to fit inside a 53%-wide column, not the whole screen, without
+   wrapping awkwardly or crowding the frame edge. */
+.slide.welcome .label{font-size:2.2vmin}
+.slide.welcome .name{font-size:clamp(3rem,7.4vmin,6.2rem)}
+.slide.welcome .dates{font-size:clamp(1.5rem,3.4vmin,2.6rem);margin-top:2.6vmin}
+.slide.welcome .who{font-size:clamp(1.3rem,2.7vmin,1.9rem);margin-top:2vmin}
+.name em{font-style:italic;color:var(--gold);font-weight:400}
+.dates{margin-top:1.8vmin;font-family:var(--serif);font-style:italic;font-size:clamp(1.3rem,3.1vmin,2.5rem);color:var(--gold)}
+.rule{width:6vmin;height:1px;background:var(--gold-deep);margin:3.5vmin auto}
+.label{font-size:2.2vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:2.2vmin;font-weight:600}
+.body{max-width:82vmin;font-size:clamp(1.9rem,4.6vmin,3.6rem);line-height:1.5;color:var(--ink-invert);font-weight:300}
+.body + .body{margin-top:2.4vmin}
+/* A pull-quote line — its own visual moment, larger and in the serif, so a
+   quote (e.g. "I'm the president of your fan club") doesn't bury inside a
+   paragraph. ChatGPT: "give the quote its own visual moment." Optional —
+   only vignettes that include one get the html for it. */
+.quote{max-width:78vmin;margin-top:2.6vmin;font-family:var(--serif);font-style:italic;font-weight:400;
+  font-size:clamp(2.3rem,5.6vmin,4.4rem);line-height:1.3;color:var(--paper)}
+.who{margin-top:1.7vmin;font-family:var(--serif);font-style:italic;color:var(--ink-quiet);font-size:clamp(1.1rem,2.5vmin,1.7rem)}
+/* "— Name" byline under a guestbook quote — smaller and quieter than
+   .who, since the quote itself is already the point of the slide. */
+.attrib{margin-top:2vmin;font-size:clamp(1rem,2.2vmin,1.5rem);color:var(--gold);font-weight:600;letter-spacing:.02em}
+
+/* Guestbook notes, v2 — real cream note cards (Randy: "an interface like
+   that seems ok"), replacing the old dark-field/decorative-quote-mark
+   treatment. A literal card reads as "someone else's words" even more
+   plainly than a quote mark did, and it's what actually holds up with
+   several notes on screen together. */
+/* Side padding matches the base .slide's own 9vmin (was 6vmin — Randy:
+   the left text sat too close to the frame edge, "crammed"). */
+.pair-slide{position:absolute;inset:0;display:flex;flex-direction:row;align-items:center;padding:0 9vmin}
+.pair-left{width:42%;text-align:left;padding-right:4vmin}
+.pair-left .rule{margin-left:0;margin-right:auto}
+.pair-left .body{max-width:none;font-size:clamp(1.4rem,3.15vmin,2.4rem)}
+.pair-right{width:58%;display:flex;justify-content:center}
+
+.notes-slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vmin 6vmin}
+.notes-slide .label,.notes-slide .rule{flex:0 0 auto}
+.notes-grid{display:grid;gap:2.6vmin;width:100%;max-width:92vmin;margin-top:1vmin}
+.notes-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.notes-grid.cols-2{grid-template-columns:1fr 1fr}
+.note-card{background:var(--paper);border-radius:.8vmin;padding:2.2vmin 2.4vmin;
+  box-shadow:0 .6vmin 2vmin rgba(0,0,0,.5);display:flex;flex-direction:column;text-align:left}
+.note-card.wide{grid-column:1 / -1;max-width:58vmin;margin:0 auto}
+.nc-head{display:flex;align-items:baseline;gap:1.1vmin;margin-bottom:1.1vmin;flex-wrap:wrap}
+.nc-name{font-family:var(--sans);font-weight:700;color:#241c12;font-size:clamp(.82rem,1.6vmin,1.1rem)}
+.nc-date{font-family:var(--sans);color:rgba(36,28,18,.52);font-size:clamp(.65rem,1.2vmin,.82rem)}
+.nc-quote{font-family:var(--serif);font-style:italic;font-weight:400;color:#2a2116;
+  font-size:clamp(.92rem,1.85vmin,1.3rem);line-height:1.45}
+
+/* One card — Randy's own — carries a photo. Every other note card is
+   text-only; this is a deliberate one-off, not a new standard pattern. */
+.note-card.with-photo{padding:0;overflow:hidden}
+.note-card.with-photo .nc-photo{width:100%;height:22vmin;object-fit:cover;display:block}
+.note-card.with-photo .nc-body{padding:2.2vmin 2.4vmin}
+
+/* The one-time photo NOTE (not a byline) — a small, quiet explanatory line
+   under the first photo vignette shown each session, never repeated.
+   Deliberately far smaller than .body; it's an acknowledgment, not content. */
+.photo-note{max-width:64vmin;margin-top:2.8vmin;font-size:clamp(.8rem,1.6vmin,1.05rem);
+  line-height:1.5;color:var(--ink-quiet);font-weight:300;font-style:italic}
+
+/* Per-photo credit — bottom-left, tiny, on EVERY slide that carries a park
+   photo (welcome included). Randy: "a 'tiny' readable but 'tiny' credit
+   line... Name Date CC-BY-NC, taken here in the park Ina was such an
+   integral part of." Same photographer/license/date convention the rest of
+   the site already uses (photo_credits.json) — reused here, not reinvented. */
+.photo-cred{position:absolute;left:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 1.6vmin);
+  z-index:2;font-size:clamp(.62rem,1.1vmin,.82rem);letter-spacing:.03em;color:rgba(253,252,248,.5);
+  text-align:left;line-height:1.4}
+.photo-cred b{color:rgba(253,252,248,.68);font-weight:600}
+
+/* Quiet transition line into the QR row — deliberately smaller/softer than
+   .body and in the serif italic (like .who), so it reads as a gentle aside
+   rather than a continuation of Ina's own story. */
+.give-lead{max-width:78vmin;margin-top:2.2vmin;font-family:var(--serif);font-style:italic;
+  font-weight:400;color:var(--ink-quiet);font-size:clamp(1.3rem,3vmin,2.2rem)}
+
+.qr-row{display:flex;gap:6vmin;justify-content:center;margin-top:3vmin}
+.qr-card{display:flex;flex-direction:column;align-items:center}
+.qr-card img{width:13vmin;height:13vmin;display:block;border-radius:.5vmin;
+  box-shadow:0 0 0 .55vmin var(--paper),0 .6vmin 1.6vmin rgba(0,0,0,.45)}
+.qr-label{margin-top:1.6vmin;font-family:var(--serif);font-style:italic;font-weight:400;
+  color:var(--gold);font-size:clamp(1.15rem,2.7vmin,1.9rem)}
+/* Event flyers — shown whole, full color, no saturation/veil treatment (the
+   .anec dimming only ever targets .bg/.veil, which this slide doesn't use).
+   Deliberately NOT tied to Ina in the copy: a park-events slide doesn't need
+   a memorial angle, and forcing one risks landing corny. The plain label
+   just orients the viewer after a slide's worth of her own story. */
+.event-row{display:flex;gap:3.5vmin;justify-content:center;align-items:center;margin-top:1.5vmin}
+/* height alone drives size — no max-width cap fighting it (that was the
+   bug: 36vmin was quietly overriding the 56vmin height's own natural
+   width, so object-fit:contain shrank the actual image again inside its
+   own already-shrunk box). Let both portrait flyers use the room they
+   have; the row's own gap/centering keeps them from ever overlapping. */
+.event-card img{display:block;height:78vmin;width:auto;object-fit:contain;
+  box-shadow:0 .8vmin 2.6vmin rgba(0,0,0,.55)}
+
+/* "A Thank You In Flowers" — the one vignette here that talks to real data
+   instead of carrying its own hardcoded copy: pulls every photo tagged
+   role:"flower" from data/sources/photo_credits.json, at random, redrawn a
+   couple of times each time this slide comes up. Split screen: the tribute
+   text stays put on the left; an irregular mosaic on the right cross-fades
+   between sets. Deliberately NOT a uniform grid — see .flower-mosaic. */
+.slide .flower-slide{position:absolute;inset:0;display:flex;flex-direction:row;
+  align-items:center;padding:0 6vmin}
+.flower-left{width:38%;text-align:left;padding-right:4vmin}
+.flower-left .rule{margin-left:0;margin-right:auto}
+.flower-left .body{max-width:none;font-size:clamp(1.4rem,3.15vmin,2.4rem)}
+.flower-right{position:relative;width:62%;height:76vmin}
+
+/* Two crossfading mosaic layers can be in the DOM at once (old fading out,
+   new fading in) — same device as the main .slide/.on crossfade, just
+   scoped to this one panel instead of the whole screen. */
+.flower-mosaic{position:absolute;inset:0;display:grid;gap:.9vmin;opacity:0;
+  transition:opacity 1.8s ease}
+.flower-mosaic.on{opacity:1;z-index:1}
+.flower-tile{position:relative;overflow:hidden;border-radius:.5vmin;
+  box-shadow:0 0 0 1px rgba(234,188,90,.22)}
+.flower-tile img{width:100%;height:100%;object-fit:cover;display:block}
+/* Credit stacks Name then "MM/YYYY · Species" on one line, in that order on
+   purpose: single-line ellipsis truncation eats from the right, so on a
+   tile too small to fit everything, species drops before the date does. */
+/* Taller scrim than before, with the gradient starting higher and ramping
+   more gradually — Randy: the photographer name (the top line, sitting
+   right at the scrim's own top edge) was landing where the gradient was
+   still nearly transparent, so it read poorly against a busy photo, while
+   the peak darkness below it was more than needed. */
+.flower-cred{position:absolute;left:0;right:0;bottom:0;padding:2.8vmin 1.3vmin .9vmin;
+  background:linear-gradient(180deg,rgba(8,18,9,0) 0%,rgba(7,16,9,.32) 30%,rgba(6,14,8,.62) 65%,rgba(6,14,8,.7) 100%)}
+.fc-name{font-family:var(--serif);font-style:italic;color:var(--gold);
+  font-size:clamp(.72rem,1.4vmin,1.05rem);line-height:1.25;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-meta{margin-top:.15vmin;color:rgba(253,252,248,.7);
+  font-size:clamp(.6rem,1.1vmin,.82rem);line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+@media (max-width:900px){ .body{max-width:88vmin} }
+</style>
+</head>
+<body>
+
+<div class="frame"></div>
+<img class="logo-mark" src="images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
+<div class="deck" id="deck"></div>
+<div id="bar"></div>
+
+<script>
+/* PHOTO_URL: leave blank for the clean type-only version of the welcome
+   slide. To add a photo later, set this to a path (e.g.
+   'images/ina-baden.jpg') and the welcome slide uses it as a full-bleed
+   background automatically. */
+var PHOTO_URL = 'images/memorial-ina-baden.jpg'; // Ina herself — from her own obituary photo, smiling by the water
+
+/* WELCOME is the "home base" slide — office monitor, meant to spark
+   conversation among people milling around before/during the service.
+   Randy: "The most in rotation just say welcome... Come back to that one a
+   lot but intersperse some tasteful anecdotes." So the rotation isn't a
+   flat loop — it alternates WELCOME, anecdote, WELCOME, anecdote... built
+   below, not hardcoded as one long sequence. */
+var WELCOME = {
+  bg: PHOTO_URL || null,
+  // No credit line here on purpose — this is Ina's own photo, from the
+  // family's obituary, not a park photo from photo_credits.json. The
+  // photographer/date pair used to belong to the bottlebrush placeholder
+  // this replaced; leaving it in would have misattributed her own portrait.
+  credit: null,
+  // Wrapped in .welcome-text so it lives in the right-hand column instead
+  // of centering across the whole screen (and across her face).
+  html:
+      '<div class="welcome-text">'
+    + '<div class="label">Welcome to the Celebration of Life for</div>'
+    + '<div class="name">Mary <em>Ina</em> Baden</div>'
+    + '<div class="dates">September 21, 1940 &ndash; September 8, 2026</div>'
+    + '<div class="who">&ldquo;Niny&rdquo;</div>'
+    + '</div>'
+};
+
+/* VIGNETTES — every one sourced directly from the family obituary, per
+   ChatGPT's review (relayed by Randy). FIXED ORDER, not random: Randy/Bev
+   found the randomized weighted rotation wasn't working for them ("let's
+   not leave to chance") — this array IS the play order now, top to bottom,
+   looping back to the start when it reaches the end. See nextVignette()
+   below: it just walks this array in order. `id` on the first 12 matches
+   the standalone screen-ina-frozen-vignetteNN.html files (see below in
+   this file's header comment for the full frozen-page list) — those pages
+   render one one of these entries statically, no rotation machinery at
+   all. `seconds` overrides the default dwell; PALMA SOLA and the flower
+   mosaic run longer since there's more to read/watch on each. */
+var VIGNETTES = [
+  { id: 'vignette01', html:
+        '<div class="label">Her Hobbies</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Rose gardening. Shell collecting. Piano. Scuba diving. Horseback riding. Harley riding. Ina found plenty of ways to fill a life.</div>' },
+
+  { id: 'vignette02', html:
+        '<div class="label">&ldquo;Hey, Darlin&rsquo;&rdquo;</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina greeted people with &ldquo;Hey, Darlin&rsquo;,&rdquo; usually followed by a hug and a kiss. And she rarely let anyone leave without hearing, &ldquo;I love you.&rdquo;</div>' },
+
+  { id: 'vignette03', html:
+        '<div class="label">Elvis</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">As a teenager, Ina went to an Elvis Presley concert. Her favorite part of the story: Elvis kissed her. She told that one for the rest of her life.</div>' },
+
+  { id: 'vignette04', html:
+        '<div class="label">President of Your Fan Club</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina had a way of making people feel like they were her favorite. She often told them, &ldquo;I&rsquo;m the president of your fan club.&rdquo;</div>' },
+
+  { id: 'vignette05', bg: 'https://inaturalist-open-data.s3.amazonaws.com/photos/733826471/large.jpg', credit: { name: 'Helen Lewis', date: 'Sep 13, 2026' }, html:
+        '<div class="label">Adventure</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">She traveled to nearly every continent, scuba dived, rode horses, and took road trips on her big Harley.</div>' },
+
+  { id: 'vignette06', seconds: 22, html:
+        '<div class="pair-slide">'
+      +   '<div class="pair-left">'
+      +     '<div class="label">The Class of &rsquo;58</div>'
+      +     '<div class="rule"></div>'
+      +     '<div class="body">Ina graduated from Manatee High School in 1958 and could still recite the motto: &ldquo;Always ready, never late. We&rsquo;re the class of &rsquo;58!&rdquo;</div>'
+      +   '</div>'
+      +   '<div class="pair-right">'
+      +     '<div class="note-card" style="max-width:46vmin">'
+      +       '<div class="nc-head"><span class="nc-name">Manatee High Alumni Association</span><span class="nc-date">Sep 15, 2026</span></div>'
+      +       '<div class="nc-quote">Our sincere condolences to the family, classmates, and friends of our Manatee County High School Class of 1958 alumna.</div>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>' },
+
+  { id: 'vignette07', html:
+        '<div class="label">On the Road</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina earned her commercial driver&rsquo;s license and helped launch the Manatee Blood Bank&rsquo;s mobile donation program &mdash; then drove the bus around town herself.</div>' },
+
+  { id: 'vignette08', bg: 'photos/PSBP-00072/703871348.jpg', credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
+        '<div class="label">The Rose Garden</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina loved her roses and proudly showed off her garden. She also collected shells from around the world, and thousands of photographs from a life well traveled.</div>' },
+
+  { id: 'vignette09', html:
+        '<div class="label">The Piano</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina learned to play piano and kept playing throughout her life. It was one of many interests she carried with her through the years.</div>' },
+
+  { id: 'vignette10', html:
+        '<div class="label">Scrabble</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Even in later years, Ina remained competitive. One of her favorite pursuits was beating family and friends at online Scrabble.</div>' },
+
+  { id: 'vignette11', html:
+        '<div class="label">A Life of Service</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Nurse. Blood-bank worker. Home-health caregiver. Hospice volunteer. And, for many happy years, a familiar face here at Palma Sola Botanical Park.</div>' },
+
+  { id: 'vignette12', html:
+        '<div class="label">The White Bed</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">When someone was frightened, overwhelmed, or simply needed comfort, Ina had a standing invitation: &ldquo;Come get in the white bed.&rdquo; For generations of her family, it became a place of refuge.</div>' },
+
+  /* The one vignette that talks to real data — see FLOWER_PHOTOS / MOSAIC
+     TEMPLATES / startFlowerVignette below. */
+  { id: 'flowers', seconds: 34, special: 'flowerGrid', html:
+        '<div class="flower-slide">'
+      +   '<div class="flower-left">'
+      +     '<div class="label">A Thank You In Flowers</div>'
+      +     '<div class="rule"></div>'
+      +     '<div class="body">Ina worked hard to preserve this park for those who would come after her. Today, students, volunteers, visitors and photographers are among those carrying that work forward.</div>'
+      +     '<div class="body">Every photograph here was taken at Palma Sola, by someone who stopped to notice what was growing. Together, they make a fitting thank you to Ina.</div>'
+      +   '</div>'
+      +   '<div class="flower-right"></div>'
+      + '</div>' },
+
+  { id: 'donate', seconds: 30, bg: 'photos/PSBP-00001/681679773.jpg', credit: { name: 'Rob Carr', date: 'May 28, 2023' }, noPhotoNote: true, html:
+        '<div class="label">Palma Sola</div>'
+      + '<div class="rule"></div>'
+      + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>'
+      + '<div class="give-lead">Here&rsquo;s how to give.</div>'
+      + '<div class="qr-row">'
+      +   '<div class="qr-card"><img src="images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One&#8209;Time Gift</div></div>'
+      +   '<div class="qr-card"><img src="images/qr-membership.png" alt="QR code to choose a membership level"><div class="qr-label">Membership</div></div>'
+      + '</div>' },
+
+  /* Guestbook notes — real cream note cards, all verbatim messages left on
+     her obituary pages (legacy.com and Shannon Funeral Homes). Two
+     corrections from a fuller re-read of the source: Carol's was missing a
+     whole sentence ("Your heavenly job is just beginning...") and Ann's
+     was missing one ("She was devoted to every family member.") — both
+     restored here. Pam's still drops one broken trailing clause ("She was
+     a very to me") that's genuinely how it reads on legacy.com, not a
+     transcription error. Charlene Neal's note (addressed directly to
+     "Taylor," about someone named "Daisy") was deliberately left out — a
+     private message to a specific family member with no context for a
+     park visitor, unlike every other note here. Grouped shorter-together/
+     longer-together across two pages so no card ends up looking empty
+     next to a dense one. Extras beyond the numbered 12, not frozen pages
+     of their own (Randy: keep the 12 pure-anecdote, add these on top). */
+  { id: 'guestbook1', seconds: 22, html:
+        '<div class="notes-slide">'
+      +   '<div class="label">In Their Own Words</div>'
+      +   '<div class="rule"></div>'
+      +   '<div class="notes-grid cols-3">'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Pam Hartnagle</span><span class="nc-date">Sep 14, 2026</span></div>'
+      +       '<div class="nc-quote">I am heartbroken. Ina and I spent many times remembering the past. I will miss her more than anything.</div></div>'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Gene Gallo</span><span class="nc-date">Sep 16, 2026</span></div>'
+      +       '<div class="nc-quote">I am so sorry to hear this news. I have great memories with her. She was such a sweet person. Blessings to her family.</div></div>'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Carl Williams</span><span class="nc-date">Sep 15, 2026</span></div>'
+      +       '<div class="nc-quote">Ina, it was such a pleasure knowing you for so many years. You treated my father and myself more like family than friends. I always loved your rose garden and the wonderful fragrance.</div></div>'
+      +   '</div>'
+      + '</div>' },
+
+  { id: 'events', seconds: 20, html:
+        '<div class="label">Coming Up at the Park</div>'
+      + '<div class="rule"></div>'
+      + '<div class="event-row">'
+      +   '<div class="event-card"><img src="images/events/fallplant.jpg" alt="Fall Plant and Garden Festival flyer, Sunday October 4, 10am to 3pm"></div>'
+      +   '<div class="event-card"><img src="images/events/groovin-2026.jpg" alt="Groovin in the Gardens flyer, Sunday October 18, 4 to 6pm"></div>'
+      + '</div>' },
+
+  { id: 'guestbook2', seconds: 30, html:
+        '<div class="notes-slide">'
+      +   '<div class="label">In Their Own Words</div>'
+      +   '<div class="rule"></div>'
+      +   '<div class="notes-grid cols-2">'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Nancy Beal</span><span class="nc-date">Sep 16, 2026</span></div>'
+      +       '<div class="nc-quote">Ina was a dear friend. I will fondly remember her joyous spirit, her kindness, and her humor. Her stories about growing up in Bradenton were always a highlight of visits with her. My love and condolences to her family.</div></div>'
+      +     '<div class="note-card"><div class="nc-head"><span class="nc-name">Ann Graham</span><span class="nc-date">Sep 15, 2026</span></div>'
+      +       '<div class="nc-quote">I cannot ask for a better best friend. Ina was always there for me. We had some wonderful adventures! She was devoted to every family member. It&rsquo;s true she made everyone feel special. I will carry her in my heart forever.</div></div>'
+      +     '<div class="note-card wide"><div class="nc-head"><span class="nc-name">Carol Couchois</span><span class="nc-date">Sep 14, 2026</span></div>'
+      +       '<div class="nc-quote">Niny, Baby A, Baby B and Baby C bonded us together for life! Your earthly watch is over and I&rsquo;ll continue it as long as God wills it. Your heavenly job is just beginning and I know for a fact you&rsquo;ll watch over your family as they grieve. So many memories you&rsquo;ve given, so many as treasures to guide them!</div></div>'
+      +   '</div>'
+      + '</div>' },
+
+  /* Randy's own submission to legacy.com, added after the fact — same
+     "In Their Own Words" family as the pages above, just a solo card
+     since there's only one quote, and the one card in this whole set
+     that carries a photo (the park's only surviving photo of the actual
+     Amazon Lily, which is who this note is about). Closes the loop before
+     it wraps back around to vignette01. */
+  { id: 'randynote', seconds: 26, html:
+        '<div class="notes-slide">'
+      +   '<div class="label">In Their Own Words</div>'
+      +   '<div class="rule"></div>'
+      +   '<div class="notes-grid cols-2">'
+      +     '<div class="note-card wide with-photo">'
+      +       '<img class="nc-photo" src="photos/PSBP-00121/673659284.jpg" alt="The Baden family&rsquo;s Amazon Lily on Bird of Paradise Island">'
+      +       '<div class="nc-body">'
+      +         '<div class="nc-head"><span class="nc-name">Randall Carter</span><span class="nc-date">Sep 17, 2026</span></div>'
+      +         '<div class="nc-quote">Ina, as a volunteer here who works alongside our high school volunteers, I promise we&rsquo;ll help carry your legacy forward. We&rsquo;ll give special care to your family&rsquo;s Amazon lily on Bird of Paradise Island. It was knocked back hard by saltwater from the bay a couple of years ago, but we&rsquo;ll make it our mission to see it continue its comeback. We&rsquo;ll remember you.</div>'
+      +       '</div>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>' }
+];
+
+/* ?speed=10 previews the whole flow fast — same convention as screen.html.
+   Divides every duration (welcome, default vignette, and any vignette's own
+   `seconds` override) by this factor. */
+var SPEED = Math.max(0.1, Math.min(20, +(new URLSearchParams(location.search).get('speed') || 1) || 1));
+
+var WELCOME_SECONDS  = 38 / SPEED; // roughly two-thirds of total screen time given the current vignette mix — see loop() below
+var VIGNETTE_SECONDS = 14 / SPEED; // default; a vignette's own `seconds` overrides this
+
+/* ── The Flowers vignette: real data, not hardcoded copy ───────────────────
+   Every photo in the catalog tagged role:"flower" (i.e. primarily a flower
+   shot), pulled at runtime from the same source the rest of the site
+   publishes from. Loaded once, up front. With a fixed play order this
+   vignette's turn only comes up well after several other slides have
+   already played, so in practice the fetch has always long since finished
+   by then; startFlowerVignette() below still no-ops safely (just the left
+   text shows, no mosaic) in the unlikely case it hasn't. */
+var FLOWER_PHOTOS = [];
+fetch('data/sources/photo_credits.json').then(function(r){ return r.json(); }).then(function(d){
+  FLOWER_PHOTOS = (d.photos || []).filter(function(p){
+    return p.publish_ok && Array.isArray(p.role) && p.role.indexOf('flower') !== -1;
+  }).map(function(p){
+    // Mirrors the site's own convention (see any plant page's window.PHOTOS):
+    // a locally-mirrored file if one exists, else the iNaturalist original.
+    var src = p.filename ? ('photos/' + p.psbp_id + '/' + p.filename) : p.photo_url;
+    var date = '';
+    var m = /^(\d{4})-(\d{2})-\d{2}$/.exec(p.observed_on || '');
+    if (m) date = m[2] + '/' + m[1]; // MM/YYYY
+    return { src: src, name: p.photographer_name || p.photographer || '',
+             species: p.common_name || '', date: date };
+  }).filter(function(p){ return p.src; });
+}).catch(function(){ /* FLOWER_PHOTOS stays empty; vignette excludes itself */ });
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function shuffleCopy(arr){
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* Deliberately not a squared-off grid: each template covers a 4x3 (for 6
+   photos) or 3x3 (for 5) area with one big cell and several smaller ones of
+   mixed shape. Two variants per count so back-to-back sets don't always
+   look identical in outline, only in content. */
+var MOSAIC_TEMPLATES = {
+  6: [
+    { cols: 4, rows: 3, areas: ['a a b b', 'a a c d', 'e e c f'] },
+    { cols: 4, rows: 3, areas: ['b b a a', 'd c a a', 'f c e e'] }
+  ],
+  5: [
+    { cols: 3, rows: 3, areas: ['a a b', 'a a c', 'd e c'] },
+    { cols: 3, rows: 3, areas: ['b a a', 'c a a', 'c e d'] }
+  ]
+};
+function buildMosaicEl(picks){
+  var n = picks.length;
+  var tmpl = MOSAIC_TEMPLATES[n][Math.floor(Math.random() * MOSAIC_TEMPLATES[n].length)];
+  var el = document.createElement('div');
+  el.className = 'flower-mosaic';
+  el.style.gridTemplateColumns = 'repeat(' + tmpl.cols + ',1fr)';
+  el.style.gridTemplateRows = 'repeat(' + tmpl.rows + ',1fr)';
+  el.style.gridTemplateAreas = tmpl.areas.map(function(r){ return '"' + r + '"'; }).join(' ');
+  'abcdef'.slice(0, n).split('').forEach(function(letter, i){
+    var p = picks[i];
+    var meta = [p.date, p.species].filter(Boolean).join(' &middot; '); // date first: see .fc-meta note
+    var tile = document.createElement('div');
+    tile.className = 'flower-tile';
+    tile.style.gridArea = letter;
+    tile.innerHTML = '<img src="' + p.src + '" alt="' + escapeHtml(p.species || 'A flower in the park') + '">'
+      + '<div class="flower-cred"><div class="fc-name">' + escapeHtml(p.name) + '</div>'
+      + (meta ? '<div class="fc-meta">' + meta + '</div>' : '') + '</div>';
+    el.appendChild(tile);
+  });
+  return el;
+}
+/* Shuffled pool without replacement — module-level, not reset per showing.
+   With 98 photos across 33 photographers, resetting the shuffle every time
+   this vignette comes up would let one photo repeat across two showings
+   while dozens of others still hadn't appeared all session — the opposite
+   of the point (showing the breadth of who's participating). This instead
+   drains the WHOLE catalog once, in random order, across every showing for
+   the whole session, before any photo repeats, and only reshuffles once
+   truly exhausted. */
+var flowerPool = [], flowerCursor = 0;
+function nextFlowerPicks(n){
+  if (flowerCursor + n > flowerPool.length) { flowerPool = shuffleCopy(FLOWER_PHOTOS); flowerCursor = 0; }
+  var picks = flowerPool.slice(flowerCursor, flowerCursor + n);
+  flowerCursor += n;
+  return picks;
+}
+/* Runs for as long as this vignette is on screen: crossfades through a few
+   (SETS) random mosaics, drawn from the pool above, before the outer
+   loop() moves on to the next vignette. */
+function startFlowerVignette(slideEl, totalMs){
+  var right = slideEl && slideEl.querySelector('.flower-right');
+  if (!right || !FLOWER_PHOTOS.length) return;
+  var SETS = 3; // "a couple sets" each time this vignette comes up
+  var FADE = 1800 / SPEED;
+  var perSet = Math.max(4500 / SPEED, (totalMs - FADE) / SETS);
+  var live = null;
+  function showSet(i){
+    if (i >= SETS || !right.isConnected) return;
+    var el = buildMosaicEl(nextFlowerPicks(Math.random() < 0.5 ? 5 : 6));
+    right.appendChild(el);
+    void el.offsetWidth; // force reflow before the fade-in, same device as renderSlide()
+    var prev = live;
+    el.classList.add('on');
+    if (prev) prev.classList.remove('on');
+    live = el;
+    if (prev) (function(p){ setTimeout(function(){ p.remove(); }, FADE + 300); })(prev);
+    if (i + 1 < SETS) setTimeout(function(){ showSet(i + 1); }, perSet);
+  }
+  showSet(0);
+}
+
+/* Fixed sequence, no randomness — Randy/Bev: the randomized weighted
+   rotation "isn't working," they want a locked deck with deliberate
+   spacing and pacing, not left to chance. VIGNETTES above IS the play
+   order; this just walks it and wraps back to the start. (The old
+   shuffle-bag / earliest-deadline-first machinery that used to live here
+   is gone — with a fixed order there's nothing left to schedule.) */
+var deckIndex = -1;
+function nextVignette(){
+  deckIndex = (deckIndex + 1) % VIGNETTES.length;
+  return VIGNETTES[deckIndex];
+}
+
+var deck = document.getElementById('deck');
+var bar = document.getElementById('bar');
+var liveEl = null; // the currently-shown slide element, if any
+
+/* Same device as screen-park.html's #bar: snap width back to 0 with no
+   transition, then (next frame, so the browser registers that reset)
+   animate it to 100% linearly over the slide's actual dwell time. */
+function runBar(seconds){
+  bar.style.transition = 'none';
+  bar.style.width = '0';
+  requestAnimationFrame(function(){
+    bar.style.transition = 'width ' + seconds + 's linear';
+    bar.style.width = '100%';
+  });
+}
+
+/* A real crossfade, not a swap: the new slide is appended at opacity 0,
+   forced to reflow so the browser registers that starting state, then both
+   old-fades-out and new-fades-in fire together via the .on toggle — the
+   same device screen.html's own multi-slide deck uses, just with only ever
+   two elements in the DOM at once here instead of the whole deck. */
+function renderSlide(entry){
+  var el = document.createElement('div');
+  el.className = 'slide' + (entry.welcome ? ' welcome' : ' anec');
+  var inner = '';
+  if (entry.bg) inner += '<div class="bg" style="background-image:url(\'' + entry.bg + '\')"></div><div class="veil"></div>';
+  inner += entry.html;
+  el.innerHTML = inner;
+  deck.appendChild(el);
+  void el.offsetWidth; // force reflow before adding .on, or the transition won't fire
+
+  var prev = liveEl;
+  el.classList.add('on');
+  if (prev) prev.classList.remove('on');
+  liveEl = el;
+
+  if (prev) setTimeout(function(){ prev.remove(); }, 2200); // a bit past --fade
+}
+
+/* One-time photo credit — the first photo-carrying vignette the session
+   ever shows gets a small line appended, then never again. Per spec:
+   "somewhere early in the rotation... as a small line on the first
+   photo-based vignette." With the fixed order that's always vignette05
+   (Adventure) — still tracked with a flag rather than hardcoded there,
+   so the logic keeps working correctly if the order ever changes. */
+var photoNoteShown = false;
+var PHOTO_NOTE_HTML =
+  '<div class="photo-note">The garden photographs throughout this tribute were taken here, in the park Ina loved, by others who stopped to notice what was growing.</div>';
+
+/* Small per-photo byline, bottom-left, on every slide carrying a park
+   photo — same photographer/date/license shape the rest of the site uses.
+   Used to also repeat "Taken here in the park Ina was such an integral
+   part of" underneath every one, on top of the once-per-session
+   PHOTO_NOTE_HTML above that already explains the photos in full — once a
+   visitor has seen that, a bare name/date/license is enough; the repeated
+   line was explaining meaning that's already been established. */
+function photoCredHtml(c){
+  if (!c) return '';
+  return '<div class="photo-cred"><b>' + c.name + '</b> &middot; ' + c.date + ' &middot; CC BY-NC</div>';
+}
+
+/* Randy: welcome should dominate ("come back to that one a lot"); ChatGPT's
+   structure (relayed): welcome, one vignette (~14s, or its own override),
+   back to welcome, repeat — never two vignettes back to back. WELCOME_SECONDS
+   (38s) puts welcome at roughly two-thirds of total screen time given the
+   current vignette mix — nudged down from an original ~75–80% on request. */
+function loop(){
+  renderSlide({ welcome: true, bg: WELCOME.bg, html: WELCOME.html + photoCredHtml(WELCOME.credit) });
+  runBar(WELCOME_SECONDS);
+  setTimeout(function(){
+    var v = nextVignette();
+    var html = v.html;
+    if (v.bg && !photoNoteShown && !v.noPhotoNote) { html += PHOTO_NOTE_HTML; photoNoteShown = true; }
+    html += photoCredHtml(v.credit);
+    renderSlide({ welcome: false, bg: v.bg, html: html });
+    var dwellMs = (v.seconds ? v.seconds / SPEED : VIGNETTE_SECONDS) * 1000;
+    runBar(dwellMs / 1000);
+    if (v.special === 'flowerGrid') startFlowerVignette(liveEl, dwellMs);
+    setTimeout(loop, dwellMs);
+  }, WELCOME_SECONDS * 1000);
+}
+loop();
+</script>
+</body>
+</html>
