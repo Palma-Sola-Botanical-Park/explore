@@ -10,13 +10,28 @@
 <link rel="stylesheet" href="event-winternights.css">
 <!-- In-event deck for Winter Nights. Redesigned 2026-09-25 from Bev's actual
      flyer (winternights.jpg — NOT the -2/-3 files, which are AI mockups and
-     must never be shown as real park photography). Midnight ground, soft
-     out-of-focus bokeh instead of a fixed glow, a cranberry script line
-     echoing the flyer's red lettering, a gift-tag treatment for Toys for
-     Tots so it does not read as just another green slide. See
+     must never be shown as real park photography). A gift-tag treatment for
+     Toys for Tots so it does not read as just another green slide. See
      event-winternights.css for the theme. [Bracketed gold] text is a fact
      still to supply; a real night photo of the lit park would improve the
-     welcome/best-outside slides whenever one exists. -->
+     welcome/best-outside slides whenever one exists.
+
+     TRIALS, same day: Randy — "Dark seems tricky and less festive... try
+     different ideas... mention the trials in the mockup screens." Nothing
+     below is decided. Two kinds of trial, both openly tagged on screen:
+       - welcome-candy / welcome-emerald / welcome-gold — three different
+         dominant-color answers to "make it glitzier", same content, so he
+         can compare them running in rotation. Pick one, then delete the
+         other two welcome-* slides and fold the winner's colors into
+         event-winternights.css's real :root palette.
+       - idea-vendors / idea-crafts / idea-music / idea-santa — his own
+         thrown-out content ideas (market by the Pavilion, crafts in the
+         Serenity Garden, the high-school string ensemble, "the Pavilion
+         Gazebo is the North Pole tonight"), staged as slides so they are
+         easer to react to than a bullet list. Tagged "Idea — not confirmed"
+         (a dashed .idea-tag, deliberately unlike the solid-gold .todo,
+         which means "this is definitely happening"). Confirm or kill each
+         one, then either promote it to a real slide or delete it. -->
 </head>
 <body>
 <div class="frame"></div>
@@ -29,6 +44,12 @@
 window.SLIDES = [
   { id: 'welcome', html:
     '<div class="copy"><div class="wn-script">Palma Sola Botanical Park&rsquo;s</div><div class="wn-word">Winter Nights<em>under the Lights</em></div><ul class="lines" style="margin-top:3vmin"><li>Warm up in here, then go back out &mdash; the lights are the point.</li><li>Free admission. Donations keep the park open all year.</li><li>Four nights only, Thursday to Sunday.</li></ul></div><div class="poster"><img src="../../images/events/winternights.jpg" alt="Winter Nights under the Lights poster"></div>' },
+  { id: 'welcome-candy', html:
+    '<div class="copy"><div class="trial-tag">Trial 1 &middot; Candy Glitz</div><div class="wn-script" style="--gold:#f7d896">Palma Sola Botanical Park&rsquo;s</div><div class="wn-word" style="--gold:#f7d896">Winter Nights<em>under the Lights</em></div><ul class="lines" style="margin-top:3vmin;--gold:#f7d896"><li>Warm up in here, then go back out &mdash; the lights are the point.</li><li>Free admission. Donations keep the park open all year.</li></ul></div>' },
+  { id: 'welcome-emerald', html:
+    '<div class="copy"><div class="trial-tag">Trial 2 &middot; Emerald Sparkle</div><div class="wn-script" style="--cranberry:#e8b65a">Palma Sola Botanical Park&rsquo;s</div><div class="wn-word" style="--gold:#fdf3d8">Winter Nights<em style="color:#fdf3d8">under the Lights</em></div><ul class="lines" style="margin-top:3vmin;--gold:#fdf3d8"><li>Warm up in here, then go back out &mdash; the lights are the point.</li><li>Free admission. Donations keep the park open all year.</li></ul></div>' },
+  { id: 'welcome-gold', html:
+    '<div class="copy"><div class="trial-tag">Trial 3 &middot; Gold Glitter</div><div class="wn-script">Palma Sola Botanical Park&rsquo;s</div><div class="wn-word">Winter Nights<em>under the Lights</em></div><ul class="lines" style="margin-top:3vmin"><li>Warm up in here, then go back out &mdash; the lights are the point.</li><li>Free admission. Donations keep the park open all year.</li></ul></div>' },
   { id: 'outside', html:
     '<div class="wn-moment"><h1>The best part<br><em style="font-style:italic;color:var(--gold)">is outside.</em></h1><div class="sub">Seriously. Go look.</div><div class="sub" style="margin-top:5vmin;color:var(--ink-quiet);font-style:normal;font-size:.7em">Florida&rsquo;s version of a winter walk &mdash; no snow required.</div></div>' },
   { id: 'curve', html:
@@ -41,6 +62,14 @@ window.SLIDES = [
     '<div class="gifttag"><div class="label">Toys for Tots</div><h2>Bring a toy,<br><em>make a kid\'s December.</em></h2><div class="rule"></div><div class="body">New, unwrapped toys are being collected all four nights for Toys for Tots. The drop box is <span class="todo" style="color:var(--cranberry)">[location]</span>.</div></div>' },
   { id: 'practical', html:
     '<div class="copy"><div class="label">Good to know</div><div class="where"><div><b>Restrooms</b><span>Inside the Galleria, and the ramped building by the Pavilion</span></div><div><b>Step-free routes</b><span>The Galleria and the office both have ramps as well as stairs</span></div><div><b>Lost &amp; found</b><span class="todo">[the office / a table]</span></div><div><b>First aid</b><span class="todo">[where]</span></div></div></div>' },
+  { id: 'idea-vendors', html:
+    '<div class="copy"><div class="idea-tag">Idea &mdash; not confirmed</div><div class="label">Near the Pavilion</div><h2>A little market<br><em>under the lights.</em></h2><div class="rule"></div><div class="body">Local makers and crafters, set up in the open field by the Pavilion. Ornaments, wreaths, small gifts &mdash; the kind of thing you buy once a year, from someone you can actually talk to.</div></div>' },
+  { id: 'idea-crafts', html:
+    '<div class="copy"><div class="idea-tag">Idea &mdash; not confirmed</div><div class="label">In the Serenity Garden</div><h2>A quiet corner<br><em>for the kids.</em></h2><div class="rule"></div><div class="body">Ornament-making, paper stars, something small enough for little hands and a picnic table. Tucked into the Serenity Garden, away from the crowd by the trees.</div></div>' },
+  { id: 'idea-music', html:
+    '<div class="copy"><div class="idea-tag">Idea &mdash; not confirmed</div><div class="label">Live music</div><h2>The high school string ensemble.</h2><div class="rule"></div><div class="body">Some of the same students whose photographs are on the plant signs around the park, playing carols on the lawn. Ask them about a plant while you\'re at it.</div></div>' },
+  { id: 'idea-santa', html:
+    '<div class="copy"><div class="idea-tag">Idea &mdash; not confirmed</div><div class="label">Santa &amp; Mrs. Claus</div><h2>The North Pole<br><em>is the Pavilion Gazebo.</em></h2><div class="rule"></div><div class="body">One night a year, the gazebo gets a new name. Line up where the shade usually is.</div></div>' },
   { id: 'support', html:
     '<div class="copy"><div class="label">Free to visit, funded by you</div><h2>The lights are free.<br><em>The park runs on you.</em></h2><div class="rule"></div><div class="body">No entrance fee, no government money. Members and donors keep this park open every day of the year, lights or no lights.</div><div class="qr-row"><div class="qr-card"><img src="../../images/qr-donate-onetime.png" alt="QR code for a one-time donation"><div class="qr-label">One-time gift</div></div><div class="qr-card"><img src="../../images/qr-membership.png" alt="QR code to join as a member"><div class="qr-label">Membership</div></div></div></div>' }
 ];
