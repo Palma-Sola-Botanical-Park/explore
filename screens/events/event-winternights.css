@@ -1,35 +1,37 @@
 /* ============================================================================
    WINTER NIGHTS UNDER THE LIGHTS — theme for screen-winternights.html
    ----------------------------------------------------------------------------
-   Palette pulled from Bev's actual flyer (winternights.jpg): a nearly-black
-   photo of a lit tree, warm multicolor bokeh, a cranberry-red script line
-   ("Palma Sola Botanical Park's"), a glowing white/silver headline. Midnight,
-   not red-and-green retail Christmas — the flyer itself is closer to candlelight
-   than to a big-box store.
+   Palette: was the flyer's near-black tree photo; Randy, after living with
+   it across the whole deck, 2026-09-25: "there are still awful dark ones in
+   mine. Dreary." Base repainted with the winning trial — deep wine into
+   pine, small quiet gold light-dots — so every slide gets it, not just one
+   welcome variant. Candy Glitz (red) and Emerald Sparkle (bright green) are
+   also confirmed liked; they stay as alternate welcome-only trials below in
+   case the whole-deck base should move to one of those instead. Gold/brown
+   and the raw bright gaudy gradient are OUT — do not reintroduce.
    Loaded after event-deck.css; overrides its variables, adds slide classes.
    2026-09-25.
 ============================================================================ */
 :root{
-  --ground:#0a1410; --ground-2:#0e1c15; --bg-glow:#152a1e;
-  --gold:#e8b65a; --gold-deep:#c99a3f; --paper:#f7f2e6;
-  --ink-invert:rgba(247,242,230,.88); --ink-quiet:rgba(247,242,230,.56);
-  --rule:rgba(232,182,90,.32);
-  --cranberry:#c04a4f; --evergreen:#2f5d3c;
+  --ground:#5a1f26; --ground-2:#24503a; --bg-glow:#3a2a2e;
+  --gold:#e8c99a; --gold-deep:#c9a24a; --paper:#f7f2e6;
+  --ink-invert:rgba(247,242,230,.9); --ink-quiet:rgba(247,242,230,.62);
+  --rule:rgba(232,201,154,.34);
+  --cranberry:#d8a9ac; --evergreen:#3a6b4c;
 }
 body{background:var(--ground)}
 
-/* Soft out-of-focus string-light dots instead of a fixed gradient — very
-   slow, gentle pulses. Not literal light-string art (we have no real photo
-   of the lit park yet), just the FEELING of it. Kept slow on purpose: a
-   park screen is furniture, and flicker reads as a fault, not a decoration. */
+/* Small, quiet gold light-dots over a wine-into-pine gradient — a hint of
+   lights behind the words, not a layer competing with them. Randy: "strong
+   hints of the lights... that don't distract from the print." */
 .slide .bg{
+  position:absolute;inset:0;
   background:
-    radial-gradient(3.2vmin 3.2vmin at 12% 22%, rgba(232,182,90,.5), transparent 70%),
-    radial-gradient(2.6vmin 2.6vmin at 82% 16%, rgba(192,74,79,.42), transparent 70%),
-    radial-gradient(3vmin 3vmin at 68% 70%, rgba(232,182,90,.4), transparent 70%),
-    radial-gradient(2.4vmin 2.4vmin at 22% 78%, rgba(120,150,120,.34), transparent 70%),
-    radial-gradient(2.8vmin 2.8vmin at 92% 60%, rgba(192,74,79,.32), transparent 70%),
-    radial-gradient(140vmin 90vmin at 50% 50%, var(--bg-glow) 0%, var(--ground) 72%);
+    radial-gradient(1.8vmin 1.8vmin at 16% 20%, rgba(232,201,154,.4), transparent 70%),
+    radial-gradient(1.6vmin 1.6vmin at 80% 24%, rgba(232,201,154,.32), transparent 70%),
+    radial-gradient(1.7vmin 1.7vmin at 62% 78%, rgba(232,201,154,.34), transparent 70%),
+    radial-gradient(1.5vmin 1.5vmin at 26% 82%, rgba(232,201,154,.28), transparent 70%),
+    linear-gradient(150deg, var(--ground) 0%, #5a1f26 40%, var(--ground-2) 100%);
   animation:bokehDrift 34s ease-in-out infinite alternate;
 }
 @keyframes bokehDrift{
@@ -38,6 +40,48 @@ body{background:var(--ground)}
   100%{filter:brightness(1)}
 }
 @media (prefers-reduced-motion:reduce){ .slide .bg{animation:none} }
+
+/* Stars — Randy: "play up winter night (stars) and lights (which kinda
+   match the stars)... any glistening features would be good... a little
+   twinkling, not blinking and disturbing." Two clusters of small, crisp
+   points (sharper than the soft bokeh "lights" above, so the two read as
+   two related things — stars in the sky, lights in the tree), each cluster
+   fading gently on its OWN slow rhythm. Never fully off, never in unison —
+   that is what keeps it a twinkle and not a flash. Pure CSS, on the
+   auto-generated .bg element, so it applies to every slide for free. */
+.slide .bg::before,.slide .bg::after{
+  content:'';position:absolute;top:0;left:0;width:.3vmin;height:.3vmin;background:transparent;border-radius:50%;
+}
+.slide .bg::before{
+  box-shadow:
+    8vmin 12vmin 0 .15vmin rgba(247,242,230,.85),
+    22vmin 6vmin 0 .1vmin rgba(232,201,154,.8),
+    38vmin 18vmin 0 .12vmin rgba(247,242,230,.75),
+    58vmin 9vmin 0 .1vmin rgba(232,201,154,.8),
+    72vmin 22vmin 0 .15vmin rgba(247,242,230,.85),
+    88vmin 14vmin 0 .1vmin rgba(232,201,154,.75),
+    14vmin 62vmin 0 .12vmin rgba(247,242,230,.7),
+    46vmin 70vmin 0 .1vmin rgba(232,201,154,.7),
+    80vmin 66vmin 0 .12vmin rgba(247,242,230,.75);
+  animation:twinkleA 6s ease-in-out infinite;
+}
+.slide .bg::after{
+  box-shadow:
+    15vmin 4vmin 0 .1vmin rgba(232,201,154,.7),
+    30vmin 26vmin 0 .12vmin rgba(247,242,230,.7),
+    50vmin 15vmin 0 .1vmin rgba(232,201,154,.65),
+    66vmin 4vmin 0 .12vmin rgba(247,242,230,.75),
+    92vmin 24vmin 0 .1vmin rgba(232,201,154,.7),
+    6vmin 78vmin 0 .12vmin rgba(247,242,230,.65),
+    34vmin 84vmin 0 .1vmin rgba(232,201,154,.65),
+    64vmin 80vmin 0 .12vmin rgba(247,242,230,.7),
+    90vmin 76vmin 0 .1vmin rgba(232,201,154,.7);
+  animation:twinkleB 7.5s ease-in-out infinite;
+  animation-delay:2.4s;
+}
+@keyframes twinkleA{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes twinkleB{0%,100%{opacity:.4}50%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){ .slide .bg::before,.slide .bg::after{animation:none;opacity:.75} }
 
 /* The flyer's own two-line treatment: a small cranberry script line, then
    the glowing headline underneath it. */
