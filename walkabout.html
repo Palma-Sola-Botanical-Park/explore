@@ -491,36 +491,43 @@ async function loadPriorWalkabouts(){
     // round trips in series and the picker took the best part of fifteen seconds. Both
     // lookups per day now run together, and days run six at a time — fast enough to feel
     // instant, gentle enough not to hammer iNaturalist.
+    // ONE small request per candidate day, not two. iNaturalist's published limit is 60
+    // requests a minute, and a cold load of this page — thirty days probed twice, the
+    // day's observations, the park history — was going past it. Refused requests came
+    // back as missing days: Randy, 2026-09-24, "the walkabout seems to stop at sep 9."
+    // The v2 endpoint with a field list returns a day's 200 records in ~15 KB, which is
+    // enough to count people and same-day uploads in one go. Still tested by the pin.
     const rows=[]; let failed=0;
     const probe=async([day,n])=>{
       try{
-        const [oj,sj]=await Promise.all([
-          fetchJSONRetry("https://api.inaturalist.org/v1/observations/observers?"+
-            SCOPE+"&d1="+day+"&d2="+day),
-          fetchJSONRetry(API+"?"+SCOPE+"&d1="+day+"&d2="+day+
-            "&created_d1="+day+"&created_d2="+day+"&per_page=0")
-        ]);
-        const people=oj.total_results||0, sameDay=sj.total_results||0;
-        if(people<WALK_MIN_PEOPLE) return null;
+        const j=await fetchJSONRetry("https://api.inaturalist.org/v2/observations?"+
+          SCOPE.replace("&verifiable=any","")+"&d1="+day+"&d2="+day+
+          "&per_page=200&fields=id,location,created_at,user.login");
+        const obs=(j.results||[]).filter(inPark);
+        const people=new Set(obs.map(o=>o.user&&o.user.login).filter(Boolean)).size;
+        const sameDay=obs.filter(o=>(o.created_at||"").slice(0,10)===day).length;
+        if(obs.length<WALK_MIN_OBS||people<WALK_MIN_PEOPLE) return null;
         // Was it a walkabout, or a batch upload of older photographs? Randy, 2026-08-30:
         // "Rob did his stuff in batch uploads, not walkabouts in our sense." On a real
         // outing the records are uploaded the same day. Measured: 3 Jun 100%, 26 Aug 100%,
         // 14 Jul 100%; 14 Jun, Rob's batch, 0%.
-        if(sameDay/n < WALK_SAME_DAY) return null;
-        return {day:day,n:n,people:people};
+        if(sameDay/obs.length < WALK_SAME_DAY) return null;
+        return {day:day,n:obs.length,people:people};
       }catch(e){ failed++; return null; }   // iNaturalist refused — NOT "not a walkabout"
     };
-    for(let i=0;i<candidates.length;i+=6){
-      const batch=await Promise.all(candidates.slice(i,i+6).map(probe));
+    for(let i=0;i<candidates.length;i+=4){
+      const batch=await Promise.all(candidates.slice(i,i+4).map(probe));
       batch.forEach(r=>{ if(r) rows.push(r); });
     }
     done();
+    // A day whose probe was refused is simply missing from `rows`. Showing that list
+    // would drop the day; caching it would hide the day for twelve hours. So with a
+    // refusal, keep whatever was on screen (yesterday's cached list, or the incomplete
+    // one if there was nothing) and remember nothing.
+    if(failed && cached) return;
     const keep=sel.value;
     fillPicker(rows);
     if(keep) sel.value=keep;
-    // A day whose probe was refused is simply missing from `rows`. Caching that list
-    // would hide the day for twelve hours — Randy, 2026-09-24: "the walkabout seems to
-    // stop at sep 9." So an incomplete list is shown but never remembered.
     if(!failed) cacheSet("walks",rows);
   }catch(e){ done(); }
 }
