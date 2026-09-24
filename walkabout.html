@@ -915,11 +915,15 @@ function drawMap(obs){
     if(lat==null||isNaN(lat)||lng==null||isNaN(lng)) return;
     if(lat<BOUNDS.s-0.002||lat>BOUNDS.n+0.002||lng<BOUNDS.w-0.002||lng>BOUNDS.e+0.002){offmap++;return;}
     const a=o.positional_accuracy;
-    const col=o.obscured?"#8e9c90":(typeof a!=="number"?"#8e9c90":a<=10?"#2d6a35":a<=30?"#c5922a":"#9a4a24");
+    // Colors picked to read against SATELLITE imagery, not the page — the old muted green/gold/rust
+    // were close enough to tree canopy and bare dirt to nearly vanish. Randy, 2026-09-25: "can hardly
+    // see them now, i really want to see the red circles to make a point to people." Bumped ring
+    // opacity too; a ring at 9% fill and 50% stroke was barely a ring at all.
+    const col=o.obscured?"#6b7280":(typeof a!=="number"?"#6b7280":a<=10?"#16a34a":a<=30?"#f5a623":"#e0261f");
     if(typeof a==="number"&&a>3&&a<=120)
-      L.circle([lat,lng],{radius:a,color:col,weight:1,opacity:.5,fillColor:col,
-        fillOpacity:.09,interactive:false}).addTo(LAYER);
-    L.circleMarker([lat,lng],{radius:6,color:"#faf8f3",weight:2,fillColor:col,fillOpacity:.95})
+      L.circle([lat,lng],{radius:a,color:col,weight:2,opacity:.85,fillColor:col,
+        fillOpacity:.18,interactive:false}).addTo(LAYER);
+    L.circleMarker([lat,lng],{radius:7,color:"#faf8f3",weight:2.5,fillColor:col,fillOpacity:.95})
       .bindPopup('<b>'+esc(nameOf(o._taxon||o.taxon))+'</b>'+
         (((o._taxon||o.taxon)||{}).name&&((o._taxon||o.taxon)||{}).preferred_common_name?
           '<div class="sci">'+esc((o._taxon||o.taxon).name)+'</div>':'')+
