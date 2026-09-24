@@ -378,40 +378,29 @@ def get_overview_data():
     def analyze_kingdom(species_list, required_fields, sci_field):
         """sci_field: 'botanical_name' for plants, 'scientific_name' for wildlife."""
         by_status = {}
-        attention = []
+        in_progress = []
 
         for sp in species_list:
             sid = sp.get("id", "???")
             status = sp.get("status", "unknown")
             by_status.setdefault(status, []).append(sid)
 
-            # Attention checks for spotted species
+            # The queue: EVERY spotted species, nothing about what it lacks. Randy,
+            # 2026-09-24: "just list all the plants in spotted there — and NOT focus on
+            # what is missing... the number listed should match the chart above it."
+            # The missing-pieces detail lives on the Preview & Publish tab.
             if status == "spotted":
-                issues = []
-
-                if sid not in hero_ids:
-                    issues.append("No hero photo")
-                elif not _hero_on_disk(sid):
-                    issues.append("Hero not on disk")
-
-                missing = _check_required_fields(sp, required_fields)
-                if missing:
-                    issues.append(f"Missing: {', '.join(missing)}")
-
-                if issues:
-                    attention.append({
-                        "id": sid,
-                        "name": sp.get("common_name", sid),
-                        "scientific": sp.get(sci_field, ""),
-                        "status": status,
-                        "issues": issues,
-                    })
+                in_progress.append({
+                    "id": sid,
+                    "name": sp.get("common_name", sid),
+                    "scientific": sp.get(sci_field, ""),
+                })
 
         status_counts = {k: len(v) for k, v in by_status.items()}
         return {
             "total": len(species_list),
             "by_status": status_counts,
-            "attention": sorted(attention, key=lambda x: x["id"]),
+            "in_progress": sorted(in_progress, key=lambda x: x["id"]),
         }
 
     # Photographer analysis
@@ -1843,7 +1832,7 @@ def handle_api_overview(params):
         import traceback
         print(f"[WARN] overview computation failed, returning empty: {e}")
         traceback.print_exc()
-        empty_kingdom = {"total": 0, "by_status": {}, "attention": []}
+        empty_kingdom = {"total": 0, "by_status": {}, "in_progress": []}
         return {
             "plants": dict(empty_kingdom),
             "wildlife": dict(empty_kingdom),
@@ -4148,6 +4137,11 @@ main {
     color: var(--gold);
     font-size: 12px;
 }
+.attention-sci {
+    color: var(--gray-600);
+    font-style: italic;
+    font-size: 13px;
+}
 .attention-empty {
     color: var(--gray-400);
     font-style: italic;
@@ -5729,22 +5723,17 @@ def render_overview():
         <!-- Attention items -->
         <div class="grid-2">
             <div class="card">
-                <h2>🌱 Plants in progress (spotted)</h2>
-                <p class="attention-intro">Spotted species still being prepped for publish. Missing pieces here are expected — this is the to-do list before they go live.</p>
+                <h2>🌱 Plants in progress</h2>
+                <p class="attention-intro">Every spotted plant — the queue between research and a published page.</p>
                 <div id="plants-attention"></div>
             </div>
             <div class="card">
-                <h2>🦎 Wildlife in progress (spotted)</h2>
-                <p class="attention-intro">Spotted species still being prepped for publish. Missing pieces here are expected — this is the to-do list before they go live.</p>
+                <h2>🦎 Wildlife in progress</h2>
+                <p class="attention-intro">Every spotted animal — the queue between research and a published page.</p>
                 <div id="wildlife-attention"></div>
             </div>
         </div>
 
-        <!-- Photographers -->
-        <div class="card">
-            <h2>📸 Photographer Registry</h2>
-            <div id="photog-status"></div>
-        </div>
     </div>
 
     <script>
@@ -5811,12 +5800,11 @@ def render_overview():
         renderFunnel('plants-funnel-body', data.plants);
         renderFunnel('wildlife-funnel-body', data.wildlife);
 
-        // Attention
-        renderAttention('plants-attention', data.plants.attention);
-        renderAttention('wildlife-attention', data.wildlife.attention);
-
-        // Photographers
-        renderPhotographers(data.photographers);
+        // The queues
+        renderAttention('plants-attention', data.plants.in_progress);
+        renderAttention('wildlife-attention', data.wildlife.in_progress);
+        // The Photographer Registry card was removed 2026-09-24 (Randy: "duplicate,
+        // unneeded here at overview"); the Photos tab is where handles get resolved.
     }
 
     function renderFunnel(containerId, kingdomData) {
@@ -5889,44 +5877,20 @@ def render_overview():
     function renderAttention(containerId, items) {
         const el = document.getElementById(containerId);
         if (!items || items.length === 0) {
-            el.innerHTML = '<div class="attention-empty">All spotted species are publish-ready — nothing outstanding.</div>';
+            el.innerHTML = '<div class="attention-empty">Nothing in the queue.</div>';
             return;
         }
+        // A plain list: id, common name, scientific name. Every row is spotted, so no
+        // chip; what each one still lacks is the Preview & Publish tab's business.
         let html = '';
         for (const item of items) {
-            const st = (item.status || 'spotted').toLowerCase();
-            const stLabel = st === 'html' ? 'Published' : st.charAt(0).toUpperCase() + st.slice(1);
             html += `
                 <div class="attention-item">
                     <span class="attention-id">${item.id}</span>
                     <span class="attention-name">${item.name}</span>
-                    <span class="status-pill ${st}">${stLabel}</span>
-                    <span class="attention-issues">${item.issues.join(' · ')}</span>
+                    <span class="attention-sci">${item.scientific || ''}</span>
                 </div>
             `;
-        }
-        el.innerHTML = html;
-    }
-
-    function renderPhotographers(photog) {
-        const el = document.getElementById('photog-status');
-        let html = `<div style="margin-bottom: 10px; font-size: 13px;">
-            <strong>${photog.resolved}</strong> of <strong>${photog.total_logins}</strong>
-            photographer handles resolved to real names
-        </div>`;
-
-        if (photog.unresolved.length > 0) {
-            html += '<div style="margin-top: 8px;">';
-            html += '<span style="font-size: 12px; color: var(--gray-600); margin-right: 6px;">Unresolved:</span>';
-            for (const handle of photog.unresolved) {
-                html += `<span class="photog-unresolved">${handle}</span> `;
-            }
-            html += '</div>';
-            html += `<div style="margin-top: 8px; font-size: 12px; color: var(--gray-400);">
-                Add real names in <code>data/sources/photographer_names.json</code>, then propagate.
-            </div>`;
-        } else {
-            html += '<div class="photog-resolved">All handles resolved ✓</div>';
         }
         el.innerHTML = html;
     }
