@@ -89,15 +89,84 @@ RESEARCH_JSON      = os.path.join(REPO, "data", "sources", "research.json")
 
 # ── iNaturalist triage config ──────────────────────────────────────────────
 # Project slug from the URL: inaturalist.org/projects/<THIS-PART>
-# iNat accepts the slug directly as the project_id query parameter.
-# Override with the INAT_PROJECT_ID env var if needed.
+# Kept for reference and env compatibility — no query in this file is scoped
+# by the project any more. See INAT_SCOPE below.
 INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
 
-# ── The observer roster — the fallback when the project cannot see a species ──
-# A project query is scoped by PLACE, and iNaturalist obscures the coordinates of
-# threatened taxa: the public pin lands ~20 km away, so the observation is not a
-# project member and a normal scan returns ZERO. Measured 2026-09-01: 20 published
-# or spotted species are invisible this way, 13 of them palms.
+# ── The park's own search: Randy's boundary, tested against the PIN alone ──
+# Decided 2026-09-23. The iNat project is a collection project with a place
+# rule, and iNat applies that rule to the whole accuracy circle: an observation
+# pinned inside the park with a ±200 m circle is not a member. On the 23 Sep
+# walkabout that dropped 21 of one observer's 44 records — every bird, dragonfly
+# and butterfly she shot on a long lens — and with them eight species the park
+# had never recorded. Randy: "yes i want my polygon but without the gps
+# accuracy issue."
+#
+# So: ask iNat for the boundary's RECTANGLE (a rectangle typed into a query
+# uses the pin, full stop), then keep only pins inside the polygon Randy drew
+# for the project. The polygon's chopped north-west corner matters: it cuts
+# out the preserve entrance across 99th St, where 396 pins and ~95 species
+# that are not the park's sit inside the plain rectangle.
+#
+# PARK_POLYGON is the project's own boundary (inaturalist.org/places/233156),
+# copied verbatim, (lng, lat) pairs. walkabout.html carries the SAME list, so
+# the page and the app can never disagree about what counts as "in the park".
+# If the boundary is ever redrawn on iNat, update both.
+#
+# verifiable=any is REQUIRED. A planted collection is nearly all cultivated,
+# and cultivated is casual grade, which the default view hides.
+#
+# What this still cannot see: OBSCURED observations. Their public pin is
+# scattered up to ~20 km away, so no location query returns them. The observer
+# roster below is the route for those.
+PARK_POLYGON = [
+    (-82.661275, 27.512191),
+    (-82.658079, 27.512198),
+    (-82.658107, 27.514825),
+    (-82.660644, 27.514828),
+    (-82.661133, 27.514130),
+    (-82.661132, 27.513123),
+]
+PARK_BBOX = {   # the rectangle round the polygon — what iNat is actually asked
+    "swlat": min(p[1] for p in PARK_POLYGON), "nelat": max(p[1] for p in PARK_POLYGON),
+    "swlng": min(p[0] for p in PARK_POLYGON), "nelng": max(p[0] for p in PARK_POLYGON),
+}
+INAT_SCOPE = (f"nelat={PARK_BBOX['nelat']}&nelng={PARK_BBOX['nelng']}"
+              f"&swlat={PARK_BBOX['swlat']}&swlng={PARK_BBOX['swlng']}"
+              "&verifiable=any")
+
+
+def _in_park(obs):
+    """True if the observation's public pin is inside PARK_POLYGON.
+
+    Takes a full v1 record (geojson.coordinates or location "lat,lng") or one
+    of the light v2 records from _park_observations_lite(). No pin → False:
+    a record with no coordinates cannot be placed in the park."""
+    lng = lat = None
+    geo = (obs.get("geojson") or {}).get("coordinates")
+    if geo:
+        lng, lat = geo
+    elif obs.get("location"):
+        try:
+            lat, lng = (float(v) for v in str(obs["location"]).split(","))
+        except ValueError:
+            return False
+    if lng is None:
+        return False
+    inside, j = False, len(PARK_POLYGON) - 1
+    for i in range(len(PARK_POLYGON)):
+        xi, yi = PARK_POLYGON[i]
+        xj, yj = PARK_POLYGON[j]
+        if (yi > lat) != (yj > lat) and lng < (xj - xi) * (lat - yi) / (yj - yi) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+# ── The observer roster — the fallback when the park cannot see a species ──
+# iNaturalist obscures the coordinates of threatened taxa: the public pin lands
+# ~20 km away, so the observation falls outside the park and a normal scan
+# returns ZERO. Measured 2026-09-01: 20 published or spotted species are
+# invisible this way, 13 of them palms.
 #
 # Widening the park boundary does NOT fix it — obscuring ignores the boundary.
 # The only way to reach those photos is to ask by OBSERVER instead of by place.
@@ -132,18 +201,9 @@ PARK_CELL_LAT = 27.4   # cell holding 27.5137, -82.6600
 PARK_CELL_LNG = -82.8
 
 # Curated iNat place drawn for the park boundary (inaturalist.org/places/233156).
-# RETAINED FOR REFERENCE ONLY — the photo scan and intake check query the
-# PROJECT (project_id), not this place, because project membership includes
-# obscured observations whose public pin falls outside the boundary (a place
-# query silently drops those). Kept here in case a future place-based helper
-# wants it. Override with INAT_PLACE_ID if the place ever changes.
+# RETAINED FOR REFERENCE ONLY — a place query applies the same accuracy-circle
+# rule as the project, so it drops the same records. Nothing queries it.
 INAT_PLACE_ID = os.environ.get("INAT_PLACE_ID", "233156")
-
-# Park centroid — kept for reference / non-scan geographic helpers only.
-# NOTE: no longer used for photo scanning (see _inat_observations).
-PARK_LAT  = 27.497
-PARK_LNG  = -82.619
-PARK_RADIUS_KM = 0.5   # ~500m covers the whole park with margin
 
 # Scan cache lives OUTSIDE the repo — throwaway, re-fetchable iNat results.
 TRIAGE_WORKSPACE = os.path.expanduser("~/Documents/PSBP_photo_workspace")
@@ -1097,19 +1157,22 @@ _ROSTER_CACHE = None
 
 
 def _project_observers():
-    """The project's observers, most observations first, capped at ROSTER_MAX.
-    Fetched once per process. PSBP_OBSERVERS overrides it entirely."""
+    """The park's observers (everyone with a record in the park's rectangle),
+    most observations first, capped at ROSTER_MAX. Fetched once per process.
+    PSBP_OBSERVERS overrides it entirely. The rectangle, not the polygon: the
+    observers endpoint cannot be filtered by pin, and the roster only needs to
+    be a list of likely names — every record it yields is still tested."""
     global _ROSTER_CACHE
     if PARK_OBSERVERS:
         return PARK_OBSERVERS
     if _ROSTER_CACHE is None:
         data = _inat_get("https://api.inaturalist.org/v1/observations/observers"
-                         f"?project_id={INAT_PROJECT_ID}&per_page={ROSTER_MAX}")
+                         f"?{INAT_SCOPE}&per_page={ROSTER_MAX}")
         rows = (data or {}).get("results", [])
         _ROSTER_CACHE = [r["user"]["login"] for r in rows
                          if r.get("user", {}).get("login")]
         if not _ROSTER_CACHE:
-            print("    [roster] could not fetch the project observer list")
+            print("    [roster] could not fetch the park observer list")
     return _ROSTER_CACHE
 
 
@@ -1291,27 +1354,18 @@ def _inat_observations(taxon_id, exclude_taxa=None):
 
     Set it per species via `photo_exclude_taxa` on the signage record.
 
-    Queries the iNat PROJECT (project_id), not a place polygon or a lat/lng
-    radius, because project membership is the most complete single key available
-    — a raw place query drops more.
+    Queries the park's RECTANGLE (INAT_SCOPE) and keeps the pins inside
+    PARK_POLYGON — not the iNat project. Changed 2026-09-23: the project applies
+    its place rule to the whole accuracy circle, so a long-lens bird or butterfly
+    pinned inside the park with a ±200 m circle was never a member. This test
+    uses the pin alone.
 
-    ⚠ CORRECTED 2026-08-31. An earlier version of this note claimed the project
-    returns OBSCURED observations as members regardless of where their public pin
-    lands, citing a Foxtail Palm that project_id found and place_id did not. That
-    generalised from one case and is WRONG. A collection project applies its place
-    rule to the PUBLIC coordinate, so an obscured observation whose pin is
-    scattered kilometres away fails the rule and is never a member.
-
-    Measured that day: of Ruby Meador's 104 observations, 95 are in the project.
-    Three of the nine outside are obscured, with public pins 5.1 km, 13.4 km and
-    13.8 km from the park — two of them palms from her 15 July palm walk. And
-    Veitchia arecina (Montgomery Palm), which the park grows and has pinned at Big
-    Pond, returns ZERO observations both in the project and in a wide box around
-    it.
-
-    So: obscured observations are not merely coordinate-hidden, they are ABSENT.
-    They cannot be counted, listed, or have photos pulled. No boundary change
-    recovers them. Two routes exist, and neither is a code change here:
+    OBSCURED observations are still absent from either query. Their public pin
+    is scattered kilometres away (measured 2026-08-31: of Ruby Meador's 104
+    observations, three obscured ones had pins 5.1, 13.4 and 13.8 km off; and
+    Veitchia arecina, which the park grows at Big Pond, returns ZERO anywhere).
+    They cannot be counted, listed, or have photos pulled by location. Routes:
+      • The observer-roster fallback below
       • Appeal the obscuring — see park-library INAT_OBSCURING_APPEALS.md
       • Set INAT_TOKEN (below) to an account trusted with the project's hidden
         coordinates, which makes them visible to this function
@@ -1330,17 +1384,17 @@ def _inat_observations(taxon_id, exclude_taxa=None):
         ids = ",".join(str(t) for t in exclude_taxa if t)
         if ids:
             excl = f"&without_taxon_id={ids}"
-    out, page, project_ok = [], 1, False
+    out, page, scope_ok = [], 1, False
     while True:
         url = ("https://api.inaturalist.org/v1/observations"
-               f"?taxon_id={taxon_id}&project_id={INAT_PROJECT_ID}"
-               f"&per_page=200&page={page}&verifiable=any"
+               f"?taxon_id={taxon_id}&{INAT_SCOPE}"
+               f"&per_page=200&page={page}"
                f"{excl}"
                "&order=desc&order_by=created_at")
         data = _inat_get(url)
         if not data:
             break
-        project_ok = True
+        scope_ok = True
         results = data.get("results", [])
         out.extend(results)
         if len(results) < 200:
@@ -1349,9 +1403,11 @@ def _inat_observations(taxon_id, exclude_taxa=None):
         if page > 10:
             break
         time.sleep(API_DELAY)
+    # The rectangle is only what iNat can be asked for; the boundary is the polygon.
+    out = [o for o in out if _in_park(o)]
 
-    # ── Fallback: obscured taxa are invisible to a project query ──────────────
-    # If the project returned nothing, ask the observer roster for the same
+    # ── Fallback: obscured taxa are invisible to a location query ─────────────
+    # If the park returned nothing, ask the observer roster for the same
     # taxon. Only fires on an empty result, so normal species cost one query and
     # behave exactly as before. Photos found this way land in the same scan
     # cache and go through the same "View New Only" review — nothing is
@@ -1360,10 +1416,10 @@ def _inat_observations(taxon_id, exclude_taxa=None):
     # One query for the whole roster — iNat takes user_login as a comma-
     # separated list — so an obscured species costs one extra request, not
     # one per observer. (Per-observer looping tripped the 429 rate limit on
-    # the second species; verified 2026-09-09.) A failed project query does
+    # the second species; verified 2026-09-09.) A failed rectangle query does
     # NOT trigger this: a rate-limited Royal Poinciana must not be mistaken
     # for an obscured one.
-    roster = _project_observers() if (project_ok and not out) else []
+    roster = _project_observers() if (scope_ok and not out) else []
     if roster:
         via, elsewhere, page = [], 0, 1
         while page <= 5:
@@ -1377,7 +1433,13 @@ def _inat_observations(taxon_id, exclude_taxa=None):
                 break
             results = data.get("results", [])
             for o in results:
-                if not _in_park_cell(o):
+                # This route exists for OBSCURED records, whose pin is scrambled
+                # within the park's 0.2° cell. A record with an honest pin must
+                # still be inside the polygon — otherwise a species seen only at
+                # the preserve entrance would come back through the roster after
+                # the boundary had just excluded it.
+                ok = (_in_park_cell(o) if o.get("obscured") else _in_park(o))
+                if not ok:
                     elsewhere += 1
                     continue
                 out.append(o)
@@ -1389,9 +1451,9 @@ def _inat_observations(taxon_id, exclude_taxa=None):
             page += 1
             time.sleep(API_DELAY)
         if out or elsewhere:
-            print(f"    [roster] project found 0 for taxon {taxon_id}; "
+            print(f"    [roster] park found 0 for taxon {taxon_id}; "
                   f"{len(out)} observation(s) via {', '.join(via) or 'nobody'}"
-                  + (f"; {elsewhere} skipped, pin outside the park's cell"
+                  + (f"; {elsewhere} skipped, pin outside the park"
                      if elsewhere else ""))
     return out
 
@@ -1487,8 +1549,6 @@ def _scan_species(kingdom, species, decided=None, registry_ids=None):
     decided/registry_ids are optional pre-loaded sets (used by scan-all so the
     new-candidate count doesn't re-read JSON for every species).
     """
-    if not INAT_PROJECT_ID:
-        return {"error": "INAT_PROJECT_ID is not set."}
     taxon_id = species.get("inat_taxon_id")
     pinned = _photo_observations(species)
     if not taxon_id and not pinned:
@@ -1804,51 +1864,111 @@ def handle_api_species_list(params):
 # tab gets built out. The route is already wired up.
 
 # ╔══════════════════════════════════════════════════════════════════════════╗
-# ║  iNAT DISCOVERY — scan the project, diff against everything we track,      ║
+# ║  iNAT DISCOVERY — sweep the park, diff against everything we track,        ║
 # ║  surface brand-new taxa, and seed them into research.json.                 ║
 # ║                                                                            ║
-# ║  Scan uses the species_counts endpoint (one cheap paginated call returns   ║
-# ║  every distinct taxon in the project with its observation count). The      ║
-# ║  join key is inat_taxon_id, falling back to scientific name.               ║
+# ║  Scan sweeps every observation pinned inside PARK_POLYGON (small v2       ║
+# ║  records) and counts leaf taxa locally, the way iNat's species_counts     ║
+# ║  would — that endpoint cannot be filtered by a polygon. The join key is   ║
+# ║  inat_taxon_id, falling back to scientific name.                           ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
+_LITE_CACHE = {"at": 0.0, "rows": None}
+_LITE_TTL = 600   # seconds — Discover and the cultivated audit share one sweep
+
+
+def _park_observations_lite():
+    """Every observation pinned inside the park, as small records.
+
+    iNat's species_counts endpoint cannot be filtered by a polygon, and the full
+    v1 records are ~65 KB each — 2,400 of them is too much for a button click.
+    The v2 endpoint takes a field list, so one page of 200 is ~74 KB and the
+    whole park is about thirteen requests. Each record: id, location, captive,
+    taxon{id, name, preferred_common_name, rank, iconic_taxon_name,
+    default_photo{square_url}}. Asked for the rectangle, kept to the polygon.
+
+    v2 refuses verifiable=any; it simply returns everything when the parameter
+    is left off (checked 2026-09-23: 2,590 both ways for the park's rectangle).
+    """
+    if _LITE_CACHE["rows"] is not None and time.time() - _LITE_CACHE["at"] < _LITE_TTL:
+        return _LITE_CACHE["rows"]
+    scope = INAT_SCOPE.replace("&verifiable=any", "")
+    fields = ("id,location,captive,taxon.id,taxon.name,taxon.preferred_common_name,"
+              "taxon.rank,taxon.iconic_taxon_name,taxon.ancestor_ids,"
+              "taxon.default_photo.square_url")
+    def get_page(page):
+        return _inat_get("https://api.inaturalist.org/v2/observations"
+                         f"?{scope}&per_page=200&page={page}&order_by=id&order=asc"
+                         f"&fields={fields}")
+    first = get_page(1)
+    if not first:
+        return []
+    pages_all = [first]
+    # Each page takes iNat ~2 s to build, so a dozen in series was half a
+    # minute. Four at a time is under ten seconds and a dozen requests is far
+    # inside iNat's ~60-a-minute limit. 50 pages = iNat's own 10k ceiling.
+    n_pages = min(50, -(-int(first.get("total_results", 0)) // 200))
+    if n_pages > 1:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            pages_all.extend(pool.map(get_page, range(2, n_pages + 1)))
+    out = []
+    for data in pages_all:
+        if not data:
+            print("    [park sweep] a page failed — this sweep is incomplete")
+            continue
+        out.extend(o for o in data.get("results", []) if _in_park(o))
+    if out and all(pages_all):
+        _LITE_CACHE.update(at=time.time(), rows=out)
+    return out
+
+
+def _leaf_taxa(rows):
+    """The taxon ids in `rows` that are not an ancestor of another taxon in
+    `rows` — iNat's species_counts rule. A grass logged as "Poaceae" is not a
+    separate find when someone else logged a specific grass; it is the same
+    park, seen less closely. Without this, Discover listed 176 NEW instead of
+    the 62 that survive (measured 2026-09-23)."""
+    observed, ancestors = set(), set()
+    for o in rows:
+        t = o.get("taxon") or {}
+        if t.get("id"):
+            observed.add(t["id"])
+            # iNat lists the taxon ITSELF last in its own ancestor_ids.
+            ancestors.update(a for a in (t.get("ancestor_ids") or []) if a != t["id"])
+    return observed - ancestors
+
+
 def _inat_species_counts():
-    """All distinct taxa observed in the PSBP project, with counts.
+    """All distinct taxa observed inside the park, with counts.
 
     Returns a list of dicts: taxon_id, scientific_name, common_name, rank,
-    iconic (Plantae/Aves/...), obs_count, default_photo. Paginated; per_page
-    maxes at 500 on this endpoint. verifiable=any keeps casual/cultivated in,
-    matching _inat_observations' philosophy (a botanical garden is mostly
-    casual-grade plantings).
+    iconic (Plantae/Aves/...), obs_count, default_photo — the shape iNat's
+    species_counts endpoint gave before 2026-09-23, now counted locally from
+    _park_observations_lite() so the polygon applies. Casual/cultivated stay in
+    (a botanical garden is mostly casual-grade plantings).
     """
-    out, page = [], 1
-    while True:
-        url = ("https://api.inaturalist.org/v1/observations/species_counts"
-               f"?project_id={INAT_PROJECT_ID}&verifiable=any"
-               f"&per_page=500&page={page}")
-        data = _inat_get(url)
-        if not data:
-            break
-        results = data.get("results", [])
-        for r in results:
-            t = r.get("taxon") or {}
-            out.append({
-                "taxon_id":      t.get("id"),
+    rows = _park_observations_lite()
+    leaves = _leaf_taxa(rows)
+    by_taxon = {}
+    for o in rows:
+        t = o.get("taxon") or {}
+        tid = t.get("id")
+        if not tid or tid not in leaves:
+            continue
+        row = by_taxon.get(tid)
+        if row is None:
+            row = by_taxon[tid] = {
+                "taxon_id":      tid,
                 "scientific_name": t.get("name", "") or "",
                 "common_name":   t.get("preferred_common_name", "") or "",
                 "rank":          t.get("rank", "") or "",
                 "iconic":        t.get("iconic_taxon_name", "") or "",
-                "obs_count":     r.get("count", 0),
+                "obs_count":     0,
                 "default_photo": ((t.get("default_photo") or {}).get("square_url")) or "",
-            })
-        total = data.get("total_results", len(out))
-        if len(results) < 500 or len(out) >= total:
-            break
-        page += 1
-        if page > 20:   # 10k taxa ceiling — far beyond any park
-            break
-        time.sleep(API_DELAY)
-    return out
+            }
+        row["obs_count"] += 1
+    return sorted(by_taxon.values(), key=lambda r: -r["obs_count"])
 
 
 def _known_taxa_index():
@@ -1972,12 +2092,12 @@ def _next_psbp_id(kingdom):
 
 
 def discover_reconcile():
-    """Scan the project and bucket every observed taxon as NEW or tracked."""
+    """Scan the park and bucket every observed taxon as NEW or tracked."""
     counts = _inat_species_counts()
     if not counts:
         return {"ok": False,
                 "error": "No taxa returned from iNaturalist — offline, or the "
-                         "project slug is wrong. Check INAT_PROJECT_ID."}
+                         "park boundary is wrong. Check PARK_POLYGON."}
     by_taxon, by_sci = _known_taxa_index()
 
     new_items, ready_items, pipeline_items = [], [], []
@@ -2250,26 +2370,32 @@ def handle_api_intake_set_status(params):
 def handle_api_intake_inat_check(params):
     """GET /api/intake/inat-check?taxon_id=12345 — observation quality from iNat.
 
-    Hits the iNat API for PSBP-project observations of this taxon and returns
-    a summary: total obs, quality grades, unique observers, latest date.
-    Helps Randy judge whether an iNat-only sighting is a fluke or solid.
+    Hits the iNat API for observations of this taxon inside the park and
+    returns a summary: total obs, quality grades, unique observers, latest
+    date. Helps Randy judge whether an iNat-only sighting is a fluke or solid.
     """
     taxon_id = params.get("taxon_id", [""])[0]
     if not taxon_id:
         return {"error": "Missing taxon_id"}
 
-    # Query the PROJECT (membership), not a place/radius — matches the photo
-    # scan and includes obscured + casual-grade observations that a place query
-    # would drop (their public pin lands outside the park boundary).
-    url = ("https://api.inaturalist.org/v1/observations"
-           f"?taxon_id={taxon_id}&project_id={INAT_PROJECT_ID}&per_page=200"
-           "&verifiable=any&order=desc&order_by=created_at")
-    data = _inat_get(url)
-    if not data:
-        return {"error": "iNat API request failed"}
-
-    results = data.get("results", [])
-    total = data.get("total_results", len(results))
+    # Same rectangle-then-polygon as the photo scan and Discover, so the three
+    # never disagree. Up to three pages; no park species has 600 records.
+    results, page = [], 1
+    while page <= 3:
+        url = ("https://api.inaturalist.org/v1/observations"
+               f"?taxon_id={taxon_id}&{INAT_SCOPE}&per_page=200&page={page}"
+               "&order=desc&order_by=created_at")
+        data = _inat_get(url)
+        if not data:
+            if page == 1:
+                return {"error": "iNat API request failed"}
+            break
+        batch = data.get("results", [])
+        results.extend(o for o in batch if _in_park(o))
+        if len(batch) < 200:
+            break
+        page += 1
+    total = len(results)
 
     quality = {}
     observers = set()
@@ -2292,8 +2418,7 @@ def handle_api_intake_inat_check(params):
         "observer_logins":    sorted(observers),
         "latest_observation": latest_date,
         "project_url":        (f"https://www.inaturalist.org/observations"
-                               f"?project_id={INAT_PROJECT_ID}&taxon_id={taxon_id}"
-                               f"&verifiable=any"),
+                               f"?{INAT_SCOPE}&taxon_id={taxon_id}"),
     }
 
 def handle_api_photos_species(params):
@@ -5800,9 +5925,9 @@ def render_intake():
         <div class="discover-head">
             <div>
                 <span class="discover-title">🔭 Discover new species</span>
-                <span class="discover-sub">Scan the iNaturalist project and surface taxa not yet in research.json</span>
+                <span class="discover-sub">Scan everything on iNaturalist pinned inside the park boundary and surface taxa not yet in research.json</span>
             </div>
-            <button class="discover-scan-btn" id="discover-scan-btn" onclick="discoverScan()">🌐 Scan project</button>
+            <button class="discover-scan-btn" id="discover-scan-btn" onclick="discoverScan()">🌐 Scan iNaturalist</button>
         </div>
         <div class="discover-status" id="discover-status"></div>
         <div class="discover-results" id="discover-results"></div>
@@ -6122,7 +6247,7 @@ def render_intake():
         // iNat row (link + check button)
         let inatHtml = '';
         if (sp.inat_taxon_id) {{
-            const obsUrl = `https://www.inaturalist.org/observations?project_id=palma-sola-botanical-park&taxon_id=${{sp.inat_taxon_id}}&verifiable=any`;
+            const obsUrl = `https://www.inaturalist.org/observations?{INAT_SCOPE}&taxon_id=${{sp.inat_taxon_id}}`;
             const taxUrl = `https://www.inaturalist.org/taxa/${{sp.inat_taxon_id}}`;
             inatHtml = `
                 <div class="intake-inat-row">
@@ -6295,7 +6420,7 @@ def render_intake():
                 const verdict = rg > 0 && obs > 1
                     ? '✓ Solid — multiple observers, research-grade IDs'
                     : total === 0
-                    ? '⚠ No observations found in the PSBP project'
+                    ? '⚠ No observations pinned inside the park'
                     : obs <= 1
                     ? '⚠ Single observer — needs independent confirmation'
                     : '⚠ No research-grade IDs yet';
@@ -6418,7 +6543,7 @@ def render_intake():
         const status = document.getElementById('discover-status');
         const results = document.getElementById('discover-results');
         btn.disabled = true; btn.textContent = '⏳ Scanning…';
-        status.textContent = 'Querying the iNaturalist project — this can take a few seconds…';
+        status.textContent = 'Sweeping every observation pinned inside the park — about fifteen seconds…';
         results.innerHTML = '';
         try {{
             const resp = await fetch('/api/intake/discover');
@@ -6428,7 +6553,7 @@ def render_intake():
         }} catch (err) {{
             status.innerHTML = '<span style="color:#c62828;">Network error — is the dashboard online?</span>';
         }}
-        btn.disabled = false; btn.textContent = '🌐 Re-scan project';
+        btn.disabled = false; btn.textContent = '🌐 Re-scan iNaturalist';
     }}
     function discoverRender(d) {{
         discoverNew = d.new || [];
@@ -8381,29 +8506,27 @@ def render_publish():
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 def _inat_species_counts_captive(captive_value):
-    """species_counts for the project filtered by captive flag.
-    Returns {taxon_id: {"count": n, "taxon": {...}}}."""
+    """species_counts for the park filtered by captive flag ("true"/"false").
+    Returns {taxon_id: {"count": n, "taxon": {...}}} — counted locally from
+    _park_observations_lite() since 2026-09-23, so the polygon applies."""
+    want = (captive_value == "true")
+    rows = _park_observations_lite()
+    leaves = _leaf_taxa(rows)
     out = {}
-    page = 1
-    while True:
-        url = ("https://api.inaturalist.org/v1/observations/species_counts"
-               f"?project_id={INAT_PROJECT_ID}&verifiable=any"
-               f"&captive={captive_value}&per_page=500&page={page}")
-        data = _inat_get(url)
-        if not data:
-            break
-        results = data.get("results", [])
-        for row in results:
-            tx = row.get("taxon") or {}
-            tid = tx.get("id")
-            if tid is not None:
-                out[tid] = {"count": row.get("count", 0), "taxon": tx}
-        total = data.get("total_results", 0)
-        if len(results) < 500 or (page * 500) >= total:
-            break
-        page += 1
-        time.sleep(API_DELAY)
+    for o in rows:
+        if bool(o.get("captive")) != want:
+            continue
+        tx = o.get("taxon") or {}
+        tid = tx.get("id")
+        if tid is None or tid not in leaves:
+            continue
+        row = out.get(tid)
+        if row is None:
+            out[tid] = {"count": 1, "taxon": tx}
+        else:
+            row["count"] += 1
     return out
+
 
 
 WILD_KEEP_JSON = os.path.join(REPO, "data", "sources", "cultivated_keep_wild.json")
@@ -8504,8 +8627,8 @@ def cultivated_audit(limit=10):
     cult = _inat_species_counts_captive("true")
     if not wild and not cult:
         return {"ok": False,
-                "error": "No data from iNaturalist — offline, or the project "
-                         "slug is wrong. Check INAT_PROJECT_ID."}
+                "error": "No data from iNaturalist — offline, or the park "
+                         "boundary is wrong. Check PARK_POLYGON."}
 
     keep = _load_keep_wild()
     recent = _load_recent_marked()

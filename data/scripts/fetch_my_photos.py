@@ -5,8 +5,8 @@ fetch_my_photos.py — pull YOUR OWN iNat observation photos into the PSBP repo.
 Place in data/scripts/ alongside species_manager.py.
 
 WHY THIS EXISTS
-    The triage grid in species_manager queries iNat by project_id. Observations
-    that never became project members are invisible to it — which is most of
+    The triage grid in species_manager queries iNat by location (a circle round
+    the park). Obscured observations are invisible to it — which is most of
     the threatened-taxa palms, whose public coordinates land far from the park.
     This script queries by user_id instead, so your own photos are reachable
     regardless of project membership or coordinate obscuring.
