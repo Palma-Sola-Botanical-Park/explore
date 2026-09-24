@@ -89,8 +89,9 @@ RESEARCH_JSON      = os.path.join(REPO, "data", "sources", "research.json")
 
 # ── iNaturalist triage config ──────────────────────────────────────────────
 # Project slug from the URL: inaturalist.org/projects/<THIS-PART>
-# Kept for reference and env compatibility — no query in this file is scoped
-# by the project any more. See INAT_SCOPE below.
+# Used by ONE tab only: Cultivated, which writes "not wild" votes on other
+# people's records and must never reach past the project (see that section).
+# Every other query in this file uses the park boundary — INAT_SCOPE below.
 INAT_PROJECT_ID = os.environ.get("INAT_PROJECT_ID", "palma-sola-botanical-park")
 
 # ── The park's own search: Randy's boundary, tested against the PIN alone ──
@@ -1865,7 +1866,7 @@ def handle_api_species_list(params):
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
 _LITE_CACHE = {"at": 0.0, "rows": None}
-_LITE_TTL = 600   # seconds — Discover and the cultivated audit share one sweep
+_LITE_TTL = 600   # seconds — Discover's sweep, reused within a session
 
 
 def _park_observations_lite():
@@ -8613,26 +8614,61 @@ def render_publish():
 # ║  "Organism is wild" DQA metric to FALSE — exactly mark_not_wild.py.       ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
 
+# ── THIS TAB USES THE iNAT PROJECT, NOT THE PARK BOUNDARY — on purpose ──────
+# Everything else in this file asks for the park's rectangle and keeps pins
+# inside the polygon (see INAT_SCOPE). This tab WRITES to other people's
+# records: a "not wild" vote is a message to the observer. The project's
+# membership rule — the whole accuracy circle inside the boundary — is the
+# conservative set, and that is what you want before voting on a stranger's
+# observation. Randy, 2026-09-24: "i DO NOT want to mark people's observations
+# outside the park as cultivated — that would be rude. I'm ok with missing a
+# few in the park but it would be rude to do others."
+# The read (audit), the preview and the write all use the same project query so
+# the list you see is exactly the list that gets voted on.
+
+def _project_observations(taxon_id):
+    """Every project-member observation of one taxon, full v1 records."""
+    out, page = [], 1
+    while page <= 10:
+        data = _inat_get("https://api.inaturalist.org/v1/observations"
+                         f"?taxon_id={taxon_id}&project_id={INAT_PROJECT_ID}"
+                         f"&per_page=200&page={page}&verifiable=any"
+                         "&order=desc&order_by=created_at")
+        if not data:
+            break
+        results = data.get("results", [])
+        out.extend(results)
+        if len(results) < 200:
+            break
+        page += 1
+        time.sleep(API_DELAY)
+    return out
+
+
 def _inat_species_counts_captive(captive_value):
-    """species_counts for the park filtered by captive flag ("true"/"false").
-    Returns {taxon_id: {"count": n, "taxon": {...}}} — counted locally from
-    _park_observations_lite() since 2026-09-23, so the polygon applies."""
-    want = (captive_value == "true")
-    rows = _park_observations_lite()
-    leaves = _leaf_taxa(rows)
+    """species_counts for the PROJECT filtered by captive flag ("true"/"false").
+    Returns {taxon_id: {"count": n, "taxon": {...}}}. Project, not polygon —
+    see the note above."""
     out = {}
-    for o in rows:
-        if bool(o.get("captive")) != want:
-            continue
-        tx = o.get("taxon") or {}
-        tid = tx.get("id")
-        if tid is None or tid not in leaves:
-            continue
-        row = out.get(tid)
-        if row is None:
-            out[tid] = {"count": 1, "taxon": tx}
-        else:
-            row["count"] += 1
+    page = 1
+    while True:
+        url = ("https://api.inaturalist.org/v1/observations/species_counts"
+               f"?project_id={INAT_PROJECT_ID}&verifiable=any"
+               f"&captive={captive_value}&per_page=500&page={page}")
+        data = _inat_get(url)
+        if not data:
+            break
+        results = data.get("results", [])
+        for row in results:
+            tx = row.get("taxon") or {}
+            tid = tx.get("id")
+            if tid is not None:
+                out[tid] = {"count": row.get("count", 0), "taxon": tx}
+        total = data.get("total_results", 0)
+        if len(results) < 500 or (page * 500) >= total:
+            break
+        page += 1
+        time.sleep(API_DELAY)
     return out
 
 
@@ -8789,8 +8825,9 @@ def cultivated_audit(limit=10):
 
 
 def cultivated_preview(taxon_id):
-    """Read-only: which observations of one taxon would be marked cultivated."""
-    obs = _inat_observations(taxon_id)
+    """Read-only: which observations of one taxon would be marked cultivated.
+    Project members only — never a record the project itself would not claim."""
+    obs = _project_observations(taxon_id)
     to_change = [o for o in obs if o.get("captive") is not True]
     already   = [o for o in obs if o.get("captive") is True]
     name = ""
@@ -8821,7 +8858,9 @@ def cultivated_mark(taxon_id, token):
         return {"ok": False, "error": "Token invalid or expired — paste a fresh "
                 "one from inaturalist.org/users/api_token"}
 
-    obs = _inat_observations(taxon_id)
+    # Project members only — the same set the preview showed. See the note at
+    # the top of this section.
+    obs = _project_observations(taxon_id)
     to_change = [o for o in obs if o.get("captive") is not True]
     if not to_change:
         return {"ok": True, "marked": 0, "failed": 0, "results": [],
