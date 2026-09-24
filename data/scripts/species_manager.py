@@ -544,6 +544,8 @@ def get_research_list(kingdom):
             "source":         sp.get("research_source", ""),
             "inat_taxon_id":  sp.get("inat_taxon_id"),
             "inat_obs_count": sp.get("inat_obs_count"),
+            "set_aside_on":   sp.get("set_aside_on"),
+            "set_aside_obs_count": sp.get("set_aside_obs_count"),
         })
     return result
 
@@ -1992,6 +1994,8 @@ def _known_taxa_index():
                 "where":           where,
                 "common_name":     e.get("common_name", ""),
                 "scientific_name": e.get("botanical_name") or e.get("scientific_name") or "",
+                "set_aside_on":    e.get("set_aside_on"),
+                "set_aside_obs_count": e.get("set_aside_obs_count"),
             }
             if tid:
                 try:
@@ -2122,15 +2126,27 @@ def discover_reconcile():
                 "kingdom": match["kingdom"]}
         if match["where"] == "research":
             # In the research pile AND freshly observed → ready to advance.
-            # A died/stolen species you just observed alive is a revive flag.
-            item["revivable"] = match["status"] in ("died", "stolen")
+            # A set-aside species (dead, outside the park, parked, photo not
+            # usable) that is being observed in the park is a revive flag —
+            # and the count it was set aside at says whether anything is NEW.
+            item["revivable"] = match["status"] in SET_ASIDE
+            if item["revivable"]:
+                item["set_aside_label"] = SET_ASIDE[match["status"]]
+                item["set_aside_on"] = match.get("set_aside_on")
+                item["set_aside_obs_count"] = match.get("set_aside_obs_count")
+                was = match.get("set_aside_obs_count")
+                item["new_since"] = ((item.get("obs_count") or 0) - was
+                                     if isinstance(was, int) else None)
             ready_items.append(item)
         else:
             pipeline_items.append(item)
 
     new_items.sort(key=lambda x: -(x.get("obs_count") or 0))
-    # Ready: surface dead-but-observed first, then best-observed.
-    ready_items.sort(key=lambda x: (not x.get("revivable"), -(x.get("obs_count") or 0)))
+    # Ready: set-aside species with NEW observations first, then other set-aside,
+    # then best-observed.
+    ready_items.sort(key=lambda x: (not (x.get("revivable") and (x.get("new_since") or 0) > 0),
+                                    not x.get("revivable"),
+                                    -(x.get("obs_count") or 0)))
 
     pipe_summary = {}
     for t in pipeline_items:
@@ -2326,19 +2342,37 @@ def handle_api_intake_promote(params):
     return promote_to_spotted(species_id, kingdom)
 
 
+# ── Set aside ────────────────────────────────────────────────────────────────
+# A research.json record is either in the research pool or SET ASIDE for one of
+# these reasons. Randy, 2026-09-24, after the park boundary switch put ninety
+# hidden species into Discover: "I'd rather get all INSIDE the park and deal with
+# some strays that I put aside — than miss some good ones." Set aside never
+# leaves research.json; Revive puts it back. When a record is set aside the park
+# observation count at that moment is kept, so Discover can say "now more".
+SET_ASIDE = {
+    "died":           "Dead",
+    "stolen":         "Stolen",
+    "outside_park":   "Outside the park",
+    "parked":         "Parked for classification",
+    "photo_unusable": "Photo not usable",
+}
+
+
 def handle_api_intake_set_status(params):
     """POST /api/intake/set-status — change status within research.json.
 
-    Body: {"id": "PSBP-00123", "status": "died"}
-    Valid targets: research, died, stolen.  This does NOT move the record
-    to signage — it only relabels it inside research.json.
+    Body: {"id": "PSBP-00123", "status": "outside_park", "obs_count": 3}
+    Valid targets: research, or any SET_ASIDE key. This does NOT move the
+    record to signage — it only relabels it inside research.json. obs_count is
+    optional: the park observation count the caller has just seen (Discover
+    knows it); otherwise the record's own inat_obs_count is used.
     """
     body = params.get("_body", {})
     species_id = body.get("id", "")
     new_status = body.get("status", "")
     if not species_id or not new_status:
         return {"ok": False, "error": "Missing id or status"}
-    if new_status not in ("research", "died", "stolen"):
+    if new_status != "research" and new_status not in SET_ASIDE:
         return {"ok": False, "error": f"Invalid status: {new_status}"}
 
     research = _load(RESEARCH_JSON)
@@ -2352,6 +2386,15 @@ def handle_api_intake_set_status(params):
         return {"ok": True, "id": species_id, "note": "No change"}
 
     sp["status"] = new_status
+    if new_status == "research":
+        sp.pop("set_aside_on", None)
+        sp.pop("set_aside_obs_count", None)
+    else:
+        sp["set_aside_on"] = datetime.date.today().isoformat()
+        n = body.get("obs_count")
+        if not isinstance(n, int):
+            n = sp.get("inat_obs_count")
+        sp["set_aside_obs_count"] = n if isinstance(n, int) else 0
     # meta.status_counts REMOVED 2026-09-03 (Randy's call). It duplicated a fact
     # the records already carry, drifted whenever a write path forgot it, and
     # nothing ever read it — the Overview tab counts statuses live from the
@@ -5459,6 +5502,7 @@ main {
 .pi-btn { border: none; border-radius: 6px; padding: 5px 10px; font-size: 11px; font-weight: 700; cursor: pointer; }
 .pi-work { background: var(--green-mid); color: #fff; }
 .pi-dead { background: #f0eee8; color: #8a6d2f; }
+.set-aside-select { cursor: pointer; font: inherit; font-size: 12px; max-width: 150px; }
 .pi-revive { background: #c62828; color: #fff; }
 
 /* Source banner in detail card */
@@ -5946,7 +5990,7 @@ def render_intake():
             <span class="control-group-label">Show</span>
             <div class="mode-toggle" id="intake-status-toggle">
                 <button class="active" onclick="intakeSetStatus('research')">Research</button>
-                <button onclick="intakeSetStatus('dead')">☠ Dead</button>
+                <button onclick="intakeSetStatus('aside')">Set aside</button>
                 <button onclick="intakeSetStatus('all')">All</button>
             </div>
         </div>
@@ -5993,6 +6037,17 @@ def render_intake():
     <script>
     let intakeKingdom = 'plants';
     let intakeStatusFilter = 'research';
+    // Mirrors SET_ASIDE in Python — the reasons a research record can be set aside.
+    const SET_ASIDE = {json.dumps(SET_ASIDE)};
+    const isSetAside = s => !!(s && SET_ASIDE[s.status]);
+    const setAsideLabel = s => SET_ASIDE[s.status] || s.status;
+    // A small select that reads "Set aside…" until a reason is picked.
+    function setAsideSelect(id, cls) {{
+        const opts = Object.keys(SET_ASIDE).map(k => `<option value="${{k}}">${{esc(SET_ASIDE[k])}}</option>`).join('');
+        return `<select class="${{cls}} set-aside-select" onclick="event.stopPropagation()"
+                    onchange="event.stopPropagation(); intakeSetSpeciesStatus('${{id}}', this.value); this.value='';">
+                    <option value="">Set aside…</option>${{opts}}</select>`;
+    }}
     let intakeSpecies = [];
     let intakeSelected = null;
 
@@ -6042,7 +6097,7 @@ def render_intake():
         intakeStatusFilter = f;
         const btns = document.querySelectorAll('#intake-status-toggle button');
         btns.forEach(b => b.classList.remove('active'));
-        const idx = {{research: 0, dead: 1, all: 2}}[f];
+        const idx = {{research: 0, aside: 1, all: 2}}[f];
         btns[idx].classList.add('active');
         intakeRenderPicker();
         // Clear detail if the selected species is now hidden
@@ -6080,8 +6135,8 @@ def render_intake():
         // Status filter
         if (intakeStatusFilter === 'research') {{
             filtered = filtered.filter(s => s.status === 'research');
-        }} else if (intakeStatusFilter === 'dead') {{
-            filtered = filtered.filter(s => s.status === 'died' || s.status === 'stolen');
+        }} else if (intakeStatusFilter === 'aside') {{
+            filtered = filtered.filter(s => isSetAside(s));
         }}
 
         // Search
@@ -6094,8 +6149,12 @@ def render_intake():
             );
         }}
 
-        // Sort by source priority, then ID
+        // Set-aside species sink to the bottom in every view (Randy, 2026-09-24: "all of
+        // these dispositions should be at the bottom of the list of intake, not the top").
+        // Then source priority, then ID.
         filtered.sort((a, b) => {{
+            const aa = isSetAside(a) ? 1 : 0, ab = isSetAside(b) ? 1 : 0;
+            if (aa !== ab) return aa - ab;
             const ra = SOURCE_RANK[a.source] ?? 9;
             const rb = SOURCE_RANK[b.source] ?? 9;
             if (ra !== rb) return ra - rb;
@@ -6112,16 +6171,16 @@ def render_intake():
         // Update count
         const total = intakeSpecies.length;
         const researchCount = intakeSpecies.filter(s => s.status === 'research').length;
-        const deadCount = intakeSpecies.filter(s => s.status === 'died' || s.status === 'stolen').length;
+        const asideCount = intakeSpecies.filter(isSetAside).length;
         let countText = `${{filtered.length}} shown`;
         if (intakeStatusFilter === 'research') countText += ` of ${{researchCount}} research`;
-        else if (intakeStatusFilter === 'dead') countText += ` of ${{deadCount}} dead/stolen`;
+        else if (intakeStatusFilter === 'aside') countText += ` of ${{asideCount}} set aside`;
         else countText += ` of ${{total}} total`;
         document.getElementById('intake-count').textContent = countText;
 
         if (!filtered.length) {{
             list.innerHTML = '<div class="picker-empty">'
-                + (intakeStatusFilter === 'dead' ? 'No dead/stolen species.' : 'No species match.')
+                + (intakeStatusFilter === 'aside' ? 'Nothing set aside.' : 'No species match.')
                 + '</div>';
             return;
         }}
@@ -6130,7 +6189,7 @@ def render_intake():
             const active = s.id === intakeSelected ? 'active' : '';
             const name = s.common_name || s.scientific_name || s.id;
             const sci = s.scientific_name || '';
-            const isDead = s.status === 'died' || s.status === 'stolen';
+            const isDead = isSetAside(s);
             const deadCls = isDead ? 'is-dead' : '';
             const sm = SOURCE_META[s.source] || {{}};
             const srcCls = sm.cls || '';
@@ -6142,12 +6201,13 @@ def render_intake():
             }})[s.source] || '';
             const obs = (typeof s.inat_obs_count === 'number' && s.inat_obs_count > 0)
                 ? `${{s.inat_obs_count}} obs` : '';
-            const meta = [s.id, obs, srcLabel].filter(Boolean).join(' · ');
+            const aside = isDead ? setAsideLabel(s) : '';
+            const meta = [s.id, obs, srcLabel, aside].filter(Boolean).join(' · ');
             const content = `<span class="pi-content ${{s.content_filled > 0 ? 'has' : 'none'}}" title="${{s.content_filled}} of ${{s.content_total}} content fields filled">${{s.content_filled}}/${{s.content_total}}</span>`;
             const actions = isDead
                 ? `<button class="pi-btn pi-revive" onclick="event.stopPropagation(); intakeSetSpeciesStatus('${{s.id}}','research')">↩ Revive</button>`
                 : `<button class="pi-btn pi-work" onclick="event.stopPropagation(); intakeWorkIt('${{s.id}}')">Work it</button>`
-                  + `<button class="pi-btn pi-dead" onclick="event.stopPropagation(); intakeSetSpeciesStatus('${{s.id}}','died')">Mark dead</button>`;
+                  + setAsideSelect(s.id, 'pi-btn pi-dead');
             return `<div class="picker-item card ${{active}} ${{srcCls}} ${{deadCls}}" onclick="intakeSelect('${{s.id}}')">
                 <div class="pi-top">
                     <div class="pi-name">
@@ -6213,7 +6273,7 @@ def render_intake():
         const isPlant = intakeKingdom === 'plants';
         const sciName = isPlant ? (sp.botanical_name || '') : (sp.scientific_name || '');
         const commonName = sp.common_name || sciName || sp.id;
-        const isDead = sp.status === 'died' || sp.status === 'stolen';
+        const isDead = isSetAside(sp);
 
         // Source banner
         const src = sp.research_source || '';
@@ -6223,10 +6283,13 @@ def render_intake():
             <span class="isb-label">${{sm.label}}<span class="isb-sub">${{sm.sub}}</span></span>
         </div>`;
 
-        // Dead banner
+        // Set-aside banner
+        const since = sp.set_aside_on ? ` since ${{esc(sp.set_aside_on)}}` : '';
+        const wasN = (typeof sp.set_aside_obs_count === 'number')
+            ? ` (${{sp.set_aside_obs_count}} park observation${{sp.set_aside_obs_count === 1 ? '' : 's'}} at the time)` : '';
         const deadBanner = isDead
-            ? `<div class="intake-dead-banner">☠ This species is marked <strong>${{sp.status}}</strong>
-                   — it will not appear in the research pool.
+            ? `<div class="intake-dead-banner">Set aside: <strong>${{esc(setAsideLabel(sp))}}</strong>${{since}}${{wasN}}
+                   — it sits at the bottom of the research pool until revived.
                    <button class="pub-btn revive-btn" style="margin-left:auto;"
                            onclick="intakeSetSpeciesStatus('${{sp.id}}', 'research')">↩ Revive</button>
                </div>`
@@ -6359,10 +6422,7 @@ def render_intake():
                         title="${{canPromote ? 'Move to signage JSON as spotted' : 'Cannot promote — status is ' + sp.status}}"
                         onclick="intakePromote('${{sp.id}}')">
                     ⬆ Promote to Spotted</button>
-                <button class="pub-btn dead-btn"
-                        onclick="intakeSetSpeciesStatus('${{sp.id}}', 'died')"
-                        title="Park this species as dead / no longer in park">
-                    ☠ Mark Dead</button>
+                ${{setAsideSelect(sp.id, 'pub-btn dead-btn')}}
             </div>`;
         }}
 
@@ -6374,7 +6434,7 @@ def render_intake():
                         <h2>${{esc(commonName)}}</h2>
                         <div class="intake-sci">${{esc(sciName)}}</div>
                     </div>
-                    <span class="status-pill ${{sp.status === 'research' ? 'research' : 'spotted'}}">${{esc(sp.status)}}</span>
+                    <span class="status-pill ${{sp.status === 'research' ? 'research' : 'spotted'}}">${{esc(isDead ? setAsideLabel(sp) : sp.status)}}</span>
                 </div>
 
                 ${{deadBanner}}
@@ -6442,22 +6502,25 @@ def render_intake():
         if (btn) {{ btn.disabled = false; btn.textContent = '🌐 Check Quality'; }}
     }}
 
-    async function intakeSetSpeciesStatus(id, newStatus) {{
-        const label = newStatus === 'died' ? 'dead' : 'research';
+    async function intakeSetSpeciesStatus(id, newStatus, obsCount) {{
+        if (!newStatus) return;                       // the select's placeholder
         const sp = intakeSpecies.find(s => s.id === id);
         const name = sp ? (sp.common_name || sp.id) : id;
+        const label = SET_ASIDE[newStatus];
 
-        if (newStatus === 'died' && !confirm(`Mark ${{name}} as dead?\\nIt will move to the Dead view.`)) return;
+        if (label && !confirm(`Set ${{name}} aside as "${{label}}"?\\nIt drops to the bottom of the list until you revive it.`)) return;
 
         try {{
+            const body = {{id: id, status: newStatus}};
+            if (typeof obsCount === 'number') body.obs_count = obsCount;
             const resp = await fetch('/api/intake/set-status', {{
                 method: 'POST',
                 headers: {{'Content-Type': 'application/json'}},
-                body: JSON.stringify({{id: id, status: newStatus}})
+                body: JSON.stringify(body)
             }});
             const data = await resp.json();
             if (data.ok) {{
-                const verb = newStatus === 'died' ? 'Marked dead' : 'Revived';
+                const verb = label ? `Set aside (${{label}})` : 'Revived';
                 intakeToast(`${{verb}}: ${{data.common_name || id}}`);
                 intakeSelected = null;
                 intakeLoad();
@@ -6574,8 +6637,21 @@ def render_intake():
                 const photo = it.default_photo ? `<img src="${{esc(it.default_photo)}}" alt="">` : '<img alt="">';
                 const cn = it.common_name || it.scientific_name;
                 const dead = it.revivable;
+                let why = '';
+                if (dead) {{
+                    const lbl = esc(it.set_aside_label || it.status);
+                    const when = it.set_aside_on ? ` in ${{esc(it.set_aside_on.slice(0, 7))}}` : '';
+                    if (it.status === 'died' || it.status === 'stolen')
+                        why = `set aside as ${{lbl}}${{when}} — you observed a live one`;
+                    else if (typeof it.new_since === 'number' && it.new_since > 0)
+                        why = `set aside as ${{lbl}}${{when}} with ${{it.set_aside_obs_count}} — now ${{it.obs_count}} inside the park, ${{it.new_since}} new since`;
+                    else if (typeof it.new_since === 'number')
+                        why = `set aside as ${{lbl}}${{when}} — nothing new since`;
+                    else
+                        why = `set aside as ${{lbl}}${{when}} — now ${{it.obs_count}} inside the park`;
+                }}
                 const meta = `${{esc(it.psbp_id)}} · ${{it.obs_count}} obs`
-                    + (dead ? ` · <span style="color:#c62828;font-weight:600;">marked ${{esc(it.status)}} — you observed a live one</span>` : '');
+                    + (dead ? ` · <span style="color:${{(it.new_since || 0) > 0 || it.status === 'died' || it.status === 'stolen' ? '#c62828' : 'var(--gray-600)'}};font-weight:600;">${{why}}</span>` : '');
                 const actions = dead
                     ? `<button class="discover-revive-btn" onclick="discoverRevive('${{it.psbp_id}}', this)">↩ Revive</button>`
                     : `<button class="discover-open-btn" onclick="discoverOpenInPicker('${{it.psbp_id}}','${{it.kingdom}}','${{it.status}}')">→ Work it</button>`;
