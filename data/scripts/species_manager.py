@@ -1970,6 +1970,11 @@ def _inat_species_counts():
                 "default_photo": ((t.get("default_photo") or {}).get("square_url")) or "",
             }
         row["obs_count"] += 1
+        # The parent taxon — for a subspecies, its species. Discover uses it to
+        # attribute "Florida Zebra Longwing" to the park's Zebra Longwing.
+        anc = t.get("ancestor_ids") or []
+        if len(anc) >= 2 and not row.get("parent_id"):
+            row["parent_id"] = anc[-2]
     return sorted(by_taxon.values(), key=lambda r: -r["obs_count"])
 
 
@@ -2095,6 +2100,9 @@ def _next_psbp_id(kingdom):
     return f"PSBP-{nxt:05d}", warn
 
 
+INFRASPECIFIC = {"subspecies", "variety", "form", "infrahybrid"}
+
+
 def discover_reconcile():
     """Scan the park and bucket every observed taxon as NEW or tracked."""
     counts = _inat_species_counts()
@@ -2116,6 +2124,15 @@ def discover_reconcile():
                 match = None
         if not match and sci:
             match = by_sci.get(sci)
+        # A record logged BELOW species — "Heliconius charithonia tuckeri" — is the
+        # park's Zebra Longwing, not a new find. ONE step up only, to the parent:
+        # a new species inside a tracked genus must still come through as new.
+        # Randy, 2026-09-24, on nine such stubs intake had minted: "I would simply
+        # intake the photo and pretend they are the same."
+        via_parent = False
+        if not match and c.get("rank") in INFRASPECIFIC and c.get("parent_id"):
+            match = by_taxon.get(c["parent_id"])
+            via_parent = bool(match)
 
         if not match:
             new_items.append({**c, "tracked": False})
@@ -2123,7 +2140,7 @@ def discover_reconcile():
 
         item = {**c, "tracked": True, "psbp_id": match["id"],
                 "status": match["status"], "where": match["where"],
-                "kingdom": match["kingdom"]}
+                "kingdom": match["kingdom"], "via_parent": via_parent}
         if match["where"] == "research":
             # In the research pile AND freshly observed → ready to advance.
             # A set-aside species (dead, outside the park, parked, photo not
@@ -6651,6 +6668,7 @@ def render_intake():
                         why = `set aside as ${{lbl}}${{when}} — now ${{it.obs_count}} inside the park`;
                 }}
                 const meta = `${{esc(it.psbp_id)}} · ${{it.obs_count}} obs`
+                    + (it.via_parent ? ` · logged as a ${{esc(it.rank || 'subspecies')}} of this species` : '')
                     + (dead ? ` · <span style="color:${{(it.new_since || 0) > 0 || it.status === 'died' || it.status === 'stolen' ? '#c62828' : 'var(--gray-600)'}};font-weight:600;">${{why}}</span>` : '');
                 const actions = dead
                     ? `<button class="discover-revive-btn" onclick="discoverRevive('${{it.psbp_id}}', this)">↩ Revive</button>`

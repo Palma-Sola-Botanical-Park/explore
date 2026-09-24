@@ -2,9 +2,9 @@
   "meta": {
     "generated": "2026-06-23",
     "description": "Staging file for species under research — not yet promoted to spotted or html. Plants and wildlife coexist, distinguished by the 'type' field.",
-    "species_count": 564,
+    "species_count": 555,
     "plant_count": 489,
-    "wildlife_count": 75,
+    "wildlife_count": 66,
     "id_allocation": {
       "plants": "PSBP-00001 upward (next available: PSBP-00788)",
       "wildlife": "PSBP-90000–99999 band. Two blocks are in use: 99887–99999 (allocated downward from the ceiling, historically) and 90001–90016. The allocator computes max(band)+1, which overflows the 99999 ceiling, so it now gap-fills upward from the low block (next available: PSBP-90017).",
@@ -12262,10 +12262,12 @@
         "order": "Zingiberales"
       },
       "type": "plant",
-      "status": "research",
+      "status": "parked",
       "has_sign": false,
       "research_source": "inat_observed",
-      "inat_obs_count": 6
+      "inat_obs_count": 6,
+      "set_aside_on": "2026-09-24",
+      "set_aside_obs_count": 6
     },
     {
       "id": "PSBP-00787",
@@ -13731,48 +13733,6 @@
       "animal_group_source": "derived: class Arachnida"
     },
     {
-      "id": "PSBP-90052",
-      "common_name": "Florida Screech-Owl",
-      "scientific_name": "Megascops asio floridanus",
-      "inat_taxon_id": 725930,
-      "inat_rank": "subspecies",
-      "taxonomy": {
-        "family": "Strigidae",
-        "genus": "Megascops",
-        "species": "asio",
-        "class": "Aves",
-        "order": "Strigiformes"
-      },
-      "type": "wildlife",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 1,
-      "animal_group": "Bird",
-      "animal_group_source": "derived: class Aves"
-    },
-    {
-      "id": "PSBP-90053",
-      "common_name": "Southern Black Racer",
-      "scientific_name": "Coluber constrictor priapus",
-      "inat_taxon_id": 27140,
-      "inat_rank": "subspecies",
-      "taxonomy": {
-        "family": "Colubridae",
-        "genus": "Coluber",
-        "species": "constrictor",
-        "class": "Reptilia",
-        "order": "Squamata"
-      },
-      "type": "wildlife",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 1,
-      "animal_group": "Snake",
-      "animal_group_source": "derived: suborder Serpentes"
-    },
-    {
       "id": "PSBP-90054",
       "common_name": "Rambur's Forktail",
       "scientific_name": "Ischnura ramburii",
@@ -13845,69 +13805,6 @@
         "family": "Papilionidae",
         "genus": "Papilio",
         "species": "glaucus",
-        "class": "Insecta",
-        "order": "Lepidoptera"
-      },
-      "type": "wildlife",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 1,
-      "animal_group": "Butterfly",
-      "animal_group_source": "derived: superfamily Papilionoidea"
-    },
-    {
-      "id": "PSBP-90058",
-      "common_name": "Feral Pigeon",
-      "scientific_name": "Columba livia domestica",
-      "inat_taxon_id": 122767,
-      "inat_rank": "variety",
-      "taxonomy": {
-        "family": "Columbidae",
-        "genus": "Columba",
-        "species": "livia",
-        "class": "Aves",
-        "order": "Columbiformes"
-      },
-      "type": "wildlife",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 1,
-      "animal_group": "Bird",
-      "animal_group_source": "derived: class Aves"
-    },
-    {
-      "id": "PSBP-90059",
-      "common_name": "Elanoides forficatus forficatus",
-      "scientific_name": "Elanoides forficatus forficatus",
-      "inat_taxon_id": 236988,
-      "inat_rank": "subspecies",
-      "taxonomy": {
-        "family": "Accipitridae",
-        "genus": "Elanoides",
-        "species": "forficatus",
-        "class": "Aves",
-        "order": "Accipitriformes"
-      },
-      "type": "wildlife",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 1,
-      "animal_group": "Bird",
-      "animal_group_source": "derived: class Aves"
-    },
-    {
-      "id": "PSBP-90060",
-      "common_name": "Eastern Black Swallowtail",
-      "scientific_name": "Papilio polyxenes asterius",
-      "inat_taxon_id": 54900,
-      "inat_rank": "subspecies",
-      "taxonomy": {
-        "family": "Papilionidae",
-        "genus": "Papilio",
-        "species": "polyxenes",
         "class": "Insecta",
         "order": "Lepidoptera"
       },
@@ -14109,69 +14006,6 @@
       "animal_group_source": "derived: class Malacostraca"
     },
     {
-      "id": "PSBP-90070",
-      "common_name": "Florida Mangrove Skipper",
-      "scientific_name": "Phocides batabano okeechobee",
-      "inat_taxon_id": 1607213,
-      "inat_rank": "subspecies",
-      "taxonomy": {
-        "family": "Hesperiidae",
-        "genus": "Phocides",
-        "species": "batabano",
-        "class": "Insecta",
-        "order": "Lepidoptera"
-      },
-      "type": "wildlife",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 5,
-      "animal_group": "Butterfly",
-      "animal_group_source": "derived: superfamily Papilionoidea"
-    },
-    {
-      "id": "PSBP-90071",
-      "common_name": "Florida Zebra Longwing",
-      "scientific_name": "Heliconius charithonia tuckeri",
-      "inat_taxon_id": 49765,
-      "inat_rank": "subspecies",
-      "taxonomy": {
-        "family": "Nymphalidae",
-        "genus": "Heliconius",
-        "species": "charithonia",
-        "class": "Insecta",
-        "order": "Lepidoptera"
-      },
-      "type": "wildlife",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 4,
-      "animal_group": "Butterfly",
-      "animal_group_source": "derived: superfamily Papilionoidea"
-    },
-    {
-      "id": "PSBP-90072",
-      "common_name": "American Osprey",
-      "scientific_name": "Pandion haliaetus carolinensis",
-      "inat_taxon_id": 126619,
-      "inat_rank": "subspecies",
-      "taxonomy": {
-        "family": "Pandionidae",
-        "genus": "Pandion",
-        "species": "haliaetus",
-        "class": "Aves",
-        "order": "Accipitriformes"
-      },
-      "type": "wildlife",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 3,
-      "animal_group": "Bird",
-      "animal_group_source": "derived: class Aves"
-    },
-    {
       "id": "PSBP-90073",
       "common_name": "American Bird Grasshopper",
       "scientific_name": "Schistocerca americana",
@@ -14191,27 +14025,6 @@
       "inat_obs_count": 2,
       "animal_group": "Grasshopper",
       "animal_group_source": "derived: order Orthoptera"
-    },
-    {
-      "id": "PSBP-90074",
-      "common_name": "North American Common Gallinule",
-      "scientific_name": "Gallinula galeata cachinnans",
-      "inat_taxon_id": 367388,
-      "inat_rank": "subspecies",
-      "taxonomy": {
-        "family": "Rallidae",
-        "genus": "Gallinula",
-        "species": "galeata",
-        "class": "Aves",
-        "order": "Gruiformes"
-      },
-      "type": "wildlife",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 2,
-      "animal_group": "Bird",
-      "animal_group_source": "derived: class Aves"
     },
     {
       "id": "PSBP-90075",
