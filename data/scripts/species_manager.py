@@ -2162,12 +2162,23 @@ def discover_reconcile():
         else:
             pipeline_items.append(item)
 
+    # Within equal counts, the most recently observed comes first — Randy, 2026-09-24,
+    # on yesterday's walkabout finds sitting at the bottom of the 1-observation run:
+    # "i'd like them at the top of the 1-observation list, not the bottom." A stable
+    # sort by date first, then by the main key, gives exactly that.
+    new_items.sort(key=lambda x: x.get("latest") or "", reverse=True)
     new_items.sort(key=lambda x: -(x.get("obs_count") or 0))
-    # Ready: set-aside species with NEW observations first, then other set-aside,
-    # then best-observed.
-    ready_items.sort(key=lambda x: (not (x.get("revivable") and (x.get("new_since") or 0) > 0),
-                                    not x.get("revivable"),
-                                    -(x.get("obs_count") or 0)))
+    # Ready: the ones Randy is working on first, best-observed at the top. Set-aside
+    # species go LAST — the page folds them behind a button — grouped by type, the
+    # ones with new observations first within a type. Randy, 2026-09-24: "I do not
+    # want them cluttering the top."
+    aside_order = list(SET_ASIDE)
+    ready_items.sort(key=lambda x: x.get("latest") or "", reverse=True)
+    ready_items.sort(key=lambda x: (
+        1 if x.get("revivable") else 0,
+        aside_order.index(x["status"]) if x.get("revivable") else 0,
+        -(x.get("new_since") or 0),
+        -(x.get("obs_count") or 0)))
 
     pipe_summary = {}
     for t in pipeline_items:
@@ -6072,7 +6083,7 @@ def render_intake():
     function setAsideSelect(id, cls) {{
         const opts = Object.keys(SET_ASIDE).map(k => `<option value="${{k}}">${{esc(SET_ASIDE[k])}}</option>`).join('');
         return `<select class="${{cls}} set-aside-select" onclick="event.stopPropagation()"
-                    onchange="event.stopPropagation(); intakeSetSpeciesStatus('${{id}}', this.value); this.value='';">
+                    onchange="event.stopPropagation(); intakeSetSpeciesStatus('${{id}}', this.value, (discoverStats['${{id}}'] || {{}}).obs); this.value='';">
                     <option value="">Set aside…</option>${{opts}}</select>`;
     }}
     let intakeSpecies = [];
@@ -6636,7 +6647,7 @@ def render_intake():
     let discoverNew = [];
     function discoverStatusPill(s) {{
         const k = (s === 'html') ? 'dp-html' : (s === 'spotted') ? 'dp-spotted' : 'dp-research';
-        return `<span class="discover-pill ${{k}}">${{esc(s || '?')}}</span>`;
+        return `<span class="discover-pill ${{k}}">${{esc(SET_ASIDE[s] || s || '?')}}</span>`;
     }}
     async function discoverScan() {{
         const btn = document.getElementById('discover-scan-btn');
@@ -6676,11 +6687,11 @@ def render_intake():
             + `<span style="color:var(--green-mid);">${{d.ready_count}} ready to advance</span> · `
             + `${{d.pipeline_count}} in pipeline${{smBits ? ' (' + smBits + ')' : ''}}</div>`;
 
-        // Ready to advance — in research.json AND now observed on iNat
-        if (ready.length) {{
-            html += '<div class="discover-section-label">⭐ In your research pile and now observed — ready to advance</div>';
-            html += '<div class="discover-new-grid">';
-            ready.forEach(it => {{
+        // Ready to advance — in research.json AND now observed on iNat. Set-aside
+        // records are folded away at the bottom of this section, behind a button.
+        const working = ready.filter(it => !it.revivable);
+        const asideReady = ready.filter(it => it.revivable);
+        const readyCard = it => {{
                 const photo = it.default_photo ? `<img src="${{esc(it.default_photo)}}" alt="">` : '<img alt="">';
                 const cn = it.common_name || it.scientific_name;
                 const dead = it.revivable;
@@ -6698,12 +6709,13 @@ def render_intake():
                         why = `set aside as ${{lbl}}${{when}} — now ${{it.obs_count}} inside the park`;
                 }}
                 const meta = `${{esc(it.psbp_id)}} · ${{it.obs_count}} obs`
+                    + (it.latest ? ` · last seen ${{esc(it.latest)}}` : '')
                     + (it.via_parent ? ` · logged as a ${{esc(it.rank || 'subspecies')}} of this species` : '')
                     + (dead ? ` · <span style="color:${{(it.new_since || 0) > 0 || it.status === 'died' || it.status === 'stolen' ? '#c62828' : 'var(--gray-600)'}};font-weight:600;">${{why}}</span>` : '');
                 const actions = dead
                     ? `<button class="discover-revive-btn" onclick="discoverRevive('${{it.psbp_id}}', this)">↩ Revive</button>`
                     : `<button class="discover-open-btn" onclick="discoverOpenInPicker('${{it.psbp_id}}','${{it.kingdom}}','${{it.status}}')">→ Work it</button>`;
-                html += `<div class="discover-card ready">
+                return `<div class="discover-card ready">
                     ${{photo}}
                     <div class="dc-body">
                         <div class="dc-name">${{esc(cn)}} ${{discoverStatusPill(it.status)}}</div>
@@ -6712,8 +6724,16 @@ def render_intake():
                     </div>
                     ${{actions}}
                 </div>`;
-            }});
-            html += '</div>';
+        }};
+        if (working.length) {{
+            html += '<div class="discover-section-label">⭐ In your research pile and now observed — ready to advance</div>';
+            html += '<div class="discover-new-grid">' + working.map(readyCard).join('') + '</div>';
+        }}
+        if (asideReady.length) {{
+            const withNew = asideReady.filter(it => (it.new_since || 0) > 0 || it.status === 'died' || it.status === 'stolen').length;
+            html += `<button class="discover-tracked-toggle" onclick="const p=document.getElementById('discover-aside'); p.hidden=!p.hidden; this.textContent=(p.hidden?'Show ':'Hide ')+this.dataset.label;"
+                        data-label="${{asideReady.length}} set aside but observed in the park${{withNew ? ' (' + withNew + ' with something new)' : ''}}">Show ${{asideReady.length}} set aside but observed in the park${{withNew ? ' (' + withNew + ' with something new)' : ''}}</button>`;
+            html += '<div id="discover-aside" hidden><div class="discover-new-grid" style="margin-top:8px;">' + asideReady.map(readyCard).join('') + '</div></div>';
         }}
 
         // Brand new — not tracked anywhere
@@ -6723,7 +6743,7 @@ def render_intake():
             discoverNew.forEach((it, i) => {{
                 const photo = it.default_photo ? `<img src="${{esc(it.default_photo)}}" alt="">` : '<img alt="">';
                 const cn = it.common_name || it.scientific_name;
-                const meta = `${{it.obs_count}} obs · ${{esc(it.iconic || it.rank || '')}}`;
+                const meta = `${{it.obs_count}} obs${{it.latest ? ' · last seen ' + esc(it.latest) : ''}} · ${{esc(it.iconic || it.rank || '')}}`;
                 html += `<div class="discover-card" id="dcard-${{i}}">
                     ${{photo}}
                     <div class="dc-body">
