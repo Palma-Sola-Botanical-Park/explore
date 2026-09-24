@@ -920,7 +920,9 @@ function drawMap(obs){
     // see them now, i really want to see the red circles to make a point to people." Bumped ring
     // opacity too; a ring at 9% fill and 50% stroke was barely a ring at all.
     const col=o.obscured?"#6b7280":(typeof a!=="number"?"#6b7280":a<=10?"#16a34a":a<=30?"#f5a623":"#e0261f");
-    if(typeof a==="number"&&a>3&&a<=120)
+    // No upper cap — Randy, 2026-09-25: "I think show them because it is making my point for me."
+    // A 649 m ring swallowing half the map on a bad pin is the point, not a bug to hide.
+    if(typeof a==="number"&&a>3)
       L.circle([lat,lng],{radius:a,color:col,weight:2,opacity:.85,fillColor:col,
         fillOpacity:.18,interactive:false}).addTo(LAYER);
     L.circleMarker([lat,lng],{radius:7,color:"#faf8f3",weight:2.5,fillColor:col,fillOpacity:.95})
