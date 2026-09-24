@@ -1,20 +1,24 @@
 /* ============================================================================
    GROOVIN' IN THE GARDENS — theme for screen-groovin.html
    ----------------------------------------------------------------------------
-   Palette pulled from Bev's actual flyer (groovin-2026.jpg), not a generic
-   "jazz poster": a soft, hazy tulip-field photo behind a deep forest-green
-   brush-script wordmark, an olive vine strung with music notes, cream
-   paint-stroke callout boxes, and warm mustard-gold pricing numerals. This
-   is an elegant garden party, not a nightclub — keep it soft.
+   Palette pulled from Bev's actual flyer (groovin-2026.jpg). First pass made
+   the ground the flyer's forest green, which — Randy, 2026-09-25 — "seems
+   undercut by garden green... I thought maybe the groovin could go toward
+   another dominant color." Fair: a green GROUND reads as the park's usual
+   green no matter what color the text is. The flyer has a second, truer
+   "jazz and champagne" story: the warm cream-to-gold pricing band along the
+   bottom. That is now the dominant ground. The deep green stays — it is
+   still the poster's own script color — but demoted to one accent (the
+   wordmark, the vine), not the whole room.
    Loaded after event-deck.css; overrides its variables, adds slide classes.
-   2026-09-25.
+   2026-09-25, revised same day.
 ============================================================================ */
 :root{
-  --ground:#1e3a22; --ground-2:#16301a; --bg-glow:#2a4d2f;
-  --gold:#d9a941; --gold-deep:#b3812a; --paper:#fdf8ec;
+  --ground:#3d2c14; --ground-2:#2f2210; --bg-glow:#5a441f;
+  --gold:#e8c97a; --gold-deep:#c9a24a; --paper:#fdf8ec;
   --ink-invert:rgba(253,248,236,.88); --ink-quiet:rgba(253,248,236,.58);
-  --rule:rgba(217,169,65,.4);
-  --olive:#8ea052; --olive-dim:#6d7d3f;
+  --rule:rgba(232,201,122,.4);
+  --olive:#93a35a; --olive-dim:#748046;
 }
 body{background:var(--ground)}
 

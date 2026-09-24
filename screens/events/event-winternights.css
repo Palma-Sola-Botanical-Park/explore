@@ -1,0 +1,67 @@
+/* ============================================================================
+   WINTER NIGHTS UNDER THE LIGHTS — theme for screen-winternights.html
+   ----------------------------------------------------------------------------
+   Palette pulled from Bev's actual flyer (winternights.jpg): a nearly-black
+   photo of a lit tree, warm multicolor bokeh, a cranberry-red script line
+   ("Palma Sola Botanical Park's"), a glowing white/silver headline. Midnight,
+   not red-and-green retail Christmas — the flyer itself is closer to candlelight
+   than to a big-box store.
+   Loaded after event-deck.css; overrides its variables, adds slide classes.
+   2026-09-25.
+============================================================================ */
+:root{
+  --ground:#0a1410; --ground-2:#0e1c15; --bg-glow:#152a1e;
+  --gold:#e8b65a; --gold-deep:#c99a3f; --paper:#f7f2e6;
+  --ink-invert:rgba(247,242,230,.88); --ink-quiet:rgba(247,242,230,.56);
+  --rule:rgba(232,182,90,.32);
+  --cranberry:#c04a4f; --evergreen:#2f5d3c;
+}
+body{background:var(--ground)}
+
+/* Soft out-of-focus string-light dots instead of a fixed gradient — very
+   slow, gentle pulses. Not literal light-string art (we have no real photo
+   of the lit park yet), just the FEELING of it. Kept slow on purpose: a
+   park screen is furniture, and flicker reads as a fault, not a decoration. */
+.slide .bg{
+  background:
+    radial-gradient(3.2vmin 3.2vmin at 12% 22%, rgba(232,182,90,.5), transparent 70%),
+    radial-gradient(2.6vmin 2.6vmin at 82% 16%, rgba(192,74,79,.42), transparent 70%),
+    radial-gradient(3vmin 3vmin at 68% 70%, rgba(232,182,90,.4), transparent 70%),
+    radial-gradient(2.4vmin 2.4vmin at 22% 78%, rgba(120,150,120,.34), transparent 70%),
+    radial-gradient(2.8vmin 2.8vmin at 92% 60%, rgba(192,74,79,.32), transparent 70%),
+    radial-gradient(140vmin 90vmin at 50% 50%, var(--bg-glow) 0%, var(--ground) 72%);
+  animation:bokehDrift 34s ease-in-out infinite alternate;
+}
+@keyframes bokehDrift{
+  0%{filter:brightness(1)}
+  50%{filter:brightness(1.08)}
+  100%{filter:brightness(1)}
+}
+@media (prefers-reduced-motion:reduce){ .slide .bg{animation:none} }
+
+/* The flyer's own two-line treatment: a small cranberry script line, then
+   the glowing headline underneath it. */
+.wn-script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--cranberry);
+  font-size:clamp(1.4rem,3.6vmin,2.8rem);text-shadow:0 0 1.6vmin rgba(192,74,79,.5);margin-bottom:.6vmin}
+.wn-word{font-family:var(--serif);font-weight:700;color:var(--paper);
+  font-size:clamp(3.4rem,10.5vmin,8.4rem);line-height:1.02;
+  text-shadow:0 0 2.2vmin rgba(232,182,90,.45),0 .2vmin .8vmin rgba(0,0,0,.4)}
+.wn-word em{display:block;font-style:italic;font-weight:400;color:var(--gold);font-size:.86em}
+
+/* Toys for Tots — deliberately NOT another dark-green slide. A bright
+   gift-tag card, cream and cranberry, so it reads as its own moment. */
+.gifttag{background:var(--paper);color:#2a1b12;border-radius:1vmin;padding:3.4vmin 4vmin;
+  max-width:64vmin;box-shadow:0 1vmin 3vmin rgba(0,0,0,.4);position:relative}
+.gifttag::before{content:'';position:absolute;top:-1.6vmin;left:4vmin;width:1px;height:1.8vmin;background:var(--cranberry)}
+.gifttag .label{color:var(--cranberry);margin-bottom:1.6vmin}
+.gifttag h2{color:#2a1b12;font-size:clamp(2.2rem,5.6vmin,4.4rem)}
+.gifttag h2 em{color:var(--cranberry)}
+.gifttag .rule{background:var(--cranberry)}
+.gifttag .body{color:#3a2a1f;max-width:none}
+
+/* A quiet moment — big type, almost nothing else, for the two short punchy
+   lines ("go look" / "no snow required"). */
+.wn-moment{display:flex;flex-direction:column;justify-content:center;height:100%}
+.wn-moment h1{font-size:clamp(3.6rem,10vmin,7.8rem)}
+.wn-moment .sub{margin-top:1.6vmin;font-family:var(--serif);font-style:italic;color:var(--gold);
+  font-size:clamp(1.6rem,4vmin,3.2rem)}
