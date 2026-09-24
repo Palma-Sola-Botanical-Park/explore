@@ -85,5 +85,27 @@ window.SLIDES = [
 ];
 </script>
 <script src="event-deck.js"></script>
+<script>
+// Stars — one real element per star, each its own random pace, so nothing
+// twinkles in visible lockstep. See event-winternights.css .wn-star for why
+// this has to be JS: a shared CSS animation can't give each dot its own
+// independent timing. Runs once, right after event-deck.js has built every
+// .slide .bg (event-deck.js is synchronous, so they already exist here).
+(function(){
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('.slide .bg').forEach(function(bg){
+    for (var i = 0; i < 11; i++){
+      var s = document.createElement('div');
+      s.className = 'wn-star';
+      s.style.left = (4 + Math.random() * 92) + '%';
+      s.style.top = (4 + Math.random() * 88) + '%';
+      var dur = 5 + Math.random() * 6;                    // 5–11s, each star its own pace
+      s.style.animationDuration = dur + 's';
+      s.style.animationDelay = (-Math.random() * dur) + 's';  // negative = starts already mid-cycle
+      bg.appendChild(s);
+    }
+  });
+})();
+</script>
 </body>
 </html>

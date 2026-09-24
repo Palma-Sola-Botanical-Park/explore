@@ -41,47 +41,24 @@ body{background:var(--ground)}
 }
 @media (prefers-reduced-motion:reduce){ .slide .bg{animation:none} }
 
-/* Stars — Randy: "play up winter night (stars) and lights (which kinda
-   match the stars)... any glistening features would be good... a little
-   twinkling, not blinking and disturbing." Two clusters of small, crisp
-   points (sharper than the soft bokeh "lights" above, so the two read as
-   two related things — stars in the sky, lights in the tree), each cluster
-   fading gently on its OWN slow rhythm. Never fully off, never in unison —
-   that is what keeps it a twinkle and not a flash. Pure CSS, on the
-   auto-generated .bg element, so it applies to every slide for free. */
-.slide .bg::before,.slide .bg::after{
-  content:'';position:absolute;top:0;left:0;width:.3vmin;height:.3vmin;background:transparent;border-radius:50%;
-}
-.slide .bg::before{
-  box-shadow:
-    8vmin 12vmin 0 .15vmin rgba(247,242,230,.85),
-    22vmin 6vmin 0 .1vmin rgba(232,201,154,.8),
-    38vmin 18vmin 0 .12vmin rgba(247,242,230,.75),
-    58vmin 9vmin 0 .1vmin rgba(232,201,154,.8),
-    72vmin 22vmin 0 .15vmin rgba(247,242,230,.85),
-    88vmin 14vmin 0 .1vmin rgba(232,201,154,.75),
-    14vmin 62vmin 0 .12vmin rgba(247,242,230,.7),
-    46vmin 70vmin 0 .1vmin rgba(232,201,154,.7),
-    80vmin 66vmin 0 .12vmin rgba(247,242,230,.75);
-  animation:twinkleA 6s ease-in-out infinite;
-}
-.slide .bg::after{
-  box-shadow:
-    15vmin 4vmin 0 .1vmin rgba(232,201,154,.7),
-    30vmin 26vmin 0 .12vmin rgba(247,242,230,.7),
-    50vmin 15vmin 0 .1vmin rgba(232,201,154,.65),
-    66vmin 4vmin 0 .12vmin rgba(247,242,230,.75),
-    92vmin 24vmin 0 .1vmin rgba(232,201,154,.7),
-    6vmin 78vmin 0 .12vmin rgba(247,242,230,.65),
-    34vmin 84vmin 0 .1vmin rgba(232,201,154,.65),
-    64vmin 80vmin 0 .12vmin rgba(247,242,230,.7),
-    90vmin 76vmin 0 .1vmin rgba(232,201,154,.7);
-  animation:twinkleB 7.5s ease-in-out infinite;
-  animation-delay:2.4s;
-}
-@keyframes twinkleA{0%,100%{opacity:.55}50%{opacity:1}}
-@keyframes twinkleB{0%,100%{opacity:.4}50%{opacity:.9}}
-@media (prefers-reduced-motion:reduce){ .slide .bg::before,.slide .bg::after{animation:none;opacity:.75} }
+/* Stars — Randy: "play up winter night (stars) and lights... a little
+   twinkling, not blinking and disturbing." First pass used two box-shadow
+   clusters, which meant every star in a cluster moved in lockstep — visibly
+   a pattern. Randy: "each star could just barely go up and down in
+   brightness at its own random pace and not in synch... not off to bright
+   but just dim to not dim... aware of them moving but not sure at what
+   pattern." True per-star independence needs a real element per star (a
+   shared CSS animation can't give each one its own random timing), so this
+   is real DOM nodes, injected once by the small script at the bottom of
+   screen-winternights.html — one per slide's .bg, each with its own random
+   duration and a random NEGATIVE delay (so it starts already mid-cycle;
+   nothing begins in sync). Kept here, not in event-deck.js, because this is
+   this event's look, not shared mechanics. */
+.wn-star{position:absolute;width:.28vmin;height:.28vmin;border-radius:50%;
+  background:rgba(247,242,230,.65);pointer-events:none;
+  animation-name:starDim;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+@keyframes starDim{0%,100%{opacity:.3}50%{opacity:.7}}
+@media (prefers-reduced-motion:reduce){ .wn-star{animation:none;opacity:.5} }
 
 /* The flyer's own two-line treatment: a small cranberry script line, then
    the glowing headline underneath it. */
