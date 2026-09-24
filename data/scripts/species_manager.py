@@ -1895,9 +1895,9 @@ def _park_observations_lite():
     if _LITE_CACHE["rows"] is not None and time.time() - _LITE_CACHE["at"] < _LITE_TTL:
         return _LITE_CACHE["rows"]
     scope = INAT_SCOPE.replace("&verifiable=any", "")
-    fields = ("id,location,captive,taxon.id,taxon.name,taxon.preferred_common_name,"
-              "taxon.rank,taxon.iconic_taxon_name,taxon.ancestor_ids,"
-              "taxon.default_photo.square_url")
+    fields = ("id,location,captive,observed_on,taxon.id,taxon.name,"
+              "taxon.preferred_common_name,taxon.rank,taxon.iconic_taxon_name,"
+              "taxon.ancestor_ids,taxon.default_photo.square_url")
     def get_page(page):
         return _inat_get("https://api.inaturalist.org/v2/observations"
                          f"?{scope}&per_page=200&page={page}&order_by=id&order=asc"
@@ -1970,6 +1970,10 @@ def _inat_species_counts():
                 "default_photo": ((t.get("default_photo") or {}).get("square_url")) or "",
             }
         row["obs_count"] += 1
+        # Most recent observation, ISO date — the Intake list sorts on it.
+        seen_on = o.get("observed_on") or ""
+        if seen_on > (row.get("latest") or ""):
+            row["latest"] = seen_on
         # The parent taxon — for a subspecies, its species. Discover uses it to
         # attribute "Florida Zebra Longwing" to the park's Zebra Longwing.
         anc = t.get("ancestor_ids") or []
@@ -6057,6 +6061,12 @@ def render_intake():
     // Mirrors SET_ASIDE in Python — the reasons a research record can be set aside.
     const SET_ASIDE = {json.dumps(SET_ASIDE)};
     const isSetAside = s => !!(s && SET_ASIDE[s.status]);
+    // Park observation count and most recent date per research record, filled by the
+    // last Scan iNaturalist on this page (keyed by PSBP id, so a subspecies logged under
+    // a tracked species adds to that species). Empty until a scan has run.
+    let discoverStats = {{}};
+    const statOf = s => discoverStats[s.id]
+        || {{obs: (typeof s.inat_obs_count === 'number' ? s.inat_obs_count : 0), latest: ''}};
     const setAsideLabel = s => SET_ASIDE[s.status] || s.status;
     // A small select that reads "Set aside…" until a reason is picked.
     function setAsideSelect(id, cls) {{
@@ -6166,15 +6176,23 @@ def render_intake():
             );
         }}
 
-        // Set-aside species sink to the bottom in every view (Randy, 2026-09-24: "all of
-        // these dispositions should be at the bottom of the list of intake, not the top").
-        // Then source priority, then ID.
+        // Randy, 2026-09-24: "Start with the ones I'm working on. All the set-asides go to
+        // the bottom. For the ones I'm working on, sort by # of observations, and within
+        // that, most recent on top. For the Set Asides at the bottom, sort by type of set
+        // aside, then most recent observation." Observation counts and dates come from the
+        // last Scan iNaturalist in this page; before a scan, the record's own count stands in.
+        const asideOrder = Object.keys(SET_ASIDE);
         filtered.sort((a, b) => {{
             const aa = isSetAside(a) ? 1 : 0, ab = isSetAside(b) ? 1 : 0;
             if (aa !== ab) return aa - ab;
-            const ra = SOURCE_RANK[a.source] ?? 9;
-            const rb = SOURCE_RANK[b.source] ?? 9;
-            if (ra !== rb) return ra - rb;
+            const sa = statOf(a), sb = statOf(b);
+            if (aa) {{
+                const ta = asideOrder.indexOf(a.status), tb = asideOrder.indexOf(b.status);
+                if (ta !== tb) return ta - tb;
+            }} else if (sa.obs !== sb.obs) {{
+                return sb.obs - sa.obs;
+            }}
+            if (sa.latest !== sb.latest) return sa.latest < sb.latest ? 1 : -1;
             return a.id.localeCompare(b.id);
         }});
 
@@ -6216,10 +6234,12 @@ def render_intake():
                 'inat_observed': 'iNat sighting',
                 'park_inventory': 'Inventory'
             }})[s.source] || '';
-            const obs = (typeof s.inat_obs_count === 'number' && s.inat_obs_count > 0)
-                ? `${{s.inat_obs_count}} obs` : '';
+            const st = statOf(s);
+            const obs = st.obs > 0 ? `${{st.obs}} obs` : '';
+            const seen = st.latest ? 'last seen ' + new Date(st.latest + 'T12:00:00')
+                .toLocaleDateString([], {{month: 'short', day: 'numeric', year: 'numeric'}}) : '';
             const aside = isDead ? setAsideLabel(s) : '';
-            const meta = [s.id, obs, srcLabel, aside].filter(Boolean).join(' · ');
+            const meta = [s.id, obs, seen, srcLabel, aside].filter(Boolean).join(' · ');
             const content = `<span class="pi-content ${{s.content_filled > 0 ? 'has' : 'none'}}" title="${{s.content_filled}} of ${{s.content_total}} content fields filled">${{s.content_filled}}/${{s.content_total}}</span>`;
             const actions = isDead
                 ? `<button class="pi-btn pi-revive" onclick="event.stopPropagation(); intakeSetSpeciesStatus('${{s.id}}','research')">↩ Revive</button>`
@@ -6638,6 +6658,16 @@ def render_intake():
     function discoverRender(d) {{
         discoverNew = d.new || [];
         const ready = d.ready || [];
+        // Feed the research pool's sort: count and latest date per tracked record.
+        discoverStats = {{}};
+        [...ready, ...(d.pipeline || [])].forEach(it => {{
+            if (!it.psbp_id) return;
+            const cur = discoverStats[it.psbp_id] || {{obs: 0, latest: ''}};
+            cur.obs += it.obs_count || 0;
+            if ((it.latest || '') > cur.latest) cur.latest = it.latest;
+            discoverStats[it.psbp_id] = cur;
+        }});
+        intakeRenderPicker();
         const results = document.getElementById('discover-results');
         const sm = d.pipeline_summary || {{}};
         const smBits = Object.keys(sm).sort().map(k => `${{sm[k]}} ${{k}}`).join(' · ');
