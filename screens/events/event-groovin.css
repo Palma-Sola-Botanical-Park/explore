@@ -1,0 +1,71 @@
+/* ============================================================================
+   GROOVIN' IN THE GARDENS — theme for screen-groovin.html
+   ----------------------------------------------------------------------------
+   Palette pulled from Bev's actual flyer (groovin-2026.jpg), not a generic
+   "jazz poster": a soft, hazy tulip-field photo behind a deep forest-green
+   brush-script wordmark, an olive vine strung with music notes, cream
+   paint-stroke callout boxes, and warm mustard-gold pricing numerals. This
+   is an elegant garden party, not a nightclub — keep it soft.
+   Loaded after event-deck.css; overrides its variables, adds slide classes.
+   2026-09-25.
+============================================================================ */
+:root{
+  --ground:#1e3a22; --ground-2:#16301a; --bg-glow:#2a4d2f;
+  --gold:#d9a941; --gold-deep:#b3812a; --paper:#fdf8ec;
+  --ink-invert:rgba(253,248,236,.88); --ink-quiet:rgba(253,248,236,.58);
+  --rule:rgba(217,169,65,.4);
+  --olive:#8ea052; --olive-dim:#6d7d3f;
+}
+body{background:var(--ground)}
+
+/* Soft drifting glow instead of a fixed radial — the flyer's photo has that
+   same slow, hazy, out-of-focus garden quality. Subtle: a park screen is
+   furniture, not a music video. */
+.slide .bg{background:radial-gradient(120vmin 80vmin at 30% 40%, var(--bg-glow) 0%, var(--ground) 72%);
+  animation:glowDrift 26s ease-in-out infinite alternate}
+@keyframes glowDrift{
+  0%{background-position:0% 0%}
+  100%{background-position:14% 8%}
+}
+@media (prefers-reduced-motion:reduce){ .slide .bg{animation:none} }
+
+/* The wordmark — Playfair italic stands in for the flyer's brush script.
+   Big enough to bleed past the frame on purpose, the way the real script
+   overlaps the flyer's vine. */
+.grv-word{font-family:var(--serif);font-style:italic;font-weight:700;color:var(--paper);
+  font-size:clamp(4.2rem,13vmin,10.5rem);line-height:.94;letter-spacing:-.01em;
+  text-shadow:0 .3vmin 1.2vmin rgba(0,0,0,.35)}
+.grv-word em{display:block;font-style:normal;font-weight:400;font-size:.34em;
+  letter-spacing:.3em;text-transform:uppercase;color:var(--olive);margin-top:1.4vmin}
+
+/* A quiet vine-and-music-note flourish, the flyer's own graphic vocabulary,
+   drawn once as inline SVG rather than borrowed clip-art. */
+.vine{display:block;width:34vmin;height:auto;color:var(--olive);opacity:.85;margin:1.6vmin 0 .4vmin -.6vmin}
+
+/* Cream paint-stroke callout — the flyer's white brush-box treatment,
+   approximated with a soft irregular border-radius instead of a real
+   brush texture. */
+.paint{display:inline-block;background:var(--paper);color:var(--ground);
+  border-radius:1.2vmin 2.4vmin 1vmin 2.6vmin/2.2vmin 1vmin 2.8vmin 1vmin;
+  padding:2vmin 3vmin;font-size:clamp(1.3rem,2.7vmin,2.1rem);font-weight:600;
+  box-shadow:0 .8vmin 2.4vmin rgba(0,0,0,.28);max-width:60vmin}
+.paint b{color:var(--gold-deep)}
+
+/* The 1975 → today → tonight sequence — big stacked numerals, not paragraphs */
+.grv-timeline{display:flex;flex-direction:column;gap:2.6vmin}
+.grv-step{display:flex;align-items:baseline;gap:2.4vmin}
+.grv-step .yr{font-family:var(--serif);font-weight:700;color:var(--gold);
+  font-size:clamp(2.2rem,5.6vmin,4.4rem);min-width:7ch}
+.grv-step .what{font-size:clamp(1.5rem,3.4vmin,2.7rem);color:var(--ink-invert);font-weight:300}
+.grv-step .what b{color:var(--paper);font-weight:700}
+.grv-step+.grv-step{border-top:1px solid var(--rule);padding-top:2.6vmin}
+
+/* Full-bleed photo slide with the wordmark ghosted huge behind it */
+.grv-hero{position:absolute;inset:0}
+.grv-hero .bg.photo{filter:brightness(.52) saturate(.92);
+  animation:kenburns 22s ease-in-out infinite alternate}
+@keyframes kenburns{ 0%{transform:scale(1)} 100%{transform:scale(1.045)} }
+@media (prefers-reduced-motion:reduce){ .grv-hero .bg.photo{animation:none} }
+.grv-hero .ghost{position:absolute;left:-2vmin;bottom:-4vmin;font-family:var(--serif);font-style:italic;
+  font-weight:700;font-size:26vmin;color:rgba(253,248,236,.1);line-height:1;pointer-events:none;z-index:0}
+.grv-hero .copy{position:relative;z-index:1;align-self:flex-end;margin-bottom:6vmin}

@@ -1,16 +1,27 @@
 /* ============================================================================
-   EVENT DECK — shared look for the in-event screens in screens/events/.
-   Same furniture as screens/screen.html (frame, clock, logo, --ground/--gold,
-   Playfair + Source Sans). The visitor is ALREADY HERE — so no dates, no
-   directions to the park, no "save the date". Every slide answers "what do I
-   do now that I'm standing in this air-conditioned room?"
-   2026-09-23, mockup.
+   EVENT DECK — shared MECHANICS for the in-event screens in screens/events/.
+   Frame, clock, logo corner, slide/fade engine, QR sizing, the .where grid.
+   The visitor is ALREADY HERE — so no dates, no directions to the park, no
+   "save the date". Every slide answers "what do I do now that I'm standing
+   in this air-conditioned room?"
+
+   ── Philosophy, changed 2026-09-25 ──────────────────────────────────────
+   Palma Sola supplies the FRAME (this file); the event supplies the
+   PERSONALITY. Every color/type value below is a custom property with a
+   plain, muted default — deliberately not "the" park look. Each event gets
+   its own stylesheet (event-groovin.css, event-winternights.css, …) loaded
+   AFTER this one that overrides the variables and adds a few slide-specific
+   classes of its own. Do not add event-specific colors or compositions
+   here; that is exactly the trap ("green + gold = the whole visual
+   language") that made Groovin', Winter Nights and the Plant Festival look
+   like one event wearing three different hats.
+   2026-09-23, mockup. Split into mechanics + themes 2026-09-25.
 ============================================================================ */
 :root{
-  --ground:#0c1a10; --ground-2:#122316;
-  --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
-  --ink-invert:rgba(253,252,248,.84); --ink-quiet:rgba(253,252,248,.58);
-  --rule:rgba(234,188,90,.34);
+  --ground:#14261a; --ground-2:#1a3020; --bg-glow:#1f3a26;
+  --gold:#c9a24a; --gold-deep:#a67e30; --paper:#f7f3e9;
+  --ink-invert:rgba(247,243,233,.86); --ink-quiet:rgba(247,243,233,.58);
+  --rule:rgba(201,162,74,.34);
   --serif:'Playfair Display',Georgia,serif;
   --sans:'Source Sans 3',-apple-system,'Segoe UI',sans-serif;
   --fade:1.2s; --frame:2.6vmin; --pad:4.4vmin;
