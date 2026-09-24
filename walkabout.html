@@ -113,6 +113,8 @@ h2 .tag{margin-left:auto;font-family:'Source Sans 3',sans-serif;font-size:.82rem
 .chip{background:var(--cream);border:1px solid var(--border);border-radius:999px;
   padding:8px 14px;font-size:.92rem}
 .chip.hot{background:var(--gold-light);border-color:var(--gold);font-weight:700}
+a.chip{text-decoration:none;color:inherit}
+a.chip:hover{border-color:var(--green-deep)}
 .chip .sci{font-style:italic;color:var(--text-soft);font-size:.8rem;margin-left:6px}
 
 /* ── map ── */
@@ -199,8 +201,9 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
 <div id="err"></div>
 
 <section id="secWall">
-  <h2><span id="wallH">Here&rsquo;s a batch of the first 20 taken this walkabout</span><span class="tag" id="tWall"></span></h2>
-  <p class="sub">Everything the group photographed, newest first. Click any picture to open it on iNaturalist.</p>
+  <h2><span id="wallH">The first 20 observations this walkabout</span><span class="tag" id="tWall"></span></h2>
+  <p class="sub">Everything the group recorded, newest first. Each picture is the first photo of its
+    observation. Hover for who, when and what; click to open it on iNaturalist.</p>
   <div class="wall" id="wall"></div>
   <button class="more" id="wallMore" hidden></button>
 </section>
@@ -726,26 +729,33 @@ function render(obs,priorTaxa){
   // that lotsa good pics were taken. That's the best point." The rest are one click away,
   // and holding them back is most of what keeps a big day from costing megabytes on open.
   const withPhoto=obs.filter(o=>photoOf(o));
+  // Hover says who, when and what — Randy, 2026-09-24. The picture is the observation's
+  // FIRST photo; the observation may hold several.
+  const whenOf=o=>{
+    const t=o.time_observed_at?new Date(o.time_observed_at):null;
+    return t&&!isNaN(t)?t.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"time not recorded";
+  };
   const tile=o=>'<a href="'+uriOf(o)+'" target="_blank" rel="noopener" title="'+
-    esc(nameOf(o._taxon||o.taxon))+' — '+esc(whoOf(o))+
+    esc(nameOf(o._taxon||o.taxon))+' · '+esc(whoOf(o))+' · '+esc(whenOf(o))+
+    ((o.photos||[]).length>1?' · '+(o.photos||[]).length+' photos':'')+
     '"><img loading="lazy" src="'+photoOf(o)+'" alt=""></a>';
   const FIRST=20;
   $("wall").innerHTML=withPhoto.slice(0,FIRST).map(tile).join("")
-    ||'<p class="empty">No photographs in this window yet.</p>';
+    ||'<p class="empty">No observations with a photo in this window yet.</p>';
   const moreBtn=$("wallMore"), rest=withPhoto.slice(FIRST);
   if(rest.length){
     moreBtn.hidden=false;
-    moreBtn.textContent="Show the other "+rest.length+" photograph"+(rest.length===1?"":"s");
+    moreBtn.textContent="Show the other "+rest.length+" observation"+(rest.length===1?"":"s");
     moreBtn.onclick=()=>{
       $("wall").insertAdjacentHTML("beforeend",rest.map(tile).join(""));
       moreBtn.hidden=true;
     };
   } else { moreBtn.hidden=true; moreBtn.onclick=null; }
-  $("tWall").textContent=withPhoto.length?withPhoto.length+" photographed":"";
+  $("tWall").textContent=withPhoto.length?withPhoto.length+" with photos":"";
   const shownN=Math.min(FIRST,withPhoto.length);
-  $("wallH").textContent = !withPhoto.length ? "Photographs from this walkabout"
-    : rest.length ? "Here\u2019s a batch of the first "+shownN+" taken this walkabout"
-    : "Here are all "+shownN+" photograph"+(shownN===1?"":"s")+" taken this walkabout";
+  $("wallH").textContent = !withPhoto.length ? "Observations from this walkabout"
+    : rest.length ? "The first "+shownN+" observations this walkabout"
+    : "All "+shownN+" observation"+(shownN===1?"":"s")+" this walkabout";
 
   // ── people ──
   // How far did each person actually walk? Straight lines between their observations in
@@ -783,8 +793,17 @@ function render(obs,priorTaxa){
   $("tTeam").textContent=rows.length?rows.length+(rows.length===1?" person":" people"):"";
 
   // ── first for the park ──
-  const chip=(r,hot)=>'<span class="chip'+(hot?" hot":"")+'">'+esc(r.name)+
-    (r.sci?'<span class="sci">'+esc(r.sci)+'</span>':'')+'</span>';
+  // Each chip links to the day's observation of that species — or, when the group
+  // recorded it more than once, to all of them on iNaturalist. Randy, 2026-09-24.
+  const dayISO=$("day").value||todayISO();
+  const linkFor=tid=>{
+    const list=DUPS[tid]||[];
+    if(list.length===1) return uriOf(list[0]);
+    return "https://www.inaturalist.org/observations?"+SCOPE+"&taxon_id="+tid+"&on="+dayISO;
+  };
+  const chip=(r,hot,tid)=>'<a class="chip'+(hot?" hot":"")+'" href="'+linkFor(tid)+
+    '" target="_blank" rel="noopener" title="Open on iNaturalist">'+esc(r.name)+
+    (r.sci?'<span class="sci">'+esc(r.sci)+'</span>':'')+'</a>';
   const isToday=($("day").value||todayISO())===todayISO();
   if(!priorTaxa) $("tNew").textContent="checking the park's history…";
   $("newSub").innerHTML = priorTaxa
@@ -793,12 +812,12 @@ function render(obs,priorTaxa){
       "we know now &mdash; so this still means something for a walkabout months ago."
     : "Species with no record in the park&rsquo;s catalog. (The park&rsquo;s full history "+
       "could not be checked just now, so this is the catalog comparison instead.)";
-  $("newList").innerHTML=newSp.size?[...newSp.values()].map(r=>chip(r,true)).join("")
+  $("newList").innerHTML=newSp.size?[...newSp].map(([tid,r])=>chip(r,true,tid)).join("")
     :'<p class="empty">Nothing recorded here for the first time — which is completely normal. '+
      'Most walkabouts add depth rather than firsts.</p>';
   $("tNew").textContent=newSp.size?newSp.size+(priorTaxa?" first records":" to check"):"";
 
-  $("unpubList").innerHTML=unpub.size?[...unpub.values()].map(r=>chip(r,false)).join("")
+  $("unpubList").innerHTML=unpub.size?[...unpub].map(([tid,r])=>chip(r,false,tid)).join("")
     :'<p class="empty">Everything recorded on this walkabout already has a finished page.</p>';
   $("tUnpub").textContent=unpub.size||"";
 
