@@ -1,0 +1,11 @@
+{
+  "_note": "Starting point for the FastAPI controller described in park-library/system docs/PSBP_Mini_PC_Display_System_Deployment_Plan_UPDATED.md, section 17 ('choose what to show, then where'). This file lives in the repo so it reaches PSBP-Office and PSBP-Galleria on the normal 10-minute git pull, same as every other published JSON. The controller reads this list to build its WHAT TO SHOW buttons; each 'file' is a path relative to the repo root that the controller turns into a full localhost URL (e.g. http://localhost:8080/screens/screen-volunteer.html). Add a row here whenever a new screen is built — nothing else needs to change for the controller to offer it.",
+  "choices": [
+    { "id": "park",        "label": "Normal Park Screen",              "file": "screens/screen.html" },
+    { "id": "volunteer",   "label": "Bright Futures / Volunteer Mode", "file": "screens/screen-volunteer.html" },
+    { "id": "ina",         "label": "Ina Memorial",                    "file": "screens/events/screen-ina.html" },
+    { "id": "groovin",     "label": "Groovin' in the Gardens",         "file": "screens/events/screen-groovin.html" },
+    { "id": "winternights","label": "Winter Nights Under the Lights",  "file": "screens/events/screen-winternights.html" },
+    { "id": "plantsale",   "label": "Fall Plant & Garden Festival",    "file": "screens/events/screen-plantsale.html" }
+  ]
+}
