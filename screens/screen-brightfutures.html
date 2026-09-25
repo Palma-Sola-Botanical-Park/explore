@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925n">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925n">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925o">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925o">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -274,6 +274,9 @@
     if(FOCUS_MEM[key]) return FOCUS_MEM[key];
     var cached = focusCache()[key];
     if(cached) return (FOCUS_MEM[key] = Promise.resolve(cached));
+    /* only the open-data bucket allows pixel reads; static.inaturalist.org
+       refuses, so don't ask (the photo just stays centred) */
+    if(url.indexOf('inaturalist-open-data') < 0) return (FOCUS_MEM[key] = Promise.resolve(null));
     FOCUS_MEM[key] = new Promise(function(res){
       var img = new Image(); img.crossOrigin = 'anonymous';
       img.onload = function(){
@@ -488,7 +491,10 @@
       return { items: collageFor(urls),
                credit: window.PSBPPhotos.creditPlate({ by: by, license: members[0].photos[0].license }) };
     });
-    return { id:'month-'+part, seconds: SECONDS*(0.5 + 0.32*quilt.length), quilt: quilt, html:
+    /* long enough that the last group always lands (render() holds each
+       group at least 3.2 s), whatever the base dwell is set to */
+    var secs = Math.max(SECONDS*(0.5 + 0.32*quilt.length), (1.4 + 3.4*quilt.length + 1)/SPEED);
+    return { id:'month-'+part, seconds: secs, quilt: quilt, html:
         '<div class="copy"><div class="label">This month</div>'
       + '<h2>Here’s how many iNat pics we’ve taken this month:</h2>'
       + countHtml(PULSE.monthPhotos, 'photos', 'hero')
@@ -586,7 +592,7 @@
     if(!tasksData) return null;
     var copy = '<div class="copy"><div class="label">The weekly tasks</div>'
       + '<h2>Go own something.</h2>'
-      + '<div class="body">It’s on the clipboard in the office. Circle a task to own it. X it when it’s done. Tell staff you’ve got it.</div>'
+      + '<div class="body">This one. It’s on the clipboard in the office. Circle a task to own it. X it when it’s done. Tell staff you’ve got it.</div>'
       + (tasksData.note ? '<div class="body"><b>'+esc(tasksData.note)+'</b></div>' : '')
       + '</div>';
     if(tasksData.sheetOk){
@@ -685,36 +691,9 @@
     try{ localStorage.setItem(NICE_KEY, JSON.stringify(last)); }catch(e){}
   }
 
-  /* Randy, 2026-09-25, on the old two-photo version: "oddly composed...
-     hideously boring." / "use screen on right side with irregular size
-     blocks and show more than 2." Four real photos in a mosaic (one big,
-     three smaller — see .mosaic), each from a DIFFERENT student so it
-     reads as "the crew," not one kid's highlight reel. */
-  function diversePhotos(pool, n){
-    var byPhotog = {};
-    pool.forEach(function(p){ (byPhotog[p.photographer] = byPhotog[p.photographer] || []).push(p); });
-    var keys = Object.keys(byPhotog).sort(function(){ return Math.random()-0.5; });
-    var out = [];
-    for(var i=0; i<keys.length && out.length<n; i++){
-      var mine2 = byPhotog[keys[i]];
-      out.push(mine2[Math.floor(Math.random()*mine2.length)]);
-    }
-    return out;
-  }
-  function slideHero(mine){
-    var pool = mine.filter(function(p){ return p.hero; });
-    var pics = diversePhotos(pool.length >= 4 ? pool : mine, 4);
-    if(pics.length < 3) return null;
-    var tiles = pics.map(function(p,i){
-      return '<figure class="m'+i+'"><img src="'+p.photo_url+'" alt="">'
-        + '<figcaption>'+esc((p.photographer_name||'').split(' ')[0]||'')+'</figcaption></figure>';
-    }).join('');
-    return { id:'hero', seconds: SECONDS*2, html:
-        '<div class="copy"><div class="label">The hero shot</div>'
-      + '<h2>And there’s not just one way to do it.</h2>'
-      + '<div class="body">One thing in the frame. Nothing in the way. Get close so it fills the shot, or step back so you get the whole shape. Both work.</div></div>'
-      + '<div class="mosaic">'+tiles+'</div>' };
-  }
+  /* The four-photo mosaic ("And there's not just one way to do it")
+     retired 2026-09-25 — Randy: "not much meat here. Drop it?" The
+     annotated hero shot, the example cards and the detail shot cover it. */
 
   /* Randy, 2026-09-25: "use some of this" — the September photo-awards
      deck on his Desktop. Its five judging questions, in his own words,
@@ -806,10 +785,15 @@
   ];
   function slideIdDetail(mine){
     var byId = {}; mine.forEach(function(p){ byId[p.photo_id] = p; });
-    var exs = ID_EXAMPLES.filter(function(e){ return byId[e.id]; });
-    if(exs.length < 2) return null;
-    exs = exs.sort(function(){ return Math.random()-0.5; }).slice(0, 3);
-    var opener = randomPhoto(mine.filter(function(x){ return x.hero; })) || randomPhoto(mine);
+    var all = ID_EXAMPLES.filter(function(e){ return byId[e.id]; });
+    if(all.length < 2) return null;
+    var exs = all.slice().sort(function(){ return Math.random()-0.5; }).slice(0, 3);
+    /* Randy, 2026-09-25: the intro ran over "a perfect hero image of
+       bridal veil tree with bridge and galleria and pond. It was NOT a
+       detail photo." So the intro's backdrop is the one detail example
+       left out of this showing — a close-up under words about close-ups. */
+    var left = all.filter(function(e){ return exs.indexOf(e) < 0; })[0] || exs[0];
+    var opener = byId[left.id];
     var steps = [{ seconds: SECONDS*0.5, copy:
         '<div class="label">The detail shot</div>'
       + '<h2>Ok, here’s the other kind of shot.</h2>'
@@ -958,8 +942,8 @@
     return { id:'website', seconds: SECONDS*1.9, shout:true, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">The website</div>'
       + '<div class="shout-line">We need <em>hero</em> photos.</div>'
-      + '<div class="body">The hero is the lead photo on the species page and the one on the sign. It has to look like the plant.</div>'
-      + '<div class="body">And if it’s so darn gorgeous we can’t NOT use it — even better.</div>'
+      + '<div class="body">The hero leads the species page and goes on the sign. The plant, unmistakable, sharp, with a bit of the park behind it.</div>'
+      + '<div class="body">Or so darn gorgeous we can’t NOT use it.</div>'
       + '<div class="body">Shoot a better one. It goes up with your name under it.</div></div>' };
   }
 
@@ -1484,7 +1468,7 @@
     /* Reviewer: "four photography-instruction slides is a lot. I'd
        rotate only one or two of those in any given session." Two of the
        general ones, plus one or two of Randy's example cards. */
-    var coachingAll = [slideHero(mine), slideWhyMultiple(mine), slideWhyAllYear(mine)].filter(Boolean);
+    var coachingAll = [slideWhyMultiple(mine), slideWhyAllYear(mine)].filter(Boolean);
     var closerOf = dealt(HERO_CLOSERS);
     var examplesAll = EXAMPLES.map(function(ex, i){ return slideExample(mine, ex, closerOf(i)); }).filter(Boolean);
     /* ?only= proofing wants every format reachable, so skip the sampling then */

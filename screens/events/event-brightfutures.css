@@ -189,25 +189,7 @@
 .task .job{font-size:clamp(1.5rem,3.5vmin,2.8rem);color:var(--paper);font-weight:400;line-height:1.35}
 .task-list + .body{margin-top:5vmin}
 
-/* Sized to actually fill a widescreen TV, not sit as two thumbnails in a
-   sea of empty ground — Randy, 2026-09-25: "empty space." */
-/* Randy, 2026-09-25, on the old side-by-side pair: "oddly composed...
-   hideously boring." / "use screen on right side with irregular size
-   blocks and show more than 2." A fixed-size block on the right (sibling
-   to .copy, same pattern as event-deck.css's .poster/.photo-col), four
-   tiles of deliberately different sizes rather than a tidy even grid. */
-.mosaic{flex:0 0 auto;width:52vmin;height:70vmin;display:grid;gap:1.4vmin;
-  grid-template-columns:1.4fr 1fr;grid-template-rows:1fr 1fr .8fr}
-.mosaic figure{margin:0;position:relative;border-radius:1.4vmin;overflow:hidden;
-  box-shadow:0 .8vmin 3.2vmin rgba(0,0,0,.5)}
-.mosaic img{display:block;width:100%;height:100%;object-fit:cover}
-.mosaic .m0{grid-column:1;grid-row:1 / span 2}
-.mosaic .m1{grid-column:2;grid-row:1}
-.mosaic .m2{grid-column:2;grid-row:2}
-.mosaic .m3{grid-column:1 / span 2;grid-row:3}
-.mosaic figcaption{position:absolute;left:0;right:0;bottom:0;padding:1vmin 1.4vmin;
-  background:linear-gradient(transparent,rgba(0,0,0,.78));
-  font-size:1.4vmin;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--paper)}
+/* (the four-photo .mosaic slide was retired 2026-09-25 — "not much meat here") */
 
 /* Borrowed from Randy's photo-awards deck (Desktop, Sept 2026): the
    framed photo-beside-text card, and the numbered rubric rows. Two more
@@ -245,9 +227,13 @@
 
 /* The weekly-tasks slide: copy left, a photo of the week's sheet right —
    Randy: "split paned." Portrait or landscape, it fits inside the band. */
-.sheet{flex:0 0 auto;width:50vmin;max-height:70vmin;display:flex;align-items:flex-start;justify-content:flex-end}
-.sheet img{max-width:100%;max-height:70vmin;display:block;border-radius:.8vmin;background:#fff;
-  box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.6)}
+/* Randy: "much bigger... zoomed in to cut out distractions... center of
+   right hand frame. Really lean into it being a real thing they should
+   look for." The photo is cropped to the paper; here it takes the full
+   height of the slide, centred in the right half. */
+.sheet{flex:0 0 48%;height:80vmin;display:flex;align-items:flex-start;justify-content:center}
+.sheet img{max-width:100%;max-height:80vmin;display:block;border-radius:.6vmin;background:#fff;
+  box-shadow:0 1.6vmin 5vmin rgba(0,0,0,.65)}
 .rubric{display:grid;gap:1vmin;margin-top:2.4vmin;max-width:82vmin}
 .rub{display:grid;grid-template-columns:4.4vmin 1fr;gap:1.6vmin;align-items:start;
   background:rgba(255,255,255,.05);border:1px solid var(--rule);border-radius:.6vmin;padding:1.1vmin 1.5vmin}
@@ -273,8 +259,8 @@
 .slide.on .copy.slow > *:nth-child(2){animation-delay:1.4s}
 .slide.on .copy.slow > *:nth-child(3){animation-delay:2.5s}
 .slide.on .copy.slow > *:nth-child(n+4){animation-delay:3.7s}
-.slide .mosaic,.slide .card-photo,.slide .sheet{opacity:0;transform:translateX(1.5vmin)}
-.slide.on .mosaic,.slide.on .card-photo,.slide.on .sheet{animation:rise .7s ease-out .7s forwards}
+.slide .card-photo,.slide .sheet{opacity:0;transform:translateX(1.5vmin)}
+.slide.on .card-photo,.slide.on .sheet{animation:rise .7s ease-out .7s forwards}
 .slide .task,.slide .rub{opacity:0;transform:translateY(.8vmin)}
 .slide.on .task,.slide.on .rub{animation:rise .5s ease-out forwards}
 .slide.on .task:nth-child(1),.slide.on .rub:nth-child(1){animation-delay:.9s}
@@ -310,7 +296,7 @@
   to{opacity:0;transform:translate(-50%,-50%) rotate(var(--rot)) scale(.8)}}
 
 @media (prefers-reduced-motion:reduce){
-  .slide .copy > *,.slide .mosaic,.slide .card-photo,.slide .sheet,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
+  .slide .copy > *,.slide .card-photo,.slide .sheet,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
   .quilt .tile{animation:none;opacity:1;transform:translate(-50%,-50%) rotate(var(--rot))}
   .quilt .tile.out{opacity:0}
   .callout,.idstage .dot,.obs-row{animation:none;opacity:1;transform:none}
