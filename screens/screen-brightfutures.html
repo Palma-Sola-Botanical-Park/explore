@@ -408,8 +408,8 @@
   function slideTasks(tasksData, mine){
     if(!tasksData) return null;
     var copy = '<div class="copy"><div class="label">The weekly tasks</div>'
-      + '<h2>First thing when you get here: pick a job.</h2>'
-      + '<div class="body">Find one on the sheet that nobody has started and you can do, then tell staff you’re on it.</div>'
+      + '<h2>Go own something.</h2>'
+      + '<div class="body">Find a job on the sheet nobody’s started. Tell staff you’ve got it.</div>'
       + (tasksData.note ? '<div class="body"><b>'+esc(tasksData.note)+'</b></div>' : '')
       + '</div>';
     if(tasksData.sheetOk){
@@ -497,7 +497,7 @@
         + '<figcaption>'+esc((p.photographer_name||'').split(' ')[0]||'')+'</figcaption></figure>';
     }).join('');
     return { id:'hero', seconds: SECONDS*2, html:
-        '<div class="copy"><div class="label">What a hero photo is</div>'
+        '<div class="copy"><div class="label">This is what we mean</div>'
       + '<div class="body">One thing in the frame. Nothing in the way. Get close so it fills the shot, or step back so you get the whole shape. Both work.</div></div>'
       + '<div class="mosaic">'+tiles+'</div>' };
   }
@@ -517,10 +517,15 @@
     var rows = RUBRIC.map(function(r, i){
       return '<div class="rub"><b>'+(i+1)+'</b><div><strong>'+esc(r[0])+'</strong>'+esc(r[1])+'</div></div>';
     }).join('');
-    return { id:'rubric', seconds: SECONDS*2, html:
-        '<div class="copy"><div class="label">What a hero photo is</div>'
-      + '<h2>Recognition first. Pretty second.</h2>'
-      + '<div class="rubric">'+rows+'</div></div>' };
+    /* Randy, 2026-09-25, on the tutorial voice: "we use lingo like 'ok,
+       so here's our best thoughts on what makes a good HERO image.'
+       let's make sure we try to get one of these each observation.
+       maybe you get selected." Staff talking, not a poster. */
+    return { id:'rubric', seconds: SECONDS*2.2, html:
+        '<div class="copy"><div class="label">The hero image</div>'
+      + '<h2>Ok, so here’s our best thoughts.</h2>'
+      + '<div class="rubric">'+rows+'</div>'
+      + '<div class="body">Let’s try for one of these every observation. Maybe you get selected.</div></div>' };
   }
 
   /* Real crew photos with Randy's own notes from that deck, lightly
@@ -561,8 +566,8 @@
     return { id:'website', seconds: SECONDS*1.9, shout:true, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">The website</div>'
       + '<div class="shout-line">We need <em>hero</em> photos.</div>'
-      + '<div class="body">Every species page on the site opens with one photo that stands for the plant. We swap them out all the time as better ones come in.</div>'
-      + '<div class="body">Shoot a better one and it goes up with your name under it.</div></div>' };
+      + '<div class="body">One photo leads every species page. We swap them as better ones come in.</div>'
+      + '<div class="body">Shoot a better one. It goes up with your name under it.</div></div>' };
   }
 
   function slideWhyMultiple(mine){
@@ -575,7 +580,7 @@
   function slideWhyAllYear(mine){
     var p = randomPhoto(mine);
     return { id:'allyear', seconds: SECONDS*1.2, bg: p && p.photo_url, credit: p && creditText(p), html:
-        '<div class="copy"><div class="label">Why we keep going</div><h2>Same plant, three different plants.</h2>'
+        '<div class="copy"><div class="label">Shoot it again</div><h2>Same plant, three different plants.</h2>'
     + '<div class="body">Bare in winter. Flowers in spring. Fruit in fall. So no, we don’t already have that one.</div></div>' };
   }
 
@@ -659,8 +664,8 @@
     return { id:'signs', seconds: SECONDS*1.9, shout:true, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">The signs</div>'
       + '<div class="shout-line">We need your <em>photos.</em></div>'
-      + '<div class="body">We put up new signs constantly: fresher photos, better words, worn ones swapped out. And we do that on Wednesdays, right here.</div>'
-      + '<div class="body">The photo on a sign comes from one of you. Your name goes on it.</div>'
+      + '<div class="body">New signs go up all the time. Wednesdays, right here.</div>'
+      + '<div class="body">Your photo. Your name on it.</div>'
       + (push ? '<div class="body"><b>'+esc(push)+'</b></div>' : '') + '</div>' };
   }
 
@@ -688,6 +693,10 @@
         '<div class="copy"><div class="label">5:30</div><h2>WARNING — time to stop what you’re doing.</h2>'
       + '<div class="body"><b>Carts</b> put away and washed down. <b>Tools</b> put away. Wrap up what you’re holding.</div></div>' };
   }
+  /* The wrap-up lists what got done, not just iNat — otherwise the
+     screen says iNat is the work that counts, and somebody who hauled
+     mulch for three hours sees nothing. `today_accomplishments` in
+     brightfutures_today.json, typed in that afternoon; empty is fine. */
   function slideSummary(){
     var stats = (PULSE && PULSE.todayObs)
       ? '<div class="stat-row">'
@@ -695,14 +704,16 @@
         + countHtml(PULSE.todaySpecies, 'species')
         + countHtml(PULSE.todayObservers, 'observers') + '</div>'
       : '<div class="body">Today’s iNat numbers are still coming in — check the app.</div>';
+    var done = (TODAY && TODAY.today_accomplishments || []).filter(Boolean).slice(0,4);
+    var doneHtml = done.length ? '<div class="body done">' + done.map(function(d){ return '<b>'+esc(d)+'</b>'; }).join(' · ') + '</div>' : '';
     return { id:'summary', seconds: SECONDS*1.6, html:
         '<div class="copy"><div class="label">5:45 · Look what happened today</div>'
-      + stats + '<div class="body">Nice work. See you next Wednesday.</div></div>' };
+      + stats + doneHtml + '<div class="body">That’s a Wednesday. See you next week.</div></div>' };
   }
 
   /* ── data load + rotation ───────────────────────────────────────────── */
   var BASE = '../';
-  var slides = [];
+  var slides = [], TODAY = null;   /* TODAY = brightfutures_today.json, once loaded */
   var lastForced = { cleanup:0, summary:0 };
 
   function forcedSlide(){
@@ -869,6 +880,9 @@
   function pick(){
     var forced = forcedSlide();
     if(forced) return forced;
+    /* the two clock slides aren't in the bag, so ?only= reaches them by name */
+    if(ONLY === 'summary') return slideSummary();
+    if(ONLY === 'cleanup') return slideCleanup();
     var all = ONLY ? slides.filter(function(s){ return s.id.indexOf(ONLY) === 0; }) : slides;
     /* ?only= for a live-data slide (month, mostphoto…) matches nothing
        until the iNat pulse lands — hold on "Loading…" for a couple of
@@ -999,7 +1013,7 @@
         /* the week's task-sheet photo: test-load it before the first
            build (local image, well under a second; a 404 fails fast) so
            the tasks slide is the split-pane version from the first pick */
-        var today = r[0], sheetReady = Promise.resolve();
+        var today = TODAY = r[0], sheetReady = Promise.resolve();
         if(today && today.sheet){
           today.sheetUrl = BASE + today.sheet;
           sheetReady = new Promise(function(res){
