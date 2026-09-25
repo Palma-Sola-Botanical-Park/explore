@@ -105,10 +105,11 @@
    from left lines" — box pulled in by its own padding (so its text lines
    up with the headline text above), and the bottom gap matched to it. */
 .credit-block{position:fixed;left:calc(var(--frame) + var(--pad) - 1.7vmin);bottom:calc(var(--frame) + 2.7vmin);
-  z-index:41;opacity:0;transition:opacity .4s ease;
+  z-index:41;opacity:0;transform:translateX(-2.4vmin);
+  transition:opacity .45s ease,transform .55s cubic-bezier(.2,.8,.3,1);   /* slides in, a beat late — see setCredit() */
   background:rgba(8,13,18,.74);border:1px solid var(--rule);border-radius:.7vmin;
   padding:1.2vmin 1.7vmin 1.1vmin;backdrop-filter:blur(6px)}
-.credit-block.on{opacity:1}
+.credit-block.on{opacity:1;transform:none}
 
 /* Randy, 2026-09-25: "there is a standard credit block in html site.
    much better than what youve done" — so the markup now comes straight
@@ -193,6 +194,11 @@
 .card-photo{flex:0 0 auto;width:52vmin;aspect-ratio:3/2;border-radius:1vmin;overflow:hidden;
   background:#000;box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.6)}
 .card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+/* The weekly-tasks slide: copy left, a photo of the week's sheet right —
+   Randy: "split paned." Portrait or landscape, it fits inside the band. */
+.sheet{flex:0 0 auto;width:50vmin;max-height:70vmin;display:flex;align-items:flex-start;justify-content:flex-end}
+.sheet img{max-width:100%;max-height:70vmin;display:block;border-radius:.8vmin;background:#fff;
+  box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.6)}
 .rubric{display:grid;gap:1vmin;margin-top:2.4vmin;max-width:82vmin}
 .rub{display:grid;grid-template-columns:4.4vmin 1fr;gap:1.6vmin;align-items:start;
   background:rgba(255,255,255,.05);border:1px solid var(--rule);border-radius:.6vmin;padding:1.1vmin 1.5vmin}
@@ -212,8 +218,8 @@
 .slide.on .copy > *:nth-child(3){animation-delay:.9s}
 .slide.on .copy > *:nth-child(4){animation-delay:1.25s}
 .slide.on .copy > *:nth-child(n+5){animation-delay:1.55s}
-.slide .mosaic,.slide .card-photo,.slide .roll{opacity:0;transform:translateX(1.5vmin)}
-.slide.on .mosaic,.slide.on .card-photo,.slide.on .roll{animation:rise .7s ease-out .7s forwards}
+.slide .mosaic,.slide .card-photo,.slide .wall,.slide .sheet{opacity:0;transform:translateX(1.5vmin)}
+.slide.on .mosaic,.slide.on .card-photo,.slide.on .wall,.slide.on .sheet{animation:rise .7s ease-out .7s forwards}
 .slide .task,.slide .rub{opacity:0;transform:translateY(.8vmin)}
 .slide.on .task,.slide.on .rub{animation:rise .5s ease-out forwards}
 .slide.on .task:nth-child(1),.slide.on .rub:nth-child(1){animation-delay:.9s}
@@ -223,20 +229,24 @@
 .slide.on .task:nth-child(n+5),.slide.on .rub:nth-child(n+5){animation-delay:2.1s}
 @keyframes rise{to{opacity:1;transform:none}}
 
-/* The monthly slide's right-hand panel — see slideMonth()/render() roll */
-.roll{flex:0 0 auto;width:46vmin}
-.roll-hint{font-size:1.6vmin;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:1.2vmin}
-.roll-stage{min-height:42vmin}
-.roll-frame{opacity:0;transition:opacity .45s ease}
-.roll-frame.in{opacity:1}
-.roll-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2vmin}
-.roll-grid img{width:100%;height:20vmin;object-fit:cover;border-radius:.8vmin;
-  box-shadow:0 .5vmin 2vmin rgba(0,0,0,.45)}
+/* The monthly slide — see slideMonth()/render() wall. One huge number
+   on the left; on the right a wall of this month's photos that fills in
+   burst by burst and stays. 7 columns × 8 rows = 56 tiles, ~67vmin tall
+   under the 13vmin top band, clear of the caption at bottom-left. */
+.count.hero{font-size:clamp(6rem,22vmin,19rem);line-height:1;margin-top:.6vmin;
+  display:flex;align-items:baseline;gap:1.8vmin}   /* label beside, not under: old-style figures hang below the line box */
+.count.hero small{display:inline-block;font-size:2.3vmin;margin:0}
+.wall{flex:0 0 auto;width:58vmin;max-height:67.5vmin;display:grid;grid-template-columns:repeat(7,1fr);
+  grid-auto-rows:7.6vmin;gap:.9vmin;align-content:start;overflow:hidden}
+.wall img{width:100%;height:100%;object-fit:cover;border-radius:.5vmin;display:block;
+  box-shadow:0 .3vmin 1.2vmin rgba(0,0,0,.45);opacity:0;transform:scale(.7);
+  animation:tileIn .45s cubic-bezier(.2,.9,.3,1.2) forwards}
+@keyframes tileIn{to{opacity:1;transform:none}}
 
 @media (prefers-reduced-motion:reduce){
-  .slide .copy > *,.slide .mosaic,.slide .card-photo,.slide .roll,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
-  .roll-frame{transition:none;opacity:1}
+  .slide .copy > *,.slide .mosaic,.slide .card-photo,.slide .wall,.slide .sheet,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
+  .wall img{animation:none;opacity:1;transform:none}
+  .credit-block{transition:none;transform:none}
 }
 
 /* The one loud, urgent slide — Randy, 2026-09-24: "blinking RED. WARNING

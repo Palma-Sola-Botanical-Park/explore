@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925d">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925d">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925f">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925f">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -167,17 +167,16 @@
               url: ph.url.replace(/square\.(jpg|jpeg|png)/i, 'medium.$1'), license: ph.license_code || '' });
           });
         });
-        var topLogins = Object.keys(byLogin).map(function(k){ return byLogin[k]; })
-          .filter(function(t){ return t.photos.length >= 2; })
-          .sort(function(a,b){ return b.count - a.count; }).slice(0,5)
-          .sort(function(){ return Math.random()-0.5; });
+        var photographers = Object.keys(byLogin).map(function(k){ return byLogin[k]; })
+          .filter(function(t){ return t.photos.length; })
+          .sort(function(a,b){ return b.count - a.count; });
 
         PULSE = {
           monthPhotos: monthPhotos,
           monthObs: monthRows.length,
           monthSpecies: uniq(monthRows, function(o){ return o.taxon && o.taxon.id; }),
           monthObservers: uniq(monthRows, function(o){ return o.user && o.user.login; }),
-          topLogins: topLogins,
+          photographers: photographers,
           todayObs: rows.filter(function(o){ return o.observed_on===today; }).length,
           todaySpecies: uniq(rows.filter(function(o){ return o.observed_on===today; }),
             function(o){ return o.taxon && o.taxon.id; }),
@@ -258,8 +257,9 @@
      place it bottom left. maybe make it a bit bigger. Remove the name
      from the heart of the slides... Use the caption to answer the
      question." So: no slide puts a name in its headline any more; every
-     photo slide runs the same creditPlate caption, and "Who shot this?"
-     just delays it to the halfway point (see creditDelay in render()). */
+     photo slide runs the same creditPlate caption, and it always slides
+     in a beat late — "Who shot this?" just waits longer, to the halfway
+     point (see setCredit()/creditDelay in render()). */
 
   /* A real fact, not just a name — Randy: "too boring without good info."
      Same quick_hits array the species pages themselves use, keyed by the
@@ -279,21 +279,31 @@
      fades through the month's busiest photographers, four of their own
      photos each; the bottom-left caption names each one as it lands (no
      names in the panel itself, no rank numbers, random order). */
+  /* Randy, 2026-09-25, on the first version (four numbers, a 2×2 grid,
+     two-thirds of the screen empty): "needs to be way better somehow."
+     So the slide SHOWS the number: the photo count is one huge figure,
+     and the right half is a wall of this month's real photos that fills
+     in burst by burst, one photographer at a time, the caption naming
+     each as their pictures land. ~50 tiles by the end. */
   function slideMonth(names){
     if(!PULSE || !PULSE.monthObs) return null;
-    var roll = PULSE.topLogins.map(function(t){
-      var pics = t.photos.slice(0,4).map(function(p){ return '<img alt="" src="'+p.url+'">'; }).join('');
-      return { html: '<div class="roll-grid">'+pics+'</div>',
-               credit: window.PSBPPhotos.creditPlate({ by: nameFor(names, t.login), license: t.photos[0].license }) };
+    var wall = [], tiles = 0, CAP = 56;   /* 7 × 8 grid; up to a row per photographer */
+    PULSE.photographers.forEach(function(t){
+      if(tiles >= CAP) return;
+      var urls = t.photos.slice(0, Math.min(7, CAP - tiles)).map(function(p){ return p.url; });
+      if(!urls.length) return;
+      tiles += urls.length;
+      wall.push({ urls: urls, credit: window.PSBPPhotos.creditPlate({ by: nameFor(names, t.login), license: t.photos[0].license }) });
     });
-    return { id:'month', seconds: SECONDS*(1.2 + 0.45*roll.length), roll: roll, html:
+    return { id:'month', seconds: SECONDS*2.4, wall: wall, html:
         '<div class="copy"><div class="label">This month</div>'
       + '<h2>Here’s how many iNat pics we’ve taken this month:</h2>'
+      + countHtml(PULSE.monthPhotos, 'photos', 'hero')
       + '<div class="stat-row">'
-      +   countHtml(PULSE.monthPhotos, 'photos') + countHtml(PULSE.monthObs, 'observations')
-      +   countHtml(PULSE.monthSpecies, 'species') + countHtml(PULSE.monthObservers, 'photographers')
+      +   countHtml(PULSE.monthObs, 'observations') + countHtml(PULSE.monthSpecies, 'species')
+      +   countHtml(PULSE.monthObservers, 'photographers')
       + '</div></div>'
-      + (roll.length ? '<div class="roll"><div class="roll-hint">A few of this month’s photographers</div><div class="roll-stage"></div></div>' : '') };
+      + (wall.length ? '<div class="wall"></div>' : '') };
   }
 
   /* A real achievement, not just a count — Randy: "no achievements. no
@@ -348,17 +358,26 @@
       + '<div class="body">'+PULSE.monthSpecies+' species so far. A few of them:</div></div>' };
   }
 
+  /* Randy, 2026-09-25: "let's make that about learning the weekly tasks.
+     First thing to do when you arrive, pick one you can do that nobody
+     has started and tell staff you're on it. On the right I'll have an
+     image of the sheet. So it will be split paned." The sheet is a photo
+     he drops in each week at the path brightfutures_today.json names in
+     `sheet`; loadEverything() test-loads it, so a missing file gives the
+     plain photo version of this slide rather than a broken image. */
   function slideTasks(tasksData, mine){
-    if(!tasksData || !tasksData.tasks || !tasksData.tasks.length) return null;
-    var rows = tasksData.tasks.map(function(t){
-      return '<div class="task"><span class="team">'+esc(t.team||'')+'</span>'
-           + '<span class="job">'+esc(t.job||'')+'</span></div>';
-    }).join('');
+    if(!tasksData) return null;
+    var copy = '<div class="copy"><div class="label">The weekly tasks</div>'
+      + '<h2>First thing when you get here: pick a job.</h2>'
+      + '<div class="body">Find one on the sheet that nobody has started and you can do, then tell staff you’re on it.</div>'
+      + (tasksData.note ? '<div class="body"><b>'+esc(tasksData.note)+'</b></div>' : '')
+      + '</div>';
+    if(tasksData.sheetOk){
+      return { id:'tasks', seconds: SECONDS*1.6, html:
+        copy + '<div class="sheet"><img alt="This week’s task sheet" src="'+esc(tasksData.sheetUrl)+'"></div>' };
+    }
     var p = randomPhoto(mine);
-    return { id:'tasks', seconds: SECONDS*1.3, bg: p && p.photo_url, credit: p && creditText(p), html:
-        '<div class="copy"><div class="label">Today at the park</div>'
-      + '<h2>'+esc(tasksData.note || 'Wednesday jobs')+'</h2>'
-      + '<div class="task-list">'+rows+'</div></div>' };
+    return { id:'tasks', seconds: SECONDS*1.3, bg: p && p.photo_url, credit: p && creditText(p), html: copy };
   }
 
   /* Reviewer's note, 2026-09-25: "a very lightweight 'Can you beat this?'
@@ -388,7 +407,7 @@
     return { id:'events', seconds: SECONDS*1.4, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Coming up</div>'
       + '<div class="task-list">'+rows+'</div>'
-      + '<div class="body">Need hours? Events pay out a bunch at once. Ask Randy.</div></div>' };
+      + '<div class="body">Need hours? Ask staff about these. You get a whole bunch more in one go.</div></div>' };
   }
 
   /* The scattered "match-game" crew slide lived here until 2026-09-25.
@@ -465,8 +484,11 @@
   }
 
   /* Real crew photos with Randy's own notes from that deck, lightly
-     trimmed for a TV. "Almost" ones are framed as half a step, not a
-     miss — "pick different kids to represent various images." */
+     trimmed for a TV — "pick different kids to represent various
+     images." Only ones that work. Randy, 2026-09-25, on the "Almost"
+     cards: "how do we know he wanted a Hero image. comes across as us
+     complaining... toss it." A kid's photo never goes up with a note
+     about what's missing from it. */
   var EXAMPLES = [
     { id:'731638176', label:'Why this one works',
       note:'Look at the depth. One bract front and center, the whole bed behind it, then the pond and the far shore. Most people shoot the flower and forget the place. Alaina shot both.' },
@@ -475,11 +497,7 @@
     { id:'735608579', label:'Why this one works',
       note:'That heavy green fruit couldn’t belong to any other plant here. The prop roots back it up, and the deck railing says this is here. Most visitors have no idea a Screw Pine fruits like that.' },
     { id:'731645331', label:'Why this one works',
-      note:'You can count the five points on every flower. That’s exactly what the Pentas page is about.' },
-    { id:'735615080', label:'Almost',
-      note:'Perfect light, perfectly sharp, dead center. One thing missing: a flower against a green blur could be anywhere on earth. Step back half a pace and it’s a hero.' },
-    { id:'723780282', label:'Almost',
-      note:'That purple is unbeatable and the berries fill the frame. No path, no sky, no ground. Nothing that says Palma Sola. Half a step back.' }
+      note:'You can count the five points on every flower. That’s exactly what the Pentas page is about.' }
   ];
   function slideExample(mine, ex){
     var p = null;
@@ -492,13 +510,19 @@
       + '<div class="body">'+esc(ex.note)+'</div></div>' };
   }
 
-  /* From the same deck's last slide — the real ask. */
-  function slideNeedsPhoto(mine){
-    var p = randomPhoto(mine);
-    return { id:'needsphoto', seconds: SECONDS*1.5, bg: p && p.photo_url, credit: p && creditText(p), html:
-        '<div class="copy"><div class="label">Pages that need a better photo</div>'
-      + '<h2>Yours goes live with your name under it.</h2>'
-      + '<div class="body">Nine species pages are led by a photo where you can’t tell what the plant is. Sweet Viburnum is mostly a deck. Amazon Lily has no flower in it. Mottled Spurge is a gray wall. Take a better one.</div></div>' };
+  /* The website ask — the twin of slideSigns(). Randy, 2026-09-25:
+     "we need better hero images for the website. images to represent
+     the species. constantly updating — so get photos." Same shape as
+     the signs slide so the two asks read as a pair. Replaced the old
+     "pages that need a better photo" card, which named pages and said
+     what was wrong with their photos. */
+  function slideWebsite(mine){
+    var p = randomPhoto(mine.filter(function(x){ return x.hero; })) || randomPhoto(mine);
+    return { id:'website', seconds: SECONDS*1.9, shout:true, bg: p && p.photo_url, credit: p && creditText(p), html:
+        '<div class="copy"><div class="label">The website</div>'
+      + '<div class="shout-line">We need <em>hero</em> photos.</div>'
+      + '<div class="body">Every species page on the site opens with one photo that stands for the plant. We swap them out all the time as better ones come in.</div>'
+      + '<div class="body">Shoot a better one and it goes up with your name under it.</div></div>' };
   }
 
   function slideWhyMultiple(mine){
@@ -577,7 +601,7 @@
     return { id:'signs', seconds: SECONDS*1.9, shout:true, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">The signs</div>'
       + '<div class="shout-line">We need your <em>photos.</em></div>'
-      + '<div class="body">The park redoes signs all the time: fresher photos, better words, worn ones swapped out.</div>'
+      + '<div class="body">We put up new signs constantly: fresher photos, better words, worn ones swapped out. And we do that on Wednesdays, right here.</div>'
       + '<div class="body">The photo on a sign comes from one of you. Your name goes on it.</div>'
       + (push ? '<div class="body"><b>'+esc(push)+'</b></div>' : '') + '</div>' };
   }
@@ -635,10 +659,23 @@
 
   var cur = null, last = null;
   var creditEl = document.getElementById('credit');
-  function setCredit(html){
-    if(!html){ creditEl.classList.remove('on'); return; }
-    creditEl.innerHTML = html;
-    creditEl.classList.add('on');
+  /* Randy, 2026-09-25: "I am liking the idea of the photograph thing
+     sliding in a little after the slide starts, to give it some guessing
+     from the kids — to see whose pic it is each time. tad bit of
+     suspense. even on the slides that do NOT ask who shot this."
+     So every caption arrives late: CREDIT_LAG after a slide starts
+     (the copy has landed by then), FRAME_LAG after each photo flip on a
+     frames slide, the halfway mark on "Who shot this?". The wall's
+     captions are the exception — its tiles ARE the reveal, so the name
+     lands with them. `lagMs` is already speed-scaled by the caller. */
+  var CREDIT_LAG = 2600, FRAME_LAG = 1500;
+  var creditTimer = null;
+  function setCredit(html, lagMs){
+    if(creditTimer){ clearTimeout(creditTimer); creditTimer = null; }
+    creditEl.classList.remove('on');
+    if(!html) return;
+    function show(){ creditEl.innerHTML = html; creditEl.classList.add('on'); }
+    if(lagMs) creditTimer = setTimeout(show, lagMs); else show();
   }
 
   /* Numbers count up from 0 instead of just sitting there — a stat card
@@ -646,8 +683,8 @@
      .count[data-n] (see countHtml) gets it. Under reduced motion it just
      lands on the final number. */
   var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
-  function countHtml(n, label){
-    return '<div class="count" data-n="'+n+'">'+(REDUCED ? n : 0)+'<small>'+label+'</small></div>';
+  function countHtml(n, label, cls){
+    return '<div class="count'+(cls ? ' '+cls : '')+'" data-n="'+n+'">'+(REDUCED ? n : 0)+'<small>'+label+'</small></div>';
   }
   function countUp(el){
     if(REDUCED) return;
@@ -692,8 +729,7 @@
     setTimeout(function(){ el.classList.add('on'); }, 40);
     if(cur){
       if(cur._frameTimer) clearInterval(cur._frameTimer);
-      if(cur._rollTimer) clearInterval(cur._rollTimer);
-      if(cur._creditTimer) clearTimeout(cur._creditTimer);
+      if(cur._wallTimer) clearTimeout(cur._wallTimer);
       var old=cur; old.classList.remove('on'); setTimeout(function(){ old.remove(); }, 1300/SPEED);
     }
     cur = el;
@@ -702,7 +738,7 @@
 
     if(frames && frames.length > 1){
       var bgEl = el.querySelector('.bg'), titleEl = el.querySelector('.frame-title');
-      setCredit(frames[0].credit || '');
+      setCredit(frames[0].credit || '', CREDIT_LAG/SPEED);
       var fi = 0, frameMs = (dur*1000/frames.length);
       el._frameTimer = setInterval(function(){
         fi = (fi+1) % frames.length;
@@ -711,32 +747,35 @@
           bgEl.classList.add('photo');
           bgEl.style.backgroundImage = 'url('+frames[fi].bg+')';
           if(titleEl && frames[fi].title) titleEl.textContent = frames[fi].title;
-          setCredit(frames[fi].credit || '');
+          setCredit(frames[fi].credit || '', FRAME_LAG/SPEED);   /* a beat to guess, every flip */
           bgEl.style.opacity = 1;
         }, 260/SPEED);
       }, frameMs);
     } else if(s.creditDelay){
       /* "Who shot this?" — hold the caption back until the halfway mark */
-      setCredit('');
-      el._creditTimer = setTimeout(function(){ setCredit(s.credit || ''); }, s.creditDelay*1000);
+      setCredit(s.credit || '', s.creditDelay*1000);
     } else {
-      setCredit(s.credit || '');
+      setCredit(s.credit || '', CREDIT_LAG/SPEED);
     }
 
-    /* `s.roll` — the monthly slide's right-hand panel: fades through one
-       photographer's small grid after another while the numbers stay put,
-       and the bottom-left caption names whoever is up. */
-    if(s.roll && s.roll.length){
-      var stage = el.querySelector('.roll-stage'), ri = 0;
-      function showRoll(i){
-        var f = document.createElement('div'); f.className = 'roll-frame'; f.innerHTML = s.roll[i].html;
-        stage.innerHTML = ''; stage.appendChild(f);
-        setTimeout(function(){ f.classList.add('in'); }, 40);
-        setCredit(s.roll[i].credit || '');
+    /* `s.wall` — the monthly slide's right half: tiles pour in one
+       photographer at a time and STAY, so the wall builds up over the
+       slide; the bottom-left caption names whoever's photos are landing. */
+    if(s.wall && s.wall.length){
+      var wallEl = el.querySelector('.wall'), gi = 0;
+      var groupMs = Math.max(900/SPEED, (dur*1000*0.6) / s.wall.length);
+      function placeGroup(g){
+        setCredit(g.credit || '');
+        g.urls.forEach(function(u, k){
+          var img = document.createElement('img'); img.alt = '';
+          img.style.animationDelay = (k*0.07/SPEED).toFixed(2)+'s';
+          img.src = u; wallEl.appendChild(img);
+        });
       }
-      setTimeout(function(){ showRoll(0); }, 1500/SPEED);   /* after the numbers have landed */
-      var rollMs = Math.max(3000/SPEED, (dur*1000 - 2000/SPEED) / s.roll.length);
-      el._rollTimer = setInterval(function(){ ri = (ri+1) % s.roll.length; showRoll(ri); }, rollMs);
+      el._wallTimer = setTimeout(function tickWall(){
+        placeGroup(s.wall[gi]); gi++;
+        if(gi < s.wall.length) el._wallTimer = setTimeout(tickWall, groupMs);
+      }, 1400/SPEED);
     }
 
     bar.style.transition='none'; bar.style.width='0';
@@ -763,8 +802,11 @@
     var forced = forcedSlide();
     if(forced) return forced;
     var all = ONLY ? slides.filter(function(s){ return s.id.indexOf(ONLY) === 0; }) : slides;
-    if(!all.length) all = slides;
-    if(!all.length) return { id:'empty', seconds:SECONDS, html:'<div class="copy"><h2>Loading…</h2></div>' };
+    /* ?only= for a live-data slide (month, mostphoto…) matches nothing
+       until the iNat pulse lands — hold on "Loading…" for a couple of
+       seconds rather than falling back to the whole deck, which put the
+       proof on the wrong slide for a full dwell. */
+    if(!all.length) return { id:'empty', seconds: ONLY ? 2 : SECONDS, html:'<div class="copy"><h2>Loading…</h2></div>' };
     if(seen.length >= all.length - 1) seen = [];
     var pool = all.filter(function(s){ return seen.indexOf(s.id) < 0 && s.id !== lastId; });
     if(!pool.length) pool = all.filter(function(s){ return s.id !== lastId; });
@@ -829,7 +871,7 @@
     /* Reviewer: "four photography-instruction slides is a lot. I'd
        rotate only one or two of those in any given session." Two of the
        general ones, plus one or two of Randy's example cards. */
-    var coachingAll = [slideRubric(), slideHero(mine), slideNeedsPhoto(mine),
+    var coachingAll = [slideRubric(), slideHero(mine),
       slideWhyMultiple(mine), slideWhyAllYear(mine)].filter(Boolean);
     var examplesAll = EXAMPLES.map(function(ex){ return slideExample(mine, ex); }).filter(Boolean);
     /* ?only= proofing wants every format reachable, so skip the sampling then */
@@ -845,6 +887,7 @@
       .concat(weighted(slideMonth(names), 3))
       .concat(weighted(slideMostPhotographed(names), 3))
       .concat(weighted(slideSigns(mine, tasksData), 2))
+      .concat(weighted(slideWebsite(mine), 2))
       .concat(weighted(slideChallenge(mine), 2))
       .concat(weighted(tasksSlide, duringTaskWindow ? 4 : 2))
       .concat(spotlights)
@@ -882,8 +925,23 @@
         var photos = (r[2] && r[2].photos) || r[2] || [];
         var mine = crewOf(photos, bfSet);
         var hits = indexHits(r[3]); Object.assign(hits, indexHits(r[4]));
-        function build(){ buildSlides(r[0], r[1], photos, names, mine, hits, r[5]); }
+        /* the week's task-sheet photo: test-load it, then rebuild so the
+           split-pane version of the tasks slide joins the rotation */
+        var today = r[0], sheetReady = Promise.resolve();
+        if(today && today.sheet){
+          today.sheetUrl = BASE + today.sheet;
+          sheetReady = new Promise(function(res){
+            var im = new Image(), done = false;
+            function fin(ok){ if(done) return; done = true; today.sheetOk = ok; res(); }
+            im.onload = function(){ fin(true); };
+            im.onerror = function(){ fin(false); };
+            setTimeout(function(){ fin(false); }, 4000);
+            im.src = today.sheetUrl;
+          });
+        }
+        function build(){ buildSlides(today, r[1], photos, names, mine, hits, r[5]); }
         build();
+        sheetReady.then(build);
         pulse.then(build);
       });
     });
