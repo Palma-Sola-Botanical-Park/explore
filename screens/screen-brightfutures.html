@@ -578,7 +578,7 @@
     return { id:'speciesseen', seconds: SECONDS*0.6*frames.length, frames: frames, html:
         '<div class="copy"><div class="label">Seen this month</div>'
       + '<h2 class="frame-title">'+esc(frames[0].title)+'</h2>'
-      + '<div class="body">'+PULSE.monthSpecies+' species so far. Not too shabby, guys. Here’s a quick scroll through a bunch.</div></div>' };
+      + '<div class="body">'+PULSE.monthSpecies+' species so far. Here’s a quick scroll through a bunch.</div></div>' };
   }
 
   /* Randy, 2026-09-25: "let's make that about learning the weekly tasks.
@@ -917,7 +917,7 @@
         '<div class="label">The hero shot</div>'
       + '<h2>Ok, so here’s our best thoughts on the hero shot.</h2>'
       + '<div class="body">The one photo that stands for the species, on the sign and on the page. Check out the next couple of slides.</div>'
-      + '<div class="body">Let’s try for one of these every observation. Maybe you get selected.</div>' }];
+      + '<div class="body">Let’s try for one of these every observation. Maybe yours gets picked.</div>' }];
     exs.forEach(function(e){
       var p = byId[e.id];
       steps.push({ seconds: SECONDS*1.15, photo: p.photo_url, credit: creditText(p), callouts: e.callouts, copy:
@@ -964,8 +964,15 @@
   /* WHO SHOT THIS? — Randy, 2026-09-25: "yes ask who a lot. very good."
      The photo alone for a beat, then the name slams in. Attribution as
      the payoff of the slide, not a caption under it. Species after. */
+  /* Randy, 2026-09-25, after Zailibeth's bottlebrush came up by luck
+     ("WOWOWOW, stunning"): "I would LOVE a preselection of just stunners
+     like this." brightfutures_showcase.json holds ~20 picks (three-
+     quarters from the past month, a quarter all-time); one in three
+     Who-shot-this draws comes from it, and the screen never says so. */
+  var SHOWCASE = {};
   function slideWhoShot(mine){
-    var p = freshPhoto(mine);
+    var stunners = mine.filter(function(x){ return SHOWCASE[x.photo_id]; });
+    var p = freshPhoto(stunners.length && Math.random() < 0.34 ? stunners : mine);
     if(!p || !p.photographer_name) return null;
     var dur = SECONDS*1.3;
     /* question + species for the first half; the caption answers it at
@@ -1528,8 +1535,11 @@
         grab(BASE+'data/sources/photo_credits.json'),
         grab(BASE+'data/sources/plant_signage.json'),
         grab(BASE+'data/sources/wildlife_signage.json'),
-        grab(BASE+'images/brightfutures-local/photos.json')
+        grab(BASE+'images/brightfutures-local/photos.json'),
+        grab(BASE+'data/published/brightfutures_showcase.json')
       ]).then(function(r){
+        SHOWCASE = {};
+        ((r[6] && r[6].photos) || []).forEach(function(s){ var id = s && (s.photo_id || s); if(id) SHOWCASE[String(id)] = 1; });
         var photos = (r[2] && r[2].photos) || r[2] || [];
         var mine = crewOf(photos, bfSet);
         var hits = indexHits(r[3]); Object.assign(hits, indexHits(r[4]));
