@@ -343,13 +343,52 @@
     + '<div class="body">Bare in winter, blooming in spring, fruiting in fall — the same plant looks like three different plants across a year. "We already have a photo of that one" is never really true.</div></div>' };
   }
 
+  /* Randy, 2026-09-25: "the why this matters is important and we are
+     totally underselling it. Plant sits there with no sign. phone and
+     person appear. photo goes to cloud. processed/id'ed/researched. then
+     photo gets processed and printed onto a sign. sign gets put in front
+     of the plant... animate that somehow?" Six icons reveal one at a
+     time, each connecting line drawing itself in before the next icon
+     lands — real CSS animation (stagger + a drawn line), not an
+     illustrated sequence, which is honestly further than this can reach. */
+  var CHAIN_STEPS = [
+    ['🌿','No sign yet'], ['📱','You stop and shoot'], ['☁️','Uploaded'],
+    ['🔍','ID’d & researched'], ['🪧','Printed'], ['🌿🪧','On the plant']
+  ];
   function slideThankYou(mine){
     var p = randomPhoto(mine);
-    return { id:'thanks', seconds: SECONDS*1.5, bg: p && p.photo_url, credit: p && creditText(p), html:
+    var chain = CHAIN_STEPS.map(function(s,i){
+      var step = '<div class="step'+(i===CHAIN_STEPS.length-1?' final':'')+'">'
+        + '<span class="icon">'+s[0]+'</span><span class="cap">'+esc(s[1])+'</span></div>';
+      return i===0 ? step : '<div class="chain-line"></div>'+step;
+    }).join('');
+    return { id:'thanks', seconds: SECONDS*2.4, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Why this matters</div>'
-      + '<h2>Your phone → an observation → an ID → the catalog → a sign → a visitor reads it.</h2>'
-      + '<div class="body">That whole chain starts with somebody deciding a plant was worth stopping for. Thank you for being that somebody, week after week.</div>'
+      + '<div class="chain">'+chain+'</div>'
+      + '<div class="body">Thank you for being the one who stops. Week after week.</div>'
       + '<img class="bf-logo" src="../images/logos/bright-futures.png" alt="Florida Bright Futures Scholarship Program"></div>' };
+  }
+
+  /* Photos OF the crew, not photos they took — images/brightfutures-
+     local/photos.json. That whole folder is gitignored on purpose: these
+     are photos of minors, and this repo is public. Randy, 2026-09-25:
+     "ill keep on office computer" — so this only ever renders on a
+     machine that actually has the local folder populated; every other
+     machine (and GitHub Pages) just sees the empty-state teaser below,
+     which is the correct, safe default rather than a broken image. */
+  function slideCrewMontage(crewPhotos){
+    var rows = (crewPhotos && crewPhotos.photos) || [];
+    if(!rows.length){
+      return { id:'montage-empty', seconds: SECONDS*1.1, html:
+          '<div class="copy"><div class="label">Coming soon</div>'
+        + '<h2>Photos of the actual crew.</h2>'
+        + '<div class="body">Not just what you shot — you. Ask Randy about getting a group photo up here.</div></div>' };
+    }
+    var pics = rows.slice(0,8).map(function(r){ return '<img alt="" src="'+BASE+'images/brightfutures-local/'+r.file+'">'; }).join('');
+    return { id:'montage', seconds: SECONDS*1.5, html:
+        '<div class="copy"><div class="label">The crew</div>'
+      + '<h2>Wednesdays at the park.</h2></div>'
+      + '<div class="photo-grid">'+pics+'</div>' };
   }
 
   function slideCleanup(){
@@ -480,20 +519,23 @@
     return hits;
   }
 
-  function buildSlides(tasksData, events, photos, names, mine, hits){
+  function buildSlides(tasksData, events, photos, names, mine, hits, crewPhotos){
     var built = [
       slidePulse(mine), slideMostPhotographed(names), slideSpeciesSeen(mine),
       slideTasks(tasksData, mine), slideEvents(events, mine), slideCrew(mine),
       slidePhotoSpotlight(mine, hits), slidePhotoSpotlight(mine, hits),
       slideHero(mine), slideOtherKinds(mine), slideWhyMultiple(mine), slideWhyAllYear(mine),
-      slideThankYou(mine)
+      slideCrewMontage(crewPhotos), slideThankYou(mine)
     ];
     slides = built.filter(Boolean);
   }
 
   /* names has to load BEFORE loadPulse — the pulse filters every
      observation to Bright Futures logins as it fetches, it can't be
-     filtered after the fact. */
+     filtered after the fact. brightfutures-local/photos.json 404s on
+     every machine that doesn't have it (GitHub Pages, any clone without
+     the local folder) — that's fine, grab() already resolves those to
+     null and slideCrewMontage() shows the teaser instead. */
   function loadEverything(){
     return grab(BASE+'data/sources/photographer_names.json').then(function(names){
       names = names || {};
@@ -504,12 +546,13 @@
         grab(BASE+'data/sources/photo_credits.json'),
         grab(BASE+'data/sources/plant_signage.json'),
         grab(BASE+'data/sources/wildlife_signage.json'),
+        grab(BASE+'images/brightfutures-local/photos.json'),
         loadPulse(bfSet)
       ]).then(function(r){
         var photos = (r[2] && r[2].photos) || r[2] || [];
         var mine = crewOf(photos, bfSet);
         var hits = indexHits(r[3]); Object.assign(hits, indexHits(r[4]));
-        buildSlides(r[0], r[1], photos, names, mine, hits);
+        buildSlides(r[0], r[1], photos, names, mine, hits, r[5]);
       });
     });
   }
