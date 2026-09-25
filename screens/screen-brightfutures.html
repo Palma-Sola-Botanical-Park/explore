@@ -323,7 +323,7 @@
   }
   /* set a .bg's photo (large now, original when it lands), then (once
      its focus is known) its crop */
-  function placeBg(bgEl, url, tx){
+  function placeBg(bgEl, url, tx, centre){
     if(!bgEl || !url) return;
     var key = photoKey(url), big = bigUrl(url);
     bgEl.classList.add('photo');
@@ -337,6 +337,7 @@
     }
     focusFor(url).then(function(f){
       if(!f || !bgEl.isConnected || bgEl.dataset.photo !== key) return;
+      if(centre) f = { fx: 0.5, fy: 0.5, ar: f.ar };   /* animals: trust the photographer's framing, not the texture score */
       var Ws = innerWidth, Hs = innerHeight, Wd, Hd;
       if(f.ar > Ws/Hs){ Hd = Hs*BG_ZOOM; Wd = Hd*f.ar; } else { Wd = Ws*BG_ZOOM; Hd = Wd/f.ar; }
       var ox = Math.min(0, Math.max(Ws - Wd, tx*Ws - f.fx*Wd));
@@ -661,7 +662,8 @@
         + (fact ? '<div class="body">'+rich(fact)+'</div>' : '')
         + (nice ? '<div class="body nice">'+esc(nice)+'</div>' : '') + '</div>';
     }
-    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditText(p),
+    /* Randy, 2026-09-25: "go quicker on the species pages that show a fact... those can move along" — 1.5× → 1.0× */
+    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.0, bg: p.photo_url, credit: creditText(p), centerCrop: p.type === 'Wildlife',
              login: p.photographer, first: ((p.photographer_name || '').split(' – ')[0].split(' ')[0] || ''),
              htmlFor: htmlFor, html: htmlFor('') };
   }
@@ -977,20 +979,27 @@
     var dur = SECONDS*1.3;
     /* question + species for the first half; the caption answers it at
        the halfway mark — Randy: "I think a good delay would help" */
-    return { id:'who-'+p.photo_id, seconds: dur, bg: p.photo_url, credit: creditText(p), creditDelay: dur/2, html:
+    return { id:'who-'+p.photo_id, seconds: dur, bg: p.photo_url, credit: creditText(p), creditDelay: dur/2, centerCrop: p.type === 'Wildlife', html:
         '<div class="copy"><div class="reveal-q">Who shot this?</div>'
       + '<h2>'+esc(p.common_name||'')+'</h2></div>' };
   }
 
   /* THIS LIVES HERE. — the loud one. A crew wildlife photo, block caps,
      short dwell. Kept rare in buildSlides: "no overdo of course." */
-  function slideLivesHere(mine){
+  /* Randy, 2026-09-25: "the marsh rabbit doesn't show... it was 'This
+     lives here', grass, photographer name. kids need more (fun fact?)"
+     So: the wildlife page's quick fact under the name, and a CENTRED
+     crop for animals — the focus scorer chases grass texture, while a
+     kid pointing a phone at a rabbit puts the rabbit in the middle. */
+  function slideLivesHere(mine, hits){
     var wild = mine.filter(function(p){ return p.type === 'Wildlife'; });
     var p = randomPhoto(wild);
     if(!p) return null;
-    return { id:'lives-'+p.photo_id, seconds: SECONDS*0.8, shout:true, bg: p.photo_url, credit: creditText(p), html:
+    var fact = hitFor(hits, p.psbp_id);
+    return { id:'lives-'+p.photo_id, seconds: SECONDS*(fact ? 1.2 : 0.8), shout:true, centerCrop:true, bg: p.photo_url, credit: creditText(p), html:
         '<div class="copy"><div class="shout-line">This <em>lives</em> here.</div>'
-      + '<div class="shout-sub"><b>'+esc(p.common_name||'')+'</b></div></div>' };
+      + '<div class="shout-sub"><b>'+esc(p.common_name||'')+'</b></div>'
+      + (fact ? '<div class="body">'+rich(fact)+'</div>' : '') + '</div>' };
   }
 
   /* FIRST ONE THIS MONTH — a species only one crew member has logged in
@@ -1177,9 +1186,9 @@
     deck.appendChild(el);
     if(firstBg){
       /* single-photo slides whose busy part is on the left put the words on the right */
-      var flip = !!(s.focus && s.focus.fx < 0.45 && !s.noflip && !frames && !s.build && !s.steps);
+      var flip = !!(s.focus && s.focus.fx < 0.45 && !s.noflip && !s.centerCrop && !frames && !s.build && !s.steps);
       if(flip) el.classList.add('flip');
-      placeBg(el.querySelector('.bg'), firstBg, flip ? BG_TX_FLIP : BG_TX);
+      placeBg(el.querySelector('.bg'), firstBg, flip ? BG_TX_FLIP : BG_TX, !!s.centerCrop);
     }
     /* A timer, not requestAnimationFrame: rAF never fires in a hidden or
        throttled tab, which left slides built but stuck at opacity 0
@@ -1493,7 +1502,7 @@
       .concat(weighted(tasksSlide, tasksN))
       .concat(spotlights)
       .concat(whos)
-      .concat([slideLivesHere(mine), slideFirstFind(names)])
+      .concat([slideLivesHere(mine, hits), slideFirstFind(names)])
       .concat([slideSpeciesSeen(names), slideEvents(events, mine), slideCrewMontage(crewPhotos)])
       .concat(coaching)
       .concat(examples)
