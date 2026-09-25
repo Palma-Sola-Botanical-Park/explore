@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925a">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925a">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925d">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925d">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -209,6 +209,27 @@
     return mine[Math.floor(Math.random()*mine.length)];
   }
 
+  /* Randy, 2026-09-25: "For who shot this slide, definitely minimal
+     repeats. Use ANY photo in photo_credits.JSON that is from someone in
+     Bright Futures." A shuffle bag over the whole crew set (every
+     publishable photo by a Bright Futures login — all ~500, not just
+     heroes or this month), remembered in localStorage so the 10-minute
+     rebuild and a page reload don't restart the repeats. It only resets
+     once every photo has had a turn. Shared by "Who shot this?" and
+     "From the crew"; plain background photos still draw at random. */
+  var USED_KEY = 'psbp-bf-used';
+  function usedSet(){ try{ return JSON.parse(localStorage.getItem(USED_KEY) || '{}'); }catch(e){ return {}; } }
+  function freshPhoto(mine){
+    if(!mine || !mine.length) return null;
+    var used = usedSet();
+    var pool = mine.filter(function(p){ return !used[p.photo_id]; });
+    if(!pool.length){ used = {}; pool = mine; }
+    var p = pool[Math.floor(Math.random()*pool.length)];
+    used[p.photo_id] = 1;
+    try{ localStorage.setItem(USED_KEY, JSON.stringify(used)); }catch(e){}
+    return p;
+  }
+
   /* Randy, 2026-09-25: "there is a standard credit block in html site.
      much better than what youve done." Reusing the real one — same
      function the species pages themselves call — instead of my own
@@ -371,7 +392,7 @@
      the corner credit block — species drops to a smaller subtitle line.
      Same rule everywhere a specific photographer's photo is the point. */
   function slidePhotoSpotlight(mine, hits){
-    var p = randomPhoto(mine);
+    var p = freshPhoto(mine);
     if(!p) return null;
     var fact = hitFor(hits, p.psbp_id);
     return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditText(p), html:
@@ -486,7 +507,7 @@
      The photo alone for a beat, then the name slams in. Attribution as
      the payoff of the slide, not a caption under it. Species after. */
   function slideWhoShot(mine){
-    var p = randomPhoto(mine);
+    var p = freshPhoto(mine);
     if(!p || !p.photographer_name) return null;
     var dur = SECONDS*1.3;
     /* question + species for the first half; the caption answers it at
@@ -520,30 +541,33 @@
       + '<div class="shout-sub"><b>'+esc(s.name)+'</b></div></div>' };
   }
 
-  /* Randy, 2026-09-25: "the why this matters is important and we are
-     totally underselling it. Plant sits there with no sign. phone and
-     person appear. photo goes to cloud. processed/id'ed/researched. then
-     photo gets processed and printed onto a sign. sign gets put in front
-     of the plant... animate that somehow?" Six icons reveal one at a
-     time, each connecting line drawing itself in before the next icon
-     lands — real CSS animation (stagger + a drawn line), not an
-     illustrated sequence, which is honestly further than this can reach. */
-  var CHAIN_STEPS = [
-    ['🌿','No sign yet'], ['📱','You stop and shoot'], ['☁️','Uploaded'],
-    ['🔍','ID’d & researched'], ['🪧','Printed'], ['🌿🪧','On the plant']
-  ];
-  function slideThankYou(mine){
-    var p = randomPhoto(mine);
-    var chain = CHAIN_STEPS.map(function(s,i){
-      var step = '<div class="step'+(i===CHAIN_STEPS.length-1?' final':'')+'">'
-        + '<span class="icon">'+s[0]+'</span><span class="cap">'+esc(s[1])+'</span></div>';
-      return i===0 ? step : '<div class="chain-line"></div>'+step;
-    }).join('');
-    return { id:'thanks', seconds: SECONDS*2.4, bg: p && p.photo_url, credit: p && creditText(p), html:
-        '<div class="copy"><div class="label">Why this matters</div>'
-      + '<div class="chain">'+chain+'</div>'
-      + '<div class="body">Thanks for stopping for the plant. Every week.</div>'
-      + '<img class="bf-logo" src="../images/logos/bright-futures.png" alt="Florida Bright Futures Scholarship Program"></div>' };
+  /* Randy, 2026-09-25, on the emoji chain that used to be here: "just
+     horrible. the graphics must go. I suggested an idea but it was very
+     very poorly done. Rethink total on that." Rethought around the park's
+     own artifacts instead of icons: one of the crew's photos that
+     actually became a species page's hero, and then the real page itself
+     — live from this same repo, scaled down — fading in beside it with
+     their credit line sitting at the top of it. Nothing drawn, nothing
+     pretend. (No printable sign pages exist in the repo, so the sign is
+     a plain sentence, not a graphic.) */
+  /* Randy, 2026-09-25: "Maybe instead of saying 'Why this matters' we
+     just have a sign: The park will update signage constantly to refresh
+     photos, and improve what is written on them, as well as replace
+     damaged and worn. We NEED THEM to get us good photos for those
+     signs!!!!! They will be credited. Bonus if we can fit it on there
+     that in a month, we will do a large batch of signs so get those pics
+     now." The ask, plainly, over one of their own photos. The dated
+     "big batch" line lives in brightfutures_today.json (signs_push) so it
+     can be changed or dropped without touching code. */
+  function slideSigns(mine, tasksData){
+    var p = randomPhoto(mine.filter(function(x){ return x.hero; })) || randomPhoto(mine);
+    var push = tasksData && tasksData.signs_push;
+    return { id:'signs', seconds: SECONDS*1.9, shout:true, bg: p && p.photo_url, credit: p && creditText(p), html:
+        '<div class="copy"><div class="label">The signs</div>'
+      + '<div class="shout-line">We need your <em>photos.</em></div>'
+      + '<div class="body">The park redoes signs all the time: fresher photos, better words, worn ones swapped out.</div>'
+      + '<div class="body">The photo on a sign comes from one of you. Your name goes on it.</div>'
+      + (push ? '<div class="body"><b>'+esc(push)+'</b></div>' : '') + '</div>' };
   }
 
   /* Photos OF the crew, not photos they took — images/brightfutures-
@@ -628,7 +652,7 @@
         node.innerHTML = Math.round(target*k) + label;
         if(k < 1) requestAnimationFrame(step);
       }
-      setTimeout(function(){ requestAnimationFrame(step); }, 500/SPEED);
+      setTimeout(function(){ requestAnimationFrame(step); }, 1200/SPEED);   /* after the stat row has faded in */
     })(nodes[i]);
   }
 
@@ -807,7 +831,7 @@
     var built = []
       .concat(weighted(slideMonth(names), 3))
       .concat(weighted(slideMostPhotographed(names), 3))
-      .concat(weighted(slideThankYou(mine), 2))
+      .concat(weighted(slideSigns(mine, tasksData), 2))
       .concat(weighted(slideChallenge(mine), 2))
       .concat(weighted(tasksSlide, duringTaskWindow ? 4 : 2))
       .concat(spotlights)
@@ -852,7 +876,7 @@
     });
   }
 
-  loadEverything().then(next).catch(function(){ slides = [slideRubric(), slideWhyMultiple([]), slideThankYou([])]; next(); });
+  loadEverything().then(next).catch(function(){ slides = [slideRubric(), slideWhyMultiple([])]; next(); });
 
   /* Refresh data + iNat pulse every 10 minutes, same cadence as the rest
      of the kiosk fleet. */

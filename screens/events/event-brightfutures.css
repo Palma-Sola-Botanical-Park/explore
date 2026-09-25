@@ -101,7 +101,10 @@
    / "Let's standardize on bottom left." One fixed spot, a dark plate
    behind it so it reads on any photo, and no line under ~17 px at
    1080p (his standing rule: never ship type under the base size). */
-.credit-block{position:fixed;left:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 1.8vmin);
+/* Randy: "nudge slightly left to be equidistant from bottom as it is
+   from left lines" — box pulled in by its own padding (so its text lines
+   up with the headline text above), and the bottom gap matched to it. */
+.credit-block{position:fixed;left:calc(var(--frame) + var(--pad) - 1.7vmin);bottom:calc(var(--frame) + 2.7vmin);
   z-index:41;opacity:0;transition:opacity .4s ease;
   background:rgba(8,13,18,.74);border:1px solid var(--rule);border-radius:.7vmin;
   padding:1.2vmin 1.7vmin 1.1vmin;backdrop-filter:blur(6px)}
@@ -127,7 +130,7 @@
    room 2.4vmin is about 26 px at 1080p — a bit bigger, still a caption. */
 .credit-plate .credit-name{font-family:var(--serif);font-size:2.7vmin;font-weight:700;
   color:var(--paper);line-height:1.1;white-space:nowrap}
-.credit-plate .credit-date{font-size:1.75vmin;color:rgba(245,248,251,.88)}
+.credit-plate .credit-date{font-size:1.95vmin;font-weight:600;color:var(--paper)}   /* "highlighted a tad bit more" */
 .credit-plate .credit-license{display:flex;align-items:center;gap:1.1vmin;margin-top:.5vmin}
 .credit-plate .credit-src{font-size:1.6vmin;font-style:italic;color:rgba(245,248,251,.8)}
 .credit-plate .cc-badge{border-color:rgba(245,248,251,.45);background:rgba(255,255,255,.1);
@@ -184,29 +187,20 @@
   background:linear-gradient(transparent,rgba(0,0,0,.78));
   font-size:1.4vmin;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--paper)}
 
-/* Randy, 2026-09-25: "the point is not the photo. the point is that THEY
-   took it... the photos are not in even places and the credits are
-   scrambled and there's animation to match them up at the end. Throw in
-   species too. then they align at the end. photo, species, credit."
-   Each cell's CORRECT grid-row is set inline by slideCrew() — nothing is
-   really mismatched — but every photo/species/credit also gets a random
-   inline scatter transform. One shared transition, triggered by adding
-   .settled a beat after mount (see render()'s settleSelector), strips
-   every transform at once, so the three scattered pieces of each row
-   glide home and land together. */
-.matchgame{flex:0 0 auto;width:58vmin;display:grid;
-  grid-template-columns:11vmin 1fr auto;grid-template-rows:repeat(5,1fr);
-  row-gap:1.6vmin;column-gap:2.2vmin;align-items:center}
-.matchgame > *{transition:transform 1.15s cubic-bezier(.16,.78,.2,1)}
-.matchgame.settled > *{transform:none !important}
-.matchgame .mphoto{grid-column:1;border-radius:1vmin;overflow:hidden;
-  box-shadow:0 .5vmin 2vmin rgba(0,0,0,.45)}
-.matchgame .mphoto img{display:block;width:100%;height:9vmin;object-fit:cover}
-.matchgame .mspecies{grid-column:2;font-family:var(--serif);font-weight:700;
-  font-size:1.9vmin;color:var(--paper);text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6)}
-.matchgame .mcredit{grid-column:3;font-size:1.25vmin;font-weight:700;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--gold);white-space:nowrap}
-@media (prefers-reduced-motion:reduce){ .matchgame > *{transition:none;transform:none !important} }
+/* "Why this matters" — see slideWhy(). Their photo, then the real
+   species page (an iframe of this same repo's page, scaled to fit) fading
+   in beside it a few seconds later. 110vmin × .3636 = 40vmin, so the page
+   lays out at a normal desktop width and shrinks as one piece. */
+.why{flex:0 0 auto;width:48vmin;height:66vmin;position:relative;opacity:0;transform:translateX(1.5vmin)}
+.slide.on .why{animation:rise .7s ease-out .7s forwards}
+.why-photo{position:absolute;left:0;top:0;width:36vmin;border-radius:1vmin;overflow:hidden;
+  background:#000;box-shadow:0 1.2vmin 4vmin rgba(0,0,0,.6)}
+.why-photo img{display:block;width:100%;height:27vmin;object-fit:cover}
+.why-page{position:absolute;right:0;bottom:0;width:40vmin;height:42vmin;overflow:hidden;border-radius:.8vmin;
+  background:#fff;box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.65);opacity:0;transform:translateY(1.5vmin)}
+.slide.on .why-page{animation:rise .8s ease-out 3.4s forwards}
+.why-page iframe{width:110vmin;height:120vmin;border:0;transform:scale(.3636);transform-origin:0 0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){ .why,.why-page{opacity:1;transform:none;animation:none} }
 
 /* Borrowed from Randy's photo-awards deck (Desktop, Sept 2026): the
    framed photo-beside-text card, and the numbered rubric rows. Two more
@@ -258,6 +252,45 @@
 @media (prefers-reduced-motion:reduce){
   .chain .step{opacity:1;transform:none;animation:none}
   .chain-line::after{transform:scaleX(1);animation:none}
+}
+
+/* Randy, 2026-09-25: "Each slide can do fade in's of multiple things and
+   not be so static." Every direct child of .copy arrives in sequence —
+   label, headline, body, numbers — and any right-hand panel a beat
+   later; list rows (tasks, events, rubric) come in one by one. Same
+   device as the awards deck's .slide.on>* rise. */
+.slide .copy > *{opacity:0;transform:translateY(1.2vmin)}
+.slide.on .copy > *{animation:rise .6s cubic-bezier(.2,.7,.3,1) forwards}
+.slide.on .copy > *:nth-child(1){animation-delay:.15s}
+.slide.on .copy > *:nth-child(2){animation-delay:.5s}
+.slide.on .copy > *:nth-child(3){animation-delay:.9s}
+.slide.on .copy > *:nth-child(4){animation-delay:1.25s}
+.slide.on .copy > *:nth-child(n+5){animation-delay:1.55s}
+.slide .mosaic,.slide .card-photo,.slide .roll{opacity:0;transform:translateX(1.5vmin)}
+.slide.on .mosaic,.slide.on .card-photo,.slide.on .roll{animation:rise .7s ease-out .7s forwards}
+.slide .task,.slide .rub{opacity:0;transform:translateY(.8vmin)}
+.slide.on .task,.slide.on .rub{animation:rise .5s ease-out forwards}
+.slide.on .task:nth-child(1),.slide.on .rub:nth-child(1){animation-delay:.9s}
+.slide.on .task:nth-child(2),.slide.on .rub:nth-child(2){animation-delay:1.2s}
+.slide.on .task:nth-child(3),.slide.on .rub:nth-child(3){animation-delay:1.5s}
+.slide.on .task:nth-child(4),.slide.on .rub:nth-child(4){animation-delay:1.8s}
+.slide.on .task:nth-child(n+5),.slide.on .rub:nth-child(n+5){animation-delay:2.1s}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* The monthly slide's right-hand panel — see slideMonth()/render() roll */
+.roll{flex:0 0 auto;width:46vmin}
+.roll-hint{font-size:1.6vmin;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1.2vmin}
+.roll-stage{min-height:42vmin}
+.roll-frame{opacity:0;transition:opacity .45s ease}
+.roll-frame.in{opacity:1}
+.roll-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2vmin}
+.roll-grid img{width:100%;height:20vmin;object-fit:cover;border-radius:.8vmin;
+  box-shadow:0 .5vmin 2vmin rgba(0,0,0,.45)}
+
+@media (prefers-reduced-motion:reduce){
+  .slide .copy > *,.slide .mosaic,.slide .card-photo,.slide .roll,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
+  .roll-frame{transition:none;opacity:1}
 }
 
 /* The one loud, urgent slide — Randy, 2026-09-24: "blinking RED. WARNING
