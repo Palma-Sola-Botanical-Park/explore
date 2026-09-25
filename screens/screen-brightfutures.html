@@ -25,6 +25,7 @@
 <div class="clock" id="clock"></div>
 <img class="logo-mark" src="../images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
 <div class="deck"></div>
+<div class="credit-block" id="credit"></div>
 <div id="bar"></div>
 <script>
 (function(){
@@ -62,7 +63,12 @@
     return inside;
   }
   var PULSE = null;
-  function loadPulse(){
+  /* Randy, 2026-09-25, spotting a stranger's login in the credits:
+     "nigrosh60 is not bright futures fyi" / "every photo should be by
+     Bright Futures people." This screen is about THIS crew's week, not
+     the whole park's — bfSet filters every observation out before any
+     count or photo is built from it. */
+  function loadPulse(bfSet){
     var d1 = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
     var nelat=Math.max.apply(null,PULSE_POLYGON.map(function(p){return p[1];}));
     var nelng=Math.max.apply(null,PULSE_POLYGON.map(function(p){return p[0];}));
@@ -73,7 +79,8 @@
       + '&order_by=observed_on&order=desc&per_page=200';
     return fetch(url, { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
       .then(function(data){
-        var rows = ((data && data.results) || []).filter(inPark);
+        var rows = ((data && data.results) || []).filter(inPark)
+          .filter(function(o){ return o.user && bfSet[o.user.login]; });
         var today = new Date().toISOString().slice(0,10);
         function uniq(list, key){ var seen={}; list.forEach(function(o){
           var v = key(o); if(v) seen[v]=1; }); return Object.keys(seen).length; }
@@ -87,10 +94,16 @@
           var t = o.taxon; if(!t || !t.id) return;
           var key = t.id;
           if(!bySpecies[key]) bySpecies[key] = {
-            name: t.preferred_common_name || t.name, count:0, logins:{}
+            name: t.preferred_common_name || t.name, count:0, logins:{}, photos:[]
           };
           bySpecies[key].count++;
           if(o.user && o.user.login) bySpecies[key].logins[o.user.login] = 1;
+          var ph = o.photos && o.photos[0] && o.photos[0].url;
+          if(ph) bySpecies[key].photos.push({
+            url: ph.replace(/square\.(jpg|jpeg|png)/i, 'medium.$1'),
+            login: (o.user && o.user.login) || '',
+            observed_on: o.observed_on || ''
+          });
         });
         var speciesList = Object.keys(bySpecies).map(function(k){ return bySpecies[k]; })
           .sort(function(a,b){ return b.count - a.count; });
@@ -117,17 +130,41 @@
      just the two that used to show pictures. Randy, 2026-09-25, watching
      it run: "how do we make this interesting? no photo?" — correct, the
      old render() never set a background image at all. */
-  function crewOf(photos, names){
-    var logins = [];
+  function bfLogins(names){
+    var logins = {};
     for(var login in names){
       var n = (names[login] && names[login].note) || '';
-      if(n.toLowerCase().indexOf('bright futures') > -1) logins.push(login);
+      if(n.toLowerCase().indexOf('bright futures') > -1) logins[login] = 1;
     }
-    return (photos||[]).filter(function(p){ return logins.indexOf(p.photographer) > -1 && p.publish_ok; });
+    return logins;
+  }
+  function crewOf(photos, bfSet){
+    return (photos||[]).filter(function(p){ return bfSet[p.photographer] && p.publish_ok; });
   }
   function randomPhoto(mine){
     if(!mine || !mine.length) return null;
     return mine[Math.floor(Math.random()*mine.length)];
+  }
+
+  /* Species · Photographer · Date · License — the standardized credit
+     block, same shape every time a photo_credits.json row is on screen. */
+  function creditText(p){
+    if(!p) return '';
+    var bits = [];
+    if(p.common_name) bits.push('<b>'+esc(p.common_name)+'</b>');
+    if(p.photographer_name) bits.push(esc(p.photographer_name.split(' – ')[0]));
+    if(p.observed_on) bits.push(new Date(p.observed_on+'T12:00').toLocaleDateString('en-US',{month:'long',year:'numeric'}));
+    if(p.license) bits.push(esc(p.license.replace(/^CC-/,'CC ').replace(/_/g,' ')));
+    return bits.join(' &middot; ');
+  }
+
+  /* A real fact, not just a name — Randy: "too boring without good info."
+     Same quick_hits array the species pages themselves use, keyed by the
+     photo's own psbp_id. */
+  function hitFor(hits, psbpId){
+    var list = hits[psbpId];
+    if(!list || !list.length) return '';
+    return list[Math.floor(Math.random()*list.length)];
   }
 
   /* ── slide builders ──────────────────────────────────────────────────── */
@@ -135,7 +172,7 @@
     if(!PULSE || PULSE.weekObs < 1) return null;
     var p = randomPhoto(mine);
     return { id:'pulse', seconds: SECONDS*1.2, bg: p && p.photo_url, html:
-        '<div class="copy"><div class="label">Palma Sola this week</div>'
+        '<div class="copy"><div class="label">Bright Futures this week</div>'
       + '<div class="stat-row">'
       +   '<div class="count">'+PULSE.weekObs+'<small>observations</small></div>'
       +   '<div class="count">'+PULSE.weekSpecies+'<small>species</small></div>'
@@ -145,20 +182,30 @@
   }
 
   /* A real achievement, not just a count — Randy: "no achievements. no
-     nothing." Names the actual top species and who photographed it. */
+     nothing." Names the actual top species. Randy, seeing this render as a
+     bare name list: "this slide is begging for the pics to be cycled
+     through with credits for each. show all 5 in succession" — so this
+     builds a `frames` array (one per actual observation photo) instead of
+     a static slide; render() below knows how to step through frames on
+     its own timer while the slide stays up. */
+  function nameFor(names, login){
+    var n = names[login];
+    return ((n && (n.credit_as || n.display_name)) || login).split(' – ')[0];
+  }
   function slideMostPhotographed(names){
     if(!PULSE || !PULSE.speciesList || !PULSE.speciesList.length) return null;
     var top = PULSE.speciesList[0];
-    if(top.count < 2) return null;
-    var who = Object.keys(top.logins).map(function(login){
-      var n = names[login];
-      return (n && (n.credit_as || n.display_name)) || login;
-    }).map(function(n){ return n.split(' – ')[0]; }).slice(0,4);
-    return { id:'mostphoto', seconds: SECONDS*1.3, html:
+    if(top.count < 2 || !top.photos || top.photos.length < 2) return null;
+    var frames = top.photos.slice(0,5).map(function(p){
+      var bits = ['<b>'+esc(top.name)+'</b>', esc(nameFor(names, p.login))];
+      if(p.observed_on) bits.push(new Date(p.observed_on+'T12:00').toLocaleDateString('en-US',{month:'long',year:'numeric'}));
+      return { bg: p.url, credit: bits.join(' &middot; ') };
+    });
+    return { id:'mostphoto', seconds: SECONDS*1.3*frames.length, frames: frames, html:
         '<div class="copy"><div class="label">Most photographed this week</div>'
       + '<h2>'+esc(top.name)+'</h2>'
       + '<div class="stat-row"><div class="count">'+top.count+'<small>observations</small></div></div>'
-      + '<div class="body">Spotted by '+esc(who.join(', '))+'.</div></div>' };
+      + '<div class="body frame-credit"></div></div>' };
   }
 
   /* Concrete species names, not an abstract number — makes "63 species"
@@ -213,27 +260,44 @@
 
   /* One real photo, full-bleed, minimal text — the "photo of the moment"
      beat. Rotates through the actual crew archive, not a fixed pair. */
-  function slidePhotoSpotlight(mine){
+  function slidePhotoSpotlight(mine, hits){
     var p = randomPhoto(mine);
     if(!p) return null;
-    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.3, bg: p.photo_url, html:
+    var fact = hitFor(hits, p.psbp_id);
+    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditText(p), html:
         '<div class="copy"><div class="label">From the crew</div>'
       + '<h2>'+esc(p.common_name || '')+'</h2>'
-      + '<div class="body">'+esc(p.photographer_name || '')+'</div></div>' };
+      + (fact ? '<div class="body">'+esc(fact)+'</div>' : '') + '</div>' };
   }
 
+  /* Randy, 2026-09-25, on the old two-photo version: "oddly composed...
+     hideously boring." / "use screen on right side with irregular size
+     blocks and show more than 2." Four real photos in a mosaic (one big,
+     three smaller — see .mosaic), each from a DIFFERENT student so it
+     reads as "the crew," not one kid's highlight reel. */
+  function diversePhotos(pool, n){
+    var byPhotog = {};
+    pool.forEach(function(p){ (byPhotog[p.photographer] = byPhotog[p.photographer] || []).push(p); });
+    var keys = Object.keys(byPhotog).sort(function(){ return Math.random()-0.5; });
+    var out = [];
+    for(var i=0; i<keys.length && out.length<n; i++){
+      var mine2 = byPhotog[keys[i]];
+      out.push(mine2[Math.floor(Math.random()*mine2.length)]);
+    }
+    return out;
+  }
   function slideHero(mine){
     var pool = mine.filter(function(p){ return p.hero; });
-    var a = randomPhoto(pool.length >= 2 ? pool : mine);
-    var b = randomPhoto(pool.length >= 2 ? pool : mine);
-    if(!a || !b) return null;
-    return { id:'hero', seconds: SECONDS*1.8, html:
+    var pics = diversePhotos(pool.length >= 4 ? pool : mine, 4);
+    if(pics.length < 3) return null;
+    var tiles = pics.map(function(p,i){
+      return '<figure class="m'+i+'"><img src="'+p.photo_url+'" alt="">'
+        + '<figcaption>'+esc((p.photographer_name||'').split(' ')[0]||'')+'</figcaption></figure>';
+    }).join('');
+    return { id:'hero', seconds: SECONDS*2, html:
         '<div class="copy"><div class="label">What makes a hero photo</div>'
-      + '<div class="two-up">'
-      +   '<figure><img src="'+a.photo_url+'" alt=""><figcaption>'+esc(a.common_name||'')+' · '+esc((a.photographer_name||'').split(' ')[0]||'')+'</figcaption></figure>'
-      +   '<figure><img src="'+b.photo_url+'" alt=""><figcaption>'+esc(b.common_name||'')+' · '+esc((b.photographer_name||'').split(' ')[0]||'')+'</figcaption></figure>'
-      + '</div>'
-      + '<div class="body">One clean subject, nothing competing for the eye. A tight shot fills the frame; a wider one shows the whole plant’s shape. Both are right — they’re answering different questions.</div></div>' };
+      + '<div class="body">One clean subject, nothing competing for the eye. A tight shot fills the frame; a wider one shows the whole plant’s shape. Both are right — they’re answering different questions.</div></div>'
+      + '<div class="mosaic">'+tiles+'</div>' };
   }
 
   function slideOtherKinds(mine){
@@ -296,28 +360,73 @@
   }
 
   var cur = null, last = null;
+  var creditEl = document.getElementById('credit');
+  function setCredit(html){
+    if(!html){ creditEl.classList.remove('on'); return; }
+    creditEl.innerHTML = html;
+    creditEl.classList.add('on');
+  }
+
+  /* `s.frames` — a slide that steps through several real photos (with a
+     credit each) while it stays on screen, instead of one static image.
+     Randy, 2026-09-25: "this slide is begging for the pics to be cycled
+     through with credits for each. show all 5 in succession." Every
+     photo, framed or not, drives the one standardized credit block
+     (bottom-left, see .credit-block) rather than its own one-off caption. */
   function render(s){
     var el = document.createElement('div');
     el.className = 'slide' + (s.warn ? ' warn' : '');
-    var bg = '<div class="bg'+(s.bg?' photo':'')+'"'+(s.bg?' style="background-image:url('+s.bg+')"':'')+'></div>';
-    el.innerHTML = bg + s.html;
+    var frames = s.frames;
+    var firstBg = frames ? frames[0].bg : s.bg;
+    var bg = '<div class="bg'+(firstBg?' photo':'')+'"'+(firstBg?' style="background-image:url('+firstBg+')"':'')+'></div>';
+    var scrim = firstBg ? '<div class="scrim"></div>' : '';
+    el.innerHTML = bg + scrim + s.html;
     deck.appendChild(el);
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add('on'); }); });
-    if(cur){ var old=cur; old.classList.remove('on'); setTimeout(function(){ old.remove(); }, 1300/SPEED); }
+    if(cur){
+      if(cur._frameTimer) clearInterval(cur._frameTimer);
+      var old=cur; old.classList.remove('on'); setTimeout(function(){ old.remove(); }, 1300/SPEED);
+    }
     cur = el;
     var dur = s.seconds || SECONDS;
+
+    if(frames && frames.length > 1){
+      var bgEl = el.querySelector('.bg');
+      setCredit(frames[0].credit || '');
+      var fi = 0, frameMs = (dur*1000/frames.length);
+      el._frameTimer = setInterval(function(){
+        fi = (fi+1) % frames.length;
+        bgEl.style.opacity = 0;
+        setTimeout(function(){
+          bgEl.classList.add('photo');
+          bgEl.style.backgroundImage = 'url('+frames[fi].bg+')';
+          setCredit(frames[fi].credit || '');
+          bgEl.style.opacity = 1;
+        }, 260/SPEED);
+      }, frameMs);
+    } else {
+      setCredit(s.credit || '');
+    }
+
     bar.style.transition='none'; bar.style.width='0';
     requestAnimationFrame(function(){ bar.style.transition='width '+dur+'s linear'; bar.style.width='100%'; });
     return dur;
   }
 
+  /* Randy, 2026-09-25: "too many screens repeat with only one other screen
+     between them." Only excluding the ONE previous slide let a 10-13-item
+     pool repeat itself constantly (A, B, A, C, A…). A shuffle bag — every
+     slide shown once before ANY repeats — fixes that properly, same
+     device screen.html's own slideSpotlight() uses for the same reason. */
+  var seen = [];
   function pick(){
     var forced = forcedSlide();
     if(forced) return forced;
     if(!slides.length) return { id:'empty', seconds:SECONDS, html:'<div class="copy"><h2>Loading…</h2></div>' };
-    var pool = slides.filter(function(s){ return s.id !== last; });
+    if(seen.length >= slides.length - 1) seen = [];
+    var pool = slides.filter(function(s){ return seen.indexOf(s.id) < 0; });
     var s = pool.length ? pool[Math.floor(Math.random()*pool.length)] : slides[0];
-    last = s.id;
+    seen.push(s.id);
     return s;
   }
 
@@ -326,8 +435,7 @@
     setTimeout(next, dur*1000);
   }
 
-  function buildSlides(tasksData, events, photos, names){
-    var mine = crewOf(photos, names);
+  function buildSlides(tasksData, events, photos, names, mine){
     var built = [
       slidePulse(mine), slideMostPhotographed(names), slideSpeciesSeen(mine),
       slideTasks(tasksData, mine), slideEvents(events, mine), slideCrew(mine),
@@ -338,32 +446,31 @@
     slides = built.filter(Boolean);
   }
 
-  Promise.all([
-    grab(BASE+'data/published/brightfutures_today.json'),
-    grab(BASE+'data/published/events.json'),
-    grab(BASE+'data/sources/photo_credits.json'),
-    grab(BASE+'data/sources/photographer_names.json'),
-    loadPulse()
-  ]).then(function(r){
-    var photos = (r[2] && r[2].photos) || r[2] || [];
-    buildSlides(r[0], r[1], photos, r[3] || {});
-    next();
-  }).catch(function(){ slides = [HERO_LESSON, OTHER_KINDS, THANK_YOU]; next(); });
+  /* names has to load BEFORE loadPulse — the pulse filters every
+     observation to Bright Futures logins as it fetches, it can't be
+     filtered after the fact. */
+  function loadEverything(){
+    return grab(BASE+'data/sources/photographer_names.json').then(function(names){
+      names = names || {};
+      var bfSet = bfLogins(names);
+      return Promise.all([
+        grab(BASE+'data/published/brightfutures_today.json'),
+        grab(BASE+'data/published/events.json'),
+        grab(BASE+'data/sources/photo_credits.json'),
+        loadPulse(bfSet)
+      ]).then(function(r){
+        var photos = (r[2] && r[2].photos) || r[2] || [];
+        var mine = crewOf(photos, bfSet);
+        buildSlides(r[0], r[1], photos, names, mine);
+      });
+    });
+  }
+
+  loadEverything().then(next).catch(function(){ slides = [slideOtherKinds([]), THANK_YOU]; next(); });
 
   /* Refresh data + iNat pulse every 10 minutes, same cadence as the rest
      of the kiosk fleet. */
-  setInterval(function(){
-    Promise.all([
-      grab(BASE+'data/published/brightfutures_today.json'),
-      grab(BASE+'data/published/events.json'),
-      grab(BASE+'data/sources/photo_credits.json'),
-      grab(BASE+'data/sources/photographer_names.json'),
-      loadPulse()
-    ]).then(function(r){
-      var photos = (r[2] && r[2].photos) || r[2] || [];
-      buildSlides(r[0], r[1], photos, r[3] || {});
-    }).catch(function(){});
-  }, (10*60*1000) / SPEED);
+  setInterval(function(){ loadEverything().catch(function(){}); }, (10*60*1000) / SPEED);
 })();
 </script>
 </body>
