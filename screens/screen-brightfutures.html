@@ -3,18 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bright Futures Volunteers — Palma Sola Botanical Park</title>
+<title>Bright Futures — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="events/event-deck.css">
-<link rel="stylesheet" href="events/event-volunteer.css">
-<!-- Standalone deck for the Wednesday Bright Futures high-school volunteer
-     sessions. Rebuilt 2026-09-25 as its own self-contained page (not a mode
-     inside screen.html) — Randy: "i thought each sort of screen was an html
-     page," same as the event decks. Reuses event-deck.css for the shared
-     frame/clock/logo chrome, own theme in event-volunteer.css, own rotation
-     logic below (unlike the event decks it needs live data and two
-     wall-clock-scheduled slides, so it doesn't reuse event-deck.js). -->
+<link rel="stylesheet" href="events/event-brightfutures.css">
+<!-- Standalone deck for the Wednesday Bright Futures high-school session.
+     Randy, 2026-09-25: "volunteers would refer to adults so the name of
+     this html is wrong imo. We call this crew Bright Futures" — this is
+     their crew's screen, not a generic "volunteer" one. Rebuilt the same
+     day as its own self-contained page (not a mode inside screen.html) —
+     Randy: "i thought each sort of screen was an html page," same as the
+     event decks. Reuses event-deck.css for the shared frame/clock/logo
+     chrome, own theme in event-brightfutures.css, own rotation logic below
+     (unlike the event decks it needs live data and two wall-clock-
+     scheduled slides, so it doesn't reuse event-deck.js). -->
 </head>
 <body>
 <div class="frame"></div>
@@ -242,7 +245,7 @@
   }
 
   Promise.all([
-    grab(BASE+'data/published/volunteer_today.json'),
+    grab(BASE+'data/published/brightfutures_today.json'),
     grab(BASE+'data/published/events.json'),
     grab(BASE+'data/sources/photo_credits.json'),
     grab(BASE+'data/sources/photographer_names.json'),
@@ -257,7 +260,7 @@
      of the kiosk fleet. */
   setInterval(function(){
     Promise.all([
-      grab(BASE+'data/published/volunteer_today.json'),
+      grab(BASE+'data/published/brightfutures_today.json'),
       grab(BASE+'data/published/events.json'),
       grab(BASE+'data/sources/photo_credits.json'),
       grab(BASE+'data/sources/photographer_names.json'),
