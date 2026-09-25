@@ -181,6 +181,20 @@
     });
   }
 
+  /* Randy, 2026-09-25: "some screens have name twice. kinda weird." Right
+     — slidePhotoSpotlight already puts the name in the headline, so the
+     corner block was repeating it via creditPlate's byline. Same date +
+     license badge, no name row, built from PSBPPhotos' own pieces rather
+     than the full creditPlate(). */
+  function creditNoName(p){
+    if(!p) return '';
+    var date = window.PSBPPhotos.fmtDate(p.observed_on);
+    return '<div class="credit-plate"><div class="credit-license">'
+      + window.PSBPPhotos.ccBadge(p.license)
+      + (date ? '<span class="credit-date">'+esc(date)+'</span>' : '')
+      + '<span class="credit-src">via iNaturalist</span></div></div>';
+  }
+
   /* A real fact, not just a name — Randy: "too boring without good info."
      Same quick_hits array the species pages themselves use, keyed by the
      photo's own psbp_id. */
@@ -334,7 +348,7 @@
     if(!p) return null;
     var fact = hitFor(hits, p.psbp_id);
     var name = (p.photographer_name || 'a crew member').split(' – ')[0];
-    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditText(p), html:
+    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditNoName(p), html:
         '<div class="copy"><div class="label">From the crew</div>'
       + '<h2>'+esc(name)+'</h2>'
       + '<div class="subspecies">'+esc(p.common_name || '')+'</div>'
