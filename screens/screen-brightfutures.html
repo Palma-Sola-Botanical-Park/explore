@@ -171,7 +171,7 @@
   function slidePulse(mine){
     if(!PULSE || PULSE.weekObs < 1) return null;
     var p = randomPhoto(mine);
-    return { id:'pulse', seconds: SECONDS*1.2, bg: p && p.photo_url, html:
+    return { id:'pulse', seconds: SECONDS*1.2, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Bright Futures this week</div>'
       + '<div class="stat-row">'
       +   '<div class="count">'+PULSE.weekObs+'<small>observations</small></div>'
@@ -205,7 +205,7 @@
         '<div class="copy"><div class="label">Most photographed this week</div>'
       + '<h2>'+esc(top.name)+'</h2>'
       + '<div class="stat-row"><div class="count">'+top.count+'<small>observations</small></div></div>'
-      + '<div class="body frame-credit"></div></div>' };
+      + '</div>' };
   }
 
   /* Concrete species names, not an abstract number — makes "63 species"
@@ -215,7 +215,7 @@
     var names = PULSE.speciesList.slice(0,8).map(function(s){ return s.name; }).filter(Boolean);
     if(names.length < 3) return null;
     var p = randomPhoto(mine);
-    return { id:'speciesseen', seconds: SECONDS*1.4, bg: p && p.photo_url, html:
+    return { id:'speciesseen', seconds: SECONDS*1.4, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Seen this week</div>'
       + '<h2>'+esc(names.join(' · '))+'</h2></div>' };
   }
@@ -227,7 +227,7 @@
            + '<span class="job">'+esc(t.job||'')+'</span></div>';
     }).join('');
     var p = randomPhoto(mine);
-    return { id:'tasks', seconds: SECONDS*1.3, bg: p && p.photo_url, html:
+    return { id:'tasks', seconds: SECONDS*1.3, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Today at the park</div>'
       + '<h2>'+esc(tasksData.note || 'Wednesday jobs')+'</h2>'
       + '<div class="task-list">'+rows+'</div></div>' };
@@ -242,7 +242,7 @@
            + '<span class="job">'+esc(e.title||'')+'</span></div>';
     }).join('');
     var p = randomPhoto(mine);
-    return { id:'events', seconds: SECONDS*1.2, bg: p && p.photo_url, html:
+    return { id:'events', seconds: SECONDS*1.2, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Coming up</div>'
       + '<div class="task-list">'+rows+'</div></div>' };
   }
@@ -302,30 +302,33 @@
 
   function slideOtherKinds(mine){
     var p = randomPhoto(mine);
-    return { id:'kinds', seconds: SECONDS*1.5, bg: p && p.photo_url, html:
+    return { id:'kinds', seconds: SECONDS*1.5, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Beyond the hero shot</div><h2>One photo rarely tells the whole story.</h2>'
     + '<div class="body">The close-up detail that settles an ID. The whole-plant habit shot that shows how it actually grows here. Bark, fruit, seed pods, the ID sign itself — the boring ones are often the ones we need most.</div></div>' };
   }
 
   function slideWhyMultiple(mine){
     var p = randomPhoto(mine);
-    return { id:'multiple', seconds: SECONDS*1.2, bg: p && p.photo_url, html:
+    return { id:'multiple', seconds: SECONDS*1.2, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Take more than one</div><h2>If it’s worth stopping for, it’s worth three photos.</h2>'
     + '<div class="body">Wide, then closer, then closer still. You can always throw two away later — you can’t go back and take the one you skipped.</div></div>' };
   }
 
   function slideWhyAllYear(mine){
     var p = randomPhoto(mine);
-    return { id:'allyear', seconds: SECONDS*1.3, bg: p && p.photo_url, html:
+    return { id:'allyear', seconds: SECONDS*1.3, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Why we never stop</div><h2>One photo is one moment. The park isn’t.</h2>'
     + '<div class="body">Bare in winter, blooming in spring, fruiting in fall — the same plant looks like three different plants across a year. "We already have a photo of that one" is never really true.</div></div>' };
   }
 
-  var THANK_YOU = { id:'thanks', seconds: SECONDS*1.4, html:
-      '<div class="copy"><div class="label">Why this matters</div>'
-    + '<h2>Your phone → an observation → an ID → the catalog → a sign → a visitor reads it.</h2>'
-    + '<div class="body">That whole chain starts with somebody deciding a plant was worth stopping for. Thank you for being that somebody, week after week.</div>'
-    + '<img class="bf-logo" src="../images/logos/bright-futures.png" alt="Florida Bright Futures Scholarship Program"></div>' };
+  function slideThankYou(mine){
+    var p = randomPhoto(mine);
+    return { id:'thanks', seconds: SECONDS*1.5, bg: p && p.photo_url, credit: p && creditText(p), html:
+        '<div class="copy"><div class="label">Why this matters</div>'
+      + '<h2>Your phone → an observation → an ID → the catalog → a sign → a visitor reads it.</h2>'
+      + '<div class="body">That whole chain starts with somebody deciding a plant was worth stopping for. Thank you for being that somebody, week after week.</div>'
+      + '<img class="bf-logo" src="../images/logos/bright-futures.png" alt="Florida Bright Futures Scholarship Program"></div>' };
+  }
 
   function slideCleanup(){
     return { id:'cleanup', seconds: SECONDS*1.1, warn:true, html:
@@ -441,7 +444,7 @@
       slideTasks(tasksData, mine), slideEvents(events, mine), slideCrew(mine),
       slidePhotoSpotlight(mine), slidePhotoSpotlight(mine),
       slideHero(mine), slideOtherKinds(mine), slideWhyMultiple(mine), slideWhyAllYear(mine),
-      THANK_YOU
+      slideThankYou(mine)
     ];
     slides = built.filter(Boolean);
   }
@@ -466,7 +469,7 @@
     });
   }
 
-  loadEverything().then(next).catch(function(){ slides = [slideOtherKinds([]), THANK_YOU]; next(); });
+  loadEverything().then(next).catch(function(){ slides = [slideOtherKinds([]), slideThankYou([])]; next(); });
 
   /* Refresh data + iNat pulse every 10 minutes, same cadence as the rest
      of the kiosk fleet. */
