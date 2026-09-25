@@ -162,6 +162,20 @@
 .count small{display:block;font-family:var(--sans);font-size:1.7vmin;font-weight:700;
   letter-spacing:.24em;text-transform:uppercase;color:var(--gold);opacity:.85;margin-top:.9vmin}
 
+/* Most photographed: "N OBSERVATIONS" on one line, then the list builds
+   1. Name, date … oldest first, one row per beat, eight to a column,
+   the photo and caption switching with each — "cool to build the 8 you
+   know are coming". */
+.count.inline{display:flex;align-items:baseline;gap:1.4vmin;margin-top:1.2vmin}
+.count.inline small{display:inline-block;margin:0}
+.obs-list{display:grid;grid-auto-flow:column;grid-template-rows:repeat(8,auto);column-gap:6vmin;row-gap:.5vmin;
+  margin-top:2.2vmin;width:max-content;max-width:100%}
+.obs-row{display:flex;align-items:baseline;gap:1.4vmin;font-size:clamp(1.3rem,2.9vmin,2.3rem);color:var(--paper);
+  text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6);opacity:0;transform:translateY(.8vmin);animation:rise .35s ease-out forwards}
+.obs-row .n{font-family:var(--serif);font-weight:700;color:var(--gold);min-width:3.2vmin;text-align:right}
+.obs-row .who{font-weight:600}
+.obs-row .when,.obs-row.more{color:var(--ink-invert);font-weight:300}
+
 .task-list{display:flex;flex-direction:column;gap:1.9vmin;margin-top:2.6vmin;max-width:90vmin}
 .task{display:grid;grid-template-columns:15vmin 1fr;gap:2.2vmin;align-items:baseline}
 .task .team{font-size:1.6vmin;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
@@ -288,7 +302,7 @@
   .slide .copy > *,.slide .mosaic,.slide .card-photo,.slide .sheet,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
   .quilt .tile{animation:none;opacity:1;transform:translate(-50%,-50%) rotate(var(--rot))}
   .quilt .tile.out{opacity:0}
-  .callout,.idstage .dot{animation:none;opacity:1;transform:none}
+  .callout,.idstage .dot,.obs-row{animation:none;opacity:1;transform:none}
   .idstage .arrow{transition:none}
   .credit-block{transition:none;transform:none}
 }

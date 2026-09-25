@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925i">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925i">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925j">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925j">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -137,17 +137,20 @@
           var t = o.taxon; if(!t || !t.id) return;
           var key = t.id;
           if(!bySpecies[key]) bySpecies[key] = {
-            name: t.preferred_common_name || t.name, count:0, logins:{}, photos:[]
+            name: t.preferred_common_name || t.name, count:0, logins:{}, photos:[], obs:[]
           };
           bySpecies[key].count++;
           if(o.user && o.user.login) bySpecies[key].logins[o.user.login] = 1;
           var photo0 = o.photos && o.photos[0];
-          if(photo0 && photo0.url) bySpecies[key].photos.push({
-            url: photo0.url.replace(/square\.(jpg|jpeg|png)/i, 'medium.$1'),
+          var rec = {
+            id: o.id || 0,
+            url: photo0 && photo0.url ? photo0.url.replace(/square\.(jpg|jpeg|png)/i, 'medium.$1') : '',
             login: (o.user && o.user.login) || '',
             observed_on: o.observed_on || '',
-            license: photo0.license_code || ''
-          });
+            license: (photo0 && photo0.license_code) || ''
+          };
+          bySpecies[key].obs.push(rec);              /* every observation, photo or not — the built list counts to N */
+          if(rec.url) bySpecies[key].photos.push(rec);
         });
         var speciesList = Object.keys(bySpecies).map(function(k){ return bySpecies[k]; })
           .sort(function(a,b){ return b.count - a.count; });
@@ -357,22 +360,46 @@
     var n = names[login];
     return ((n && (n.credit_as || n.display_name)) || login).split(' – ')[0];
   }
-  function slideMostPhotographed(names){
-    if(!PULSE || !PULSE.speciesList || !PULSE.speciesList.length) return null;
-    var top = PULSE.speciesList[0];
-    if(top.count < 2 || !top.photos || top.photos.length < 2) return null;
-    var frames = top.photos.slice(0,5).map(function(p){
-      return { bg: p.url, credit: window.PSBPPhotos.creditPlate({
-        by: nameFor(names, p.login), date: p.observed_on, license: p.license
-      }) };
+  /* Randy, 2026-09-25: "It starts great, but bores quickly. Start with
+     what you've got but put the word observations on the same line as
+     '8'. Also start with 1. Name, date (oldest one of batch). Then 2.
+     Name, date... Each time swap out the credit image at the bottom and
+     switch to their photo. Build the 8. Time is such that the Nth (last)
+     one ends when slide ends. It can go quicker than it is now. Movement
+     is good... Cool to build the 8 you know are coming." So: the number
+     lands first, then one row per beat, oldest first, the photo behind
+     and the caption switching with every row; the last row lands one
+     beat before the slide ends. Eight rows to a column. */
+  /* Then: "we could do the 2nd and 3rd most popular plants too. Phase
+     them in on the rotation that you would have done the Most popular
+     again. There is time over 3 hours! Do the same repeating countdown
+     for each." rank 0/1/2 → the three slots the top one used to fill. */
+  var RANK_LABEL = ['Most photographed this month', 'Second most photographed this month', 'Third most photographed this month'];
+  function slideMostPhotographed(names, rank){
+    rank = rank || 0;
+    if(!PULSE || !PULSE.speciesList || PULSE.speciesList.length <= rank) return null;
+    var top = PULSE.speciesList[rank];
+    if(top.count < 2 || !top.obs || top.obs.length < 2) return null;
+    var obs = top.obs.slice().sort(function(a, b){
+      return a.observed_on < b.observed_on ? -1 : a.observed_on > b.observed_on ? 1 : a.id - b.id;
     });
-    /* Randy: "fast is good" — 0.75x instead of 1.3x per photo, a quick
-       flip through the top 5 rather than a slow dwell on each. */
-    return { id:'mostphoto', seconds: SECONDS*0.75*frames.length, frames: frames, html:
-        '<div class="copy"><div class="label">Most photographed this month</div>'
+    var shown = obs.slice(0, 24), extra = obs.length - shown.length;
+    var rowMs = shown.length <= 8 ? 3400 : shown.length <= 16 ? 2400 : 1800, intro = 2600;
+    var rows = shown.map(function(o, i){
+      var when = o.observed_on ? new Date(o.observed_on+'T12:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+      return { bg: o.url, html:
+          '<div class="obs-row"><span class="n">'+(i+1)+'</span><span class="who">'+esc(nameFor(names, o.login))+'</span>'
+        + '<span class="when">'+esc(when)+'</span></div>',
+        credit: window.PSBPPhotos.creditPlate({ by: nameFor(names, o.login), date: o.observed_on, license: o.license }) };
+    });
+    if(extra > 0) rows.push({ html: '<div class="obs-row more">…and '+extra+' more</div>' });
+    var firstBg = shown[0].url || (top.photos[0] && top.photos[0].url) || '';
+    return { id:'mostphoto-'+(rank+1), seconds: (intro + rows.length*rowMs)/1000/SPEED,
+             build: { rows: rows, intro: intro/SPEED, rowMs: rowMs/SPEED }, bg: firstBg, credit: '', html:
+        '<div class="copy"><div class="label">'+RANK_LABEL[rank]+'</div>'
       + '<h2>'+esc(cap(top.name))+'</h2>'
-      + '<div class="stat-row">'+countHtml(top.count, 'observations')+'</div>'
-      + '</div>' };
+      + countHtml(top.count, 'observations', 'inline')
+      + '<div class="obs-list"></div></div>' };
   }
 
   /* Concrete species names, not an abstract number — makes "63 species"
@@ -395,7 +422,7 @@
     return { id:'speciesseen', seconds: SECONDS*0.6*frames.length, frames: frames, html:
         '<div class="copy"><div class="label">Seen this month</div>'
       + '<h2 class="frame-title">'+esc(frames[0].title)+'</h2>'
-      + '<div class="body">'+PULSE.monthSpecies+' species so far. A few of them:</div></div>' };
+      + '<div class="body">'+PULSE.monthSpecies+' species so far. Not too shabby, guys. Here’s a quick scroll through a bunch. Any of them could be yours because this is RANDOM!</div></div>' };
   }
 
   /* Randy, 2026-09-25: "let's make that about learning the weekly tasks.
@@ -485,7 +512,7 @@
      of two per cycle, on the From-the-crew slides, and the deck keeps a
      ledger (localStorage) of when each kid last got one — the two go to
      whoever has waited longest. */
-  var NICE_KEY = 'psbp-bf-nice';
+  var NICE_KEY = 'psbp-bf-nice', NICE_ARMED = false;
   var NICE = ['Nice one, {n}.', 'Good eye, {n}.', 'That’s the shot, {n}.', '{n}, that’s a keeper.'];
   function sprinkleNice(spots){
     var last = {}; try{ last = JSON.parse(localStorage.getItem(NICE_KEY) || '{}'); }catch(e){}
@@ -710,7 +737,8 @@
     return { id:'website', seconds: SECONDS*1.9, shout:true, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">The website</div>'
       + '<div class="shout-line">We need <em>hero</em> photos.</div>'
-      + '<div class="body">One photo leads every species page. We swap them as better ones come in.</div>'
+      + '<div class="body">The hero is the lead photo on the species page and the one on the sign. It has to look like the plant.</div>'
+      + '<div class="body">Or just be so darn gorgeous we can’t NOT use it.</div>'
       + '<div class="body">Shoot a better one. It goes up with your name under it.</div></div>' };
   }
 
@@ -972,6 +1000,29 @@
       setCredit(s.credit || '', CREDIT_LAG/SPEED);
     }
 
+    /* `s.build` — Most photographed: one list row per beat, the photo
+       behind and the caption switching with each row. */
+    if(s.build){
+      var listEl = el.querySelector('.obs-list'), bgB = el.querySelector('.bg'), bi = 0;
+      el._stepTimers = el._stepTimers || [];
+      function addRow(){
+        if(!el.isConnected) return;
+        var r = s.build.rows[bi];
+        var holder = document.createElement('div'); holder.innerHTML = r.html;
+        listEl.appendChild(holder.firstChild);
+        if(r.bg && bi > 0){
+          bgB.style.opacity = 0;
+          el._stepTimers.push(setTimeout(function(){
+            bgB.classList.add('photo'); bgB.style.backgroundImage = 'url('+r.bg+')'; bgB.style.opacity = 1;
+          }, 260/SPEED));
+        }
+        if(r.credit !== undefined) setCredit(r.credit || '');
+        bi++;
+        if(bi < s.build.rows.length) el._stepTimers.push(setTimeout(addRow, s.build.rowMs));
+      }
+      el._stepTimers.push(setTimeout(addRow, s.build.intro));
+    }
+
     /* `s.steps` — the detail-shot slide: the copy changes step by step;
        steps with a photo hide the full-bleed background and show the
        photo in the stage on the right with its callouts and arrows. */
@@ -1117,7 +1168,9 @@
       var sp = slidePhotoSpotlight(mine, hits);
       if(sp && !seenIds[sp.id]){ seenIds[sp.id] = 1; spotlights.push(sp); }
     }
-    sprinkleNice(spotlights);
+    /* only the build that actually stays on screen spends the budget —
+       the first build of a load is replaced seconds later by the pulse one */
+    if(NICE_ARMED){ sprinkleNice(spotlights); NICE_ARMED = false; }
 
     /* Reviewer: "Today at the park should probably be very prominent from
        3:00-4:00... then reduce it later." */
@@ -1145,7 +1198,7 @@
     var built = []
       .concat(weighted(slideWelcome(mine), welcomeN))
       .concat(weighted(slideMonth(names), 3))
-      .concat(weighted(slideMostPhotographed(names), 3))
+      .concat([slideMostPhotographed(names, 0), slideMostPhotographed(names, 1), slideMostPhotographed(names, 2)])
       .concat(weighted(slideSigns(mine, tasksData), 2))
       .concat(weighted(slideWebsite(mine), 2))
       .concat(weighted(slideChallenge(mine), 2))
@@ -1202,7 +1255,8 @@
           });
         }
         function build(){ buildSlides(today, r[1], photos, names, mine, hits, r[5]); }
-        return sheetReady.then(function(){ build(); pulse.then(build); });
+        function finalBuild(){ NICE_ARMED = true; build(); }
+        return sheetReady.then(function(){ build(); pulse.then(finalBuild, finalBuild); });
       });
     });
   }
