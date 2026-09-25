@@ -380,6 +380,7 @@
      coverage is even but never regular). */
   var CW = 171, CH = 84;            /* the .quilt box in vmin at 16:9 — for spacing maths only */
   var HOLE_X = 0.55, HOLE_Y = 0.69; /* the copy's corner, as fractions of the box, with room for a tilted print's corner: no tile may cover the words */
+  var CREDIT_X = 0.24, CREDIT_Y = 0.78; /* and the caption's corner, bottom-left — Randy: "give the screen credit some breathing space" */
   function collageFor(urls){
     var n = urls.length, boost = Math.min(1.5, Math.sqrt(16/Math.max(n,4)));
     var sizes = urls.map(function(_, i){          /* biggest first */
@@ -395,6 +396,7 @@
       for(var c=0; c<24; c++){
         var cx = hw*0.5 + Math.random()*(1 - hw), cy = hh*0.5 + Math.random()*(1 - hh);
         if(cx - hw < HOLE_X && cy - hh < HOLE_Y) continue;          /* would sit on the words */
+        if(cx - hw < CREDIT_X && cy + hh > CREDIT_Y) continue;      /* would sit on the caption */
         var d = 1e9;
         for(var p=0; p<placed.length; p++){
           var dx = (cx - placed[p][0])*CW, dy = (cy - placed[p][1])*CH;
