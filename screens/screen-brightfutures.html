@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925f">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925f">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925g">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925g">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -285,21 +285,35 @@
      names in the panel itself, no rank numbers, random order). */
   /* Randy, 2026-09-25, on the first version (four numbers, a 2×2 grid,
      two-thirds of the screen empty): "needs to be way better somehow."
-     So the slide SHOWS the number: the photo count is one huge figure,
-     and the right half is a wall of this month's real photos that fills
-     in burst by burst, one photographer at a time, the caption naming
-     each as their pictures land. ~50 tiles by the end. */
+     Then on the tidy wall of squares that replaced it: "needs a crazy
+     irregularly framed bunch of photos that changes with each
+     photographer... take much of the screen and be built to fit around
+     the text... interesting shapes with lots photos that interlock."
+     So: the photo count is one huge figure, and a QUILT of mixed-size
+     tiles packs around the text (dense CSS grid with a hole where the
+     copy sits) — a fresh arrangement for each photographer, the caption
+     naming whoever is up. Shapes are picked so each photographer's
+     photos roughly fill the space: someone with 4 photos gets 4 big
+     blocks, someone with 40 gets a tight patchwork. */
+  var QUILT_COLS = 12, QUILT_ROWS = 7, QUILT_HOLE = 6*4;   /* hole: cols 1–6 × rows 1–4, under the copy */
+  var SHAPES = [[1,1],[2,1],[1,2],[3,1],[2,2],[3,2],[2,3],[4,2],[3,3]];
+  function quiltFor(urls){
+    var cells = QUILT_COLS*QUILT_ROWS - QUILT_HOLE, per = cells/urls.length, left = cells;
+    return urls.map(function(u){
+      var fit = SHAPES.filter(function(s){ var a = s[0]*s[1]; return a >= per*0.5 && a <= per*1.8 && a <= left; });
+      if(!fit.length) fit = SHAPES.filter(function(s){ return s[0]*s[1] <= Math.max(1,left); }).slice(-2);
+      var s = fit[Math.floor(Math.random()*fit.length)] || [1,1];
+      left -= s[0]*s[1];
+      return { url: u, c: s[0], r: s[1] };
+    });
+  }
   function slideMonth(names){
     if(!PULSE || !PULSE.monthObs) return null;
-    var wall = [], tiles = 0, CAP = 56;   /* 7 × 8 grid; up to a row per photographer */
-    PULSE.photographers.forEach(function(t){
-      if(tiles >= CAP) return;
-      var urls = t.photos.slice(0, Math.min(7, CAP - tiles)).map(function(p){ return p.url; });
-      if(!urls.length) return;
-      tiles += urls.length;
-      wall.push({ urls: urls, credit: window.PSBPPhotos.creditPlate({ by: nameFor(names, t.login), license: t.photos[0].license }) });
+    var quilt = PULSE.photographers.slice(0, 6).map(function(t){
+      return { items: quiltFor(t.photos.slice(0, 16).map(function(p){ return p.url; })),
+               credit: window.PSBPPhotos.creditPlate({ by: nameFor(names, t.login), license: t.photos[0].license }) };
     });
-    return { id:'month', seconds: SECONDS*2.4, wall: wall, html:
+    return { id:'month', seconds: SECONDS*2.4, quilt: quilt, html:
         '<div class="copy"><div class="label">This month</div>'
       + '<h2>Here’s how many iNat pics we’ve taken this month:</h2>'
       + countHtml(PULSE.monthPhotos, 'photos', 'hero')
@@ -307,7 +321,7 @@
       +   countHtml(PULSE.monthObs, 'observations') + countHtml(PULSE.monthSpecies, 'species')
       +   countHtml(PULSE.monthObservers, 'photographers')
       + '</div></div>'
-      + (wall.length ? '<div class="wall"></div>' : '') };
+      + (quilt.length ? '<div class="quilt"></div>' : '') };
   }
 
   /* A real achievement, not just a count — Randy: "no achievements. no
@@ -733,7 +747,7 @@
     setTimeout(function(){ el.classList.add('on'); }, 40);
     if(cur){
       if(cur._frameTimer) clearInterval(cur._frameTimer);
-      if(cur._wallTimer) clearTimeout(cur._wallTimer);
+      if(cur._quiltTimer) clearTimeout(cur._quiltTimer);
       var old=cur; old.classList.remove('on'); setTimeout(function(){ old.remove(); }, 1300/SPEED);
     }
     cur = el;
@@ -762,23 +776,32 @@
       setCredit(s.credit || '', CREDIT_LAG/SPEED);
     }
 
-    /* `s.wall` — the monthly slide's right half: tiles pour in one
-       photographer at a time and STAY, so the wall builds up over the
-       slide; the bottom-left caption names whoever's photos are landing. */
-    if(s.wall && s.wall.length){
-      var wallEl = el.querySelector('.wall'), gi = 0;
-      var groupMs = Math.max(900/SPEED, (dur*1000*0.6) / s.wall.length);
-      function placeGroup(g){
-        setCredit(g.credit || '');
-        g.urls.forEach(function(u, k){
-          var img = document.createElement('img'); img.alt = '';
-          img.style.animationDelay = (k*0.07/SPEED).toFixed(2)+'s';
-          img.src = u; wallEl.appendChild(img);
-        });
+    /* `s.quilt` — the monthly slide's patchwork: one photographer's
+       tiles pop in around the text, hold, shrink away, and the next
+       photographer's arrangement takes the space; the bottom-left
+       caption names whoever is up. The tiles are the reveal, so the
+       caption lands with them, no lag. */
+    if(s.quilt && s.quilt.length){
+      var quiltEl = el.querySelector('.quilt'), gi = 0;
+      var groupMs = Math.max(3200/SPEED, (dur*1000 - 1400/SPEED) / s.quilt.length);
+      function showGroup(g){
+        var olds = quiltEl.querySelectorAll('img');
+        for(var i=0;i<olds.length;i++) olds[i].classList.add('out');
+        setTimeout(function(){
+          if(!quiltEl.isConnected) return;
+          setCredit(g.credit || '');
+          quiltEl.innerHTML = '<div class="quilt-hole"></div>';
+          g.items.forEach(function(it, k){
+            var img = document.createElement('img'); img.alt = '';
+            img.style.gridColumn = 'span '+it.c; img.style.gridRow = 'span '+it.r;
+            img.style.animationDelay = (k*0.06/SPEED).toFixed(2)+'s';
+            img.src = it.url; quiltEl.appendChild(img);
+          });
+        }, olds.length ? 260/SPEED : 0);
       }
-      el._wallTimer = setTimeout(function tickWall(){
-        placeGroup(s.wall[gi]); gi++;
-        if(gi < s.wall.length) el._wallTimer = setTimeout(tickWall, groupMs);
+      el._quiltTimer = setTimeout(function tickQuilt(){
+        showGroup(s.quilt[gi]); gi++;
+        if(gi < s.quilt.length) el._quiltTimer = setTimeout(tickQuilt, groupMs);
       }, 1400/SPEED);
     }
 

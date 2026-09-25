@@ -218,8 +218,8 @@
 .slide.on .copy > *:nth-child(3){animation-delay:.9s}
 .slide.on .copy > *:nth-child(4){animation-delay:1.25s}
 .slide.on .copy > *:nth-child(n+5){animation-delay:1.55s}
-.slide .mosaic,.slide .card-photo,.slide .wall,.slide .sheet{opacity:0;transform:translateX(1.5vmin)}
-.slide.on .mosaic,.slide.on .card-photo,.slide.on .wall,.slide.on .sheet{animation:rise .7s ease-out .7s forwards}
+.slide .mosaic,.slide .card-photo,.slide .sheet{opacity:0;transform:translateX(1.5vmin)}
+.slide.on .mosaic,.slide.on .card-photo,.slide.on .sheet{animation:rise .7s ease-out .7s forwards}
 .slide .task,.slide .rub{opacity:0;transform:translateY(.8vmin)}
 .slide.on .task,.slide.on .rub{animation:rise .5s ease-out forwards}
 .slide.on .task:nth-child(1),.slide.on .rub:nth-child(1){animation-delay:.9s}
@@ -229,23 +229,31 @@
 .slide.on .task:nth-child(n+5),.slide.on .rub:nth-child(n+5){animation-delay:2.1s}
 @keyframes rise{to{opacity:1;transform:none}}
 
-/* The monthly slide — see slideMonth()/render() wall. One huge number
-   on the left; on the right a wall of this month's photos that fills in
-   burst by burst and stays. 7 columns × 8 rows = 56 tiles, ~67vmin tall
-   under the 13vmin top band, clear of the caption at bottom-left. */
+/* The monthly slide — see slideMonth()/render() quilt. One huge number
+   top-left; the rest of the screen is a dense grid of mixed-size photo
+   tiles packed around the copy (.quilt-hole reserves cols 1–6 × rows
+   1–4 for it). A fresh arrangement per photographer. Rows/cols are
+   minmax(0,1fr) and overflow rows are 0 high, so an arrangement that
+   doesn't quite fit clips instead of squashing the grid. */
 .count.hero{font-size:clamp(6rem,22vmin,19rem);line-height:1;margin-top:.6vmin;
   display:flex;align-items:baseline;gap:1.8vmin}   /* label beside, not under: old-style figures hang below the line box */
 .count.hero small{display:inline-block;font-size:2.3vmin;margin:0}
-.wall{flex:0 0 auto;width:58vmin;max-height:67.5vmin;display:grid;grid-template-columns:repeat(7,1fr);
-  grid-auto-rows:7.6vmin;gap:.9vmin;align-content:start;overflow:hidden}
-.wall img{width:100%;height:100%;object-fit:cover;border-radius:.5vmin;display:block;
-  box-shadow:0 .3vmin 1.2vmin rgba(0,0,0,.45);opacity:0;transform:scale(.7);
-  animation:tileIn .45s cubic-bezier(.2,.9,.3,1.2) forwards}
+.quilt{position:absolute;left:calc(var(--frame) + var(--pad));right:calc(var(--frame) + var(--pad));
+  top:13vmin;bottom:calc(var(--frame) + 2.7vmin);z-index:0;
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(7,minmax(0,1fr));
+  grid-auto-rows:0;grid-auto-flow:dense;gap:.9vmin;overflow:hidden}
+.quilt-hole{grid-area:1/1/5/7}
+.quilt img{width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;border-radius:.7vmin;display:block;
+  box-shadow:0 .4vmin 1.6vmin rgba(0,0,0,.5);opacity:0;transform:scale(.8);
+  animation:tileIn .42s cubic-bezier(.2,.9,.3,1.2) forwards}
+.quilt img.out{animation:tileOut .24s ease forwards}
 @keyframes tileIn{to{opacity:1;transform:none}}
+@keyframes tileOut{from{opacity:1;transform:none}to{opacity:0;transform:scale(.94)}}
 
 @media (prefers-reduced-motion:reduce){
-  .slide .copy > *,.slide .mosaic,.slide .card-photo,.slide .wall,.slide .sheet,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
-  .wall img{animation:none;opacity:1;transform:none}
+  .slide .copy > *,.slide .mosaic,.slide .card-photo,.slide .sheet,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
+  .quilt img{animation:none;opacity:1;transform:none}
+  .quilt img.out{opacity:0}
   .credit-block{transition:none;transform:none}
 }
 
