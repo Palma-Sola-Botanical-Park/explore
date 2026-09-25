@@ -85,10 +85,26 @@
     var nelng=Math.max.apply(null,PULSE_POLYGON.map(function(p){return p[0];}));
     var swlat=Math.min.apply(null,PULSE_POLYGON.map(function(p){return p[1];}));
     var swlng=Math.min.apply(null,PULSE_POLYGON.map(function(p){return p[0];}));
-    var url = 'https://api.inaturalist.org/v1/observations?nelat='+nelat+'&nelng='+nelng
-      + '&swlat='+swlat+'&swlng='+swlng+'&verifiable=any&d1='+d1
-      + '&order_by=observed_on&order=desc&per_page=200';
-    return fetch(url, { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
+    /* v2 with an explicit field list, same trick species_manager.py uses:
+       ~100 KB a page instead of ~13 MB of full v1 records for 200
+       observations. v2 has no verifiable=any — leaving it off returns
+       everything, which is what a planted collection needs. Up to three
+       pages so a busy month isn't cut off at the 200 most recent. */
+    var base = 'https://api.inaturalist.org/v2/observations?nelat='+nelat+'&nelng='+nelng
+      + '&swlat='+swlat+'&swlng='+swlng+'&d1='+d1
+      + '&order_by=observed_on&order=desc&per_page=200'
+      + '&fields=id,observed_on,location,user.login,taxon.id,taxon.name,taxon.preferred_common_name,photos.url,photos.license_code';
+    function page(n){ return fetch(base+'&page='+n, { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; }); }
+    return page(1).then(function(first){
+        if(!first) return null;
+        var n = Math.min(3, Math.ceil((first.total_results||0)/200)), more = [];
+        for(var i=2;i<=n;i++) more.push(page(i));
+        return Promise.all(more).then(function(rest){
+          var results = first.results || [];
+          rest.forEach(function(d){ if(d && d.results) results = results.concat(d.results); });
+          return { results: results };
+        });
+      })
       .then(function(data){
         var monthRows = ((data && data.results) || []).filter(inPark)
           .filter(function(o){ return o.user && bfSet[o.user.login]; });
@@ -211,11 +227,11 @@
     return { id:'pulse', seconds: SECONDS*1.2, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Bright Futures this week</div>'
       + '<div class="stat-row">'
-      +   '<div class="count">'+PULSE.weekObs+'<small>observations</small></div>'
-      +   '<div class="count">'+PULSE.weekSpecies+'<small>species</small></div>'
-      +   '<div class="count">'+PULSE.weekObservers+'<small>observers</small></div>'
+      +   countHtml(PULSE.weekObs, 'observations')
+      +   countHtml(PULSE.weekSpecies, 'species')
+      +   countHtml(PULSE.weekObservers, 'observers')
       + '</div>'
-      + '<div class="body">Every one of those came from somebody’s phone, right here in the park.</div></div>' };
+      + '<div class="body">All of it off your phones. This week.</div></div>' };
   }
 
   /* A real achievement, not just a count — Randy: "no achievements. no
@@ -243,7 +259,7 @@
     return { id:'mostphoto', seconds: SECONDS*0.75*frames.length, frames: frames, html:
         '<div class="copy"><div class="label">Most photographed this month</div>'
       + '<h2>'+esc(top.name)+'</h2>'
-      + '<div class="stat-row"><div class="count">'+top.count+'<small>observations</small></div></div>'
+      + '<div class="stat-row">'+countHtml(top.count, 'observations')+'</div>'
       + '</div>' };
   }
 
@@ -285,7 +301,7 @@
     var p = randomPhoto(mine);
     return { id:'challenge', seconds: SECONDS*1.3, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Can we beat this?</div>'
-      + '<div class="stat-row"><div class="count">'+PULSE.todaySpecies+'<small>species today</small></div></div>'
+      + '<div class="stat-row">'+countHtml(PULSE.todaySpecies, 'species today')+'</div>'
       + '<div class="body">Can the crew hit <b>'+target+'</b> before cleanup?</div></div>' };
   }
 
@@ -301,7 +317,7 @@
     return { id:'events', seconds: SECONDS*1.4, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Coming up</div>'
       + '<div class="task-list">'+rows+'</div>'
-      + '<div class="body">Need hours? Events are the quickest way to pick up several at once — ask Randy about signing up.</div></div>' };
+      + '<div class="body">Need hours? Events pay out a bunch at once. Ask Randy.</div></div>' };
   }
 
   /* Randy, 2026-09-25: "the point is not the photo. the point is that
@@ -332,7 +348,7 @@
     }).join('');
     return { id:'crew', seconds: SECONDS*1.8, settleSelector:'.matchgame', html:
         '<div class="copy"><div class="label">The Bright Futures crew</div>'
-      + '<h2>'+mine.length+' photographs, '+Object.keys(species).length+' species documented</h2></div>'
+      + '<h2>'+mine.length+' photos. '+Object.keys(species).length+' species.</h2></div>'
       + '<div class="matchgame">'+rows+'</div>' };
   }
 
@@ -380,30 +396,122 @@
         + '<figcaption>'+esc((p.photographer_name||'').split(' ')[0]||'')+'</figcaption></figure>';
     }).join('');
     return { id:'hero', seconds: SECONDS*2, html:
-        '<div class="copy"><div class="label">What makes a hero photo</div>'
-      + '<div class="body">One clean subject, nothing competing for the eye. A tight shot fills the frame; a wider one shows the whole plant’s shape. Both are right — they’re answering different questions.</div></div>'
+        '<div class="copy"><div class="label">What a hero photo is</div>'
+      + '<div class="body">One thing in the frame. Nothing in the way. Get close so it fills the shot, or step back so you get the whole shape. Both work.</div></div>'
       + '<div class="mosaic">'+tiles+'</div>' };
   }
 
-  function slideOtherKinds(mine){
+  /* Randy, 2026-09-25: "use some of this" — the September photo-awards
+     deck on his Desktop. Its five judging questions, in his own words,
+     replace my aphorisms as the coaching content. No point values on
+     screen: "don't need to make it about winning." */
+  var RUBRIC = [
+    ['Unmistakably this species', 'Can you tell what it is from the frame? A great photo of Generic Green Shrub scores zero.'],
+    ['Survives the crop', 'Heroes get cut to a wide band and shrunk to a thumbnail. Distant or cluttered subjects die.'],
+    ['In the park', 'Show the path, the pond, the fence. This plant, not a book photo.'],
+    ['Light and moment', 'Is it good to look at.'],
+    ['Teaches something', 'A fruit, a behavior, a clue to scale. The photo has a fact in it.']
+  ];
+  function slideRubric(){
+    var rows = RUBRIC.map(function(r, i){
+      return '<div class="rub"><b>'+(i+1)+'</b><div><strong>'+esc(r[0])+'</strong>'+esc(r[1])+'</div></div>';
+    }).join('');
+    return { id:'rubric', seconds: SECONDS*2, html:
+        '<div class="copy"><div class="label">What a hero photo is</div>'
+      + '<h2>Recognition first. Pretty second.</h2>'
+      + '<div class="rubric">'+rows+'</div></div>' };
+  }
+
+  /* Real crew photos with Randy's own notes from that deck, lightly
+     trimmed for a TV. "Almost" ones are framed as half a step, not a
+     miss — "pick different kids to represent various images." */
+  var EXAMPLES = [
+    { id:'731638176', label:'Why this one works',
+      note:'Look at the depth. One bract front and center, the whole bed behind it, then the pond and the far shore. Most people shoot the flower and forget the place. Alaina shot both.' },
+    { id:'731644653', label:'Why this one works',
+      note:'The swollen trunk is the species. Nothing else in the park looks like that. And Kevin kept the path and the plant label in the frame.' },
+    { id:'735608579', label:'Why this one works',
+      note:'That heavy green fruit couldn’t belong to any other plant here. The prop roots back it up, and the deck railing says this is here. Most visitors have no idea a Screw Pine fruits like that.' },
+    { id:'731645331', label:'Why this one works',
+      note:'You can count the five points on every flower. That’s exactly what the Pentas page is about.' },
+    { id:'735615080', label:'Almost',
+      note:'Perfect light, perfectly sharp, dead center. One thing missing: a flower against a green blur could be anywhere on earth. Step back half a pace and it’s a hero.' },
+    { id:'723780282', label:'Almost',
+      note:'That purple is unbeatable and the berries fill the frame. No path, no sky, no ground. Nothing that says Palma Sola. Half a step back.' }
+  ];
+  function slideExample(mine, ex){
+    var p = null;
+    for(var i=0;i<mine.length;i++) if(mine[i].photo_id === ex.id){ p = mine[i]; break; }
+    if(!p) return null;
+    var name = (p.photographer_name || '').split(' – ')[0];
+    return { id:'ex-'+ex.id, seconds: SECONDS*1.7, html:
+        '<div class="card-photo"><img alt="" src="'+p.photo_url+'"></div>'
+      + '<div class="copy"><div class="label">'+esc(ex.label)+'</div>'
+      + '<h2>'+esc(name)+'</h2>'
+      + '<div class="subspecies">'+esc(p.common_name||'')+'</div>'
+      + '<div class="body">'+esc(ex.note)+'</div></div>' };
+  }
+
+  /* From the same deck's last slide — the real ask. */
+  function slideNeedsPhoto(mine){
     var p = randomPhoto(mine);
-    return { id:'kinds', seconds: SECONDS*1.5, bg: p && p.photo_url, credit: p && creditText(p), html:
-        '<div class="copy"><div class="label">Beyond the hero shot</div><h2>One photo rarely tells the whole story.</h2>'
-    + '<div class="body">The close-up detail that settles an ID. The whole-plant habit shot that shows how it actually grows here. Bark, fruit, seed pods, the ID sign itself — the boring ones are often the ones we need most.</div></div>' };
+    return { id:'needsphoto', seconds: SECONDS*1.5, bg: p && p.photo_url, credit: p && creditText(p), html:
+        '<div class="copy"><div class="label">Pages that need a better photo</div>'
+      + '<h2>Yours goes live with your name under it.</h2>'
+      + '<div class="body">Nine species pages are led by a photo where you can’t tell what the plant is. Sweet Viburnum is mostly a deck. Amazon Lily has no flower in it. Mottled Spurge is a gray wall. Take a better one.</div></div>' };
   }
 
   function slideWhyMultiple(mine){
     var p = randomPhoto(mine);
-    return { id:'multiple', seconds: SECONDS*1.2, bg: p && p.photo_url, credit: p && creditText(p), html:
-        '<div class="copy"><div class="label">Take more than one</div><h2>If it’s worth stopping for, it’s worth three photos.</h2>'
-    + '<div class="body">Wide, then closer, then closer still. You can always throw two away later — you can’t go back and take the one you skipped.</div></div>' };
+    return { id:'multiple', seconds: SECONDS*1.1, bg: p && p.photo_url, credit: p && creditText(p), html:
+        '<div class="copy"><div class="label">Take more than one</div><h2>Take three.</h2>'
+    + '<div class="body">Wide. Closer. Closer again. Toss two later if you want. You can’t go back for the one you skipped.</div></div>' };
   }
 
   function slideWhyAllYear(mine){
     var p = randomPhoto(mine);
-    return { id:'allyear', seconds: SECONDS*1.3, bg: p && p.photo_url, credit: p && creditText(p), html:
-        '<div class="copy"><div class="label">Why we never stop</div><h2>One photo is one moment. The park isn’t.</h2>'
-    + '<div class="body">Bare in winter, blooming in spring, fruiting in fall — the same plant looks like three different plants across a year. "We already have a photo of that one" is never really true.</div></div>' };
+    return { id:'allyear', seconds: SECONDS*1.2, bg: p && p.photo_url, credit: p && creditText(p), html:
+        '<div class="copy"><div class="label">Why we keep going</div><h2>Same plant, three different plants.</h2>'
+    + '<div class="body">Bare in winter. Flowers in spring. Fruit in fall. So no, we don’t already have that one.</div></div>' };
+  }
+
+  /* WHO SHOT THIS? — Randy, 2026-09-25: "yes ask who a lot. very good."
+     The photo alone for a beat, then the name slams in. Attribution as
+     the payoff of the slide, not a caption under it. Species after. */
+  function slideWhoShot(mine){
+    var p = randomPhoto(mine);
+    if(!p) return null;
+    var name = (p.photographer_name || '').split(' – ')[0];
+    if(!name) return null;
+    return { id:'who-'+p.photo_id, seconds: SECONDS*1.1, bg: p.photo_url, credit: creditNoName(p), html:
+        '<div class="copy"><div class="reveal-q">Who shot this?</div>'
+      + '<div class="reveal-name" style="animation-delay:'+(2.2/SPEED).toFixed(2)+'s">'+esc(name)+'</div>'
+      + '<div class="subspecies" style="opacity:0;animation:stepIn .4s ease-out '+(2.8/SPEED).toFixed(2)+'s forwards">'+esc(p.common_name||'')+'</div></div>' };
+  }
+
+  /* THIS LIVES HERE. — the loud one. A crew wildlife photo, block caps,
+     short dwell. Kept rare in buildSlides: "no overdo of course." */
+  function slideLivesHere(mine){
+    var wild = mine.filter(function(p){ return p.type === 'Wildlife'; });
+    var p = randomPhoto(wild);
+    if(!p) return null;
+    var name = (p.photographer_name || '').split(' – ')[0];
+    return { id:'lives-'+p.photo_id, seconds: SECONDS*0.8, shout:true, bg: p.photo_url, credit: creditNoName(p), html:
+        '<div class="copy"><div class="shout-line">This <em>lives</em> here.</div>'
+      + '<div class="shout-sub"><b>'+esc(p.common_name||'')+'</b>'+(name ? ' &middot; '+esc(name)+' got it' : '')+'</div></div>' };
+  }
+
+  /* FIRST ONE THIS MONTH — a species only one crew member has logged in
+     the last 30 days. Real, personal, changes every week. */
+  function slideFirstFind(names){
+    if(!PULSE || !PULSE.speciesList) return null;
+    var firsts = PULSE.speciesList.filter(function(s){ return s.count === 1 && s.photos.length && s.name; });
+    if(!firsts.length) return null;
+    var s = firsts[Math.floor(Math.random()*firsts.length)], ph = s.photos[0];
+    var name = nameFor(names, ph.login);
+    return { id:'first-'+s.name, seconds: SECONDS*0.9, shout:true, bg: ph.url, credit: creditNoName(ph), html:
+        '<div class="copy"><div class="shout-line">First one <em>this month.</em></div>'
+      + '<div class="shout-sub"><b>'+esc(s.name)+'</b> &middot; '+esc(name)+'</div></div>' };
   }
 
   /* Randy, 2026-09-25: "the why this matters is important and we are
@@ -428,7 +536,7 @@
     return { id:'thanks', seconds: SECONDS*2.4, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Why this matters</div>'
       + '<div class="chain">'+chain+'</div>'
-      + '<div class="body">Thank you for being the one who stops. Week after week.</div>'
+      + '<div class="body">Thanks for stopping for the plant. Every week.</div>'
       + '<img class="bf-logo" src="../images/logos/bright-futures.png" alt="Florida Bright Futures Scholarship Program"></div>' };
   }
 
@@ -441,12 +549,9 @@
      which is the correct, safe default rather than a broken image. */
   function slideCrewMontage(crewPhotos){
     var rows = (crewPhotos && crewPhotos.photos) || [];
-    if(!rows.length){
-      return { id:'montage-empty', seconds: SECONDS*1.1, html:
-          '<div class="copy"><div class="label">Coming soon</div>'
-        + '<h2>Photos of the actual crew.</h2>'
-        + '<div class="body">Not just what you shot — you. Ask Randy about getting a group photo up here.</div></div>' };
-    }
+    /* Out of rotation while empty — a "coming soon" slide is dead air to
+       a kid. The slot lights up the moment photos.json has rows. */
+    if(!rows.length) return null;
     var pics = rows.slice(0,8).map(function(r){ return '<img alt="" src="'+BASE+'images/brightfutures-local/'+r.file+'">'; }).join('');
     return { id:'montage', seconds: SECONDS*1.5, html:
         '<div class="copy"><div class="label">The crew</div>'
@@ -462,9 +567,9 @@
   function slideSummary(){
     var stats = (PULSE && PULSE.todayObs)
       ? '<div class="stat-row">'
-        + '<div class="count">'+PULSE.todayObs+'<small>observations</small></div>'
-        + '<div class="count">'+PULSE.todaySpecies+'<small>species</small></div>'
-        + '<div class="count">'+PULSE.todayObservers+'<small>observers</small></div></div>'
+        + countHtml(PULSE.todayObs, 'observations')
+        + countHtml(PULSE.todaySpecies, 'species')
+        + countHtml(PULSE.todayObservers, 'observers') + '</div>'
       : '<div class="body">Today’s iNat numbers are still coming in — check the app.</div>';
     return { id:'summary', seconds: SECONDS*1.6, html:
         '<div class="copy"><div class="label">5:45 · Look what happened today</div>'
@@ -494,6 +599,31 @@
     creditEl.classList.add('on');
   }
 
+  /* Numbers count up from 0 instead of just sitting there — a stat card
+     is a dashboard; a number climbing is something you watch. Any
+     .count[data-n] (see countHtml) gets it. Under reduced motion it just
+     lands on the final number. */
+  var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function countHtml(n, label){
+    return '<div class="count" data-n="'+n+'">'+(REDUCED ? n : 0)+'<small>'+label+'</small></div>';
+  }
+  function countUp(el){
+    if(REDUCED) return;
+    var nodes = el.querySelectorAll('.count[data-n]');
+    for(var i=0;i<nodes.length;i++)(function(node){
+      var target = parseInt(node.getAttribute('data-n'),10) || 0;
+      var small = node.querySelector('small'), label = small ? small.outerHTML : '';
+      var t0 = null, ms = 1100/SPEED;
+      function step(ts){
+        if(!t0) t0 = ts;
+        var k = Math.min(1, (ts - t0)/ms); k = 1 - Math.pow(1-k, 3);
+        node.innerHTML = Math.round(target*k) + label;
+        if(k < 1) requestAnimationFrame(step);
+      }
+      setTimeout(function(){ requestAnimationFrame(step); }, 500/SPEED);
+    })(nodes[i]);
+  }
+
   /* `s.frames` — a slide that steps through several real photos (with a
      credit each) while it stays on screen, instead of one static image.
      Randy, 2026-09-25: "this slide is begging for the pics to be cycled
@@ -502,10 +632,12 @@
      (bottom-left, see .credit-block) rather than its own one-off caption. */
   function render(s){
     var el = document.createElement('div');
-    el.className = 'slide' + (s.warn ? ' warn' : '');
+    el.className = 'slide' + (s.warn ? ' warn' : '') + (s.shout ? ' shout' : '');
     var frames = s.frames;
     var firstBg = frames ? frames[0].bg : s.bg;
-    var bg = '<div class="bg'+(firstBg?' photo':'')+'"'+(firstBg?' style="background-image:url('+firstBg+')"':'')+'></div>';
+    /* one of three slow camera moves, at random — see .kb1/.kb2/.kb3 */
+    var kb = firstBg ? ' kb' + (1 + Math.floor(Math.random()*3)) : '';
+    var bg = '<div class="bg'+(firstBg?' photo'+kb:'')+'"'+(firstBg?' style="background-image:url('+firstBg+')"':'')+'></div>';
     var scrim = firstBg ? '<div class="scrim"></div>' : '';
     el.innerHTML = bg + scrim + s.html;
     deck.appendChild(el);
@@ -516,6 +648,7 @@
     }
     cur = el;
     var dur = s.seconds || SECONDS;
+    countUp(el);
 
     if(frames && frames.length > 1){
       var bgEl = el.querySelector('.bg');
@@ -561,15 +694,21 @@
      slide again, INCLUDING the one that had just played, so a reset could
      repeat the last slide back-to-back. `lastId` is tracked outside
      `seen` and excluded no matter what state the bag is in. */
+  /* ?only=who  (or rubric, ex-, lives-, first-, crew, pulse…) restricts
+     the rotation to slides whose id starts with that — for proofing one
+     format without waiting on the shuffle. */
+  var ONLY = (Q.get('only') || '').trim();
   var seen = [], lastId = null;
   function pick(){
     var forced = forcedSlide();
     if(forced) return forced;
-    if(!slides.length) return { id:'empty', seconds:SECONDS, html:'<div class="copy"><h2>Loading…</h2></div>' };
-    if(seen.length >= slides.length - 1) seen = [];
-    var pool = slides.filter(function(s){ return seen.indexOf(s.id) < 0 && s.id !== lastId; });
-    if(!pool.length) pool = slides.filter(function(s){ return s.id !== lastId; });
-    var s = pool.length ? pool[Math.floor(Math.random()*pool.length)] : slides[0];
+    var all = ONLY ? slides.filter(function(s){ return s.id.indexOf(ONLY) === 0; }) : slides;
+    if(!all.length) all = slides;
+    if(!all.length) return { id:'empty', seconds:SECONDS, html:'<div class="copy"><h2>Loading…</h2></div>' };
+    if(seen.length >= all.length - 1) seen = [];
+    var pool = all.filter(function(s){ return seen.indexOf(s.id) < 0 && s.id !== lastId; });
+    if(!pool.length) pool = all.filter(function(s){ return s.id !== lastId; });
+    var s = pool.length ? pool[Math.floor(Math.random()*pool.length)] : all[0];
     seen.push(s.id);
     lastId = s.id;
     return s;
@@ -628,9 +767,19 @@
     var tasksSlide = slideTasks(tasksData, mine);
 
     /* Reviewer: "four photography-instruction slides is a lot. I'd
-       rotate only one or two of those in any given session." */
-    var coaching = pickN([slideHero(mine), slideOtherKinds(mine),
-      slideWhyMultiple(mine), slideWhyAllYear(mine)].filter(Boolean), 2);
+       rotate only one or two of those in any given session." Two of the
+       general ones, plus one or two of Randy's example cards. */
+    var coachingAll = [slideRubric(), slideHero(mine), slideNeedsPhoto(mine),
+      slideWhyMultiple(mine), slideWhyAllYear(mine)].filter(Boolean);
+    var examplesAll = EXAMPLES.map(function(ex){ return slideExample(mine, ex); }).filter(Boolean);
+    /* ?only= proofing wants every format reachable, so skip the sampling then */
+    var coaching = ONLY ? coachingAll : pickN(coachingAll, 2);
+    var examples = ONLY ? examplesAll : pickN(examplesAll, 2);
+
+    /* "ask who a lot" — four different photos per cycle. Shout slides
+       stay rare: "no overdo of course." */
+    var whos = [], seenW = {};
+    for(var w=0; w<4; w++){ var q = slideWhoShot(mine); if(q && !seenW[q.id]){ seenW[q.id]=1; whos.push(q); } }
 
     var built = []
       .concat(weighted(slidePulse(mine), 3))
@@ -640,8 +789,11 @@
       .concat(weighted(slideChallenge(mine), 2))
       .concat(weighted(tasksSlide, duringTaskWindow ? 4 : 2))
       .concat(spotlights)
+      .concat(whos)
+      .concat([slideLivesHere(mine), slideFirstFind(names)])
       .concat([slideSpeciesSeen(mine), slideEvents(events, mine), slideCrewMontage(crewPhotos)])
-      .concat(coaching);
+      .concat(coaching)
+      .concat(examples);
     slides = built.filter(Boolean);
   }
 
@@ -655,24 +807,30 @@
     return grab(BASE+'data/sources/photographer_names.json').then(function(names){
       names = names || {};
       var bfSet = bfLogins(names);
+      /* iNat is the slow one — a few seconds, sometimes more. Don't hold
+         the first slide for it: build the deck from the local JSON the
+         moment it lands, then rebuild once the pulse arrives so the live
+         slides join the rotation. Startup was a ~6 s blank screen. */
+      var pulse = loadPulse(bfSet);
       return Promise.all([
         grab(BASE+'data/published/brightfutures_today.json'),
         grab(BASE+'data/published/events.json'),
         grab(BASE+'data/sources/photo_credits.json'),
         grab(BASE+'data/sources/plant_signage.json'),
         grab(BASE+'data/sources/wildlife_signage.json'),
-        grab(BASE+'images/brightfutures-local/photos.json'),
-        loadPulse(bfSet)
+        grab(BASE+'images/brightfutures-local/photos.json')
       ]).then(function(r){
         var photos = (r[2] && r[2].photos) || r[2] || [];
         var mine = crewOf(photos, bfSet);
         var hits = indexHits(r[3]); Object.assign(hits, indexHits(r[4]));
-        buildSlides(r[0], r[1], photos, names, mine, hits, r[5]);
+        function build(){ buildSlides(r[0], r[1], photos, names, mine, hits, r[5]); }
+        build();
+        pulse.then(build);
       });
     });
   }
 
-  loadEverything().then(next).catch(function(){ slides = [slideOtherKinds([]), slideThankYou([])]; next(); });
+  loadEverything().then(next).catch(function(){ slides = [slideRubric(), slideWhyMultiple([]), slideThankYou([])]; next(); });
 
   /* Refresh data + iNat pulse every 10 minutes, same cadence as the rest
      of the kiosk fleet. */

@@ -35,6 +35,46 @@
    "it's all so flat... needs a lighter touch." Real color, not a muddy
    photo behind a wash. */
 .slide .bg.photo{filter:brightness(.7) saturate(1.05);transition:opacity .3s ease}
+
+/* Randy, 2026-09-25: "better random funny animations... whatever." Every
+   photo slide was a static fade. Now render() hands each one of three
+   slow camera moves at random, so the same layout never animates the
+   same way twice running. Slow on purpose: a screen glanced at from
+   across a room, not a music video. */
+.slide .bg.photo.kb1{animation:kbIn 22s ease-out forwards}
+.slide .bg.photo.kb2{animation:kbOut 22s ease-out forwards}
+.slide .bg.photo.kb3{animation:kbPan 22s ease-in-out forwards}
+@keyframes kbIn{from{transform:scale(1)}to{transform:scale(1.08)}}
+@keyframes kbOut{from{transform:scale(1.08)}to{transform:scale(1)}}
+@keyframes kbPan{from{transform:scale(1.06) translateX(-1.5%)}to{transform:scale(1.06) translateX(1.5%)}}
+
+/* SHOUT — the loud format. Block caps, no serif, two to four words,
+   short dwell. The deck needed a second register besides "tasteful":
+   the reviewer and Randy both said the museum voice is what makes kids
+   tune it out as signage. */
+.slide.shout .copy{max-width:none}
+.shout-line{font-family:var(--sans);font-weight:700;text-transform:uppercase;line-height:.95;
+  letter-spacing:-.01em;color:var(--paper);font-size:clamp(3.4rem,11vmin,9rem);
+  text-shadow:0 .4vmin 2vmin rgba(0,0,0,.7),0 .1vmin .5vmin rgba(0,0,0,.6)}
+.shout-line em{font-style:normal;color:var(--gold)}
+.shout-sub{margin-top:2vmin;font-size:clamp(1.3rem,2.8vmin,2.3rem);color:var(--ink-invert);font-weight:400;
+  text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6)}
+.shout-sub b{color:var(--paper);font-weight:700}
+
+/* WHO SHOT THIS? — attribution as a reveal instead of a caption. The
+   photo sits alone for a beat, then the name slams in. */
+.reveal-name{display:inline-block;font-family:var(--serif);font-weight:700;color:var(--paper);
+  font-size:clamp(3rem,9vmin,7.5rem);line-height:1;opacity:0;transform:scale(2.4);
+  animation:slam .55s cubic-bezier(.2,1.2,.3,1) forwards;
+  text-shadow:0 .5vmin 2.4vmin rgba(0,0,0,.75)}
+@keyframes slam{0%{opacity:0;transform:scale(2.4)}60%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+.reveal-q{font-family:var(--sans);font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--gold);font-size:clamp(1.6rem,4vmin,3.2rem);
+  text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6)}
+@media (prefers-reduced-motion:reduce){
+  .slide .bg.photo.kb1,.slide .bg.photo.kb2,.slide .bg.photo.kb3{animation:none}
+  .reveal-name{animation:none;opacity:1;transform:none}
+}
 @media (prefers-reduced-motion:reduce){ .slide .bg.photo{transition:none} }
 
 /* Randy, 2026-09-25: "we should standardize the credit block somewhere...
@@ -151,6 +191,19 @@
   text-transform:uppercase;color:var(--gold);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){ .matchgame > *{transition:none;transform:none !important} }
 
+/* Borrowed from Randy's photo-awards deck (Desktop, Sept 2026): the
+   framed photo-beside-text card, and the numbered rubric rows. Two more
+   layouts, so the deck isn't one skeleton wearing different photos. */
+.card-photo{flex:0 0 auto;width:52vmin;aspect-ratio:3/2;border-radius:1vmin;overflow:hidden;
+  background:#000;box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.6)}
+.card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.rubric{display:grid;gap:1vmin;margin-top:2.4vmin;max-width:82vmin}
+.rub{display:grid;grid-template-columns:4.4vmin 1fr;gap:1.6vmin;align-items:start;
+  background:rgba(255,255,255,.05);border:1px solid var(--rule);border-radius:.6vmin;padding:1.1vmin 1.5vmin}
+.rub b{font-family:var(--serif);font-size:2.8vmin;color:var(--gold);line-height:1}
+.rub strong{display:block;color:var(--paper);font-size:1.9vmin;margin-bottom:.15vmin}
+.rub div{color:var(--ink-invert);font-size:1.6vmin;line-height:1.4}
+
 .bf-logo{margin-top:3vmin;height:6.5vmin;width:auto;background:var(--paper);border-radius:.6vmin;
   padding:1vmin 1.6vmin;box-shadow:0 .4vmin 2vmin rgba(0,0,0,.4)}
 
@@ -162,7 +215,7 @@
 .chain{display:flex;align-items:flex-start;margin:3.2vmin 0;max-width:82vmin}
 .chain .step{display:flex;flex-direction:column;align-items:center;gap:1vmin;flex:0 0 auto;
   opacity:0;transform:translateY(1.4vmin);animation:stepIn .5s ease-out forwards}
-.chain .step .icon{font-size:4.4vmin;line-height:1;filter:drop-shadow(0 .3vmin 1vmin rgba(0,0,0,.5))}
+.chain .step .icon{font-size:7vmin;line-height:1;filter:drop-shadow(0 .3vmin 1vmin rgba(0,0,0,.5))}
 .chain .step .cap{font-size:1.15vmin;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
   color:var(--gold);text-align:center;max-width:11vmin;line-height:1.3;
   text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6)}
@@ -175,7 +228,7 @@
 @keyframes stepIn{to{opacity:1;transform:none}}
 @keyframes finalPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
 
-.chain-line{flex:1 1 4vmin;height:2px;margin-top:2.2vmin;background:var(--rule);position:relative;
+.chain-line{flex:1 1 4vmin;height:2px;margin-top:3.5vmin;background:var(--rule);position:relative;
   overflow:hidden;min-width:2vmin}
 .chain-line::after{content:'';position:absolute;inset:0;background:var(--gold);
   transform:scaleX(0);transform-origin:left;animation:lineDraw .4s ease-out forwards}
