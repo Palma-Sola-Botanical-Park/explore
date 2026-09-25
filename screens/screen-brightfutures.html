@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925m">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925m">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925n">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925n">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -503,7 +503,7 @@
     return { id:'speciesseen', seconds: SECONDS*0.6*frames.length, frames: frames, html:
         '<div class="copy"><div class="label">Seen this month</div>'
       + '<h2 class="frame-title">'+esc(frames[0].title)+'</h2>'
-      + '<div class="body">'+PULSE.monthSpecies+' species so far. Not too shabby, guys. Here’s a quick scroll through a bunch. Any of them could be yours because this is RANDOM!</div></div>' };
+      + '<div class="body">'+PULSE.monthSpecies+' species so far. Not too shabby, guys. Here’s a quick scroll through a bunch.</div></div>' };
   }
 
   /* Randy, 2026-09-25: "let's make that about learning the weekly tasks.
@@ -634,7 +634,8 @@
         + '<figcaption>'+esc((p.photographer_name||'').split(' ')[0]||'')+'</figcaption></figure>';
     }).join('');
     return { id:'hero', seconds: SECONDS*2, html:
-        '<div class="copy"><div class="label">This is what we mean</div>'
+        '<div class="copy"><div class="label">The hero shot</div>'
+      + '<h2>And there’s not just one way to do it.</h2>'
       + '<div class="body">One thing in the frame. Nothing in the way. Get close so it fills the shot, or step back so you get the whole shape. Both work.</div></div>'
       + '<div class="mosaic">'+tiles+'</div>' };
   }
@@ -650,20 +651,9 @@
     ['Light and moment', 'Is it good to look at.'],
     ['Teaches something', 'A fruit, a behavior, a clue to scale. The photo has a fact in it.']
   ];
-  function slideRubric(){
-    var rows = RUBRIC.map(function(r, i){
-      return '<div class="rub"><b>'+(i+1)+'</b><div><strong>'+esc(r[0])+'</strong>'+esc(r[1])+'</div></div>';
-    }).join('');
-    /* Randy, 2026-09-25, on the tutorial voice: "we use lingo like 'ok,
-       so here's our best thoughts on what makes a good HERO image.'
-       let's make sure we try to get one of these each observation.
-       maybe you get selected." Staff talking, not a poster. */
-    return { id:'rubric', seconds: SECONDS*2.2, html:
-        '<div class="copy"><div class="label">The hero image</div>'
-      + '<h2>Ok, so here’s our best thoughts.</h2>'
-      + '<div class="rubric">'+rows+'</div>'
-      + '<div class="body">Let’s try for one of these every observation. Maybe you get selected.</div></div>' };
-  }
+  /* The numbered-rows rubric slide retired 2026-09-25: the five
+     headings above now live on the annotated photos in slideHeroShot(),
+     with his "Ok, so here's our best thoughts" as the intro. */
 
   /* Real crew photos with Randy's own notes from that deck, lightly
      trimmed for a TV — "pick different kids to represent various
@@ -687,13 +677,14 @@
      dealt without replacement each rebuild (see buildSlides), so no
      two cards in a cycle end the same way and the mix changes every
      ten minutes. */
+  /* Two of Randy's lines and one short one; the blanks mean about a
+     third of the cards get no closer — the note on the photo already is
+     the compliment. */
   var HERO_CLOSERS = [
-    'Now THAT is a solid hero image, so try to get one of these from time to time in your observations.',
+    'Now THAT is a solid hero image.',
     'Now THAT is a hero image that can go live in the park.',
-    'That one could be the sign. Get one like it.',
-    'This is the kind of shot that ends up leading the species page.',
-    'Hero shot. That’s what we’re after.',
-    'See that? Go get one of those.'
+    'That’s the shot.',
+    '', ''
   ];
   function dealt(pool){ var bag = pool.slice().sort(function(){ return Math.random()-0.5; }); return function(i){ return bag[i % bag.length]; }; }
   function slideExample(mine, ex, closer){
@@ -796,7 +787,8 @@
       return true;
     }
     callouts.forEach(function(c, i){
-      var box = document.createElement('div'); box.className = 'callout'; box.textContent = c.t;
+      var box = document.createElement('div'); box.className = 'callout';
+      box.innerHTML = (c.h ? '<b>'+esc(c.h)+'</b>' : '') + esc(c.t);
       stage.appendChild(box);
       var bw = box.offsetWidth, bh = box.offsetHeight, g = targets[i];
       var ok = [], any = [];
@@ -824,6 +816,48 @@
     });
   }
 
+  /* THE HERO SHOT, annotated — the rubric slide (five numbered rows for
+     35 s) was the last thing on the deck that read like a presentation.
+     Same five headings, Randy's own from the awards deck, now pointed at
+     the evidence in two of the crew's photos. Chained like the detail
+     shot: intro, then each photo with its five callouts. Coordinates
+     set by looking at each picture. */
+  var HERO_SHOTS = [
+    { id:'731638176', line:'Five things, one frame.',
+      callouts:[ { h:RUBRIC[0][0], t:'The bract. Nothing else in the bed looks like that.', x:67, y:44 },
+                 { h:RUBRIC[1][0], t:'One tall thing, centered. Cut it to a wide band and it still works.', x:63, y:62 },
+                 { h:RUBRIC[2][0], t:'The bed, the road, the far trees. This is here.', x:30, y:41 },
+                 { h:RUBRIC[3][0], t:'Evening light, storm sky. Good to look at.', x:40, y:16 },
+                 { h:RUBRIC[4][0], t:'The orange flowers poke out of the bract. That’s the fact.', x:52, y:53 } ] },
+    { id:'735608579', line:'Same five. Different plant.',
+      callouts:[ { h:RUBRIC[0][0], t:'That fruit.', x:49, y:46 },
+                 { h:RUBRIC[1][0], t:'Fruit, roots, leaves, all in the middle band. Crops wide, crops tight.', x:45, y:56 },
+                 { h:RUBRIC[2][0], t:'Deck railing, house. Here, not a book.', x:12, y:55 },
+                 { h:RUBRIC[3][0], t:'Overcast. Even light, no glare on the fruit.', x:70, y:15 },
+                 { h:RUBRIC[4][0], t:'Prop roots. Most people have no idea.', x:83, y:74 } ] }
+  ];
+  function slideHeroShot(mine){
+    var byId = {}; mine.forEach(function(p){ byId[p.photo_id] = p; });
+    var exs = HERO_SHOTS.filter(function(e){ return byId[e.id]; });
+    if(!exs.length) return null;
+    var opener = randomPhoto(mine.filter(function(x){ return x.hero; })) || randomPhoto(mine);
+    var steps = [{ seconds: SECONDS*0.5, copy:
+        '<div class="label">The hero shot</div>'
+      + '<h2>Ok, so here’s our best thoughts.</h2>'
+      + '<div class="body">Let’s try for one of these every observation. Maybe you get selected.</div>' }];
+    exs.forEach(function(e){
+      var p = byId[e.id];
+      steps.push({ seconds: SECONDS*1.15, photo: p.photo_url, credit: creditText(p), callouts: e.callouts, copy:
+          '<div class="label">The hero shot</div>'
+        + '<h2>'+esc(p.common_name||'')+'</h2>'
+        + '<div class="body">'+esc(e.line)+'</div>' });
+    });
+    var total = steps.reduce(function(a, s){ return a + s.seconds; }, 0);
+    return { id:'heroshot', cls:'split', noflip:true, seconds: total, steps: steps,
+             bg: opener && opener.photo_url, credit: opener && creditText(opener),
+             html: '<div class="copy"></div><div class="idstage"></div>' };
+  }
+
   /* The website ask — the twin of slideSigns(). Randy, 2026-09-25:
      "we need better hero images for the website. images to represent
      the species. constantly updating — so get photos." Same shape as
@@ -836,7 +870,7 @@
         '<div class="copy"><div class="label">The website</div>'
       + '<div class="shout-line">We need <em>hero</em> photos.</div>'
       + '<div class="body">The hero is the lead photo on the species page and the one on the sign. It has to look like the plant.</div>'
-      + '<div class="body">Or just be so darn gorgeous we can’t NOT use it.</div>'
+      + '<div class="body">And if it’s so darn gorgeous we can’t NOT use it — even better.</div>'
       + '<div class="body">Shoot a better one. It goes up with your name under it.</div></div>' };
   }
 
@@ -1296,8 +1330,7 @@
     /* Reviewer: "four photography-instruction slides is a lot. I'd
        rotate only one or two of those in any given session." Two of the
        general ones, plus one or two of Randy's example cards. */
-    var coachingAll = [slideRubric(), slideHero(mine),
-      slideWhyMultiple(mine), slideWhyAllYear(mine)].filter(Boolean);
+    var coachingAll = [slideHero(mine), slideWhyMultiple(mine), slideWhyAllYear(mine)].filter(Boolean);
     var closerOf = dealt(HERO_CLOSERS);
     var examplesAll = EXAMPLES.map(function(ex, i){ return slideExample(mine, ex, closerOf(i)); }).filter(Boolean);
     /* ?only= proofing wants every format reachable, so skip the sampling then */
@@ -1323,7 +1356,7 @@
       .concat([slideSpeciesSeen(names), slideEvents(events, mine), slideCrewMontage(crewPhotos)])
       .concat(coaching)
       .concat(examples)
-      .concat([slideIdDetail(mine)]);
+      .concat([slideHeroShot(mine), slideIdDetail(mine)]);
     slides = built.filter(Boolean);
   }
 
@@ -1375,7 +1408,7 @@
     });
   }
 
-  loadEverything().then(next).catch(function(){ slides = [slideRubric(), slideWhyMultiple([])]; next(); });
+  loadEverything().then(next).catch(function(){ slides = [slideWhyMultiple([]), slideWhyAllYear([])]; next(); });
 
   /* Refresh data + iNat pulse every 10 minutes, same cadence as the rest
      of the kiosk fleet. */
