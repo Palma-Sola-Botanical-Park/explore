@@ -24,6 +24,24 @@
 .slide .bg{background:radial-gradient(120vmin 80vmin at 30% 40%, var(--bg-glow) 0%, var(--ground) 72%)}
 .copy h2{max-width:80vmin}
 
+/* Randy, 2026-09-25: "I don't like the placement of the bulk of the text
+   left side middle of screen. Move it up?" event-deck.css centers every
+   slide vertically; here everything hangs from a band just under the
+   logos instead. */
+.slide{align-items:flex-start;padding-top:13vmin}
+
+/* Top-left: park mark + Bright Futures mark + what this screen is.
+   Replaces event-deck.css's text eyebrow and its bottom-right logo. */
+.brand{position:fixed;top:calc(var(--frame) + 1.2vmin);left:calc(var(--frame) + var(--pad));z-index:41;
+  display:flex;align-items:center;gap:1.6vmin}
+.brand-psbp{height:5.4vmin;width:auto;opacity:.92}
+.brand-plate{display:inline-flex;background:var(--paper);border-radius:.5vmin;padding:.5vmin .9vmin}
+.brand-plate img{height:4.2vmin;width:auto;display:block}
+.brand-text{display:flex;flex-direction:column;line-height:1.15;padding-left:1.5vmin;border-left:1px solid var(--rule)}
+.brand-text b{font-family:var(--serif);font-size:2.3vmin;color:var(--paper)}
+.brand-text span{font-size:1.6vmin;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.logo-mark{display:none}
+
 /* The species name, demoted to a subtitle under the photographer's own
    name — see slidePhotoSpotlight()'s comment: names lead, species
    follows, never the other way around on this screen. */
@@ -61,19 +79,14 @@
   text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6)}
 .shout-sub b{color:var(--paper);font-weight:700}
 
-/* WHO SHOT THIS? — attribution as a reveal instead of a caption. The
-   photo sits alone for a beat, then the name slams in. */
-.reveal-name{display:inline-block;font-family:var(--serif);font-weight:700;color:var(--paper);
-  font-size:clamp(3rem,9vmin,7.5rem);line-height:1;opacity:0;transform:scale(2.4);
-  animation:slam .55s cubic-bezier(.2,1.2,.3,1) forwards;
-  text-shadow:0 .5vmin 2.4vmin rgba(0,0,0,.75)}
-@keyframes slam{0%{opacity:0;transform:scale(2.4)}60%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+/* WHO SHOT THIS? — the question and the species up top; the answer is
+   the standard caption, held back until halfway (render()'s creditDelay).
+   The earlier slam-in name is gone: "DO NOT PUT THEM IN BIG PRINT." */
 .reveal-q{font-family:var(--sans);font-weight:700;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--gold);font-size:clamp(1.6rem,4vmin,3.2rem);
+  color:var(--gold);font-size:clamp(1.6rem,4vmin,3.2rem);margin-bottom:1.2vmin;
   text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6)}
 @media (prefers-reduced-motion:reduce){
   .slide .bg.photo.kb1,.slide .bg.photo.kb2,.slide .bg.photo.kb3{animation:none}
-  .reveal-name{animation:none;opacity:1;transform:none}
 }
 @media (prefers-reduced-motion:reduce){ .slide .bg.photo{transition:none} }
 
@@ -83,8 +96,15 @@
    right), so it completes the frame instead of crowding it. One persistent
    element, like the clock — render() below just changes its text; it
    doesn't get rebuilt per slide. */
+/* Randy, 2026-09-25: "The credit block needs to be readable with the
+   name too. claude keeps making the photo credit nearly invisible."
+   / "Let's standardize on bottom left." One fixed spot, a dark plate
+   behind it so it reads on any photo, and no line under ~17 px at
+   1080p (his standing rule: never ship type under the base size). */
 .credit-block{position:fixed;left:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 1.8vmin);
-  z-index:41;opacity:0;transition:opacity .4s ease}
+  z-index:41;opacity:0;transition:opacity .4s ease;
+  background:rgba(8,13,18,.74);border:1px solid var(--rule);border-radius:.7vmin;
+  padding:1.2vmin 1.7vmin 1.1vmin;backdrop-filter:blur(6px)}
 .credit-block.on{opacity:1}
 
 /* Randy, 2026-09-25: "there is a standard credit block in html site.
@@ -98,24 +118,21 @@
    (eyebrow, date, the CC badge) stays as supporting detail underneath. */
 .credit-plate{display:flex;flex-direction:column;align-items:flex-start;gap:.5vmin;
   padding:0;border-top:none}
-.credit-plate .credit-byline{display:flex;flex-direction:column;gap:.2vmin}
-.credit-plate .credit-eyebrow{font-size:1.3vmin;font-weight:700;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--gold);text-shadow:0 .15vmin 1vmin rgba(0,0,0,.7)}
-/* Randy, 2026-09-25: "name might be too big. overcorrection." Dialed back
-   from clamp(2.4rem,6vmin,5rem) — still clearly bigger and bolder than
-   the original 1.35vmin byline, just not fighting the slide's own h2
-   for attention anymore. */
-.credit-plate .credit-name{font-family:var(--serif);font-size:clamp(1.7rem,3.6vmin,3rem);font-weight:700;
-  color:var(--paper);line-height:1.05;white-space:nowrap;
-  text-shadow:0 .3vmin 1.4vmin rgba(0,0,0,.75),0 .1vmin .5vmin rgba(0,0,0,.6)}
-.credit-plate .credit-date{font-size:1.5vmin;color:var(--ink-quiet);
-  text-shadow:0 .15vmin 1vmin rgba(0,0,0,.7)}
-.credit-plate .credit-license{display:flex;align-items:center;gap:1vmin;margin-top:.2vmin}
-.credit-plate .credit-src{font-size:1.2vmin;font-style:italic;color:var(--ink-quiet);
-  text-shadow:0 .15vmin 1vmin rgba(0,0,0,.7)}
-.credit-plate .cc-badge{border-color:var(--rule);background:rgba(0,0,0,.45);
-  font-size:1.15vmin;color:var(--paper)}
-.credit-plate .cc-badge .cc-term{border-left-color:var(--rule)}
+.credit-plate .credit-byline{display:flex;flex-direction:column;gap:.25vmin}
+.credit-plate .credit-eyebrow{font-size:1.6vmin;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold)}
+/* Randy, 2026-09-25 (morning): "RIDICULOUSLY cartoonishly large. Use the
+   standard caption from the html site... maybe make it a bit bigger."
+   The site's own .credit-name is roughly 15 px; on a TV from across a
+   room 2.4vmin is about 26 px at 1080p — a bit bigger, still a caption. */
+.credit-plate .credit-name{font-family:var(--serif);font-size:2.7vmin;font-weight:700;
+  color:var(--paper);line-height:1.1;white-space:nowrap}
+.credit-plate .credit-date{font-size:1.75vmin;color:rgba(245,248,251,.88)}
+.credit-plate .credit-license{display:flex;align-items:center;gap:1.1vmin;margin-top:.5vmin}
+.credit-plate .credit-src{font-size:1.6vmin;font-style:italic;color:rgba(245,248,251,.8)}
+.credit-plate .cc-badge{border-color:rgba(245,248,251,.45);background:rgba(255,255,255,.1);
+  font-size:1.5vmin;color:var(--paper)}
+.credit-plate .cc-badge .cc-term{border-left-color:rgba(245,248,251,.35)}
 
 /* Randy, 2026-09-25: "a lot of text tough to read with photo in back."
    Text-shadow alone wasn't enough over a busy or bright patch of photo.

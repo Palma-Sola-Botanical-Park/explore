@@ -6,8 +6,11 @@
 <title>Bright Futures — Palma Sola Botanical Park</title>
 <link rel="icon" type="image/png" href="../images/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="events/event-deck.css">
-<link rel="stylesheet" href="events/event-brightfutures.css">
+<!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
+     for 10 minutes; bump it whenever the stylesheet changes or the TV
+     keeps showing the old look after a pull. -->
+<link rel="stylesheet" href="events/event-deck.css?v=20260925a">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925a">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -21,9 +24,16 @@
 </head>
 <body>
 <div class="frame"></div>
-<div class="eyebrow-fixed">Palma Sola Botanical Park</div>
+<!-- Randy, 2026-09-25: "Top left could be the logos of PSBP and Bright
+     Futures... and some mention that this is the weekly Bright Futures
+     volunteer program." The park mark moves up here from the bottom-right
+     corner so it isn't on screen twice. -->
+<div class="brand">
+  <img class="brand-psbp" src="../images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
+  <span class="brand-plate"><img src="../images/logos/bright-futures.png" alt="Florida Bright Futures Scholarship Program"></span>
+  <span class="brand-text"><b>Bright Futures</b><span>Weekly volunteer program</span></span>
+</div>
 <div class="clock" id="clock"></div>
-<img class="logo-mark" src="../images/white_PSBP_logo.png" alt="Palma Sola Botanical Park">
 <div class="deck"></div>
 <div class="credit-block" id="credit"></div>
 <div id="bar"></div>
@@ -139,10 +149,32 @@
         var speciesList = Object.keys(bySpecies).map(function(k){ return bySpecies[k]; })
           .sort(function(a,b){ return b.count - a.count; });
 
+        /* Per-photographer tallies for the monthly slide's side panel:
+           who shot the most this month, with their photos. Shown in
+           random order, no counts per kid — recognition, not a
+           leaderboard. */
+        var byLogin = {}, monthPhotos = 0;
+        monthRows.forEach(function(o){
+          var login = o.user && o.user.login; if(!login) return;
+          if(!byLogin[login]) byLogin[login] = { login:login, count:0, photos:[] };
+          byLogin[login].count++;
+          (o.photos || []).forEach(function(ph){
+            monthPhotos++;
+            if(ph.url) byLogin[login].photos.push({
+              url: ph.url.replace(/square\.(jpg|jpeg|png)/i, 'medium.$1'), license: ph.license_code || '' });
+          });
+        });
+        var topLogins = Object.keys(byLogin).map(function(k){ return byLogin[k]; })
+          .filter(function(t){ return t.photos.length >= 2; })
+          .sort(function(a,b){ return b.count - a.count; }).slice(0,5)
+          .sort(function(){ return Math.random()-0.5; });
+
         PULSE = {
-          weekObs: rows.length,
-          weekSpecies: uniq(rows, function(o){ return o.taxon && o.taxon.id; }),
-          weekObservers: uniq(rows, function(o){ return o.user && o.user.login; }),
+          monthPhotos: monthPhotos,
+          monthObs: monthRows.length,
+          monthSpecies: uniq(monthRows, function(o){ return o.taxon && o.taxon.id; }),
+          monthObservers: uniq(monthRows, function(o){ return o.user && o.user.login; }),
+          topLogins: topLogins,
           todayObs: rows.filter(function(o){ return o.observed_on===today; }).length,
           todaySpecies: uniq(rows.filter(function(o){ return o.observed_on===today; }),
             function(o){ return o.taxon && o.taxon.id; }),
@@ -197,19 +229,13 @@
     });
   }
 
-  /* Randy, 2026-09-25: "some screens have name twice. kinda weird." Right
-     — slidePhotoSpotlight already puts the name in the headline, so the
-     corner block was repeating it via creditPlate's byline. Same date +
-     license badge, no name row, built from PSBPPhotos' own pieces rather
-     than the full creditPlate(). */
-  function creditNoName(p){
-    if(!p) return '';
-    var date = window.PSBPPhotos.fmtDate(p.observed_on);
-    return '<div class="credit-plate"><div class="credit-license">'
-      + window.PSBPPhotos.ccBadge(p.license)
-      + (date ? '<span class="credit-date">'+esc(date)+'</span>' : '')
-      + '<span class="credit-src">via iNaturalist</span></div></div>';
-  }
+  /* Randy, 2026-09-25 (morning): "The names of the kids is RIDICULOUSLY
+     cartoonishly large. Use the standard caption from the html site, and
+     place it bottom left. maybe make it a bit bigger. Remove the name
+     from the heart of the slides... Use the caption to answer the
+     question." So: no slide puts a name in its headline any more; every
+     photo slide runs the same creditPlate caption, and "Who shot this?"
+     just delays it to the halfway point (see creditDelay in render()). */
 
   /* A real fact, not just a name — Randy: "too boring without good info."
      Same quick_hits array the species pages themselves use, keyed by the
@@ -221,17 +247,29 @@
   }
 
   /* ── slide builders ──────────────────────────────────────────────────── */
-  function slidePulse(mine){
-    if(!PULSE || PULSE.weekObs < 1) return null;
-    var p = randomPhoto(mine);
-    return { id:'pulse', seconds: SECONDS*1.2, bg: p && p.photo_url, credit: p && creditText(p), html:
-        '<div class="copy"><div class="label">Bright Futures this week</div>'
+  /* Randy, 2026-09-25: "Instead of 'The Bright Futures Crew' and then
+     weekly stats, let's do 'Here's how many iNat pics we've taken this
+     month:' show good monthly stats. Then on the right give some sense
+     that it is a lot, fade in a slide deck of some of the top students
+     (maybe the top 5 that month) with small grids." The right-hand panel
+     fades through the month's busiest photographers, four of their own
+     photos each; the bottom-left caption names each one as it lands (no
+     names in the panel itself, no rank numbers, random order). */
+  function slideMonth(names){
+    if(!PULSE || !PULSE.monthObs) return null;
+    var roll = PULSE.topLogins.map(function(t){
+      var pics = t.photos.slice(0,4).map(function(p){ return '<img alt="" src="'+p.url+'">'; }).join('');
+      return { html: '<div class="roll-grid">'+pics+'</div>',
+               credit: window.PSBPPhotos.creditPlate({ by: nameFor(names, t.login), license: t.photos[0].license }) };
+    });
+    return { id:'month', seconds: SECONDS*(1.2 + 0.45*roll.length), roll: roll, html:
+        '<div class="copy"><div class="label">This month</div>'
+      + '<h2>Here’s how many iNat pics we’ve taken this month:</h2>'
       + '<div class="stat-row">'
-      +   countHtml(PULSE.weekObs, 'observations')
-      +   countHtml(PULSE.weekSpecies, 'species')
-      +   countHtml(PULSE.weekObservers, 'observers')
-      + '</div>'
-      + '<div class="body">All of it off your phones. This week.</div></div>' };
+      +   countHtml(PULSE.monthPhotos, 'photos') + countHtml(PULSE.monthObs, 'observations')
+      +   countHtml(PULSE.monthSpecies, 'species') + countHtml(PULSE.monthObservers, 'photographers')
+      + '</div></div>'
+      + (roll.length ? '<div class="roll"><div class="roll-hint">A few of this month’s photographers</div><div class="roll-stage"></div></div>' : '') };
   }
 
   /* A real achievement, not just a count — Randy: "no achievements. no
@@ -273,7 +311,7 @@
     if(names.length < 3) return null;
     var p = randomPhoto(mine);
     return { id:'speciesseen', seconds: SECONDS*1.4, bg: p && p.photo_url, credit: p && creditText(p), html:
-        '<div class="copy"><div class="label">Seen this week</div>'
+        '<div class="copy"><div class="label">Seen this month</div>'
       + '<h2>'+esc(names.join(' · '))+'</h2></div>' };
   }
 
@@ -320,37 +358,10 @@
       + '<div class="body">Need hours? Events pay out a bunch at once. Ask Randy.</div></div>' };
   }
 
-  /* Randy, 2026-09-25: "the point is not the photo. the point is that
-     THEY took it." First try was a flat 8-up grid; Randy's next idea was
-     better: "maybe the photos are not in even places and the credits are
-     scrambled and there's animation to match them up at the end. Throw in
-     species too. then they align at the end. photo, species, credit."
-     So: five rows (grid-row assigns each photo/species/credit to its
-     CORRECT row from the start — nothing is really mismatched), but each
-     of the three starts flung to a random scattered position via an
-     inline transform. A few hundred ms after mount, .settled strips every
-     transform via one CSS transition, and everything glides home into its
-     matched row at once — photo, species, and credit landing together. */
-  function scatterStyle(){
-    var x = (Math.random()*140-70).toFixed(0), y = (Math.random()*70-35).toFixed(0);
-    var r = (Math.random()*50-25).toFixed(0);
-    return 'transform:translate('+x+'vmin,'+y+'vmin) rotate('+r+'deg)';
-  }
-  function slideCrew(mine){
-    if(mine.length < 5) return null;
-    var species = {}; mine.forEach(function(p){ species[p.psbp_id]=1; });
-    var pick = mine.slice().sort(function(){ return Math.random()-0.5; }).slice(0,5);
-    var rows = pick.map(function(p,i){
-      var row = i+1;
-      return '<div class="mphoto" style="grid-row:'+row+';'+scatterStyle()+'"><img alt="" src="'+p.photo_url+'"></div>'
-        + '<div class="mspecies" style="grid-row:'+row+';'+scatterStyle()+'">'+esc(p.common_name||'')+'</div>'
-        + '<div class="mcredit" style="grid-row:'+row+';'+scatterStyle()+'">'+esc((p.photographer_name||'').split(' – ')[0]||'')+'</div>';
-    }).join('');
-    return { id:'crew', seconds: SECONDS*1.8, settleSelector:'.matchgame', html:
-        '<div class="copy"><div class="label">The Bright Futures crew</div>'
-      + '<h2>'+mine.length+' photos. '+Object.keys(species).length+' species.</h2></div>'
-      + '<div class="matchgame">'+rows+'</div>' };
-  }
+  /* The scattered "match-game" crew slide lived here until 2026-09-25.
+     Randy: "The total page of 'The Bright Futures Crew' and all the
+     numbers and the most boring list to the right ever has to be changed
+     or tossed." Tossed; slideMonth() above is its replacement. */
 
   /* One real photo, full-bleed, minimal text — the "photo of the moment"
      beat. Rotates through the actual crew archive, not a fixed pair. */
@@ -363,11 +374,9 @@
     var p = randomPhoto(mine);
     if(!p) return null;
     var fact = hitFor(hits, p.psbp_id);
-    var name = (p.photographer_name || 'a crew member').split(' – ')[0];
-    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditNoName(p), html:
+    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditText(p), html:
         '<div class="copy"><div class="label">From the crew</div>'
-      + '<h2>'+esc(name)+'</h2>'
-      + '<div class="subspecies">'+esc(p.common_name || '')+'</div>'
+      + '<h2>'+esc(p.common_name || '')+'</h2>'
       + (fact ? '<div class="body">'+rich(fact)+'</div>' : '') + '</div>' };
   }
 
@@ -443,12 +452,10 @@
     var p = null;
     for(var i=0;i<mine.length;i++) if(mine[i].photo_id === ex.id){ p = mine[i]; break; }
     if(!p) return null;
-    var name = (p.photographer_name || '').split(' – ')[0];
-    return { id:'ex-'+ex.id, seconds: SECONDS*1.7, html:
+    return { id:'ex-'+ex.id, seconds: SECONDS*1.7, credit: creditText(p), html:
         '<div class="card-photo"><img alt="" src="'+p.photo_url+'"></div>'
       + '<div class="copy"><div class="label">'+esc(ex.label)+'</div>'
-      + '<h2>'+esc(name)+'</h2>'
-      + '<div class="subspecies">'+esc(p.common_name||'')+'</div>'
+      + '<h2>'+esc(p.common_name||'')+'</h2>'
       + '<div class="body">'+esc(ex.note)+'</div></div>' };
   }
 
@@ -480,13 +487,13 @@
      the payoff of the slide, not a caption under it. Species after. */
   function slideWhoShot(mine){
     var p = randomPhoto(mine);
-    if(!p) return null;
-    var name = (p.photographer_name || '').split(' – ')[0];
-    if(!name) return null;
-    return { id:'who-'+p.photo_id, seconds: SECONDS*1.1, bg: p.photo_url, credit: creditNoName(p), html:
+    if(!p || !p.photographer_name) return null;
+    var dur = SECONDS*1.3;
+    /* question + species for the first half; the caption answers it at
+       the halfway mark — Randy: "I think a good delay would help" */
+    return { id:'who-'+p.photo_id, seconds: dur, bg: p.photo_url, credit: creditText(p), creditDelay: dur/2, html:
         '<div class="copy"><div class="reveal-q">Who shot this?</div>'
-      + '<div class="reveal-name" style="animation-delay:'+(2.2/SPEED).toFixed(2)+'s">'+esc(name)+'</div>'
-      + '<div class="subspecies" style="opacity:0;animation:stepIn .4s ease-out '+(2.8/SPEED).toFixed(2)+'s forwards">'+esc(p.common_name||'')+'</div></div>' };
+      + '<h2>'+esc(p.common_name||'')+'</h2></div>' };
   }
 
   /* THIS LIVES HERE. — the loud one. A crew wildlife photo, block caps,
@@ -495,10 +502,9 @@
     var wild = mine.filter(function(p){ return p.type === 'Wildlife'; });
     var p = randomPhoto(wild);
     if(!p) return null;
-    var name = (p.photographer_name || '').split(' – ')[0];
-    return { id:'lives-'+p.photo_id, seconds: SECONDS*0.8, shout:true, bg: p.photo_url, credit: creditNoName(p), html:
+    return { id:'lives-'+p.photo_id, seconds: SECONDS*0.8, shout:true, bg: p.photo_url, credit: creditText(p), html:
         '<div class="copy"><div class="shout-line">This <em>lives</em> here.</div>'
-      + '<div class="shout-sub"><b>'+esc(p.common_name||'')+'</b>'+(name ? ' &middot; '+esc(name)+' got it' : '')+'</div></div>' };
+      + '<div class="shout-sub"><b>'+esc(p.common_name||'')+'</b></div></div>' };
   }
 
   /* FIRST ONE THIS MONTH — a species only one crew member has logged in
@@ -508,10 +514,10 @@
     var firsts = PULSE.speciesList.filter(function(s){ return s.count === 1 && s.photos.length && s.name; });
     if(!firsts.length) return null;
     var s = firsts[Math.floor(Math.random()*firsts.length)], ph = s.photos[0];
-    var name = nameFor(names, ph.login);
-    return { id:'first-'+s.name, seconds: SECONDS*0.9, shout:true, bg: ph.url, credit: creditNoName(ph), html:
+    var credit = window.PSBPPhotos.creditPlate({ by: nameFor(names, ph.login), date: ph.observed_on, license: ph.license });
+    return { id:'first-'+s.name, seconds: SECONDS*0.9, shout:true, bg: ph.url, credit: credit, html:
         '<div class="copy"><div class="shout-line">First one <em>this month.</em></div>'
-      + '<div class="shout-sub"><b>'+esc(s.name)+'</b> &middot; '+esc(name)+'</div></div>' };
+      + '<div class="shout-sub"><b>'+esc(s.name)+'</b></div></div>' };
   }
 
   /* Randy, 2026-09-25: "the why this matters is important and we are
@@ -650,6 +656,8 @@
     setTimeout(function(){ el.classList.add('on'); }, 40);
     if(cur){
       if(cur._frameTimer) clearInterval(cur._frameTimer);
+      if(cur._rollTimer) clearInterval(cur._rollTimer);
+      if(cur._creditTimer) clearTimeout(cur._creditTimer);
       var old=cur; old.classList.remove('on'); setTimeout(function(){ old.remove(); }, 1300/SPEED);
     }
     cur = el;
@@ -670,19 +678,28 @@
           bgEl.style.opacity = 1;
         }, 260/SPEED);
       }, frameMs);
+    } else if(s.creditDelay){
+      /* "Who shot this?" — hold the caption back until the halfway mark */
+      setCredit('');
+      el._creditTimer = setTimeout(function(){ setCredit(s.credit || ''); }, s.creditDelay*1000);
     } else {
       setCredit(s.credit || '');
     }
 
-    /* Randy, 2026-09-25: "the photos are not in even places and the
-       credits are scrambled and there's animation to match them up at
-       the end... then they align at the end. photo, species, credit."
-       Each piece starts at a random inline transform (see scatterStyle()
-       in slideCrew); stripping it one beat after mount, all at once,
-       via a CSS transition is what makes everything glide home together. */
-    if(s.settleSelector){
-      var toSettle = el.querySelector(s.settleSelector);
-      if(toSettle) setTimeout(function(){ toSettle.classList.add('settled'); }, 500/SPEED);
+    /* `s.roll` — the monthly slide's right-hand panel: fades through one
+       photographer's small grid after another while the numbers stay put,
+       and the bottom-left caption names whoever is up. */
+    if(s.roll && s.roll.length){
+      var stage = el.querySelector('.roll-stage'), ri = 0;
+      function showRoll(i){
+        var f = document.createElement('div'); f.className = 'roll-frame'; f.innerHTML = s.roll[i].html;
+        stage.innerHTML = ''; stage.appendChild(f);
+        setTimeout(function(){ f.classList.add('in'); }, 40);
+        setCredit(s.roll[i].credit || '');
+      }
+      setTimeout(function(){ showRoll(0); }, 1500/SPEED);   /* after the numbers have landed */
+      var rollMs = Math.max(3000/SPEED, (dur*1000 - 2000/SPEED) / s.roll.length);
+      el._rollTimer = setInterval(function(){ ri = (ri+1) % s.roll.length; showRoll(ri); }, rollMs);
     }
 
     bar.style.transition='none'; bar.style.width='0';
@@ -788,9 +805,8 @@
     for(var w=0; w<4; w++){ var q = slideWhoShot(mine); if(q && !seenW[q.id]){ seenW[q.id]=1; whos.push(q); } }
 
     var built = []
-      .concat(weighted(slidePulse(mine), 3))
+      .concat(weighted(slideMonth(names), 3))
       .concat(weighted(slideMostPhotographed(names), 3))
-      .concat(weighted(slideCrew(mine), 2))
       .concat(weighted(slideThankYou(mine), 2))
       .concat(weighted(slideChallenge(mine), 2))
       .concat(weighted(tasksSlide, duringTaskWindow ? 4 : 2))
