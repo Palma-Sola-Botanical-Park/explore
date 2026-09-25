@@ -289,28 +289,50 @@
      irregularly framed bunch of photos that changes with each
      photographer... take much of the screen and be built to fit around
      the text... interesting shapes with lots photos that interlock."
-     So: the photo count is one huge figure, and a QUILT of mixed-size
-     tiles packs around the text (dense CSS grid with a hole where the
-     copy sits) — a fresh arrangement for each photographer, the caption
-     naming whoever is up. Shapes are picked so each photographer's
-     photos roughly fill the space: someone with 4 photos gets 4 big
-     blocks, someone with 40 gets a tight patchwork. */
-  var QUILT_COLS = 12, QUILT_ROWS = 8, QUILT_HOLE = 7*5;   /* hole: cols 1–7 × rows 1–5, under the copy (keep in step with .quilt-hole) */
-  var SHAPES = [[1,1],[2,1],[1,2],[3,1],[2,2],[3,2],[2,3],[4,2],[3,3]];
-  function quiltFor(urls){
-    var cells = QUILT_COLS*QUILT_ROWS - QUILT_HOLE, per = cells/urls.length, left = cells;
-    return urls.map(function(u){
-      var fit = SHAPES.filter(function(s){ var a = s[0]*s[1]; return a >= per*0.5 && a <= per*1.8 && a <= left; });
-      if(!fit.length) fit = SHAPES.filter(function(s){ return s[0]*s[1] <= Math.max(1,left); }).slice(-2);
-      var s = fit[Math.floor(Math.random()*fit.length)] || [1,1];
-      left -= s[0]*s[1];
-      return { url: u, c: s[0], r: s[1] };
+     And on a grid of rectangles: "square grids will not cut it."
+     So: the photo count is one huge figure, and the rest of the screen
+     is a COLLAGE — paper prints, circles and hexagons at three sizes,
+     tilted, overlapping, scattered around the copy and bleeding to the
+     frame line. A fresh scatter for each photographer, the caption
+     naming whoever is up. Big ones are placed first, then medium, then
+     small into the gaps (best-of-24 candidate sampling: each new tile
+     goes where it is farthest from the ones already down, so the
+     coverage is even but never regular). */
+  var CW = 171, CH = 84;            /* the .quilt box in vmin at 16:9 — for spacing maths only */
+  var HOLE_X = 0.52, HOLE_Y = 0.62; /* the copy's corner, as fractions of the box: no tile may cover it */
+  function collageFor(urls){
+    var n = urls.length, boost = Math.min(1.5, Math.sqrt(16/Math.max(n,4)));
+    var sizes = urls.map(function(_, i){          /* biggest first */
+      var k = i/n; return (k < 0.15 ? 33 : k < 0.45 ? 23 : 15) * boost;
     });
+    var placed = [], tiles = [];
+    urls.forEach(function(u, i){
+      var kinds = ['print','print','print','tilt','tilt','circle','hex'];
+      var kind = i < 2 ? 'print' : kinds[Math.floor(Math.random()*kinds.length)];
+      var aspect = (kind === 'circle' || kind === 'hex') ? 1 : [1.5,1.33,1,0.8][Math.floor(Math.random()*4)];
+      var w = sizes[i]*Math.sqrt(aspect), h = sizes[i]/Math.sqrt(aspect);
+      var hw = w/2/CW, hh = h/2/CH, best = null, bestD = -1;
+      for(var c=0; c<24; c++){
+        var cx = hw*0.5 + Math.random()*(1 - hw), cy = hh*0.5 + Math.random()*(1 - hh);
+        if(cx - hw < HOLE_X && cy - hh < HOLE_Y) continue;          /* would sit on the words */
+        var d = 1e9;
+        for(var p=0; p<placed.length; p++){
+          var dx = (cx - placed[p][0])*CW, dy = (cy - placed[p][1])*CH;
+          d = Math.min(d, dx*dx + dy*dy);
+        }
+        if(d > bestD){ bestD = d; best = [cx, cy]; }
+      }
+      if(!best) return;
+      placed.push(best);
+      var rot = kind === 'circle' ? 0 : kind === 'tilt' ? (Math.random()*22 - 11) : (Math.random()*10 - 5);
+      tiles.push({ url:u, kind:kind, x:best[0]*100, y:best[1]*100, w:w, h:h, rot:rot.toFixed(1) });
+    });
+    return tiles;
   }
   function slideMonth(names){
     if(!PULSE || !PULSE.monthObs) return null;
     var quilt = PULSE.photographers.slice(0, 6).map(function(t){
-      return { items: quiltFor(t.photos.slice(0, 16).map(function(p){ return p.url; })),
+      return { items: collageFor(t.photos.slice(0, 16).map(function(p){ return p.url; })),
                credit: window.PSBPPhotos.creditPlate({ by: nameFor(names, t.login), license: t.photos[0].license }) };
     });
     return { id:'month', seconds: SECONDS*2.4, quilt: quilt, html:
@@ -785,17 +807,18 @@
       var quiltEl = el.querySelector('.quilt'), gi = 0;
       var groupMs = Math.max(3200/SPEED, (dur*1000 - 1400/SPEED) / s.quilt.length);
       function showGroup(g){
-        var olds = quiltEl.querySelectorAll('img');
+        var olds = quiltEl.querySelectorAll('.tile');
         for(var i=0;i<olds.length;i++) olds[i].classList.add('out');
         setTimeout(function(){
           if(!quiltEl.isConnected) return;
           setCredit(g.credit || '');
-          quiltEl.innerHTML = '<div class="quilt-hole"></div>';
+          quiltEl.innerHTML = '';
           g.items.forEach(function(it, k){
-            var img = document.createElement('img'); img.alt = '';
-            img.style.gridColumn = 'span '+it.c; img.style.gridRow = 'span '+it.r;
-            img.style.animationDelay = (k*0.06/SPEED).toFixed(2)+'s';
-            img.src = it.url; quiltEl.appendChild(img);
+            var t = document.createElement('div'); t.className = 'tile '+it.kind;
+            t.style.cssText = 'left:'+it.x.toFixed(1)+'%;top:'+it.y.toFixed(1)+'%;width:'+it.w.toFixed(1)+'vmin;height:'+it.h.toFixed(1)+'vmin;'
+              + '--rot:'+it.rot+'deg;z-index:'+(k+1)+';animation-delay:'+(k*0.07/SPEED).toFixed(2)+'s';
+            t.innerHTML = '<img alt="" src="'+it.url+'">';
+            quiltEl.appendChild(t);
           });
         }, olds.length ? 260/SPEED : 0);
       }

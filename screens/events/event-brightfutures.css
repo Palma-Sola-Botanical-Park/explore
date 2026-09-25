@@ -229,31 +229,35 @@
 .slide.on .task:nth-child(n+5),.slide.on .rub:nth-child(n+5){animation-delay:2.1s}
 @keyframes rise{to{opacity:1;transform:none}}
 
-/* The monthly slide — see slideMonth()/render() quilt. One huge number
-   top-left; the rest of the screen is a dense grid of mixed-size photo
-   tiles packed around the copy (.quilt-hole reserves cols 1–6 × rows
-   1–4 for it). A fresh arrangement per photographer. Rows/cols are
-   minmax(0,1fr) and overflow rows are 0 high, so an arrangement that
-   doesn't quite fit clips instead of squashing the grid. */
+/* The monthly slide — see slideMonth()/render() collage. One huge
+   number top-left; the rest of the screen is a scatter of photo tiles —
+   paper prints, tilted cards, circles, hexagons, three sizes — placed
+   around the copy by collageFor() and running out to the frame line.
+   Randy: "square grids will not cut it." A fresh scatter for each
+   photographer. Positions are % of .quilt, sizes in vmin. */
 .count.hero{font-size:clamp(6rem,22vmin,19rem);line-height:1;margin-top:.6vmin;
   display:flex;align-items:baseline;gap:1.8vmin}   /* label beside, not under: old-style figures hang below the line box */
 .count.hero small{display:inline-block;font-size:2.3vmin;margin:0}
-.quilt{position:absolute;left:calc(var(--frame) + var(--pad));right:calc(var(--frame) + var(--pad));
-  top:13vmin;bottom:calc(var(--frame) + 2.7vmin);z-index:0;
-  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(7,minmax(0,1fr));
-  grid-auto-rows:0;grid-auto-flow:dense;gap:.9vmin;overflow:hidden}
-.quilt-hole{grid-area:1/1/5/7}
-.quilt img{width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;border-radius:.7vmin;display:block;
-  box-shadow:0 .4vmin 1.6vmin rgba(0,0,0,.5);opacity:0;transform:scale(.8);
-  animation:tileIn .42s cubic-bezier(.2,.9,.3,1.2) forwards}
-.quilt img.out{animation:tileOut .24s ease forwards}
-@keyframes tileIn{to{opacity:1;transform:none}}
-@keyframes tileOut{from{opacity:1;transform:none}to{opacity:0;transform:scale(.94)}}
+.quilt{position:absolute;left:calc(var(--frame) + .8vmin);right:calc(var(--frame) + .8vmin);
+  top:13vmin;bottom:calc(var(--frame) + .8vmin);z-index:0;overflow:hidden}
+.quilt .tile{position:absolute;overflow:hidden;background:#101820;border-radius:1vmin;
+  box-shadow:0 1vmin 3vmin rgba(0,0,0,.55);opacity:0;
+  transform:translate(-50%,-50%) rotate(var(--rot)) scale(.5);
+  animation:tilePop .5s cubic-bezier(.2,.9,.3,1.15) forwards}
+.quilt .tile img{width:100%;height:100%;object-fit:cover;display:block}
+.quilt .tile.print{border:.8vmin solid #f4f1ea;border-bottom-width:2.2vmin;border-radius:.3vmin}   /* a print from the drugstore */
+.quilt .tile.circle{border-radius:50%}
+.quilt .tile.hex{border-radius:0;box-shadow:none;clip-path:polygon(25% 2%,75% 2%,100% 50%,75% 98%,25% 98%,0 50%)}
+.quilt .tile.out{animation:tileGone .26s ease forwards}
+@keyframes tilePop{from{opacity:0;transform:translate(-50%,-50%) rotate(calc(var(--rot) + 16deg)) scale(.5)}
+  to{opacity:1;transform:translate(-50%,-50%) rotate(var(--rot)) scale(1)}}
+@keyframes tileGone{from{opacity:1;transform:translate(-50%,-50%) rotate(var(--rot)) scale(1)}
+  to{opacity:0;transform:translate(-50%,-50%) rotate(var(--rot)) scale(.8)}}
 
 @media (prefers-reduced-motion:reduce){
   .slide .copy > *,.slide .mosaic,.slide .card-photo,.slide .sheet,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
-  .quilt img{animation:none;opacity:1;transform:none}
-  .quilt img.out{opacity:0}
+  .quilt .tile{animation:none;opacity:1;transform:translate(-50%,-50%) rotate(var(--rot))}
+  .quilt .tile.out{opacity:0}
   .credit-block{transition:none;transform:none}
 }
 
