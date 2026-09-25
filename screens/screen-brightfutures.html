@@ -198,8 +198,12 @@
   function bfLogins(names){
     var logins = {};
     for(var login in names){
-      var n = (names[login] && names[login].note) || '';
-      if(n.toLowerCase().indexOf('bright futures') > -1) logins[login] = 1;
+      var n = ((names[login] && names[login].note) || '').toLowerCase();
+      /* The note has to SAY student. A plain "bright futures" match let
+         in "NOT a Bright Futures student" (Caitlin — staff; Randy,
+         2026-09-25: "can't use her") and "Bright Futures alumnus" (Aiden,
+         adult). The 31 real students all carry the exact phrase. */
+      if(n.indexOf('bright futures student') > -1 && n.indexOf('not a bright futures') < 0) logins[login] = 1;
     }
     return logins;
   }
@@ -925,8 +929,9 @@
         var photos = (r[2] && r[2].photos) || r[2] || [];
         var mine = crewOf(photos, bfSet);
         var hits = indexHits(r[3]); Object.assign(hits, indexHits(r[4]));
-        /* the week's task-sheet photo: test-load it, then rebuild so the
-           split-pane version of the tasks slide joins the rotation */
+        /* the week's task-sheet photo: test-load it before the first
+           build (local image, well under a second; a 404 fails fast) so
+           the tasks slide is the split-pane version from the first pick */
         var today = r[0], sheetReady = Promise.resolve();
         if(today && today.sheet){
           today.sheetUrl = BASE + today.sheet;
@@ -940,9 +945,7 @@
           });
         }
         function build(){ buildSlides(today, r[1], photos, names, mine, hits, r[5]); }
-        build();
-        sheetReady.then(build);
-        pulse.then(build);
+        return sheetReady.then(function(){ build(); pulse.then(build); });
       });
     });
   }
