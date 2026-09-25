@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925g">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925g">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925h">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925h">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -299,7 +299,7 @@
      goes where it is farthest from the ones already down, so the
      coverage is even but never regular). */
   var CW = 171, CH = 84;            /* the .quilt box in vmin at 16:9 — for spacing maths only */
-  var HOLE_X = 0.52, HOLE_Y = 0.62; /* the copy's corner, as fractions of the box: no tile may cover it */
+  var HOLE_X = 0.55, HOLE_Y = 0.69; /* the copy's corner, as fractions of the box, with room for a tilted print's corner: no tile may cover the words */
   function collageFor(urls){
     var n = urls.length, boost = Math.min(1.5, Math.sqrt(16/Math.max(n,4)));
     var sizes = urls.map(function(_, i){          /* biggest first */
@@ -635,6 +635,24 @@
      now." The ask, plainly, over one of their own photos. The dated
      "big batch" line lives in brightfutures_today.json (signs_push) so it
      can be changed or dropped without touching code. */
+  /* THE OPENER — Randy, 2026-09-25: "a new vibe to the whole thing. It
+     is a message from me to them as young adults to say: come on in. get
+     settled. DO STUFF! This is a place to just do things... I don't want
+     to be explicit but that's the vibe." And: "the rest is suggestions.
+     what to do. how to do it. why it's important." So this is the one
+     slide that says it outright, three lines landing a beat apart; every
+     other slide on the deck is a suggestion of one of those three kinds.
+     Heavy while they're walking in (3:00–3:45), then out of the rotation. */
+  function slideWelcome(mine){
+    var p = randomPhoto(mine.filter(function(x){ return x.hero; })) || randomPhoto(mine);
+    return { id:'welcome', seconds: SECONDS*1.6, shout:true, bg: p && p.photo_url, credit: p && creditText(p), creditDelay: 4.5, html:
+        '<div class="copy slow">'
+      + '<div class="shout-line">Come on in.</div>'
+      + '<div class="shout-line">Put your stuff down.</div>'
+      + '<div class="shout-line">Let’s do <em>stuff.</em></div>'
+      + '<div class="body">The list. iNat. The office. The nursery. Pick one and go.</div></div>' };
+  }
+
   function slideSigns(mine, tasksData){
     var p = randomPhoto(mine.filter(function(x){ return x.hero; })) || randomPhoto(mine);
     var push = tasksData && tasksData.signs_push;
@@ -917,6 +935,8 @@
     var mins = new Date().getHours()*60 + new Date().getMinutes();
     var duringTaskWindow = mins >= 15*60 && mins < 16*60;
     var tasksSlide = slideTasks(tasksData, mine);
+    /* the opener: four slots while they're arriving, two before that, none after 3:45 */
+    var welcomeN = ONLY ? 1 : (mins < 15*60 ? 2 : mins < 15*60+45 ? 4 : 0);
 
     /* Reviewer: "four photography-instruction slides is a lot. I'd
        rotate only one or two of those in any given session." Two of the
@@ -934,6 +954,7 @@
     for(var w=0; w<4; w++){ var q = slideWhoShot(mine); if(q && !seenW[q.id]){ seenW[q.id]=1; whos.push(q); } }
 
     var built = []
+      .concat(weighted(slideWelcome(mine), welcomeN))
       .concat(weighted(slideMonth(names), 3))
       .concat(weighted(slideMostPhotographed(names), 3))
       .concat(weighted(slideSigns(mine, tasksData), 2))

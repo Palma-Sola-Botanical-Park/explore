@@ -922,9 +922,13 @@ function drawMap(obs){
     const col=o.obscured?"#6b7280":(typeof a!=="number"?"#6b7280":a<=10?"#16a34a":a<=30?"#f5a623":"#e0261f");
     // No upper cap — Randy, 2026-09-25: "I think show them because it is making my point for me."
     // A 649 m ring swallowing half the map on a bad pin is the point, not a bug to hide.
+    // Same day, once a dozen of those big rings stacked into a solid red disc: "go a little
+    // lighter on the red now, lol." The red fill is thinner than the others so the stack stays
+    // see-through; small green/amber rings keep their weight.
+    const red=col==="#e0261f";
     if(typeof a==="number"&&a>3)
-      L.circle([lat,lng],{radius:a,color:col,weight:2,opacity:.85,fillColor:col,
-        fillOpacity:.18,interactive:false}).addTo(LAYER);
+      L.circle([lat,lng],{radius:a,color:col,weight:2,opacity:red?.6:.85,fillColor:col,
+        fillOpacity:red?.07:.18,interactive:false}).addTo(LAYER);
     L.circleMarker([lat,lng],{radius:7,color:"#faf8f3",weight:2.5,fillColor:col,fillOpacity:.95})
       .bindPopup('<b>'+esc(nameOf(o._taxon||o.taxon))+'</b>'+
         (((o._taxon||o.taxon)||{}).name&&((o._taxon||o.taxon)||{}).preferred_common_name?
