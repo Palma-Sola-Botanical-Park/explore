@@ -510,15 +510,22 @@
      pool repeat itself constantly (A, B, A, C, A…). A shuffle bag — every
      slide shown once before ANY repeats — fixes that properly, same
      device screen.html's own slideSpotlight() uses for the same reason. */
-  var seen = [];
+  /* Randy, 2026-09-25 (again): "slides repeat too frequently." The reset
+     above had a seam — the instant `seen` emptied, the pool was every
+     slide again, INCLUDING the one that had just played, so a reset could
+     repeat the last slide back-to-back. `lastId` is tracked outside
+     `seen` and excluded no matter what state the bag is in. */
+  var seen = [], lastId = null;
   function pick(){
     var forced = forcedSlide();
     if(forced) return forced;
     if(!slides.length) return { id:'empty', seconds:SECONDS, html:'<div class="copy"><h2>Loading…</h2></div>' };
     if(seen.length >= slides.length - 1) seen = [];
-    var pool = slides.filter(function(s){ return seen.indexOf(s.id) < 0; });
+    var pool = slides.filter(function(s){ return seen.indexOf(s.id) < 0 && s.id !== lastId; });
+    if(!pool.length) pool = slides.filter(function(s){ return s.id !== lastId; });
     var s = pool.length ? pool[Math.floor(Math.random()*pool.length)] : slides[0];
     seen.push(s.id);
+    lastId = s.id;
     return s;
   }
 
@@ -536,14 +543,22 @@
     return hits;
   }
 
+  /* Randy, 2026-09-25: "slides repeat too frequently." More
+     slidePhotoSpotlight() draws (each pulls a real, different photo — a
+     bigger pool means the shuffle bag takes longer to cycle back to
+     anything). De-duped by photo id below in case two draws collide. */
   function buildSlides(tasksData, events, photos, names, mine, hits, crewPhotos){
+    var spotlights = [], seenIds = {};
+    for(var i=0; i<5; i++){
+      var sp = slidePhotoSpotlight(mine, hits);
+      if(sp && !seenIds[sp.id]){ seenIds[sp.id] = 1; spotlights.push(sp); }
+    }
     var built = [
       slidePulse(mine), slideMostPhotographed(names), slideSpeciesSeen(mine),
       slideTasks(tasksData, mine), slideEvents(events, mine), slideCrew(mine),
-      slidePhotoSpotlight(mine, hits), slidePhotoSpotlight(mine, hits),
       slideHero(mine), slideOtherKinds(mine), slideWhyMultiple(mine), slideWhyAllYear(mine),
       slideCrewMontage(crewPhotos), slideThankYou(mine)
-    ];
+    ].concat(spotlights);
     slides = built.filter(Boolean);
   }
 
