@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925h">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925h">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925i">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925i">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -466,10 +466,38 @@
     var p = freshPhoto(mine);
     if(!p) return null;
     var fact = hitFor(hits, p.psbp_id);
-    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditText(p), html:
-        '<div class="copy"><div class="label">From the crew</div>'
-      + '<h2>'+esc(p.common_name || '')+'</h2>'
-      + (fact ? '<div class="body">'+rich(fact)+'</div>' : '') + '</div>' };
+    function htmlFor(nice){
+      return '<div class="copy"><div class="label">From the crew</div>'
+        + '<h2>'+esc(p.common_name || '')+'</h2>'
+        + (fact ? '<div class="body">'+rich(fact)+'</div>' : '')
+        + (nice ? '<div class="body nice">'+esc(nice)+'</div>' : '') + '</div>';
+    }
+    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditText(p),
+             login: p.photographer, first: ((p.photographer_name || '').split(' – ')[0].split(' ')[0] || ''),
+             htmlFor: htmlFor, html: htmlFor('') };
+  }
+
+  /* Randy, 2026-09-25: "some of the headings or text could say 'nice
+     one, Molly' or whatever, but that cannot go on REPEAT that Molly
+     always gets the callout. so if we stick in compliments, it has to be
+     once or twice per deck and shuffled between the kids... you spread
+     things out and try not to be an automaton on repeat." So: a budget
+     of two per cycle, on the From-the-crew slides, and the deck keeps a
+     ledger (localStorage) of when each kid last got one — the two go to
+     whoever has waited longest. */
+  var NICE_KEY = 'psbp-bf-nice';
+  var NICE = ['Nice one, {n}.', 'Good eye, {n}.', 'That’s the shot, {n}.', '{n}, that’s a keeper.'];
+  function sprinkleNice(spots){
+    var last = {}; try{ last = JSON.parse(localStorage.getItem(NICE_KEY) || '{}'); }catch(e){}
+    var seenLogin = {};
+    var ranked = spots.filter(function(s){ return s.login && s.first && !seenLogin[s.login] && (seenLogin[s.login] = 1); })
+      .sort(function(a, b){ return (last[a.login] || 0) - (last[b.login] || 0); });
+    ranked.slice(0, 2).forEach(function(s){
+      var line = NICE[Math.floor(Math.random()*NICE.length)].replace('{n}', s.first);
+      s.html = s.htmlFor(line);
+      last[s.login] = Date.now();
+    });
+    try{ localStorage.setItem(NICE_KEY, JSON.stringify(last)); }catch(e){}
   }
 
   /* Randy, 2026-09-25, on the old two-photo version: "oddly composed...
@@ -553,6 +581,122 @@
       + '<div class="copy"><div class="label">'+esc(ex.label)+'</div>'
       + '<h2>'+esc(p.common_name||'')+'</h2>'
       + '<div class="body">'+esc(ex.note)+'</div></div>' };
+  }
+
+  /* THE DETAIL SHOT — Randy, 2026-09-25: "Another slide: 'here are our
+     thoughts on photos with good detail to allow the world to identify
+     this species'. Then show examples of THEIRS and why they are good. I
+     LOVE the idea of floating text with points, with ARROWS to the photo
+     elements. Randomized placements of text in boxes and arrows that go
+     to the spot on the photo... NOT a POWERPOINT boring bullet list."
+     One chained slide: the intro, then each example with its callouts.
+     Every arrow lands on a real spot — x,y are % of the photo, set by
+     looking at each picture, not guessed. Voice: "one-on-one, real
+     talk... plain language like I respect them but there's shit to get
+     done." */
+  var ID_EXAMPLES = [
+    { id:'731645331', line:'Sharp on the one in front. The rest can blur.',
+      callouts:[ { t:'Five points, every flower. That’s pentas.', x:52, y:26 },
+                 { t:'The one in front is sharp. That’s the shot.', x:48, y:44 },
+                 { t:'Leaves in the frame too: veins, shape. iNat looks at those.', x:14, y:27 } ] },
+    { id:'735608579', line:'Three clues in one frame.',
+      callouts:[ { t:'That fruit. Nothing else in the park makes one.', x:49, y:46 },
+                 { t:'Prop roots. Second clue.', x:83, y:74 },
+                 { t:'Strap leaves in a spiral. Third.', x:34, y:60 } ] },
+    { id:'723780282', line:'Close enough that the berries are the whole picture.',
+      callouts:[ { t:'Purple berries in tight balls, wrapped round the stem. That’s the tell.', x:33, y:47 },
+                 { t:'Stem showing between clusters: how they sit.', x:54, y:51 },
+                 { t:'Leaf edges: toothed and rough. Backup clue.', x:35, y:84 } ] },
+    { id:'735615080', line:'Dead center, in focus, and the part that matters is right there.',
+      callouts:[ { t:'That column out of the middle, anthers on it, stigma on top. Hibiscus, every time.', x:51, y:55 },
+                 { t:'Red throat, orange petals. It’s the pattern, not just the color.', x:44, y:62 },
+                 { t:'Get a leaf in. Glossy, toothed edge.', x:9, y:32 } ] }
+  ];
+  function slideIdDetail(mine){
+    var byId = {}; mine.forEach(function(p){ byId[p.photo_id] = p; });
+    var exs = ID_EXAMPLES.filter(function(e){ return byId[e.id]; });
+    if(exs.length < 2) return null;
+    exs = exs.sort(function(){ return Math.random()-0.5; }).slice(0, 3);
+    var opener = randomPhoto(mine.filter(function(x){ return x.hero; })) || randomPhoto(mine);
+    var steps = [{ seconds: SECONDS*0.5, copy:
+        '<div class="label">The detail shot</div>'
+      + '<h2>Ok, here’s the other kind of shot.</h2>'
+      + '<div class="body">The hero shows where it lives. The detail shot is what lets the world put a name on it: the part only this plant has, close and sharp.</div>'
+      + '<div class="body">Some of yours that nail it, coming up.</div>' }];
+    exs.forEach(function(e){
+      var p = byId[e.id];
+      steps.push({ seconds: SECONDS*0.85, photo: p.photo_url, credit: creditText(p), callouts: e.callouts, copy:
+          '<div class="label">The detail shot</div>'
+        + '<h2>'+esc(p.common_name||'')+'</h2>'
+        + '<div class="body">'+esc(e.line)+'</div>' });
+    });
+    var total = steps.reduce(function(a, s){ return a + s.seconds; }, 0);
+    return { id:'iddetail', cls:'split', seconds: total, steps: steps,
+             bg: opener && opener.photo_url, credit: opener && creditText(opener),
+             html: '<div class="copy"></div><div class="idstage"></div>' };
+  }
+
+  /* Lay one example's callouts out around the photo: measure each box,
+     try the ten spots around the picture in random order, keep the first
+     that covers no target and no other box (preferring one near its own
+     target so arrows don't cross the whole frame), then draw the arrow
+     from the box to the spot and drop a dot on it. Boxes pop in one at a
+     time; each arrow draws itself a beat after its box. */
+  function placeCallouts(stage, img, callouts, timers){
+    if(!stage.isConnected) return;
+    var S = stage.getBoundingClientRect(), R = img.getBoundingClientRect();
+    var vmin = Math.min(innerWidth, innerHeight)/100;
+    var ox = R.left - S.left, oy = R.top - S.top, W = R.width, H = R.height;
+    var svg = stage.querySelector('svg.arrows');
+    svg.setAttribute('viewBox', '0 0 '+S.width+' '+S.height);
+    svg.innerHTML = '<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z"/></marker></defs>';
+    var targets = callouts.map(function(c){ return { x: ox + W*c.x/100, y: oy + H*c.y/100 }; });
+    var cands = [
+      { ax: ox - 1.5*vmin,     ay: oy + H*0.12, h:'right' }, { ax: ox - 1.5*vmin,     ay: oy + H*0.5, h:'right' }, { ax: ox - 1.5*vmin,     ay: oy + H*0.88, h:'right' },
+      { ax: ox + W + 1.5*vmin, ay: oy + H*0.12, h:'left'  }, { ax: ox + W + 1.5*vmin, ay: oy + H*0.5, h:'left'  }, { ax: ox + W + 1.5*vmin, ay: oy + H*0.88, h:'left'  },
+      { ax: ox + W*0.3, ay: oy - 1.5*vmin,     h:'center', v:'bottom' }, { ax: ox + W*0.7, ay: oy - 1.5*vmin,     h:'center', v:'bottom' },
+      { ax: ox + W*0.3, ay: oy + H + 1.5*vmin, h:'center', v:'top' },    { ax: ox + W*0.7, ay: oy + H + 1.5*vmin, h:'center', v:'top' }
+    ].sort(function(){ return Math.random()-0.5; });
+    var boxes = [];
+    function rectFor(c, bw, bh){
+      var l = c.h === 'right' ? c.ax - bw : c.h === 'left' ? c.ax : c.ax - bw/2;
+      var t = c.h === 'center' ? (c.v === 'bottom' ? c.ay - bh : c.ay) : c.ay - bh/2;
+      l = Math.max(0, Math.min(S.width - bw, l)); t = Math.max(0, Math.min(S.height - bh, t));
+      return { l:l, t:t, r:l+bw, b:t+bh };
+    }
+    function clear(b){
+      var pad = 2.5*vmin;
+      for(var i=0;i<targets.length;i++){ var g=targets[i]; if(g.x > b.l-pad && g.x < b.r+pad && g.y > b.t-pad && g.y < b.b+pad) return false; }
+      for(var j=0;j<boxes.length;j++){ var o=boxes[j]; if(b.l < o.r+vmin && b.r > o.l-vmin && b.t < o.b+vmin && b.b > o.t-vmin) return false; }
+      return true;
+    }
+    callouts.forEach(function(c, i){
+      var box = document.createElement('div'); box.className = 'callout'; box.textContent = c.t;
+      stage.appendChild(box);
+      var bw = box.offsetWidth, bh = box.offsetHeight, g = targets[i];
+      var ok = [], any = [];
+      cands.forEach(function(cd){
+        var r = rectFor(cd, bw, bh); if(boxes.some(function(o){ return o.cand === cd; })) return;
+        var d = Math.hypot((r.l+r.r)/2 - g.x, (r.t+r.b)/2 - g.y);
+        var item = { r:r, cand:cd, d:d }; any.push(item); if(clear(r)) ok.push(item);
+      });
+      var near = ok.filter(function(it){ return it.d < 0.7*Math.max(W,H); });
+      var pool = near.length ? near : ok.length ? ok : any;
+      var pick = pool.length ? pool[Math.floor(Math.random()*pool.length)] : null;
+      if(!pick){ box.remove(); return; }
+      boxes.push({ l:pick.r.l, t:pick.r.t, r:pick.r.r, b:pick.r.b, cand:pick.cand });
+      box.style.left = pick.r.l+'px'; box.style.top = pick.r.t+'px';
+      var cx = (pick.r.l+pick.r.r)/2, cy = (pick.r.t+pick.r.b)/2;
+      var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('class','arrow'); line.setAttribute('x1',cx); line.setAttribute('y1',cy); line.setAttribute('x2',g.x); line.setAttribute('y2',g.y);
+      line.setAttribute('marker-end','url(#ah)');
+      var L = Math.hypot(g.x-cx, g.y-cy); line.style.strokeDasharray = L; line.style.strokeDashoffset = L;
+      var dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('class','dot'); dot.setAttribute('cx',g.x); dot.setAttribute('cy',g.y); dot.setAttribute('r', 0.75*vmin);
+      svg.appendChild(line); svg.appendChild(dot);
+      timers.push(setTimeout(function(){ box.classList.add('in'); }, (900 + i*1500)/SPEED));
+      timers.push(setTimeout(function(){ line.style.strokeDashoffset = 0; dot.classList.add('in'); }, (1250 + i*1500)/SPEED));
+    });
   }
 
   /* The website ask — the twin of slideSigns(). Randy, 2026-09-25:
@@ -782,7 +926,7 @@
      (bottom-left, see .credit-block) rather than its own one-off caption. */
   function render(s){
     var el = document.createElement('div');
-    el.className = 'slide' + (s.warn ? ' warn' : '') + (s.shout ? ' shout' : '');
+    el.className = 'slide' + (s.warn ? ' warn' : '') + (s.shout ? ' shout' : '') + (s.cls ? ' '+s.cls : '');
     var frames = s.frames;
     var firstBg = frames ? frames[0].bg : s.bg;
     /* one of three slow camera moves, at random — see .kb1/.kb2/.kb3 */
@@ -799,6 +943,7 @@
     if(cur){
       if(cur._frameTimer) clearInterval(cur._frameTimer);
       if(cur._quiltTimer) clearTimeout(cur._quiltTimer);
+      if(cur._stepTimers) cur._stepTimers.forEach(clearTimeout);
       var old=cur; old.classList.remove('on'); setTimeout(function(){ old.remove(); }, 1300/SPEED);
     }
     cur = el;
@@ -823,8 +968,37 @@
     } else if(s.creditDelay){
       /* "Who shot this?" — hold the caption back until the halfway mark */
       setCredit(s.credit || '', s.creditDelay*1000);
-    } else {
+    } else if(!s.steps){
       setCredit(s.credit || '', CREDIT_LAG/SPEED);
+    }
+
+    /* `s.steps` — the detail-shot slide: the copy changes step by step;
+       steps with a photo hide the full-bleed background and show the
+       photo in the stage on the right with its callouts and arrows. */
+    if(s.steps && s.steps.length){
+      var copyEl = el.querySelector('.copy'), stage = el.querySelector('.idstage');
+      var bgEl2 = el.querySelector('.bg'), scrimEl = el.querySelector('.scrim'), si = 0;
+      el._stepTimers = [];
+      function showStep(){
+        if(!el.isConnected) return;
+        var st = s.steps[si];
+        copyEl.innerHTML = st.copy;
+        if(st.photo){
+          bgEl2.style.opacity = 0; if(scrimEl) scrimEl.style.opacity = 0;
+          stage.innerHTML = '<img alt="" src="'+st.photo+'"><svg class="arrows"></svg>';
+          stage.classList.add('in');
+          var img = stage.querySelector('img');
+          img.onload = function(){ placeCallouts(stage, img, st.callouts || [], el._stepTimers); };
+          if(img.complete && img.naturalWidth) img.onload();
+          setCredit(st.credit || '', CREDIT_LAG/SPEED);
+        } else {
+          stage.classList.remove('in'); stage.innerHTML = '';
+          setCredit(s.credit || '', CREDIT_LAG/SPEED);
+        }
+        si++;
+        if(si < s.steps.length) el._stepTimers.push(setTimeout(showStep, st.seconds*1000));
+      }
+      showStep();
     }
 
     /* `s.quilt` — the monthly slide's patchwork: one photographer's
@@ -943,6 +1117,7 @@
       var sp = slidePhotoSpotlight(mine, hits);
       if(sp && !seenIds[sp.id]){ seenIds[sp.id] = 1; spotlights.push(sp); }
     }
+    sprinkleNice(spotlights);
 
     /* Reviewer: "Today at the park should probably be very prominent from
        3:00-4:00... then reduce it later." */
@@ -980,7 +1155,8 @@
       .concat([slideLivesHere(mine), slideFirstFind(names)])
       .concat([slideSpeciesSeen(names), slideEvents(events, mine), slideCrewMontage(crewPhotos)])
       .concat(coaching)
-      .concat(examples);
+      .concat(examples)
+      .concat([slideIdDetail(mine)]);
     slides = built.filter(Boolean);
   }
 

@@ -194,6 +194,30 @@
 .card-photo{flex:0 0 auto;width:52vmin;aspect-ratio:3/2;border-radius:1vmin;overflow:hidden;
   background:#000;box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.6)}
 .card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+/* The detail-shot slide: copy left, the photo right in .idstage with
+   callout boxes and self-drawing arrows to real spots on it — Randy:
+   "floating text with points, with ARROWS to the photo elements... NOT
+   a POWERPOINT boring bullet list." Boxes are placed by placeCallouts(). */
+.slide.split .copy{max-width:37%}
+.body.nice{color:var(--gold);font-weight:600}   /* the once-or-twice-a-cycle first-name line, see sprinkleNice() */
+.idstage{position:absolute;top:13vmin;right:calc(var(--frame) + 1.2vmin);bottom:calc(var(--frame) + 1.2vmin);
+  width:60%;z-index:1;opacity:0;transition:opacity .5s ease}
+.idstage.in{opacity:1}
+.idstage img{position:absolute;inset:0;margin:auto;max-width:66%;max-height:82%;display:block;
+  border-radius:.8vmin;box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.6)}
+.idstage svg.arrows{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.idstage .arrow{fill:none;stroke:var(--gold);stroke-width:.45vmin;stroke-linecap:round;
+  transition:stroke-dashoffset .6s ease-out;filter:drop-shadow(0 .2vmin .6vmin rgba(0,0,0,.7))}
+.idstage marker path{fill:var(--gold)}
+.idstage .dot{fill:var(--gold);stroke:#0b1218;stroke-width:.3vmin;opacity:0}
+.idstage .dot.in{animation:dotIn .4s ease forwards}
+.callout{position:absolute;max-width:26vmin;background:rgba(8,13,18,.86);border:1px solid var(--gold-deep);
+  border-radius:.7vmin;padding:1.1vmin 1.5vmin;font-size:2.3vmin;line-height:1.35;color:var(--paper);font-weight:600;
+  backdrop-filter:blur(6px);box-shadow:0 .6vmin 2vmin rgba(0,0,0,.5);opacity:0;transform:scale(.85)}
+.callout.in{animation:calloutIn .4s cubic-bezier(.2,.9,.3,1.2) forwards}
+@keyframes calloutIn{to{opacity:1;transform:none}}
+@keyframes dotIn{to{opacity:1}}
+
 /* The weekly-tasks slide: copy left, a photo of the week's sheet right —
    Randy: "split paned." Portrait or landscape, it fits inside the band. */
 .sheet{flex:0 0 auto;width:50vmin;max-height:70vmin;display:flex;align-items:flex-start;justify-content:flex-end}
@@ -264,6 +288,8 @@
   .slide .copy > *,.slide .mosaic,.slide .card-photo,.slide .sheet,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
   .quilt .tile{animation:none;opacity:1;transform:translate(-50%,-50%) rotate(var(--rot))}
   .quilt .tile.out{opacity:0}
+  .callout,.idstage .dot{animation:none;opacity:1;transform:none}
+  .idstage .arrow{transition:none}
   .credit-block{transition:none;transform:none}
 }
 
