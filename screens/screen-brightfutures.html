@@ -1368,7 +1368,7 @@
     if(!fresh.length) fresh = all.filter(function(s){ return s.id !== lastId; });
     var pool = [], gap = MIN_GAP;
     while(!pool.length && gap >= 0){
-      var recentFam = recent.slice(-gap);
+      var recentFam = gap ? recent.slice(-gap) : [];   /* slice(-0) is the whole list, not none */
       pool = fresh.filter(function(s){ return recentFam.indexOf(familyOf(s.id)) < 0; });
       gap--;
     }
