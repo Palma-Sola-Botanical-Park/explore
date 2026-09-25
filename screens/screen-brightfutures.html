@@ -609,7 +609,13 @@
      the corner credit block — species drops to a smaller subtitle line.
      Same rule everywhere a specific photographer's photo is the point. */
   function slidePhotoSpotlight(mine, hits){
-    var p = freshPhoto(mine);
+    /* Randy, 2026-09-25: Denise's Turk's Turban came up as her second
+       frame — all leaves — under a fact about the flower and a
+       compliment. The fact and the gold line belong on the frame that
+       stands for the species, so this slide draws from the hero-flagged
+       photos only (88 of 484); "Who shot this?" keeps the whole archive. */
+    var heroes = mine.filter(function(x){ return x.hero; });
+    var p = freshPhoto(heroes.length >= 20 ? heroes : mine);
     if(!p) return null;
     var fact = hitFor(hits, p.psbp_id);
     function htmlFor(nice){
@@ -889,9 +895,13 @@
     var exs = HERO_SHOTS.filter(function(e){ return byId[e.id]; });
     if(!exs.length) return null;
     var opener = randomPhoto(mine.filter(function(x){ return x.hero; })) || randomPhoto(mine);
-    var steps = [{ seconds: SECONDS*0.5, copy:
+    /* Randy, 2026-09-25: the intro "needs to say more about these are
+       our best thoughts on how to document our species... and that a
+       couple screens will follow." */
+    var steps = [{ seconds: SECONDS*0.6, copy:
         '<div class="label">The hero shot</div>'
-      + '<h2>Ok, so here’s our best thoughts.</h2>'
+      + '<h2>Ok, so here’s our best thoughts on the hero shot.</h2>'
+      + '<div class="body">The one photo that stands for the species, on the sign and on the page. Check out the next couple of slides.</div>'
       + '<div class="body">Let’s try for one of these every observation. Maybe you get selected.</div>' }];
     exs.forEach(function(e){
       var p = byId[e.id];
@@ -1506,7 +1516,9 @@
            the tasks slide is the split-pane version from the first pick */
         var today = TODAY = r[0], sheetReady = Promise.resolve();
         if(today && today.sheet){
-          today.sheetUrl = BASE + today.sheet;
+          /* a new photo at the same path shows within ten minutes — the
+             kiosk and GitHub Pages both cache the old one otherwise */
+          today.sheetUrl = BASE + today.sheet + '?t=' + Math.floor(Date.now()/600000);
           sheetReady = new Promise(function(res){
             var im = new Image(), done = false;
             function fin(ok){ if(done) return; done = true; today.sheetOk = ok; res(); }
