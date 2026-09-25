@@ -146,6 +146,10 @@
 .scrim{position:absolute;inset:0;z-index:0;pointer-events:none;
   background:linear-gradient(100deg, rgba(8,13,18,.72) 0%, rgba(8,13,18,.58) 38%, rgba(8,13,18,0) 66%)}
 .slide .copy{position:relative;z-index:1}
+/* A photo whose busy part is on the left gets the words on the right
+   (render() adds .flip from the photo's focus score) — scrim mirrored. */
+.slide.flip .copy{margin-left:auto;max-width:48%}
+.slide.flip .scrim{transform:scaleX(-1)}
 
 /* event-deck.css has no scrim behind the text — legibility relied entirely
    on that heavy darkening. A lighter photo needs its own contrast instead. */

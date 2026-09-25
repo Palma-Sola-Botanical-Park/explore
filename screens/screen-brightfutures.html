@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925j">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925j">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925k">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925k">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -226,6 +226,83 @@
      rebuild and a page reload don't restart the repeats. It only resets
      once every photo has had a turn. Shared by "Who shot this?" and
      "From the crew"; plain background photos still draw at random. */
+  /* FOCUS-AWARE CROP — Randy, 2026-09-25, on a squirrel lost behind the
+     words: "Can't see some of the ones where the focus is left of
+     center... Can you analyze focus of image and crop/move it to the
+     right where there is space?" A full-bleed portrait photo on a 16:9
+     screen keeps under half its height, and the left of what's left is
+     under the copy. So each photo is scored once on a 48-px-wide canvas
+     (edge density plus saturation; the centre of the top quarter of
+     cells is the focus point), then: the crop is zoomed a touch and
+     positioned so the focus sits two-thirds across and mid-height; and
+     if the focus is on the LEFT, the words move to the right instead
+     (.slide.flip) — you can't drag a left-side subject rightwards
+     without zooming it to mush. iNat's photo bucket allows cross-origin
+     pixel reads; if a read ever fails the photo just stays centred.
+     Scores cache in localStorage, so every photo is scored once ever. */
+  var FOCUS_KEY = 'psbp-bf-focus', FOCUS_MEM = {};
+  var BG_ZOOM = 1.12, BG_TX = 0.66, BG_TX_FLIP = 0.34, BG_TY = 0.5;
+  function focusCache(){ try{ return JSON.parse(localStorage.getItem(FOCUS_KEY) || '{}'); }catch(e){ return {}; } }
+  function analyzeFocus(img){
+    var W = 48, H = Math.max(8, Math.round(W*img.naturalHeight/img.naturalWidth));
+    var c = document.createElement('canvas'); c.width = W; c.height = H;
+    var g = c.getContext('2d'); g.drawImage(img, 0, 0, W, H);
+    var d = g.getImageData(0, 0, W, H).data, n = W*H;
+    var lum = new Float32Array(n), sat = new Float32Array(n), w = new Float32Array(n), vals = [];
+    for(var i=0;i<n;i++){
+      var r=d[i*4], gg=d[i*4+1], b=d[i*4+2], mx=Math.max(r,gg,b), mn=Math.min(r,gg,b);
+      lum[i] = .3*r + .59*gg + .11*b; sat[i] = mx ? (mx-mn)/mx : 0;
+    }
+    for(var y=1;y<H-1;y++) for(var x=1;x<W-1;x++){
+      var k = y*W+x;
+      w[k] = (Math.abs(lum[k+1]-lum[k-1]) + Math.abs(lum[k+W]-lum[k-W]))/255 + 0.6*sat[k];
+      vals.push(w[k]);
+    }
+    vals.sort(function(a,b){ return a-b; });
+    var thr = vals[Math.floor(vals.length*0.75)] || 0, sx=0, sy=0, sw=0;
+    for(var y2=1;y2<H-1;y2++) for(var x2=1;x2<W-1;x2++){
+      var k2 = y2*W+x2;
+      if(w[k2] >= thr && w[k2] > 0){ sx += x2*w[k2]; sy += y2*w[k2]; sw += w[k2]; }
+    }
+    var ar = img.naturalWidth/img.naturalHeight;
+    return sw ? { fx:(sx/sw+.5)/W, fy:(sy/sw+.5)/H, ar:ar } : { fx:.5, fy:.5, ar:ar };
+  }
+  function focusFor(url){
+    var key = (url.match(/photos\/(\d+)\//) || [])[1] || url;
+    if(FOCUS_MEM[key]) return FOCUS_MEM[key];
+    var cached = focusCache()[key];
+    if(cached) return (FOCUS_MEM[key] = Promise.resolve(cached));
+    FOCUS_MEM[key] = new Promise(function(res){
+      var img = new Image(); img.crossOrigin = 'anonymous';
+      img.onload = function(){
+        var f = null; try{ f = analyzeFocus(img); }catch(e){}
+        if(f){ try{ var all = focusCache(); all[key] = f; localStorage.setItem(FOCUS_KEY, JSON.stringify(all)); }catch(e2){} }
+        res(f);
+      };
+      img.onerror = function(){ res(null); };
+      /* the medium size is plenty for a 48-px score, and a distinct URL
+         (plus ?f=1) never collides with the non-CORS cached full-size copy */
+      img.src = url.replace(/\/(large|original)\.(jpe?g|png)/i, '/medium.$2') + (url.indexOf('?') > -1 ? '&' : '?') + 'f=1';
+    });
+    return FOCUS_MEM[key];
+  }
+  /* set a .bg's photo, then (once its focus is known) its crop */
+  function placeBg(bgEl, url, tx){
+    if(!bgEl || !url) return;
+    bgEl.classList.add('photo');
+    bgEl.style.backgroundImage = 'url('+url+')';
+    bgEl.style.backgroundSize = ''; bgEl.style.backgroundPosition = '';
+    focusFor(url).then(function(f){
+      if(!f || !bgEl.isConnected || bgEl.style.backgroundImage.indexOf(url) < 0) return;
+      var Ws = innerWidth, Hs = innerHeight, Wd, Hd;
+      if(f.ar > Ws/Hs){ Hd = Hs*BG_ZOOM; Wd = Hd*f.ar; } else { Wd = Ws*BG_ZOOM; Hd = Wd/f.ar; }
+      var ox = Math.min(0, Math.max(Ws - Wd, tx*Ws - f.fx*Wd));
+      var oy = Math.min(0, Math.max(Hs - Hd, BG_TY*Hs - f.fy*Hd));
+      bgEl.style.backgroundSize = Wd.toFixed(0)+'px '+Hd.toFixed(0)+'px';
+      bgEl.style.backgroundPosition = ox.toFixed(0)+'px '+oy.toFixed(0)+'px';
+    });
+  }
+
   var USED_KEY = 'psbp-bf-used';
   function usedSet(){ try{ return JSON.parse(localStorage.getItem(USED_KEY) || '{}'); }catch(e){ return {}; } }
   function freshPhoto(mine){
@@ -658,7 +735,7 @@
         + '<div class="body">'+esc(e.line)+'</div>' });
     });
     var total = steps.reduce(function(a, s){ return a + s.seconds; }, 0);
-    return { id:'iddetail', cls:'split', seconds: total, steps: steps,
+    return { id:'iddetail', cls:'split', noflip:true, seconds: total, steps: steps,
              bg: opener && opener.photo_url, credit: opener && creditText(opener),
              html: '<div class="copy"></div><div class="idstage"></div>' };
   }
@@ -963,6 +1040,12 @@
     var scrim = firstBg ? '<div class="scrim"></div>' : '';
     el.innerHTML = bg + scrim + s.html;
     deck.appendChild(el);
+    if(firstBg){
+      /* single-photo slides whose busy part is on the left put the words on the right */
+      var flip = !!(s.focus && s.focus.fx < 0.45 && !s.noflip && !frames && !s.build && !s.steps);
+      if(flip) el.classList.add('flip');
+      placeBg(el.querySelector('.bg'), firstBg, flip ? BG_TX_FLIP : BG_TX);
+    }
     /* A timer, not requestAnimationFrame: rAF never fires in a hidden or
        throttled tab, which left slides built but stuck at opacity 0
        during proofing. 40 ms is enough for the browser to paint the
@@ -986,8 +1069,7 @@
         fi = (fi+1) % frames.length;
         bgEl.style.opacity = 0;
         setTimeout(function(){
-          bgEl.classList.add('photo');
-          bgEl.style.backgroundImage = 'url('+frames[fi].bg+')';
+          placeBg(bgEl, frames[fi].bg, BG_TX);
           if(titleEl && frames[fi].title) titleEl.textContent = frames[fi].title;
           setCredit(frames[fi].credit || '', FRAME_LAG/SPEED);   /* a beat to guess, every flip */
           bgEl.style.opacity = 1;
@@ -1013,7 +1095,7 @@
         if(r.bg && bi > 0){
           bgB.style.opacity = 0;
           el._stepTimers.push(setTimeout(function(){
-            bgB.classList.add('photo'); bgB.style.backgroundImage = 'url('+r.bg+')'; bgB.style.opacity = 1;
+            placeBg(bgB, r.bg, BG_TX); bgB.style.opacity = 1;
           }, 260/SPEED));
         }
         if(r.credit !== undefined) setCredit(r.credit || '');
@@ -1124,8 +1206,18 @@
   }
 
   function next(){
-    var dur = render(pick());
-    setTimeout(next, dur*1000);
+    var s = pick();
+    /* know the photo's focus BEFORE the slide starts, so the words land
+       on the right side first time (cached: instant; new photo: the
+       previous slide holds up to 0.7 s longer) */
+    var ready = (s.bg && !s.frames && !s.build)
+      ? Promise.race([focusFor(s.bg), new Promise(function(r){ setTimeout(r, 700); })])
+      : Promise.resolve(null);
+    ready.then(function(f){
+      if(f) s.focus = f;
+      var dur = render(s);
+      setTimeout(next, dur*1000);
+    });
   }
 
   /* quick_hits — the same fun-fact array the public species pages use,
