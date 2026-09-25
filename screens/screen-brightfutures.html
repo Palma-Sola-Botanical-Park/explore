@@ -682,11 +682,19 @@
     var p = null;
     for(var i=0;i<mine.length;i++) if(mine[i].photo_id === ex.id){ p = mine[i]; break; }
     if(!p) return null;
-    return { id:'ex-'+ex.id, seconds: SECONDS*1.7, credit: creditText(p), html:
+    /* Randy, 2026-09-25: "needs context. Gotta mention HERO image
+       somehow... at the end, a good comment." Two of his lines, one
+       picked per card each rebuild, so the cards don't all end alike. */
+    var closers = [
+      'Now THAT is a solid hero image, so try to get one of these from time to time in your observations.',
+      'Now THAT is a hero image that can go live in the park.'
+    ];
+    return { id:'ex-'+ex.id, seconds: SECONDS*1.8, credit: creditText(p), html:
         '<div class="card-photo"><img alt="" src="'+p.photo_url+'"></div>'
       + '<div class="copy"><div class="label">'+esc(ex.label)+'</div>'
       + '<h2>'+esc(p.common_name||'')+'</h2>'
-      + '<div class="body">'+esc(ex.note)+'</div></div>' };
+      + '<div class="body">'+esc(ex.note)+'</div>'
+      + '<div class="body nice">'+closers[Math.floor(Math.random()*closers.length)]+'</div></div>' };
   }
 
   /* THE DETAIL SHOT — Randy, 2026-09-25: "Another slide: 'here are our
