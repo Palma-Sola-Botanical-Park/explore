@@ -613,6 +613,8 @@
     for(var i=0;i<nodes.length;i++)(function(node){
       var target = parseInt(node.getAttribute('data-n'),10) || 0;
       var small = node.querySelector('small'), label = small ? small.outerHTML : '';
+      /* same rAF caveat as the fade-in: a hidden tab would leave it at 0 */
+      if(document.hidden){ node.innerHTML = target + label; return; }
       var t0 = null, ms = 1100/SPEED;
       function step(ts){
         if(!t0) t0 = ts;
@@ -641,7 +643,11 @@
     var scrim = firstBg ? '<div class="scrim"></div>' : '';
     el.innerHTML = bg + scrim + s.html;
     deck.appendChild(el);
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add('on'); }); });
+    /* A timer, not requestAnimationFrame: rAF never fires in a hidden or
+       throttled tab, which left slides built but stuck at opacity 0
+       during proofing. 40 ms is enough for the browser to paint the
+       opacity-0 state first so the fade actually runs. */
+    setTimeout(function(){ el.classList.add('on'); }, 40);
     if(cur){
       if(cur._frameTimer) clearInterval(cur._frameTimer);
       var old=cur; old.classList.remove('on'); setTimeout(function(){ old.remove(); }, 1300/SPEED);
