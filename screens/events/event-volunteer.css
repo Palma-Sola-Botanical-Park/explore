@@ -1,0 +1,57 @@
+/* ============================================================================
+   BRIGHT FUTURES VOLUNTEER SCREEN — theme for screen-volunteer.html
+   ----------------------------------------------------------------------------
+   Built as its OWN standalone deck, not a mode inside screen.html — Randy,
+   2026-09-25: "why are we not just doing a separate html again?" / "i thought
+   each sort of screen was an html page." Matches the pattern already set by
+   event-groovin.css / event-winternights.css: event-deck.css supplies the
+   frame/clock/logo/fade mechanics, this file supplies the personality.
+
+   Blue-gray, deliberately not the park's usual green — Randy, 2026-09-24:
+   "kinda liking a blue-ish gray motif, nothing like standard Palma Sola
+   green," echoing the Florida Bright Futures logo's own blue/green mark.
+============================================================================ */
+:root{
+  --ground:#1c232b; --ground-2:#141920; --bg-glow:#232c36;
+  --gold:#a9c2d6; --gold-deep:#7f9db4; --paper:#f5f8fb;
+  --ink-invert:rgba(245,248,251,.88); --ink-quiet:rgba(245,248,251,.58);
+  --rule:rgba(169,194,214,.32);
+}
+.slide .bg{background:radial-gradient(120vmin 80vmin at 30% 40%, var(--bg-glow) 0%, var(--ground) 72%)}
+
+.stat-row{display:flex;gap:5vmin;flex-wrap:wrap;margin-top:1.6vmin}
+.count{font-family:var(--serif);font-weight:700;line-height:.9;color:var(--gold);
+  font-size:clamp(2.4rem,8vmin,6.4rem);letter-spacing:-.02em}
+.count small{display:block;font-family:var(--sans);font-size:1.7vmin;font-weight:700;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--gold);opacity:.85;margin-top:.9vmin}
+
+.task-list{display:flex;flex-direction:column;gap:1.7vmin;margin-top:2.4vmin;max-width:78vmin}
+.task{display:grid;grid-template-columns:15vmin 1fr;gap:2.2vmin;align-items:baseline}
+.task .team{font-size:1.5vmin;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);opacity:.95}
+.task .job{font-size:clamp(1.1rem,2.3vmin,1.8rem);color:var(--paper);font-weight:400;line-height:1.35}
+
+.two-up{display:flex;gap:3vmin;margin-top:2.4vmin;flex-wrap:wrap}
+.two-up figure{margin:0;max-width:32vmin}
+.two-up img{display:block;width:100%;height:22vmin;object-fit:cover;border-radius:.6vmin;
+  box-shadow:0 .5vmin 2.4vmin rgba(0,0,0,.4)}
+.two-up figcaption{margin-top:.9vmin;font-size:1.3vmin;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--gold);opacity:.9}
+
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4vmin;margin-top:2.4vmin;max-width:70vmin}
+.photo-grid img{width:100%;height:12vmin;object-fit:cover;border-radius:.5vmin;
+  box-shadow:0 .4vmin 1.6vmin rgba(0,0,0,.4)}
+
+.bf-logo{margin-top:3vmin;height:6.5vmin;width:auto;background:var(--paper);border-radius:.6vmin;
+  padding:1vmin 1.6vmin;box-shadow:0 .4vmin 2vmin rgba(0,0,0,.4)}
+
+/* The one loud, urgent slide — Randy, 2026-09-24: "blinking RED. WARNING
+   time to stop what you're doing." Slow pulse, not a strobe; steady red
+   under reduced motion. */
+.slide.warn .bg{background:linear-gradient(160deg,#3d0c0c 0%,#1c0505 78%)}
+.slide.warn .label{color:#ff6b6b}
+.slide.warn h2{color:#ff5a5a;animation:warnPulse 1.6s ease-in-out infinite;
+  text-shadow:0 0 4vmin rgba(255,70,70,.55)}
+@keyframes warnPulse{0%,100%{opacity:1}50%{opacity:.55}}
+.slide.warn .body b{color:#ffb3b3}
+@media (prefers-reduced-motion:reduce){ .slide.warn h2{animation:none;opacity:1} }
