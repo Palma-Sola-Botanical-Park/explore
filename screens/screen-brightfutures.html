@@ -598,8 +598,9 @@
     var seenLogin = {};
     var ranked = spots.filter(function(s){ return s.login && s.first && !seenLogin[s.login] && (seenLogin[s.login] = 1); })
       .sort(function(a, b){ return (last[a.login] || 0) - (last[b.login] || 0); });
-    ranked.slice(0, 2).forEach(function(s){
-      var line = NICE[Math.floor(Math.random()*NICE.length)].replace('{n}', s.first);
+    var phraseOf = dealt(NICE);   /* two different phrasings per cycle */
+    ranked.slice(0, 2).forEach(function(s, i){
+      var line = phraseOf(i).replace('{n}', s.first);
       s.html = s.htmlFor(line);
       last[s.login] = Date.now();
     });
@@ -678,23 +679,31 @@
     { id:'731645331', label:'Why this one works',
       note:'You can count the five points on every flower. That’s exactly what the Pentas page is about.' }
   ];
-  function slideExample(mine, ex){
+  /* Randy, 2026-09-25: "needs context. Gotta mention HERO image
+     somehow... at the end, a good comment." Then: "mix it up... stock
+     phrases, repetition low as people catch on." A pool of closers,
+     dealt without replacement each rebuild (see buildSlides), so no
+     two cards in a cycle end the same way and the mix changes every
+     ten minutes. */
+  var HERO_CLOSERS = [
+    'Now THAT is a solid hero image, so try to get one of these from time to time in your observations.',
+    'Now THAT is a hero image that can go live in the park.',
+    'That one could be the sign. Get one like it.',
+    'This is the kind of shot that ends up leading the species page.',
+    'Hero shot. That’s what we’re after.',
+    'See that? Go get one of those.'
+  ];
+  function dealt(pool){ var bag = pool.slice().sort(function(){ return Math.random()-0.5; }); return function(i){ return bag[i % bag.length]; }; }
+  function slideExample(mine, ex, closer){
     var p = null;
     for(var i=0;i<mine.length;i++) if(mine[i].photo_id === ex.id){ p = mine[i]; break; }
     if(!p) return null;
-    /* Randy, 2026-09-25: "needs context. Gotta mention HERO image
-       somehow... at the end, a good comment." Two of his lines, one
-       picked per card each rebuild, so the cards don't all end alike. */
-    var closers = [
-      'Now THAT is a solid hero image, so try to get one of these from time to time in your observations.',
-      'Now THAT is a hero image that can go live in the park.'
-    ];
     return { id:'ex-'+ex.id, seconds: SECONDS*1.8, credit: creditText(p), html:
         '<div class="card-photo"><img alt="" src="'+p.photo_url+'"></div>'
       + '<div class="copy"><div class="label">'+esc(ex.label)+'</div>'
       + '<h2>'+esc(p.common_name||'')+'</h2>'
       + '<div class="body">'+esc(ex.note)+'</div>'
-      + '<div class="body nice">'+closers[Math.floor(Math.random()*closers.length)]+'</div></div>' };
+      + (closer ? '<div class="body nice">'+esc(closer)+'</div>' : '') + '</div>' };
   }
 
   /* THE DETAIL SHOT — Randy, 2026-09-25: "Another slide: 'here are our
@@ -1287,7 +1296,8 @@
        general ones, plus one or two of Randy's example cards. */
     var coachingAll = [slideRubric(), slideHero(mine),
       slideWhyMultiple(mine), slideWhyAllYear(mine)].filter(Boolean);
-    var examplesAll = EXAMPLES.map(function(ex){ return slideExample(mine, ex); }).filter(Boolean);
+    var closerOf = dealt(HERO_CLOSERS);
+    var examplesAll = EXAMPLES.map(function(ex, i){ return slideExample(mine, ex, closerOf(i)); }).filter(Boolean);
     /* ?only= proofing wants every format reachable, so skip the sampling then */
     var coaching = ONLY ? coachingAll : pickN(coachingAll, 2);
     var examples = ONLY ? examplesAll : pickN(examplesAll, 2);
