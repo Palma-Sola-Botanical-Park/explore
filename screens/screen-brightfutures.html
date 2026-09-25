@@ -162,7 +162,7 @@
      Same quick_hits array the species pages themselves use, keyed by the
      photo's own psbp_id. */
   function hitFor(hits, psbpId){
-    var list = hits[psbpId];
+    var list = hits && hits[psbpId];
     if(!list || !list.length) return '';
     return list[Math.floor(Math.random()*list.length)];
   }
@@ -248,15 +248,36 @@
       + '<div class="body">Behind on hours? Events are the fastest way to bank a bunch at once — ask Randy about signing up.</div></div>' };
   }
 
+  /* Randy, 2026-09-25: "the point is not the photo. the point is that
+     THEY took it." First try was a flat 8-up grid; Randy's next idea was
+     better: "maybe the photos are not in even places and the credits are
+     scrambled and there's animation to match them up at the end. Throw in
+     species too. then they align at the end. photo, species, credit."
+     So: five rows (grid-row assigns each photo/species/credit to its
+     CORRECT row from the start — nothing is really mismatched), but each
+     of the three starts flung to a random scattered position via an
+     inline transform. A few hundred ms after mount, .settled strips every
+     transform via one CSS transition, and everything glides home into its
+     matched row at once — photo, species, and credit landing together. */
+  function scatterStyle(){
+    var x = (Math.random()*140-70).toFixed(0), y = (Math.random()*70-35).toFixed(0);
+    var r = (Math.random()*50-25).toFixed(0);
+    return 'transform:translate('+x+'vmin,'+y+'vmin) rotate('+r+'deg)';
+  }
   function slideCrew(mine){
     if(mine.length < 5) return null;
     var species = {}; mine.forEach(function(p){ species[p.psbp_id]=1; });
-    var pick = mine.slice().sort(function(){ return Math.random()-0.5; }).slice(0,8);
-    var grid = pick.map(function(p){ return '<img alt="" src="'+p.photo_url+'">'; }).join('');
-    return { id:'crew', seconds: SECONDS*1.4, html:
+    var pick = mine.slice().sort(function(){ return Math.random()-0.5; }).slice(0,5);
+    var rows = pick.map(function(p,i){
+      var row = i+1;
+      return '<div class="mphoto" style="grid-row:'+row+';'+scatterStyle()+'"><img alt="" src="'+p.photo_url+'"></div>'
+        + '<div class="mspecies" style="grid-row:'+row+';'+scatterStyle()+'">'+esc(p.common_name||'')+'</div>'
+        + '<div class="mcredit" style="grid-row:'+row+';'+scatterStyle()+'">'+esc((p.photographer_name||'').split(' – ')[0]||'')+'</div>';
+    }).join('');
+    return { id:'crew', seconds: SECONDS*1.8, settleSelector:'.matchgame', html:
         '<div class="copy"><div class="label">The Bright Futures crew</div>'
-      + '<h2>'+mine.length+' photographs, '+Object.keys(species).length+' species documented</h2>'
-      + '<div class="photo-grid">'+grid+'</div></div>' };
+      + '<h2>'+mine.length+' photographs, '+Object.keys(species).length+' species documented</h2></div>'
+      + '<div class="matchgame">'+rows+'</div>' };
   }
 
   /* One real photo, full-bleed, minimal text — the "photo of the moment"
@@ -412,6 +433,17 @@
       setCredit(s.credit || '');
     }
 
+    /* Randy, 2026-09-25: "the photos are not in even places and the
+       credits are scrambled and there's animation to match them up at
+       the end... then they align at the end. photo, species, credit."
+       Each piece starts at a random inline transform (see scatterStyle()
+       in slideCrew); stripping it one beat after mount, all at once,
+       via a CSS transition is what makes everything glide home together. */
+    if(s.settleSelector){
+      var toSettle = el.querySelector(s.settleSelector);
+      if(toSettle) setTimeout(function(){ toSettle.classList.add('settled'); }, 500/SPEED);
+    }
+
     bar.style.transition='none'; bar.style.width='0';
     requestAnimationFrame(function(){ bar.style.transition='width '+dur+'s linear'; bar.style.width='100%'; });
     return dur;
@@ -439,11 +471,20 @@
     setTimeout(next, dur*1000);
   }
 
-  function buildSlides(tasksData, events, photos, names, mine){
+  /* quick_hits — the same fun-fact array the public species pages use,
+     keyed by id (== photo_credits.json's psbp_id). Randy: "too boring
+     without good info." */
+  function indexHits(blob){
+    var hits = {}, rows = (blob && blob.species) || blob || [];
+    rows.forEach(function(r){ if(r && r.id && r.quick_hits && r.quick_hits.length) hits[r.id] = r.quick_hits; });
+    return hits;
+  }
+
+  function buildSlides(tasksData, events, photos, names, mine, hits){
     var built = [
       slidePulse(mine), slideMostPhotographed(names), slideSpeciesSeen(mine),
       slideTasks(tasksData, mine), slideEvents(events, mine), slideCrew(mine),
-      slidePhotoSpotlight(mine), slidePhotoSpotlight(mine),
+      slidePhotoSpotlight(mine, hits), slidePhotoSpotlight(mine, hits),
       slideHero(mine), slideOtherKinds(mine), slideWhyMultiple(mine), slideWhyAllYear(mine),
       slideThankYou(mine)
     ];
@@ -461,11 +502,14 @@
         grab(BASE+'data/published/brightfutures_today.json'),
         grab(BASE+'data/published/events.json'),
         grab(BASE+'data/sources/photo_credits.json'),
+        grab(BASE+'data/sources/plant_signage.json'),
+        grab(BASE+'data/sources/wildlife_signage.json'),
         loadPulse(bfSet)
       ]).then(function(r){
         var photos = (r[2] && r[2].photos) || r[2] || [];
         var mine = crewOf(photos, bfSet);
-        buildSlides(r[0], r[1], photos, names, mine);
+        var hits = indexHits(r[3]); Object.assign(hits, indexHits(r[4]));
+        buildSlides(r[0], r[1], photos, names, mine, hits);
       });
     });
   }

@@ -93,9 +93,29 @@
   background:linear-gradient(transparent,rgba(0,0,0,.78));
   font-size:1.4vmin;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--paper)}
 
-.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.8vmin;margin-top:2.6vmin;max-width:96vmin}
-.photo-grid img{width:100%;height:19vmin;object-fit:cover;border-radius:.6vmin;
-  box-shadow:0 .5vmin 2vmin rgba(0,0,0,.4)}
+/* Randy, 2026-09-25: "the point is not the photo. the point is that THEY
+   took it... the photos are not in even places and the credits are
+   scrambled and there's animation to match them up at the end. Throw in
+   species too. then they align at the end. photo, species, credit."
+   Each cell's CORRECT grid-row is set inline by slideCrew() — nothing is
+   really mismatched — but every photo/species/credit also gets a random
+   inline scatter transform. One shared transition, triggered by adding
+   .settled a beat after mount (see render()'s settleSelector), strips
+   every transform at once, so the three scattered pieces of each row
+   glide home and land together. */
+.matchgame{flex:0 0 auto;width:58vmin;display:grid;
+  grid-template-columns:11vmin 1fr auto;grid-template-rows:repeat(5,1fr);
+  row-gap:1.6vmin;column-gap:2.2vmin;align-items:center}
+.matchgame > *{transition:transform 1.15s cubic-bezier(.16,.78,.2,1)}
+.matchgame.settled > *{transform:none !important}
+.matchgame .mphoto{grid-column:1;border-radius:1vmin;overflow:hidden;
+  box-shadow:0 .5vmin 2vmin rgba(0,0,0,.45)}
+.matchgame .mphoto img{display:block;width:100%;height:9vmin;object-fit:cover}
+.matchgame .mspecies{grid-column:2;font-family:var(--serif);font-weight:700;
+  font-size:1.9vmin;color:var(--paper);text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6)}
+.matchgame .mcredit{grid-column:3;font-size:1.25vmin;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--gold);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){ .matchgame > *{transition:none;transform:none !important} }
 
 .bf-logo{margin-top:3vmin;height:6.5vmin;width:auto;background:var(--paper);border-radius:.6vmin;
   padding:1vmin 1.6vmin;box-shadow:0 .4vmin 2vmin rgba(0,0,0,.4)}
