@@ -638,8 +638,9 @@
     var seenLogin = {};
     var ranked = spots.filter(function(s){ return s.login && s.first && !seenLogin[s.login] && (seenLogin[s.login] = 1); })
       .sort(function(a, b){ return (last[a.login] || 0) - (last[b.login] || 0); });
-    var phraseOf = dealt(NICE);   /* two different phrasings per cycle */
-    ranked.slice(0, 2).forEach(function(s, i){
+    var phraseOf = dealt(NICE);
+    /* one per rebuild (every ten minutes) — "once or twice per deck" */
+    ranked.slice(0, 1).forEach(function(s, i){
       var line = phraseOf(i).replace('{n}', s.first);
       s.html = s.htmlFor(line);
       last[s.login] = Date.now();
@@ -842,15 +843,24 @@
       boxes.push({ l:pick.r.l, t:pick.r.t, r:pick.r.r, b:pick.r.b, cand:pick.cand });
       box.style.left = pick.r.l+'px'; box.style.top = pick.r.t+'px';
       var cx = (pick.r.l+pick.r.r)/2, cy = (pick.r.t+pick.r.b)/2;
-      var line = document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('class','arrow'); line.setAttribute('x1',cx); line.setAttribute('y1',cy); line.setAttribute('x2',g.x); line.setAttribute('y2',g.y);
-      line.setAttribute('marker-end','url(#ah)');
-      var L = Math.hypot(g.x-cx, g.y-cy); line.style.strokeDasharray = L; line.style.strokeDashoffset = L;
-      var dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      dot.setAttribute('class','dot'); dot.setAttribute('cx',g.x); dot.setAttribute('cy',g.y); dot.setAttribute('r', 0.75*vmin);
-      svg.appendChild(line); svg.appendChild(dot);
+      /* a callout can point at two things — Randy, on IN THE PARK:
+         "there is a building and a railing to choose from" — so `also`
+         draws a second arrow from the same box */
+      var spots = [g].concat(c.also ? [{ x: ox + W*c.also[0]/100, y: oy + H*c.also[1]/100 }] : []);
+      var lines = spots.map(function(p){
+        var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+        line.setAttribute('class','arrow'); line.setAttribute('x1',cx); line.setAttribute('y1',cy); line.setAttribute('x2',p.x); line.setAttribute('y2',p.y);
+        line.setAttribute('marker-end','url(#ah)');
+        var L = Math.hypot(p.x-cx, p.y-cy); line.style.strokeDasharray = L; line.style.strokeDashoffset = L;
+        var dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        dot.setAttribute('class','dot'); dot.setAttribute('cx',p.x); dot.setAttribute('cy',p.y); dot.setAttribute('r', 0.75*vmin);
+        svg.appendChild(line); svg.appendChild(dot);
+        return { line: line, dot: dot };
+      });
       timers.push(setTimeout(function(){ box.classList.add('in'); }, (900 + i*1500)/SPEED));
-      timers.push(setTimeout(function(){ line.style.strokeDashoffset = 0; dot.classList.add('in'); }, (1250 + i*1500)/SPEED));
+      lines.forEach(function(ld, k){
+        timers.push(setTimeout(function(){ ld.line.style.strokeDashoffset = 0; ld.dot.classList.add('in'); }, (1250 + i*1500 + k*450)/SPEED));
+      });
     });
   }
 
@@ -864,13 +874,13 @@
     { id:'731638176', line:'Five things, one frame.',
       callouts:[ { h:RUBRIC[0][0], t:'The bract. Nothing else in the bed looks like that.', x:67, y:44 },
                  { h:RUBRIC[1][0], t:'One tall thing, centered. Cut it to a wide band and it still works.', x:63, y:62 },
-                 { h:RUBRIC[2][0], t:'The bed, the road, the far trees. This is here.', x:30, y:41 },
+                 { h:RUBRIC[2][0], t:'The bed, the road, the far trees. This is here.', x:30, y:41, also:[85,33] },
                  { h:RUBRIC[3][0], t:'Evening light, storm sky. Good to look at.', x:40, y:16 },
                  { h:RUBRIC[4][0], t:'The orange flowers poke out of the bract. That’s the fact.', x:52, y:53 } ] },
     { id:'735608579', line:'Same five. Different plant.',
       callouts:[ { h:RUBRIC[0][0], t:'That fruit.', x:49, y:46 },
                  { h:RUBRIC[1][0], t:'Fruit, roots, leaves, all in the middle band. Crops wide, crops tight.', x:45, y:56 },
-                 { h:RUBRIC[2][0], t:'Deck railing, house. Here, not a book.', x:12, y:55 },
+                 { h:RUBRIC[2][0], t:'Deck railing, house. Here, not a book.', x:12, y:55, also:[76,42] },
                  { h:RUBRIC[3][0], t:'Overcast. Even light, no glare on the fruit.', x:70, y:15 },
                  { h:RUBRIC[4][0], t:'Prop roots. Most people have no idea.', x:83, y:74 } ] }
   ];
@@ -1327,8 +1337,10 @@
       : Promise.resolve(null);
     ready.then(function(f){
       if(f) s.focus = f;
-      var dur = render(s);
-      setTimeout(next, dur*1000);
+      var dur;
+      /* an unattended TV must never stop on one bad slide */
+      try{ dur = render(s); }catch(e){ dur = 1; }
+      setTimeout(next, (dur || 1)*1000);
     });
   }
 
@@ -1415,6 +1427,11 @@
       .concat(examples)
       .concat([slideHeroShot(mine), slideIdDetail(mine)]);
     slides = built.filter(Boolean);
+    /* the bag remembers ids; drop the ones that no longer exist (each
+       rebuild draws new photos, so stale ids would pad the count and
+       reset the bag early — repeats sooner than they should) */
+    var live = {}; slides.forEach(function(s){ live[s.id] = 1; });
+    seen = seen.filter(function(id){ return live[id]; });
     /* warm every full-bleed photo this deck can show, in the background */
     var urls = [];
     slides.forEach(function(s){
