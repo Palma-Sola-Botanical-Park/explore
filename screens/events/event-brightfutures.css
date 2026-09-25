@@ -187,21 +187,6 @@
   background:linear-gradient(transparent,rgba(0,0,0,.78));
   font-size:1.4vmin;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--paper)}
 
-/* "Why this matters" — see slideWhy(). Their photo, then the real
-   species page (an iframe of this same repo's page, scaled to fit) fading
-   in beside it a few seconds later. 110vmin × .3636 = 40vmin, so the page
-   lays out at a normal desktop width and shrinks as one piece. */
-.why{flex:0 0 auto;width:48vmin;height:66vmin;position:relative;opacity:0;transform:translateX(1.5vmin)}
-.slide.on .why{animation:rise .7s ease-out .7s forwards}
-.why-photo{position:absolute;left:0;top:0;width:36vmin;border-radius:1vmin;overflow:hidden;
-  background:#000;box-shadow:0 1.2vmin 4vmin rgba(0,0,0,.6)}
-.why-photo img{display:block;width:100%;height:27vmin;object-fit:cover}
-.why-page{position:absolute;right:0;bottom:0;width:40vmin;height:42vmin;overflow:hidden;border-radius:.8vmin;
-  background:#fff;box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.65);opacity:0;transform:translateY(1.5vmin)}
-.slide.on .why-page{animation:rise .8s ease-out 3.4s forwards}
-.why-page iframe{width:110vmin;height:120vmin;border:0;transform:scale(.3636);transform-origin:0 0;pointer-events:none}
-@media (prefers-reduced-motion:reduce){ .why,.why-page{opacity:1;transform:none;animation:none} }
-
 /* Borrowed from Randy's photo-awards deck (Desktop, Sept 2026): the
    framed photo-beside-text card, and the numbered rubric rows. Two more
    layouts, so the deck isn't one skeleton wearing different photos. */
@@ -214,45 +199,6 @@
 .rub b{font-family:var(--serif);font-size:2.8vmin;color:var(--gold);line-height:1}
 .rub strong{display:block;color:var(--paper);font-size:1.9vmin;margin-bottom:.15vmin}
 .rub div{color:var(--ink-invert);font-size:1.6vmin;line-height:1.4}
-
-.bf-logo{margin-top:3vmin;height:6.5vmin;width:auto;background:var(--paper);border-radius:.6vmin;
-  padding:1vmin 1.6vmin;box-shadow:0 .4vmin 2vmin rgba(0,0,0,.4)}
-
-/* Randy, 2026-09-25: "the why this matters is important and we are
-   totally underselling it... animate that somehow?" Six icons land one
-   at a time; each connecting line draws itself in right before the next
-   icon appears, so the chain reads as one continuous handoff rather than
-   a row of static emoji. See slideThankYou()/CHAIN_STEPS. */
-.chain{display:flex;align-items:flex-start;margin:3.2vmin 0;max-width:82vmin}
-.chain .step{display:flex;flex-direction:column;align-items:center;gap:1vmin;flex:0 0 auto;
-  opacity:0;transform:translateY(1.4vmin);animation:stepIn .5s ease-out forwards}
-.chain .step .icon{font-size:7vmin;line-height:1;filter:drop-shadow(0 .3vmin 1vmin rgba(0,0,0,.5))}
-.chain .step .cap{font-size:1.15vmin;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--gold);text-align:center;max-width:11vmin;line-height:1.3;
-  text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6)}
-.chain .step:nth-child(1){animation-delay:.15s}
-.chain .step:nth-child(3){animation-delay:.85s}
-.chain .step:nth-child(5){animation-delay:1.55s}
-.chain .step:nth-child(7){animation-delay:2.25s}
-.chain .step:nth-child(9){animation-delay:2.95s}
-.chain .step:nth-child(11).final{animation:stepIn .5s ease-out 3.65s forwards, finalPulse 1.6s ease-in-out 4.3s infinite}
-@keyframes stepIn{to{opacity:1;transform:none}}
-@keyframes finalPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
-
-.chain-line{flex:1 1 4vmin;height:2px;margin-top:3.5vmin;background:var(--rule);position:relative;
-  overflow:hidden;min-width:2vmin}
-.chain-line::after{content:'';position:absolute;inset:0;background:var(--gold);
-  transform:scaleX(0);transform-origin:left;animation:lineDraw .4s ease-out forwards}
-.chain .chain-line:nth-child(2)::after{animation-delay:.6s}
-.chain .chain-line:nth-child(4)::after{animation-delay:1.3s}
-.chain .chain-line:nth-child(6)::after{animation-delay:2s}
-.chain .chain-line:nth-child(8)::after{animation-delay:2.7s}
-.chain .chain-line:nth-child(10)::after{animation-delay:3.4s}
-@keyframes lineDraw{to{transform:scaleX(1)}}
-@media (prefers-reduced-motion:reduce){
-  .chain .step{opacity:1;transform:none;animation:none}
-  .chain-line::after{transform:scaleX(1);animation:none}
-}
 
 /* Randy, 2026-09-25: "Each slide can do fade in's of multiple things and
    not be so static." Every direct child of .copy arrives in sequence —

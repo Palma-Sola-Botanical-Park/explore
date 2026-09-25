@@ -56,6 +56,9 @@
      turning that into visible literal tags on screen — this whitelists
      b/strong/i/em and strips anything else instead of escaping it all. */
   function rich(s){ return String(s==null?'':s).replace(/<(?!\/?(b|strong|i|em)\b)[^>]*>/gi,''); }
+  /* iNat's preferred_common_name is lowercase for genus-level IDs
+     ("bottlebrushes"); the site's own records are already cased. */
+  function cap(s){ s = String(s||''); return s.charAt(0).toUpperCase() + s.slice(1); }
   function grab(url){
     return fetch(url, { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
       .catch(function(){ return null; });
@@ -317,23 +320,32 @@
        flip through the top 5 rather than a slow dwell on each. */
     return { id:'mostphoto', seconds: SECONDS*0.75*frames.length, frames: frames, html:
         '<div class="copy"><div class="label">Most photographed this month</div>'
-      + '<h2>'+esc(top.name)+'</h2>'
+      + '<h2>'+esc(cap(top.name))+'</h2>'
       + '<div class="stat-row">'+countHtml(top.count, 'observations')+'</div>'
       + '</div>' };
   }
 
   /* Concrete species names, not an abstract number — makes "63 species"
      feel real instead of just a stat. */
-  function slideSpeciesSeen(mine){
-    if(!PULSE || !PULSE.speciesList || PULSE.speciesList.length < 3) return null;
-    /* Trimmed from 8 to 6 — a reviewer's note, 2026-09-25: past a
-       certain count this reads as a word cloud, not a list. */
-    var names = PULSE.speciesList.slice(0,6).map(function(s){ return s.name; }).filter(Boolean);
-    if(names.length < 3) return null;
-    var p = randomPhoto(mine);
-    return { id:'speciesseen', seconds: SECONDS*1.4, bg: p && p.photo_url, credit: p && creditText(p), html:
+  /* Randy, 2026-09-25: "'Seen this month' cannot be just a weird list of
+     species. Doesn't work." Now a fast flip instead: one species at a
+     time, its own crew photo full-screen, the name changing with it and
+     the caption crediting whoever shot it. Same frame engine as "Most
+     photographed", plus a per-frame title. */
+  function slideSpeciesSeen(names){
+    if(!PULSE || !PULSE.speciesList) return null;
+    var withPhoto = PULSE.speciesList.filter(function(s){ return s.name && s.photos.length; });
+    if(withPhoto.length < 3) return null;
+    var pick = withPhoto.slice().sort(function(){ return Math.random()-0.5; }).slice(0,6);
+    var frames = pick.map(function(s){
+      var ph = s.photos[Math.floor(Math.random()*s.photos.length)];
+      return { bg: ph.url, title: cap(s.name),
+        credit: window.PSBPPhotos.creditPlate({ by: nameFor(names, ph.login), date: ph.observed_on, license: ph.license }) };
+    });
+    return { id:'speciesseen', seconds: SECONDS*0.6*frames.length, frames: frames, html:
         '<div class="copy"><div class="label">Seen this month</div>'
-      + '<h2>'+esc(names.join(' · '))+'</h2></div>' };
+      + '<h2 class="frame-title">'+esc(frames[0].title)+'</h2>'
+      + '<div class="body">'+PULSE.monthSpecies+' species so far. A few of them:</div></div>' };
   }
 
   function slideTasks(tasksData, mine){
@@ -538,7 +550,7 @@
     var credit = window.PSBPPhotos.creditPlate({ by: nameFor(names, ph.login), date: ph.observed_on, license: ph.license });
     return { id:'first-'+s.name, seconds: SECONDS*0.9, shout:true, bg: ph.url, credit: credit, html:
         '<div class="copy"><div class="shout-line">First one <em>this month.</em></div>'
-      + '<div class="shout-sub"><b>'+esc(s.name)+'</b></div></div>' };
+      + '<div class="shout-sub"><b>'+esc(cap(s.name))+'</b></div></div>' };
   }
 
   /* Randy, 2026-09-25, on the emoji chain that used to be here: "just
@@ -689,7 +701,7 @@
     countUp(el);
 
     if(frames && frames.length > 1){
-      var bgEl = el.querySelector('.bg');
+      var bgEl = el.querySelector('.bg'), titleEl = el.querySelector('.frame-title');
       setCredit(frames[0].credit || '');
       var fi = 0, frameMs = (dur*1000/frames.length);
       el._frameTimer = setInterval(function(){
@@ -698,6 +710,7 @@
         setTimeout(function(){
           bgEl.classList.add('photo');
           bgEl.style.backgroundImage = 'url('+frames[fi].bg+')';
+          if(titleEl && frames[fi].title) titleEl.textContent = frames[fi].title;
           setCredit(frames[fi].credit || '');
           bgEl.style.opacity = 1;
         }, 260/SPEED);
@@ -837,7 +850,7 @@
       .concat(spotlights)
       .concat(whos)
       .concat([slideLivesHere(mine), slideFirstFind(names)])
-      .concat([slideSpeciesSeen(mine), slideEvents(events, mine), slideCrewMontage(crewPhotos)])
+      .concat([slideSpeciesSeen(names), slideEvents(events, mine), slideCrewMontage(crewPhotos)])
       .concat(coaching)
       .concat(examples);
     slides = built.filter(Boolean);
