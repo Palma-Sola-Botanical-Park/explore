@@ -180,11 +180,14 @@
 .obs-row .who{font-weight:600}
 .obs-row .when,.obs-row.more{color:var(--ink-invert);font-weight:300}
 
-.task-list{display:flex;flex-direction:column;gap:1.9vmin;margin-top:2.6vmin;max-width:90vmin}
-.task{display:grid;grid-template-columns:15vmin 1fr;gap:2.2vmin;align-items:baseline}
-.task .team{font-size:1.6vmin;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+/* Coming up — Randy, 2026-09-25: "balance? lower the words under the
+   events? slightly bigger font?" Rows a size up, the line below given air. */
+.task-list{display:flex;flex-direction:column;gap:2.6vmin;margin-top:3.2vmin;max-width:96vmin}
+.task{display:grid;grid-template-columns:16vmin 1fr;gap:2.4vmin;align-items:baseline}
+.task .team{font-size:2vmin;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
   color:var(--gold);opacity:.95}
-.task .job{font-size:clamp(1.3rem,2.8vmin,2.2rem);color:var(--paper);font-weight:400;line-height:1.35}
+.task .job{font-size:clamp(1.5rem,3.5vmin,2.8rem);color:var(--paper);font-weight:400;line-height:1.35}
+.task-list + .body{margin-top:5vmin}
 
 /* Sized to actually fill a widescreen TV, not sit as two thumbnails in a
    sea of empty ground — Randy, 2026-09-25: "empty space." */
@@ -209,9 +212,12 @@
 /* Borrowed from Randy's photo-awards deck (Desktop, Sept 2026): the
    framed photo-beside-text card, and the numbered rubric rows. Two more
    layouts, so the deck isn't one skeleton wearing different photos. */
-.card-photo{flex:0 0 auto;width:52vmin;aspect-ratio:3/2;border-radius:1vmin;overflow:hidden;
+/* Randy, 2026-09-25: "could use space a tad better. Bigger image. move
+   text right." The card takes the slide's height and its own shape — a
+   portrait shot stays portrait — and the words sit to its right. */
+.card-photo{flex:0 0 auto;height:64vmin;max-width:86vmin;border-radius:1vmin;overflow:hidden;
   background:#000;box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.6)}
-.card-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.card-photo img{height:100%;width:auto;max-width:100%;object-fit:cover;display:block}
 /* The detail-shot slide: copy left, the photo right in .idstage with
    callout boxes and self-drawing arrows to real spots on it — Randy:
    "floating text with points, with ARROWS to the photo elements... NOT

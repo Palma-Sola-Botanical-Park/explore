@@ -9,8 +9,8 @@
 <!-- ?v= is a cache-buster. GitHub Pages and the kiosk browser cache CSS
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
-<link rel="stylesheet" href="events/event-deck.css?v=20260925k">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925k">
+<link rel="stylesheet" href="events/event-deck.css?v=20260925m">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260925m">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -42,7 +42,9 @@
 (function(){
   var Q = new URLSearchParams(location.search);
   var SPEED = Math.max(0.1, parseFloat(Q.get('speed')) || 1);
-  var SECONDS = (parseFloat(Q.get('seconds')) || 16) / SPEED;
+  /* Randy, 2026-09-25: "let's speed the whole thing up by 10%... feels
+     slow in normal speed." 16 → 14.5. Every slide is a multiple of this. */
+  var SECONDS = (parseFloat(Q.get('seconds')) || 14.5) / SPEED;
   var deck = document.querySelector('.deck'), bar = document.getElementById('bar');
   var clockEl = document.getElementById('clock');
   function tick(){ var d=new Date(), h=d.getHours(), m=d.getMinutes();
