@@ -77,6 +77,24 @@
         var today = new Date().toISOString().slice(0,10);
         function uniq(list, key){ var seen={}; list.forEach(function(o){
           var v = key(o); if(v) seen[v]=1; }); return Object.keys(seen).length; }
+
+        /* Per-species tallies — this is the "achievements" data the first
+           pass never built. Randy, 2026-09-25: "no achievements. no
+           nothing so far." Real numbers weren't enough on their own;
+           naming the actual species is what makes it feel alive. */
+        var bySpecies = {};
+        rows.forEach(function(o){
+          var t = o.taxon; if(!t || !t.id) return;
+          var key = t.id;
+          if(!bySpecies[key]) bySpecies[key] = {
+            name: t.preferred_common_name || t.name, count:0, logins:{}
+          };
+          bySpecies[key].count++;
+          if(o.user && o.user.login) bySpecies[key].logins[o.user.login] = 1;
+        });
+        var speciesList = Object.keys(bySpecies).map(function(k){ return bySpecies[k]; })
+          .sort(function(a,b){ return b.count - a.count; });
+
         PULSE = {
           weekObs: rows.length,
           weekSpecies: uniq(rows, function(o){ return o.taxon && o.taxon.id; }),
@@ -85,15 +103,38 @@
           todaySpecies: uniq(rows.filter(function(o){ return o.observed_on===today; }),
             function(o){ return o.taxon && o.taxon.id; }),
           todayObservers: uniq(rows.filter(function(o){ return o.observed_on===today; }),
-            function(o){ return o.user && o.user.login; })
+            function(o){ return o.user && o.user.login; }),
+          speciesList: speciesList
         };
       }).catch(function(){});
   }
 
+  /* ── real Bright Futures photographs ─────────────────────────────────
+     photo_credits.json rows whose photographer's note in
+     photographer_names.json says "Bright Futures student" — same rule
+     screen.html's cohort() uses. Threaded into every slide builder below
+     so nearly every slide gets a real full-bleed photo behind it, not
+     just the two that used to show pictures. Randy, 2026-09-25, watching
+     it run: "how do we make this interesting? no photo?" — correct, the
+     old render() never set a background image at all. */
+  function crewOf(photos, names){
+    var logins = [];
+    for(var login in names){
+      var n = (names[login] && names[login].note) || '';
+      if(n.toLowerCase().indexOf('bright futures') > -1) logins.push(login);
+    }
+    return (photos||[]).filter(function(p){ return logins.indexOf(p.photographer) > -1 && p.publish_ok; });
+  }
+  function randomPhoto(mine){
+    if(!mine || !mine.length) return null;
+    return mine[Math.floor(Math.random()*mine.length)];
+  }
+
   /* ── slide builders ──────────────────────────────────────────────────── */
-  function slidePulse(){
+  function slidePulse(mine){
     if(!PULSE || PULSE.weekObs < 1) return null;
-    return { id:'pulse', seconds: SECONDS*1.2, html:
+    var p = randomPhoto(mine);
+    return { id:'pulse', seconds: SECONDS*1.2, bg: p && p.photo_url, html:
         '<div class="copy"><div class="label">Palma Sola this week</div>'
       + '<div class="stat-row">'
       +   '<div class="count">'+PULSE.weekObs+'<small>observations</small></div>'
@@ -103,19 +144,49 @@
       + '<div class="body">Every one of those came from somebody’s phone, right here in the park.</div></div>' };
   }
 
-  function slideTasks(tasksData){
+  /* A real achievement, not just a count — Randy: "no achievements. no
+     nothing." Names the actual top species and who photographed it. */
+  function slideMostPhotographed(names){
+    if(!PULSE || !PULSE.speciesList || !PULSE.speciesList.length) return null;
+    var top = PULSE.speciesList[0];
+    if(top.count < 2) return null;
+    var who = Object.keys(top.logins).map(function(login){
+      var n = names[login];
+      return (n && (n.credit_as || n.display_name)) || login;
+    }).map(function(n){ return n.split(' – ')[0]; }).slice(0,4);
+    return { id:'mostphoto', seconds: SECONDS*1.3, html:
+        '<div class="copy"><div class="label">Most photographed this week</div>'
+      + '<h2>'+esc(top.name)+'</h2>'
+      + '<div class="stat-row"><div class="count">'+top.count+'<small>observations</small></div></div>'
+      + '<div class="body">Spotted by '+esc(who.join(', '))+'.</div></div>' };
+  }
+
+  /* Concrete species names, not an abstract number — makes "63 species"
+     feel real instead of just a stat. */
+  function slideSpeciesSeen(mine){
+    if(!PULSE || !PULSE.speciesList || PULSE.speciesList.length < 3) return null;
+    var names = PULSE.speciesList.slice(0,8).map(function(s){ return s.name; }).filter(Boolean);
+    if(names.length < 3) return null;
+    var p = randomPhoto(mine);
+    return { id:'speciesseen', seconds: SECONDS*1.4, bg: p && p.photo_url, html:
+        '<div class="copy"><div class="label">Seen this week</div>'
+      + '<h2>'+esc(names.join(' · '))+'</h2></div>' };
+  }
+
+  function slideTasks(tasksData, mine){
     if(!tasksData || !tasksData.tasks || !tasksData.tasks.length) return null;
     var rows = tasksData.tasks.map(function(t){
       return '<div class="task"><span class="team">'+esc(t.team||'')+'</span>'
            + '<span class="job">'+esc(t.job||'')+'</span></div>';
     }).join('');
-    return { id:'tasks', seconds: SECONDS*1.3, html:
+    var p = randomPhoto(mine);
+    return { id:'tasks', seconds: SECONDS*1.3, bg: p && p.photo_url, html:
         '<div class="copy"><div class="label">Today at the park</div>'
       + '<h2>'+esc(tasksData.note || 'Wednesday jobs')+'</h2>'
       + '<div class="task-list">'+rows+'</div></div>' };
   }
 
-  function slideEvents(events){
+  function slideEvents(events, mine){
     var big = (events||[]).filter(function(e){ return e.category === 'Community'; });
     if(!big.length) return null;
     var rows = big.slice(0,4).map(function(e){
@@ -123,22 +194,13 @@
       return '<div class="task"><span class="team">'+esc(when)+'</span>'
            + '<span class="job">'+esc(e.title||'')+'</span></div>';
     }).join('');
-    return { id:'events', seconds: SECONDS*1.2, html:
-        '<div class="copy"><div class="label">Coming up at the park</div>'
-      + '<h2>Events worth knowing about</h2>'
+    var p = randomPhoto(mine);
+    return { id:'events', seconds: SECONDS*1.2, bg: p && p.photo_url, html:
+        '<div class="copy"><div class="label">Coming up</div>'
       + '<div class="task-list">'+rows+'</div></div>' };
   }
 
-  /* Real Bright Futures photographs — photo_credits.json rows whose
-     photographer's note in photographer_names.json says "Bright Futures
-     student", the same rule screen.html's cohort() uses. */
-  function slideCrew(photos, names){
-    var logins = [];
-    for(var login in names){
-      var n = (names[login] && names[login].note) || '';
-      if(n.toLowerCase().indexOf('bright futures') > -1) logins.push(login);
-    }
-    var mine = (photos||[]).filter(function(p){ return logins.indexOf(p.photographer) > -1 && p.publish_ok; });
+  function slideCrew(mine){
     if(mine.length < 5) return null;
     var species = {}; mine.forEach(function(p){ species[p.psbp_id]=1; });
     var pick = mine.slice().sort(function(){ return Math.random()-0.5; }).slice(0,8);
@@ -149,25 +211,51 @@
       + '<div class="photo-grid">'+grid+'</div></div>' };
   }
 
-  var HERO_LESSON = { id:'hero', seconds: SECONDS*1.8, html:
-      '<div class="copy"><div class="label">What makes a hero photo</div>'
-    + '<div class="two-up">'
-    +   '<figure><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698457680/medium.jpg" alt=""><figcaption>Pink Trumpet Tree · Ruby M.</figcaption></figure>'
-    +   '<figure><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/731644653/medium.jpg" alt=""><figcaption>Bottle Palm · Kevin W.</figcaption></figure>'
-    + '</div>'
-    + '<div class="body">One clean subject, nothing competing for the eye. Ruby’s flower fills the frame; Kevin’s palm steps back to show the whole plant’s shape. Both are right — they’re answering different questions.</div></div>' };
+  /* One real photo, full-bleed, minimal text — the "photo of the moment"
+     beat. Rotates through the actual crew archive, not a fixed pair. */
+  function slidePhotoSpotlight(mine){
+    var p = randomPhoto(mine);
+    if(!p) return null;
+    return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.3, bg: p.photo_url, html:
+        '<div class="copy"><div class="label">From the crew</div>'
+      + '<h2>'+esc(p.common_name || '')+'</h2>'
+      + '<div class="body">'+esc(p.photographer_name || '')+'</div></div>' };
+  }
 
-  var OTHER_KINDS = { id:'kinds', seconds: SECONDS*1.5, html:
-      '<div class="copy"><div class="label">Beyond the hero shot</div><h2>One photo rarely tells the whole story.</h2>'
+  function slideHero(mine){
+    var pool = mine.filter(function(p){ return p.hero; });
+    var a = randomPhoto(pool.length >= 2 ? pool : mine);
+    var b = randomPhoto(pool.length >= 2 ? pool : mine);
+    if(!a || !b) return null;
+    return { id:'hero', seconds: SECONDS*1.8, html:
+        '<div class="copy"><div class="label">What makes a hero photo</div>'
+      + '<div class="two-up">'
+      +   '<figure><img src="'+a.photo_url+'" alt=""><figcaption>'+esc(a.common_name||'')+' · '+esc((a.photographer_name||'').split(' ')[0]||'')+'</figcaption></figure>'
+      +   '<figure><img src="'+b.photo_url+'" alt=""><figcaption>'+esc(b.common_name||'')+' · '+esc((b.photographer_name||'').split(' ')[0]||'')+'</figcaption></figure>'
+      + '</div>'
+      + '<div class="body">One clean subject, nothing competing for the eye. A tight shot fills the frame; a wider one shows the whole plant’s shape. Both are right — they’re answering different questions.</div></div>' };
+  }
+
+  function slideOtherKinds(mine){
+    var p = randomPhoto(mine);
+    return { id:'kinds', seconds: SECONDS*1.5, bg: p && p.photo_url, html:
+        '<div class="copy"><div class="label">Beyond the hero shot</div><h2>One photo rarely tells the whole story.</h2>'
     + '<div class="body">The close-up detail that settles an ID. The whole-plant habit shot that shows how it actually grows here. Bark, fruit, seed pods, the ID sign itself — the boring ones are often the ones we need most.</div></div>' };
+  }
 
-  var WHY_MULTIPLE = { id:'multiple', seconds: SECONDS*1.2, html:
-      '<div class="copy"><div class="label">Take more than one</div><h2>If it’s worth stopping for, it’s worth three photos.</h2>'
+  function slideWhyMultiple(mine){
+    var p = randomPhoto(mine);
+    return { id:'multiple', seconds: SECONDS*1.2, bg: p && p.photo_url, html:
+        '<div class="copy"><div class="label">Take more than one</div><h2>If it’s worth stopping for, it’s worth three photos.</h2>'
     + '<div class="body">Wide, then closer, then closer still. You can always throw two away later — you can’t go back and take the one you skipped.</div></div>' };
+  }
 
-  var WHY_ALL_YEAR = { id:'allyear', seconds: SECONDS*1.3, html:
-      '<div class="copy"><div class="label">Why we never stop</div><h2>One photo is one moment. The park isn’t.</h2>'
+  function slideWhyAllYear(mine){
+    var p = randomPhoto(mine);
+    return { id:'allyear', seconds: SECONDS*1.3, bg: p && p.photo_url, html:
+        '<div class="copy"><div class="label">Why we never stop</div><h2>One photo is one moment. The park isn’t.</h2>'
     + '<div class="body">Bare in winter, blooming in spring, fruiting in fall — the same plant looks like three different plants across a year. "We already have a photo of that one" is never really true.</div></div>' };
+  }
 
   var THANK_YOU = { id:'thanks', seconds: SECONDS*1.4, html:
       '<div class="copy"><div class="label">Why this matters</div>'
@@ -211,7 +299,7 @@
   function render(s){
     var el = document.createElement('div');
     el.className = 'slide' + (s.warn ? ' warn' : '');
-    var bg = '<div class="bg"></div>';
+    var bg = '<div class="bg'+(s.bg?' photo':'')+'"'+(s.bg?' style="background-image:url('+s.bg+')"':'')+'></div>';
     el.innerHTML = bg + s.html;
     deck.appendChild(el);
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add('on'); }); });
@@ -239,8 +327,14 @@
   }
 
   function buildSlides(tasksData, events, photos, names){
-    var built = [slidePulse(), slideTasks(tasksData), slideEvents(events), slideCrew(photos, names),
-                 HERO_LESSON, OTHER_KINDS, WHY_MULTIPLE, WHY_ALL_YEAR, THANK_YOU];
+    var mine = crewOf(photos, names);
+    var built = [
+      slidePulse(mine), slideMostPhotographed(names), slideSpeciesSeen(mine),
+      slideTasks(tasksData, mine), slideEvents(events, mine), slideCrew(mine),
+      slidePhotoSpotlight(mine), slidePhotoSpotlight(mine),
+      slideHero(mine), slideOtherKinds(mine), slideWhyMultiple(mine), slideWhyAllYear(mine),
+      THANK_YOU
+    ];
     slides = built.filter(Boolean);
   }
 
