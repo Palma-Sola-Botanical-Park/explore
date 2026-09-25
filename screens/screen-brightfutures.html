@@ -27,6 +27,7 @@
 <div class="deck"></div>
 <div class="credit-block" id="credit"></div>
 <div id="bar"></div>
+<script src="../js/photo-credits.js"></script>
 <script>
 (function(){
   var Q = new URLSearchParams(location.search);
@@ -98,11 +99,12 @@
           };
           bySpecies[key].count++;
           if(o.user && o.user.login) bySpecies[key].logins[o.user.login] = 1;
-          var ph = o.photos && o.photos[0] && o.photos[0].url;
-          if(ph) bySpecies[key].photos.push({
-            url: ph.replace(/square\.(jpg|jpeg|png)/i, 'medium.$1'),
+          var photo0 = o.photos && o.photos[0];
+          if(photo0 && photo0.url) bySpecies[key].photos.push({
+            url: photo0.url.replace(/square\.(jpg|jpeg|png)/i, 'medium.$1'),
             login: (o.user && o.user.login) || '',
-            observed_on: o.observed_on || ''
+            observed_on: o.observed_on || '',
+            license: photo0.license_code || ''
           });
         });
         var speciesList = Object.keys(bySpecies).map(function(k){ return bySpecies[k]; })
@@ -146,16 +148,24 @@
     return mine[Math.floor(Math.random()*mine.length)];
   }
 
-  /* Species · Photographer · Date · License — the standardized credit
-     block, same shape every time a photo_credits.json row is on screen. */
+  /* Randy, 2026-09-25: "there is a standard credit block in html site.
+     much better than what youve done." Reusing the real one — same
+     function the species pages themselves call — instead of my own
+     ad-hoc joined string. See js/photo-credits.js: PSBPPhotos.creditPlate
+     emits .credit-plate/.credit-name/.cc-badge markup; event-brightfutures
+     .css restyles it for this dark TV theme, MUCH bigger on .credit-name
+     specifically — Randy, same thread, on the first pass: "we WANT their
+     names big and bold on photos. i literally cannot read it." The
+     site's own version is deliberately quiet (a byline under a species
+     page's hero); this screen's whole point is the name, so it can't
+     copy that sizing, only the structure. */
   function creditText(p){
     if(!p) return '';
-    var bits = [];
-    if(p.common_name) bits.push('<b>'+esc(p.common_name)+'</b>');
-    if(p.photographer_name) bits.push(esc(p.photographer_name.split(' – ')[0]));
-    if(p.observed_on) bits.push(new Date(p.observed_on+'T12:00').toLocaleDateString('en-US',{month:'long',year:'numeric'}));
-    if(p.license) bits.push(esc(p.license.replace(/^CC-/,'CC ').replace(/_/g,' ')));
-    return bits.join(' &middot; ');
+    return window.PSBPPhotos.creditPlate({
+      by: (p.photographer_name || 'community member').split(' – ')[0],
+      date: p.observed_on,
+      license: p.license
+    });
   }
 
   /* A real fact, not just a name — Randy: "too boring without good info."
@@ -197,9 +207,9 @@
     var top = PULSE.speciesList[0];
     if(top.count < 2 || !top.photos || top.photos.length < 2) return null;
     var frames = top.photos.slice(0,5).map(function(p){
-      var bits = ['<b>'+esc(top.name)+'</b>', esc(nameFor(names, p.login))];
-      if(p.observed_on) bits.push(new Date(p.observed_on+'T12:00').toLocaleDateString('en-US',{month:'long',year:'numeric'}));
-      return { bg: p.url, credit: bits.join(' &middot; ') };
+      return { bg: p.url, credit: window.PSBPPhotos.creditPlate({
+        by: nameFor(names, p.login), date: p.observed_on, license: p.license
+      }) };
     });
     return { id:'mostphoto', seconds: SECONDS*1.3*frames.length, frames: frames, html:
         '<div class="copy"><div class="label">Most photographed this week</div>'
@@ -282,13 +292,20 @@
 
   /* One real photo, full-bleed, minimal text — the "photo of the moment"
      beat. Rotates through the actual crew archive, not a fixed pair. */
+  /* Randy, 2026-09-25: "you are highlighting species way more. no!!!!!
+     they are first. always... we are all about big credits." The
+     photographer's name leads as the slide's own headline now, not just
+     the corner credit block — species drops to a smaller subtitle line.
+     Same rule everywhere a specific photographer's photo is the point. */
   function slidePhotoSpotlight(mine, hits){
     var p = randomPhoto(mine);
     if(!p) return null;
     var fact = hitFor(hits, p.psbp_id);
+    var name = (p.photographer_name || 'a crew member').split(' – ')[0];
     return { id:'spotlight-'+p.photo_id, seconds: SECONDS*1.5, bg: p.photo_url, credit: creditText(p), html:
         '<div class="copy"><div class="label">From the crew</div>'
-      + '<h2>'+esc(p.common_name || '')+'</h2>'
+      + '<h2>'+esc(name)+'</h2>'
+      + '<div class="subspecies">'+esc(p.common_name || '')+'</div>'
       + (fact ? '<div class="body">'+esc(fact)+'</div>' : '') + '</div>' };
   }
 

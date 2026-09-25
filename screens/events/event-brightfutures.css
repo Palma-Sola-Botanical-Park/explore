@@ -24,6 +24,12 @@
 .slide .bg{background:radial-gradient(120vmin 80vmin at 30% 40%, var(--bg-glow) 0%, var(--ground) 72%)}
 .copy h2{max-width:80vmin}
 
+/* The species name, demoted to a subtitle under the photographer's own
+   name — see slidePhotoSpotlight()'s comment: names lead, species
+   follows, never the other way around on this screen. */
+.subspecies{font-size:2vmin;font-style:italic;color:var(--ink-quiet);margin-top:.4vmin;
+  text-shadow:0 .2vmin 1vmin rgba(0,0,0,.6)}
+
 /* event-deck.css darkens every background photo to brightness(.42) —
    right for a memorial/evening deck, way too heavy here. Randy, 2026-09-25:
    "it's all so flat... needs a lighter touch." Real color, not a muddy
@@ -38,10 +44,34 @@
    element, like the clock — render() below just changes its text; it
    doesn't get rebuilt per slide. */
 .credit-block{position:fixed;left:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 1.8vmin);
-  z-index:41;font-size:1.35vmin;color:var(--ink-quiet);letter-spacing:.03em;
-  text-shadow:0 .15vmin 1vmin rgba(0,0,0,.6);opacity:0;transition:opacity .4s ease}
+  z-index:41;opacity:0;transition:opacity .4s ease}
 .credit-block.on{opacity:1}
-.credit-block b{color:var(--paper);font-weight:700}
+
+/* Randy, 2026-09-25: "there is a standard credit block in html site.
+   much better than what youve done" — so the markup now comes straight
+   from PSBPPhotos.creditPlate(), the same function the species pages
+   call (see js/photo-credits.js), not a hand-rolled string. But that
+   version is a quiet species-page byline, and this screen is the
+   opposite of quiet about it — same message, five minutes later:
+   "we WANT their names big and bold on photos. i literally cannot read
+   it. wtf." So only .credit-name gets blown up here; everything else
+   (eyebrow, date, the CC badge) stays as supporting detail underneath. */
+.credit-plate{display:flex;flex-direction:column;align-items:flex-start;gap:.5vmin;
+  padding:0;border-top:none}
+.credit-plate .credit-byline{display:flex;flex-direction:column;gap:.2vmin}
+.credit-plate .credit-eyebrow{font-size:1.3vmin;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);text-shadow:0 .15vmin 1vmin rgba(0,0,0,.7)}
+.credit-plate .credit-name{font-family:var(--serif);font-size:clamp(2.4rem,6vmin,5rem);font-weight:700;
+  color:var(--paper);line-height:1.05;white-space:nowrap;
+  text-shadow:0 .3vmin 1.4vmin rgba(0,0,0,.75),0 .1vmin .5vmin rgba(0,0,0,.6)}
+.credit-plate .credit-date{font-size:1.5vmin;color:var(--ink-quiet);
+  text-shadow:0 .15vmin 1vmin rgba(0,0,0,.7)}
+.credit-plate .credit-license{display:flex;align-items:center;gap:1vmin;margin-top:.2vmin}
+.credit-plate .credit-src{font-size:1.2vmin;font-style:italic;color:var(--ink-quiet);
+  text-shadow:0 .15vmin 1vmin rgba(0,0,0,.7)}
+.credit-plate .cc-badge{border-color:var(--rule);background:rgba(0,0,0,.45);
+  font-size:1.15vmin;color:var(--paper)}
+.credit-plate .cc-badge .cc-term{border-left-color:var(--rule)}
 
 /* Randy, 2026-09-25: "a lot of text tough to read with photo in back."
    Text-shadow alone wasn't enough over a busy or bright patch of photo.
