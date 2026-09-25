@@ -41,6 +41,11 @@
 
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  /* Ported from screen.html: quick_hits facts carry inline <b> for real
+     emphasis (e.g. "causes chlorosis" in a way that matters). esc() was
+     turning that into visible literal tags on screen — this whitelists
+     b/strong/i/em and strips anything else instead of escaping it all. */
+  function rich(s){ return String(s==null?'':s).replace(/<(?!\/?(b|strong|i|em)\b)[^>]*>/gi,''); }
   function grab(url){
     return fetch(url, { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
       .catch(function(){ return null; });
@@ -69,8 +74,13 @@
      Bright Futures people." This screen is about THIS crew's week, not
      the whole park's — bfSet filters every observation out before any
      count or photo is built from it. */
+  /* Randy, 2026-09-25: "'most photographed' needs to be past month. show
+     top 5 in succession and who took them." A week was too thin a sample
+     — one fetch covers 30 days, "this week"/"today" stats filter that
+     same set down client-side rather than firing a second request. */
   function loadPulse(bfSet){
-    var d1 = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
+    var d1 = new Date(Date.now() - 30*864e5).toISOString().slice(0,10);
+    var weekAgo = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
     var nelat=Math.max.apply(null,PULSE_POLYGON.map(function(p){return p[1];}));
     var nelng=Math.max.apply(null,PULSE_POLYGON.map(function(p){return p[0];}));
     var swlat=Math.min.apply(null,PULSE_POLYGON.map(function(p){return p[1];}));
@@ -80,8 +90,9 @@
       + '&order_by=observed_on&order=desc&per_page=200';
     return fetch(url, { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
       .then(function(data){
-        var rows = ((data && data.results) || []).filter(inPark)
+        var monthRows = ((data && data.results) || []).filter(inPark)
           .filter(function(o){ return o.user && bfSet[o.user.login]; });
+        var rows = monthRows.filter(function(o){ return o.observed_on >= weekAgo; });
         var today = new Date().toISOString().slice(0,10);
         function uniq(list, key){ var seen={}; list.forEach(function(o){
           var v = key(o); if(v) seen[v]=1; }); return Object.keys(seen).length; }
@@ -89,9 +100,11 @@
         /* Per-species tallies — this is the "achievements" data the first
            pass never built. Randy, 2026-09-25: "no achievements. no
            nothing so far." Real numbers weren't enough on their own;
-           naming the actual species is what makes it feel alive. */
+           naming the actual species is what makes it feel alive.
+           Sourced from monthRows (not the 7-day `rows`) so there's
+           actually enough material for "top 5 in succession". */
         var bySpecies = {};
-        rows.forEach(function(o){
+        monthRows.forEach(function(o){
           var t = o.taxon; if(!t || !t.id) return;
           var key = t.id;
           if(!bySpecies[key]) bySpecies[key] = {
@@ -211,8 +224,10 @@
         by: nameFor(names, p.login), date: p.observed_on, license: p.license
       }) };
     });
-    return { id:'mostphoto', seconds: SECONDS*1.3*frames.length, frames: frames, html:
-        '<div class="copy"><div class="label">Most photographed this week</div>'
+    /* Randy: "fast is good" — 0.75x instead of 1.3x per photo, a quick
+       flip through the top 5 rather than a slow dwell on each. */
+    return { id:'mostphoto', seconds: SECONDS*0.75*frames.length, frames: frames, html:
+        '<div class="copy"><div class="label">Most photographed this month</div>'
       + '<h2>'+esc(top.name)+'</h2>'
       + '<div class="stat-row"><div class="count">'+top.count+'<small>observations</small></div></div>'
       + '</div>' };
@@ -222,7 +237,9 @@
      feel real instead of just a stat. */
   function slideSpeciesSeen(mine){
     if(!PULSE || !PULSE.speciesList || PULSE.speciesList.length < 3) return null;
-    var names = PULSE.speciesList.slice(0,8).map(function(s){ return s.name; }).filter(Boolean);
+    /* Trimmed from 8 to 6 — a reviewer's note, 2026-09-25: past a
+       certain count this reads as a word cloud, not a list. */
+    var names = PULSE.speciesList.slice(0,6).map(function(s){ return s.name; }).filter(Boolean);
     if(names.length < 3) return null;
     var p = randomPhoto(mine);
     return { id:'speciesseen', seconds: SECONDS*1.4, bg: p && p.photo_url, credit: p && creditText(p), html:
@@ -243,6 +260,21 @@
       + '<div class="task-list">'+rows+'</div></div>' };
   }
 
+  /* Reviewer's note, 2026-09-25: "a very lightweight 'Can you beat this?'
+     slide... only if the numbers are framed as a group challenge, not
+     individual ranking. That gives the screen some game energy without
+     turning volunteering into competition." Whole crew vs. a number, no
+     names attached. */
+  function slideChallenge(mine){
+    if(!PULSE || PULSE.todaySpecies < 3) return null;
+    var target = PULSE.todaySpecies + 2;
+    var p = randomPhoto(mine);
+    return { id:'challenge', seconds: SECONDS*1.3, bg: p && p.photo_url, credit: p && creditText(p), html:
+        '<div class="copy"><div class="label">Can we beat this?</div>'
+      + '<div class="stat-row"><div class="count">'+PULSE.todaySpecies+'<small>species today</small></div></div>'
+      + '<div class="body">Can the crew hit <b>'+target+'</b> before cleanup?</div></div>' };
+  }
+
   function slideEvents(events, mine){
     var big = (events||[]).filter(function(e){ return e.category === 'Community'; });
     if(!big.length) return null;
@@ -255,7 +287,7 @@
     return { id:'events', seconds: SECONDS*1.4, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Coming up</div>'
       + '<div class="task-list">'+rows+'</div>'
-      + '<div class="body">Behind on hours? Events are the fastest way to bank a bunch at once — ask Randy about signing up.</div></div>' };
+      + '<div class="body">Need hours? Events are the quickest way to pick up several at once — ask Randy about signing up.</div></div>' };
   }
 
   /* Randy, 2026-09-25: "the point is not the photo. the point is that
@@ -306,7 +338,7 @@
         '<div class="copy"><div class="label">From the crew</div>'
       + '<h2>'+esc(name)+'</h2>'
       + '<div class="subspecies">'+esc(p.common_name || '')+'</div>'
-      + (fact ? '<div class="body">'+esc(fact)+'</div>' : '') + '</div>' };
+      + (fact ? '<div class="body">'+rich(fact)+'</div>' : '') + '</div>' };
   }
 
   /* Randy, 2026-09-25, on the old two-photo version: "oddly composed...
@@ -547,18 +579,55 @@
      slidePhotoSpotlight() draws (each pulls a real, different photo — a
      bigger pool means the shuffle bag takes longer to cycle back to
      anything). De-duped by photo id below in case two draws collide. */
+  /* Reviewer's note, 2026-09-25: weight the rotation — "three content
+     types: live crew status, recognition, coaching... roughly half the
+     screen time live/recognition, a quarter to a third coaching." The
+     shuffle bag in pick() guarantees every slide shown once before ANY
+     repeats, so weight means duplicate pool slots (distinct ids, same
+     content) rather than a probability — a slide with 3 slots shows 3x
+     per full pass through the bag, still with the bag's no-immediate-
+     repeat guarantee. */
+  function weighted(slideObj, n){
+    if(!slideObj) return [];
+    var out = [];
+    for(var i=0; i<n; i++){
+      var copy = {}; for(var k in slideObj) copy[k] = slideObj[k];
+      copy.id = slideObj.id + '-w' + i;
+      out.push(copy);
+    }
+    return out;
+  }
+  function pickN(list, n){
+    return list.slice().sort(function(){ return Math.random()-0.5; }).slice(0,n);
+  }
   function buildSlides(tasksData, events, photos, names, mine, hits, crewPhotos){
     var spotlights = [], seenIds = {};
     for(var i=0; i<5; i++){
       var sp = slidePhotoSpotlight(mine, hits);
       if(sp && !seenIds[sp.id]){ seenIds[sp.id] = 1; spotlights.push(sp); }
     }
-    var built = [
-      slidePulse(mine), slideMostPhotographed(names), slideSpeciesSeen(mine),
-      slideTasks(tasksData, mine), slideEvents(events, mine), slideCrew(mine),
-      slideHero(mine), slideOtherKinds(mine), slideWhyMultiple(mine), slideWhyAllYear(mine),
-      slideCrewMontage(crewPhotos), slideThankYou(mine)
-    ].concat(spotlights);
+
+    /* Reviewer: "Today at the park should probably be very prominent from
+       3:00-4:00... then reduce it later." */
+    var mins = new Date().getHours()*60 + new Date().getMinutes();
+    var duringTaskWindow = mins >= 15*60 && mins < 16*60;
+    var tasksSlide = slideTasks(tasksData, mine);
+
+    /* Reviewer: "four photography-instruction slides is a lot. I'd
+       rotate only one or two of those in any given session." */
+    var coaching = pickN([slideHero(mine), slideOtherKinds(mine),
+      slideWhyMultiple(mine), slideWhyAllYear(mine)].filter(Boolean), 2);
+
+    var built = []
+      .concat(weighted(slidePulse(mine), 3))
+      .concat(weighted(slideMostPhotographed(names), 3))
+      .concat(weighted(slideCrew(mine), 2))
+      .concat(weighted(slideThankYou(mine), 2))
+      .concat(weighted(slideChallenge(mine), 2))
+      .concat(weighted(tasksSlide, duringTaskWindow ? 4 : 2))
+      .concat(spotlights)
+      .concat([slideSpeciesSeen(mine), slideEvents(events, mine), slideCrewMontage(crewPhotos)])
+      .concat(coaching);
     slides = built.filter(Boolean);
   }
 
