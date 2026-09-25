@@ -288,14 +288,52 @@
     });
     return FOCUS_MEM[key];
   }
-  /* set a .bg's photo, then (once its focus is known) its crop */
+  /* FULL-SIZE PHOTOS — Randy, 2026-09-25: "the hero images are likely
+     too low RES to show well on a big screen. Can we build a method to
+     go ahead and cache the FULL size images from iNat?" iNat keeps every
+     photo's `original` (up to 2048 px on the long side, 1–3 MB) in the
+     same public bucket as the `large` (1024 px, ~150 KB) we link. So a
+     full-bleed background shows `large` at once, and the `original` is
+     swapped in the moment it arrives — same crop geometry, so nothing
+     jumps. warmPhotos() loads every photo in the deck in the background
+     one at a time, so by the time a slide comes up its original is
+     already in the browser cache (Chrome keeps them for weeks). Not the
+     site's local hero copies: "those were mainly for quick web site
+     delivery of the index page." */
+  function bigUrl(url){ return url.replace(/\/(square|small|medium|large)\.(jpe?g|png)$/i, '/original.$2'); }
+  function photoKey(url){ return (url.match(/photos\/(\d+)\//) || [])[1] || url; }
+  var WARM_DONE = {}, warmQueue = [], warming = false;
+  function warmPhotos(urls){
+    urls.forEach(function(u){ if(u && !WARM_DONE[photoKey(u)]){ WARM_DONE[photoKey(u)] = 1; warmQueue.push(bigUrl(u)); } });
+    if(warming) return;
+    warming = true;
+    (function step(){
+      var u = warmQueue.shift();
+      if(!u){ warming = false; return; }
+      var im = new Image();
+      im.onload = im.onerror = function(){
+        document.documentElement.dataset.warmed = (+(document.documentElement.dataset.warmed || 0)) + 1;
+        setTimeout(step, 250);   /* breathe, so the slide on screen loads first */
+      };
+      im.src = u;
+    })();
+  }
+  /* set a .bg's photo (large now, original when it lands), then (once
+     its focus is known) its crop */
   function placeBg(bgEl, url, tx){
     if(!bgEl || !url) return;
+    var key = photoKey(url), big = bigUrl(url);
     bgEl.classList.add('photo');
+    bgEl.dataset.photo = key;
     bgEl.style.backgroundImage = 'url('+url+')';
     bgEl.style.backgroundSize = ''; bgEl.style.backgroundPosition = '';
+    if(big !== url){
+      var im = new Image();
+      im.onload = function(){ if(bgEl.isConnected && bgEl.dataset.photo === key) bgEl.style.backgroundImage = 'url('+big+')'; };
+      im.src = big;
+    }
     focusFor(url).then(function(f){
-      if(!f || !bgEl.isConnected || bgEl.style.backgroundImage.indexOf(url) < 0) return;
+      if(!f || !bgEl.isConnected || bgEl.dataset.photo !== key) return;
       var Ws = innerWidth, Hs = innerHeight, Wd, Hd;
       if(f.ar > Ws/Hs){ Hd = Hs*BG_ZOOM; Wd = Hd*f.ar; } else { Wd = Ws*BG_ZOOM; Hd = Wd/f.ar; }
       var ox = Math.min(0, Math.max(Ws - Wd, tx*Ws - f.fx*Wd));
@@ -1252,12 +1290,31 @@
        proof on the wrong slide for a full dwell. */
     if(!all.length) return { id:'empty', seconds: ONLY ? 2 : SECONDS, html:'<div class="copy"><h2>Loading…</h2></div>' };
     if(seen.length >= all.length - 1) seen = [];
-    var pool = all.filter(function(s){ return seen.indexOf(s.id) < 0 && s.id !== lastId; });
-    if(!pool.length) pool = all.filter(function(s){ return s.id !== lastId; });
+    /* Randy, 2026-09-25: "iNat monthly has repeated too many times or
+       too frequently... was only a couple slides ago and then again.
+       Maybe set min it can repeat somehow to 5 slide types?" The three
+       weighted copies have different ids, so "not twice in a row" never
+       saw them as the same slide. Now every slide has a FAMILY (the
+       weighted copies, all the Who-shot-this, all three Most-photographed
+       ranks…) and a family can't come back within MIN_GAP slides — relaxed
+       only when nothing else is left in the bag. */
+    var fresh = all.filter(function(s){ return seen.indexOf(s.id) < 0 && s.id !== lastId; });
+    if(!fresh.length) fresh = all.filter(function(s){ return s.id !== lastId; });
+    var pool = [], gap = MIN_GAP;
+    while(!pool.length && gap >= 0){
+      var recentFam = recent.slice(-gap);
+      pool = fresh.filter(function(s){ return recentFam.indexOf(familyOf(s.id)) < 0; });
+      gap--;
+    }
     var s = pool.length ? pool[Math.floor(Math.random()*pool.length)] : all[0];
     seen.push(s.id);
     lastId = s.id;
+    recent.push(familyOf(s.id)); if(recent.length > MIN_GAP) recent.shift();
     return s;
+  }
+  var MIN_GAP = 5, recent = [];
+  function familyOf(id){
+    return id.replace(/-w\d+$/, '').replace(/^(who|spotlight|lives|first|ex|mostphoto)-.*$/, '$1');
   }
 
   function next(){
@@ -1358,6 +1415,14 @@
       .concat(examples)
       .concat([slideHeroShot(mine), slideIdDetail(mine)]);
     slides = built.filter(Boolean);
+    /* warm every full-bleed photo this deck can show, in the background */
+    var urls = [];
+    slides.forEach(function(s){
+      if(s.bg) urls.push(s.bg);
+      (s.frames || []).forEach(function(f){ if(f.bg) urls.push(f.bg); });
+      ((s.build && s.build.rows) || []).forEach(function(r){ if(r.bg) urls.push(r.bg); });
+    });
+    warmPhotos(urls);
   }
 
   /* names has to load BEFORE loadPulse — the pulse filters every
