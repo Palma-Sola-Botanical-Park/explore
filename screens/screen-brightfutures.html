@@ -451,13 +451,44 @@
     });
     return tiles;
   }
-  function slideMonth(names){
-    if(!PULSE || !PULSE.monthObs) return null;
-    var quilt = PULSE.photographers.slice(0, 6).map(function(t){
-      return { items: collageFor(t.photos.slice(0, 16).map(function(p){ return p.url; })),
-               credit: window.PSBPPhotos.creditPlate({ by: nameFor(names, t.login), license: t.photos[0].license }) };
+  /* Randy, 2026-09-25: "Can we not include just the top photo takers?
+     Can we put two people at the bottom credits who add up enough to
+     fill a screen. We have 18 to choose from this month. Let's try to
+     get everyone represented somehow doing clever combines." So:
+     anyone with ten or more photos gets a scatter to themselves; the
+     rest are bundled two or three to a scatter until there's enough to
+     fill the screen, photos interleaved, the caption naming all of
+     them. The groups are shuffled once per rebuild and split across the
+     three monthly showings in a cycle — everyone appears every cycle. */
+  function monthGroups(){
+    var groups = [], cur = null;
+    PULSE.photographers.forEach(function(t){
+      if(!t.photos.length) return;
+      if(t.photos.length >= 10){ groups.push([t]); return; }
+      cur = cur || [];
+      cur.push(t);
+      var n = cur.reduce(function(a, m){ return a + m.photos.length; }, 0);
+      if(n >= 10 || cur.length >= 3){ groups.push(cur); cur = null; }
     });
-    return { id:'month', seconds: SECONDS*2.4, quilt: quilt, html:
+    if(cur) groups.push(cur);
+    return groups.sort(function(){ return Math.random()-0.5; });
+  }
+  function slideMonth(names, groups, part){
+    if(!PULSE || !PULSE.monthObs || !groups || !groups.length) return null;
+    var quilt = groups.map(function(members){
+      var urls = [], at = members.map(function(){ return 0; }), more = true;
+      while(urls.length < 16 && more){            /* interleave the members' photos */
+        more = false;
+        members.forEach(function(m, i){
+          if(urls.length < 16 && at[i] < m.photos.length){ urls.push(m.photos[at[i]++].url); more = true; }
+        });
+      }
+      var who = members.map(function(m){ return nameFor(names, m.login); });
+      var by = who.length > 2 ? who.slice(0, -1).join(', ') + ' & ' + who[who.length-1] : who.join(' & ');
+      return { items: collageFor(urls),
+               credit: window.PSBPPhotos.creditPlate({ by: by, license: members[0].photos[0].license }) };
+    });
+    return { id:'month-'+part, seconds: SECONDS*(0.5 + 0.32*quilt.length), quilt: quilt, html:
         '<div class="copy"><div class="label">This month</div>'
       + '<h2>Here’s how many iNat pics we’ve taken this month:</h2>'
       + countHtml(PULSE.monthPhotos, 'photos', 'hero')
@@ -1366,7 +1397,7 @@
     return 0;                      /* cleanup time */
   }
   function familyOf(id){
-    return id.replace(/-w\d+$/, '').replace(/^(who|spotlight|lives|first|ex|mostphoto)-.*$/, '$1');
+    return id.replace(/-w\d+$/, '').replace(/^(who|spotlight|lives|first|ex|mostphoto|month)-.*$/, '$1');
   }
 
   function next(){
@@ -1407,6 +1438,17 @@
      content) rather than a probability — a slide with 3 slots shows 3x
      per full pass through the bag, still with the bag's no-immediate-
      repeat guarantee. */
+  /* the monthly collage as three showings, each with a third of this
+     month's photographer groups (see monthGroups) */
+  function monthSlides(names){
+    if(!PULSE || !PULSE.monthObs) return [];
+    var groups = monthGroups(), per = Math.ceil(groups.length/3), out = [];
+    for(var i=0; i<3; i++){
+      var chunk = groups.slice(i*per, (i+1)*per);
+      if(chunk.length) out.push(slideMonth(names, chunk, i));
+    }
+    return out;
+  }
   function weighted(slideObj, n){
     if(!slideObj) return [];
     var out = [];
@@ -1456,7 +1498,7 @@
 
     var built = []
       .concat(weighted(slideWelcome(mine), welcomeN))
-      .concat(weighted(slideMonth(names), 3))
+      .concat(monthSlides(names))
       .concat([slideMostPhotographed(names, 0), slideMostPhotographed(names, 1), slideMostPhotographed(names, 2)])
       .concat(weighted(slideSigns(mine, tasksData), 2))
       .concat(weighted(slideWebsite(mine), 2))
