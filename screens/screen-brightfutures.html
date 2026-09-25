@@ -295,7 +295,7 @@
      naming whoever is up. Shapes are picked so each photographer's
      photos roughly fill the space: someone with 4 photos gets 4 big
      blocks, someone with 40 gets a tight patchwork. */
-  var QUILT_COLS = 12, QUILT_ROWS = 7, QUILT_HOLE = 6*4;   /* hole: cols 1–6 × rows 1–4, under the copy */
+  var QUILT_COLS = 12, QUILT_ROWS = 8, QUILT_HOLE = 7*5;   /* hole: cols 1–7 × rows 1–5, under the copy (keep in step with .quilt-hole) */
   var SHAPES = [[1,1],[2,1],[1,2],[3,1],[2,2],[3,2],[2,3],[4,2],[3,3]];
   function quiltFor(urls){
     var cells = QUILT_COLS*QUILT_ROWS - QUILT_HOLE, per = cells/urls.length, left = cells;
