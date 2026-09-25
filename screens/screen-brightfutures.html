@@ -1364,22 +1364,15 @@
   }
   var MIN_GAP = 5, recent = [];
   var WELCOME = null, TASKS = null, picks = 0, sinceWelcome = 0, sinceTasks = 3;   /* tasks starts half a beat along, so the two never land together */
-  function welcomeEvery(){
-    var m = new Date().getHours()*60 + new Date().getMinutes();
-    if(m < 14*60+30) return 6;     /* setting up — still say hi */
-    if(m < 15*60+30) return 4;     /* they're walking in */
-    if(m < 16*60)    return 7;
-    if(m < 16*60+30) return 12;
-    return 0;                      /* gone by 4:30 */
-  }
-  function tasksEvery(){
-    var m = new Date().getHours()*60 + new Date().getMinutes();
-    if(m < 14*60+30) return 8;
-    if(m < 15*60+30) return 6;     /* pick a job */
-    if(m < 16*60)    return 9;
-    if(m < 17*60+30) return 14;    /* settled and doing stuff; still there for whoever finishes one */
-    return 0;                      /* cleanup time */
-  }
+  /* Randy, 2026-09-25: "only have the repetition rules for those
+     welcoming screens work from like 2:55PM through 4:00PMish. Anytime a
+     reviewer is looking (like now), just have them all be using the
+     regular rules for frequency." Inside the arrival window they're
+     scheduled; outside it they're ordinary bag slides (see buildSlides). */
+  function nowMins(){ var d = new Date(); return d.getHours()*60 + d.getMinutes(); }
+  function arrivalWindow(){ var m = nowMins(); return m >= 14*60+55 && m < 16*60; }
+  function welcomeEvery(){ return !arrivalWindow() ? 0 : nowMins() < 15*60+30 ? 4 : 7; }
+  function tasksEvery(){   return !arrivalWindow() ? 0 : nowMins() < 15*60+30 ? 6 : 9; }
   function familyOf(id){
     return id.replace(/-w\d+$/, '').replace(/^(who|spotlight|lives|first|ex|mostphoto|month)-.*$/, '$1');
   }
@@ -1460,10 +1453,13 @@
        3:00-4:00... then reduce it later." */
     /* the task sheet is scheduled by pick() too — see tasksEvery() */
     var tasksSlide = TASKS = slideTasks(tasksData, mine);
-    /* the opener is scheduled by pick(), not shuffled — see welcomeEvery();
-       in ?only= proofing it goes in the bag like anything else */
+    /* the opener and task sheet: scheduled by pick() during the arrival
+       window, ordinary bag slides otherwise (opener sits out the evening
+       after 4:00 — "disappears by 4:30"); ?only= proofing puts them in the bag */
     WELCOME = slideWelcome(mine);
-    var welcomeN = ONLY ? 1 : 0;
+    var evening = nowMins() >= 16*60 && nowMins() < 18*60+30;
+    var welcomeN = ONLY ? 1 : (arrivalWindow() || evening) ? 0 : 1;
+    var tasksN = ONLY ? 1 : arrivalWindow() ? 0 : 2;
 
     /* Reviewer: "four photography-instruction slides is a lot. I'd
        rotate only one or two of those in any given session." Two of the
@@ -1487,7 +1483,7 @@
       .concat(weighted(slideSigns(mine, tasksData), 2))
       .concat(weighted(slideWebsite(mine), 2))
       .concat(weighted(slideChallenge(mine), 2))
-      .concat(weighted(tasksSlide, ONLY ? 1 : 0))
+      .concat(weighted(tasksSlide, tasksN))
       .concat(spotlights)
       .concat(whos)
       .concat([slideLivesHere(mine), slideFirstFind(names)])
