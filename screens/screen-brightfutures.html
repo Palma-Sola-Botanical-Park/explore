@@ -555,7 +555,7 @@
     if(!tasksData) return null;
     var copy = '<div class="copy"><div class="label">The weekly tasks</div>'
       + '<h2>Go own something.</h2>'
-      + '<div class="body">Find a job on the sheet nobody’s started. Tell staff you’ve got it.</div>'
+      + '<div class="body">It’s on the clipboard in the office. Circle a task to own it. X it when it’s done. Tell staff you’ve got it.</div>'
       + (tasksData.note ? '<div class="body"><b>'+esc(tasksData.note)+'</b></div>' : '')
       + '</div>';
     if(tasksData.sheetOk){
@@ -1293,6 +1293,21 @@
     /* the two clock slides aren't in the bag, so ?only= reaches them by name */
     if(ONLY === 'summary') return slideSummary();
     if(ONLY === 'cleanup') return slideCleanup();
+    /* THE OPENER is scheduled, not shuffled — Randy, 2026-09-25: "first
+       slide should always be about welcoming them in... If any were to
+       repeat at the first hour most often, that would be it. Then it
+       fades in prominence as the hours go by... From 2:30–3:30, it is
+       every 4th slide or so. Then disappears by 4:30." */
+    /* …and the task sheet runs the same way, staggered off the opener —
+       "every 6th? and staggered from each other? then lower how often
+       because they are all settled and doing stuff after that." */
+    if(!ONLY){
+      var due = null, wE = welcomeEvery(), tE = tasksEvery();
+      if(WELCOME && (picks === 0 || (wE && sinceWelcome >= wE))){ due = WELCOME; sinceWelcome = -1; }
+      else if(TASKS && tE && sinceTasks >= tE){ due = TASKS; sinceTasks = -1; }
+      picks++; sinceWelcome++; sinceTasks++;
+      if(due){ lastId = due.id; return due; }
+    }
     var all = ONLY ? slides.filter(function(s){ return s.id.indexOf(ONLY) === 0; }) : slides;
     /* ?only= for a live-data slide (month, mostphoto…) matches nothing
        until the iNat pulse lands — hold on "Loading…" for a couple of
@@ -1323,6 +1338,23 @@
     return s;
   }
   var MIN_GAP = 5, recent = [];
+  var WELCOME = null, TASKS = null, picks = 0, sinceWelcome = 0, sinceTasks = 3;   /* tasks starts half a beat along, so the two never land together */
+  function welcomeEvery(){
+    var m = new Date().getHours()*60 + new Date().getMinutes();
+    if(m < 14*60+30) return 6;     /* setting up — still say hi */
+    if(m < 15*60+30) return 4;     /* they're walking in */
+    if(m < 16*60)    return 7;
+    if(m < 16*60+30) return 12;
+    return 0;                      /* gone by 4:30 */
+  }
+  function tasksEvery(){
+    var m = new Date().getHours()*60 + new Date().getMinutes();
+    if(m < 14*60+30) return 8;
+    if(m < 15*60+30) return 6;     /* pick a job */
+    if(m < 16*60)    return 9;
+    if(m < 17*60+30) return 14;    /* settled and doing stuff; still there for whoever finishes one */
+    return 0;                      /* cleanup time */
+  }
   function familyOf(id){
     return id.replace(/-w\d+$/, '').replace(/^(who|spotlight|lives|first|ex|mostphoto)-.*$/, '$1');
   }
@@ -1390,11 +1422,12 @@
 
     /* Reviewer: "Today at the park should probably be very prominent from
        3:00-4:00... then reduce it later." */
-    var mins = new Date().getHours()*60 + new Date().getMinutes();
-    var duringTaskWindow = mins >= 15*60 && mins < 16*60;
-    var tasksSlide = slideTasks(tasksData, mine);
-    /* the opener: four slots while they're arriving, two before that, none after 3:45 */
-    var welcomeN = ONLY ? 1 : (mins < 15*60 ? 2 : mins < 15*60+45 ? 4 : 0);
+    /* the task sheet is scheduled by pick() too — see tasksEvery() */
+    var tasksSlide = TASKS = slideTasks(tasksData, mine);
+    /* the opener is scheduled by pick(), not shuffled — see welcomeEvery();
+       in ?only= proofing it goes in the bag like anything else */
+    WELCOME = slideWelcome(mine);
+    var welcomeN = ONLY ? 1 : 0;
 
     /* Reviewer: "four photography-instruction slides is a lot. I'd
        rotate only one or two of those in any given session." Two of the
@@ -1418,7 +1451,7 @@
       .concat(weighted(slideSigns(mine, tasksData), 2))
       .concat(weighted(slideWebsite(mine), 2))
       .concat(weighted(slideChallenge(mine), 2))
-      .concat(weighted(tasksSlide, duringTaskWindow ? 4 : 2))
+      .concat(weighted(tasksSlide, ONLY ? 1 : 0))
       .concat(spotlights)
       .concat(whos)
       .concat([slideLivesHere(mine), slideFirstFind(names)])
