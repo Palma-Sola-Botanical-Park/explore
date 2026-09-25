@@ -242,9 +242,10 @@
            + '<span class="job">'+esc(e.title||'')+'</span></div>';
     }).join('');
     var p = randomPhoto(mine);
-    return { id:'events', seconds: SECONDS*1.2, bg: p && p.photo_url, credit: p && creditText(p), html:
+    return { id:'events', seconds: SECONDS*1.4, bg: p && p.photo_url, credit: p && creditText(p), html:
         '<div class="copy"><div class="label">Coming up</div>'
-      + '<div class="task-list">'+rows+'</div></div>' };
+      + '<div class="task-list">'+rows+'</div>'
+      + '<div class="body">Behind on hours? Events are the fastest way to bank a bunch at once — ask Randy about signing up.</div></div>' };
   }
 
   function slideCrew(mine){
