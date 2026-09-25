@@ -675,6 +675,55 @@ body{
   .clock{font-size:1.6vmax}
 }
 
+/* ── VOLUNTEER MODE (?mode=volunteer) ────────────────────────────────────
+   Everything above is the public deck. These rules only ever apply to slide
+   types that buildDeck() adds when MODE==='volunteer' (screen-volunteer.html),
+   so the office and galleria screens are untouched. 2026-09-24. */
+
+/* Randy, 2026-09-24: "kinda liking a blue-ish gray motif, nothing like
+   standard Palma Sola green" — this is the one screen that isn't trying to
+   look like the park's own botanical signage, it's a classroom/workshop
+   wall, so it gets its own identity. Same variable names as :root, so every
+   existing rule (.eyebrow, .count, .headline, the frame, the credit line)
+   repaints for free — nothing below this needed a second copy. */
+body.mode-volunteer{
+  --ground:#1c232b; --ground-2:#141920; --veil:rgba(10,13,17,.6);
+  --gold:#a9c2d6; --gold-deep:#7f9db4;
+  --rule:rgba(169,194,214,.3);
+}
+.stat-row{display:flex;gap:5vmin;margin-top:1.6vmin;flex-wrap:wrap}
+.stat-row .count{margin-bottom:0}
+.task-list{display:flex;flex-direction:column;gap:1.7vmin;margin-top:2vmin}
+.task{display:grid;grid-template-columns:15vmin 1fr;gap:2.2vmin;align-items:baseline}
+.task .team{
+  font-size:1.55vmin;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);opacity:.95;
+}
+.task .job{font-size:clamp(1.1rem,2.4vmin,1.9rem);color:var(--paper);font-weight:400;line-height:1.35}
+.two-up{display:flex;gap:3vmin;margin-top:2.2vmin;flex-wrap:wrap}
+.two-up figure{margin:0;max-width:34vmin}
+.two-up img{display:block;width:100%;height:24vmin;object-fit:cover;border-radius:.6vmin;
+  box-shadow:0 .5vmin 2.4vmin rgba(0,0,0,.4)}
+.two-up figcaption{
+  margin-top:.9vmin;font-size:1.35vmin;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--gold);opacity:.9;
+}
+
+/* The 5:30/5:45 forced slides — the one place this deck is meant to be loud
+   rather than pretty. Randy, 2026-09-24: "blinking RED. WARNING time to stop
+   what you're doing." Blink is a slow pulse, not a strobe, and turns off
+   under reduced motion (still red, just steady). */
+.slide.warn .bg{background:linear-gradient(160deg,#3d0c0c 0%,#1c0505 78%)}
+.slide.warn .scrim{background:rgba(20,4,4,.35)}
+.slide.warn .eyebrow{color:#ff6b6b}
+.slide.warn .eyebrow::before{content:'⚠ ';}
+.slide.warn .headline{
+  color:#ff5a5a;animation:warnPulse 1.6s ease-in-out infinite;
+  text-shadow:0 0 4vmin rgba(255,70,70,.55);
+}
+@keyframes warnPulse{0%,100%{opacity:1}50%{opacity:.55}}
+.slide.warn .body b{color:#ffb3b3}
+
 @media (prefers-reduced-motion:reduce){
   .slide{transition:opacity .25s}
   .bg img,.slide.on .bg img{transform:none;transition:none;animation:none}
@@ -684,6 +733,7 @@ body{
   .beat.spent{display:none}
   .beats{min-height:0 !important}
   #bar{transition:none}
+  .slide.warn .headline{animation:none;opacity:1}
 }
 </style>
 </head>
@@ -804,7 +854,7 @@ function famOf(item){ return FAMILY[item.type] || item.type; }
    ═══════════════════════════════════════════════════════════════════════════ */
 var D = { right_now:[], events:[], classes:[], news:[], announcements:[],
           volunteer:[], series:[], newsletters:[], plants:[], wildlife:[],
-          photographers:[] };
+          photographers:[], volunteerToday:null };
 
 /* `display` decides web vs screen. An optional `screen_where` decides WHICH
    screen — office, galleria, or blank for both.
@@ -848,7 +898,8 @@ function loadAll(){
     grab(BASE+'data/sources/plant_signage.json'),
     grab(BASE+'data/sources/wildlife_signage.json'),
     grab(BASE+'data/sources/photographer_names.json'),
-    grab(FEEDS+'photographers.json')
+    grab(FEEDS+'photographers.json'),
+    grab(FEEDS+'volunteer_today.json')
   ]).then(function(r){
     D.right_now=onScreen(r[0]); D.events=onScreen(r[1]);
     D.classes=onScreen(r[2]);   D.news=onScreen(r[3]);
@@ -859,8 +910,71 @@ function loadAll(){
     indexHits(r[11]); indexHits(r[12]);
     NAMES = r[13] || {};
     D.photographers=onScreen(r[14]);
+    D.volunteerToday=r[15]||null;
     if(!D.right_now.length && !D.plants.length) fallback();
   });
+}
+
+/* ── LIVE iNAT PULSE (volunteer mode only) ───────────────────────────────
+   Randy, 2026-09-24: "if a new observation goes up in iNat, occasionally
+   pop that up there. Or every 15 minutes, summarize how many have been
+   taken." One request, not a sweep — this only ever runs on the volunteer
+   screen, never office/galleria, and only ever needs THIS WEEK, so a single
+   v1 page (order_by observed_on, per_page 200) is enough; a Wednesday
+   afternoon at the park has never logged 200 observations. Polygon test
+   copied verbatim from walkabout.html's inPark() — same park, same rule
+   (a record whose accuracy circle crosses the boundary still counts here
+   because the PIN is what's inside, exactly the fix walkabout.html made
+   for the iNat project view). Refreshed on the same 10-minute cycle as
+   everything else in start(). */
+var INAT_PULSE = null;   // {weekRows, todayRows, obsSinceLastLoad}
+var PULSE_POLYGON=[
+  [-82.661275,27.512191],[-82.658079,27.512198],[-82.658107,27.514825],
+  [-82.660644,27.514828],[-82.661133,27.514130],[-82.661132,27.513123]];
+function pulseInPark(o){
+  var g=(o.geojson&&o.geojson.coordinates)||(o.location&&o.location.split(',').map(Number).reverse());
+  if(!g||g.length<2||!isFinite(g[0])) return false;
+  var x=g[0], y=g[1], inside=false;
+  for(var i=0,j=PULSE_POLYGON.length-1;i<PULSE_POLYGON.length;j=i++){
+    var xi=PULSE_POLYGON[i][0], yi=PULSE_POLYGON[i][1];
+    var xj=PULSE_POLYGON[j][0], yj=PULSE_POLYGON[j][1];
+    if((yi>y)!==(yj>y) && x<(xj-xi)*(y-yi)/(yj-yi)+xi) inside=!inside;
+  }
+  return inside;
+}
+function loadINatPulse(){
+  if(MODE!=='volunteer') return Promise.resolve();
+  var d1 = new Date(Date.now() - 7*864e5).toISOString().slice(0,10);
+  var nelat=Math.max.apply(null,PULSE_POLYGON.map(function(p){return p[1];}));
+  var nelng=Math.max.apply(null,PULSE_POLYGON.map(function(p){return p[0];}));
+  var swlat=Math.min.apply(null,PULSE_POLYGON.map(function(p){return p[1];}));
+  var swlng=Math.min.apply(null,PULSE_POLYGON.map(function(p){return p[0];}));
+  var url = 'https://api.inaturalist.org/v1/observations?nelat='+nelat+'&nelng='+nelng
+    + '&swlat='+swlat+'&swlng='+swlng+'&verifiable=any&d1='+d1
+    + '&order_by=observed_on&order=desc&per_page=200';
+  return fetch(url, { cache:'no-store' })
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      var rows = ((data && data.results) || []).filter(pulseInPark);
+      var today = new Date().toISOString().slice(0,10);
+      var last = null;
+      try{ last = parseInt(localStorage.getItem('psbp-pulse-seen') || '0', 10) || 0; }catch(e){}
+      var maxId = rows.reduce(function(m,o){ return Math.max(m, o.id||0); }, last);
+      var since = last ? rows.filter(function(o){ return o.id > last; }).length : 0;
+      try{ localStorage.setItem('psbp-pulse-seen', String(maxId)); }catch(e){}
+      INAT_PULSE = {
+        weekObs: rows.length,
+        weekSpecies: Object.keys(rows.reduce(function(a,o){ if(o.taxon&&o.taxon.id) a[o.taxon.id]=1; return a; },{})).length,
+        weekObservers: Object.keys(rows.reduce(function(a,o){ if(o.user&&o.user.login) a[o.user.login]=1; return a; },{})).length,
+        todayObs: rows.filter(function(o){ return o.observed_on===today; }).length,
+        todaySpecies: Object.keys(rows.filter(function(o){ return o.observed_on===today; })
+          .reduce(function(a,o){ if(o.taxon&&o.taxon.id) a[o.taxon.id]=1; return a; },{})).length,
+        todayObservers: Object.keys(rows.filter(function(o){ return o.observed_on===today; })
+          .reduce(function(a,o){ if(o.user&&o.user.login) a[o.user.login]=1; return a; },{})).length,
+        sinceLastLoad: since
+      };
+    })
+    .catch(function(){ /* stays null; slideINatPulse() just skips */ });
 }
 
 /* QUICK HITS COME FROM THE SIGNAGE MASTERS, NOT THE SEARCH INDEX.
@@ -2132,6 +2246,166 @@ function interleave(items){
 }
 
 var cycle = 0;
+/* ── VOLUNTEER MODE SLIDE TYPES ──────────────────────────────────────────
+   Built 2026-09-24 for the Wednesday Bright Futures sessions (screen-
+   volunteer.html). Every function below is only ever added to the pool in
+   buildDeck() when MODE==='volunteer' — none of this reaches the office or
+   galleria screens. Reuses cohort()/BY_SHOOTER/NAMES/beatsMarkup/esc, same
+   as the rest of the deck, rather than standing up a second data path. */
+
+function slideINatPulse(){
+  if(!INAT_PULSE || INAT_PULSE.weekObs < 1) return null;
+  var p = INAT_PULSE;
+  var freshLine = p.sinceLastLoad > 0
+    ? '<div class="body">'+p.sinceLastLoad+' of those went up since this screen last checked.</div>'
+    : '';
+  return {
+    seconds: Math.round(SECONDS * 1.3),
+    html:
+        '<div class="eyebrow">Palma Sola this week</div>'
+      + '<div class="stat-row">'
+      +   '<div class="count">'+p.weekObs+'<small>observations</small></div>'
+      +   '<div class="count">'+p.weekSpecies+'<small>species</small></div>'
+      +   '<div class="count">'+p.weekObservers+'<small>observers</small></div>'
+      + '</div>'
+      + freshLine
+      + '<div class="body">Every one of those came from somebody\'s phone, right here in the park.</div>'
+  };
+}
+
+function slideTasksToday(){
+  var v = D.volunteerToday;
+  if(!v || !v.tasks || !v.tasks.length) return null;
+  var rows = v.tasks.map(function(t){
+    return '<div class="task"><span class="team">'+esc(t.team||'')+'</span>'
+         + '<span class="job">'+esc(t.job||'')+'</span></div>';
+  }).join('');
+  return {
+    seconds: Math.round(SECONDS * 1.4),
+    html:
+        '<div class="eyebrow">Today at the park</div>'
+      + '<div class="headline">'+esc(v.note || 'Wednesday jobs')+'</div>'
+      + '<div class="task-list">'+rows+'</div>'
+  };
+}
+
+/* Two real Bright Futures hero photographs, picked and reviewed 2026-09-24
+   (Pink Trumpet Tree by Ruby Meador, Bottle Palm by Kevin Wang — both from
+   photo_credits.json, hero:true, publish_ok:true). The point isn't "these
+   two are the best ever taken" — it's naming, out loud, the two things that
+   actually make a hero photograph work: one clean subject with nothing
+   competing, and a shot that shows the whole plant's shape. */
+function slideHeroLesson(){
+  var beats = beatsMarkup([
+    'A hero photo has ONE subject and nothing else fighting for the eye — no thumb, no hose, no half a sign in the corner.',
+    'Ruby’s Pink Trumpet Tree flower fills the frame. Soft natural light, sharp on the bloom, everything else falls away behind it.',
+    'Kevin’s Bottle Palm steps back instead — you can see the whole plant’s shape, not just a piece of it. Both are "right." They’re answering different questions.'
+  ]);
+  return {
+    seconds: Math.round(SECONDS * 2.2),
+    html:
+        '<div class="eyebrow">What makes a hero photo</div>'
+      + '<div class="two-up">'
+      +   '<figure><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/698457680/medium.jpg" alt=""><figcaption>Pink Trumpet Tree · Ruby M.</figcaption></figure>'
+      +   '<figure><img src="https://inaturalist-open-data.s3.amazonaws.com/photos/731644653/medium.jpg" alt=""><figcaption>Bottle Palm · Kevin W.</figcaption></figure>'
+      + '</div>'
+      + beats
+  };
+}
+
+function slideOtherKinds(){
+  return {
+    seconds: Math.round(SECONDS * 1.6),
+    html:
+        '<div class="eyebrow">Beyond the hero shot</div>'
+      + '<div class="headline">One photo rarely tells the whole story.</div>'
+      + beatsMarkup([
+          'The close-up detail — a flower, a leaf edge, a thorn — that settles an ID.',
+          'The whole-plant habit shot — how it actually grows here, not just what one part looks like.',
+          'Bark, fruit, seed pods, the ID sign itself — the boring ones are often the ones we need most.'
+        ])
+  };
+}
+
+function slideWhyMultiple(){
+  return {
+    seconds: Math.round(SECONDS * 1.3),
+    html:
+        '<div class="eyebrow">Take more than one</div>'
+      + '<div class="headline">If it’s worth stopping for, it’s worth three photos.</div>'
+      + '<div class="body">Wide, then closer, then closer still. You can always throw two away later — you can’t go back and take the one you skipped.</div>'
+  };
+}
+
+function slideWhyAllYear(){
+  return {
+    seconds: Math.round(SECONDS * 1.4),
+    html:
+        '<div class="eyebrow">Why we never stop</div>'
+      + '<div class="headline">One photo is one moment. The park isn’t.</div>'
+      + '<div class="body">Bare in winter, blooming in spring, fruiting in fall — the same plant looks like three different plants across a year. That’s why "we already have a photo of that one" is never really true.</div>'
+  };
+}
+
+function slideThankYouVolunteer(){
+  return {
+    seconds: Math.round(SECONDS * 1.5),
+    html:
+        '<div class="eyebrow">Why this matters</div>'
+      + '<div class="headline">Your phone → an observation → an ID → the catalog → a sign → a visitor reads it.</div>'
+      + '<div class="body">That whole chain starts with somebody deciding a plant was worth stopping for. Thank you for being that somebody, week after week.</div>'
+      + '<div class="logo"><span class="logo-plate"><img alt="" src="'+BASE+'images/logos/bright-futures.png"></span></div>'
+  };
+}
+
+/* ── forced, time-of-day slides ───────────────────────────────────────────
+   Randy, 2026-09-24: "at 5:30 start to clean up... at 5:45 we summarize the
+   day's observations... can we put that slide on a schedule." These bypass
+   buildDeck() entirely — checked once per turn in next(), see
+   forcedVolunteerSlide() below — so they show up on the wall clock, not on
+   a random draw. */
+function slideCleanupCall(){
+  return {
+    seconds: Math.round(SECONDS * 1.1),
+    warn: true,
+    html:
+        '<div class="eyebrow">5:30</div>'
+      + '<div class="headline">WARNING — time to stop what you’re doing.</div>'
+      + '<div class="body"><b>Carts</b> put away and washed down. <b>Tools</b> put away. Wrap up what you’re holding.</div>'
+  };
+}
+
+function slideDaySummary(){
+  var p = INAT_PULSE;
+  var stats = (p && p.todayObs)
+    ? '<div class="stat-row">'
+      + '<div class="count">'+p.todayObs+'<small>observations</small></div>'
+      + '<div class="count">'+p.todaySpecies+'<small>species</small></div>'
+      + '<div class="count">'+p.todayObservers+'<small>observers</small></div>'
+      + '</div>'
+    : '<div class="body">Today’s iNat numbers are still coming in — check the app.</div>';
+  return {
+    seconds: Math.round(SECONDS * 1.6),
+    html:
+        '<div class="eyebrow">5:45 · Look what happened today</div>'
+      + stats
+      + '<div class="body">Nice work. See you next Wednesday.</div>'
+  };
+}
+
+var _lastForced = { cleanup:0, summary:0 };
+function forcedVolunteerSlide(){
+  if(MODE !== 'volunteer') return null;
+  var d = new Date(), mins = d.getHours()*60 + d.getMinutes();
+  var now = Date.now();
+  if(mins >= 17*60+30 && mins < 17*60+45){
+    if(now - _lastForced.cleanup > 90000){ _lastForced.cleanup = now; return slideCleanupCall(); }
+  } else if(mins >= 17*60+45 && mins < 18*60+15){
+    if(now - _lastForced.summary > 150000){ _lastForced.summary = now; return slideDaySummary(); }
+  }
+  return null;
+}
+
 function buildDeck(){
   cycle++;
   var pool=[], i;
@@ -2170,6 +2444,19 @@ function buildDeck(){
   if(cycle % 3 === 2 && D.photographers.length){
     var who = takeFrom('photographer', D.photographers, PHOTOGS)[0];
     if(who) pool.push({type:'photographer', make:slidePhotographer.bind(null, who)});
+  }
+
+  /* Volunteer mode adds its own slide types on top of everything above —
+     cohort (the Bright Futures photo pile) and week (upcoming events) are
+     already in the pool for free. These are the ones unique to Wednesday. */
+  if(MODE === 'volunteer'){
+    pool.push({type:'vtasks',  make:slideTasksToday});
+    pool.push({type:'vpulse',  make:slideINatPulse});
+    if(cycle % 2 === 0) pool.push({type:'vhero',     make:slideHeroLesson});
+    if(cycle % 2 === 1) pool.push({type:'vkinds',    make:slideOtherKinds});
+    if(cycle % 3 === 0) pool.push({type:'vmultiple', make:slideWhyMultiple});
+    if(cycle % 3 === 1) pool.push({type:'vallyear',  make:slideWhyAllYear});
+    if(cycle % 4 === 2) pool.push({type:'vthanks',   make:slideThankYouVolunteer});
   }
 
   pool = interleave(pool);
@@ -2248,7 +2535,7 @@ function render(s){
   var el=document.createElement('div');
   el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'')
              +(s.ambient?' ambient':'')+(s.set?' set':'')+(s.week?' week-slide':'')+(s.pile?' pile-slide':'')
-             +(s.photog?' photog':'');
+             +(s.photog?' photog':'')+(s.warn?' warn':'');
 
   /* pick a motion, never the same one twice running */
   var moves = KB.filter(function(k){ return k!==lastKB; });
@@ -2394,7 +2681,7 @@ function render(s){
    every ten minutes, so a transient outage recovers by itself and the worst
    case is a stale slide rather than a dead one. */
 function next(){
-  var s = null, item = null, rebuilds = 0;
+  var s = forcedVolunteerSlide(), item = null, rebuilds = 0;
   while(s === null){
     if(at >= deck.length){
       if(++rebuilds > 1){
@@ -2434,6 +2721,7 @@ function tickClock(){
    anyone touching the TV, and do a hard reload in the small hours to clear
    any long-running drift. */
 function start(){
+  if(MODE === 'volunteer') document.body.classList.add('mode-volunteer');
   var root = document.documentElement.style;
   root.setProperty('--sp', SPEED);
   root.setProperty('--fade', (1.1 / SPEED).toFixed(3) + 's');
@@ -2470,7 +2758,9 @@ function start(){
       GROUPS = null;
       queues = {};
     }).catch(function(){});
+    loadINatPulse();
   }, (10*60*1000) / SPEED);
+  loadINatPulse();
 
   /* THE NIGHTLY RELOAD — two guards, both learned the hard way rather than seen.
 
