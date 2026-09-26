@@ -12,6 +12,56 @@ private `park-library` repo (`../park-library/system docs/`) or nowhere. Never h
 
 ---
 
+## 0. Session routine — manage continuity for Randy
+
+Randy should not have to remember a context-management checklist. Run this routine yourself.
+This file is the starting map and standing rules; the private docs are references, not required
+cover-to-cover reading. Explicit task instructions (including read-only) still govern all edits.
+
+**At the start**
+- Read this file and the current `HANDOFF.md` in the private docs location in §9. If the handoff
+  is long, read its current summary and the section for today's task; search other threads only
+  as needed. If unavailable, say so briefly and proceed with accessible sources where possible.
+- Use Randy's request to identify the task. Read only relevant code and reference sections.
+  Search headings and keywords before loading a large document. Do not preload all onboarding,
+  architecture, or action history. Read more when a dependency or uncertainty requires it.
+- For a substantive task, briefly state the goal, current behavior, and next inspection or
+  change. Ask only when missing context materially affects the work; do not make him repeat
+  information already available.
+- Verify specific behavior against current code/data. Distinguish current decisions, proposals,
+  and completed history; a historical action item is not authorization to implement it.
+
+**While working**
+- Keep track of decisions and their reasons, rejected approaches, changed files, verification,
+  and remaining uncertainties. Reuse what you have read; reread when freshness matters.
+- Keep durable context in its existing home: current status in HANDOFF, priorities in the
+  ACTIONS index, stable design in the relevant reference. Do not duplicate the whole story
+  across documents or create a new tracking system.
+- Suggest a checkpoint at a substantial task boundary, a major topic change, or when repeated
+  corrections, conflicting approaches, or lost details make continuity unreliable. Do not
+  interrupt every small task. Do not claim an exact context percentage unless a tool exposes it.
+- Recommend a new chat when a focused restart would help, explain why in one sentence, and
+  prepare the transition before asking Randy to move. A long document alone is not a reason
+  to restart. Never promise perfect recall or automatic detection of context loss.
+
+**When Randy says "wrap up" or "handoff"**
+- Treat this as a request to update the private HANDOFF, subject to any explicit read-only
+  restriction. Reread it before editing. Replace stale status for this task; preserve unrelated
+  open threads and constraints. Do not append a transcript.
+- Keep the opening summary about one page: current goal; completed work and verification;
+  decisions and reasons; unresolved questions; next concrete step; relevant paths. Link to
+  existing detail rather than copying it. Clearly separate verified facts from assumptions.
+- Record whether work is local/uncommitted or committed on GitHub, including branch/commit
+  when available. Never describe an unverified change as shipped.
+- Provide a short ready-to-paste next-chat prompt naming the repo, task, handoff location,
+  next step, and applicable restrictions. Include the essential handoff in chat if private
+  docs cannot be updated; do not put private context in this public repo.
+- Leave local changes uncommitted for Randy unless he explicitly asks otherwise. If this
+  environment can only save via a GitHub commit, explain that before writing; do not silently
+  substitute a remote commit for a local edit.
+
+---
+
 ## 1. Working with Randy
 
 **How he works**
@@ -302,12 +352,13 @@ Pace is about two per day; old pages are fine as they are.
 
 ## 9. Where the deeper docs are (private repo, `../park-library/system docs/`)
 
-- `HANDOFF.md` — **read first.** Where every open thread stands, rewritten at the end of each
-  session. When he says "wrap up" or "handoff", rewrite it: done, next, decisions with reasons,
-  dead ends.
-- `CLAUDE_ONBOARDING.md` — the people, the history, the working relationship in full
+- `HANDOFF.md` — current summary first, then the relevant task. Keep it current using §0;
+  preserve other open threads when updating one task.
+- `CLAUDE_ONBOARDING.md` — the people, history, and working relationship; consult relevant
+  sections when this file and the handoff do not provide enough context.
 - `PSBP_ARCHITECTURE.md` + `_APPENDIX.md` — deep technical reference
-- `PSBP_ACTIONS.md` — the live priority list; **Randy reads only the index rows**, ~80 chars each
+- `PSBP_ACTIONS.md` — start with the active index; search details/history only when needed.
+  **Randy reads only the index rows**, ~80 chars each. Completed entries are history, not tasks.
 - `BOTANICAL_QUESTIONS.md` — open ID questions, for the horticulture crew
 - `PAGE_BLOCK_CONTRACT.md`, `PAGE_COPY_FLAGS.md`, `SPECIES_PAGE_RECIPE.md`, `WRITING_UNITS.md`
 - `PARK_TOUR_BEARINGS.md` — where things are, in words, by placement area
@@ -330,4 +381,5 @@ When he says where something is in the park, it goes in `PARK_TOUR_BEARINGS.md` 
 - Syntax-check anything you wrote (`python3 -m py_compile`, `node --check`, `json.tool`).
 - Verify in the browser on `localhost`, by reading the DOM, not by trusting a screenshot's timing.
 - `git status`. Tell him what is modified and what to commit. Do not commit for him.
+- Follow §0 for continuity and checkpoints; do not require Randy to remember the routine.
 - If a claim in this file turned out wrong, fix this file in the same change.
