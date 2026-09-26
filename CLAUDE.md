@@ -183,7 +183,7 @@ is editing the live screens.
 | `plant_publisher.py` | 8701 | `--generate PSBP-xxxxx`, `--generate-all`, `--demote`; writes `plants/` and `plants.json` |
 | `wildlife_publisher.py` | 8702 | same for wildlife |
 | `psbp_placements.py` | 8701 | placement pinning UI (collides with the plant publisher's port; run one at a time) |
-| `audit_psbp.py` | | read-only; sections CREDITS CONTENT LINK PUBLISH FK TAXA META PAGE, `--only X`, `--json` |
+| `audit_psbp.py` | | read-only; sections PHOTOS CREDITS CONTENT PAGE LINK DISK INDEX FK TAXA, `--only X`, `--json` |
 | `psbp_page_drift.py` | | read-only; the TRUE staleness check (renders and compares) |
 | `fetch_sheets.py` → `validate_promote.py` | | the sync, run by the Action |
 | `shrink.sh` | | JPEG size budget via sips; `DRY_RUN=1` prints a banner but still writes, verify before trusting |
@@ -191,8 +191,9 @@ is editing the live screens.
 - Species Manager's Health tab shells out to `audit_psbp.py --json`. One implementation of every
   rule. A useful new check becomes a tab or button there, never a loose script or `.app`.
 - `--generate-all` is always safe: unchanged pages come out byte-identical.
-- The `PUBLISH` audit compares a template fingerprint and flags hundreds of pages after any edit
-  to a publisher. That is a false alarm. `psbp_page_drift.py` is the answer.
+- Staleness is answered by `psbp_page_drift.py` (renders and compares), never by a fingerprint.
+  `publish_state.json` holds template fingerprints that flag hundreds of pages after any edit to a
+  publisher. That is a false alarm.
 - Audits detect disagreement between two sources, never wrongness. A clean audit is necessary,
   not sufficient.
 - Python: standard library only for the pipeline and servers. GitHub Desktop runs hooks with

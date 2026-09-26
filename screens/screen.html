@@ -965,12 +965,16 @@ function withGallery(rows){
 
 /* Everyone whose registry note marks them as part of a named program.
    `photographer_names.json` already records this — the note field is doing
-   real work, not just sitting there as a comment. */
-function cohort(match){
+   real work, not just sitting there as a comment. `exclude` drops a note that
+   names the program only to deny it ("NOT a Bright Futures student") — a
+   plain substring match let park staff and an alumnus onto the crew slide. */
+function cohort(match, exclude){
   var logins = [];
   for(var login in NAMES){
-    var n = (NAMES[login] && NAMES[login].note) || '';
-    if(n.toLowerCase().indexOf(match.toLowerCase()) > -1) logins.push(login);
+    var n = ((NAMES[login] && NAMES[login].note) || '').toLowerCase();
+    if(n.indexOf(match.toLowerCase()) < 0) continue;
+    if(exclude && n.indexOf(exclude.toLowerCase()) > -1) continue;
+    logins.push(login);
   }
   return logins;
 }
@@ -1654,7 +1658,9 @@ function qrBlock(row, caption, fallback){
    the park, transient and local — not a permanent indexed page per child.
    Their names already appear as photo credits, so nothing new is exposed. */
 function slideCohort(){
-  var logins = cohort('Bright Futures');
+  /* same rule as the Wednesday deck's bfLogins(): the note must say
+     "Bright Futures student" and must not say "NOT a Bright Futures" */
+  var logins = cohort('Bright Futures student', 'NOT a Bright Futures');
   if(!logins.length) return null;
 
   var photos = [], species = {}, people = [];
