@@ -301,6 +301,9 @@ Pace is about two per day; old pages are fine as they are.
 
 ## 9. Where the deeper docs are (private repo, `../park-library/system docs/`)
 
+- `HANDOFF.md` — **read first.** Where every open thread stands, rewritten at the end of each
+  session. When he says "wrap up" or "handoff", rewrite it: done, next, decisions with reasons,
+  dead ends.
 - `CLAUDE_ONBOARDING.md` — the people, the history, the working relationship in full
 - `PSBP_ARCHITECTURE.md` + `_APPENDIX.md` — deep technical reference
 - `PSBP_ACTIONS.md` — the live priority list; **Randy reads only the index rows**, ~80 chars each
@@ -309,6 +312,8 @@ Pace is about two per day; old pages are fine as they are.
 - `PARK_TOUR_BEARINGS.md` — where things are, in words, by placement area
 - `WEB_HOW_IT_WORKS.md`, `WEB_CUTOVER_PREP.md`, `WEB_MIGRATION_MASTER.md` — the domain move
 - `PSBP_Mini_PC_Display_System_Deployment_Plan_UPDATED.md` — the TV computers
+- `BRIGHT_FUTURES_DECK.md` — every slide of the Wednesday deck, its words, timing and weight
+- `../prototypes/` — demo pages and print drafts kept out of the public site, each folder has a README
 
 Any specific claim in those docs is a lead, not a fact. Verify against the code or the JSON
 before acting on it or repeating it, and cite the file and line when you do.
