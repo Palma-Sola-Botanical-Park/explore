@@ -362,7 +362,7 @@ Pace is about two per day; old pages are fine as they are.
 - `BOTANICAL_QUESTIONS.md` — open ID questions, for the horticulture crew
 - `PAGE_BLOCK_CONTRACT.md`, `PAGE_COPY_FLAGS.md`, `SPECIES_PAGE_RECIPE.md`, `WRITING_UNITS.md`
 - `PARK_TOUR_BEARINGS.md` — where things are, in words, by placement area
-- `WEB_HOW_IT_WORKS.md`, `WEB_CUTOVER_PREP.md`, `WEB_MIGRATION_MASTER.md` — the domain move
+- `WEB_MIGRATION_MASTER.md` — the current one-stop domain cutover roadmap; older web-migration docs are archived in `park-library/stuff we may need/`
 - `PSBP_Mini_PC_Display_System_Deployment_Plan_UPDATED.md` — the TV computers
 - `BRIGHT_FUTURES_DECK.md` — every slide of the Wednesday deck, its words, timing and weight
 - `../prototypes/` — demo pages and print drafts kept out of the public site, each folder has a README
