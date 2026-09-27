@@ -339,9 +339,11 @@ date, time, and title is a Sheet row, not a document.
 
 1. Randy clicks "Work on this page" in Species Manager, with notes.
 2. He runs the result past ChatGPT, then Work again. Two or three rounds.
-3. He adds photos to `photo_credits.json` and picks the hero. AI never places photographs.
+3. Randy curates the gallery in `photo_credits.json` and picks the hero. Do not add new
+   photographs or change the gallery choices on his behalf.
 4. Claude does finals: cut repetition, cut what another section says better, check each section
-   still does its own job, verify claims against the record, place in-flow photos.
+   still does its own job, verify claims against the record, inspect the approved gallery,
+   choose the photos that illustrate passages, place them in-flow, and write captions.
 5. He previews and publishes.
 
 ChatGPT drafts arrive as `park-library/drafts chatgpt/*_FINISHED.md`. Before reading one, check
