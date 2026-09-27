@@ -201,7 +201,7 @@ accepted name (POWO, Palmpedia) first, it has caught a superseded name every tim
 still read as a fallback, don't add to them), `watch_invasive` (one loose boolean, by decision),
 `page` (the authored layer, below).
 
-**`page.*` is the authored layer** and it is locked (`PAGE_BLOCK_CONTRACT.md`). Eight section
+**`page.*` is the authored layer** and it is locked (`SPECIES_PAGES.md` §10). Eight section
 keys for plants, six for wildlife, nothing else. A section is a list of blocks. A block is prose
 OR a photograph, never both: the renderer keeps the figure and silently drops the text. Key
 absent → old machine fields render. Key present as `[]` → section hidden. Enforced by
@@ -303,7 +303,7 @@ Don't rewrite what is already good; fix what's wrong, write what's missing, say 
 
 **Facts.** Never invent a park observation ("three or four species at once" from "multiple").
 Never infer where a plant stands from a photo. Where-to-find-it comes from Randy or
-`park-library/system docs/PARK_TOUR_BEARINGS.md`. When sources conflict, say so plainly and land
+`park-library/system docs/PARK_BACKGROUND.md`. When sources conflict, say so plainly and land
 on what is not in dispute; never silently pick a number. Describe the tagged species with
 confidence and log ID doubt in `BOTANICAL_QUESTIONS.md`, not on the page.
 
@@ -360,8 +360,11 @@ Pace is about two per day; old pages are fine as they are.
 - `PSBP_ACTIONS.md` — start with the active index; search details/history only when needed.
   **Randy reads only the index rows**, ~80 chars each. Completed entries are history, not tasks.
 - `BOTANICAL_QUESTIONS.md` — open ID questions, for the horticulture crew
-- `PAGE_BLOCK_CONTRACT.md`, `PAGE_COPY_FLAGS.md`, `SPECIES_PAGE_RECIPE.md`, `WRITING_UNITS.md`
-- `PARK_TOUR_BEARINGS.md` — where things are, in words, by placement area
+- `SPECIES_PAGES.md` — how species pages are written: sections, voice, photos, Take care,
+  units, the block rules (§10), the daily loop, the ChatGPT review brief
+- `PAGE_COPY_FLAGS.md` — per-page log of what the copy must not say
+- `PARK_BACKGROUND.md` — the park itself: where things are (by placement area), the ponds,
+  the Helene salt event, history, buildings, stories
 - `WEB_MIGRATION_MASTER.md` — the current one-stop domain cutover roadmap; older web-migration docs are archived in `park-library/stuff we may need/`
 - `PSBP_Mini_PC_Display_System_Deployment_Plan_UPDATED.md` — the TV computers
 - `BRIGHT_FUTURES_DECK.md` — every slide of the Wednesday deck, its words, timing and weight
@@ -372,7 +375,7 @@ before acting on it or repeating it, and cite the file and line when you do.
 
 **Doc discipline:** index rows are his interface and must stay one line. Detail below the tables
 is for the next Claude and can be long. Record decisions and constraints, not arguments.
-When he says where something is in the park, it goes in `PARK_TOUR_BEARINGS.md` that day.
+When he says where something is in the park, it goes in `PARK_BACKGROUND.md` that day.
 
 ---
 

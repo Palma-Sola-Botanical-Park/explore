@@ -10516,10 +10516,11 @@ _PLANT_PAGE_SECTIONS = [
      "\"12 m\" or \"40 ft\"."),
     ("take_care",
      "ONLY if there is something real: toxic if eaten, a sap that burns, spines, pods that "
-     "litter a path, a plant that spreads into natural areas (FISC Category I or II — name "
-     "the list). Lead with the one that matters most, plainly. If the plant is harmless, "
+     "litter a path. Lead with the one that matters most, plainly. Ignore the toxicity and "
+     "edibility colour levels; judge from what is actually true. If the plant is harmless, "
      "OMIT THE SECTION — a section that says nothing will happen is worse than none. Never "
-     "repeat a hazard already stated elsewhere."),
+     "repeat a hazard already stated elsewhere. Anything else (invasive status included) "
+     "goes wherever it reads best."),
 ]
 _PLANT_PAGE_KEYS = [k for k, _ in _PLANT_PAGE_SECTIONS]
 
@@ -10577,10 +10578,10 @@ _WILDLIFE_PAGE_SECTIONS = [
      "invent it."),
     ("take_care",
      "ONLY if there is something real: a sting, a bite, venom, a disease risk, a nest that "
-     "will be defended, an animal that should not be fed or handled, or a species on a "
-     "Florida invasive list (name the list). Lead with the one that matters most, plainly. "
-     "If the animal is harmless, OMIT THE SECTION — generic \"do not approach wildlife\" "
-     "boilerplate is worse than nothing."),
+     "will be defended, an animal that should not be fed or handled. Lead with the one that "
+     "matters most, plainly. If the animal is harmless, OMIT THE SECTION — generic \"do not "
+     "approach wildlife\" boilerplate is worse than nothing. Anything else (invasive status "
+     "included) goes wherever it reads best."),
 ]
 _WILDLIFE_PAGE_KEYS = [k for k, _ in _WILDLIFE_PAGE_SECTIONS]
 
