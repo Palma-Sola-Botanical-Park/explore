@@ -10,7 +10,7 @@
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
 <link rel="stylesheet" href="events/event-deck.css?v=20260925o">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260927a">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20260927c">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -1085,8 +1085,9 @@
      grid with nice borders, not boring… oddly shaped boxes that kids find
      cool", and with 81 photos in the folder, "swap out a couple times".
      The box right of the title is cut into 8–10 blocks by random
-     guillotine splits (always fills, never the same twice); each block
-     gets a frame — print, gold, arch, slant, notch, blob, circle, hex.
+     guillotine splits (always fills, never the same twice). Randy, same
+     day: "just irregular rectangles and squares that align in
+     interesting ways" — straight blocks, no tilt, a white or gold frame.
      A new layout of fresh photos every ~7 s; CREW_DECK walks the whole
      folder before any photo comes round again. */
   var CREW_DECK = [];
@@ -1105,12 +1106,12 @@
      the title: the column right of it plus the strip under it, the
      photos shared between them by area. Each region is cut in two with
      the photo count split as evenly as it goes (a 5 becomes 2 + 3 with
-     the cut at 2/5, jittered a little), always across the longer side —
+     the cut near 2/5, jittered so rows and columns don't all line up), always across the longer side —
      so the blocks come out near-equal and never slivers. */
   function crewSplit(r, c, out){
     if(c <= 1){ out.push(r); return; }
     var c1 = Math.floor(c/2); if(Math.random() < 0.5) c1 = c - c1;
-    var t = c1/c + (Math.random()*0.08 - 0.04), a = r.w/r.h;
+    var t = c1/c + (Math.random()*0.16 - 0.08), a = r.w/r.h;
     var vert = a > 1.15 ? true : a < 0.87 ? false : Math.random() < 0.5;
     if(vert){ crewSplit({x:r.x, y:r.y, w:r.w*t, h:r.h}, c1, out); crewSplit({x:r.x+r.w*t, y:r.y, w:r.w*(1-t), h:r.h}, c-c1, out); }
     else    { crewSplit({x:r.x, y:r.y, w:r.w, h:r.h*t}, c1, out); crewSplit({x:r.x, y:r.y+r.h*t, w:r.w, h:r.h*(1-t)}, c-c1, out); }
@@ -1123,16 +1124,6 @@
     if(nB) crewSplit(below, nB, out);
     return out;
   }
-  function crewKind(r, used){
-    var a = r.w/r.h, ok = ['print','gold','round','notch','blob'];
-    if(a > 0.8) ok.push('slant');
-    if(a < 1.1) ok.push('arch');
-    if(a > 0.7 && a < 1.45) ok.push('circle','hex');
-    var fresh = ok.filter(function(k){ return !used[k]; });
-    var k = (fresh.length ? fresh : ok)[Math.floor(Math.random()*(fresh.length || ok.length))];
-    used[k] = 1;
-    return k;
-  }
   function crewLayout(gridEl, rows){
     var W = gridEl.clientWidth, H = gridEl.clientHeight;
     if(!W || !H) return;
@@ -1140,17 +1131,14 @@
     var gap = Math.min(innerWidth, innerHeight)*0.025;
     var tx = Math.min(W*0.5, cr.right - gr.left + gap), ty = Math.max(0, cr.bottom - gr.top + gap);
     var pics = crewNext(rows, 9 + Math.floor(Math.random()*3));
-    var rects = crewRects(pics.length, W, H, tx, ty), used = {};
+    var rects = crewRects(pics.length, W, H, tx, ty);
     gridEl.innerHTML = '';
     rects.forEach(function(r, k){
-      var kind = crewKind(r, used), ct = document.createElement('div');
-      var rot = kind === 'print' ? (Math.random()*6 - 3) : (kind === 'circle' ? 0 : Math.random()*3 - 1.5);
-      ct.className = 'ct k-'+kind;
-      ct.style.cssText = 'left:'+r.x+'px;top:'+r.y+'px;width:'+r.w+'px;height:'+r.h+'px;--rot:'+rot.toFixed(1)+'deg;'
+      var ct = document.createElement('div');
+      ct.className = 'ct' + (Math.random() < 0.3 ? ' gold' : '');
+      ct.style.cssText = 'left:'+r.x+'px;top:'+r.y+'px;width:'+r.w+'px;height:'+r.h+'px;'
         + 'animation-delay:'+(k*0.08/SPEED).toFixed(2)+'s';
-      var side = (kind === 'circle' || kind === 'hex') ? Math.min(r.w, r.h) - 16 : 0;
-      ct.innerHTML = '<div class="sh"'+(side ? ' style="width:'+side+'px;height:'+side+'px"' : '')+'>'
-        + '<img alt="" src="'+BASE+'images/brightfutures-local/'+pics[k].file+'"></div>';
+      ct.innerHTML = '<div class="sh"><img alt="" src="'+BASE+'images/brightfutures-local/'+pics[k].file+'"></div>';
       gridEl.appendChild(ct);
     });
   }
