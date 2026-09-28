@@ -299,8 +299,9 @@
    right: every block framed, shapes mixed so no two showings match. The
    frame colour is the .sh background; the photo sits inside it with the
    same shape, so clip-path shapes keep a border too. */
+.slide.crew{align-items:flex-start;padding-top:13vmin}   /* title up top, photos fill the rest */
 .slide.crew .copy{flex:0 0 auto;max-width:31%}
-.crewgrid{position:absolute;left:36%;right:calc(var(--frame) + .8vmin);
+.crewgrid{position:absolute;left:calc(var(--frame) + .8vmin);right:calc(var(--frame) + .8vmin);
   top:13vmin;bottom:calc(var(--frame) + .8vmin);z-index:0}
 .crewgrid .ct{position:absolute;box-sizing:border-box;padding:.9vmin;display:flex;
   align-items:center;justify-content:center;filter:drop-shadow(0 .8vmin 1.6vmin rgba(0,0,0,.55));
