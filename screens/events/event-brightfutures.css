@@ -295,7 +295,43 @@
 @keyframes tileGone{from{opacity:1;transform:translate(-50%,-50%) rotate(var(--rot)) scale(1)}
   to{opacity:0;transform:translate(-50%,-50%) rotate(var(--rot)) scale(.8)}}
 
+/* The crew slide — see crewLayout(). Title left, a random blocked grid
+   right: every block framed, shapes mixed so no two showings match. The
+   frame colour is the .sh background; the photo sits inside it with the
+   same shape, so clip-path shapes keep a border too. */
+.slide.crew .copy{flex:0 0 auto;max-width:31%}
+.crewgrid{position:absolute;left:36%;right:calc(var(--frame) + .8vmin);
+  top:13vmin;bottom:calc(var(--frame) + .8vmin);z-index:0}
+.crewgrid .ct{position:absolute;box-sizing:border-box;padding:.9vmin;display:flex;
+  align-items:center;justify-content:center;filter:drop-shadow(0 .8vmin 1.6vmin rgba(0,0,0,.55));
+  opacity:0;transform:rotate(var(--rot)) scale(.6);
+  animation:crewPop .55s cubic-bezier(.2,.9,.3,1.2) forwards}
+.crewgrid .sh{width:100%;height:100%;box-sizing:border-box;padding:.7vmin;background:#f4f1ea}
+.crewgrid img{width:100%;height:100%;object-fit:cover;object-position:50% 35%;display:block}
+.crewgrid .k-print .sh{padding-bottom:2.4vmin;border-radius:.3vmin}              /* a drugstore print */
+.crewgrid .k-gold .sh{background:var(--gold);border-radius:1.4vmin}
+.crewgrid .k-gold img{border-radius:.8vmin}
+.crewgrid .k-round .sh{border-radius:4vmin}
+.crewgrid .k-round img{border-radius:3.3vmin}
+.crewgrid .k-arch .sh{background:var(--gold);border-radius:999px 999px 1vmin 1vmin}
+.crewgrid .k-arch img{border-radius:999px 999px .5vmin .5vmin}
+.crewgrid .k-blob .sh,.crewgrid .k-blob img{border-radius:42% 58% 60% 40% / 45% 40% 60% 55%}
+.crewgrid .k-circle .sh,.crewgrid .k-circle img{border-radius:50%}
+.crewgrid .k-circle .sh{background:var(--gold)}
+.crewgrid .k-slant .sh,.crewgrid .k-slant img{clip-path:polygon(9% 0,100% 0,91% 100%,0 100%)}
+.crewgrid .k-slant .sh{padding:.9vmin 1.6vmin}
+.crewgrid .k-notch .sh,.crewgrid .k-notch img{clip-path:polygon(0 0,80% 0,100% 20%,100% 100%,20% 100%,0 80%)}
+.crewgrid .k-notch .sh{background:var(--gold);padding:1vmin}
+.crewgrid .k-hex .sh,.crewgrid .k-hex img{clip-path:polygon(25% 2%,75% 2%,100% 50%,75% 98%,25% 98%,0 50%)}
+.crewgrid .k-hex .sh{padding:1vmin}
+.crewgrid .ct.out{animation:crewGone .3s ease forwards}
+@keyframes crewPop{to{opacity:1;transform:rotate(var(--rot)) scale(1)}}
+@keyframes crewGone{from{opacity:1;transform:rotate(var(--rot)) scale(1)}
+  to{opacity:0;transform:rotate(var(--rot)) scale(.85)}}
+
 @media (prefers-reduced-motion:reduce){
+  .crewgrid .ct{animation:none;opacity:1;transform:rotate(var(--rot))}
+  .crewgrid .ct.out{opacity:0}
   .slide .copy > *,.slide .card-photo,.slide .sheet,.slide .task,.slide .rub{opacity:1;transform:none;animation:none}
   .quilt .tile{animation:none;opacity:1;transform:translate(-50%,-50%) rotate(var(--rot))}
   .quilt .tile.out{opacity:0}
