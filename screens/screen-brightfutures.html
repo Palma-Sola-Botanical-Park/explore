@@ -1100,22 +1100,28 @@
     }
     return out;
   }
-  function crewRects(n, W, H){
-    var rs = [{x:0, y:0, w:W, h:H}], MW = W*0.13, MH = H*0.2;   /* no slivers */
-    while(rs.length < n){
-      var tot = 0, wts = rs.map(function(r){
-        var a = (r.w >= 2*MW || r.h >= 2*MH) ? Math.pow(r.w*r.h, 1.4) : 0; tot += a; return a; });
-      if(!tot) break;
-      var pick = Math.random()*tot, i = 0;
-      while(pick > wts[i] && i < rs.length-1){ pick -= wts[i]; i++; }
-      var r = rs[i], t = 0.36 + Math.random()*0.28;
-      var vert = r.w/r.h > 1.25 ? true : r.h/r.w > 1.25 ? false : Math.random() < 0.5;
-      if(vert && r.w < 2*MW) vert = false;
-      if(!vert && r.h < 2*MH) vert = true;
-      rs.splice(i, 1, vert ? {x:r.x, y:r.y, w:r.w*t, h:r.h} : {x:r.x, y:r.y, w:r.w, h:r.h*t},
-                      vert ? {x:r.x+r.w*t, y:r.y, w:r.w*(1-t), h:r.h} : {x:r.x, y:r.y+r.h*t, w:r.w, h:r.h*(1-t)});
-    }
-    return rs;
+  /* Randy, 2026-09-27: "fill all the spaces not used by the title…
+     All should be somewhat equal." So the box is the whole slide minus
+     the title: the column right of it plus the strip under it, the
+     photos shared between them by area. Each region is cut in two with
+     the photo count split as evenly as it goes (a 5 becomes 2 + 3 with
+     the cut at 2/5, jittered a little), always across the longer side —
+     so the blocks come out near-equal and never slivers. */
+  function crewSplit(r, c, out){
+    if(c <= 1){ out.push(r); return; }
+    var c1 = Math.floor(c/2); if(Math.random() < 0.5) c1 = c - c1;
+    var t = c1/c + (Math.random()*0.08 - 0.04), a = r.w/r.h;
+    var vert = a > 1.15 ? true : a < 0.87 ? false : Math.random() < 0.5;
+    if(vert){ crewSplit({x:r.x, y:r.y, w:r.w*t, h:r.h}, c1, out); crewSplit({x:r.x+r.w*t, y:r.y, w:r.w*(1-t), h:r.h}, c-c1, out); }
+    else    { crewSplit({x:r.x, y:r.y, w:r.w, h:r.h*t}, c1, out); crewSplit({x:r.x, y:r.y+r.h*t, w:r.w, h:r.h*(1-t)}, c-c1, out); }
+  }
+  function crewRects(n, W, H, tx, ty){
+    var right = {x:tx, y:0, w:W-tx, h:H}, below = {x:0, y:ty, w:tx, h:H-ty}, out = [];
+    var aR = right.w*right.h, aB = below.h > H*0.18 ? below.w*below.h : 0;
+    var nB = aB ? Math.max(1, Math.round(n*aB/(aR+aB))) : 0;
+    crewSplit(right, n - nB, out);
+    if(nB) crewSplit(below, nB, out);
+    return out;
   }
   function crewKind(r, used){
     var a = r.w/r.h, ok = ['print','gold','round','notch','blob'];
@@ -1130,8 +1136,11 @@
   function crewLayout(gridEl, rows){
     var W = gridEl.clientWidth, H = gridEl.clientHeight;
     if(!W || !H) return;
-    var pics = crewNext(rows, 8 + Math.floor(Math.random()*3));
-    var rects = crewRects(pics.length, W, H).sort(function(){ return Math.random()-0.5; }), used = {};
+    var gr = gridEl.getBoundingClientRect(), cr = gridEl.parentNode.querySelector('.copy').getBoundingClientRect();
+    var gap = Math.min(innerWidth, innerHeight)*0.025;
+    var tx = Math.min(W*0.5, cr.right - gr.left + gap), ty = Math.max(0, cr.bottom - gr.top + gap);
+    var pics = crewNext(rows, 9 + Math.floor(Math.random()*3));
+    var rects = crewRects(pics.length, W, H, tx, ty), used = {};
     gridEl.innerHTML = '';
     rects.forEach(function(r, k){
       var kind = crewKind(r, used), ct = document.createElement('div');
