@@ -8,9 +8,11 @@ WHAT IT DOES
     Reads data/sources/photo_credits.json (fresh, every run) and downloads each
     photo at iNat's full size to
 
-        C:\\PSBP\\data\\media\\originals\\PSBP-xxxxx\\<photo_id>.jpg
+        C:\\PSBP\\data\\media\\originals\\inat\\<photo_id>.jpg
 
-    and writes a manifest with size, checksum, licence and credit for each file:
+    one file per iNat photo, named by its photo ID alone: a photo can move to
+    another species, its file never moves. A manifest records which species
+    use each photo, with size, checksum, licence and credit:
 
         C:\\PSBP\\data\\media\\manifests\\inat_originals.json
 
@@ -99,84 +101,81 @@ def main():
         log_f.flush()
 
     photos = json.loads(CREDITS.read_text(encoding="utf-8"))["photos"]
-    rows = [p for p in photos if p.get("photo_url") and p.get("psbp_id") and p.get("photo_id")]
+    # One file per iNat photo. Which species use it can change; that lives in
+    # the manifest, never in the path.
+    by_photo = {}
+    for p in photos:
+        if p.get("photo_url") and p.get("psbp_id") and p.get("photo_id"):
+            by_photo.setdefault(str(p["photo_id"]), []).append(p)
+    todo_ids = list(by_photo)
     if args.limit:
-        rows = rows[:args.limit]
+        todo_ids = todo_ids[:args.limit]
 
     manifest = {}
     if manifest_path.exists():
         for m in json.loads(manifest_path.read_text(encoding="utf-8")).get("files", []):
             manifest[m["file"]] = m
 
-    todo = sum(1 for p in rows if not (args.dest / f"originals/{p['psbp_id']}/{p['photo_id']}.jpg").exists())
-    log(f"{len(rows)} photos listed in photo_credits.json -> {originals}")
+    def rel_for(pid):
+        return f"originals/inat/{pid}.jpg"
+
+    todo = sum(1 for pid in todo_ids if not (args.dest / rel_for(pid)).exists())
+    log(f"{len(todo_ids)} photos listed in photo_credits.json -> {originals / 'inat'}")
     log(f"{todo} still to fetch, one every {args.gap:g} s: about {todo * args.gap / 3600:.1f} hours. "
         "Safe to close this window; it picks up where it left off.")
     got = skipped = failed = 0
     total_bytes = 0
-    by_photo_id = {}   # a photo used by two species is fetched once, copied once
     last_request = 0.0
 
-    for i, p in enumerate(rows, 1):
-        pid = str(p["photo_id"])
-        rel = f"originals/{p['psbp_id']}/{pid}.jpg"
+    for i, pid in enumerate(todo_ids, 1):
+        uses = by_photo[pid]
+        p = uses[0]
+        rel = rel_for(pid)
         target = args.dest / rel
         target.parent.mkdir(parents=True, exist_ok=True)
+        names = ", ".join(u.get("common_name") or u["psbp_id"] for u in uses)
 
         if target.exists() and target.stat().st_size > 0:
             skipped += 1
-            by_photo_id.setdefault(pid, target)
-            if rel not in manifest:
-                manifest[rel] = None   # filled in below
         else:
             data = None
-            source = None
-            if pid in by_photo_id:
-                data = by_photo_id[pid].read_bytes()
-                source = "copy"
-            else:
-                for url in original_url(p["photo_url"]):
-                    wait = args.gap - (time.time() - last_request)
-                    if wait > 0:
-                        time.sleep(wait)
-                    last_request = time.time()
-                    try:
-                        data = fetch(url)
-                        source = url
-                        break
-                    except (urllib.error.URLError, OSError) as e:
-                        log(f"  {p['psbp_id']} {pid}: {url.rsplit('/', 1)[1]} failed ({e})")
+            for url in original_url(p["photo_url"]):
+                wait = args.gap - (time.time() - last_request)
+                if wait > 0:
+                    time.sleep(wait)
+                last_request = time.time()
+                try:
+                    data = fetch(url)
+                    break
+                except (urllib.error.URLError, OSError) as e:
+                    log(f"  {pid}: {url.rsplit('/', 1)[1]} failed ({e})")
             if not data:
                 failed += 1
-                log(f"FAILED {p['psbp_id']} {pid} {p.get('common_name', '')}")
+                log(f"FAILED {pid} {names}")
                 continue
             part = target.with_suffix(".part")
             part.write_bytes(data)
             os.replace(part, target)
-            by_photo_id.setdefault(pid, target)
             got += 1
             total_bytes += len(data)
-            manifest[rel] = None
-            if source != "copy":
-                log(f"[{i}/{len(rows)}] {p['psbp_id']} {pid}  {len(data) // 1024} KB  "
-                    f"{p.get('common_name', '')}")
+            log(f"[{i}/{len(todo_ids)}] {pid}  {len(data) // 1024} KB  {names}")
 
-        if manifest[rel] is None:
-            manifest[rel] = {
-                "file": rel,
-                "psbp_id": p["psbp_id"],
-                "common_name": p.get("common_name"),
-                "photo_id": p["photo_id"],
-                "observation_id": p.get("observation_id"),
-                "license": p.get("license"),
-                "credit_line": p.get("credit_line"),
-                "photographer": p.get("photographer"),
-                "source_url": p.get("source_url"),
-                "photo_url": p.get("photo_url"),
-                "bytes": target.stat().st_size,
-                "sha256": sha256_of(target),
-                "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
-            }
+        size = target.stat().st_size
+        old = manifest.get(rel) or {}
+        manifest[rel] = {
+            "file": rel,
+            "photo_id": p["photo_id"],
+            "observation_id": p.get("observation_id"),
+            "species": [{"psbp_id": u["psbp_id"], "common_name": u.get("common_name")} for u in uses],
+            "license": p.get("license"),
+            "credit_line": p.get("credit_line"),
+            "photographer": p.get("photographer"),
+            "source_url": p.get("source_url"),
+            "photo_url": p.get("photo_url"),
+            "bytes": size,
+            "sha256": old["sha256"] if old.get("bytes") == size and old.get("sha256") else sha256_of(target),
+            "fetched_at": old.get("fetched_at") or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"),
+        }
         if i % 50 == 0:
             write_json_atomic(manifest_path, {"files": sorted(manifest.values(), key=lambda m: m["file"])})
 
