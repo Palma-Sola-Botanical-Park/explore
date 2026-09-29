@@ -1491,6 +1491,17 @@ def _cc_photos_from_observations(obs_list):
     return cc, non_cc
 
 
+def _non_cc_by_obs(obs_list):
+    """{obs_id: number of non-CC photos} for observations that have any."""
+    out = {}
+    for obs in obs_list:
+        n = sum(1 for p in obs.get("photos", [])
+                if (p.get("license_code") or "").lower() not in CC_LICENSES)
+        if n:
+            out[str(obs.get("id", ""))] = n
+    return out
+
+
 # ── Scan cache (workspace, outside the repo) ───────────────────────────────
 
 def _cache_path(kingdom, psbp_id):
@@ -1501,7 +1512,7 @@ def _read_cache(kingdom, psbp_id):
     return load_json(_cache_path(kingdom, psbp_id), None)
 
 
-def _write_cache(kingdom, psbp_id, cc, non_cc):
+def _write_cache(kingdom, psbp_id, cc, non_cc, non_cc_by_obs=None):
     payload = {
         "psbp_id": psbp_id,
         "scanned_at": datetime.datetime.utcnow().isoformat() + "Z",
@@ -1509,6 +1520,10 @@ def _write_cache(kingdom, psbp_id, cc, non_cc):
         "cc_count": len(cc),
         "non_cc_count": non_cc,
     }
+    if non_cc_by_obs is not None:
+        # Per observation, so the fast scan can drop a changed observation's
+        # non-CC count exactly instead of letting the total drift.
+        payload["non_cc_by_obs"] = non_cc_by_obs
     write_json_atomic(_cache_path(kingdom, psbp_id), payload)
     return payload
 
@@ -1555,7 +1570,7 @@ def _scan_species(kingdom, species, decided=None, registry_ids=None):
         seen = {o.get("id") for o in obs}
         obs.extend(o for o in _inat_observations_by_id(pinned) if o.get("id") not in seen)
     cc, non_cc = _cc_photos_from_observations(obs)
-    payload = _write_cache(kingdom, species["id"], cc, non_cc)
+    payload = _write_cache(kingdom, species["id"], cc, non_cc, _non_cc_by_obs(obs))
     payload["new_count"] = _count_new_candidates(species["id"], cc, decided, registry_ids)
     return payload
 
@@ -2554,6 +2569,10 @@ _SCAN_JOB = {
     "species_with_new": 0,   # how many species gained at least one new candidate
     "started_at": None,
     "finished_at": None,
+    "mode": "full",
+    "since": None,
+    "changed_obs": None,
+    "full_scanned_new": 0,
 }
 _SCAN_LOCK = threading.Lock()
 
@@ -2571,6 +2590,10 @@ def _write_last_scan_summary(job):
         "skipped_no_taxon": list(job.get("skipped_no_taxon", [])),
         "started_at":       job.get("started_at"),
         "finished_at":      job.get("finished_at"),
+        "mode":             job.get("mode", "full"),
+        "since":            job.get("since"),
+        "changed_obs":      job.get("changed_obs"),
+        "full_scanned_new": job.get("full_scanned_new", 0),
     }
     try:
         write_json_atomic(_last_scan_path(job.get("kingdom")), summary)
@@ -2579,8 +2602,219 @@ def _write_last_scan_summary(job):
     return summary
 
 
-def _scan_all_worker(kingdom, targets):
-    """Background worker: scan each target species, updating _SCAN_JOB."""
+# ── Fast scan: only what changed on iNat since the last scan (2026-09-28) ──
+# A full scan asks iNat for every species' whole park history, one species at a
+# time: ~400 requests and several minutes, re-downloading everything. The fast
+# scan asks ONE question for the whole park: "which observations were UPDATED
+# since the last scan?" Updated, not added: iNat bumps updated_at for a new
+# observation, a photo added to an old one, an identification change, a licence
+# change. Each changed observation is re-sorted to its species with the same
+# rules the full scan uses (photo_taxa, photo_exclude_taxa, photo_observations).
+#
+# What only the FULL scan catches, so run it monthly (the button says when due):
+#   • deleted observations (they never show up as "updated"; they just linger)
+#   • obscured observations (their public pin is outside the park rectangle)
+#   • pinned photo_observations whose pin is outside the rectangle
+#   • an observation whose pin was moved out of the rectangle
+
+FULL_SCAN_DUE_DAYS = 30
+SCAN_OVERLAP_MIN = 10          # re-ask the last few minutes; repeats are harmless
+FAST_SCAN_MAX_PAGES = 50       # 10,000 observations; past that, run a full scan
+ICONIC_PLANTAE = 47126
+
+
+def _scan_stamp_path(kingdom):
+    safe = "wildlife" if kingdom == "wildlife" else "plants"
+    return os.path.join(TRIAGE_WORKSPACE, f"_scan_since_{safe}.json")
+
+
+def _load_scan_stamp(kingdom):
+    return load_json(_scan_stamp_path(kingdom), {}) or {}
+
+
+def _save_scan_stamp(kingdom, **fields):
+    stamp = _load_scan_stamp(kingdom)
+    stamp.update(fields)
+    write_json_atomic(_scan_stamp_path(kingdom), stamp)
+
+
+def _utc_iso(dt):
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _full_scan_status(kingdom):
+    """When the last full scan ran and whether the monthly one is due."""
+    last = _load_scan_stamp(kingdom).get("last_full")
+    days = None
+    if last:
+        try:
+            then = datetime.datetime.strptime(last, "%Y-%m-%dT%H:%M:%SZ")
+            days = (datetime.datetime.utcnow() - then).days
+        except ValueError:
+            pass
+    return {"last_full": last, "full_days_ago": days,
+            "full_due": days is None or days >= FULL_SCAN_DUE_DAYS}
+
+
+def _scannable_targets(kingdom):
+    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
+    species_list = _get_species_list(_load(path))
+    def _scannable(s):
+        return bool(s.get("inat_taxon_id") or _photo_observations(s))
+    live = [s for s in species_list if s.get("status") in ("html", "spotted")]
+    return ([s for s in live if _scannable(s)],
+            [s.get("id") for s in live if not _scannable(s)])
+
+
+def _inat_changed_observations(kingdom, since):
+    """Every observation in the park rectangle updated since `since`.
+    Returns (observations, error). Plants and wildlife split on kingdom Plantae."""
+    split = (f"&taxon_id={ICONIC_PLANTAE}" if kingdom == "plants"
+             else f"&without_taxon_id={ICONIC_PLANTAE}")
+    out, page = [], 1
+    while True:
+        data = _inat_get("https://api.inaturalist.org/v1/observations"
+                         f"?{INAT_SCOPE}{split}&updated_since={since}"
+                         f"&per_page=200&page={page}&order=asc&order_by=id")
+        if data is None:
+            return out, "iNat did not answer"
+        results = data.get("results", [])
+        out.extend(results)
+        if len(results) < 200:
+            return out, None
+        page += 1
+        if page > FAST_SCAN_MAX_PAGES:
+            return out, "too many changes for a fast scan; run a full scan"
+        time.sleep(API_DELAY)
+
+
+def _obs_lineage(obs):
+    t = obs.get("taxon") or {}
+    lineage = {int(a) for a in (t.get("ancestor_ids") or []) if a}
+    if t.get("id"):
+        lineage.add(int(t["id"]))
+    return lineage
+
+
+def _obs_belongs_to(obs, species):
+    """Would the full scan have returned this observation for this species?"""
+    oid = obs.get("id")
+    if oid and int(oid) in set(_photo_observations(species)):
+        return True
+    if not _in_park(obs):
+        return False
+    taxa = set(_photo_taxa(species))
+    if not taxa:
+        return False
+    lineage = _obs_lineage(obs)
+    return bool(lineage & taxa) and not (lineage & set(_photo_exclude_taxa(species)))
+
+
+def _fast_scan_worker(kingdom, targets, since):
+    """Background worker for the fast scan. Updates _SCAN_JOB like the full one."""
+    global _SCAN_JOB
+    decided = {str(k) for k in load_workbench()["decisions"].keys()}
+    registry_ids = {str(p.get("photo_id"))
+                    for p in _get_photos_list(_load(PHOTO_CREDITS))
+                    if p.get("photo_id")}
+    with _SCAN_LOCK:
+        _SCAN_JOB["current"] = "asking iNat what changed"
+    changed, err = _inat_changed_observations(kingdom, since)
+    changed_ids = {str(o.get("id")) for o in changed}
+    with _SCAN_LOCK:
+        _SCAN_JOB["changed_obs"] = len(changed)
+        if err:
+            _SCAN_JOB["failed"].append({"id": "iNat", "error": err})
+
+    for i, sp in enumerate(targets):
+        with _SCAN_LOCK:
+            _SCAN_JOB["current"] = sp.get("common_name", sp.get("id", ""))
+        try:
+            cache = None if err else _read_cache(kingdom, sp["id"])
+            if err:
+                pass
+            elif cache is None:
+                # Never scanned: give this one species its whole history.
+                res = _scan_species(kingdom, sp, decided=decided, registry_ids=registry_ids)
+                if "error" in res:
+                    raise RuntimeError(res["error"])
+                with _SCAN_LOCK:
+                    _SCAN_JOB["full_scanned_new"] += 1
+                nc = res.get("new_count", 0)
+                with _SCAN_LOCK:
+                    _SCAN_JOB["total_new_found"] += nc
+                    _SCAN_JOB["species_with_new"] += 1 if nc else 0
+                    _SCAN_JOB["total_cc_found"] += res.get("cc_count", 0)
+                time.sleep(API_DELAY)
+            else:
+                mine = [o for o in changed if _obs_belongs_to(o, sp)]
+                old_cc = cache.get("cc", [])
+                had = any(p.get("obs_id") in changed_ids for p in old_cc)
+                old_map = cache.get("non_cc_by_obs")
+                had = had or any(k in changed_ids for k in (old_map or {}))
+                if mine or had:
+                    new_cc, _ = _cc_photos_from_observations(mine)
+                    cc = new_cc + [p for p in old_cc if p.get("obs_id") not in changed_ids]
+                    add_map = _non_cc_by_obs(mine)
+                    if old_map is None:
+                        # Cache from before per-observation counts: best effort
+                        # until the next full scan rewrites it exactly.
+                        n_map = None
+                        non_cc = cache.get("non_cc_count", 0) + sum(add_map.values())
+                    else:
+                        n_map = {k: v for k, v in old_map.items() if k not in changed_ids}
+                        n_map.update(add_map)
+                        non_cc = sum(n_map.values())
+                    _write_cache(kingdom, sp["id"], cc, non_cc, n_map)
+                else:
+                    cc = old_cc
+                nc = _count_new_candidates(sp["id"], cc, decided, registry_ids)
+                with _SCAN_LOCK:
+                    _SCAN_JOB["total_cc_found"] += len(cc)
+                    _SCAN_JOB["total_new_found"] += nc
+                    _SCAN_JOB["species_with_new"] += 1 if nc else 0
+            with _SCAN_LOCK:
+                if not err:
+                    _SCAN_JOB["scanned"] += 1
+        except Exception as e:
+            with _SCAN_LOCK:
+                _SCAN_JOB["failed"].append({"id": sp.get("id"), "error": str(e)})
+        with _SCAN_LOCK:
+            _SCAN_JOB["done"] = i + 1
+
+
+def _scan_all_worker(kingdom, targets, mode="full"):
+    """Background worker: run the fast or full scan, then stamp and summarize."""
+    global _SCAN_JOB
+    started = datetime.datetime.utcnow()
+    try:
+        if mode == "fast":
+            _fast_scan_worker(kingdom, targets, _load_scan_stamp(kingdom)["since"])
+        else:
+            _full_scan_worker(kingdom, targets)
+    except Exception as e:
+        with _SCAN_LOCK:
+            _SCAN_JOB["failed"].append({"id": "scan", "error": repr(e)})
+    with _SCAN_LOCK:
+        failed = list(_SCAN_JOB["failed"])
+    # Move "since" forward only after a clean run, so nothing changed on iNat
+    # during a failed run is ever skipped.
+    if not failed:
+        since = _utc_iso(started - datetime.timedelta(minutes=SCAN_OVERLAP_MIN))
+        if mode == "full":
+            _save_scan_stamp(kingdom, since=since, last_full=_utc_iso(started))
+        else:
+            _save_scan_stamp(kingdom, since=since)
+    with _SCAN_LOCK:
+        _SCAN_JOB["running"] = False
+        _SCAN_JOB["current"] = ""
+        _SCAN_JOB["finished_at"] = datetime.datetime.utcnow().isoformat() + "Z"
+        _SCAN_JOB.update(_full_scan_status(kingdom))
+        _write_last_scan_summary(_SCAN_JOB)
+
+
+def _full_scan_worker(kingdom, targets):
+    """Every species' whole park history, one species at a time."""
     global _SCAN_JOB
     # Load the decided-set and registry once up front so the new-candidate count
     # doesn't re-read JSON for all ~190 species. These don't change during an
@@ -2607,23 +2841,23 @@ def _scan_all_worker(kingdom, targets):
         # Be polite to iNat between species (skip the wait after the last one)
         if i < len(targets) - 1:
             time.sleep(API_DELAY)
-    with _SCAN_LOCK:
-        _SCAN_JOB["running"] = False
-        _SCAN_JOB["current"] = ""
-        _SCAN_JOB["finished_at"] = datetime.datetime.utcnow().isoformat() + "Z"
-        _write_last_scan_summary(_SCAN_JOB)
 
 
 def handle_api_triage_scan_all(params):
     """POST /api/triage/scan-all — start a background scan of all html+spotted species.
 
-    Body: {"kingdom": "plants"}
-    Returns immediately with the total count; the scan runs in a thread.
-    Poll /api/triage/scan-progress for live status.
+    Body: {"kingdom": "plants", "mode": "fast" | "full"}
+    fast (the everyday button): only observations changed since the last scan.
+    full (monthly): every species' whole history. A fast scan with no previous
+    scan to count from runs as a full one.
+    Returns immediately; poll /api/triage/scan-progress for live status.
     """
     global _SCAN_JOB
     body = params.get("_body", {})
     kingdom = body.get("kingdom", "plants")
+    mode = "fast" if body.get("mode") == "fast" else "full"
+    if mode == "fast" and not _load_scan_stamp(kingdom).get("since"):
+        mode = "full"
 
     with _SCAN_LOCK:
         if _SCAN_JOB["running"]:
@@ -2631,15 +2865,7 @@ def handle_api_triage_scan_all(params):
                     "running": True, "done": _SCAN_JOB["done"],
                     "total": _SCAN_JOB["total"]}
 
-    path = PLANT_SIGNAGE if kingdom == "plants" else WILDLIFE_SIGNAGE
-    species_list = _get_species_list(_load(path))
-    def _scannable(s):
-        return bool(s.get("inat_taxon_id") or _photo_observations(s))
-    targets = [s for s in species_list
-               if s.get("status") in ("html", "spotted") and _scannable(s)]
-    skipped_no_taxon = [s.get("id") for s in species_list
-                        if s.get("status") in ("html", "spotted") and not _scannable(s)]
-
+    targets, skipped_no_taxon = _scannable_targets(kingdom)
     if not targets:
         return {"ok": False, "error": "No scannable species (need html/spotted status + taxon ID).",
                 "skipped_no_taxon": skipped_no_taxon}
@@ -2647,19 +2873,21 @@ def handle_api_triage_scan_all(params):
     # Reset job state and launch the worker.
     with _SCAN_LOCK:
         _SCAN_JOB.update({
-            "running": True, "kingdom": kingdom,
+            "running": True, "kingdom": kingdom, "mode": mode,
+            "since": _load_scan_stamp(kingdom).get("since") if mode == "fast" else None,
             "done": 0, "total": len(targets), "current": "",
             "scanned": 0, "failed": [], "skipped_no_taxon": skipped_no_taxon,
             "total_cc_found": 0, "total_new_found": 0, "species_with_new": 0,
+            "changed_obs": None, "full_scanned_new": 0,
             "started_at": datetime.datetime.utcnow().isoformat() + "Z",
             "finished_at": None,
         })
 
-    t = threading.Thread(target=_scan_all_worker, args=(kingdom, targets), daemon=True)
+    t = threading.Thread(target=_scan_all_worker, args=(kingdom, targets, mode), daemon=True)
     t.start()
 
-    return {"ok": True, "started": True, "kingdom": kingdom, "total": len(targets),
-            "skipped_no_taxon": skipped_no_taxon}
+    return {"ok": True, "started": True, "kingdom": kingdom, "mode": mode,
+            "total": len(targets), "skipped_no_taxon": skipped_no_taxon}
 
 
 def handle_api_triage_scan_progress(params):
@@ -2678,10 +2906,12 @@ def handle_api_triage_scan_progress(params):
 
 def handle_api_triage_last_scan(params):
     """GET /api/triage/last-scan?kingdom=plants — the persisted summary of the
-    most recent finished scan-all for that kingdom. Survives page reloads and
-    dashboard restarts so the result banner can be shown again."""
+    most recent finished scan for that kingdom, plus when the last FULL scan ran
+    (for the monthly button). Survives page reloads and dashboard restarts."""
     kingdom = params.get("kingdom", ["plants"])[0]
-    return load_json(_last_scan_path(kingdom), {}) or {}
+    out = load_json(_last_scan_path(kingdom), {}) or {}
+    out.update(_full_scan_status(kingdom))
+    return out
 
 
 def handle_api_triage_view(params):
@@ -4614,6 +4844,21 @@ main {
     transition: all 0.12s;
 }
 .scan-all-btn:hover { background: var(--green-mid); color: white; }
+.scan-full-btn {
+    width: 100%;
+    margin-top: 4px;
+    padding: 4px 12px;
+    border: none;
+    background: none;
+    color: var(--gray-400);
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.scan-full-btn:hover { color: var(--green-mid); }
+.scan-full-btn.due { color: var(--green-mid); font-weight: 600; }
+.scan-full-btn:disabled { opacity: 0.5; cursor: default; text-decoration: none; }
 .scan-all-btn:disabled {
     opacity: 0.6;
     cursor: default;
@@ -6857,7 +7102,11 @@ def render_photos():
                     🟡 New only <span class="no-count" id="new-only-count">0</span>
                 </button>
                 <button class="scan-all-btn" id="scan-all-btn" style="display:none;"
-                        onclick="scanAll()">⟳ Scan all for new photos</button>
+                        onclick="scanAll('fast')"
+                        title="Only what changed on iNat since the last scan. Seconds.">⟳ Scan for new photos</button>
+                <button class="scan-full-btn" id="scan-full-btn" style="display:none;"
+                        onclick="scanAll('full')"
+                        title="Every species' whole history. Catches deleted and hidden-location observations. A few minutes; once a month.">Full scan (monthly)</button>
             </div>
             <div class="picker-list" id="picker-list">
                 <div class="loading">Loading…</div>
@@ -6980,6 +7229,8 @@ def render_photos():
         document.getElementById('picker-legend').style.display =
             m === 'triage' ? 'flex' : 'none';
         document.getElementById('scan-all-btn').style.display =
+            m === 'triage' ? 'block' : 'none';
+        document.getElementById('scan-full-btn').style.display =
             m === 'triage' ? 'block' : 'none';
         const nob = document.getElementById('new-only-btn');
         nob.style.display = m === 'triage' ? 'flex' : 'none';
@@ -7713,19 +7964,46 @@ def render_photos():
     // ── Scan all species ──────────────────────────────────────
     let scanPollTimer = null;
 
-    async function scanAll() {{
-        const btn = document.getElementById('scan-all-btn');
-        const kingdomLabel = currentKingdom === 'plants' ? 'plants' : 'wildlife';
-        if (!confirm(`Scan all published + spotted ${{kingdomLabel}} for new iNaturalist photos?\\n\\nThis checks each species one at a time and can take a couple of minutes. A progress bar will show how far along it is — you can keep working while it runs.`)) return;
+    // Two buttons: the everyday fast scan (only what changed on iNat since the
+    // last scan) and the monthly full scan (every species' whole history).
+    let scanMode = 'fast';
+    let fullScanInfo = {{}};
 
-        btn.disabled = true;
-        btn.textContent = '⟳ Scanning…';
+    function setScanButtons(running) {{
+        const fast = document.getElementById('scan-all-btn');
+        const full = document.getElementById('scan-full-btn');
+        fast.disabled = running;
+        full.disabled = running;
+        fast.textContent = running
+            ? (scanMode === 'full' ? '⟳ Full scan running…' : '⟳ Scanning…')
+            : '⟳ Scan for new photos';
+        const i = fullScanInfo || {{}};
+        const when = i.last_full ? fmtScanDate(i.last_full) : 'never';
+        full.textContent = i.full_due
+            ? `Full scan due (last: ${{when}})`
+            : `Full scan (monthly) · last: ${{when}}`;
+        full.classList.toggle('due', !!i.full_due);
+    }}
+
+    function fmtScanDate(iso) {{
+        try {{
+            return new Date(iso).toLocaleDateString([], {{month:'short', day:'numeric'}});
+        }} catch (e) {{ return iso; }}
+    }}
+
+    async function scanAll(mode) {{
+        mode = mode === 'full' ? 'full' : 'fast';
+        const kingdomLabel = currentKingdom === 'plants' ? 'plants' : 'wildlife';
+        if (mode === 'full' && !confirm(`Full scan of all published + spotted ${{kingdomLabel}}?\n\nThis asks iNaturalist for every species' whole history, one species at a time, and takes a few minutes. It catches deleted and hidden-location observations the everyday scan can't see. Once a month is plenty.`)) return;
+
+        scanMode = mode;
+        setScanButtons(true);
 
         try {{
             const resp = await fetch('/api/triage/scan-all', {{
                 method: 'POST',
                 headers: {{'Content-Type': 'application/json'}},
-                body: JSON.stringify({{kingdom: currentKingdom}})
+                body: JSON.stringify({{kingdom: currentKingdom, mode: mode}})
             }});
             const data = await resp.json();
             if (!data.ok) {{
@@ -7734,25 +8012,28 @@ def render_photos():
                     showScanProgress();
                     startScanPoll();
                 }} else {{
-                    toast(data.error || 'Scan-all failed', true);
-                    btn.disabled = false;
-                    btn.textContent = '⟳ Scan all for new photos';
+                    toast(data.error || 'Scan failed', true);
+                    setScanButtons(false);
                 }}
                 return;
             }}
+            if (mode === 'fast' && data.mode === 'full')
+                toast('No earlier scan to count from, so this first one is a full scan.');
+            scanMode = data.mode;
+            setScanButtons(true);
             // Job started — show the bar and begin polling.
             showScanProgress();
             updateScanProgress({{done: 0, total: data.total, current: ''}});
             startScanPoll();
         }} catch (err) {{
             toast('Error: ' + err.message, true);
-            btn.disabled = false;
-            btn.textContent = '⟳ Scan all for new photos';
+            setScanButtons(false);
         }}
     }}
 
     function showScanProgress() {{
-        const label = currentKingdom === 'plants' ? 'Scanning plants…' : 'Scanning wildlife…';
+        const k = currentKingdom === 'plants' ? 'plants' : 'wildlife';
+        const label = scanMode === 'full' ? `Full scan of ${{k}}…` : `Checking what changed in ${{k}}…`;
         document.getElementById('scan-progress-label').textContent = label;
         document.getElementById('scan-progress').classList.add('show');
     }}
@@ -7766,7 +8047,7 @@ def render_photos():
         document.getElementById('scan-progress-count').textContent = `${{done}} / ${{total}}`;
         document.getElementById('scan-progress-fill').style.width = pct + '%';
         document.getElementById('scan-progress-current').textContent =
-            job.current ? `Scanning: ${{job.current}}` : '';
+            job.current ? (job.mode === 'fast' ? `Sorting: ${{job.current}}` : `Scanning: ${{job.current}}`) : '';
     }}
 
     function startScanPoll() {{
@@ -7802,9 +8083,8 @@ def render_photos():
                 updateScanProgress({{done: job.total, total: job.total, current: ''}});
                 setTimeout(hideScanProgress, 1500);
 
-                const btn = document.getElementById('scan-all-btn');
-                btn.disabled = false;
-                btn.textContent = '⟳ Scan all for new photos';
+                fullScanInfo = {{last_full: job.last_full, full_due: job.full_due}};
+                setScanButtons(false);
             }}
         }} catch (err) {{
             // Network hiccup — keep polling; don't kill the job view.
@@ -7833,7 +8113,15 @@ def render_photos():
             : `No new photos — you're all caught up on ${{kLabel}} 🎉`;
 
         const bits = [];
-        bits.push(`Scanned <strong>${{s.scanned}}</strong> of ${{s.total}} ${{kLabel}}`);
+        if (s.mode === 'fast') {{
+            const n = s.changed_obs || 0;
+            bits.push(`<strong>${{n}}</strong> observation${{n !== 1 ? 's' : ''}} changed on iNat` +
+                      (s.since ? ` since ${{fmtScanTime(s.since)}}` : ''));
+            if (s.full_scanned_new)
+                bits.push(`${{s.full_scanned_new}} never-scanned species given a full look`);
+        }} else {{
+            bits.push(`Full scan: <strong>${{s.scanned}}</strong> of ${{s.total}} ${{kLabel}}`);
+        }}
         bits.push(`<span class="muted">${{s.total_cc_found || 0}} CC photos seen total</span>`);
         if (s.failed && s.failed.length)
             bits.push(`<span class="scan-summary-warn">${{s.failed.length}} failed</span>`);
@@ -7866,6 +8154,8 @@ def render_photos():
         try {{
             const resp = await fetch(`/api/triage/last-scan?kingdom=${{currentKingdom}}`);
             const s = await resp.json();
+            fullScanInfo = {{last_full: s.last_full, full_due: s.full_due}};
+            if (!scanPollTimer) setScanButtons(false);
             if (s && s.finished_at && s.kingdom === currentKingdom) renderScanSummary(s);
         }} catch (err) {{ /* ignore */ }}
     }}
@@ -7876,8 +8166,8 @@ def render_photos():
             const resp = await fetch('/api/triage/scan-progress');
             const job = await resp.json();
             if (job.running) {{
-                document.getElementById('scan-all-btn').disabled = true;
-                document.getElementById('scan-all-btn').textContent = '⟳ Scanning…';
+                scanMode = job.mode || 'full';
+                setScanButtons(true);
                 showScanProgress();
                 updateScanProgress(job);
                 startScanPoll();
