@@ -57,7 +57,7 @@ PHOTOS_DIR            = REPO / "photos"
 # it becomes the production bucket, then https://media.palmasolabp.org.
 MEDIA_BASE = "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev"
 MEDIA_REV  = "v1"
-MEDIA_ON   = False
+MEDIA_ON   = True
 
 
 def media_url(rec, size="web"):
