@@ -35,6 +35,7 @@ import argparse
 import hashlib
 import json
 import os
+import ssl
 import sys
 import time
 import urllib.error
@@ -58,9 +59,28 @@ def original_url(photo_url):
     return f"{base}/original.{ext}", photo_url
 
 
+def _ssl_context():
+    """Windows Python trusts only what its own root store already holds, and a
+    fresh machine may not hold Amazon's root yet — the first run on Office
+    failed every photo with CERTIFICATE_VERIFY_FAILED (2026-09-30). Prefer the
+    certifi bundle when it is installed, then the copy pip ships with, then the
+    system store. Returns (context, description) so the log says which."""
+    for label, loader in (("certifi", lambda: __import__("certifi")),
+                          ("pip's certifi", lambda: __import__("pip._vendor.certifi", fromlist=["where"]))):
+        try:
+            mod = loader()
+            return ssl.create_default_context(cafile=mod.where()), label
+        except Exception:
+            continue
+    return ssl.create_default_context(), "system certificate store"
+
+
+SSL_CTX, SSL_SOURCE = _ssl_context()
+
+
 def fetch(url):
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=60) as r:
+    with urllib.request.urlopen(req, timeout=60, context=SSL_CTX) as r:
         return r.read()
 
 
@@ -123,6 +143,7 @@ def main():
     log(f"{len(todo_ids)} photos listed in photo_credits.json -> {originals / 'inat'}")
     log(f"{todo} still to fetch, one every {args.gap:g} s: about {todo * args.gap / 3600:.1f} hours. "
         "Safe to close this window; it picks up where it left off.")
+    log(f"HTTPS certificates from {SSL_SOURCE}")
     got = skipped = failed = 0
     total_bytes = 0
     last_request = 0.0
