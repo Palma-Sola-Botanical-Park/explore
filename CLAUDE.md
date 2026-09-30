@@ -250,6 +250,10 @@ is editing the live screens.
   Apple's `/usr/bin/python3` (3.9), not Homebrew's; write hooks to fail open with a note.
 - Species Manager is the only tool that writes to iNaturalist (the Cultivated tab's "not wild"
   vote). Every other iNat use is read-only.
+- **Every log line carries the date and the time.** Scripts, batch files, scheduled tasks on the
+  office PCs, all of them. A log you cannot date is a log you cannot use.
+- **The Office and Galleria PCs are configured identically** except where they do different jobs:
+  same task names, same triggers, same log paths, same folders. A difference is a bug.
 
 **iNat rules of thumb**
 - Park scope for READS is the polygon in code (`PARK_POLYGON` in `species_manager.py` and
