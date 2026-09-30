@@ -44,6 +44,33 @@ WILDLIFE_DIR          = REPO / "wildlife"
 PHOTOS_DIR            = REPO / "photos"
 
 # ===========================================================================
+# MEDIA LIBRARY (Cloudflare R2) — where species photographs are served from
+# ===========================================================================
+# Off: pages use today's addresses (a local copy under photos/ when one
+# exists, otherwise the iNaturalist URL on the photo row). On: every
+# photograph on every regenerated page loads from R2 at
+#   <MEDIA_BASE>/inat/<photo_id>/<MEDIA_REV>/<size>.jpg
+# with size = original | web | thumb. Nothing is stored per photo; the address
+# is built at generation time, so a new host is one line here plus
+# --generate-all. Flipping MEDIA_ON back to False and regenerating is the
+# rollback. MEDIA_BASE is the sandbox bucket while the library is rehearsed;
+# it becomes the production bucket, then https://media.palmasolabp.org.
+MEDIA_BASE = "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev"
+MEDIA_REV  = "v1"
+MEDIA_ON   = False
+
+
+def media_url(rec, size="web"):
+    """R2 address for a photo row at one size, or None when the library is
+    off or the row has no iNat photo id (nothing to serve then)."""
+    if not MEDIA_ON or not rec:
+        return None
+    photo_id = rec.get("photo_id")
+    if not photo_id:
+        return None
+    return f"{MEDIA_BASE}/inat/{photo_id}/{MEDIA_REV}/{size}.jpg"
+
+# ===========================================================================
 # PHOTOGRAPHER NAME REGISTRY
 # ===========================================================================
 # Real names are stored in photographer_names.json (in data/sources/),

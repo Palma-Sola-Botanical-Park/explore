@@ -36,6 +36,7 @@ from psbp_common import (
     PLANT_SIGNAGE_JSON as SIGNAGE_JSON,
     PHOTO_CREDITS_JSON as CREDITS_JSON,
     PLANTS_JSON, PLANTS_DIR, PHOTOS_DIR,
+    media_url,
     load_json, write_json_atomic,
     display_name, build_credit_line,
     resolve_hero_credit, resolve_gallery_credits,
@@ -165,7 +166,7 @@ def build_plants_json_entry(species, hero):
     hero_credit = resolve_hero_credit(hero)
 
     if hero:
-        photo = f"photos/{pid}/{hero['filename']}"
+        photo = media_url(hero, "thumb") or f"photos/{pid}/{hero['filename']}"
         focus = hero.get("focus") or "50% 50%"
     else:
         photo = ""
@@ -955,7 +956,7 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
     gallery_photos = gallery_photos or []
 
     focus = (hero.get("focus") if hero else None) or "50% 50%"
-    hero_src = f"../photos/{pid}/{hero['filename']}" if hero else ""
+    hero_src = _v2_photo_url(pid, hero) if hero else ""
     # Source once per page: the Photographs roll below carries it for every
     # photograph when it renders, so the hero bar drops it. See _v2_hero_attr.
     hero_attr = _v2_hero_attr(hero, show_source=len(gallery_photos) < 2)
@@ -995,17 +996,15 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
     if len(gallery_photos) >= 2:
         _lb = []
         for g in gallery_photos:
-            local = PHOTOS_DIR / pid / (g.get("filename") or "")
             _c = resolve_hero_credit(g)
-            _lb.append({"src": (f"../photos/{pid}/{g['filename']}"
-                                if g.get("filename") and local.exists() else g.get("photo_url", "")),
+            _lb.append({"src": _v2_photo_url(pid, g),
                         "alt": "",
                         "by": _c["credit_name"],
                         "date": _fmt_observed(g.get("observed_on", ""))})
         photos_js = json.dumps(_lb, ensure_ascii=False)
         thumbs = "".join(
             f'<button type="button" data-i="{i}" aria-label="Photograph">'
-            f'<img src="{h(g.get("photo_url",""))}" alt=""></button>'
+            f'<img src="{h(media_url(g, "thumb") or g.get("photo_url", ""))}" alt=""></button>'
             for i, g in enumerate(gallery_photos) if i > 0)
         strip = (f'<div class="sp-strip" id="heroStrip">{thumbs}</div>'
                  + _v2_hero_gallery_cue(len(gallery_photos)))
@@ -2031,7 +2030,7 @@ def cmd_validate():
     for p in plants:
         hero = heroes.get(p["id"])
         if hero:
-            expected = f"photos/{p['id']}/{hero['filename']}"
+            expected = media_url(hero, "thumb") or f"photos/{p['id']}/{hero['filename']}"
             if p.get("photo") != expected:
                 print(f"  [PLANTS_JSON] {p['id']} {p['common']}: photo={p.get('photo')} expected={expected}")
                 pj_issues += 1

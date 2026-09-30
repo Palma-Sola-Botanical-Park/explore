@@ -32,6 +32,7 @@ from psbp_common import (
     WILDLIFE_SIGNAGE_JSON as SIGNAGE_JSON,
     PHOTO_CREDITS_JSON as CREDITS_JSON,
     WILDLIFE_JSON, WILDLIFE_DIR, PHOTOS_DIR,
+    media_url,
     load_json, write_json_atomic,
     display_name, build_credit_line,
     resolve_hero_credit, resolve_gallery_credits,
@@ -93,7 +94,7 @@ def build_wildlife_json_entry(species, hero):
     hero_credit = resolve_hero_credit(hero)
 
     if hero:
-        photo = f"photos/{pid}/{hero['filename']}"
+        photo = media_url(hero, "thumb") or f"photos/{pid}/{hero['filename']}"
         focus = hero.get("focus") or "50% 50%"
     else:
         photo = ""
@@ -705,7 +706,13 @@ def _v2_credit_plate(rec):
             + '<span>iNaturalist</span></span></div>')
 
 
-def _v2_photo_url(pid, rec):
+def _v2_photo_url(pid, rec, size="web"):
+    # The one place a photograph's address is decided, for both corpora.
+    # With the media library on, every photo comes from R2 (psbp_common
+    # MEDIA_*); otherwise today's rule below.
+    r2 = media_url(rec, size)
+    if r2:
+        return r2
     # A former hero keeps its `filename` after the file is removed; use the
     # local copy only when it is actually there, as the gallery strip does.
     fn = rec.get("filename")
