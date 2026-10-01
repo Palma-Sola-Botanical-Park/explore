@@ -817,7 +817,7 @@ async function register(form){
   data.kids = form.querySelector('[name=kids]').checked ? 'yes' : 'no';
   const msg = form.querySelector('.msg');
   let res = await post('/register', data);
-  if (res.lookalike && confirm(res.error + '\n\nRegister it anyway?')){
+  if (res.lookalike && confirm(res.error + '\\n\\nRegister it anyway?')){
     data.anyway = 'yes'; res = await post('/register', data);
   }
   if(res.error){

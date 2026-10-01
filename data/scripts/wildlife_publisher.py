@@ -94,7 +94,7 @@ def build_wildlife_json_entry(species, hero):
     hero_credit = resolve_hero_credit(hero)
 
     if hero:
-        photo = media_url(hero, "thumb") or f"photos/{pid}/{hero['filename']}"
+        photo = media_url(hero, "thumb", whole_site_only=True) or f"photos/{pid}/{hero['filename']}"
         focus = hero.get("focus") or "50% 50%"
     else:
         photo = ""

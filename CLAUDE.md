@@ -139,6 +139,10 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
     gitignored `images/brightfutures-local/`, never in the public tree.
 13. **Don't start servers for him.** Species Manager, `http.server`, anything holding a port.
     Print the command. If you must run one to verify, say so, name the port, kill it after.
+14. **AI writes only to Randy's local copy.** Never push. Never write to GitHub directly: no
+    cloud session, no connector, no API commit, no pull request, no branch made on GitHub. Edit
+    the files on his Mac and stop; he commits and pushes in GitHub Desktop. If a session cannot
+    reach his local copy, say so and do nothing to the repo.
 
 ---
 

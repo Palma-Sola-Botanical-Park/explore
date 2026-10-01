@@ -166,7 +166,7 @@ def build_plants_json_entry(species, hero):
     hero_credit = resolve_hero_credit(hero)
 
     if hero:
-        photo = media_url(hero, "thumb") or f"photos/{pid}/{hero['filename']}"
+        photo = media_url(hero, "thumb", whole_site_only=True) or f"photos/{pid}/{hero['filename']}"
         focus = hero.get("focus") or "50% 50%"
     else:
         photo = ""
@@ -2035,7 +2035,7 @@ def cmd_validate():
     for p in plants:
         hero = heroes.get(p["id"])
         if hero:
-            expected = media_url(hero, "thumb") or f"photos/{p['id']}/{hero['filename']}"
+            expected = media_url(hero, "thumb", whole_site_only=True) or f"photos/{p['id']}/{hero['filename']}"
             if p.get("photo") != expected:
                 print(f"  [PLANTS_JSON] {p['id']} {p['common']}: photo={p.get('photo')} expected={expected}")
                 pj_issues += 1

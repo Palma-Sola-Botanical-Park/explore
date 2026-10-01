@@ -60,14 +60,114 @@ MEDIA_REV  = "v1"
 MEDIA_ON   = False
 
 
-def media_url(rec, size="web"):
-    """R2 address for a photo row at one size, or None when the library is
-    off or the row has no iNat photo id (nothing to serve then)."""
-    if not MEDIA_ON or not rec:
+# One species at a time, while the library fills (Randy, 10-01): with the
+# whole-site switch still off, a species page takes its photographs from R2 as
+# soon as EVERY published photo of that species is confirmed in the bucket;
+# until then it keeps today's addresses, unchanged. The card photo in
+# plants.json / wildlife.json never moves this way (the TV decks read it), only
+# with MEDIA_ON. A photo is confirmed by asking the bucket's public address
+# once; a yes is remembered outside the repo, because nothing is ever deleted
+# from the bucket. A no is asked again after a minute.
+MEDIA_PER_SPECIES = True
+MEDIA_LOCAL_ROOT = (Path(r"C:\PSBP\data\media") if os.name == "nt" else Path.home() / "PSBP-media")
+MEDIA_CONFIRMED_JSON = MEDIA_LOCAL_ROOT / "manifests" / "r2_confirmed.json"
+_media_state = {"ids": None, "mtime": None, "no": {}, "offline_until": 0.0,
+                "credits_mtime": None, "by_species": {}}
+
+
+def _media_confirmed_ids():
+    st = _media_state
+    try:
+        mtime = MEDIA_CONFIRMED_JSON.stat().st_mtime
+    except OSError:
+        mtime = None
+    if st["ids"] is None or mtime != st["mtime"]:
+        data = load_json(MEDIA_CONFIRMED_JSON, {}) if mtime else {}
+        st["ids"] = set(data.get(MEDIA_BASE, []))
+        st["mtime"] = mtime
+    return st["ids"]
+
+
+def media_confirm(photo_id):
+    """Remember that this photo's three files are in the bucket."""
+    ids = _media_confirmed_ids()
+    if str(photo_id) in ids:
+        return
+    ids.add(str(photo_id))
+    try:
+        MEDIA_CONFIRMED_JSON.parent.mkdir(parents=True, exist_ok=True)
+        data = load_json(MEDIA_CONFIRMED_JSON, {}) or {}
+        data[MEDIA_BASE] = sorted(set(data.get(MEDIA_BASE, [])) | ids)
+        write_json_atomic(MEDIA_CONFIRMED_JSON, data)
+        _media_state["mtime"] = MEDIA_CONFIRMED_JSON.stat().st_mtime
+    except OSError:
+        pass                      # the answer still holds for this run
+
+
+def media_in_bucket(photo_id):
+    """True when the photo is confirmed in the bucket. thumb.jpg is the last of
+    the three files both uploaders send, so its presence means all three."""
+    import time
+    import urllib.error
+    import urllib.request
+    pid = str(photo_id)
+    st = _media_state
+    if pid in _media_confirmed_ids():
+        return True
+    now = time.time()
+    if now < st["offline_until"] or now - st["no"].get(pid, 0) < 60:
+        return False
+    req = urllib.request.Request(f"{MEDIA_BASE}/inat/{pid}/{MEDIA_REV}/thumb.jpg", method="HEAD",
+                                 headers={"User-Agent": "PalmaSolaBotanicalPark-publisher/1.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=8) as r:
+            ok = r.status == 200
+    except urllib.error.HTTPError as e:
+        ok = False
+        if e.code != 404:
+            st["offline_until"] = now + 60      # blocked or throttled: stop asking for a minute
+    except (urllib.error.URLError, OSError):
+        ok = False
+        st["offline_until"] = now + 60          # no network: pages keep today's addresses
+    if ok:
+        media_confirm(pid)
+    else:
+        st["no"][pid] = now
+    return ok
+
+
+def media_ready(psbp_id):
+    """True when every published photo of this species is in the bucket."""
+    if not psbp_id:
+        return False
+    st = _media_state
+    try:
+        mtime = PHOTO_CREDITS_JSON.stat().st_mtime
+    except OSError:
+        return False
+    if mtime != st["credits_mtime"]:
+        by = {}
+        for p in load_json(PHOTO_CREDITS_JSON, {"photos": []}).get("photos", []):
+            if p.get("publish_ok") and p.get("photo_id") and p.get("psbp_id"):
+                by.setdefault(p["psbp_id"], []).append(str(p["photo_id"]))
+        st["by_species"], st["credits_mtime"] = by, mtime
+    ids = st["by_species"].get(psbp_id)
+    return bool(ids) and all(media_in_bucket(i) for i in ids)
+
+
+def media_url(rec, size="web", whole_site_only=False):
+    """R2 address for a photo row at one size, or None when this photo should
+    keep today's address: the library is off and its species is not wholly in
+    the bucket yet, or the row has no iNat photo id. `whole_site_only` is for
+    the card photo, which moves only with MEDIA_ON."""
+    if not rec:
         return None
     photo_id = rec.get("photo_id")
     if not photo_id:
         return None
+    if not MEDIA_ON:
+        if whole_site_only or not MEDIA_PER_SPECIES or not media_ready(rec.get("psbp_id")):
+            return None
     return f"{MEDIA_BASE}/inat/{photo_id}/{MEDIA_REV}/{size}.jpg"
 
 # ===========================================================================
