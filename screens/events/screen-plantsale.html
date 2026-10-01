@@ -12,68 +12,69 @@
      order, about 40 seconds a loop: thank you, the names (two slides,
      alphabetical), the closing line. It supports the person speaking, so it is
      deliberately still: slow crossfades, nothing moving, no sound.
+     The look is type only, like the plaque: cream ground, a fine double gold
+     border, centred lines, a small gold lozenge between two rules. No drawings.
      Shared mechanics come from event-deck.css / event-deck.js; the theme is
      inline below so the whole deck is this one file. To change a name, edit
      the two lists in the script at the bottom. An entry written as
      {memory:'Name'} gets the small "In memory of" line above it. -->
 <style>
 :root{
-  --ground:#f6f1e4; --ground-2:#efe7d3; --paper:#fbf8f0;
-  --green-deep:#1a3a1f; --green-mid:#2d6a35; --ink-soft:#4a5a48;
-  --gold:#c5922a; --gold-deep:#a8791c; --rule:rgba(197,146,42,.45);
-  --sage:#9fb292; --sage-deep:#7c9272;
+  --ground:#f6f1e5; --glow:#fcf9f2; --ink:#1a3a1f; --ink-soft:#4d5b4a;
+  --gold:#b0822a; --rule:rgba(176,130,42,.55); --rule-faint:rgba(176,130,42,.28);
   --fade:2s;
 }
-body{background:var(--ground);color:var(--green-deep)}
-.slide .bg{background:
-  radial-gradient(110vmin 80vmin at 22% 30%, var(--paper) 0%, rgba(251,248,240,0) 70%),
-  linear-gradient(160deg, var(--ground) 0%, var(--ground-2) 100%)}
+body{background:var(--ground);color:var(--ink)}
+.slide .bg{background:radial-gradient(130vmin 90vmin at 50% 42%, var(--glow) 0%, var(--ground) 75%)}
 .clock,#bar{display:none}
-.eyebrow-fixed{color:var(--gold-deep)}
-.logo-mark{right:auto;left:calc(var(--frame) + var(--pad));bottom:calc(var(--frame) + 2.6vmin);height:8vmin;opacity:.92}
 
-/* Leaf sprigs, drawn in the script below. Top right on every slide; a second
-   one rises from the bottom right on the two slides that have room for it. */
-.sprig{position:absolute;z-index:0;pointer-events:none;color:var(--sage)}
-.sprig svg{display:block;width:100%;height:auto}
-.sprig.top{top:0;right:2vmin;width:38vmin}
-.sprig.low{bottom:-2vmin;right:0;width:52vmin}
-.sprig.low svg{transform:scaleY(-1)}
-.names .sprig.top{width:26vmin}
+/* A double hairline, like the border of an engraved card */
+.frame{border-color:var(--rule)}
+.frame::after{content:'';position:absolute;inset:.9vmin;border:1px solid var(--rule-faint)}
 
-.copy{position:relative;z-index:1}
+/* The park's name sits at the bottom centre, like a signature */
+.eyebrow-fixed{top:auto;left:0;right:0;bottom:calc(var(--frame) + 3.4vmin);text-align:center;
+  color:var(--gold);font-size:2vmin;letter-spacing:.32em}
+
+.slide{justify-content:center;text-align:center}
+.copy{flex:0 1 auto;max-width:150vmin}
+
+/* rule — lozenge — rule */
+.orn{display:flex;align-items:center;justify-content:center;gap:1.8vmin;margin:3.8vmin auto}
+.orn::before,.orn::after{content:'';width:13vmin;height:1px;background:var(--gold)}
+.orn i{width:.9vmin;height:.9vmin;background:var(--gold);transform:rotate(45deg)}
 
 /* Slides 1 and 4 — one thought, huge */
-.ty-h{font-family:var(--serif);font-weight:400;line-height:1.04;letter-spacing:-.005em;
-  font-size:clamp(3.4rem,12.5vmin,11rem);color:var(--green-deep)}
-.ty-h.second{font-size:clamp(3rem,10.6vmin,9.4rem)}
-.ty-h em{font-style:italic;color:var(--green-mid)}
-.ty-rule{width:34vmin;height:.3vmin;background:var(--gold);margin:4.4vmin 0 3.6vmin}
-.ty-lead{font-size:clamp(1.8rem,4.6vmin,3.9rem);line-height:1.32;font-weight:400;color:var(--green-deep);max-width:112vmin}
-.ty-match{font-size:clamp(1.3rem,3vmin,2.5rem);color:var(--ink-soft);font-weight:400;margin-top:3.6vmin}
-.ty-match b{font-weight:600;color:var(--green-deep)}
+.kicker{font-family:var(--serif);font-style:italic;font-size:6.4vmin;color:var(--gold);line-height:1.1;margin-bottom:1vmin}
+.title{font-family:var(--serif);font-weight:400;font-size:11.5vmin;line-height:1.04;letter-spacing:-.005em}
+.title.two{font-size:9.6vmin}
+.title em{font-style:italic;color:var(--gold)}
+.lead{font-size:4.2vmin;line-height:1.35;font-weight:400}
+.lead.small{font-size:3.7vmin}
+.match{margin-top:3.4vmin;font-size:3vmin;color:var(--ink-soft)}
+.match b{font-weight:600;color:var(--ink)}
 
-/* Slides 2 and 3 — the names. Both slides come from one function, so they are
-   identical apart from the names. Rows are a fixed height so the two columns
-   line up whether or not an entry carries an "In memory of" line. */
-.names{align-items:flex-start;padding-top:calc(var(--frame) + 7.2vmin)}
+/* Slides 2 and 3 — the names, two centred columns either side of a hairline.
+   Both slides come from one function, so they are identical apart from the
+   names. Rows are a fixed height so the two columns line up whether or not an
+   entry carries an "In memory of" line. */
+.slide.names{align-items:flex-start;padding-top:calc(var(--frame) + 6.4vmin)}
 .names .copy{width:100%}
-.nm-h{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,6.6vmin,5.6rem);line-height:1.08;color:var(--green-deep)}
-.nm-sub{font-size:clamp(1.2rem,2.8vmin,2.3rem);color:var(--ink-soft);margin-top:.8vmin}
-.names .ty-rule{margin:2.4vmin 0 1.2vmin}
+.nm-h{font-family:var(--serif);font-weight:400;font-size:6.6vmin;line-height:1.08}
+.nm-sub{font-size:2.9vmin;color:var(--ink-soft);margin-top:.8vmin}
+.names .orn{margin:2.6vmin auto 1.4vmin}
 .nm-grid{display:grid;grid-auto-flow:column;grid-template-columns:1fr 1fr;grid-template-rows:repeat(8,7.2vmin);
-  column-gap:8vmin;max-width:146vmin}
-.nm{display:flex;flex-direction:column;justify-content:flex-end;min-width:0;
-  font-size:clamp(1.5rem,3.9vmin,3.3rem);line-height:1.12;font-weight:600;color:var(--green-deep);white-space:nowrap}
-.nm i{display:block;font-family:var(--serif);font-style:italic;font-weight:400;
-  font-size:clamp(1.07rem,2.3vmin,1.9rem);line-height:1.15;color:var(--gold-deep);margin-bottom:.1vmin}
+  column-gap:10vmin;max-width:142vmin;margin:0 auto;
+  background:linear-gradient(var(--rule-faint),var(--rule-faint)) center/1px 92% no-repeat}
+.nm{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0;white-space:nowrap;
+  font-size:3.9vmin;line-height:1.12;font-weight:600}
+.nm i{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:2.3vmin;line-height:1.15;color:var(--gold)}
 </style>
 </head>
 <body>
 <div class="frame"></div>
 <div class="eyebrow-fixed">Palma Sola Botanical Park</div>
 <div class="clock" id="clock"></div>
-<img class="logo-mark" src="../../images/psbp_logo_green.png" alt="Palma Sola Botanical Park">
 <div class="deck"></div>
 <div id="bar"></div>
 <script>
@@ -92,49 +93,27 @@ var NAMES_2 = [
 ];
 
 function esc(s){ return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
-
-/* A leaf sprig: one curved stem, leaves alternating either side, a few gold berries.
-   cls 'low' is the same drawing turned over (in the CSS) for the bottom corner. */
-function sprig(cls){
-  var P0 = [250, 6], P1 = [215, 150], P2 = [40, 300], out = '', n = 9;
-  function at(t){ var u = 1 - t;
-    return [u*u*P0[0] + 2*u*t*P1[0] + t*t*P2[0], u*u*P0[1] + 2*u*t*P1[1] + t*t*P2[1],
-            Math.atan2(2*u*(P1[1]-P0[1]) + 2*t*(P2[1]-P1[1]), 2*u*(P1[0]-P0[0]) + 2*t*(P2[0]-P1[0])) * 180 / Math.PI]; }
-  for(var k = 0; k < n; k++){
-    var p = at(0.1 + k * 0.1), side = k % 2 ? 1 : -1, s = 1.25 - k * 0.055;
-    out += '<path d="M0 0C10 -13 38 -14 56 0C38 12 10 11 0 0Z" fill="currentColor" stroke="var(--sage-deep)" stroke-width=".8" opacity="' + (k % 3 ? .78 : .58)
-        + '" transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ') rotate(' + (p[2] + side * 52).toFixed(1) + ') scale(' + s.toFixed(2) + ')"/>';
-    if(k === 2 || k === 5 || k === 6){ var b = at(0.14 + k * 0.1);
-      out += '<circle cx="' + (b[0] + side * 9).toFixed(1) + '" cy="' + (b[1] - 6).toFixed(1) + '" r="3.6" fill="var(--gold)" opacity=".85"/>'; }
-  }
-  var tip = at(1);
-  out += '<path d="M0 0C10 -11 34 -12 50 0C34 10 10 9 0 0Z" fill="currentColor" stroke="var(--sage-deep)" stroke-width=".8" opacity=".7" transform="translate(' + tip[0].toFixed(1) + ' ' + tip[1].toFixed(1) + ') rotate(' + tip[2].toFixed(1) + ') scale(.8)"/>';
-  return '<div class="sprig ' + cls + '"><svg viewBox="0 0 300 330" aria-hidden="true">'
-    + '<path d="M' + P0 + ' Q' + P1 + ' ' + P2 + '" fill="none" stroke="var(--sage-deep)" stroke-width="1.6" stroke-linecap="round"/>' + out + '</svg></div>';
-}
+var ORN = '<div class="orn"><i></i></div>';
 
 function namesSlide(list){
-  var cells = list.map(function(n){
-    return '<div class="nm">' + (typeof n === 'string' ? esc(n) : '<i>In memory of</i>' + esc(n.memory)) + '</div>';
-  }).join('');
-  return sprig('top') + '<div class="copy"><div class="nm-h">With our sincere thanks</div>'
-    + '<div class="nm-sub">Friends who helped make our deck renovation possible</div>'
-    + '<div class="ty-rule"></div><div class="nm-grid">' + cells + '</div></div>';
+  return '<div class="copy"><div class="nm-h">With our sincere thanks</div>'
+    + '<div class="nm-sub">Friends who helped make our deck renovation possible</div>' + ORN
+    + '<div class="nm-grid">' + list.map(function(n){
+        return '<div class="nm">' + (typeof n === 'string' ? esc(n) : '<i>In memory of</i>' + esc(n.memory)) + '</div>';
+      }).join('') + '</div></div>';
 }
 
 window.DECK_ORDER = 'seq';   /* thank you → names → names → closing, in order; opens on thank you */
 window.SLIDES = [
-  { id: 'thanks', seconds: 8, html: sprig('top') + sprig('low')
-    + '<div class="copy"><div class="ty-h">Thank you,<br><em>Friends of the Park.</em></div>'
-    + '<div class="ty-rule"></div>'
-    + '<div class="ty-lead">Your generosity made our<br>deck renovation possible.</div>'
-    + '<div class="ty-match">With matching support from the <b>Bishop-Parker Foundation</b>.</div></div>' },
+  { id: 'thanks', seconds: 8, html:
+      '<div class="copy"><div class="kicker">Thank you,</div><div class="title">Friends of the Park</div>' + ORN
+    + '<div class="lead">Your generosity made our deck renovation possible.</div>'
+    + '<div class="match">With matching support from the <b>Bishop-Parker Foundation</b></div></div>' },
   { id: 'names-1', seconds: 12, html: namesSlide(NAMES_1) },
   { id: 'names-2', seconds: 12, html: namesSlide(NAMES_2) },
-  { id: 'community', seconds: 8, html: sprig('top') + sprig('low')
-    + '<div class="copy"><div class="ty-h second">A growing park.<br><em>A generous community.</em></div>'
-    + '<div class="ty-rule"></div>'
-    + '<div class="ty-lead">To our donors, volunteers, vendors and neighbors:<br>thank you for helping Palma Sola Botanical Park<br>grow as a place to gather, learn and discover.</div></div>' }
+  { id: 'community', seconds: 8, html:
+      '<div class="copy"><div class="title two">A growing park.<br><em>A generous community.</em></div>' + ORN
+    + '<div class="lead small">To our donors, volunteers, vendors and neighbors:<br>thank you for helping Palma Sola Botanical Park<br>grow as a place to gather, learn and discover.</div></div>' }
 ];
 </script>
 <script src="event-deck.js"></script>
