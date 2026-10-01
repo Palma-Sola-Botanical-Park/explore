@@ -674,6 +674,21 @@ function loadDrafts(){
   writeDrafts(kept);                  // forget files that have left the inbox
 }
 const DEFAULT_FIELDS = ['made_by','credit_line','license','public','dropped_by'];
+// One time only: the form used to start at "Not sure" and spell the field "licence".
+// Public now starts at Yes, so what this browser remembered is brought along.
+(function(){
+  try {
+    if (localStorage.getItem('intakeV2')) return;
+    const fix = v => { if (v.licence !== undefined){ if (v.license === undefined) v.license = v.licence; delete v.licence; }
+                       if (v.public === 'not_sure') v.public = 'yes'; };
+    const d = JSON.parse(localStorage.getItem('intakeDefaults')||'{}'); fix(d);
+    localStorage.setItem('intakeDefaults', JSON.stringify(d));
+    const dr = JSON.parse(localStorage.getItem('intakeDrafts')||'{}');
+    for (const k in dr) fix(dr[k].vals || {});
+    localStorage.setItem('intakeDrafts', JSON.stringify(dr));
+    localStorage.setItem('intakeV2', '1');
+  } catch(e){}
+})();
 function loadDefaults(){
   let d = {}; try { d = JSON.parse(localStorage.getItem('intakeDefaults')||'{}'); } catch(e){}
   for (const k of DEFAULT_FIELDS){
@@ -760,7 +775,7 @@ def render_page():
     <label>Credit as <small>usually blank</small><input name='credit_line' onchange='saveDefaults()'></label>
     <label>License<select name='license' onchange='saveDefaults()'><option value=''>Unknown / not set</option>{lic_opts}</select></label>
     <label>May the public see it?<select name='public' onchange='saveDefaults()'>
-      <option value='not_sure'>Not sure</option><option value='yes'>Yes</option><option value='no'>No</option></select></label>
+      <option value='yes'>Yes</option><option value='not_sure'>Not sure</option><option value='no'>No</option></select></label>
     <label>Dropped by<select name='dropped_by' onchange='saveDefaults()'><option value='randy'>Randy</option><option value='bev'>Bev</option><option value='other'>Other</option></select></label>
   </div>
   <div class='row'><button class='gold' onclick='suggestAll(this)'>Suggest all</button>
@@ -786,7 +801,7 @@ def render_page():
     <label>License <small>needed before a species page may use it</small><select name='license'>
       <option value=''>Unknown / not set</option>{"".join(f"<option value='{k}'>{v}</option>" for k, v in LICENSE_CHOICES)}</select></label>
     <label>May the public see it?<select name='public'>
-      <option value='yes'>Yes</option><option value='not_sure' selected>Not sure</option><option value='no'>No</option></select></label>
+      <option value='yes' selected>Yes</option><option value='not_sure'>Not sure</option><option value='no'>No</option></select></label>
     <label>Tags <small>comma separated: event, wedding, sign, map, nursery…</small><input name='tags'></label>
     <label>Date <small>if known, YYYY-MM-DD</small><input name='date'></label>
     <label>Species in it <small>PSBP ids, comma separated</small><input name='species'></label>
