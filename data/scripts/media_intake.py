@@ -311,6 +311,17 @@ def original_of(rec):
 
 # ── register ───────────────────────────────────────────────────────────────
 
+def _title_tags_species(form):
+    title = (form.get("title") or "").strip()
+    if not title:
+        raise ValueError("A title is needed. What is it?")
+    tags = [t.strip() for t in (form.get("tags") or "").split(",") if t.strip()]
+    species = [s.strip().upper() for s in (form.get("species") or "").split(",") if s.strip()]
+    bad = [s for s in species if not re.fullmatch(r"PSBP-\d{5}", s)]
+    if bad:
+        raise ValueError("Species must be PSBP ids (PSBP-00004), not names: " + ", ".join(bad))
+    return title, tags, species
+
 def register(form):
     """Mint an id, move the inbox file to originals, write the record."""
     name = os.path.basename(form.get("filename", ""))
@@ -320,15 +331,8 @@ def register(form):
     if form.get("kids") in ("yes", "true", "on", True):
         raise ValueError("Kids in the photo: that is private, and the private bucket is not "
                          "built yet. Take it out of the inbox for now; it was not registered.")
-    title = (form.get("title") or "").strip()
-    if not title:
-        raise ValueError("A title is needed. What is it?")
+    title, tags, species = _title_tags_species(form)
     ext = src.suffix.lower().lstrip(".")
-    tags = [t.strip() for t in (form.get("tags") or "").split(",") if t.strip()]
-    species = [s.strip().upper() for s in (form.get("species") or "").split(",") if s.strip()]
-    bad = [s for s in species if not re.fullmatch(r"PSBP-\d{5}", s)]
-    if bad:
-        raise ValueError("Species must be PSBP ids (PSBP-00004), not names: " + ", ".join(bad))
 
     def opt(k):
         v = (form.get(k) or "").strip()
@@ -336,6 +340,10 @@ def register(form):
 
     with _lock:
         reg = load_registry()
+        same = next((r for r in reg["items"] if r["source"].get("sha256") == sha256_of(src)), None)
+        if same:
+            raise ValueError(f"This is the very same file as {same['media_id']} \"{same['title']}\", "
+                             "already registered. Take it out of the inbox.")
         media_id = mint_id(reg)
         dest_dir = MEDIA_ROOT / "originals" / "media" / media_id
         dest_dir.mkdir(parents=True, exist_ok=True)
@@ -375,6 +383,41 @@ def register(form):
         reg["items"].append(rec)
         save_registry(reg)
     log(f"registered {media_id}  {name}  \"{title}\"  public={rec['public']}")
+    return rec
+
+
+# ── edit ───────────────────────────────────────────────────────────────────
+
+def edit(form):
+    """Change the words on a registered item. The id, the file and its address
+    in the bucket never change. An item already in the bucket goes back to
+    "waiting" so the next Upload refreshes the record kept beside its files
+    (the files themselves are skipped as already up)."""
+    media_id = form.get("media_id", "")
+    title, tags, species = _title_tags_species(form)
+
+    def opt(k):
+        v = (form.get(k) or "").strip()
+        return v or None
+
+    public = form.get("public") if form.get("public") in ("yes", "no", "not_sure") else "yes"
+    with _lock:
+        reg = load_registry()
+        rec = next((r for r in reg["items"] if r["media_id"] == media_id), None)
+        if not rec:
+            raise KeyError(media_id)
+        in_bucket = bool(rec.get("url"))
+        if in_bucket and public != "yes":
+            raise ValueError("This one is already in the public bucket. Taking a file back out "
+                             "is not built yet, so it stays public; nothing was changed.")
+        rec.update({"title": title, "made_by": opt("made_by"), "credit_line": opt("credit_line"),
+                    "license": form.get("license") if form.get("license") in LICENSES else None,
+                    "public": public, "tags": tags, "date": opt("date"), "species": species,
+                    "caption": opt("caption"), "updated": now_z()})
+        rec["state"] = "waiting" if public == "yes" else "private"
+        rec.pop("problem", None)
+        save_registry(reg)
+    log(f"edited {media_id}  \"{title}\"  public={public}  state={rec['state']}")
     return rec
 
 
@@ -735,6 +778,14 @@ async function suggestAll(btn){
   if (reloadWhenDone) location.reload();
 }
 document.addEventListener('DOMContentLoaded', () => { loadDefaults(); loadDrafts(); });
+function toggleEdit(id){ const r = document.getElementById('edit-' + id); r.hidden = !r.hidden; }
+async function saveEdit(form){
+  const btn = form.querySelector('button[type=submit]'), msg = form.querySelector('.msg');
+  btn.disabled = true;
+  const res = await post('/edit', Object.fromEntries(new FormData(form).entries()));
+  if (res.error){ msg.textContent = res.error; msg.style.display = 'block'; btn.disabled = false; return; }
+  location.reload();
+}
 async function upload(id){
   const out = document.getElementById('log');
   out.textContent = 'Working… (about a second per file, do not close this page)';
@@ -842,11 +893,32 @@ def render_page():
             prob = f"<br><small>{h(r.get('problem'))}</small>" if r["state"] == "problem" else ""
             btn = (f"<button onclick=\"upload('{r['media_id']}')\">{'Retry' if r['state'] == 'problem' else 'Upload'}</button>"
                    if r["public"] == "yes" and r["state"] in ("waiting", "problem") else "")
+            btn += f"<button type='button' onclick=\"toggleEdit('{r['media_id']}')\">Edit</button>"
             out.append(f"<tr><td>{pic}</td><td><code>{r['media_id']}</code></td>"
                        f"<td><b>{h(r['title'])}</b><br><small>{h(r['source']['original_filename'])}"
                        f"{' · ' + h(', '.join(r['tags'])) if r['tags'] else ''}</small></td>"
                        f"<td>{h(r['public'])}</td><td><span class='state {h(r['state'])}'>{h(r['state'])}</span>{prob}</td>"
-                       f"<td>{where}</td><td>{btn}</td></tr>")
+                       f"<td>{where}</td><td><div class='row'>{btn}</div></td></tr>")
+            sel = lambda v, cur: " selected" if v == cur else ""
+            out.append(f"""<tr id='edit-{r['media_id']}' hidden><td colspan='7'>
+<form onsubmit='event.preventDefault(); saveEdit(this)'>
+  <input type='hidden' name='media_id' value='{r['media_id']}'>
+  <div class='fields'>
+    <label class='wide'>What is it? <small>a plain title</small><input name='title' required value="{h(r['title'])}"></label>
+    <label>Who took or made it? <small>leave blank for unknown</small><input name='made_by' list='makers' value="{h(r.get('made_by'))}"></label>
+    <label>Credit as <small>leave blank; only if the credit should read differently from the name</small><input name='credit_line' value="{h(r.get('credit_line'))}"></label>
+    <label>License <small>needed before a species page may use it</small><select name='license'>
+      <option value=''>Unknown / not set</option>{"".join(f"<option value='{k}'{sel(k, r.get('license'))}>{v}</option>" for k, v in LICENSE_CHOICES)}</select></label>
+    <label>May the public see it?<select name='public'>
+      <option value='yes'{sel('yes', r['public'])}>Yes</option><option value='not_sure'{sel('not_sure', r['public'])}>Not sure</option><option value='no'{sel('no', r['public'])}>No</option></select></label>
+    <label>Tags <small>comma separated</small><input name='tags' value="{h(', '.join(r.get('tags') or []))}"></label>
+    <label>Date <small>if known, YYYY-MM-DD</small><input name='date' value="{h(r.get('date'))}"></label>
+    <label>Species in it <small>PSBP ids, comma separated</small><input name='species' value="{h(', '.join(r.get('species') or []))}"></label>
+    <label class='wide'>Caption <small>optional</small><input name='caption' value="{h(r.get('caption'))}"></label>
+  </div>
+  <div class='row'><button type='submit'>Save</button><button type='button' onclick="toggleEdit('{r['media_id']}')" style='background:#777'>Cancel</button>
+  {"<span>Already in the bucket: after saving, press Upload once to refresh its record there. The photo itself is not sent again.</span>" if r.get('url') else ""}<div class='msg'></div></div>
+</form></td></tr>""")
         out.append("</table>")
     out.append(f"</main><script>{JS}</script></body></html>")
     return "".join(out)
@@ -894,6 +966,9 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if path == "/register":
                 rec = register(body)
+                res = {"ok": True, "media_id": rec["media_id"]}
+            elif path == "/edit":
+                rec = edit(body)
                 res = {"ok": True, "media_id": rec["media_id"]}
             elif path == "/upload":
                 res = {"lines": upload(body.get("id") or None)}
