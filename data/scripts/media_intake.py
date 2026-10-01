@@ -316,11 +316,38 @@ def _title_tags_species(form):
     if not title:
         raise ValueError("A title is needed. What is it?")
     tags = [t.strip() for t in (form.get("tags") or "").split(",") if t.strip()]
-    species = [s.strip().upper() for s in (form.get("species") or "").split(",") if s.strip()]
-    bad = [s for s in species if not re.fullmatch(r"PSBP-\d{5}", s)]
+    # The form turns a typed name into its id when one is picked from the list.
+    # A name typed in full and never picked still works if it matches exactly one.
+    index = species_index()
+    species, bad = [], []
+    for tok in (t.strip() for t in (form.get("species") or "").split(",")):
+        if not tok:
+            continue
+        if re.fullmatch(r"PSBP-\d{5}", tok.upper()):
+            hit = [tok.upper()] if any(i == tok.upper() for i, _, _ in index) else []
+        else:
+            hit = [i for i, name, _ in index if name.lower() == tok.lower()]
+        if len(hit) == 1:
+            if hit[0] not in species:
+                species.append(hit[0])
+        else:
+            bad.append(tok)
     if bad:
-        raise ValueError("Species must be PSBP ids (PSBP-00004), not names: " + ", ".join(bad))
+        raise ValueError("Species not recognised: " + ", ".join(bad)
+                         + ". Type part of the name and pick it from the list.")
     return title, tags, species
+
+
+def species_index():
+    """[id, common name, scientific name] for every species in the three
+    masters, read fresh each time (rule 4). Feeds the name picker on the form."""
+    out = []
+    for fname in ("plant_signage.json", "wildlife_signage.json", "research.json"):
+        for sp in load_json(SOURCES / fname, {}).get("species", []):
+            if sp.get("id") and sp.get("common_name"):
+                out.append((sp["id"], sp["common_name"],
+                            sp.get("botanical_name") or sp.get("scientific_name") or ""))
+    return out
 
 def register(form):
     """Mint an id, move the inbox file to originals, write the record."""
@@ -659,6 +686,10 @@ code{font-size:var(--t-base)}
 .defaults .fields{grid-template-columns:repeat(3,1fr)}
 .setup{background:#fff;border:1px solid #ddd;border-radius:8px;padding:10px 14px}
 .setup div{margin:2px 0}
+.sp-pick{display:flex;flex-wrap:wrap;gap:6px}
+.sp-pick button{background:#fff;color:var(--green-deep);border:1px solid var(--green-mid);font-weight:400;padding:4px 10px;text-align:left}
+.sp-pick button:hover{background:#dff3e0}
+.sp-names{color:var(--green-deep)}
 """
 
 JS = """
@@ -778,6 +809,37 @@ async function suggestAll(btn){
   if (reloadWhenDone) location.reload();
 }
 document.addEventListener('DOMContentLoaded', () => { loadDefaults(); loadDrafts(); });
+// Species picker: type part of a common or scientific name in "Species in it",
+// click a match, and its PSBP id replaces what was typed. The names of the ids
+// already in the box are spelled out under it.
+const SP_ID = /^PSBP-\\d{5}$/i;
+function spNames(input){
+  const box = input.parentElement.querySelector('.sp-names'); if (!box) return;
+  box.textContent = input.value.split(',').map(t => t.trim().toUpperCase()).filter(t => SP_ID.test(t))
+    .map(id => { const s = SPECIES.find(x => x[0] === id); return s ? s[1] : id + ' (not a species we have)'; }).join(' · ');
+}
+function spSuggest(input){
+  const pick = input.parentElement.querySelector('.sp-pick'); if (!pick) return;
+  pick.innerHTML = ''; spNames(input);
+  const parts = input.value.split(','), q = parts[parts.length - 1].trim().toLowerCase();
+  if (q.length < 2 || SP_ID.test(q)) return;
+  const hits = SPECIES.filter(x => x[1].toLowerCase().includes(q) || x[2].toLowerCase().includes(q))
+    .sort((a, b) => (b[1].toLowerCase().startsWith(q) - a[1].toLowerCase().startsWith(q)) || a[1].localeCompare(b[1])).slice(0, 10);
+  if (!hits.length){ pick.textContent = 'No species with "' + q + '" in its name.'; return; }
+  for (const [id, name, sci] of hits){
+    const b = document.createElement('button'); b.type = 'button';
+    b.textContent = name + (sci ? ' (' + sci + ')' : '') + ' ' + id;
+    b.onclick = () => {
+      parts[parts.length - 1] = ' ' + id;
+      input.value = parts.map(t => t.trim()).filter(Boolean).join(', ') + ', ';
+      pick.innerHTML = ''; spNames(input); input.focus();
+      input.dispatchEvent(new Event('change', {bubbles: true}));   // keeps the draft
+    };
+    pick.appendChild(b);
+  }
+}
+document.addEventListener('input', e => { if (e.target.name === 'species') spSuggest(e.target); });
+document.addEventListener('DOMContentLoaded', () => setTimeout(() => document.querySelectorAll('[name=species]').forEach(spNames), 0));
 function toggleEdit(id){ const r = document.getElementById('edit-' + id); r.hidden = !r.hidden; }
 async function saveEdit(form){
   const btn = form.querySelector('button[type=submit]'), msg = form.querySelector('.msg');
@@ -866,7 +928,7 @@ def render_page():
       <option value='yes' selected>Yes</option><option value='not_sure'>Not sure</option><option value='no'>No</option></select></label>
     <label>Tags <small>comma separated: event, wedding, sign, map, nursery…</small><input name='tags'></label>
     <label>Date <small>if known, YYYY-MM-DD</small><input name='date'></label>
-    <label>Species in it <small>PSBP ids, comma separated</small><input name='species'></label>
+    <label>Species in it <small>type part of a name, pick it from the list</small><input name='species' autocomplete='off'><span class='sp-names'></span><span class='sp-pick'></span></label>
     <label>Dropped by<select name='dropped_by'><option value='randy'>Randy</option><option value='bev'>Bev</option><option value='other'>Other</option></select></label>
     <label class='wide'>Caption <small>optional</small><input name='caption'></label>
     <label class='wide' style='flex-direction:row;gap:8px;align-items:center'>
@@ -913,14 +975,15 @@ def render_page():
       <option value='yes'{sel('yes', r['public'])}>Yes</option><option value='not_sure'{sel('not_sure', r['public'])}>Not sure</option><option value='no'{sel('no', r['public'])}>No</option></select></label>
     <label>Tags <small>comma separated</small><input name='tags' value="{h(', '.join(r.get('tags') or []))}"></label>
     <label>Date <small>if known, YYYY-MM-DD</small><input name='date' value="{h(r.get('date'))}"></label>
-    <label>Species in it <small>PSBP ids, comma separated</small><input name='species' value="{h(', '.join(r.get('species') or []))}"></label>
+    <label>Species in it <small>type part of a name, pick it from the list</small><input name='species' autocomplete='off' value="{h(', '.join(r.get('species') or []))}"><span class='sp-names'></span><span class='sp-pick'></span></label>
     <label class='wide'>Caption <small>optional</small><input name='caption' value="{h(r.get('caption'))}"></label>
   </div>
   <div class='row'><button type='submit'>Save</button><button type='button' onclick="toggleEdit('{r['media_id']}')" style='background:#777'>Cancel</button>
   {"<span>Already in the bucket: after saving, press Upload once to refresh its record there. The photo itself is not sent again.</span>" if r.get('url') else ""}<div class='msg'></div></div>
 </form></td></tr>""")
         out.append("</table>")
-    out.append(f"</main><script>{JS}</script></body></html>")
+    sp_json = json.dumps(species_index(), ensure_ascii=False).replace("</", "<\\/")
+    out.append(f"</main><script>const SPECIES = {sp_json};{JS}</script></body></html>")
     return "".join(out)
 
 
