@@ -471,12 +471,18 @@ async function post(url, body){
   return r.json();
 }
 async function register(form){
+  const btn = form.querySelector('button[type=submit]');
+  if(btn.disabled) return;            // already sending
+  btn.disabled = true; btn.textContent = 'Registering…';
   const data = Object.fromEntries(new FormData(form).entries());
   data.kids = form.querySelector('[name=kids]').checked ? 'yes' : 'no';
   const msg = form.querySelector('.msg');
   const res = await post('/register', data);
-  if(res.error){ msg.textContent = res.error; msg.style.display='block'; return false; }
-  location.reload(); return false;
+  if(res.error){
+    msg.textContent = res.error; msg.style.display='block';
+    btn.disabled = false; btn.textContent = 'Register'; return;
+  }
+  location.reload();
 }
 async function upload(id){
   const out = document.getElementById('log');
@@ -516,7 +522,7 @@ def render_page():
         pic = (f"<img src='/inbox-file/{quote(p.name)}' alt=''>" if kind in ("photo", "image") and ext != "heic"
                else f"<span>{h(kind)} · .{h(ext)}</span>")
         out.append(f"""
-<form class='card' onsubmit='return register(this)'>
+<form class='card' onsubmit='event.preventDefault(); register(this)'>
   <div><div class='pic'>{pic}</div><div style='margin-top:6px'><b>{h(p.name)}</b><br>
   {p.stat().st_size // 1024} KB · {h(kind)}</div></div>
   <div>
