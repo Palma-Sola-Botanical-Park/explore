@@ -25,7 +25,7 @@ WHAT IT DOES
        "Suggest" (or "Suggest all") first sends a small copy of each photo to
        Claude, which proposes the title, tags, caption and a kids flag, and the
        date comes off the camera data when it is there. Who made it, the credit
-       line, the licence and whether it is public are never guessed: set them
+       line, the license and whether it is public are never guessed: set them
        once in "Batch defaults" and every form on the page starts with them.
        Suggestions are highlighted until you register; change anything.
 
@@ -114,8 +114,8 @@ OFFICE_LOGS = Path(r"C:\PSBP\logs")
 # Suggest: one Messages API call per photo, standard library only, the same
 # shape Species Manager uses. The model only proposes what can be SEEN:
 # title, tags, caption, whether anyone looks under 18. Never a name, a date,
-# a licence or a public decision (CLAUDE.md §7: never guess a photographer, a
-# date, a place, or a licence).
+# a license or a public decision (CLAUDE.md §7: never guess a photographer, a
+# date, a place, or a license).
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_VERSION = "2023-06-01"
 AI_MODEL = "claude-opus-5-5"
@@ -165,13 +165,13 @@ CONTENT_TYPES = {
     "mp3": "audio/mpeg", "m4a": "audio/mp4", "wav": "audio/wav", "aac": "audio/aac",
     "txt": "text/plain", "md": "text/markdown", "json": "application/json",
 }
-# Licence choices. A species page may use the item only with one of these
-# (psbp_common.MEDIA_PAGE_LICENCES); ordinary park media may leave it blank.
-LICENCES = ("permission", "cc-by", "cc-by-nc", "cc-by-sa", "cc-by-nc-sa", "cc-by-nd", "cc-by-nc-nd", "cc0")
-LICENCE_CHOICES = (("permission", "Given to the park, with permission to show it"), ("cc-by", "CC BY"),
+# License choices. A species page may use the item only with one of these
+# (psbp_common.MEDIA_PAGE_LICENSES); ordinary park media may leave it blank.
+LICENSES = ("permission", "cc-by", "cc-by-nc", "cc-by-sa", "cc-by-nc-sa", "cc-by-nd", "cc-by-nc-nd", "cc0")
+LICENSE_CHOICES = (("permission", "Given to the park, with permission to show it"), ("cc-by", "CC BY"),
                    ("cc-by-nc", "CC BY-NC"), ("cc-by-sa", "CC BY-SA"), ("cc-by-nc-sa", "CC BY-NC-SA"),
                    ("cc-by-nd", "CC BY-ND"), ("cc-by-nc-nd", "CC BY-NC-ND"), ("cc0", "CC0 (public domain)"))
-PUBLIC_FIELDS = ("media_id", "kind", "collection", "title", "made_by", "credit_line", "licence", "public",
+PUBLIC_FIELDS = ("media_id", "kind", "collection", "title", "made_by", "credit_line", "license", "public",
                  "kids", "tags", "date", "at_the_park", "species", "caption",
                  "files", "used_on", "updated")
 
@@ -348,7 +348,7 @@ def register(form):
             "title": title,
             "made_by": opt("made_by"),
             "credit_line": opt("credit_line"),
-            "licence": form.get("licence") if form.get("licence") in LICENCES else None,
+            "license": form.get("license") if form.get("license") in LICENSES else None,
             "public": form.get("public") if form.get("public") in ("yes", "no", "not_sure") else "not_sure",
             "kids": False,
             "tags": tags,
@@ -635,9 +635,45 @@ async function register(form){
     msg.textContent = res.error; msg.style.display='block';
     btn.disabled = false; btn.textContent = 'Register'; return;
   }
-  location.reload();
+  dropDraft(form);
+  form.remove();
+  // A reload in the middle of "Suggest all" would stop it, so wait for it to finish.
+  if (suggesting) reloadWhenDone = true; else location.reload();
 }
-const DEFAULT_FIELDS = ['made_by','credit_line','licence','public','dropped_by'];
+// Drafts: what is typed or suggested on a card is kept in this browser until the
+// card is registered, so a reload (Register, Upload, refresh) never blanks it.
+let suggesting = false, reloadWhenDone = false;
+function readDrafts(){ try { return JSON.parse(localStorage.getItem('intakeDrafts')||'{}'); } catch(e){ return {}; } }
+function writeDrafts(d){ try { localStorage.setItem('intakeDrafts', JSON.stringify(d)); } catch(e){} }
+function fileOf(form){ return form.querySelector('[name=filename]').value; }
+function saveDraft(form){
+  const d = readDrafts(), vals = {}, sug = [];
+  form.querySelectorAll('.fields [name]').forEach(el => {
+    vals[el.name] = el.type === 'checkbox' ? el.checked : el.value;
+    if (el.classList.contains('sug')) sug.push(el.name);
+  });
+  d[fileOf(form)] = {vals: vals, sug: sug};
+  writeDrafts(d);
+}
+function dropDraft(form){ const d = readDrafts(); delete d[fileOf(form)]; writeDrafts(d); }
+function loadDrafts(){
+  const d = readDrafts(), kept = {};
+  document.querySelectorAll('form.card').forEach(form => {
+    const draft = d[fileOf(form)];
+    if (draft){
+      kept[fileOf(form)] = draft;
+      for (const [k, v] of Object.entries(draft.vals || {})){
+        const el = form.querySelector('.fields [name='+k+']'); if (!el) continue;
+        if (el.type === 'checkbox') el.checked = !!v; else el.value = v;
+        if ((draft.sug || []).includes(k)) el.classList.add('sug');
+      }
+    }
+    form.addEventListener('input', () => saveDraft(form));
+    form.addEventListener('change', () => saveDraft(form));
+  });
+  writeDrafts(kept);                  // forget files that have left the inbox
+}
+const DEFAULT_FIELDS = ['made_by','credit_line','license','public','dropped_by'];
 function loadDefaults(){
   let d = {}; try { d = JSON.parse(localStorage.getItem('intakeDefaults')||'{}'); } catch(e){}
   for (const k of DEFAULT_FIELDS){
@@ -651,6 +687,8 @@ function saveDefaults(){
   for (const k of DEFAULT_FIELDS){ const box = document.querySelector('#defaults [name='+k+']'); if (box) d[k] = box.value; }
   try { localStorage.setItem('intakeDefaults', JSON.stringify(d)); } catch(e){}
   loadDefaults();
+  const drafts = readDrafts();
+  document.querySelectorAll('form.card').forEach(form => { if (drafts[fileOf(form)]) saveDraft(form); });
 }
 async function suggest(btn){
   const form = btn.closest('form');
@@ -665,14 +703,22 @@ async function suggest(btn){
   if (res.kids === 'yes') kids.checked = true;
   msg.textContent = 'Suggested: check it. People: ' + res.people + ', kids: ' + res.kids + (res.date ? ', date from the camera.' : ', no camera date.');
   msg.style.display = 'block';
+  if (form.isConnected) saveDraft(form);
 }
 async function suggestAll(btn){
-  btn.disabled = true;
+  btn.disabled = true; suggesting = true;
   const buttons = Array.from(document.querySelectorAll('form.card button.suggest'));
-  for (let i = 0; i < buttons.length; i++){ btn.textContent = 'Suggesting ' + (i+1) + ' of ' + buttons.length + '…'; await suggest(buttons[i]); }
-  btn.textContent = 'Suggest all'; btn.disabled = false;
+  for (let i = 0; i < buttons.length; i++){
+    const form = buttons[i].closest('form');
+    // Skip a card registered meanwhile, and one that already has a title (typed or suggested).
+    if (!buttons[i].isConnected || form.querySelector('[name=title]').value.trim()) continue;
+    btn.textContent = 'Suggesting ' + (i+1) + ' of ' + buttons.length + '…';
+    await suggest(buttons[i]);
+  }
+  suggesting = false; btn.textContent = 'Suggest all'; btn.disabled = false;
+  if (reloadWhenDone) location.reload();
 }
-document.addEventListener('DOMContentLoaded', loadDefaults);
+document.addEventListener('DOMContentLoaded', () => { loadDefaults(); loadDrafts(); });
 async function upload(id){
   const out = document.getElementById('log');
   out.textContent = 'Working… (about a second per file, do not close this page)';
@@ -706,13 +752,13 @@ def render_page():
 
     out.append(f"<h2>In the inbox ({len(waiting)})</h2>")
     if waiting:
-        lic_opts = "".join(f"<option value='{k}'>{v}</option>" for k, v in LICENCE_CHOICES)
+        lic_opts = "".join(f"<option value='{k}'>{v}</option>" for k, v in LICENSE_CHOICES)
         out.append(f"""
 <div class='defaults' id='defaults'><b>Batch defaults</b> <small>— set once, every form below starts with these; they are never guessed</small>
   <div class='fields' style='margin-top:6px'>
     <label>Who took or made it?<input name='made_by' onchange='saveDefaults()'></label>
-    <label>Credit line<input name='credit_line' onchange='saveDefaults()'></label>
-    <label>Licence<select name='licence' onchange='saveDefaults()'><option value=''>Unknown / not set</option>{lic_opts}</select></label>
+    <label>Credit as <small>usually blank</small><input name='credit_line' onchange='saveDefaults()'></label>
+    <label>License<select name='license' onchange='saveDefaults()'><option value=''>Unknown / not set</option>{lic_opts}</select></label>
     <label>May the public see it?<select name='public' onchange='saveDefaults()'>
       <option value='not_sure'>Not sure</option><option value='yes'>Yes</option><option value='no'>No</option></select></label>
     <label>Dropped by<select name='dropped_by' onchange='saveDefaults()'><option value='randy'>Randy</option><option value='bev'>Bev</option><option value='other'>Other</option></select></label>
@@ -736,9 +782,9 @@ def render_page():
   <div class='fields'>
     <label class='wide'>What is it? <small>a plain title</small><input name='title' required></label>
     <label>Who took or made it? <small>leave blank for unknown</small><input name='made_by'></label>
-    <label>Credit line <small>as it should appear</small><input name='credit_line'></label>
-    <label>Licence <small>needed before a species page may use it</small><select name='licence'>
-      <option value=''>Unknown / not set</option>{"".join(f"<option value='{k}'>{v}</option>" for k, v in LICENCE_CHOICES)}</select></label>
+    <label>Credit as <small>leave blank; only if the credit should read differently from the name</small><input name='credit_line'></label>
+    <label>License <small>needed before a species page may use it</small><select name='license'>
+      <option value=''>Unknown / not set</option>{"".join(f"<option value='{k}'>{v}</option>" for k, v in LICENSE_CHOICES)}</select></label>
     <label>May the public see it?<select name='public'>
       <option value='yes'>Yes</option><option value='not_sure' selected>Not sure</option><option value='no'>No</option></select></label>
     <label>Tags <small>comma separated: event, wedding, sign, map, nursery…</small><input name='tags'></label>

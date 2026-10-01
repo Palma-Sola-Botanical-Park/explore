@@ -82,7 +82,7 @@ MEDIA_LIBRARY_JSON = SOURCES / "media_library.json"
 
 # A gifted photograph is not Creative Commons; "permission" records that the
 # photographer gave the park the right to show it. Anything else is refused.
-MEDIA_PAGE_LICENCES = frozenset({"cc-by", "cc-by-nc", "cc-by-sa", "cc-by-nc-sa",
+MEDIA_PAGE_LICENSES = frozenset({"cc-by", "cc-by-nc", "cc-by-sa", "cc-by-nc-sa",
                                  "cc-by-nd", "cc-by-nc-nd", "cc0", "permission"})
 
 
@@ -102,8 +102,8 @@ def media_page_check(media_id):
         return None, f"{media_id} is not uploaded yet (state {rec.get('state')})"
     if not (rec.get("credit_line") or rec.get("made_by")):
         return None, f"{media_id} has no credit line and no maker"
-    if (rec.get("licence") or "").lower() not in MEDIA_PAGE_LICENCES:
-        return None, f"{media_id} has no licence a page may publish under (licence {rec.get('licence')!r})"
+    if (rec.get("license") or "").lower() not in MEDIA_PAGE_LICENSES:
+        return None, f"{media_id} has no license a page may publish under (license {rec.get('license')!r})"
     return rec, ""
 
 

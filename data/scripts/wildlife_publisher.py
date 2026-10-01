@@ -828,13 +828,13 @@ def v2_media_figure(mrec, caption=None, focus=None):
     """A park-media item (media_library.json) placed in the prose, the
     counterpart of v2_inflow_figure for photographs that did not come through
     iNaturalist. Same figure, same plate classes; the credit is the typed
-    credit line (or the maker) and the licence is the record's own. No
+    credit line (or the maker) and the license is the record's own. No
     caption, no figure, as with photographs."""
     cap = (caption or mrec.get("caption") or "").strip()
     if not cap:
         return ""
     name = (mrec.get("credit_line") or mrec.get("made_by") or "").strip()
-    lic = (mrec.get("licence") or "").lower()
+    lic = (mrec.get("license") or "").lower()
     if lic.startswith("cc"):
         badge = ('<span class="cc-badge"><span class="cc-mark">cc</span>'
                  f'<span class="cc-term">{h(lic.upper().replace("CC-", "") or "0")}</span></span>')
