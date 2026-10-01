@@ -1,8 +1,8 @@
 {
   "meta": {
     "_note": "The park media library: everything that is not a species photo (those stay in photo_credits.json). One record per item, written by media_intake.py. media_id is permanent and minted by the intake page, never typed. collection is park (the website, screens and signs; Randy's) or bev (her link area, never referenced by a page). The key prefix follows it. files[].key is the permanent address in the bucket; url is rebuilt from it on every upload. Kids and anything not public never reach the public bucket.",
-    "updated": "2026-10-01T00:46Z",
-    "count": 1
+    "updated": "2026-10-01T00:57Z",
+    "count": 2
   },
   "items": [
     {
@@ -29,13 +29,104 @@
         "sha256": "0c060578abb52fea2d27a1088c470a239a08585440bb3778050cf377a7870acc",
         "bytes": 183053
       },
-      "files": [],
-      "bucket": null,
-      "url": null,
-      "state": "waiting",
+      "files": [
+        {
+          "role": "original",
+          "key": "media/PM-000001/v1/original.jpg",
+          "bytes": 183053,
+          "sha256": "0c060578abb52fea2d27a1088c470a239a08585440bb3778050cf377a7870acc",
+          "md5": "edb8a3f33793e3a3d92ad080d27847f8",
+          "url": "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/media/PM-000001/v1/original.jpg",
+          "uploaded_at": "2026-10-01T00:52Z"
+        },
+        {
+          "role": "web",
+          "key": "media/PM-000001/v1/web.jpg",
+          "bytes": 149945,
+          "sha256": "63a33a21ede31e43a401b5622b0f7052d2905ca16ad2b1f9ee47cc9217ed8c09",
+          "md5": "7e67c1baf0be4e428ea2ad25e435b2a7",
+          "url": "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/media/PM-000001/v1/web.jpg",
+          "uploaded_at": "2026-10-01T00:52Z"
+        },
+        {
+          "role": "thumb",
+          "key": "media/PM-000001/v1/thumb.jpg",
+          "bytes": 45308,
+          "sha256": "b7d31ebb4d0eee3ac6a77629e06d221d17c805b1f2e872287c4d1098e8a273de",
+          "md5": "508497dd1e2e861aa780efad50b7619e",
+          "url": "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/media/PM-000001/v1/thumb.jpg",
+          "uploaded_at": "2026-10-01T00:52Z"
+        }
+      ],
+      "bucket": "psbp-sandbox",
+      "url": "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/media/PM-000001/v1/web.jpg",
+      "state": "done",
       "used_on": [],
       "registered": "2026-10-01T00:46Z",
-      "updated": "2026-10-01T00:46Z"
+      "updated": "2026-10-01T00:52Z",
+      "problem": "<urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] ssl/tls alert handshake failure (_ssl.c:1082)>"
+    },
+    {
+      "media_id": "PM-000002",
+      "kind": "photo",
+      "collection": "park",
+      "title": "Dinner Table Venue Promotional Photo",
+      "made_by": "unknown",
+      "credit_line": null,
+      "public": "yes",
+      "kids": false,
+      "tags": [
+        "venue",
+        "table",
+        "dinner",
+        "rental",
+        "wedding"
+      ],
+      "date": null,
+      "at_the_park": "yes",
+      "species": [],
+      "caption": "Promotional photo of dinner table at wedding venue",
+      "source": {
+        "type": "randy",
+        "original_filename": "wedding2.jpg",
+        "sha256": "7fe4be970b9585e5b2e6eeae45d3a924c62b1a0333102089f3822e7249ef4fb7",
+        "bytes": 126172
+      },
+      "files": [
+        {
+          "role": "original",
+          "key": "media/PM-000002/v1/original.jpg",
+          "bytes": 126172,
+          "sha256": "7fe4be970b9585e5b2e6eeae45d3a924c62b1a0333102089f3822e7249ef4fb7",
+          "md5": "584af720c76e13b7136098ea48aa4a65",
+          "url": "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/media/PM-000002/v1/original.jpg",
+          "uploaded_at": "2026-10-01T00:57Z"
+        },
+        {
+          "role": "web",
+          "key": "media/PM-000002/v1/web.jpg",
+          "bytes": 138867,
+          "sha256": "fa0a3017bcc84ab8c2d525157c1735b800bd3018ed5547f9ef86e93aacb288a0",
+          "md5": "f8261cac9f528c6ecfe2ce3a00ea0c72",
+          "url": "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/media/PM-000002/v1/web.jpg",
+          "uploaded_at": "2026-10-01T00:57Z"
+        },
+        {
+          "role": "thumb",
+          "key": "media/PM-000002/v1/thumb.jpg",
+          "bytes": 48805,
+          "sha256": "a83e7780e9c017c75367799353571196027fb9460471dcfeab92420329792c57",
+          "md5": "7128758b65c8dffd7a7a9c3138644584",
+          "url": "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/media/PM-000002/v1/thumb.jpg",
+          "uploaded_at": "2026-10-01T00:57Z"
+        }
+      ],
+      "bucket": "psbp-sandbox",
+      "url": "https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/media/PM-000002/v1/web.jpg",
+      "state": "done",
+      "used_on": [],
+      "registered": "2026-10-01T00:55Z",
+      "updated": "2026-10-01T00:57Z"
     }
   ]
 }
