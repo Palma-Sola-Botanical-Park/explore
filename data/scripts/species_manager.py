@@ -1056,6 +1056,101 @@ def _download_hero_file(photo_url, species_id, photo_id):
     return target_file
 
 
+# ── R2 media library ───────────────────────────────────────────────────────
+# Every photograph Species Manager takes on (a promoted hero, a promoted
+# gallery photo, a hero swap) is also sent to the park's R2 bucket, the same
+# three files at the same addresses the Office uploader writes:
+#     inat/<photo_id>/v1/original.jpg   web.jpg   thumb.jpg
+# The original comes from iNaturalist and is kept, with the two smaller copies,
+# under the media folder OUTSIDE the repo (~/PSBP-media, or C:\PSBP\data\media).
+# It runs in the background so the click returns at once; one photo at a time.
+# Nothing is ever deleted from the bucket here. A failure costs nothing: the
+# page keeps today's addresses until the photo is confirmed up (see
+# psbp_common.media_ready), and the Office uploader sends anything missed.
+_R2_LOCK = threading.Lock()
+
+
+def _r2_log(msg):
+    line = f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}  [R2] {msg}"
+    print(line, flush=True)
+    try:
+        from media_intake import MEDIA_ROOT
+        logs = MEDIA_ROOT / "logs"
+        logs.mkdir(parents=True, exist_ok=True)
+        with open(logs / f"species_manager_r2-{datetime.date.today():%Y-%m-%d}.log", "a", encoding="utf-8") as f:
+            f.write(line + "\n")
+    except Exception:
+        pass
+
+
+def _r2_send_inat_photo(photo_id, photo_url, label=""):
+    """Fetch one iNat original (if not already on disk), make web + thumb, and
+    put all three in the bucket. Skips files already there with the same
+    checksum. Returns True when all three are confirmed up."""
+    from media_intake import r2_credentials, rendition, MEDIA_ROOT
+    from upload_r2_media import (R2, md5_of, WEB_PX, WEB_BUDGET, THUMB_PX, THUMB_BUDGET,
+                                 DEFAULT_BUCKET, REVISION, GAP_S)
+    from fetch_inat_originals import original_url, fetch
+    from psbp_common import media_confirm
+    pid = str(photo_id)
+    with _R2_LOCK:
+        try:
+            creds, where = r2_credentials()
+            if not creds:
+                _r2_log(f"{pid} {label}: NOT sent, {where}")
+                return False
+            src = MEDIA_ROOT / "originals" / "inat" / f"{pid}.jpg"
+            if not (src.exists() and src.stat().st_size > 0):
+                data = None
+                for url in original_url(photo_url):
+                    try:
+                        data = fetch(url)
+                        break
+                    except Exception as e:
+                        _r2_log(f"{pid}: {url.rsplit('/', 1)[1]} failed ({e})")
+                if not data:
+                    _r2_log(f"{pid} {label}: FAILED, could not fetch the original from iNaturalist")
+                    return False
+                src.parent.mkdir(parents=True, exist_ok=True)
+                part = src.with_suffix(".part")
+                part.write_bytes(data)
+                os.replace(part, src)
+            out = MEDIA_ROOT / "derived" / "inat" / pid / REVISION
+            rendition(src, out / "web.jpg", WEB_PX, WEB_BUDGET)
+            rendition(src, out / "thumb.jpg", THUMB_PX, THUMB_BUDGET)
+            r2 = R2(creds["R2_ACCOUNT_ID"], creds["R2_ACCESS_KEY_ID"], creds["R2_SECRET_ACCESS_KEY"],
+                    DEFAULT_BUCKET)
+            notes = []
+            for name, path in (("original.jpg", src), ("web.jpg", out / "web.jpg"),
+                               ("thumb.jpg", out / "thumb.jpg")):
+                key = f"inat/{pid}/{REVISION}/{name}"
+                body = path.read_bytes()
+                have = r2.head(key)
+                if have:
+                    # Never overwrite: whichever machine got there first made a good copy.
+                    notes.append(f"{name} already up")
+                else:
+                    etag = r2.put(key, body, "image/jpeg")
+                    if etag != md5_of(body):
+                        raise RuntimeError(f"checksum mismatch after upload of {key}")
+                    notes.append(f"{name} {len(body) // 1024} KB uploaded")
+                time.sleep(GAP_S)
+            media_confirm(pid)
+            _r2_log(f"{pid} {label}: in bucket {DEFAULT_BUCKET} ({'; '.join(notes)})")
+            return True
+        except Exception as e:
+            _r2_log(f"{pid} {label}: FAILED ({e})")
+            return False
+
+
+def _r2_queue(photo_id, photo_url, label=""):
+    """Send one photo to R2 in the background. Never raises."""
+    if not photo_id or not photo_url:
+        return "not queued (no photo id or address)"
+    threading.Thread(target=_r2_send_inat_photo, args=(photo_id, photo_url, label), daemon=True).start()
+    return "queued — progress prints in the Species Manager window"
+
+
 def _cleanup_old_hero_files(species_id, keep_photo_id=None):
     """Delete old hero image file(s) from photos/PSBP-xxxxx/.
 
@@ -1800,6 +1895,8 @@ def _apply_triage_decision(payload):
         credits["photos"].append(entry)
         credits.setdefault("meta", {})["photo_count"] = len(credits["photos"])
         write_json_atomic(PHOTO_CREDITS, credits)
+        _r2_queue(pid, entry["photo_url"],
+                  f"{psbp_id} {entry['common_name']} ({'hero' if is_hero else 'gallery'})")
 
     # Record every decision in the ledger. We store enough display fields that
     # a skipped photo can be reconstructed for "revisit skipped" even if it's
@@ -3144,6 +3241,7 @@ def handle_api_photos_set_hero(params):
         try:
             dl_path = _download_hero_file(photo_url, psbp_id, photo_id)
             report["steps"]["downloaded"] = os.path.basename(dl_path)
+            report["steps"]["r2"] = _r2_queue(photo_id, photo_url, f"{psbp_id} (new hero)")
         except Exception as e:
             report["steps"]["downloaded"] = f"Error: {e}"
             report["warning"] = "Hero download failed — run again or download manually"

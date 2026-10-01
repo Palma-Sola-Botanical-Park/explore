@@ -87,6 +87,7 @@ import json
 import os
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import threading
@@ -206,6 +207,109 @@ def sha256_of(path):
         for chunk in iter(lambda: f.read(1 << 20), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+# ── look-alikes ────────────────────────────────────────────────────────────
+# The same picture saved twice under two names, or once full size and once
+# shrunk, has different bytes, so the exact check misses it. A difference hash
+# does not: the photo is reduced to a 17 x 16 grey grid and each cell is
+# compared with its neighbour, giving 256 bits that survive resizing and
+# recompression. Resized copies of one photo differ by 0 to 25 bits; different
+# photos of the same scene by far more. Measured on the first 72 files, 10-01.
+LOOKALIKE_BITS = 30
+
+
+def _grey_grid(path):
+    """16 rows of 17 grey values, by Pillow when present, else macOS sips."""
+    try:
+        from PIL import Image, ImageOps
+        with Image.open(path) as im:
+            im = ImageOps.exif_transpose(im).convert("L").resize((17, 16), Image.LANCZOS)
+            px = list(im.getdata())
+        return [px[y * 17:(y + 1) * 17] for y in range(16)]
+    except ImportError:
+        pass
+    if not shutil.which("sips"):
+        return None
+    tmp = MEDIA_ROOT / "derived" / f"_dhash-{os.getpid()}-{threading.get_ident()}.bmp"
+    tmp.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        subprocess.run(["sips", "-s", "format", "bmp", "-z", "16", "17", str(path), "--out", str(tmp)],
+                       capture_output=True, check=True)
+        b = tmp.read_bytes()
+        off = struct.unpack("<I", b[10:14])[0]
+        w, hgt = struct.unpack("<ii", b[18:26])
+        bpp = struct.unpack("<H", b[28:30])[0] // 8
+        row = (w * bpp + 3) // 4 * 4
+        grid = [[sum(b[off + y * row + x * bpp: off + y * row + x * bpp + 3]) / 3 for x in range(w)]
+                for y in range(abs(hgt))]
+        return grid[::-1] if hgt > 0 else grid
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def dhash_of(path):
+    """64 hex characters, or None for anything that is not a readable picture."""
+    if kind_of(Path(path).suffix.lower().lstrip(".")) not in ("photo", "image"):
+        return None
+    try:
+        grid = _grey_grid(path)
+        bits = 0
+        for y in range(16):
+            for x in range(16):
+                bits = (bits << 1) | (grid[y][x] > grid[y][x + 1])
+        return f"{bits:064x}"
+    except Exception:
+        return None
+
+
+def _bits_apart(a, b):
+    return bin(int(a, 16) ^ int(b, 16)).count("1")
+
+
+_inbox_hash = {}          # (name, size, mtime) -> dhash, so a reload does not re-read every file
+
+
+def inbox_dhash(path):
+    st = path.stat()
+    key = (path.name, st.st_size, int(st.st_mtime))
+    if key not in _inbox_hash:
+        _inbox_hash[key] = dhash_of(path)
+    return _inbox_hash[key]
+
+
+def is_marked_duplicate(rec):
+    return (rec.get("title") or "").upper().startswith("DUPLICATE")
+
+
+def ensure_dhashes(reg):
+    """Give every registered picture its hash, once. True if any was added."""
+    changed = False
+    for r in reg["items"]:
+        if "dhash" not in r["source"]:
+            src = original_of(r)
+            r["source"]["dhash"] = dhash_of(src) if src else None
+            changed = True
+    return changed
+
+
+def lookalike_in(reg, dh, skip_id=None):
+    """The registered item that looks most like this hash, if close enough."""
+    if not dh:
+        return None
+    best = None
+    for r in reg["items"]:
+        other = r["source"].get("dhash")
+        if not other or r["media_id"] == skip_id or is_marked_duplicate(r):
+            continue
+        d = _bits_apart(dh, other)
+        if d <= LOOKALIKE_BITS and (best is None or d < best[0]):
+            best = (d, r)
+    return best[1] if best else None
+
+
+class LookAlike(ValueError):
+    pass
 
 
 # ── credentials ────────────────────────────────────────────────────────────
@@ -371,6 +475,12 @@ def register(form):
         if same:
             raise ValueError(f"This is the very same file as {same['media_id']} \"{same['title']}\", "
                              "already registered. Take it out of the inbox.")
+        ensure_dhashes(reg)
+        dh = inbox_dhash(src)
+        twin = lookalike_in(reg, dh)
+        if twin and form.get("anyway") != "yes":
+            raise LookAlike(f"This looks like the same picture as {twin['media_id']} \"{twin['title']}\", "
+                            "already registered (perhaps at another size or under another name).")
         media_id = mint_id(reg)
         dest_dir = MEDIA_ROOT / "originals" / "media" / media_id
         dest_dir.mkdir(parents=True, exist_ok=True)
@@ -396,7 +506,7 @@ def register(form):
             "species": species,
             "caption": opt("caption"),
             "source": {"type": opt("dropped_by") or "randy", "original_filename": name,
-                       "sha256": digest, "bytes": dest.stat().st_size},
+                       "sha256": digest, "bytes": dest.stat().st_size, "dhash": dh},
             "files": [],
             "bucket": None,
             "url": None,
@@ -690,6 +800,7 @@ code{font-size:var(--t-base)}
 .sp-pick button{background:#fff;color:var(--green-deep);border:1px solid var(--green-mid);font-weight:400;padding:4px 10px;text-align:left}
 .sp-pick button:hover{background:#dff3e0}
 .sp-names{color:var(--green-deep)}
+.dupe{background:#ffe9c7;border:1px solid var(--gold);border-radius:6px;padding:6px 10px;margin-top:8px}
 """
 
 JS = """
@@ -705,7 +816,10 @@ async function register(form){
   const data = Object.fromEntries(new FormData(form).entries());
   data.kids = form.querySelector('[name=kids]').checked ? 'yes' : 'no';
   const msg = form.querySelector('.msg');
-  const res = await post('/register', data);
+  let res = await post('/register', data);
+  if (res.lookalike && confirm(res.error + '\n\nRegister it anyway?')){
+    data.anyway = 'yes'; res = await post('/register', data);
+  }
   if(res.error){
     msg.textContent = res.error; msg.style.display='block';
     btn.disabled = false; btn.textContent = 'Register'; return;
@@ -863,7 +977,10 @@ def render_page():
     inbox.mkdir(parents=True, exist_ok=True)
     waiting = sorted(p for p in inbox.iterdir()
                      if p.is_file() and not p.name.startswith(".") and p.suffix)
-    reg = load_registry()
+    with _lock:
+        reg = load_registry()
+        if ensure_dhashes(reg):
+            save_registry(reg)
     creds, where = r2_credentials()
     ai_key, ai_where = _secret("ANTHROPIC_API_KEY")
     base = PUBLIC_BASE.get(BUCKET)
@@ -907,9 +1024,20 @@ def render_page():
 </div>""")
     if not waiting:
         out.append("<p>Nothing waiting. Drop files in the inbox folder and reload.</p>")
+    seen_in_inbox = []            # (dhash, name) of the cards above this one
     for p in waiting:
         ext = p.suffix.lower().lstrip(".")
         kind = kind_of(ext)
+        dh = inbox_dhash(p)
+        twin = lookalike_in(reg, dh)
+        twin_file = next((n for d, n in seen_in_inbox if dh and _bits_apart(dh, d) <= LOOKALIKE_BITS), None)
+        if dh:
+            seen_in_inbox.append((dh, p.name))
+        dupe_note = (f"<div class='dupe'>Looks like the same picture as {h(twin['media_id'])} "
+                     f"&ldquo;{h(twin['title'])}&rdquo;, already registered. Take it out of the inbox "
+                     "unless it really is different.</div>" if twin else
+                     f"<div class='dupe'>Looks like the same picture as {h(twin_file)}, higher up in "
+                     "this inbox. Keep the larger one.</div>" if twin_file else "")
         pic = (f"<img src='/inbox-file/{quote(p.name)}' alt=''>" if kind in ("photo", "image") and ext != "heic"
                else f"<span>{h(kind)} · .{h(ext)}</span>")
         out.append(f"""
@@ -934,6 +1062,7 @@ def render_page():
     <label class='wide' style='flex-direction:row;gap:8px;align-items:center'>
       <input type='checkbox' name='kids' style='width:auto'> Are there kids in it? <small>(then it is private and stays out for now)</small></label>
   </div>
+  {dupe_note}
   <div class='row'><button type='submit'>Register</button>{"<button type='button' class='gold suggest' onclick='suggest(this)'>Suggest</button>" if kind == "photo" else ""}<div class='msg'></div></div>
   </div>
 </form>""")
@@ -953,6 +1082,10 @@ def render_page():
             where = (f"<a href='{h(r['url'])}' target='_blank'>{h(r['files'][0]['key'].rsplit('/', 1)[0])}/</a>"
                      if r.get("url") else (h(r["files"][0]["key"].rsplit('/', 1)[0]) if r.get("files") else "—"))
             prob = f"<br><small>{h(r.get('problem'))}</small>" if r["state"] == "problem" else ""
+            if not is_marked_duplicate(r):
+                twin = lookalike_in(reg, r["source"].get("dhash"), skip_id=r["media_id"])
+                if twin:
+                    prob += f"<div class='dupe'>Looks like the same picture as {h(twin['media_id'])}</div>"
             btn = (f"<button onclick=\"upload('{r['media_id']}')\">{'Retry' if r['state'] == 'problem' else 'Upload'}</button>"
                    if r["public"] == "yes" and r["state"] in ("waiting", "problem") else "")
             btn += f"<button type='button' onclick=\"toggleEdit('{r['media_id']}')\">Edit</button>"
@@ -1028,8 +1161,11 @@ class Handler(BaseHTTPRequestHandler):
             body = {}
         try:
             if path == "/register":
-                rec = register(body)
-                res = {"ok": True, "media_id": rec["media_id"]}
+                try:
+                    rec = register(body)
+                    res = {"ok": True, "media_id": rec["media_id"]}
+                except LookAlike as e:
+                    res = {"error": str(e), "lookalike": True}
             elif path == "/edit":
                 rec = edit(body)
                 res = {"ok": True, "media_id": rec["media_id"]}
