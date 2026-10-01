@@ -71,6 +71,43 @@ def media_url(rec, size="web"):
     return f"{MEDIA_BASE}/inat/{photo_id}/{MEDIA_REV}/{size}.jpg"
 
 # ===========================================================================
+# PARK MEDIA LIBRARY on species pages
+# ===========================================================================
+# media_library.json (written by media_intake.py) holds everything that is not
+# an iNaturalist species photo. A page block {"media": "PM-000123"} places one
+# of its items in the flow. The rule for whether it may show lives HERE, once:
+# the publishers render through it and audit_psbp.py --only PAGE reports
+# through it, so they cannot disagree.
+MEDIA_LIBRARY_JSON = SOURCES / "media_library.json"
+
+# A gifted photograph is not Creative Commons; "permission" records that the
+# photographer gave the park the right to show it. Anything else is refused.
+MEDIA_PAGE_LICENCES = frozenset({"cc-by", "cc-by-nc", "cc-by-sa", "cc-by-nc-sa",
+                                 "cc-by-nd", "cc-by-nc-nd", "cc0", "permission"})
+
+
+def media_page_check(media_id):
+    """(record, problem) for one media item named on a species page. The
+    record comes back only when every condition holds; otherwise `problem`
+    says which one failed, in words the audit can print."""
+    lib = load_json(MEDIA_LIBRARY_JSON, {"items": []})
+    rec = next((r for r in lib.get("items", []) if r.get("media_id") == media_id), None)
+    if not rec:
+        return None, f"{media_id} is not in media_library.json"
+    if rec.get("public") != "yes":
+        return None, f"{media_id} is not public ({rec.get('public')})"
+    if rec.get("kids"):
+        return None, f"{media_id} has kids in it"
+    if rec.get("state") != "done" or not rec.get("url"):
+        return None, f"{media_id} is not uploaded yet (state {rec.get('state')})"
+    if not (rec.get("credit_line") or rec.get("made_by")):
+        return None, f"{media_id} has no credit line and no maker"
+    if (rec.get("licence") or "").lower() not in MEDIA_PAGE_LICENCES:
+        return None, f"{media_id} has no licence a page may publish under (licence {rec.get('licence')!r})"
+    return rec, ""
+
+
+# ===========================================================================
 # PHOTOGRAPHER NAME REGISTRY
 # ===========================================================================
 # Real names are stored in photographer_names.json (in data/sources/),

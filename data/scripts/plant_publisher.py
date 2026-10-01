@@ -36,7 +36,7 @@ from psbp_common import (
     PLANT_SIGNAGE_JSON as SIGNAGE_JSON,
     PHOTO_CREDITS_JSON as CREDITS_JSON,
     PLANTS_JSON, PLANTS_DIR, PHOTOS_DIR,
-    media_url,
+    media_url, media_page_check,
     load_json, write_json_atomic,
     display_name, build_credit_line,
     resolve_hero_credit, resolve_gallery_credits,
@@ -59,7 +59,7 @@ from wildlife_publisher import (
     _v2_section, _v2_block, _v2_photo_url, _v2_hero_gallery_cue,
     _v2_credit_plate, _v2_credit_plate_wide, _v2_hero_attr,
     v2_photographs, v2_inflow_figure, v2_also_known_as,
-    _V2_GAL_SVG,
+    v2_media_figure, _V2_GAL_SVG,
 )
 
 PORT = 8701
@@ -936,6 +936,11 @@ def _v2_block_html(b, photo_index=None):
         if b.get("focus"):
             r2["focus"] = b["focus"]   # the crop that suits THIS caption
         return v2_inflow_figure(rec.get("psbp_id"), r2)
+    if b.get("media"):
+        mrec, _why = media_page_check(str(b["media"]))
+        if not mrec:                      # the audit names the reason
+            return ""
+        return v2_media_figure(mrec, b.get("caption"), b.get("focus"))
     return _v2_block(b.get("label") or "", b.get("text", ""))
 
 

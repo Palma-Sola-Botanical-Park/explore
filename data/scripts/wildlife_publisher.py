@@ -32,7 +32,7 @@ from psbp_common import (
     WILDLIFE_SIGNAGE_JSON as SIGNAGE_JSON,
     PHOTO_CREDITS_JSON as CREDITS_JSON,
     WILDLIFE_JSON, WILDLIFE_DIR, PHOTOS_DIR,
-    media_url,
+    media_url, media_page_check,
     load_json, write_json_atomic,
     display_name, build_credit_line,
     resolve_hero_credit, resolve_gallery_credits,
@@ -527,6 +527,10 @@ def _v2_render_blocks(species, blocks, pid=None, photo_index=None):
                 if b.get("links"):       r["note_species"] = b["links"][0]
                 if b.get("focus"):       r["focus"] = b["focus"]   # this crop, for this caption
                 out.append(v2_inflow_figure(pid, r))
+        elif b.get("media"):
+            mrec, _why = media_page_check(str(b["media"]))
+            if mrec:                      # otherwise nothing, and the audit says why
+                out.append(v2_media_figure(mrec, b.get("caption"), b.get("focus")))
         elif b.get("similar"):
             out.append(v2_similar(species))
         else:
@@ -818,6 +822,34 @@ def v2_inflow_figure(pid, rec):
             f'alt="{h(rec.get("alt") or "")}" loading="lazy" '
             f'style="object-position:{h(focus)}">'
             f'<figcaption>{cap}</figcaption>{_v2_credit_plate_wide(rec)}</figure>')
+
+
+def v2_media_figure(mrec, caption=None, focus=None):
+    """A park-media item (media_library.json) placed in the prose, the
+    counterpart of v2_inflow_figure for photographs that did not come through
+    iNaturalist. Same figure, same plate classes; the credit is the typed
+    credit line (or the maker) and the licence is the record's own. No
+    caption, no figure, as with photographs."""
+    cap = (caption or mrec.get("caption") or "").strip()
+    if not cap:
+        return ""
+    name = (mrec.get("credit_line") or mrec.get("made_by") or "").strip()
+    lic = (mrec.get("licence") or "").lower()
+    if lic.startswith("cc"):
+        badge = ('<span class="cc-badge"><span class="cc-mark">cc</span>'
+                 f'<span class="cc-term">{h(lic.upper().replace("CC-", "") or "0")}</span></span>')
+    else:
+        badge = '<span class="credit-src">with permission</span>'
+    date = _fmt_observed(mrec.get("date") or "")
+    src = f"{h(date)} &middot; park collection" if date else "park collection"
+    foc = (focus or "50% 50%").strip()
+    plate = ('<div class="credit-plate"><div class="credit-byline">'
+             '<span class="credit-eyebrow">Photograph by</span>'
+             f'<span class="credit-name">{h(name)}</span></div>'
+             f'<div class="credit-license">{badge}<span class="credit-src">{src}</span></div></div>')
+    return (f'<figure class="sp-figure"><img src="{h(mrec["url"])}" alt="{h(mrec.get("title") or "")}" '
+            f'loading="lazy" style="object-position:{h(foc)}">'
+            f'<figcaption>{h(cap)}</figcaption>{plate}</figure>')
 
 
 def v2_photographs(pid, photos):

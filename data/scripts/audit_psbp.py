@@ -329,7 +329,12 @@ def main():
                        "how_it_grows", "take_care"}
         _WILD_SECS  = {"at_a_glance", "how_to_know_it", "where_to_find_it_here",
                        "how_it_lives", "what_it_does_here", "take_care"}
-        _BLOCK_KEYS = {"label", "text", "photo", "focus", "caption", "links"}
+        _BLOCK_KEYS = {"label", "text", "photo", "media", "focus", "caption", "links"}
+        # A media block names a park-media item (media_library.json). Whether the
+        # page may show it is decided in psbp_common.media_page_check, the same
+        # function the publishers render through, so the audit cannot disagree.
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from psbp_common import media_page_check as _media_page_check
 
         for sp, valid, king in ([(s, _PLANT_SECS, "plant") for s in plants]
                                 + [(s, _WILD_SECS, "wild") for s in wild]):
@@ -360,7 +365,25 @@ def main():
                         add("PAGE", "ERROR", f"{sid} {cn}: {sec}[{i}] is {type(b).__name__}, expected an object")
                         continue
                     has_txt = bool((b.get("text") or "").strip() or (b.get("label") or "").strip())
-                    if b.get("photo"):
+                    if b.get("media"):
+                        if has_txt or b.get("photo"):
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: {sec}[{i}] has media AND text/photo — one block, one thing")
+                        _mrec, _why = _media_page_check(str(b["media"]))
+                        if not _mrec:
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: {sec}[{i}] media block renders as nothing: {_why}")
+                        elif not (b.get("caption") or _mrec.get("caption")):
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: {sec}[{i}] media {b['media']} has no caption — no caption, no figure")
+                        if sec == "at_a_glance":
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: at_a_glance[{i}] holds a media item — it renders a raw object")
+                        if not seen_prose:
+                            add("PAGE", "WARN",
+                                f"{sid} {cn}: {sec} opens with a photo — a photo follows the prose "
+                                f"it illustrates")
+                    elif b.get("photo"):
                         if has_txt:
                             add("PAGE", "ERROR",
                                 f"{sid} {cn}: {sec}[{i}] has a photo AND text — "

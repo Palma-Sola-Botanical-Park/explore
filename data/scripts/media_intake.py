@@ -22,6 +22,13 @@ WHAT IT DOES
 
            data/sources/media_library.json      {meta, items:[…]}
 
+       "Suggest" (or "Suggest all") first sends a small copy of each photo to
+       Claude, which proposes the title, tags, caption and a kids flag, and the
+       date comes off the camera data when it is there. Who made it, the credit
+       line, the licence and whether it is public are never guessed: set them
+       once in "Batch defaults" and every form on the page starts with them.
+       Suggestions are highlighted until you register; change anything.
+
     3. "Upload" makes a web copy and a thumbnail (photos only), sends the files
        to the bucket at
 
@@ -42,6 +49,10 @@ RULES BUILT IN
       Only public = yes reaches the bucket.
     - Unknown stays unknown. Nothing is guessed from a filename.
     - Never a name, event or date in a path. The id is the only path part.
+    - A species page may place an item with a page block {"media": "PM-000123",
+      "caption": "..."} once it is public, uploaded, credited and licensed
+      (psbp_common.media_page_check). Put the species ids in "Species in it"
+      so the item turns up when that page is drafted.
     - Every record here is collection = park: the curated set the website,
       screens and signs draw from. Bev's link area (collection = bev, prefix
       bev/) is a separate, simpler page, not built yet.
@@ -50,14 +61,15 @@ RULES BUILT IN
     - The registry is re-read from disk before every write.
 
 WHAT IT NEEDS
-    R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY — either set in the
-    environment (Windows: Environment Variables) or, easier on the Mac, in a
-    file OUTSIDE the repo:
+    R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY for the bucket and
+    ANTHROPIC_API_KEY for Suggest — either set in the environment (Windows:
+    Environment Variables) or, easier on the Mac, in a file OUTSIDE the repo:
 
            <media root>/r2.env
            R2_ACCOUNT_ID=…
            R2_ACCESS_KEY_ID=…
            R2_SECRET_ACCESS_KEY=…
+           ANTHROPIC_API_KEY=…
 
     Never in the repo, never in a page. Pillow for resizing photos; on a Mac
     without Pillow the built-in `sips` is used instead.
@@ -68,6 +80,7 @@ USAGE
     python3 data/scripts/media_intake.py --no-open           # don't open the browser
 """
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -81,6 +94,8 @@ import webbrowser
 from datetime import datetime, timezone
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
+import urllib.error
+import urllib.request
 from urllib.parse import urlparse, parse_qs, quote, unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -95,6 +110,39 @@ REGISTRY = SOURCES / "media_library.json"
 MEDIA_ROOT = (Path(r"C:\PSBP\data\media") if os.name == "nt"
               else Path.home() / "PSBP-media")
 OFFICE_LOGS = Path(r"C:\PSBP\logs")
+
+# Suggest: one Messages API call per photo, standard library only, the same
+# shape Species Manager uses. The model only proposes what can be SEEN:
+# title, tags, caption, whether anyone looks under 18. Never a name, a date,
+# a licence or a public decision (CLAUDE.md §7: never guess a photographer, a
+# date, a place, or a licence).
+ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
+ANTHROPIC_VERSION = "2023-06-01"
+AI_MODEL = "claude-opus-5-5"
+SUGGEST_PX, SUGGEST_BUDGET = 1024, 400 * 1024
+TAG_VOCAB = ("wedding", "ceremony", "reception", "event", "dinner", "plant sale", "class",
+             "volunteers", "students", "nursery", "galleria", "pavilion", "office", "pond",
+             "path", "garden", "butterfly garden", "serenity garden", "plumeria", "rare fruit",
+             "sign", "map", "flyer", "aerial", "landscape", "bird", "wildlife", "flower", "tree",
+             "sunset", "holiday lights", "people", "crowd")
+SUGGEST_SYSTEM = (
+    "You catalog photographs for Palma Sola Botanical Park, a free, volunteer-run, ten-acre "
+    "botanical park in Bradenton, Florida: ponds, palms, a galleria and pavilion used for "
+    "weddings and events, an office, a nursery and plant sales, a butterfly garden, a serenity "
+    "garden, Bright Futures student volunteers on Wednesdays. Describe only what is visible. "
+    "Never guess a person's name, the photographer, the date, or whether the photo may be "
+    "published. Title: a plain phrase of at most ten words, what the photo shows, no "
+    "marketing language. Tags: a few from this list where they fit, lowercase, plus at most two "
+    "of your own: " + ", ".join(TAG_VOCAB) + ". Caption: one factual sentence a visitor "
+    "could read under the photo, no names. kids: 'yes' if anyone clearly looks under 18, "
+    "'unsure' if someone might, else 'no'. people: 'none', 'few' or 'crowd'.")
+SUGGEST_SCHEMA = {"type": "object", "additionalProperties": False,
+                  "required": ["title", "tags", "caption", "kids", "people"],
+                  "properties": {"title": {"type": "string"},
+                                 "tags": {"type": "array", "items": {"type": "string"}},
+                                 "caption": {"type": "string"},
+                                 "kids": {"type": "string", "enum": ["yes", "unsure", "no"]},
+                                 "people": {"type": "string", "enum": ["none", "few", "crowd"]}}}
 
 # Public address of each bucket. Only the sandbox has one today; psbp-public
 # gets media.palmasolabp.org after the DNS move, and goes in here then.
@@ -117,7 +165,13 @@ CONTENT_TYPES = {
     "mp3": "audio/mpeg", "m4a": "audio/mp4", "wav": "audio/wav", "aac": "audio/aac",
     "txt": "text/plain", "md": "text/markdown", "json": "application/json",
 }
-PUBLIC_FIELDS = ("media_id", "kind", "collection", "title", "made_by", "credit_line", "public",
+# Licence choices. A species page may use the item only with one of these
+# (psbp_common.MEDIA_PAGE_LICENCES); ordinary park media may leave it blank.
+LICENCES = ("permission", "cc-by", "cc-by-nc", "cc-by-sa", "cc-by-nc-sa", "cc-by-nd", "cc-by-nc-nd", "cc0")
+LICENCE_CHOICES = (("permission", "Given to the park, with permission to show it"), ("cc-by", "CC BY"),
+                   ("cc-by-nc", "CC BY-NC"), ("cc-by-sa", "CC BY-SA"), ("cc-by-nc-sa", "CC BY-NC-SA"),
+                   ("cc-by-nd", "CC BY-ND"), ("cc-by-nc-nd", "CC BY-NC-ND"), ("cc0", "CC0 (public domain)"))
+PUBLIC_FIELDS = ("media_id", "kind", "collection", "title", "made_by", "credit_line", "licence", "public",
                  "kids", "tags", "date", "at_the_park", "species", "caption",
                  "files", "used_on", "updated")
 
@@ -155,22 +209,35 @@ def sha256_of(path):
 
 # ── credentials ────────────────────────────────────────────────────────────
 
+def _env_file_values():
+    """KEY=VALUE lines from <media root>/r2.env, outside the repo."""
+    out = {}
+    env_file = MEDIA_ROOT / "r2.env"
+    if env_file.is_file():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if "=" in line and not line.startswith("#"):
+                k, v = line.split("=", 1)
+                out[k.strip()] = v.strip().strip('"').strip("'")
+    return out
+
+
+def _secret(name):
+    """The environment first, then the env file. (value, where)."""
+    v = os.environ.get(name, "").strip()
+    if v:
+        return v, "environment"
+    v = _env_file_values().get(name, "")
+    return v, (str(MEDIA_ROOT / "r2.env") if v else "")
+
+
 def r2_credentials():
     """Three values from the environment, else from <media root>/r2.env.
     Returns (dict, where) or (None, what is missing)."""
     keys = ("R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY")
-    env = {k: os.environ.get(k, "").strip() for k in keys}
-    where = "environment"
-    if not all(env.values()):
-        env_file = MEDIA_ROOT / "r2.env"
-        if env_file.is_file():
-            where = str(env_file)
-            for line in env_file.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if "=" in line and not line.startswith("#"):
-                    k, v = line.split("=", 1)
-                    if k.strip() in keys and not env[k.strip()]:
-                        env[k.strip()] = v.strip().strip('"').strip("'")
+    found = {k: _secret(k) for k in keys}
+    env = {k: v for k, (v, _w) in found.items()}
+    where = next((w for _v, w in found.values() if w), "environment")
     missing = [k for k in keys if not env[k]]
     if missing:
         return None, "missing " + ", ".join(missing) + f" (set them, or put them in {MEDIA_ROOT / 'r2.env'})"
@@ -270,6 +337,7 @@ def register(form):
             "title": title,
             "made_by": opt("made_by"),
             "credit_line": opt("credit_line"),
+            "licence": form.get("licence") if form.get("licence") in LICENCES else None,
             "public": form.get("public") if form.get("public") in ("yes", "no", "not_sure") else "not_sure",
             "kids": False,
             "tags": tags,
@@ -420,6 +488,74 @@ def upload(only_id=None):
     return lines
 
 
+# ── suggest ────────────────────────────────────────────────────────────────
+
+def _anthropic_messages(key, system, content, schema, timeout=120):
+    """POST to the Messages API with the standard library. Structured output
+    through output_config.format; low effort, this is a look-and-describe job;
+    server-side fallbacks on so a safety decline re-runs on another model."""
+    payload = {"model": AI_MODEL, "max_tokens": 1024, "system": system,
+               "messages": [{"role": "user", "content": content}],
+               "output_config": {"effort": "low",
+                                 "format": {"type": "json_schema", "schema": schema}},
+               "fallbacks": "default"}
+    req = urllib.request.Request(
+        ANTHROPIC_URL, data=json.dumps(payload).encode("utf-8"), method="POST",
+        headers={"x-api-key": key, "anthropic-version": ANTHROPIC_VERSION,
+                 "anthropic-beta": "server-side-fallback-2026-07-01",
+                 "content-type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"Anthropic API error {e.code}: {e.read().decode('utf-8', 'replace')[:300]}")
+    except urllib.error.URLError as e:
+        raise RuntimeError(f"Could not reach the Anthropic API: {e.reason}")
+
+
+def _exif_date(path):
+    """YYYY-MM-DD from the camera data, or None. A fact, not a guess."""
+    try:
+        from PIL import Image
+        with Image.open(path) as im:
+            raw = im.getexif().get(36867) or im.getexif().get(306)   # DateTimeOriginal, DateTime
+        if raw and len(str(raw)) >= 10:
+            y, m, d = str(raw)[:10].replace("-", ":").split(":")
+            return f"{y}-{m}-{d}"
+    except Exception:
+        pass
+    return None
+
+
+def suggest(filename):
+    """Propose title, tags, caption and the kids flag for one inbox photo."""
+    name = os.path.basename(filename or "")
+    src = MEDIA_ROOT / "inbox" / name
+    if not name or not src.is_file():
+        raise ValueError(f"not in the inbox: {name}")
+    ext = src.suffix.lower().lstrip(".")
+    if kind_of(ext) != "photo":
+        raise ValueError("Suggest looks at photographs only; fill this one in by hand.")
+    key, _where = _secret("ANTHROPIC_API_KEY")
+    if not key:
+        raise RuntimeError(f"ANTHROPIC_API_KEY is not set: put it in the environment or in {MEDIA_ROOT / 'r2.env'}")
+    small = MEDIA_ROOT / "derived" / "_suggest" / (name + ".jpg")
+    rendition(src, small, SUGGEST_PX, SUGGEST_BUDGET)
+    data = base64.standard_b64encode(small.read_bytes()).decode("ascii")
+    content = [{"type": "image", "source": {"type": "base64", "media_type": "image/jpeg", "data": data}},
+               {"type": "text", "text": "Catalog this photograph."}]
+    resp = _anthropic_messages(key, SUGGEST_SYSTEM, content, SUGGEST_SCHEMA)
+    if resp.get("stop_reason") == "refusal":
+        raise RuntimeError("Claude declined to describe this photograph; fill it in by hand.")
+    text = "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text")
+    out = json.loads(text)
+    out["tags"] = [t.strip().lower() for t in out.get("tags", []) if t.strip()][:8]
+    out["date"] = _exif_date(src)
+    out["model"] = resp.get("model", AI_MODEL)
+    log(f"suggested for {name}: \"{out.get('title')}\" kids={out.get('kids')} people={out.get('people')}")
+    return out
+
+
 # ── the page ───────────────────────────────────────────────────────────────
 
 def h(s):
@@ -460,6 +596,9 @@ td img{width:90px;height:70px;object-fit:cover;border-radius:4px;background:#eee
 pre{background:#fff;border:1px solid #ddd;border-radius:6px;padding:12px;white-space:pre-wrap;
 font-size:var(--t-base)}
 code{font-size:var(--t-base)}
+.sug{background:#fff6dd}
+.defaults{background:#fff;border:1px solid var(--gold);border-radius:8px;padding:10px 14px;margin:10px 0}
+.defaults .fields{grid-template-columns:repeat(3,1fr)}
 .setup{background:#fff;border:1px solid #ddd;border-radius:8px;padding:10px 14px}
 .setup div{margin:2px 0}
 """
@@ -484,6 +623,42 @@ async function register(form){
   }
   location.reload();
 }
+const DEFAULT_FIELDS = ['made_by','credit_line','licence','public','at_the_park','dropped_by'];
+function loadDefaults(){
+  let d = {}; try { d = JSON.parse(localStorage.getItem('intakeDefaults')||'{}'); } catch(e){}
+  for (const k of DEFAULT_FIELDS){
+    const box = document.querySelector('#defaults [name='+k+']');
+    if (box && d[k] !== undefined) box.value = d[k];
+    document.querySelectorAll('form.card [name='+k+']').forEach(el => { if (d[k] !== undefined && d[k] !== '') el.value = d[k]; });
+  }
+}
+function saveDefaults(){
+  const d = {};
+  for (const k of DEFAULT_FIELDS){ const box = document.querySelector('#defaults [name='+k+']'); if (box) d[k] = box.value; }
+  try { localStorage.setItem('intakeDefaults', JSON.stringify(d)); } catch(e){}
+  loadDefaults();
+}
+async function suggest(btn){
+  const form = btn.closest('form');
+  const msg = form.querySelector('.msg');
+  btn.disabled = true; btn.textContent = 'Looking…';
+  const res = await post('/suggest', {filename: form.querySelector('[name=filename]').value});
+  btn.disabled = false; btn.textContent = 'Suggest';
+  if (res.error){ msg.textContent = res.error; msg.style.display='block'; return; }
+  const set = (k, v) => { const el = form.querySelector('[name='+k+']'); if (el && v){ el.value = v; el.classList.add('sug'); } };
+  set('title', res.title); set('tags', (res.tags||[]).join(', ')); set('caption', res.caption); set('date', res.date);
+  const kids = form.querySelector('[name=kids]');
+  if (res.kids === 'yes') kids.checked = true;
+  msg.textContent = 'Suggested: check it. People: ' + res.people + ', kids: ' + res.kids + (res.date ? ', date from the camera.' : ', no camera date.');
+  msg.style.display = 'block';
+}
+async function suggestAll(btn){
+  btn.disabled = true;
+  const buttons = Array.from(document.querySelectorAll('form.card button.suggest'));
+  for (let i = 0; i < buttons.length; i++){ btn.textContent = 'Suggesting ' + (i+1) + ' of ' + buttons.length + '…'; await suggest(buttons[i]); }
+  btn.textContent = 'Suggest all'; btn.disabled = false;
+}
+document.addEventListener('DOMContentLoaded', loadDefaults);
 async function upload(id){
   const out = document.getElementById('log');
   out.textContent = 'Working… (about a second per file, do not close this page)';
@@ -501,6 +676,7 @@ def render_page():
                      if p.is_file() and not p.name.startswith(".") and p.suffix)
     reg = load_registry()
     creds, where = r2_credentials()
+    ai_key, ai_where = _secret("ANTHROPIC_API_KEY")
     base = PUBLIC_BASE.get(BUCKET)
 
     out = [f"<!doctype html><html><head><meta charset='utf-8'><title>PSBP Media intake</title>"
@@ -511,9 +687,27 @@ def render_page():
                f"<div>Inbox folder: <code>{h(inbox)}</code> — drop files here, then reload.</div>"
                f"<div>Registry: <code>{h(REGISTRY)}</code> ({len(reg['items'])} items)</div>"
                f"<div>R2 keys: {'found in ' + h(where) if creds else '<b>' + h(where) + '</b>'}</div>"
+               f"<div>Suggest (Claude): {'key found in ' + h(ai_where) if ai_key else '<b>ANTHROPIC_API_KEY missing — add it to ' + h(MEDIA_ROOT / 'r2.env') + '</b>'}</div>"
                f"<div>Public address: {h(base) if base else 'none for this bucket yet'}</div></div>")
 
     out.append(f"<h2>In the inbox ({len(waiting)})</h2>")
+    if waiting:
+        lic_opts = "".join(f"<option value='{k}'>{v}</option>" for k, v in LICENCE_CHOICES)
+        out.append(f"""
+<div class='defaults' id='defaults'><b>Batch defaults</b> <small>— set once, every form below starts with these; they are never guessed</small>
+  <div class='fields' style='margin-top:6px'>
+    <label>Who took or made it?<input name='made_by' onchange='saveDefaults()'></label>
+    <label>Credit line<input name='credit_line' onchange='saveDefaults()'></label>
+    <label>Licence<select name='licence' onchange='saveDefaults()'><option value=''>Unknown / not set</option>{lic_opts}</select></label>
+    <label>May the public see it?<select name='public' onchange='saveDefaults()'>
+      <option value='not_sure'>Not sure</option><option value='yes'>Yes</option><option value='no'>No</option></select></label>
+    <label>Taken at the park?<select name='at_the_park' onchange='saveDefaults()'>
+      <option value='unknown'>Unknown</option><option value='yes'>Yes</option><option value='no'>No</option></select></label>
+    <label>Dropped by<select name='dropped_by' onchange='saveDefaults()'><option value='randy'>Randy</option><option value='bev'>Bev</option><option value='other'>Other</option></select></label>
+  </div>
+  <div class='row'><button class='gold' onclick='suggestAll(this)'>Suggest all</button>
+  <span>Claude proposes title, tags, caption and a kids flag for every photo below. You check, then Register.</span></div>
+</div>""")
     if not waiting:
         out.append("<p>Nothing waiting. Drop files in the inbox folder and reload.</p>")
     for p in waiting:
@@ -531,6 +725,8 @@ def render_page():
     <label class='wide'>What is it? <small>a plain title</small><input name='title' required></label>
     <label>Who took or made it?<input name='made_by' placeholder='unknown is fine'></label>
     <label>Credit line <small>as it should appear</small><input name='credit_line'></label>
+    <label>Licence <small>needed before a species page may use it</small><select name='licence'>
+      <option value=''>Unknown / not set</option>{"".join(f"<option value='{k}'>{v}</option>" for k, v in LICENCE_CHOICES)}</select></label>
     <label>May the public see it?<select name='public'>
       <option value='yes'>Yes</option><option value='not_sure' selected>Not sure</option><option value='no'>No</option></select></label>
     <label>Taken at the park?<select name='at_the_park'>
@@ -543,7 +739,7 @@ def render_page():
     <label class='wide' style='flex-direction:row;gap:8px;align-items:center'>
       <input type='checkbox' name='kids' style='width:auto'> Are there kids in it? <small>(then it is private and stays out for now)</small></label>
   </div>
-  <div class='row'><button type='submit'>Register</button><div class='msg'></div></div>
+  <div class='row'><button type='submit'>Register</button>{"<button type='button' class='gold suggest' onclick='suggest(this)'>Suggest</button>" if kind == "photo" else ""}<div class='msg'></div></div>
   </div>
 </form>""")
 
@@ -562,8 +758,8 @@ def render_page():
             where = (f"<a href='{h(r['url'])}' target='_blank'>{h(r['files'][0]['key'].rsplit('/', 1)[0])}/</a>"
                      if r.get("url") else (h(r["files"][0]["key"].rsplit('/', 1)[0]) if r.get("files") else "—"))
             prob = f"<br><small>{h(r.get('problem'))}</small>" if r["state"] == "problem" else ""
-            btn = (f"<button onclick=\"upload('{r['media_id']}')\">Upload</button>"
-                   if r["public"] == "yes" else "")
+            btn = (f"<button onclick=\"upload('{r['media_id']}')\">{'Retry' if r['state'] == 'problem' else 'Upload'}</button>"
+                   if r["public"] == "yes" and r["state"] in ("waiting", "problem") else "")
             out.append(f"<tr><td>{pic}</td><td><code>{r['media_id']}</code></td>"
                        f"<td><b>{h(r['title'])}</b><br><small>{h(r['source']['original_filename'])}"
                        f"{' · ' + h(', '.join(r['tags'])) if r['tags'] else ''}</small></td>"
@@ -619,6 +815,8 @@ class Handler(BaseHTTPRequestHandler):
                 res = {"ok": True, "media_id": rec["media_id"]}
             elif path == "/upload":
                 res = {"lines": upload(body.get("id") or None)}
+            elif path == "/suggest":
+                res = suggest(body.get("filename"))
             else:
                 res = {"error": "unknown route"}
         except Exception as e:
