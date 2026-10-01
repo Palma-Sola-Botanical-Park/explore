@@ -80,6 +80,7 @@ USAGE
     python3 data/scripts/media_intake.py --no-open           # don't open the browser
 """
 import argparse
+from collections import Counter
 import base64
 import hashlib
 import json
@@ -765,13 +766,23 @@ def render_page():
                f"<div>Suggest (Claude): {'key found in ' + h(ai_where) if ai_key else '<b>ANTHROPIC_API_KEY missing — add it to ' + h(MEDIA_ROOT / 'r2.env') + '</b>'}</div>"
                f"<div>Public address: {h(base) if base else 'none for this bucket yet'}</div></div>")
 
+    # Who took it: every earlier answer is offered, and each card starts with the
+    # commonest answer among the last five registered (blank counts as an answer;
+    # a tie goes to the more recent). Randy asked for this, 10-01.
+    by_id = sorted(reg["items"], key=lambda r: r["media_id"])
+    seen = Counter(r["made_by"] for r in by_id if r.get("made_by"))
+    makers = "".join(f"<option value=\"{h(n)}\">" for n, _ in seen.most_common())
+    last5 = [r.get("made_by") or "" for r in by_id[-5:]]
+    maker_default = max(last5, key=lambda n: (last5.count(n), max(i for i, x in enumerate(last5) if x == n))) if last5 else ""
+    out.append(f"<datalist id='makers'>{makers}</datalist>")
+
     out.append(f"<h2>In the inbox ({len(waiting)})</h2>")
     if waiting:
         lic_opts = "".join(f"<option value='{k}'>{v}</option>" for k, v in LICENSE_CHOICES)
         out.append(f"""
 <div class='defaults' id='defaults'><b>Batch defaults</b> <small>— set once, every form below starts with these; they are never guessed</small>
   <div class='fields' style='margin-top:6px'>
-    <label>Who took or made it?<input name='made_by' onchange='saveDefaults()'></label>
+    <label>Who took or made it?<input name='made_by' list='makers' onchange='saveDefaults()'></label>
     <label>Credit as <small>usually blank</small><input name='credit_line' onchange='saveDefaults()'></label>
     <label>License<select name='license' onchange='saveDefaults()'><option value=''>Unknown / not set</option>{lic_opts}</select></label>
     <label>May the public see it?<select name='public' onchange='saveDefaults()'>
@@ -796,7 +807,7 @@ def render_page():
   <input type='hidden' name='filename' value='{h(p.name)}'>
   <div class='fields'>
     <label class='wide'>What is it? <small>a plain title</small><input name='title' required></label>
-    <label>Who took or made it? <small>leave blank for unknown</small><input name='made_by'></label>
+    <label>Who took or made it? <small>leave blank for unknown</small><input name='made_by' list='makers' value="{h(maker_default)}"></label>
     <label>Credit as <small>leave blank; only if the credit should read differently from the name</small><input name='credit_line'></label>
     <label>License <small>needed before a species page may use it</small><select name='license'>
       <option value=''>Unknown / not set</option>{"".join(f"<option value='{k}'>{v}</option>" for k, v in LICENSE_CHOICES)}</select></label>
