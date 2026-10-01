@@ -256,7 +256,18 @@ def load_registry():
     return reg
 
 
+def _unknown_to_blank(rec):
+    """A typed "unknown" is the same as nothing. The first form said "unknown
+    is fine" and Randy typed it, so every save cleans it, old records too."""
+    for k in ("made_by", "credit_line", "caption", "date"):
+        if isinstance(rec.get(k), str) and rec[k].strip().lower() in ("", "unknown", "n/a", "none", "?"):
+            rec[k] = None
+    return rec
+
+
 def save_registry(reg):
+    for r in reg["items"]:
+        _unknown_to_blank(r)
     reg["meta"].update({
         "_note": "The park media library: everything that is not a species photo (those stay in "
                  "photo_credits.json). One record per item, written by media_intake.py. "
@@ -342,7 +353,10 @@ def register(form):
             "kids": False,
             "tags": tags,
             "date": opt("date"),
-            "at_the_park": form.get("at_the_park") if form.get("at_the_park") in ("yes", "no") else "unknown",
+            # Everything registered here was made at the park (Randy, 10-01: "I don't
+            # think there is a single file not in the park"). The question is gone
+            # from the form; the field stays so an exception can be set by hand.
+            "at_the_park": form.get("at_the_park") if form.get("at_the_park") in ("yes", "no", "unknown") else "yes",
             "species": species,
             "caption": opt("caption"),
             "source": {"type": opt("dropped_by") or "randy", "original_filename": name,
@@ -623,7 +637,7 @@ async function register(form){
   }
   location.reload();
 }
-const DEFAULT_FIELDS = ['made_by','credit_line','licence','public','at_the_park','dropped_by'];
+const DEFAULT_FIELDS = ['made_by','credit_line','licence','public','dropped_by'];
 function loadDefaults(){
   let d = {}; try { d = JSON.parse(localStorage.getItem('intakeDefaults')||'{}'); } catch(e){}
   for (const k of DEFAULT_FIELDS){
@@ -701,8 +715,6 @@ def render_page():
     <label>Licence<select name='licence' onchange='saveDefaults()'><option value=''>Unknown / not set</option>{lic_opts}</select></label>
     <label>May the public see it?<select name='public' onchange='saveDefaults()'>
       <option value='not_sure'>Not sure</option><option value='yes'>Yes</option><option value='no'>No</option></select></label>
-    <label>Taken at the park?<select name='at_the_park' onchange='saveDefaults()'>
-      <option value='unknown'>Unknown</option><option value='yes'>Yes</option><option value='no'>No</option></select></label>
     <label>Dropped by<select name='dropped_by' onchange='saveDefaults()'><option value='randy'>Randy</option><option value='bev'>Bev</option><option value='other'>Other</option></select></label>
   </div>
   <div class='row'><button class='gold' onclick='suggestAll(this)'>Suggest all</button>
@@ -723,14 +735,12 @@ def render_page():
   <input type='hidden' name='filename' value='{h(p.name)}'>
   <div class='fields'>
     <label class='wide'>What is it? <small>a plain title</small><input name='title' required></label>
-    <label>Who took or made it?<input name='made_by' placeholder='unknown is fine'></label>
+    <label>Who took or made it? <small>leave blank for unknown</small><input name='made_by'></label>
     <label>Credit line <small>as it should appear</small><input name='credit_line'></label>
     <label>Licence <small>needed before a species page may use it</small><select name='licence'>
       <option value=''>Unknown / not set</option>{"".join(f"<option value='{k}'>{v}</option>" for k, v in LICENCE_CHOICES)}</select></label>
     <label>May the public see it?<select name='public'>
       <option value='yes'>Yes</option><option value='not_sure' selected>Not sure</option><option value='no'>No</option></select></label>
-    <label>Taken at the park?<select name='at_the_park'>
-      <option value='unknown' selected>Unknown</option><option value='yes'>Yes</option><option value='no'>No</option></select></label>
     <label>Tags <small>comma separated: event, wedding, sign, map, nursery…</small><input name='tags'></label>
     <label>Date <small>if known, YYYY-MM-DD</small><input name='date'></label>
     <label>Species in it <small>PSBP ids, comma separated</small><input name='species'></label>
