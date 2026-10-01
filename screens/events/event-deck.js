@@ -18,7 +18,7 @@
   var Q = new URLSearchParams(location.search);
   var SPEED = Math.max(0.1, parseFloat(Q.get('speed')) || 1);
   var SECONDS = (parseFloat(Q.get('seconds')) || 14) / SPEED;
-  var SEQ = Q.get('order') === 'seq';
+  var SEQ = Q.get('order') === 'seq' || window.DECK_ORDER === 'seq';   // a page can ask for in-order play
   var slides = window.SLIDES || [];
   var deck = document.querySelector('.deck'), bar = document.getElementById('bar');
 
