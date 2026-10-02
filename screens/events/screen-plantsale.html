@@ -35,12 +35,14 @@ body{background:var(--ground);color:var(--ink)}
 
 /* Our logo and the Bishop-Parker Foundation's, bottom centre on every slide,
    either side of a gold hairline. Fixed, so they stay put through each fade.
-   Both in their own colours; theirs is never recoloured. */
+   Both in their own colours; theirs is never recoloured. The hairline sits on
+   the exact centre of the screen, under the centred titles; the two logos
+   are different widths, so each hangs off its own side. */
 .logos{position:fixed;left:0;right:0;bottom:calc(var(--frame) + 2.2vmin);z-index:41;
-  display:flex;align-items:center;justify-content:center;gap:4.4vmin}
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;column-gap:4.4vmin}
 .logos img{display:block;width:auto}
-.logos .ours{height:8.6vmin}
-.logos .theirs{height:6.8vmin}   /* a touch taller: their thin grey lettering reads lighter than our solid green */
+.logos .ours{height:8.6vmin;justify-self:end}
+.logos .theirs{height:6.8vmin;justify-self:start}   /* a touch taller: their thin grey lettering reads lighter than our solid green */
 .logos i{width:1px;height:6.4vmin;background:var(--rule)}
 
 .slide{justify-content:center;text-align:center}
@@ -61,18 +63,17 @@ body{background:var(--ground);color:var(--ink)}
 .match{margin-top:3.4vmin;font-size:3vmin;color:var(--ink-soft)}
 .match b{font-weight:600;color:var(--ink)}
 
-/* Slides 2 and 3 — the names, two centred columns either side of a hairline.
+/* Slides 2 and 3 — the names, in two centred columns.
    Both slides come from one function, so they are identical apart from the
    names. Rows are a fixed height so the two columns line up whether or not an
-   entry carries an "In memory of" line. */
+   entry carries an "In memory of" line; the row count is set per slide below. */
 .slide.names{align-items:flex-start;padding-top:calc(var(--frame) + 6.4vmin)}
 .names .copy{width:100%}
 .nm-h{font-family:var(--serif);font-weight:400;font-size:6.6vmin;line-height:1.08}
 .nm-sub{font-size:2.9vmin;color:var(--ink-soft);margin-top:.8vmin}
 .names .orn{margin:2.6vmin auto 1.4vmin}
-.nm-grid{display:grid;grid-auto-flow:column;grid-template-columns:1fr 1fr;grid-template-rows:repeat(8,7.2vmin);
-  column-gap:10vmin;max-width:142vmin;margin:0 auto;
-  background:linear-gradient(var(--rule-faint),var(--rule-faint)) center/1px 92% no-repeat}
+.nm-grid{display:grid;grid-auto-flow:column;grid-template-columns:1fr 1fr;
+  column-gap:10vmin;max-width:142vmin;margin:0 auto}
 .nm{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0;white-space:nowrap;
   font-size:3.9vmin;line-height:1.12;font-weight:600}
 .nm i{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:2.3vmin;line-height:1.15;color:#86621a}   /* deeper gold: small type has to survive a bright room */
@@ -105,7 +106,9 @@ var ORN = '<div class="orn"><i></i></div>';
 function namesSlide(list){
   return '<div class="copy"><div class="nm-h">With our sincere thanks</div>'
     + '<div class="nm-sub">Friends who helped make our deck renovation possible</div>' + ORN
-    + '<div class="nm-grid">' + list.map(function(n){
+    /* Half the list in each column (left gets the odd one). Check an "In memory of"
+       line never lands at the top of the right column, away from its donor. */
+    + '<div class="nm-grid" style="grid-template-rows:repeat(' + Math.ceil(list.length / 2) + ',7.2vmin)">' + list.map(function(n){
         return '<div class="nm">' + (typeof n === 'string' ? esc(n) : '<i>In memory of</i>' + esc(n.memory)) + '</div>';
       }).join('') + '</div></div>';
 }
