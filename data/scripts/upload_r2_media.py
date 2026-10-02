@@ -62,6 +62,7 @@ import hashlib
 import hmac
 import json
 import os
+import ssl
 import sys
 import time
 import urllib.error
@@ -88,6 +89,25 @@ QUALITIES = (85, 80, 75, 70, 65, 60)
 # Short while sizes are still being tuned; a revisioned path can go immutable
 # later without any file changing address. See the media plan §3.
 CACHE_CONTROL = "public, max-age=3600"
+
+
+def _ssl_context():
+    """Same fix as fetch_inat_originals.py: Windows Python trusts only its own
+    root store, and Office's first test run here failed every file with
+    CERTIFICATE_VERIFY_FAILED (2026-10-01). Prefer the certifi bundle, then the
+    copy pip ships with, then the system store. Returns (context, description)
+    so the log says which."""
+    for label, loader in (("certifi", lambda: __import__("certifi")),
+                          ("pip's certifi", lambda: __import__("pip._vendor.certifi", fromlist=["where"]))):
+        try:
+            mod = loader()
+            return ssl.create_default_context(cafile=mod.where()), label
+        except Exception:
+            continue
+    return ssl.create_default_context(), "system certificate store"
+
+
+SSL_CTX, SSL_SOURCE = _ssl_context()
 
 
 # ── R2 over the S3 API, standard library only ──────────────────────────────
@@ -136,7 +156,7 @@ class R2:
         del headers["host"]
         req = urllib.request.Request(f"https://{self.host}{path}", data=body or None,
                                      method=method, headers=headers)
-        return urllib.request.urlopen(req, timeout=120)
+        return urllib.request.urlopen(req, timeout=120, context=SSL_CTX)
 
     def head(self, key):
         """(size, md5) of the object, or None if it is not there."""
@@ -214,7 +234,7 @@ def main():
     log_f = open(log_path, "a", encoding="utf-8")
 
     def log(msg):
-        line = f"{datetime.now():%H:%M:%S}  {msg}"
+        line = f"{datetime.now():%Y-%m-%d %H:%M:%S}  {msg}"
         print(line, flush=True)
         log_f.write(line + "\n")
         log_f.flush()
@@ -252,6 +272,8 @@ def main():
 
     log(f"{len(ids)} originals in {originals} -> bucket {args.bucket}"
         + (" (DRY RUN: no uploads)" if args.dry_run else ""))
+    if not args.dry_run:
+        log(f"HTTPS certificates from {SSL_SOURCE}")
     uploaded = skipped = failed = 0
     total_bytes = 0
     last_request = 0.0
