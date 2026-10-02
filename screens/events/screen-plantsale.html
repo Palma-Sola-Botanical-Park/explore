@@ -14,6 +14,7 @@
      deliberately still: slow crossfades, nothing moving, no sound.
      The look is type only, like the plaque: cream ground, a fine double gold
      border, centred lines, a small gold lozenge between two rules. No drawings.
+     The only images are the two logos at the bottom: ours and the matching donor's.
      Shared mechanics come from event-deck.css / event-deck.js; the theme is
      inline below so the whole deck is this one file. To change a name, edit
      the two lists in the script at the bottom. An entry written as
@@ -32,9 +33,15 @@ body{background:var(--ground);color:var(--ink)}
 .frame{border-color:var(--rule)}
 .frame::after{content:'';position:absolute;inset:.9vmin;border:1px solid var(--rule-faint)}
 
-/* The park's name sits at the bottom centre, like a signature */
-.eyebrow-fixed{top:auto;left:0;right:0;bottom:calc(var(--frame) + 3.4vmin);text-align:center;
-  color:var(--gold);font-size:2vmin;letter-spacing:.32em}
+/* Our logo and the Bishop-Parker Foundation's, bottom centre on every slide,
+   either side of a gold hairline. Fixed, so they stay put through each fade.
+   Both in their own colours; theirs is never recoloured. */
+.logos{position:fixed;left:0;right:0;bottom:calc(var(--frame) + 2.2vmin);z-index:41;
+  display:flex;align-items:center;justify-content:center;gap:4.4vmin}
+.logos img{display:block;width:auto}
+.logos .ours{height:8.6vmin}
+.logos .theirs{height:6vmin}
+.logos i{width:1px;height:6.4vmin;background:var(--rule)}
 
 .slide{justify-content:center;text-align:center}
 .copy{flex:0 1 auto;max-width:150vmin}
@@ -73,7 +80,7 @@ body{background:var(--ground);color:var(--ink)}
 </head>
 <body>
 <div class="frame"></div>
-<div class="eyebrow-fixed">Palma Sola Botanical Park</div>
+<div class="logos"><img class="ours" src="../../images/psbp_logo_green.png" alt="Palma Sola Botanical Park"><i></i><img class="theirs" src="../../images/logos/bishop-parker.webp" alt="Bishop-Parker Foundation"></div>
 <div class="clock" id="clock"></div>
 <div class="deck"></div>
 <div id="bar"></div>
