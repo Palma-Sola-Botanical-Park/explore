@@ -195,8 +195,9 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 | `provenance/PSBP-xxxxx.json` | | AI draft/revise event log per species |
 
 **Species lifecycle:** `research → spotted → html`. Identity (name, filename, QR) is free to
-change at `spotted` and expensive after. Get the binomial right before promoting; check the
-accepted name (POWO, Palmpedia) first, it has caught a superseded name every time.
+change at `spotted` and expensive after. Get the binomial right before promoting. For a species
+that came from iNaturalist, iNat's name is the first source; override it only in the rare case
+we know the iNat identification is wrong.
 
 **Species record, the fields that matter:** `id`, `common_name`, `botanical_name`
 (`scientific_name` on wildlife), `inat_taxon_id`, `taxonomy.family`, `form`, `status`,
