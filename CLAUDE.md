@@ -359,6 +359,13 @@ ChatGPT drafts arrive as `park-library/drafts chatgpt/*_FINISHED.md`. Before rea
 its line-2 botanical name against the record. Read the "Unverified" list at the bottom first.
 Pace is about two per day; old pages are fine as they are.
 
+**Consistency rules (the "Consistency" box in `SPECIES_PAGES.md`; they bind every AI and every batch).**
+Before writing, read one finished page of the same kind and hold the draft beside it; if ours is thinner,
+go back to the record. Mine every record field before calling a section thin. A doubtful fact gets
+checked, not deleted. Never more than five pages before Randy reads them, and hand over each page's
+word count beside its exemplar's. `audit_psbp.py --only PAGE` warns on a page under about 300 words
+or with no in-text photo while gallery photos are approved; amber there means "say why", not "pad".
+
 ---
 
 ## 9. Where the deeper docs are (private repo, `../park-library/system docs/`)

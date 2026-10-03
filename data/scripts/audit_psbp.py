@@ -12,6 +12,9 @@ Sections
 --------
   PHOTOS     photo_credits.json internal consistency
   CREDITS    photographer name / credit_line drift
+  CONTENT    visitor-facing copy: units, hype words, iNat leakage
+  PAGE       the page.* block contract, plus the thin-page backstop
+             (WARN under ~300 words, WARN no in-text photo with gallery photos approved)
   LINK       photo_credits <-> signage cross-references
   DISK       hero files that should exist on disk
   INDEX      plants.json / wildlife.json hero paths
@@ -414,6 +417,34 @@ def main():
                 if not seen_prose:
                     add("PAGE", "ERROR",
                         f"{sid} {cn}: {sec} is photographs only — a section needs prose")
+
+            # Thin-page backstop, added 2026-10-02 after a 20-page speed batch
+            # came out at ~225 words against ~490 for the pages Randy likes.
+            # Both are WARN, not ERROR: a short page can be right (the evidence
+            # really is thin) but it needs a one-line reason at handover.
+            # Rules in park-library/system docs/SPECIES_PAGES.md, "Consistency".
+            _blocks = [b for v in page.values() if isinstance(v, list)
+                       for b in v if isinstance(b, dict)]
+            # Only a page that is really authored: three or more sections with
+            # prose. A record with just a hand-written find-it still renders
+            # the machine fields everywhere else, so its word count means nothing.
+            _authored_secs = sum(1 for v in page.values() if isinstance(v, list)
+                                 and any(isinstance(b, dict) and (b.get("text") or "").strip() for b in v))
+            if _authored_secs >= 3:
+                _n = sum(len((b.get("text") or "").split()) + len((b.get("label") or "").split())
+                         for b in _blocks)
+                if _n < 300:
+                    add("PAGE", "WARN",
+                        f"{sid} {cn}: authored page is {_n} words — under the ~300 floor; "
+                        f"a page this short needs a stated reason")
+                _inflow = any(b.get("photo") or b.get("media") for b in _blocks)
+                _gallery = [p for p in by_species.get(sid, [])
+                            if p.get("publish_ok") and not p.get("hero")
+                            and "gallery" in (p.get("role") or [])]
+                if not _inflow and _gallery:
+                    add("PAGE", "WARN",
+                        f"{sid} {cn}: no in-text photo though {len(_gallery)} approved gallery "
+                        f"photo(s) exist — place one after the prose it illustrates")
 
     # ── PHOTOS────────────────────────────────────────────────────────────
     if run("PHOTOS"):

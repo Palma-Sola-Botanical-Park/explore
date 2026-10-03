@@ -10565,6 +10565,7 @@ def render_health():
       LINK:    ['Species to photos',    'Published species missing a hero or a gallery photo'],
       DISK:    ['Image files on disk',  'Hero files present, and stale leftovers beside them'],
       CONTENT: ['Sign vs page wording', 'Where the printed teaser repeats the first line of the page'],
+      PAGE:    ['Authored page blocks', 'Block rules, and the thin-page backstop: under 300 words, or no in-text photo while gallery photos are approved. Amber means say why, not pad.'],
       TAXA:    ['Duplicate names',      'Two records sharing a name or an iNaturalist taxon id'],
       INDEX:   ['Browse indexes',       'plants.json and wildlife.json against the signage masters'],
       FK:      ['Placements',           'Map placements pointing at species that actually exist']
@@ -10578,7 +10579,7 @@ def render_health():
       ['Photographs', 'Every check that touches an image, its credit, or its file.',
        ['PHOTOS','CREDITS','LINK','DISK'], true],
       ['Species content', 'What the signs and pages actually say.',
-       ['CONTENT','TAXA'], false],
+       ['CONTENT','PAGE','TAXA'], false],
       ['Pages and indexes', 'What has been built, and whether the browse lists agree with it.',
        ['INDEX'], false],
       ['Data files', 'The records underneath: references this repo depends on.',
