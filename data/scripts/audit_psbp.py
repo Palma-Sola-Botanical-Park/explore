@@ -17,7 +17,8 @@ Sections
              (WARN under ~300 words, WARN no in-text photo with gallery photos approved)
   LINK       photo_credits <-> signage cross-references
   DISK       hero files that should exist on disk
-  INDEX      plants.json / wildlife.json hero paths
+  INDEX      plants.json / wildlife.json hero paths, and the /p/ permalink stubs
+  R2         every publishable photograph is in the media bucket (offline; --r2-live asks the bucket)
   FK         placements / workbench foreign keys
   TAXA       duplicate species across signage + research
 
@@ -119,6 +120,9 @@ def main():
     ap.add_argument("--only", action="append", default=None,
                     help="run only these sections (repeatable)")
     ap.add_argument("--quiet", action="store_true", help="summary table only")
+    ap.add_argument("--r2-live", action="store_true",
+                    help="R2 section: ask the bucket about photos the local record does not know "
+                         "(network; updates ~/PSBP-media/manifests/r2_confirmed.json)")
     ap.add_argument("--max", type=int, default=15,
                     help="max examples printed per finding group")
     ap.add_argument("--json", action="store_true",
@@ -674,6 +678,43 @@ def main():
         for num in sorted(stub_dirs - {s.split("-")[-1] for s in html_all}):
             add("INDEX", "ERROR", f"p/{num}: stub for a species that is not published")
 
+    # ── R2 ────────────────────────────────────────────────────────────────
+    # Every publishable photograph must be in the media bucket (ACTIONS Medium
+    # #68, PHOTOS_TO_R2.md): the pages, the TV decks and the signs read it from
+    # there, and `photos/` is going away. Offline by default: reads the local
+    # record of photos already confirmed up (~/PSBP-media/manifests/
+    # r2_confirmed.json). --r2-live asks the bucket about each photo the record
+    # does not know, and remembers a yes.
+    if run("R2"):
+        try:
+            sys.path.insert(0, str(HERE.parent))
+            import psbp_common as _pc
+        except Exception as e:                                    # noqa: BLE001
+            add("R2", "INFO", f"R2 check skipped: could not import psbp_common ({e})")
+        else:
+            absent = defaultdict(list)
+            for ph in photos:
+                sid, phid = ph.get("psbp_id"), ph.get("photo_id")
+                if not ph.get("publish_ok") or not phid or sid not in sign_by_id:
+                    continue
+                up = _pc.media_confirmed_offline(phid)
+                if not up and args.r2_live:
+                    up = _pc.media_in_bucket(phid)
+                if not up:
+                    absent[sid].append(str(phid))
+            waiting = {sid: v for sid, v in absent.items() if sign_by_id[sid].get("status") != "html"}
+            for sid in sorted(set(absent) - set(waiting)):
+                v = absent[sid]
+                add("R2", "ERROR",
+                    f"{sid} {sign_by_id[sid].get('common_name')}: {len(v)} publishable photo(s) not in R2 "
+                    f"(e.g. {', '.join(v[:3])}); the live page would lose them once photos/ is gone")
+            if waiting:
+                n = sum(len(v) for v in waiting.values())
+                add("R2", "INFO",
+                    f"{n} publishable photo(s) on {len(waiting)} species not yet published are not in R2. "
+                    f"They go up with the Office pair (Fetch iNat originals, then Upload media to R2) "
+                    f"or when the species is promoted.")
+
     # ── FK ────────────────────────────────────────────────────────────────
     if run("FK"):
         res_by_id = {s["id"]: s for s in research}
@@ -770,7 +811,7 @@ def main():
     # of 15 and look like a bug in the page.
     if args.json:
         order_j = ["PHOTOS", "CREDITS", "CONTENT", "PAGE", "LINK", "DISK",
-                   "INDEX", "FK", "TAXA"]
+                   "INDEX", "R2", "FK", "TAXA"]
         secs = []
         for sec in order_j:
             rows = [(l, m) for s_, l, m in findings if s_ == sec]
@@ -800,7 +841,7 @@ def main():
     #   add() fills `findings`, but only sections named here are printed or
     #   counted. CONTENT was added 2026-08-28 and cost twenty minutes of
     #   debugging a check that was working perfectly.
-    order = ["PHOTOS", "CREDITS", "CONTENT", "PAGE", "LINK", "DISK", "INDEX",
+    order = ["PHOTOS", "CREDITS", "CONTENT", "PAGE", "LINK", "DISK", "INDEX", "R2",
              "FK", "TAXA"]
     if not args.quiet:
         for sec in order:

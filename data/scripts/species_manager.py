@@ -10332,6 +10332,7 @@ def render_health():
       PAGE:    ['Authored page blocks', 'Block rules, and the thin-page backstop: under 300 words, or no in-text photo while gallery photos are approved. Amber means say why, not pad.'],
       TAXA:    ['Duplicate names',      'Two records sharing a name or an iNaturalist taxon id'],
       INDEX:   ['Browse indexes',       'plants.json and wildlife.json against the signage masters'],
+      R2:      ['Photos in R2',         'Every publishable photograph is in the media bucket'],
       FK:      ['Placements',           'Map placements pointing at species that actually exist']
     };
     // Grouped so related checks read together instead of in audit order.
@@ -10341,7 +10342,7 @@ def render_health():
     // worth a red dot. See audit_psbp.py for the full removal.
     var H_GROUPS = [
       ['Photographs', 'Every check that touches an image, its credit, or its file.',
-       ['PHOTOS','CREDITS','LINK','DISK'], true],
+       ['PHOTOS','CREDITS','LINK','DISK','R2'], true],
       ['Species content', 'What the signs and pages actually say.',
        ['CONTENT','PAGE','TAXA'], false],
       ['Pages and indexes', 'What has been built, and whether the browse lists agree with it.',

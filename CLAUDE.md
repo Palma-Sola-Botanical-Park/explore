@@ -244,7 +244,7 @@ is editing the live screens.
 | `plant_publisher.py` | 8701 | `--generate PSBP-xxxxx`, `--generate-all`, `--demote`; writes `plants/` and `plants.json` |
 | `wildlife_publisher.py` | 8702 | same for wildlife |
 | `psbp_placements.py` | 8701 | placement pinning UI (collides with the plant publisher's port; run one at a time) |
-| `audit_psbp.py` | | read-only; sections PHOTOS CREDITS CONTENT PAGE LINK DISK INDEX FK TAXA, `--only X`, `--json` |
+| `audit_psbp.py` | | read-only; sections PHOTOS CREDITS CONTENT PAGE LINK DISK INDEX R2 FK TAXA, `--only X`, `--json`; `--only R2` flags any publishable photo not in the media bucket (offline; `--r2-live` asks the bucket and refreshes the local record) |
 | `psbp_page_drift.py` | | read-only; the TRUE staleness check (renders and compares) |
 | `fetch_sheets.py` → `validate_promote.py` | | the sync, run by the Action |
 | `shrink.sh` | | JPEG size budget via sips; `DRY_RUN=1` prints a banner but still writes, verify before trusting |
