@@ -389,16 +389,20 @@ section { padding: 3.375rem 1.5rem; }
 .plant-card:hover img { transform: scale(1.05); }
 
 /* "Full page" on the wildlife card: desktop only, where a click opens Quick
-   View. Same 1000px threshold as drawerAllowed() in nature.html. */
+   View. Bottom right, under the credit bar. Same 1000px threshold as
+   drawerAllowed() in nature.html. */
 .card-fullpage { display: none; }
 @media (min-width: 1000px) {
   .card-fullpage {
-    display: inline-block; margin-top: .35rem;
-    font-size: var(--t-base, 1.0625rem); font-weight: 600;
-    color: var(--green-mid, #2d6a35); text-decoration: underline;
+    display: block; text-align: right;
+    margin-top: -.45rem;            /* pull it up into the credit block */
+    padding: .55rem .9rem .75rem;   /* roughly 40px of click target */
+    font-size: var(--t-base, 1.0625rem); font-weight: 500;
+    color: var(--green-mid, #2d6a35);
   }
-  .card-fullpage:hover { color: var(--green-deep, #1a3a1f); }
+  .card-fullpage:hover { color: var(--green-deep, #1a3a1f); text-decoration: underline; }
 }
+
 .obs-species { font-size: 1rem; font-weight: 700; color: var(--green-deep); margin-bottom: .15rem; }
 .obs-by { font-size: 1rem; color: var(--text-soft); }
 .obs-date { font-size: 1.05rem; color: #aaa; }

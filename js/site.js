@@ -2122,9 +2122,9 @@ function wildCard(w) {
     <div class="card-body" style="flex:1">
       <h4 style="font-size:.97rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${w.common}</h4>
       <div class="sci-name">${w.sci}</div>
-      <span class="card-fullpage" data-fullpage>Full page &rarr;</span>
     </div>
     ${_speciesCreditPlate(w)}
+    <span class="card-fullpage" data-fullpage>Full page &rarr;</span>
   </a>`;
 }
 
