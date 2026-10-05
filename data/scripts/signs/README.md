@@ -17,10 +17,26 @@ running standalone" — true, and the reason nobody could check them.
 Randy's rule, and it is the right one: *nothing large like PDF signs should
 ever go in the repo.*
 
-## Running them
+## The easy way: Species Manager, Signs tab (2026-10-04)
+
+Pick species, press Build. The tab runs `make_signs.py` as a separate process and
+writes each build to its own folder, `~/Documents/PSBP/signs_out/builds/<date>_<time>_<n>-signs/`
+(`PRINT_SHEETS_2up.pdf`, the single signs, `ids.txt`, a dated `build.log`). The top level of
+`signs_out/` stays the record of what was actually printed. `make_signs.py --check-json` is
+the read-only readiness report the tab reads. Only `status: html` plants build: an unpublished
+species has no `/p/` stub, so its code would be dead.
+
+**Sign size** 7.475 x 4.6875 in (was 7.6 x 4.75). **QR** points at the short `/p/00719`
+stub, which redirects to the species page with `?src=sign`. **Hero image order:** cache,
+repo copy if 1,000 px or wider, R2 original (only when the media library confirms the
+species is wholly in the bucket), iNat original. Downloads are cached in
+`~/Documents/PSBP/sign_photo_cache`; scratch goes to the system temp folder. Nothing is
+written inside the repo.
+
+## From the command line
 
     cd data/scripts/signs
-    python3 make_signs.py            # reads plant_signage.json, writes PDFs
+    python3 make_signs.py PSBP-00004 PSBP-00303   # or --file ids.txt
 
 **Input** — the repo, READ-ONLY, defaulting to `~/Documents/GitHub/explore`.
 Override with `PSBP_REPO=/path/to/explore`.

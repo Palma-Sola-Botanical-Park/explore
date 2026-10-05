@@ -7,8 +7,8 @@ One tool, one port (8700), seven tabs matching the species pipeline:
   Intake            → Import species from iNat, mint PSBP IDs
   Photos            → Triage + review (hero/gallery/roles)
   Cultivated        → The one tab that writes back to iNaturalist
-  Phenology         → Claude-vision reading of observation photos (plants only)
   Preview & Publish → Promote/demote, generate HTML, rebuild indexes
+  Signs             → Pick species, build print-ready sign PDFs (outside the repo)
   Verify            → Targeted fail-closed re-check of flag fields
 
 NOTE: there is NO Edit tab. This docstring listed one until 2026-08-24, and
@@ -232,8 +232,8 @@ TABS = [
     {"id": "intake",   "label": "Intake",         "route": "/intake",  "icon": "📥"},
     {"id": "photos",   "label": "Photos",         "route": "/photos",  "icon": "📷"},
     {"id": "cultivated", "label": "Cultivated",   "route": "/cultivated", "icon": "🏷️"},
-    {"id": "phenology", "label": "Phenology",     "route": "/phenology", "icon": "🌸"},
     {"id": "publish",  "label": "Preview & Publish", "route": "/publish", "icon": "🚀"},
+    {"id": "signs",    "label": "Signs",           "route": "/signs",   "icon": "🪧"},
     {"id": "verify",   "label": "Verify",          "route": "/verify",  "icon": "🔎"},
     {"id": "health",   "label": "Health",          "route": "/health",  "icon": "🩺"},
 ]
@@ -9575,242 +9575,6 @@ def render_cultivated():
     """
 
 
-def render_phenology():
-    """Phenology tab — AI-inferred plant phenology from iNat photos, stored
-    locally. READ-ONLY with respect to iNaturalist."""
-    return """
-<style>
-  .ph-wrap { display: grid; grid-template-columns: 300px 1fr; gap: 18px; }
-  .ph-banner { background:#fff7ef; border:1px solid #f0d9bf; color:#7a5a2e;
-    border-radius:9px; padding:10px 14px; font-size:13px; margin-bottom:14px; }
-  .ph-banner b { color:#5a3e1a; }
-  .ph-pick { max-height:72vh; overflow:auto; }
-  .ph-sp { padding:9px 11px; border:1px solid #e6e9ec; border-radius:8px;
-    margin-bottom:6px; cursor:pointer; background:#fff; }
-  .ph-sp:hover { border-color:#cdd6df; }
-  .ph-sp.active { border-color:#2d6a35; background:#f1f8f2; }
-  .ph-sp-name { font-weight:600; font-size:14px; }
-  .ph-sp-sci { font-style:italic; color:#7a8590; font-size:12px; }
-  .ph-sp-meta { font-size:11px; color:#9aa3ad; margin-top:2px; }
-  .ph-sp-cov { color:#2d6a35; font-weight:600; }
-  .ph-main h2 { margin:0 0 4px; }
-  .ph-scanbar { display:flex; gap:10px; align-items:center; margin:10px 0 16px; }
-  .ph-btn { background:#1a3a5c; color:#fff; border:none; border-radius:7px;
-    padding:8px 14px; font-size:13px; cursor:pointer; }
-  .ph-btn:disabled { background:#9aa3ad; cursor:default; }
-  .ph-note { font-size:12px; color:#7a8590; }
-  .ph-grid { border-collapse:collapse; margin:6px 0 20px; font-size:12px; }
-  .ph-grid th, .ph-grid td { border:1px solid #eef1f3; text-align:center;
-    padding:4px 6px; min-width:30px; }
-  .ph-grid th { background:#f7f9fa; color:#566; font-weight:600; }
-  .ph-grid td.sign { text-align:left; font-weight:600; color:#34404a;
-    white-space:nowrap; background:#fafbfc; }
-  .ph-obs { display:flex; gap:12px; padding:10px; border:1px solid #eef1f3;
-    border-radius:9px; margin-bottom:10px; align-items:flex-start; }
-  .ph-obs img { width:90px; height:90px; object-fit:cover; border-radius:7px;
-    flex-shrink:0; background:#eee; }
-  .ph-obs-body { flex:1; }
-  .ph-obs-top { font-size:12px; color:#7a8590; margin-bottom:6px; }
-  .ph-obs-top a { color:#1a5276; }
-  .ph-chips { display:flex; flex-wrap:wrap; gap:6px; }
-  .ph-chip { font-size:11px; padding:3px 9px; border-radius:11px; cursor:pointer;
-    border:1px solid transparent; user-select:none; }
-  .ph-chip.yes { background:#e3f2e6; color:#2d6a35; }
-  .ph-chip.no  { background:#eceff1; color:#8a929b; }
-  .ph-chip.unsure { background:#fff4d9; color:#8a6300; }
-  .ph-obs-note { font-size:12px; color:#67727c; margin-top:6px; font-style:italic; }
-  .ph-save { font-size:11px; margin-top:8px; }
-  .ph-save button { background:#2d6a35; color:#fff; border:none; border-radius:6px;
-    padding:4px 10px; cursor:pointer; font-size:11px; }
-  .ph-rev { color:#2d6a35; font-size:11px; font-weight:600; }
-  .ph-empty { color:#8a929b; padding:20px; }
-  .ph-sugg { background:#f1f8f2; border:1px solid #cfe6d3; border-radius:8px;
-    padding:10px 12px; font-size:12px; color:#2d5a33; margin-bottom:14px; }
-</style>
-
-<div class="ph-banner">
-  🌸 Phenology readings are <b>AI-inferred from iNaturalist photos</b> and stored only in
-  your local <code>phenology.json</code>. <b>Nothing is ever written back to iNaturalist</b> —
-  you click chips to record a human correction locally. Months shown are suggestions for the
-  <code>seasonality</code> fields; copy what you trust.
-</div>
-
-<div class="ph-wrap">
-  <div>
-    <div class="ph-pick" id="ph-pick"><div class="ph-note">Loading plants…</div></div>
-  </div>
-  <div class="ph-main" id="ph-main">
-    <div class="ph-empty">Select a plant to view and build its phenology.</div>
-  </div>
-</div>
-
-<script>
-  const PH_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  let phSpecies = [];
-  let phSelected = null;
-
-  function phEsc(s){ const d=document.createElement('div'); d.textContent=s==null?'':s; return d.innerHTML; }
-
-  async function phLoadSpecies() {
-    try {
-      const r = await fetch('/api/phenology/species');
-      const d = await r.json();
-      phSpecies = d.species || [];
-      phRenderPicker();
-    } catch(e) {
-      document.getElementById('ph-pick').innerHTML = '<div class="ph-note">Error loading: '+phEsc(e.message)+'</div>';
-    }
-  }
-
-  function phRenderPicker() {
-    const el = document.getElementById('ph-pick');
-    if (!phSpecies.length) { el.innerHTML = '<div class="ph-note">No plants with an iNat taxon found.</div>'; return; }
-    el.innerHTML = phSpecies.map(s => `
-      <div class="ph-sp ${phSelected===s.id?'active':''}" onclick="phSelect('${s.id}')">
-        <div class="ph-sp-name">${phEsc(s.common_name||s.id)}</div>
-        <div class="ph-sp-sci">${phEsc(s.scientific_name||'')}</div>
-        <div class="ph-sp-meta">${s.id} · ${phEsc(s.status||'')} ·
-          ${s.analyzed_count ? `<span class="ph-sp-cov">${s.analyzed_count} analyzed</span>` : 'none yet'}</div>
-      </div>`).join('');
-  }
-
-  async function phSelect(id) {
-    phSelected = id;
-    phRenderPicker();
-    const main = document.getElementById('ph-main');
-    main.innerHTML = '<div class="ph-note">Loading…</div>';
-    await phLoadSummary(id);
-  }
-
-  async function phLoadSummary(id) {
-    try {
-      const r = await fetch('/api/phenology/summary?id='+encodeURIComponent(id));
-      const d = await r.json();
-      phRenderSummary(d);
-    } catch(e) {
-      document.getElementById('ph-main').innerHTML = '<div class="ph-note">Error: '+phEsc(e.message)+'</div>';
-    }
-  }
-
-  function phRenderSummary(d) {
-    const sp = phSpecies.find(s => s.id === d.id) || {};
-    const main = document.getElementById('ph-main');
-    let h = `<h2>${phEsc(sp.common_name||d.id)} <span class="ph-sp-sci">${phEsc(sp.scientific_name||'')}</span></h2>`;
-    h += `<div class="ph-scanbar">
-      <button class="ph-btn" id="ph-scan-btn" onclick="phScan('${d.id}')">🔬 Scan up to 8 new observations</button>
-      <span class="ph-note">${d.n_observations} analyzed${d.n_reviewed?` · ${d.n_reviewed} human-reviewed`:''}</span>
-    </div>`;
-    h += `<div id="ph-scan-status"></div>`;
-
-    if (!d.n_observations) {
-      h += '<div class="ph-empty">No observations analyzed yet. Hit “Scan” to have Claude read the iNat photos.</div>';
-      main.innerHTML = h; return;
-    }
-
-    // Suggested seasonality months
-    const fp = (d.months_present.flowers||[]).map(m=>PH_MONTHS[m-1]);
-    const frp = (d.months_present.fruit||[]).map(m=>PH_MONTHS[m-1]);
-    if (fp.length || frp.length) {
-      h += `<div class="ph-sugg">Suggested for <code>seasonality</code>:
-        ${fp.length?`<b>flowering</b> ${fp.join(', ')}`:''}${fp.length&&frp.length?' · ':''}${frp.length?`<b>fruiting</b> ${frp.join(', ')}`:''}
-        <span class="ph-note">(copy into the species' seasonality fields if you agree)</span></div>`;
-    }
-
-    // Monthly grid
-    h += '<table class="ph-grid"><tr><th>sign</th>' + PH_MONTHS.map(m=>`<th>${m}</th>`).join('') + '</tr>';
-    d.signs.forEach(sg => {
-      const row = d.by_sign[sg];
-      h += `<tr><td class="sign">${sg.replace('_',' ')}</td>`;
-      for (let m=1;m<=12;m++){
-        const c = row.months[String(m)]||0;
-        const bg = c>0 ? `background:rgba(45,106,53,${Math.min(0.15+c*0.18,0.85)});color:${c>2?'#fff':'#234'}` : '';
-        h += `<td style="${bg}">${c||''}</td>`;
-      }
-      h += '</tr>';
-    });
-    h += '</table>';
-
-    // Per-observation list
-    h += d.observations.map(o => phObsCard(o, d.signs)).join('');
-    main.innerHTML = h;
-  }
-
-  function phObsCard(o, signs) {
-    const eff = (o.human_reviewed && o.human_signs) ? o.human_signs : (o.signs||{});
-    const chips = signs.map(sg => {
-      const v = eff[sg] || 'unsure';
-      return `<span class="ph-chip ${v}" data-obs="${o.obs_id}" data-sign="${sg}" data-val="${v}"
-                onclick="phCycle(this)">${sg.replace('_',' ')}: ${v}</span>`;
-    }).join('');
-    return `<div class="ph-obs" id="ph-obs-${o.obs_id}">
-      <img src="${phEsc(o.photo_url)}" alt="obs ${o.obs_id}" loading="lazy">
-      <div class="ph-obs-body">
-        <div class="ph-obs-top">${phEsc(o.observed_on||'date?')} ·
-          <a href="${phEsc(o.obs_url)}" target="_blank" rel="noopener">iNat #${o.obs_id}</a>
-          ${o.human_reviewed?'· <span class="ph-rev">✓ human-reviewed</span>':'· AI'}</div>
-        <div class="ph-chips">${chips}</div>
-        ${o.note?`<div class="ph-obs-note">“${phEsc(o.note)}”</div>`:''}
-        <div class="ph-save"><button onclick="phSaveReview('${o.obs_id}')">Save correction</button></div>
-      </div>
-    </div>`;
-  }
-
-  function phCycle(el) {
-    const order = ['yes','no','unsure'];
-    const cur = el.getAttribute('data-val');
-    const next = order[(order.indexOf(cur)+1)%3];
-    el.setAttribute('data-val', next);
-    el.className = 'ph-chip ' + next;
-    el.textContent = el.getAttribute('data-sign').replace('_',' ') + ': ' + next;
-  }
-
-  async function phSaveReview(obsId) {
-    const chips = document.querySelectorAll(`#ph-obs-${obsId} .ph-chip`);
-    const signs = {};
-    chips.forEach(c => signs[c.getAttribute('data-sign')] = c.getAttribute('data-val'));
-    try {
-      const r = await fetch('/api/phenology/review', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({obs_id: obsId, signs: signs})
-      });
-      const d = await r.json();
-      if (d.ok) { await phLoadSummary(phSelected); }
-      else alert(d.error||'save failed');
-    } catch(e){ alert(e.message); }
-  }
-
-  async function phScan(id) {
-    const btn = document.getElementById('ph-scan-btn');
-    const status = document.getElementById('ph-scan-status');
-    if (btn) { btn.disabled = true; btn.textContent = '🔬 Claude is reading photos…'; }
-    status.innerHTML = '<div class="ph-note">Fetching observations from iNaturalist and analyzing photos — this can take a bit.</div>';
-    try {
-      const r = await fetch('/api/phenology/scan', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({id: id, limit: 8})
-      });
-      const d = await r.json();
-      if (!d.ok) { status.innerHTML = '<div class="ph-note" style="color:#a33">⚠️ '+phEsc(d.error)+'</div>'; if(btn){btn.disabled=false;btn.textContent='🔬 Scan up to 8 new observations';} return; }
-      const u = d.usage||{};
-      status.innerHTML = `<div class="ph-note">✓ Analyzed ${d.analyzed_count}` +
-        `${d.remaining?`, ${d.remaining} still unanalyzed (scan again)`:''}` +
-        `${d.no_photos?`, ${d.no_photos} had no photo`:''}` +
-        `${(d.errors&&d.errors.length)?`, ${d.errors.length} error(s)`:''} · ${u.input_tokens||0} in / ${u.output_tokens||0} out tokens</div>`;
-      // refresh species coverage + summary
-      await phLoadSpecies();
-      await phLoadSummary(id);
-    } catch(e) {
-      status.innerHTML = '<div class="ph-note" style="color:#a33">⚠️ '+phEsc(e.message)+'</div>';
-      if(btn){btn.disabled=false;btn.textContent='🔬 Scan up to 8 new observations';}
-    }
-  }
-
-  phLoadSpecies();
-</script>
-"""
-
-
-
 # ===== VERIFY TAB (spliced) =====
 VERIFY_BODY = r"""
 <style>
@@ -10742,13 +10506,224 @@ def render_health():
     """
 
 
+def render_signs():
+    """Signs tab — pick species, build a print-ready PDF on this Mac.
+
+    Plain (non-f) raw string on purpose: the JS has braces and backslashes.
+    """
+    return r"""
+    <style>
+    .sg-intro{background:#fff;border:1px solid #e5e0d5;border-left:4px solid var(--green-mid);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+    .sg-intro h2{font-size:16px;color:var(--green-deep);margin:0 0 4px;}
+    .sg-intro p{font-size:13px;color:var(--gray-600);margin:0 0 4px;}
+    .sg-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
+    .sg-bar input[type=text]{padding:7px 10px;border:1px solid #d8d3c6;border-radius:7px;font-size:13px;min-width:220px;}
+    .sg-bar select{padding:7px 8px;border:1px solid #d8d3c6;border-radius:7px;font-size:13px;background:#fff;}
+    .sg-btn{background:#fff;color:var(--green-deep);border:1px solid #cfc9b8;border-radius:7px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;}
+    .sg-btn:hover{background:var(--cream);}
+    .sg-build{background:var(--green-mid);color:#fff;border:none;border-radius:7px;padding:9px 18px;font-size:14px;font-weight:700;cursor:pointer;}
+    .sg-build:disabled{opacity:.5;cursor:default;}
+    .sg-count{font-size:13px;color:var(--green-deep);font-weight:600;}
+    .sg-note{font-size:12px;color:var(--gray-600);}
+    .sg-tablewrap{background:#fff;border:1px solid #eee;border-radius:10px;max-height:56vh;overflow:auto;}
+    table.sg{border-collapse:collapse;width:100%;font-size:13px;}
+    table.sg th{position:sticky;top:0;background:#f6f3ea;text-align:left;padding:7px 10px;font-size:12px;color:var(--gray-600);border-bottom:1px solid #e5e0d5;}
+    table.sg td{padding:6px 10px;border-bottom:1px solid #f3f0e8;vertical-align:top;}
+    table.sg tr.held td{color:#999;background:#fbfaf6;}
+    table.sg tr.sel td{background:#eef6ef;}
+    .sg-name{font-weight:600;color:var(--green-deep);}
+    .sg-sub{font-size:11px;color:#8a8576;}
+    .sg-pill{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:9px;white-space:nowrap;}
+    .sg-pill.warn{background:#fdf0d5;color:#9a6b12;}
+    .sg-pill.bad{background:#f8e0dc;color:#a3382c;}
+    .sg-pill.ok{background:#e3f0e5;color:#2d6a35;}
+    .sg-job{background:#fff;border:1px solid #e5e0d5;border-radius:10px;padding:14px 16px;margin-top:14px;display:none;}
+    .sg-job h3{margin:0 0 6px;font-size:15px;color:var(--green-deep);}
+    .sg-log{background:#1d2a1f;color:#d8ead9;font:12px/1.45 ui-monospace,Menlo,monospace;border-radius:8px;padding:10px 12px;max-height:260px;overflow:auto;white-space:pre-wrap;}
+    .sg-err{background:#f8e0dc;color:#7c2a20;border-radius:8px;padding:10px 12px;font-size:13px;}
+    </style>
+
+    <div class="sg-intro">
+      <h2>Signs</h2>
+      <p>Pick species, build a PDF of print sheets (two signs per letter page, trim on the marks, one pouch).
+         Output goes to <code>~/Documents/PSBP/signs_out/builds/</code>, never into the repo.
+         QR codes point at the short <code>/p/00719</code> address.</p>
+      <p id="sg-meta" class="sg-note"></p>
+    </div>
+
+    <div id="sg-error"></div>
+
+    <div class="sg-bar">
+      <input type="text" id="sg-q" placeholder="Search name, family, form, id">
+      <select id="sg-form"><option value="">All forms</option></select>
+      <select id="sg-pdf">
+        <option value="">Any PDF status</option>
+        <option value="none">No PDF on disk yet</option>
+        <option value="has">Has a PDF on disk</option>
+      </select>
+      <button class="sg-btn" id="sg-all">Select shown</button>
+      <button class="sg-btn" id="sg-none">Clear</button>
+      <span class="sg-count" id="sg-sel">0 selected</span>
+    </div>
+
+    <div class="sg-tablewrap">
+      <table class="sg">
+        <thead><tr><th style="width:28px"></th><th>Species</th><th>Copy</th><th>Photo credit</th><th>Hero image</th><th>PDFs on disk</th></tr></thead>
+        <tbody id="sg-body"><tr><td colspan="6" style="padding:18px;color:#999">Reading the catalogue...</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="sg-bar" style="margin-top:12px">
+      <button class="sg-build" id="sg-go" disabled>Build PDF</button>
+      <span class="sg-note" id="sg-sheets"></span>
+    </div>
+
+    <div class="sg-job" id="sg-job">
+      <h3 id="sg-jobtitle">Building...</h3>
+      <div class="sg-log" id="sg-log"></div>
+      <div style="margin-top:10px" id="sg-jobactions"></div>
+    </div>
+
+    <script>
+    (function(){
+      var rows = [], selected = new Set(), polling = null;
+      var $ = function(id){ return document.getElementById(id); };
+      function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+      function problem(r){
+        if (!r.hero) return 'no hero photo';
+        if (!r.teaser) return 'no teaser';
+        if (!r.origin) return 'no origin';
+        return '';
+      }
+
+      function visible(){
+        var q = $('sg-q').value.trim().toLowerCase(), f = $('sg-form').value, p = $('sg-pdf').value;
+        return rows.filter(function(r){
+          if (f && r.form !== f) return false;
+          if (p === 'none' && r.pdfs.length) return false;
+          if (p === 'has' && !r.pdfs.length) return false;
+          if (q && (r.common + ' ' + r.sci + ' ' + r.family + ' ' + r.form + ' ' + r.id).toLowerCase().indexOf(q) < 0) return false;
+          return true;
+        });
+      }
+
+      function draw(){
+        var list = visible(), html = '';
+        list.forEach(function(r){
+          var bad = problem(r), sel = selected.has(r.id);
+          var copy = bad ? '<span class="sg-pill bad">' + esc(bad) + '</span>'
+                   : (r.clamped ? '<span class="sg-pill warn">teaser trimmed</span>' : '<span class="sg-pill ok">ready</span>');
+          var photo = r.photo === 'download' ? 'downloads' : (r.photo === 'cache' ? 'cached' : (r.photo === 'local' ? 'repo copy' : ''));
+          var pdfs = r.pdfs.length ? '<span title="' + esc(r.pdfs.join('\n')) + '">' + r.pdfs.length + '</span>' : '<span class="sg-sub">none</span>';
+          html += '<tr class="' + (bad ? 'held' : '') + (sel ? ' sel' : '') + '">'
+            + '<td><input type="checkbox" data-id="' + esc(r.id) + '"' + (sel ? ' checked' : '') + (bad ? ' disabled' : '') + '></td>'
+            + '<td><div class="sg-name">' + esc(r.common) + '</div><div class="sg-sub">' + esc(r.id) + ' &middot; ' + esc(r.form) + '</div></td>'
+            + '<td>' + copy + '</td>'
+            + '<td>' + esc(r.credit) + '<div class="sg-sub">' + esc(r.license) + '</div></td>'
+            + '<td class="sg-sub">' + photo + '</td>'
+            + '<td>' + pdfs + '</td></tr>';
+        });
+        $('sg-body').innerHTML = html || '<tr><td colspan="6" style="padding:18px;color:#999">Nothing matches.</td></tr>';
+        counts();
+      }
+
+      function counts(){
+        var n = selected.size;
+        $('sg-sel').textContent = n + ' selected';
+        $('sg-sheets').textContent = n ? (Math.ceil(n / 2) + ' sheet' + (Math.ceil(n / 2) === 1 ? '' : 's')
+          + (n % 2 ? ', last sheet has one sign' : '')) : '';
+        $('sg-go').disabled = !n || !!polling;
+      }
+
+      function showError(msg){ $('sg-error').innerHTML = msg ? '<div class="sg-err">' + esc(msg) + '</div>' : ''; }
+
+      function load(){
+        return fetch('/api/signs/list').then(function(r){ return r.json(); }).then(function(d){
+          if (d.error){ showError(d.error + (d.stderr ? ' ' + d.stderr : '')); $('sg-body').innerHTML = ''; return; }
+          showError('');
+          rows = d.rows;
+          var forms = {};
+          rows.forEach(function(r){ forms[r.form] = 1; });
+          var sel = $('sg-form'), cur = sel.value;
+          sel.innerHTML = '<option value="">All forms</option>' + Object.keys(forms).sort().map(function(f){
+            return '<option value="' + esc(f) + '">' + esc(f) + '</option>'; }).join('');
+          sel.value = cur;
+          rows.sort(function(a, b){ return a.common.localeCompare(b.common); });
+          var held = rows.filter(function(r){ return problem(r); }).length;
+          $('sg-meta').textContent = rows.length + ' published plants, ' + held + ' held back. Sign size '
+            + d.sign_in[0] + ' x ' + d.sign_in[1] + ' in. QR style: ' + d.url_style + '.';
+          draw();
+        }).catch(function(e){ showError('Could not read the catalogue: ' + e); });
+      }
+
+      $('sg-body').addEventListener('change', function(e){
+        var id = e.target.getAttribute && e.target.getAttribute('data-id');
+        if (!id) return;
+        if (e.target.checked) selected.add(id); else selected.delete(id);
+        e.target.closest('tr').classList.toggle('sel', e.target.checked);
+        counts();
+      });
+      ['sg-q','sg-form','sg-pdf'].forEach(function(id){ $(id).addEventListener('input', draw); });
+      $('sg-all').addEventListener('click', function(){
+        visible().forEach(function(r){ if (!problem(r)) selected.add(r.id); }); draw(); });
+      $('sg-none').addEventListener('click', function(){ selected.clear(); draw(); });
+
+      function renderJob(j){
+        $('sg-job').style.display = 'block';
+        var log = $('sg-log'), atEnd = log.scrollTop + log.clientHeight >= log.scrollHeight - 20;
+        log.textContent = j.log || '';
+        if (atEnd) log.scrollTop = log.scrollHeight;
+        var t = $('sg-jobtitle'), a = $('sg-jobactions');
+        if (j.running){ t.textContent = 'Building ' + j.count + ' sign' + (j.count === 1 ? '' : 's') + '... (started ' + j.started + ')'; a.innerHTML = ''; return; }
+        var ok = j.returncode === 0 && j.sheet;
+        t.textContent = ok ? 'Done. Print PRINT_SHEETS_2up.pdf' : 'The build did not finish cleanly (see the log).';
+        a.innerHTML = j.folder ? '<button class="sg-btn" id="sg-open">Open folder in Finder</button> <span class="sg-note">' + esc(j.folder) + '</span>' : '';
+        var b = $('sg-open');
+        if (b) b.onclick = function(){
+          fetch('/api/signs/open', {method:'POST', body: JSON.stringify({folder: j.folder})})
+            .then(function(r){ return r.json(); }).then(function(d){ if (!d.ok) showError(d.error); }); };
+      }
+
+      function poll(){
+        fetch('/api/signs/job').then(function(r){ return r.json(); }).then(function(j){
+          renderJob(j);
+          if (j.running){ if (!polling) polling = setInterval(poll, 1000); }
+          else if (polling){ clearInterval(polling); polling = null; counts(); load(); }
+          counts();
+        });
+      }
+
+      $('sg-go').addEventListener('click', function(){
+        var ids = rows.filter(function(r){ return selected.has(r.id); }).map(function(r){ return r.id; });
+        if (!ids.length) return;
+        showError('');
+        $('sg-go').disabled = true;
+        fetch('/api/signs/build', {method:'POST', body: JSON.stringify({ids: ids})})
+          .then(function(r){ return r.json(); }).then(function(d){
+            if (!d.ok){ showError(d.error); counts(); return; }
+            polling = setInterval(poll, 1000); poll();
+          });
+      });
+
+      load();
+      fetch('/api/signs/job').then(function(r){ return r.json(); }).then(function(j){
+        if (j.running){ polling = setInterval(poll, 1000); renderJob(j); }
+        else if (j.folder){ renderJob(j); }
+      });
+    })();
+    </script>
+    """
+
+
 PAGE_ROUTES = {
+    "/signs":   ("signs",    render_signs),
 
     "/":        ("overview", render_overview),
     "/intake":  ("intake",   render_intake),
     "/photos":  ("photos",   render_photos),
     "/cultivated": ("cultivated", render_cultivated),
-    "/phenology": ("phenology", render_phenology),
     "/publish": ("publish",  render_publish),
     "/verify":  ("verify",   render_verify),
     "/health":  ("health",   render_health),
@@ -12547,367 +12522,133 @@ def handle_api_ai_work(params):
 
 
 # ════════════════════════════════════════════════════════════════════════════
-# PHENOLOGY — AI-inferred plant phenology from iNat photos
+# SIGNS — build print-ready sign PDFs for chosen species  (added 2026-10-04)
 #
-# Sends iNat observation photos to Claude (vision) and records which of six
-# signs are visibly evident — flowers, flower buds, leaves, leaf buds, fruit,
-# seeds — per observation, keyed by the iNat observation ID. Everything is
-# stored ONLY in local JSON for website use.
+# A thin front end for data/scripts/signs/make_signs.py. That script is the one
+# PSBP tool that needs reportlab and Pillow, so it runs as a SEPARATE PROCESS
+# with the same Python this server runs under, exactly as the Health tab runs
+# audit_psbp.py. The dashboard itself stays standard-library only.
 #
-#   *** READ-ONLY WITH RESPECT TO iNATURALIST ***
-#   This feature NEVER writes to iNat. It only GETs observations and reads
-#   public photo URLs. Phenology annotations on iNat are for humans to set.
-#   (The only place in this dashboard that POSTs to iNat is the Cultivated tab;
-#    nothing here calls _inat_post.)
-#
-# Records carry human_reviewed / human_signs so a human can override the AI
-# reading locally; the monthly summary prefers human truth when present.
+# Output never touches the repo: each build gets its own folder,
+#   ~/Documents/PSBP/signs_out/builds/<date>_<time>_<n>-signs/
+# and the top level of signs_out stays the record of what was actually printed.
 # ════════════════════════════════════════════════════════════════════════════
 
-PHENO_MODEL          = "claude-haiku-4-5-20251001"  # cheap + vision; bump to sonnet/opus for tougher IDs
-PHENOLOGY_JSON       = os.path.join(REPO, "data", "sources", "phenology.json")
-PHENO_SIGNS          = ["flowers", "flower_buds", "leaves", "leaf_buds", "fruit", "seeds"]
-PHENO_PHOTOS_PER_OBS = 8       # photos sent to the model per observation.
-                               # Was 3, raised 2026-08-29. Randy: "I want it to look
-                               # at ALL the photos." One observation gets ONE verdict,
-                               # so every photo of it is evidence toward that verdict —
-                               # a flower may only be visible in the fifth frame. 265 of
-                               # 664 stored records were capped at 3 and may have been
-                               # scored blind to later photos; re-scan with force=True to
-                               # revisit those. 8 is a ceiling for cost, not a judgement:
-                               # observations with more than 8 photos are rare.
-PHENO_MAX_TOKENS     = 700
-PHENO_SCAN_DEFAULT   = 8       # observations analyzed per "scan" click
+SIGNS_SCRIPT = os.path.join(REPO, "data", "scripts", "signs", "make_signs.py")
+SIGNS_ROOT   = os.path.expanduser("~/Documents/PSBP/signs_out")
+_SIGNS_LOCK  = threading.Lock()
+_SIGNS_JOB   = {"running": False, "folder": "", "log": "", "returncode": None,
+                "count": 0, "started": ""}
 
 
-def _pheno_load():
-    data = _load(PHENOLOGY_JSON)
-    if not isinstance(data, dict):
-        data = {}
-    data.setdefault("meta", {})
-    data.setdefault("observations", {})
-    return data
+def _signs_env(extra=None):
+    env = dict(os.environ)
+    env["PSBP_REPO"] = str(REPO)
+    env["PSBP_SIGNS_ROOT"] = SIGNS_ROOT
+    env["PYTHONUNBUFFERED"] = "1"
+    env.update(extra or {})
+    return env
 
 
-def _pheno_save(data):
-    data["meta"]["updated"] = datetime.datetime.now().isoformat(timespec="seconds")
-    write_json_atomic(PHENOLOGY_JSON, data)
-
-
-def _pheno_photo_url(photo):
-    """iNat photo objects default to the 'square' thumbnail URL; swap to the
-    ~500px 'medium' size — plenty for phenology, cheap to send."""
-    url = (photo or {}).get("url") or ""
-    return url.replace("square", "medium") if "square" in url else url
-
-
-def _pheno_plant_index():
-    """All plants we could analyze (signage + research) that have an iNat taxon.
-    Returns list of {id, common_name, scientific_name, taxon_id, status}."""
-    seen, out = set(), []
-    sources = [
-        (_get_species_list(_load(PLANT_SIGNAGE)), "scientific_name_fallback"),
-    ]
-    # signage plants
-    for sp in _get_species_list(_load(PLANT_SIGNAGE)):
-        tid = sp.get("inat_taxon_id")
-        if not tid or sp.get("id") in seen:
-            continue
-        seen.add(sp.get("id"))
-        out.append({"id": sp.get("id"), "common_name": sp.get("common_name", ""),
-                    "scientific_name": sp.get("botanical_name", ""),
-                    "taxon_id": tid, "status": sp.get("status", ""),
-                    "photo_exclude_taxa": sp.get("photo_exclude_taxa") or []})
-    # research plants
-    for sp in get_research_list("plants"):
-        tid = sp.get("inat_taxon_id")
-        if not tid or sp.get("id") in seen:
-            continue
-        seen.add(sp.get("id"))
-        out.append({"id": sp.get("id"), "common_name": sp.get("common_name", ""),
-                    "scientific_name": sp.get("scientific_name", ""),
-                    "taxon_id": tid, "status": sp.get("status", ""),
-                    "photo_exclude_taxa": sp.get("photo_exclude_taxa") or []})
-    # Order: published (html) first, then spotted, then research, then strays.
-    # Within each status band, sort alphabetically by common name.
-    _rank = {"html": 0, "spotted": 1, "research": 2}
-    out.sort(key=lambda s: (_rank.get(s.get("status"), 3),
-                            s.get("common_name") or s.get("id")))
-    return out
-
-
-def _pheno_resolve(psbp_id):
-    for sp in _pheno_plant_index():
-        if sp["id"] == psbp_id:
-            return sp
-    return None
-
-
-def _pheno_prompt(common, sci, observed_on):
-    system = (
-        "You are a botanist examining photographs to record plant phenology for a "
-        "botanical garden's database. Report ONLY what is visibly evident in the "
-        "photograph(s) provided — never inferred from prior knowledge of the species. "
-        "For each sign answer exactly \"yes\" (clearly visible), \"no\" (clearly absent "
-        "or simply not visible in frame), or \"unsure\" (ambiguous / can't tell). Be "
-        "conservative: if you cannot clearly see it, use \"unsure\" or \"no\"."
-    )
-    when = f", observed on {observed_on}" if observed_on else ""
-    text = (
-        f"These photo(s) are of {common} ({sci}){when}. Looking ONLY at what is visible "
-        "in the photo(s), report which of these phenological signs are evident:\n"
-        "  - flowers: open blooms\n"
-        "  - flower_buds: unopened flower buds\n"
-        "  - leaves: foliage present\n"
-        "  - leaf_buds: new / emerging leaf buds or fresh growth tips\n"
-        "  - fruit: fruit present\n"
-        "  - seeds: seeds or seed pods evident\n\n"
-        "Output a single JSON object with exactly these keys: flowers, flower_buds, "
-        "leaves, leaf_buds, fruit, seeds (each \"yes\"/\"no\"/\"unsure\"), plus \"note\" "
-        "(one short sentence). Wrap the JSON exactly between a line <<<JSON>>> and a "
-        "line <<<END>>>, with nothing after <<<END>>>."
-    )
-    return system, text
-
-
-def _pheno_coerce_signs(raw):
-    out = {}
-    for s in PHENO_SIGNS:
-        v = str(raw.get(s, "unsure")).strip().lower()
-        out[s] = v if v in ("yes", "no", "unsure") else "unsure"
-    return out
-
-
-def _pheno_analyze_obs(obs, common, sci):
-    """Analyze one observation's photos. Returns a record dict or {'error':...}.
-    READ-ONLY: only reads photo URLs; never writes to iNat."""
-    photos = obs.get("photos") or []
-    urls = [_pheno_photo_url(p) for p in photos if _pheno_photo_url(p)]
-    urls = urls[:PHENO_PHOTOS_PER_OBS]
-    if not urls:
-        return {"error": "no_photos"}
-
-    observed_on = obs.get("observed_on") or (obs.get("observed_on_details") or {}).get("date")
-    system, text = _pheno_prompt(common, sci, observed_on)
-    content = [{"type": "image", "source": {"type": "url", "url": u}} for u in urls]
-    content.append({"type": "text", "text": text})
-
+def handle_api_signs_list(params):
+    """GET /api/signs/list — readiness of every published plant, from
+    make_signs.py --check-json (read-only, no network)."""
     try:
-        resp = _anthropic_messages(system, content, model=PHENO_MODEL,
-                                   max_tokens=PHENO_MAX_TOKENS, web_search=False)
-    except RuntimeError as e:
-        return {"error": str(e)}
-
+        proc = subprocess.run([sys.executable, SIGNS_SCRIPT, "--check-json"],
+                              capture_output=True, text=True, timeout=120,
+                              env=_signs_env())
+    except Exception as e:                                        # noqa: BLE001
+        return {"error": f"make_signs.py did not run: {e}"}
+    err = proc.stderr or ""
+    if proc.returncode != 0 or not proc.stdout.strip():
+        if "No module named" in err:
+            mod = err.split("No module named")[-1].strip().split()[0].strip("'\"")
+            return {"error": f"The sign builder needs the Python library {mod}, which this "
+                             f"Python ({sys.executable}) does not have."}
+        return {"error": "make_signs.py --check-json failed", "stderr": err[-800:]}
     try:
-        raw = _ai_parse_json(_ai_response_text(resp))
-    except (ValueError, json.JSONDecodeError) as e:
-        return {"error": f"parse: {e}"}
+        return json.loads(proc.stdout)
+    except json.JSONDecodeError as e:
+        return {"error": f"make_signs.py emitted invalid JSON: {e}", "stdout": proc.stdout[:400]}
 
-    month = None
-    if observed_on and len(observed_on) >= 7 and observed_on[4] == "-":
+
+def _signs_pump(proc, log_path):
+    """Copy the build's output to its log, every line dated (house rule), and
+    keep the running text for the page to poll."""
+    with open(log_path, "a", encoding="utf-8") as log:
+        for line in proc.stdout:
+            stamped = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S  ") + line.rstrip("\n")
+            log.write(stamped + "\n")
+            log.flush()
+            with _SIGNS_LOCK:
+                _SIGNS_JOB["log"] += stamped + "\n"
+    rc = proc.wait()
+    with _SIGNS_LOCK:
+        _SIGNS_JOB["returncode"] = rc
+        _SIGNS_JOB["running"] = False
+
+
+def handle_api_signs_build(params):
+    """POST /api/signs/build — body {ids:[PSBP-xxxxx, ...]}. Starts one build."""
+    ids = (params.get("_body") or {}).get("ids") or []
+    ids = [str(i).strip() for i in ids]
+    if not ids or len(ids) > 400 or any(not re.fullmatch(r"PSBP-\d{5}", i) for i in ids):
+        return {"ok": False, "error": "Pick between 1 and 400 species."}
+    with _SIGNS_LOCK:
+        if _SIGNS_JOB["running"]:
+            return {"ok": False, "error": "A build is already running."}
+        stamp = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
+        folder = os.path.join(SIGNS_ROOT, "builds", f"{stamp}_{len(ids)}-signs")
+        n = 2
+        while os.path.exists(folder):                 # two builds in one minute
+            folder = os.path.join(SIGNS_ROOT, "builds", f"{stamp}_{len(ids)}-signs-{n}")
+            n += 1
+        os.makedirs(folder)
+        with open(os.path.join(folder, "ids.txt"), "w", encoding="utf-8") as f:
+            f.write("# built by Species Manager, " + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "\n")
+            f.write("\n".join(ids) + "\n")
         try:
-            month = int(observed_on[5:7])
-        except ValueError:
-            month = None
-
-    return {
-        "obs_id": obs.get("id"),
-        "obs_url": f"https://www.inaturalist.org/observations/{obs.get('id')}",
-        "observed_on": observed_on,
-        "month": month,
-        "photo_url": urls[0],
-        "photo_count": len(urls),
-        "signs": _pheno_coerce_signs(raw),
-        "note": str(raw.get("note", ""))[:300],
-        "source": "ai",
-        "model": resp.get("model", PHENO_MODEL),
-        "analyzed_at": datetime.datetime.now().isoformat(timespec="seconds"),
-        "human_reviewed": False,
-        "human_signs": None,
-        "usage": resp.get("usage", {}) or {},
-    }
+            proc = subprocess.Popen(
+                [sys.executable, SIGNS_SCRIPT, "--file", os.path.join(folder, "ids.txt")],
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                env=_signs_env({"PSBP_SIGNS_OUT": folder}))
+        except Exception as e:                                    # noqa: BLE001
+            return {"ok": False, "error": f"Could not start the builder: {e}"}
+        _SIGNS_JOB.update(running=True, folder=folder, log="", returncode=None,
+                          count=len(ids),
+                          started=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    threading.Thread(target=_signs_pump,
+                     args=(proc, os.path.join(folder, "build.log")), daemon=True).start()
+    return {"ok": True, "folder": folder}
 
 
-def phenology_scan(psbp_id, limit=PHENO_SCAN_DEFAULT, force=False):
-    """Fetch a species' iNat observations (READ-ONLY) and analyze up to `limit`
-    that aren't already recorded. Stores incrementally, keyed by obs id."""
-    sp = _pheno_resolve(psbp_id)
-    if not sp:
-        return {"ok": False, "error": f"{psbp_id} not found as a plant with an iNat taxon."}
-
-    observations = _inat_observations(_photo_taxa(sp) or sp["taxon_id"],
-                                     _photo_exclude_taxa(sp))   # GET only
-    if observations is None:
-        return {"ok": False, "error": "Could not reach iNaturalist (check network / INAT_TOKEN)."}
-
-    store = _pheno_load()
-    recs = store["observations"]
-
-    analyzed, no_photos, errors = [], 0, []
-    in_u = out_u = 0
-    remaining = 0
-
-    for obs in observations:
-        oid = str(obs.get("id"))
-        if not oid or oid == "None":
-            continue
-        if oid in recs and not force:
-            continue
-        if not (obs.get("photos")):
-            no_photos += 1
-            continue
-        if len(analyzed) >= limit:
-            remaining += 1
-            continue
-
-        rec = _pheno_analyze_obs(obs, sp["common_name"], sp["scientific_name"])
-        if "error" in rec:
-            if rec["error"] == "no_photos":
-                no_photos += 1
-            else:
-                errors.append({"obs_id": oid, "error": rec["error"]})
-            # A hard API/credential error: stop early rather than burn the loop.
-            if rec["error"].startswith("ANTHROPIC_API_KEY") or "401" in rec["error"]:
-                return {"ok": False, "error": rec["error"]}
-            continue
-
-        rec["taxon_id"] = sp["taxon_id"]
-        rec["psbp_id"] = psbp_id
-        rec["kingdom"] = "plants"
-        u = rec.pop("usage", {})
-        in_u += u.get("input_tokens", 0)
-        out_u += u.get("output_tokens", 0)
-        recs[oid] = rec
-        analyzed.append(oid)
-        time.sleep(API_DELAY)
-
-    if analyzed:
-        _pheno_save(store)
-
-    # count any still-unanalyzed (with photos) beyond what we did
-    total_with_photos = sum(1 for o in observations if o.get("photos"))
-    done = sum(1 for o in observations
-               if str(o.get("id")) in recs and o.get("photos"))
-    remaining = max(total_with_photos - done, 0)
-
-    return {
-        "ok": True,
-        "id": psbp_id,
-        "common_name": sp["common_name"],
-        "analyzed": analyzed,
-        "analyzed_count": len(analyzed),
-        "no_photos": no_photos,
-        "errors": errors,
-        "remaining": remaining,
-        "total_observations": len(observations),
-        "model": PHENO_MODEL,
-        "usage": {"input_tokens": in_u, "output_tokens": out_u},
-    }
+def handle_api_signs_job(params):
+    """GET /api/signs/job — progress of the current or last build."""
+    with _SIGNS_LOCK:
+        job = dict(_SIGNS_JOB)
+    job["sheet"] = bool(job["folder"]) and os.path.isfile(
+        os.path.join(job["folder"], "PRINT_SHEETS_2up.pdf"))
+    return job
 
 
-def _pheno_effective_signs(rec):
-    """Human override wins over the AI reading."""
-    if rec.get("human_reviewed") and isinstance(rec.get("human_signs"), dict):
-        return _pheno_coerce_signs(rec["human_signs"])
-    return rec.get("signs", {})
-
-
-def phenology_summary(psbp_id):
-    """Return this species' stored observations + a per-sign monthly summary.
-    'yes' counts toward the month; 'unsure' tallied separately."""
-    store = _pheno_load()
-    recs = [r for r in store["observations"].values() if r.get("psbp_id") == psbp_id]
-
-    by_sign = {s: {"months": {str(m): 0 for m in range(1, 13)},
-                   "yes_total": 0, "unsure_total": 0} for s in PHENO_SIGNS}
-    for r in recs:
-        eff = _pheno_effective_signs(r)
-        m = r.get("month")
-        for s in PHENO_SIGNS:
-            v = eff.get(s, "unsure")
-            if v == "yes":
-                by_sign[s]["yes_total"] += 1
-                if m:
-                    by_sign[s]["months"][str(m)] += 1
-            elif v == "unsure":
-                by_sign[s]["unsure_total"] += 1
-
-    months_present = {s: [int(m) for m, c in by_sign[s]["months"].items() if c > 0]
-                      for s in PHENO_SIGNS}
-    for s in months_present:
-        months_present[s].sort()
-
-    recs_sorted = sorted(recs, key=lambda r: (r.get("observed_on") or ""), reverse=True)
-    reviewed = sum(1 for r in recs if r.get("human_reviewed"))
-    return {
-        "ok": True,
-        "id": psbp_id,
-        "n_observations": len(recs),
-        "n_reviewed": reviewed,
-        "by_sign": by_sign,
-        "months_present": months_present,
-        "observations": recs_sorted,
-        "signs": PHENO_SIGNS,
-    }
-
-
-def phenology_review(obs_id, signs):
-    """Apply a HUMAN override to one observation's signs (local only)."""
-    store = _pheno_load()
-    rec = store["observations"].get(str(obs_id))
-    if not rec:
-        return {"ok": False, "error": f"obs {obs_id} not recorded."}
-    rec["human_signs"] = _pheno_coerce_signs(signs or {})
-    rec["human_reviewed"] = True
-    rec["reviewed_at"] = datetime.datetime.now().isoformat(timespec="seconds")
-    _pheno_save(store)
-    return {"ok": True, "obs_id": obs_id, "human_signs": rec["human_signs"]}
-
-
-def handle_api_phenology_species(params):
-    """GET /api/phenology/species — plant list with analyzed coverage."""
-    store = _pheno_load()
-    counts = {}
-    for r in store["observations"].values():
-        pid = r.get("psbp_id")
-        if pid:
-            counts[pid] = counts.get(pid, 0) + 1
-    out = _pheno_plant_index()
-    for s in out:
-        s["analyzed_count"] = counts.get(s["id"], 0)
-    return {"ok": True, "species": out}
-
-
-def handle_api_phenology_summary(params):
-    """GET /api/phenology/summary?id=PSBP-xxxxx"""
-    pid = params.get("id", [""])[0] if isinstance(params.get("id"), list) else params.get("id", "")
-    if not pid:
-        return {"ok": False, "error": "missing id"}
-    return phenology_summary(pid)
-
-
-def handle_api_phenology_scan(params):
-    """POST /api/phenology/scan  body: {id, limit?, force?}"""
-    body = params.get("_body", {}) or {}
-    pid = body.get("id", "")
-    if not pid:
-        return {"ok": False, "error": "missing id"}
-    limit = int(body.get("limit", PHENO_SCAN_DEFAULT))
-    force = bool(body.get("force", False))
-    return phenology_scan(pid, limit=limit, force=force)
-
-
-def handle_api_phenology_review(params):
-    """POST /api/phenology/review  body: {obs_id, signs:{...}}"""
-    body = params.get("_body", {}) or {}
-    obs_id = body.get("obs_id", "")
-    signs = body.get("signs", {})
-    if not obs_id:
-        return {"ok": False, "error": "missing obs_id"}
-    return phenology_review(obs_id, signs)
+def handle_api_signs_open(params):
+    """POST /api/signs/open — reveal a folder under signs_out in Finder."""
+    folder = os.path.realpath((params.get("_body") or {}).get("folder") or "")
+    root = os.path.realpath(SIGNS_ROOT)
+    if not (folder == root or folder.startswith(root + os.sep)) or not os.path.isdir(folder):
+        return {"ok": False, "error": "That folder is not under the signs folder."}
+    try:
+        subprocess.Popen(["open", folder])
+    except Exception as e:                                        # noqa: BLE001
+        return {"ok": False, "error": f"Could not open it: {e}"}
+    return {"ok": True}
 
 
 API_ROUTES = {
+    "/api/signs/list":       handle_api_signs_list,
+    "/api/signs/build":      handle_api_signs_build,
+    "/api/signs/job":        handle_api_signs_job,
+    "/api/signs/open":       handle_api_signs_open,
     "/api/health":           handle_api_health,
     "/api/overview":         handle_api_overview,
     "/api/species":          handle_api_species_list,
@@ -12948,10 +12689,6 @@ API_ROUTES = {
     "/api/verify/fields":     handle_api_verify_fields,
     "/api/ai/verify":         handle_api_ai_verify,
     "/api/ai/verify/apply":   handle_api_ai_verify_apply,
-    "/api/phenology/species": handle_api_phenology_species,
-    "/api/phenology/summary": handle_api_phenology_summary,
-    "/api/phenology/scan":    handle_api_phenology_scan,
-    "/api/phenology/review":  handle_api_phenology_review,
     "/api/cultivated/mark":    handle_api_cultivated_mark,
     "/api/cultivated/keep":    handle_api_cultivated_keep,
 }

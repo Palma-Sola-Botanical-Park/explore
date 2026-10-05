@@ -18,7 +18,7 @@ Sections
   LINK       photo_credits <-> signage cross-references
   DISK       hero files that should exist on disk
   INDEX      plants.json / wildlife.json hero paths
-  FK         placements / phenology / workbench foreign keys
+  FK         placements / workbench foreign keys
   TAXA       duplicate species across signage + research
 
 Every finding is one of:
@@ -56,7 +56,6 @@ WORKBENCH      = SOURCES / "photo_workbench.json"
 RESEARCH       = SOURCES / "research.json"
 PLACEMENTS     = SOURCES / "placements.json"
 LANDMARKS      = REPO / "data" / "sources" / "landmarks.json"
-PHENOLOGY      = SOURCES / "phenology.json"
 PLANTS_JSON    = REPO / "plants.json"
 WILDLIFE_JSON  = REPO / "wildlife.json"
 PLANTS_DIR     = REPO / "plants"
@@ -697,12 +696,6 @@ def main():
             add("FK", "INFO",
                 f"{gap} published plant(s) have no placement row — expected if "
                 f"signs are still being surveyed")
-
-        ph = (load(PHENOLOGY, {}) or {}).get("observations", {})
-        bad = {v.get("psbp_id") for v in ph.values()
-               if v.get("psbp_id") and v["psbp_id"] not in sign_ids | res_ids}
-        for b in sorted(bad):
-            add("FK", "ERROR", f"phenology: psbp_id {b} is unknown")
 
         wb = (load(WORKBENCH, {}) or {}).get("decisions", {})
         live = {str(p.get("photo_id")) for p in photos}

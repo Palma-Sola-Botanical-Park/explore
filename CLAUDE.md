@@ -234,7 +234,8 @@ is editing the live screens.
 
 | Script | Port | Does |
 |---|---|---|
-| `species_manager.py` | 8700 | the dashboard: Overview, Intake, Photos, Cultivated, Phenology, Preview & Publish, Verify. Mints IDs. Has the "Work on this page" AI button. Holds JSON in browser memory (see rule 4). |
+| `species_manager.py` | 8700 | the dashboard: Overview, Intake, Photos, Cultivated, Preview & Publish, Signs, Verify, Health. Mints IDs. Has the "Work on this page" AI button. Holds JSON in browser memory (see rule 4). |
+| `signs/make_signs.py` | | print sign PDFs (reportlab + Pillow, so it runs as a subprocess of the Signs tab). Output to `~/Documents/PSBP/signs_out/builds/`, never the repo. QR is the short `/p/` permalink. |
 | `plant_publisher.py` | 8701 | `--generate PSBP-xxxxx`, `--generate-all`, `--demote`; writes `plants/` and `plants.json` |
 | `wildlife_publisher.py` | 8702 | same for wildlife |
 | `psbp_placements.py` | 8701 | placement pinning UI (collides with the plant publisher's port; run one at a time) |

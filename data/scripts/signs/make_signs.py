@@ -58,16 +58,22 @@ REPO = os.environ.get("PSBP_REPO") or os.path.expanduser("~/Documents/GitHub/exp
 # repo on 2026-08-27, and a script-relative output path would have written 276 MB
 # of PDFs straight into a GitHub Pages repo on the next run. Output belongs
 # outside git. Override with PSBP_SIGNS_OUT=/some/path.
-OUT_DIR   = (os.environ.get("PSBP_SIGNS_OUT")
-             or os.path.expanduser("~/Documents/PSBP/signs_out"))
+SIGNS_ROOT = (os.environ.get("PSBP_SIGNS_ROOT")
+              or os.path.expanduser("~/Documents/PSBP/signs_out"))   # the printed record + builds/
+OUT_DIR   = os.environ.get("PSBP_SIGNS_OUT") or SIGNS_ROOT           # Species Manager sets builds/<stamp>
 FONTS_DIR = os.path.join(HERE, "fonts")       # Playfair downloads here, once
-TMP_DIR   = os.path.join(HERE, ".tmp")        # scratch; wiped at the end
+# Scratch and downloaded originals live OUTSIDE the repo (2026-10-04). Scratch is
+# wiped at the end; the photo cache is kept so a reprint doesn't re-download.
+TMP_DIR   = os.path.join(tempfile.gettempdir(), "psbp_signs_tmp")
+CACHE_DIR = (os.environ.get("PSBP_SIGNS_CACHE")
+             or os.path.expanduser("~/Documents/PSBP/sign_photo_cache"))
 LOGO_GREEN = os.path.join(REPO, "images", "psbp_logo_green.png")
 
 SITE_BASE = "https://palma-sola-botanical-park.github.io/explore/plants/"
 # URL_STYLE: 'full'  = the existing long /plants/PSBP-00719-Carnaba-Palm.html
 #            'short' = SHORT_BASE + the numeric id  (far better QR density)
-URL_STYLE  = "full"
+URL_STYLE  = "short"      # flipped 2026-10-04: /p/ stubs are live (commit 4e88bf9d). Signs printed
+                          # before this carry the long /plants/ address, which stays valid.
 SHORT_BASE = "https://palma-sola-botanical-park.github.io/explore/p/"
 # When the domain moves, this becomes "https://palmasolabp.org/p/" and the QR
 # gets denser still. QR codes are permanent once they're in the ground —
@@ -91,7 +97,16 @@ TEASER_MAX = 175       # characters — comfortably 3-4 lines in the teaser box
 CREDIT_STYLE = 'oneline'
 # ───────────────────────────────────────────────────────────────
 
-# Keep every scratch file next to the script, not in /var/folders or the repo.
+# R2 originals come from the media library's own address rule, so a species is
+# only fetched from R2 once the library confirms it is wholly in the bucket.
+# Optional: with psbp_common missing the builder simply falls back to iNat.
+try:
+    sys.path.insert(0, os.path.dirname(HERE))
+    from psbp_common import media_url as _media_url
+except Exception:                                           # noqa: BLE001
+    _media_url = None
+
+# Keep every scratch file out of the repo (system temp, wiped at the end).
 os.makedirs(TMP_DIR, exist_ok=True)
 tempfile.tempdir = TMP_DIR
 
@@ -232,21 +247,54 @@ def resolve_logo():
 def orig_url(u):
     return re.sub(r'/(square|small|medium|large|original)\.(jpe?g|png)', r'/original.\2', u or '')
 
-def get_photo(rec, pid):
-    fn=rec.get('filename') or (rec.get('photo_id','')+'.jpg')
+def _cache_path(rec):
+    ph=str(rec.get('photo_id') or '')
+    return os.path.join(CACHE_DIR, ph+'.jpg') if ph else None
+
+def photo_source_hint(rec, pid):
+    """Where get_photo WOULD get this hero, without touching the network."""
+    c=_cache_path(rec)
+    if c and os.path.exists(c): return 'cache'
+    fn=rec.get('filename') or (str(rec.get('photo_id',''))+'.jpg')
     local=os.path.join(REPO,'photos',pid,fn)
+    try:
+        if os.path.exists(local) and Image.open(local).size[0]>=1000: return 'local'
+    except Exception: pass
+    return 'download'
+
+def get_photo(rec, pid):
+    """Hero image for print. Order: cache -> repo copy if >=1000px -> R2 original
+    (only when the media library confirms the species is wholly in the bucket)
+    -> iNat original -> iNat large. Downloads are kept in CACHE_DIR."""
+    fn=rec.get('filename') or (str(rec.get('photo_id',''))+'.jpg')
+    local=os.path.join(REPO,'photos',pid,fn)
+    cached=_cache_path(rec)
+    if cached and os.path.exists(cached): return cached,'cache'
     if os.path.exists(local):
         try:
             if Image.open(local).size[0]>=1000: return local,'local'
         except Exception: pass
-    for url in [orig_url(rec.get('photo_url','')), rec.get('photo_url','')]:
+    tries=[]
+    if _media_url:
+        try:
+            r2=_media_url(rec,'original')
+            if r2: tries.append((r2,'R2-original'))
+        except Exception: pass
+    tries += [(orig_url(rec.get('photo_url','')),'iNat-original'), (rec.get('photo_url',''),'iNat-large')]
+    for url,label in tries:
         if not url: continue
         try:
             req=urllib.request.Request(url, headers={'User-Agent':'PSBP-sign-builder/2.0'})
-            data=urllib.request.urlopen(req, timeout=30).read()
-            t=tempfile.NamedTemporaryFile(suffix='.jpg', delete=False); t.write(data); t.close()
-            return t.name, ('iNat-original' if 'original' in url else 'iNat-large')
+            data=urllib.request.urlopen(req, timeout=60).read()
+            os.makedirs(CACHE_DIR, exist_ok=True)
+            dest=cached or os.path.join(TMP_DIR, 'dl_%d.jpg'%abs(hash(url)))
+            with open(dest+'.part','wb') as f: f.write(data)
+            Image.open(dest+'.part').verify()          # an error page is not a photo
+            os.replace(dest+'.part', dest)
+            return dest, label
         except Exception:
+            try: os.unlink((cached or '')+'.part')
+            except Exception: pass
             continue
     if os.path.exists(local): return local,'local-small'
     return None,'MISSING'
@@ -607,8 +655,48 @@ def resolve_copy(pid, species, overrides):
     return origin, teaser, src, (c1 or c2)
 
 # ─────────────────────────── main ───────────────────────────
+def check_json():
+    """Read-only readiness report for Species Manager's Signs tab. No network, no
+    PDFs. Prints ONE JSON document on stdout; nothing else may print here."""
+    import contextlib
+    sg=json.load(open(os.path.join(REPO,'data/sources/plant_signage.json')))
+    pc=json.load(open(os.path.join(REPO,'data/sources/photo_credits.json')))
+    heroes={}
+    for p in pc.get('photos',pc):
+        if p.get('hero') and p.get('psbp_id') not in heroes: heroes[p['psbp_id']]=p
+    with contextlib.redirect_stdout(io.StringIO()):
+        overrides=load_copy()
+    # every sign PDF on disk: the printed record (top level) and builds/<stamp>/
+    pdfs={}
+    for pattern in (os.path.join(SIGNS_ROOT,'sign_PSBP-*.pdf'),
+                    os.path.join(SIGNS_ROOT,'builds','*','sign_PSBP-*.pdf')):
+        for f in glob.glob(pattern):
+            m=re.match(r'sign_(PSBP-\d+)_', os.path.basename(f))
+            if m:
+                rel=os.path.relpath(f, SIGNS_ROOT)
+                pdfs.setdefault(m.group(1),[]).append(rel)
+    rows=[]
+    for s in sg.get('species',sg):
+        if s.get('status')!='html': continue
+        pid=s['id']; h=heroes.get(pid)
+        origin,teaser,csrc,clamped=resolve_copy(pid,s,overrides)
+        rows.append(dict(
+            id=pid, common=title(s.get('common_name','')), sci=s.get('botanical_name',''), form=s.get('form') or s.get('category') or '',
+            family=(s.get('taxonomy') or {}).get('family',''),
+            origin=origin or '', teaser=teaser or '', clamped=bool(clamped),
+            hero=bool(h),
+            credit=(h.get('photographer_name') or h.get('photographer','')) if h else '',
+            license=(h.get('license','') if h else ''),
+            photo=(photo_source_hint(h,pid) if h else ''),
+            pdfs=sorted(pdfs.get(pid,[]))))
+    rows.sort(key=lambda r:r['id'])
+    print(json.dumps(dict(rows=rows, signs_root=SIGNS_ROOT, url_style=URL_STYLE,
+                          sign_in=[round(SIGN_W/IN,4), round(SIGN_H/IN,4)]), ensure_ascii=False))
+
 def main():
     args=[a for a in sys.argv[1:]]
+    if '--check-json' in args:
+        check_json(); return
     each_twice = '--each-twice' in args
     if each_twice: args.remove('--each-twice')
     if args and args[0]=='--file':
@@ -641,6 +729,9 @@ def main():
     for pid in ids:
         s=species.get(pid); h=heroes.get(pid)
         if not s: print(f"  SKIP {pid}: not in plant_signage.json"); continue
+        if s.get('status')!='html':
+            # No page, no /p/ stub: the code would be dead on the stake, permanently.
+            print(f"  SKIP {pid}: status={s.get('status')!r}, not published (its QR would be dead)"); continue
         if not h: print(f"  SKIP {pid}: no hero in photo_credits.json"); continue
         photo,psrc=get_photo(h,pid)
         if not photo: print(f"  SKIP {pid}: no photo available"); continue
@@ -670,7 +761,7 @@ def main():
         mods,modpt=_sign_body(one,**kw); one.showPage(); one.save()
         built.append(dict(pid=pid, kw=kw, common=kw['common'], pname=kw['pname'],
                           psrc=psrc, mods=mods, modpt=modpt, url=url, csrc=csrc, clamped=clamped,
-                          tmp_photo=photo if str(psrc).startswith('iNat') else None))
+                          tmp_photo=None))      # downloads are kept in CACHE_DIR now
         if each_twice: built.append(built[-1])
 
     if not built:
@@ -712,7 +803,7 @@ def main():
         print(f"{r['pid']:12} {r['common'][:20]:20} {str(r['pname'])[:15]:15} {mm:7} {flag}{r['csrc'][:21]:21} {r['psrc']}")
     worst=min([r['modpt']/IN for r in built if r.get('modpt')], default=0)
     print(f"\nQR module size (smallest): {worst:.3f}\"  — v1 full-page signs were 0.105\".")
-    if worst < 0.095:
+    if worst < 0.095 and URL_STYLE != 'short':
         print("  ↳ Shorten the URL (URL_STYLE='short') to get back to v1 scan distance.")
     print("! = copy was auto-trimmed to fit. DRAFT = auto-drafted from the plant page; have the director edit it.")
     print("\nSCAN-TEST one printed, laminated sign from 3 feet before running the batch.")
