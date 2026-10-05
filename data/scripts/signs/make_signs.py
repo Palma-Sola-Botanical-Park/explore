@@ -102,9 +102,20 @@ CREDIT_STYLE = 'oneline'
 # Optional: with psbp_common missing the builder simply falls back to iNat.
 try:
     sys.path.insert(0, os.path.dirname(HERE))
-    from psbp_common import media_url as _media_url
+    from psbp_common import (media_in_bucket as _media_in_bucket,
+                             media_confirmed_offline as _media_offline,
+                             MEDIA_BASE as _MEDIA_BASE, MEDIA_REV as _MEDIA_REV)
 except Exception:                                           # noqa: BLE001
-    _media_url = None
+    _media_in_bucket = _media_offline = None
+    _MEDIA_BASE = _MEDIA_REV = ''
+
+def r2_original_url(rec):
+    """Address of this hero's original in R2, or None. A sign needs only ITS hero
+    in the bucket, not the whole species (the page rule in psbp_common.media_url)."""
+    ph = rec.get('photo_id')
+    if ph and _media_in_bucket and _media_in_bucket(ph):
+        return f"{_MEDIA_BASE}/inat/{ph}/{_MEDIA_REV}/original.jpg"
+    return None
 
 # Keep every scratch file out of the repo (system temp, wiped at the end).
 os.makedirs(TMP_DIR, exist_ok=True)
@@ -263,26 +274,23 @@ def photo_source_hint(rec, pid):
     return 'download'
 
 def get_photo(rec, pid):
-    """Hero image for print. Order: cache -> repo copy if >=1000px -> R2 original
-    (only when the media library confirms the species is wholly in the bucket)
-    -> iNat original -> iNat large. Downloads are kept in CACHE_DIR."""
+    """Hero image for print. Order: cache -> R2 original (the media library is the
+    one home for photographs) -> repo copy if >=1000px -> iNat original -> iNat
+    large. Downloads are kept in CACHE_DIR."""
     fn=rec.get('filename') or (str(rec.get('photo_id',''))+'.jpg')
     local=os.path.join(REPO,'photos',pid,fn)
     cached=_cache_path(rec)
     if cached and os.path.exists(cached): return cached,'cache'
-    if os.path.exists(local):
-        try:
-            if Image.open(local).size[0]>=1000: return local,'local'
-        except Exception: pass
     tries=[]
-    if _media_url:
+    try:
+        r2=r2_original_url(rec)
+        if r2: tries.append((r2,'R2-original'))
+    except Exception: pass
+    def _local_big():
         try:
-            r2=_media_url(rec,'original')
-            if r2: tries.append((r2,'R2-original'))
-        except Exception: pass
-    tries += [(orig_url(rec.get('photo_url','')),'iNat-original'), (rec.get('photo_url',''),'iNat-large')]
-    for url,label in tries:
-        if not url: continue
+            return os.path.exists(local) and Image.open(local).size[0]>=1000
+        except Exception: return False
+    def _download(url,label):
         try:
             req=urllib.request.Request(url, headers={'User-Agent':'PSBP-sign-builder/2.0'})
             data=urllib.request.urlopen(req, timeout=60).read()
@@ -295,7 +303,15 @@ def get_photo(rec, pid):
         except Exception:
             try: os.unlink((cached or '')+'.part')
             except Exception: pass
-            continue
+            return None
+    for url,label in tries:
+        got=_download(url,label)
+        if got: return got
+    if _local_big(): return local,'local'
+    for url,label in [(orig_url(rec.get('photo_url','')),'iNat-original'), (rec.get('photo_url',''),'iNat-large')]:
+        if not url: continue
+        got=_download(url,label)
+        if got: return got
     if os.path.exists(local): return local,'local-small'
     return None,'MISSING'
 
@@ -688,6 +704,7 @@ def check_json():
             credit=(h.get('photographer_name') or h.get('photographer','')) if h else '',
             license=(h.get('license','') if h else ''),
             photo=(photo_source_hint(h,pid) if h else ''),
+            r2=bool(h and _media_offline and _media_offline(h.get('photo_id'))),
             pdfs=sorted(pdfs.get(pid,[]))))
     rows.sort(key=lambda r:r['id'])
     print(json.dumps(dict(rows=rows, signs_root=SIGNS_ROOT, url_style=URL_STYLE,

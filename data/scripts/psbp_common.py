@@ -138,6 +138,12 @@ def media_in_bucket(photo_id):
     return ok
 
 
+def media_confirmed_offline(photo_id):
+    """True when the local record already says this photo is in the bucket.
+    Never touches the network, so a list page can ask about hundreds of photos."""
+    return str(photo_id) in _media_confirmed_ids()
+
+
 def media_ready(psbp_id):
     """True when every published photo of this species is in the bucket."""
     if not psbp_id:

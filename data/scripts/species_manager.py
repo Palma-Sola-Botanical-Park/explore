@@ -10563,12 +10563,13 @@ def render_signs():
       </select>
       <button class="sg-btn" id="sg-all">Select shown</button>
       <button class="sg-btn" id="sg-none">Clear</button>
+      <button class="sg-btn" id="sg-archive" title="Moves every sign PDF into signs_out/archive/. Nothing is deleted.">Move PDFs aside (reset to 0)</button>
       <span class="sg-count" id="sg-sel">0 selected</span>
     </div>
 
     <div class="sg-tablewrap">
       <table class="sg">
-        <thead><tr><th style="width:28px"></th><th>Species</th><th>Copy</th><th>Photo credit</th><th>Hero image</th><th>PDFs on disk</th></tr></thead>
+        <thead><tr><th style="width:28px"></th><th>Species</th><th>Copy</th><th>Photo credit</th><th>Hero photo</th><th>PDFs on disk</th></tr></thead>
         <tbody id="sg-body"><tr><td colspan="6" style="padding:18px;color:#999">Reading the catalogue...</td></tr></tbody>
       </table>
     </div>
@@ -10615,14 +10616,14 @@ def render_signs():
           var bad = problem(r), sel = selected.has(r.id);
           var copy = bad ? '<span class="sg-pill bad">' + esc(bad) + '</span>'
                    : (r.clamped ? '<span class="sg-pill warn">teaser trimmed</span>' : '<span class="sg-pill ok">ready</span>');
-          var photo = r.photo === 'download' ? 'downloads' : (r.photo === 'cache' ? 'cached' : (r.photo === 'local' ? 'repo copy' : ''));
+          var photo = r.r2 ? '<span class="sg-pill ok">in R2</span>' : '<span class="sg-pill warn">not in R2 yet</span>';
           var pdfs = r.pdfs.length ? '<span title="' + esc(r.pdfs.join('\n')) + '">' + r.pdfs.length + '</span>' : '<span class="sg-sub">none</span>';
           html += '<tr class="' + (bad ? 'held' : '') + (sel ? ' sel' : '') + '">'
             + '<td><input type="checkbox" data-id="' + esc(r.id) + '"' + (sel ? ' checked' : '') + (bad ? ' disabled' : '') + '></td>'
             + '<td><div class="sg-name">' + esc(r.common) + '</div><div class="sg-sub">' + esc(r.id) + ' &middot; ' + esc(r.form) + '</div></td>'
             + '<td>' + copy + '</td>'
             + '<td>' + esc(r.credit) + '<div class="sg-sub">' + esc(r.license) + '</div></td>'
-            + '<td class="sg-sub">' + photo + '</td>'
+            + '<td>' + photo + '</td>'
             + '<td>' + pdfs + '</td></tr>';
         });
         $('sg-body').innerHTML = html || '<tr><td colspan="6" style="padding:18px;color:#999">Nothing matches.</td></tr>';
@@ -10669,6 +10670,16 @@ def render_signs():
       $('sg-all').addEventListener('click', function(){
         visible().forEach(function(r){ if (!problem(r)) selected.add(r.id); }); draw(); });
       $('sg-none').addEventListener('click', function(){ selected.clear(); draw(); });
+      $('sg-archive').addEventListener('click', function(){
+        var n = rows.reduce(function(a, r){ return a + r.pdfs.length; }, 0);
+        if (!confirm('Move all ' + n + ' sign PDFs into signs_out/archive/ so every count reads 0?\n\nNothing is deleted. Drag the folder back in Finder to undo.')) return;
+        fetch('/api/signs/archive', {method:'POST', body:'{}'}).then(function(r){ return r.json(); }).then(function(d){
+          if (!d.ok){ showError(d.error); return; }
+          showError('');
+          $('sg-job').style.display = 'none';
+          load().then(function(){ if (d.folder) $('sg-meta').textContent = 'Moved aside to ' + d.folder; });
+        });
+      });
 
       function renderJob(j){
         $('sg-job').style.display = 'block';
@@ -12631,6 +12642,34 @@ def handle_api_signs_job(params):
     return job
 
 
+def handle_api_signs_archive(params):
+    """POST /api/signs/archive — move every sign PDF aside so the "PDFs on disk"
+    counts read zero. NOTHING is deleted: the top-level sign_PSBP-*.pdf files and
+    the builds/ folder go into signs_out/archive/<date>_<time>/, and dragging them
+    back in Finder undoes it. The batch sheets and README are left where they are."""
+    import glob, shutil
+    with _SIGNS_LOCK:
+        if _SIGNS_JOB["running"]:
+            return {"ok": False, "error": "A build is running. Wait for it to finish."}
+    files = glob.glob(os.path.join(SIGNS_ROOT, "sign_PSBP-*.pdf"))
+    builds = os.path.join(SIGNS_ROOT, "builds")
+    has_builds = os.path.isdir(builds) and bool(os.listdir(builds))
+    if not files and not has_builds:
+        return {"ok": True, "moved": 0, "folder": ""}
+    dest = os.path.join(SIGNS_ROOT, "archive",
+                        datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S"))
+    os.makedirs(dest)
+    moved = 0
+    for f in files:
+        shutil.move(f, os.path.join(dest, os.path.basename(f)))
+        moved += 1
+    if has_builds:
+        shutil.move(builds, os.path.join(dest, "builds"))
+    with _SIGNS_LOCK:
+        _SIGNS_JOB.update(folder="", log="", returncode=None)
+    return {"ok": True, "moved": moved, "builds": has_builds, "folder": dest}
+
+
 def handle_api_signs_open(params):
     """POST /api/signs/open — reveal a folder under signs_out in Finder."""
     folder = os.path.realpath((params.get("_body") or {}).get("folder") or "")
@@ -12649,6 +12688,7 @@ API_ROUTES = {
     "/api/signs/build":      handle_api_signs_build,
     "/api/signs/job":        handle_api_signs_job,
     "/api/signs/open":       handle_api_signs_open,
+    "/api/signs/archive":    handle_api_signs_archive,
     "/api/health":           handle_api_health,
     "/api/overview":         handle_api_overview,
     "/api/species":          handle_api_species_list,
