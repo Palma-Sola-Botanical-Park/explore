@@ -1072,11 +1072,16 @@ loadINat();
 
   function photoHtml(p) {
     if (!p.photo) return '<div class="dw-photo"><div class="dw-photo-empty" style="display:flex">🌿</div></div>';
+    /* photo_web (R2, 1200 px) when the index has one: the 375 px card thumb
+       would be soft at this width. `photo` stays as the fallback. */
+    var src = p.photo_web || p.photo;
     return '<div class="dw-photo">'
-         +   '<img src="' + esc(p.photo) + '" alt="' + esc(p.common) + '"'
+         +   '<img src="' + esc(src) + '"'
+         +     (src !== p.photo ? ' data-fallback="' + esc(p.photo) + '"' : '')
+         +     ' alt="' + esc(p.common) + '"'
          +     ' style="width:100%;height:100%;object-fit:cover;object-position:'
          +     esc(p.focus || '50% 50%') + ';display:block"'
-         +     ' onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+         +     ' onerror="_photoOnError(this)">'
          +   '<div class="dw-photo-empty">🌿</div>'
          + '</div>';
   }
@@ -1135,7 +1140,7 @@ loadINat();
   function preload(i) {
     [i - 1, i + 1].forEach(function (j) {
       var p = kind.list()[j];
-      if (p && p.photo) { var im = new Image(); im.src = p.photo; }
+      if (p && p.photo) { var im = new Image(); im.src = p.photo_web || p.photo; }
     });
   }
 
@@ -1269,6 +1274,16 @@ loadINat();
   document.addEventListener('click', function (e) {
     var card = e.target.closest && e.target.closest('a.plant-card');
     if (!card) return;
+    /* "Full page" on a card skips Quick View. It is a <span>, not an <a>,
+       because an anchor inside the card's anchor is invalid HTML. Shown by CSS
+       at the same 1000px threshold as drawerAllowed(); on a phone the whole
+       card already goes to the page. */
+    if (e.target.closest('[data-fullpage]')) {
+      e.preventDefault();
+      if (e.metaKey || e.ctrlKey) window.open(card.href, '_blank');
+      else location.href = card.href;
+      return;
+    }
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     if (!drawerAllowed()) return;              // hand the click back to the browser
 

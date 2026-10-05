@@ -2095,6 +2095,17 @@ function renderWildFilterButtons() {
 // ── WILDLIFE CARD ─────────────────────────────────────────────
 // Standardized to match plantCard: photo, name, scientific, credit block. No
 // chips — theme + native are selectable from the filter bar above the grid.
+/* Card and Quick View photos come from R2 when the index carries them
+   (photo_thumb for the card, photo_web for Quick View) and from `photo` when
+   it does not. `photo` itself is untouched: the TV decks read it. If an R2
+   image fails to load, the local copy is tried before the leaf placeholder. */
+function _photoOnError(img) {
+  var fb = img.getAttribute('data-fallback');
+  if (fb && img.getAttribute('src') !== fb) { img.removeAttribute('data-fallback'); img.src = fb; return; }
+  img.style.display = 'none';
+  if (img.nextElementSibling) img.nextElementSibling.style.display = 'flex';
+}
+
 function wildCard(w) {
   /* data-kind, 2026-09-07: this card carries `plant-card` because it reuses the
      plant card's styling, and that lie cost two bugs — remember() filed animals
@@ -2102,15 +2113,16 @@ function wildCard(w) {
      the card happened to sit in. The card now says what it is. */
   return `<a class="card plant-card" data-kind="wild" href="${w.page}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">
     <div style="height:160px;overflow:hidden;position:relative;background:var(--sand)">
-      <img src="${w.photo}" alt="${w.common}"
+      <img src="${w.photo_thumb || w.photo}" ${w.photo_thumb ? `data-fallback="${w.photo}"` : ''} alt="${w.common}"
         style="width:100%;height:100%;object-fit:cover;object-position:${w.focus || 'center'};display:block;transition:transform .4s ease"
-        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+        onerror="_photoOnError(this)"
         loading="lazy">
       <div style="display:none;height:100%;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text-soft);opacity:.3">🦜</div>
     </div>
     <div class="card-body" style="flex:1">
       <h4 style="font-size:.97rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${w.common}</h4>
       <div class="sci-name">${w.sci}</div>
+      <span class="card-fullpage" data-fullpage>Full page &rarr;</span>
     </div>
     ${_speciesCreditPlate(w)}
   </a>`;

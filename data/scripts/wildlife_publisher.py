@@ -96,11 +96,19 @@ def build_wildlife_json_entry(species, hero):
     if hero:
         photo = media_url(hero, "thumb", whole_site_only=True) or f"photos/{pid}/{hero['filename']}"
         focus = hero.get("focus") or "50% 50%"
+        # R2 addresses for the browse card (small) and Quick View (larger).
+        # Separate fields on purpose: `photo` is read by the TV decks, which
+        # take the photo id from a /<digits>.jpg path. media_url() without
+        # whole_site_only is gated per species, so a field exists only when
+        # every published photo of the species is in the bucket.
+        photo_thumb = media_url(hero, "thumb")
+        photo_web = media_url(hero, "web")
     else:
         photo = ""
         focus = "50% 50%"
+        photo_thumb = photo_web = None
 
-    return {
+    entry = {
         "id": pid,
         "common": species["common_name"],
         "sci": species["scientific_name"],
@@ -161,6 +169,13 @@ def build_wildlife_json_entry(species, hero):
         # facet: which months is it here? already a real int array, 90/90
         "months": (species.get("seasonality") or {}).get("months") or [],
     }
+    # Absent, not empty, when the species is not wholly in the bucket: the
+    # site falls back to `photo`.
+    if photo_thumb:
+        entry["photo_thumb"] = photo_thumb
+    if photo_web:
+        entry["photo_web"] = photo_web
+    return entry
 
 # ── HTML generation ─────────────────────────────────────────────────────────
 
