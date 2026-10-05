@@ -544,6 +544,27 @@ def main():
             add("LINK", lvl,
                 f"{pid}: {len(by_species[pid])} photo record(s) but no signage entry "
                 f"({where})")
+        # Photo rows keep the common_name they were imported with: a record rename
+        # never reaches photo_credits.json, and the home-page caption and the
+        # Photographers page read that label off the row (js/photo-credits.js).
+        # So a rename leaves visitors seeing the old name. Common name only: the
+        # scientific-name drifts (Canna, Platycerium) were left alone by decision.
+        # ACTIONS #47.
+        stale = defaultdict(list)
+        for ph in photos:
+            sid = ph.get("psbp_id")
+            if sid in pub_ids:
+                want = (sign_by_id[sid].get("common_name") or "").strip()
+                have = (ph.get("common_name") or "").strip()
+                if want and have != want:
+                    stale[sid].append(have)
+        for sid in sorted(stale):
+            olds = sorted(set(stale[sid]))
+            add("LINK", "ERROR",
+                f"{sid}: record is {sign_by_id[sid].get('common_name')!r} but "
+                f"{len(stale[sid])} photo row(s) in photo_credits.json still say "
+                f"{', '.join(repr(o) for o in olds)} — the home-page caption and "
+                f"Photographers page read the photo row")
         for sid in sorted(pub_ids - set(heroes)):
             add("LINK", "ERROR",
                 f"{sid} {sign_by_id[sid].get('common_name')}: status=html but no hero "

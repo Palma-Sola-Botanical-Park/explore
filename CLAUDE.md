@@ -105,9 +105,12 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
 
 ## 2. Hard rules (never break)
 
-1. **QR URLs are permanent.** Hundreds of printed signs point at
-   `plants/PSBP-xxxxx-Common-Name.html`. Never rename, move, or delete a published species page.
-   A common-name change on a `status: html` record changes the filename: stop and ask.
+1. *(Retired 2026-10-04, Randy: "if we wanna rename a species, we will rename a species.")* A
+   published species may be renamed; its page file moves to the new name. New signs encode
+   `/p/00719`, which follows the species, so a rename never breaks one. Run
+   `propagate_species_name.py` so nothing keeps the old name. Signs printed before 2026-10-04 are
+   beta, carry the old long address, and will be discarded: reprint if one matters. Numbers stay
+   put so other docs can still say "rule 4".
 2. **PSBP IDs are permanent and only Species Manager mints them.** `PSBP-00001`–`89999` plants,
    `PSBP-90000`–`99999` wildlife. Never assign one by hand. Never key anything on a common name.
 3. **Masters in `data/sources/`, everything else is generated.** Never hand-edit `plants.json`,
@@ -195,7 +198,8 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 | `provenance/PSBP-xxxxx.json` | | AI draft/revise event log per species |
 
 **Species lifecycle:** `research → spotted → html`. Identity (name, filename, QR) is free to
-change at `spotted` and expensive after. Get the binomial right before promoting. For a species
+change at `spotted` and is just as easy after (a rename moves the page; run
+`propagate_species_name.py`). Get the binomial right before promoting. For a species
 that came from iNaturalist, iNat's name is the first source; override it only in the rare case
 we know the iNat identification is wrong.
 
@@ -236,6 +240,7 @@ is editing the live screens.
 |---|---|---|
 | `species_manager.py` | 8700 | the dashboard: Overview, Intake, Photos, Cultivated, Preview & Publish, Signs, Verify, Health. Mints IDs. Has the "Work on this page" AI button. Holds JSON in browser memory (see rule 4). |
 | `signs/make_signs.py` | | print sign PDFs (reportlab + Pillow, so it runs as a subprocess of the Signs tab). Output to `~/Documents/PSBP/signs_out/builds/`, never the repo. QR is the short `/p/` permalink. |
+| `propagate_species_name.py` | | after a species rename: preview lists every place the old name is still stored; `--apply` fixes the mechanical ones (record, photo rows, page, `/p/` stub, indexes) and leaves a checklist of prose, hand-kept files and docs. No args = drift scan. Like `propagate_names.py` (photographers). One species at a time. |
 | `plant_publisher.py` | 8701 | `--generate PSBP-xxxxx`, `--generate-all`, `--demote`; writes `plants/` and `plants.json` |
 | `wildlife_publisher.py` | 8702 | same for wildlife |
 | `psbp_placements.py` | 8701 | placement pinning UI (collides with the plant publisher's port; run one at a time) |
