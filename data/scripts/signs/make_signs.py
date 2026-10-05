@@ -3,7 +3,9 @@
 make_signs_v2.py — PSBP sign builder, v2 (post-beta "stronger signs" revision).
 
 WHAT CHANGED FROM v1
-  • The sign is now LANDSCAPE, 7.6" x 4.75" — a bit under half a letter page.
+  • The sign is now LANDSCAPE, 7.475" x 4.6875" — a bit under half a letter page.
+    (Trimmed 1/8" narrower and 1/16" shorter than the beta round, 2026-10-04: a
+    smaller, lower-profile sign for the wind. The QR card shrinks with the height.)
   • Two signs are imposed, stacked, on one PORTRAIT 8.5x11 sheet. Print on
     cardstock, trim on the crop marks, drop BOTH trimmed signs into ONE letter
     laminating pouch, laminate, then cut the pouch apart between them. Every
@@ -111,7 +113,7 @@ FADE_KNEE = 0.62     # opacity where the hold ends and the fall begins
 
 # ── sign + sheet geometry (inches → points) ──
 IN = 72.0
-SIGN_W, SIGN_H = 7.6*IN, 4.75*IN          # 547.2 x 342 — the TRIM size
+SIGN_W, SIGN_H = 7.475*IN, 4.6875*IN      # 538.2 x 337.5 — the TRIM size (was 7.6 x 4.75)
 PAGE_W, PAGE_H = 8.5*IN, 11.0*IN          # portrait letter print sheet
 SHEET_GAP      = 0.70*IN                  # space between the two signs
 SIGN_X  = (PAGE_W - SIGN_W)/2.0
@@ -127,10 +129,10 @@ FOOTER_H = 40
 GUTTER   = 0.0
 SEAM     = 1.2                            # gold rule on the join, 0 to disable
 BAND_RULE = 1.5                           # gold rule under the identity band, 0 to disable
-PHOTO_H  = 196.0
+PHOTO_H  = 191.5      # was 196; SIGN_H dropped by the same 4.5pt so the teaser zone is unchanged
 SCI_BAND_H = 26.0
 COL_R1 = SIGN_W - B
-COL_R0 = COL_R1 - PHOTO_H                 # square QR card: 196 wide == 196 tall
+COL_R0 = COL_R1 - PHOTO_H                 # square QR card: PHOTO_H wide == PHOTO_H tall
 COL_L0, COL_L1 = B, COL_R0 - GUTTER
 PHOTO_ASPECT = (COL_L1-COL_L0)/PHOTO_H
 LOGO_ASPECT = 1.778

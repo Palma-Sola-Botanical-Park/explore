@@ -631,6 +631,29 @@ def main():
                                if sign_by_id[s].get("status") == "html"} - seen):
                 add("INDEX", "ERROR", f"{label}: {sid} is published but missing")
 
+        # Permalink stubs (p/00719/index.html), the target of every printed QR.
+        # Plants only until wildlife signs exist. Belt and braces: the publisher
+        # writes the stub beside the page and demotion removes it.
+        PERMALINKS = REPO / "p"
+        html_plants = {s for s in plant_ids if sign_by_id[s].get("status") == "html"}
+        html_all = {s for s in sign_by_id if sign_by_id[s].get("status") == "html"}
+        stub_dirs = ({d.name for d in PERMALINKS.iterdir() if d.is_dir()}
+                     if PERMALINKS.is_dir() else set())
+        for sid in sorted(html_plants):
+            num = sid.split("-")[-1]
+            stub = PERMALINKS / num / "index.html"
+            if not stub.is_file():
+                add("INDEX", "ERROR", f"p/{num}: no permalink stub for published {sid}")
+                continue
+            m = re.search(r'<link rel="canonical" href="\.\./\.\./plants/([^"]+)"',
+                          stub.read_text(encoding="utf-8"))
+            if not m or not (PLANTS_DIR / m.group(1)).is_file():
+                add("INDEX", "ERROR",
+                    f"p/{num}: stub points at {m.group(1) if m else '?'}, "
+                    f"which is not a page on disk")
+        for num in sorted(stub_dirs - {s.split("-")[-1] for s in html_all}):
+            add("INDEX", "ERROR", f"p/{num}: stub for a species that is not published")
+
     # ── FK ────────────────────────────────────────────────────────────────
     if run("FK"):
         res_by_id = {s["id"]: s for s in research}

@@ -19,6 +19,7 @@ the repo, change REPO below. Those are the only two things to touch.
 
 import json
 import os
+import re
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -42,6 +43,7 @@ WILDLIFE_JSON         = REPO / "wildlife.json"
 PLANTS_DIR            = REPO / "plants"
 WILDLIFE_DIR          = REPO / "wildlife"
 PHOTOS_DIR            = REPO / "photos"
+PERMALINK_DIR         = REPO / "p"        # short QR permalinks: p/00719/index.html
 
 # ===========================================================================
 # MEDIA LIBRARY (Cloudflare R2) — where species photographs are served from
@@ -879,6 +881,65 @@ def update_signage_status(corpus, species_id, new_status):
     write_json_atomic(path, signage)
 
 
+def permalink_stub_html(corpus_dir, filename, common_name):
+    """The ~400-byte redirect behind a printed QR code: /p/00719 -> the species page.
+
+    Two levels down, so the RELATIVE ../../<corpus>/<file> resolves the same under
+    github.io/explore/p/00719/ today and palmasolabp.org/p/00719/ after cutover,
+    with no regeneration. location.replace() keeps Back from bouncing the visitor
+    into the redirect again; the meta refresh is the no-JS fallback.
+
+    ?src=sign is the one thing that can't be added after lamination, so it lives
+    HERE rather than in the QR: the code stays short, and GoatCounter (which reads
+    `src` as the source) names every /p/ scan as a sign. /p/ is printed only on signs.
+    """
+    import html as _h
+    target = f"../../{corpus_dir}/{filename}"
+    dest = f"{target}?src=sign"
+    title = _h.escape(f"{common_name} — Palma Sola Botanical Park")
+    return (
+        '<!doctype html>\n'
+        '<meta charset="utf-8">\n'
+        f'<title>{title}</title>\n'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
+        f'<link rel="canonical" href="{target}">\n'
+        f'<meta http-equiv="refresh" content="0; url={dest}">\n'
+        f'<script>location.replace("{dest}"+location.hash)</script>\n'
+        f'<p><a href="{dest}">{title}</a></p>\n'
+    )
+
+
+def write_permalink_stub(psbp_id, corpus_dir, filename, common_name):
+    """Write p/<digits>/index.html for a published species. Idempotent: an
+    unchanged stub is not rewritten. Called from the publisher's write_html, so
+    the page and its stub are written by the same call and cannot disagree.
+    Returns the path written, or None if it was already current."""
+    digits = re.sub(r"\D", "", psbp_id)
+    path = PERMALINK_DIR / digits / "index.html"
+    content = permalink_stub_html(corpus_dir, filename, common_name)
+    if path.is_file() and path.read_text(encoding="utf-8") == content:
+        return None
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(content, encoding="utf-8")
+    tmp.rename(path)
+    return path
+
+
+def remove_permalink_stub(psbp_id):
+    """Remove p/<digits>/ on demotion. A printed code for a demoted species then
+    404s, which is the invariant the audit expects; stubs must never outlive pages."""
+    digits = re.sub(r"\D", "", psbp_id)
+    d = PERMALINK_DIR / digits
+    gone = False
+    if d.is_dir():
+        for f in d.iterdir():
+            f.unlink()
+        d.rmdir()
+        gone = True
+    return gone
+
+
 def delete_species_page(corpus, species_id, common_name=""):
     """Delete the generated HTML page(s) for a species from disk.
 
@@ -892,6 +953,8 @@ def delete_species_page(corpus, species_id, common_name=""):
     for f in target_dir.glob(f"{species_id}-*.html"):
         f.unlink()
         deleted.append(f.name)
+    if remove_permalink_stub(species_id):
+        deleted.append("p/" + re.sub(r"\D", "", species_id) + "/")
     # Drop the publish record too — a species with no page must not keep
     # claiming a publish date. Same choke-point logic as write_html.
     try:

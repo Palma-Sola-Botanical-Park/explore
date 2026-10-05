@@ -245,7 +245,13 @@ is editing the live screens.
 
 - Species Manager's Health tab shells out to `audit_psbp.py --json`. One implementation of every
   rule. A useful new check becomes a tab or button there, never a loose script or `.app`.
-- `--generate-all` is always safe: unchanged pages come out byte-identical.
+- `--generate-all` writes every page from current data, so it is safe only for pages whose inputs
+  have not moved. It also picks up the R2 photo rollout (`MEDIA_PER_SPECIES` reads Randy's local
+  `~/PSBP-media` cache): on 2026-10-04 it rewrote 171 pages to load photos from `r2.dev`. Run it
+  only when a template change is meant to reach every page, and read `git diff --stat` after.
+- Permalink stubs: `p/00719/index.html` redirects to the species page with `?src=sign`. The plant
+  publisher writes it beside the page (`write_permalink_stub`), `delete_species_page` removes it on
+  demotion, and `audit_psbp.py --only INDEX` checks both directions. Generated; never hand-edit.
 - Staleness is answered by `psbp_page_drift.py` (renders and compares), never by a fingerprint.
   `publish_state.json` holds template fingerprints that flag hundreds of pages after any edit to a
   publisher. That is a false alarm.

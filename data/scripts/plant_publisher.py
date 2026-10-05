@@ -1291,6 +1291,13 @@ def write_html(species, hero, gallery_photos=None, dry_run=False):
         print(f"    ✕ {species['id']}: removed stale page {gone} "
               f"(renamed to {filename})")
 
+    # The printed-QR permalink /p/00719 -> this page. Written here, beside the
+    # page, so a rename rewrites the stub in the same call. Demotion removes it
+    # in delete_species_page. See ACTIONS Medium #37.
+    from psbp_common import write_permalink_stub
+    if write_permalink_stub(species["id"], "plants", filename, species["common_name"]):
+        print(f"    ↪ {species['id']}: permalink stub p/{species['id'][5:]}/")
+
     _record_publish("plants", species["id"], input_hash, generator, filename, stamp)
     return path, html_content
 
