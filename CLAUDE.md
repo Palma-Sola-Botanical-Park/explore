@@ -160,7 +160,7 @@ data-health.html     feed pipeline status board
 screen.html members.html    redirect stubs — keep them; old kiosks and QR codes land here
 plants.json wildlife.json   GENERATED card/search indexes read by nature.html and the screens
 plants/  wildlife/          GENERATED species pages, PSBP-xxxxx-Common-Name.html
-photos/PSBP-xxxxx/<inat_photo_id>.jpg   web-res copies, ~300 KB, one folder per species
+photos/PSBP-xxxxx/<inat_photo_id>.jpg   web-res copy of each species' CURRENT hero only (~300 KB); other photos live in R2
 images/              site media; images/brightfutures-local/ is gitignored on purpose
 docs/                finished PDFs and press images (tours, news, get-involved)
 css/  js/            psbp.css + site.js are the shared chrome; species-v2.* the page layout
@@ -217,8 +217,10 @@ absent → old machine fields render. Key present as `[]` → section hidden. En
 `audit_psbp.py --only PAGE`.
 
 **Photos:** `role` is an array (`gallery`, `whole`, `flower`…), `primary_for` names the roles it
-leads, `hero: true` is the card and page lead image, `publish_ok` gates publishing. Web-res only
-in `photos/`; the source is an iNat URL in `photo_url`.
+leads, `hero: true` is the card and page lead image, `publish_ok` gates publishing. `photos/` holds
+only the current heroes, web-res (a hero swap deletes the old file); every photo is in R2, and the source is an
+iNat URL in `photo_url`. **No hand-written page names a `photos/` file** (banners 404'd on 2026-09-28 when
+old heroes were deleted): use whatever hero is there, e.g. `PSBPPhotos.mountBanner()` for a random current one.
 
 **Wildlife theme** is derived, not stored: `ANIMAL_GROUP_TO_THEME` in `psbp_common.py` maps
 `animal_group` → `bird | butterfly | other`. `check_animal_group` fails closed on an unknown group.
