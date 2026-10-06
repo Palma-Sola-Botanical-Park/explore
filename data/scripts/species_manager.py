@@ -7292,6 +7292,8 @@ def render_photos():
             <div class="focus-preview-note">
                 The crop preview on the card updates to match. For the hero,
                 this also sets how the published page crops the image.
+                A click in the top quarter of the photo pins the crop to the
+                very top (0%).
             </div>
         </div>
     </div>
@@ -7831,6 +7833,11 @@ def render_photos():
         const y = ((e.clientY - rect.top) / rect.height) * 100;
         focusState.x = Math.max(0, Math.min(100, x));
         focusState.y = Math.max(0, Math.min(100, y));
+        // A click in the top quarter means "show the top": store 0% (the very
+        // top edge) so every crop, hero or card, shows it as high as it can.
+        // The stored value is an anchor for the crop window, not the subject's
+        // position, so a click on an owl's face at 20% would cut the face off.
+        if (focusState.y <= 25) focusState.y = 0;
         updateCrosshair();
     }}
 
