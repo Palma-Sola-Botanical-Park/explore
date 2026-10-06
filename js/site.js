@@ -1891,9 +1891,9 @@ function plantCard(p) {
 
   return `<a class="card plant-card" data-kind="plant" href="${pageUrl}" style="text-decoration:none;display:flex;flex-direction:column;height:100%">
     <div style="height:160px;overflow:hidden;position:relative;background:var(--sand)">
-      <img src="${photoUrl}" alt="${p.common}"
+      <img src="${p.photo_thumb || photoUrl}" ${p.photo_thumb ? `data-fallback="${photoUrl}"` : ''} alt="${p.common}"
         style="width:100%;height:100%;object-fit:cover;object-position:${p.focus || 'center'};display:block;transition:transform .4s ease"
-        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+        onerror="_photoOnError(this)"
         loading="lazy">
       <div style="display:none;height:100%;align-items:center;justify-content:center;font-size:2.5rem;color:var(--text-soft);opacity:.3">🌿</div>
     </div>
@@ -1902,6 +1902,7 @@ function plantCard(p) {
       <div class="sci-name">${p.sci}</div>
     </div>
     ${_speciesCreditPlate(p)}
+    <span class="card-fullpage" data-fullpage>Full page &rarr;</span>
   </a>`;
 }
 
