@@ -10,14 +10,12 @@
 <style>
 /* ── Hero ── */
 .news-hero-bg {
-  background-image: url('photos/PSBP-99987/681681193.jpg');
   background-size: cover;
-  /* focus 41% 43%, straight from photo_credits.json — the bird sits left of
-     center, so a plain "center" crop would push it off the edge on a wide
-     screen and put the headline over the subject instead of over open water. */
-  background-position: 41% 43%;
-  /* was a hardcoded .5, which ignored --hero-veil and made this the heaviest
-     hero on the site. It now follows the same dial as every other page. */
+  /* No image or position here on purpose. A story's own hero_image is set by
+     selectNews(); otherwise a random current hero is set by PSBPPhotos on load,
+     with its own focus point. This used to name one Whistling-Duck file, which
+     was deleted when that species' hero was swapped (2026-09-28), so the banner
+     went missing. Dimmed by --hero-veil like every other page. */
 }
 /* Compact hero — keep the big headline, just tighten the spacing around it */
 .page-hero { min-height: 150px; }
@@ -211,6 +209,7 @@
 </section>
 
 <div id="footer-placeholder"></div>
+<script src="js/photo-credits.js"></script>
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false });
@@ -282,8 +281,28 @@ function articleHTML(n){
 // (The previous default was 'photos/PSBP-00052-Mexican-Flame-Vine.jpg', a path
 // that had 404'd all along — which is why a story with no picture of its own
 // showed a blank hero.)
-const NEWS_HERO_DEFAULT        = 'photos/PSBP-99987/681681193.jpg';
-const NEWS_HERO_DEFAULT_CREDIT = '© Rob Carr · CC-BY-NC · iNaturalist';
+// The default banner (a story with no hero_image of its own) is a random current
+// hero, picked once per page load. It is set when the hero pool has loaded.
+let newsDefaultHero = null;
+function paintNewsHero(i){
+  const bg = document.querySelector('.news-hero-bg');
+  if (!bg) return;
+  const own = ((newsItems[i] || {}).hero_image || '').trim();
+  const cr = document.getElementById('newsHeroCredit');
+  if (own){
+    bg.style.backgroundImage = `url('${own}')`;
+    bg.style.backgroundPosition = '';
+    if (cr) cr.textContent = '';
+  } else if (newsDefaultHero){
+    bg.style.backgroundImage = `url('${newsDefaultHero.src}')`;
+    bg.style.backgroundPosition = newsDefaultHero.pos;
+    if (cr) cr.textContent = newsDefaultHero.credit;
+  } else {
+    bg.style.backgroundImage = 'none';
+    if (cr) cr.textContent = '';
+  }
+}
+PSBPPhotos.pickBanner().then(b => { newsDefaultHero = b; paintNewsHero(newsActive); });
 
 function selectNews(i){
   newsActive = i;
@@ -292,13 +311,7 @@ function selectNews(i){
 
   // The story's own photograph becomes the page hero — one big, dimmed image at
   // the top instead of a small dark band inside the article.
-  const bg = document.querySelector('.news-hero-bg');
-  if (bg){
-    const own = (newsItems[i].hero_image || '').trim();
-    bg.style.backgroundImage = `url('${own || NEWS_HERO_DEFAULT}')`;
-    const cr = document.getElementById('newsHeroCredit');
-    if (cr) cr.textContent = own ? '' : NEWS_HERO_DEFAULT_CREDIT;
-  }
+  paintNewsHero(i);
 
   // TOP OF THE PAGE, not top of the article. The hero at the top has just
   // changed to this story's photograph — scrolling to the article header sails

@@ -35,7 +35,8 @@
 .nature-hero::before {
   content: '';
   position: absolute; inset: 0;
-  background: url('photos/PSBP-00001/681679773.jpg') 51% 57% / cover no-repeat;
+  /* Set by PSBPPhotos.pickBanner() on load: a random current hero, never a named file. */
+  background: var(--banner-img, none) var(--banner-pos, 50% 50%) / cover no-repeat;
   opacity: .18;
 }
 .nature-hero > * { position: relative; z-index: 1; }
@@ -667,6 +668,13 @@
 <script src="js/photo-credits.js"></script>
 <script src="js/site.js"></script>
 <script>
+/* Banner texture behind the title: a random current hero on every load. */
+PSBPPhotos.pickBanner().then(function (b) {
+  var h = document.querySelector('.nature-hero');
+  if (!b || !h) return;
+  h.style.setProperty('--banner-img', "url('" + b.src + "')");
+  h.style.setProperty('--banner-pos', b.pos);
+});
 injectShared({ inatBar: false, inatFooter: true });
 
 // Check for ?family= or ?search= URL parameter — pre-populate search

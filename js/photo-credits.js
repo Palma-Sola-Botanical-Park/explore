@@ -446,7 +446,56 @@
     return _photoCount;
   }
 
+  // ---- page banner: any current hero, a different one on every load --------
+  // For the dimmed photograph behind a page title. NOTHING is hard-coded: the
+  // pick comes from the live hero pool (photo_credits.json), so swapping a
+  // species' hero in Species Manager can never leave a banner pointing at a
+  // file that is gone (nature, news and events did exactly that on 2026-09-28).
+  // No fit checks and no curation: the page's --hero-veil dims whatever lands,
+  // and a weaker frame now and then is fine (Randy, 2026-10-05). The one filter
+  // is licence: a banner is cropped and dimmed, so ND photographs are skipped.
+  // One pick per page load, shared by every caller on the page.
+  var _banner = null;
+  function pickBanner() {
+    if (_banner) return _banner;
+    _banner = loadPool().then(function (pool) {
+      var ok = (pool || []).filter(function (p) {
+        return !/ND/.test(normLicense(p.license));
+      });
+      if (!ok.length) return null;
+      var p = ok[Math.floor(Math.random() * ok.length)];
+      return resolveSrc(p).then(function (src) {
+        var who = resolveName(p.photographer, p.photographer_name);
+        var lic = normLicense(p.license);
+        return {
+          src: src,
+          pos: focusOf(p),
+          credit: '\u00a9 ' + who + (lic ? ' (' + lic + ')' : '') + ', via iNaturalist'
+        };
+      });
+    }).catch(function () { return null; });   // no pool: the banner just stays plain green
+    return _banner;
+  }
+
+  // The usual case: a .page-hero-bg and a .page-hero-credit on the page.
+  function mountBanner(opts) {
+    opts = opts || {};
+    return pickBanner().then(function (b) {
+      if (!b) return null;
+      var bg = document.querySelector(opts.bg || '.page-hero-bg');
+      if (bg) {
+        bg.style.backgroundImage = "url('" + b.src + "')";
+        bg.style.backgroundPosition = b.pos;
+      }
+      var cr = document.querySelector(opts.credit || '.page-hero-credit');
+      if (cr) cr.textContent = b.credit;
+      return b;
+    });
+  }
+
   window.PSBPPhotos = {
+    pickBanner:         pickBanner,
+    mountBanner:        mountBanner,
     attribution:        attribution,
     speciesTag:         speciesTag,
     creditPlate:        creditPlate,

@@ -58,7 +58,7 @@
 </div>
 
 <div class="page-hero">
-  <div class="page-hero-bg" style="background-image:url('photos/PSBP-00035/626742537.jpg')"></div>
+  <div class="page-hero-bg"></div>
   <div class="page-hero-content" style="text-align:center;margin:0 auto">
     <div class="label label-light">What's On</div>
     <h1>Events &amp; Classes</h1>
@@ -158,15 +158,13 @@
 </section>
 
 <div id="footer-placeholder"></div>
+<script src="js/photo-credits.js"></script>
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false });
 
-heroRotate([
-  { img: 'photos/PSBP-00035/626742537.jpg', credit: '© jsea (CC-BY-NC), via iNaturalist' },
-  { img: 'photos/PSBP-00621/681678425.jpg', credit: '© Rob Carr (CC-BY-NC), via iNaturalist' },
-  { img: 'photos/PSBP-00072/703871348.jpg', credit: '© Rhonda Olschefskie (CC-BY-NC), via iNaturalist' },
-]);
+// Banner: a random current hero on every load, never a named file.
+PSBPPhotos.mountBanner();
 
 // Load announcements
 loadAnnouncements('announcementsList').then(() => {
