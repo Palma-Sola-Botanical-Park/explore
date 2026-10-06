@@ -165,11 +165,11 @@
      HERO  (unchanged)
 ============================================================ -->
 <div class="page-hero">
-  <!-- Rotates on each load — heroRotate() in site.js, pool right below.
-       Swap/add/remove entries anytime, no curation rules: cover-crop +
-       the fixed --hero-veil opacity handle any photo. Worst case is a dud,
-       not broken. First entry is the known-good fallback. -->
-  <div class="page-hero-bg" style="background-image:url('photos/PSBP-00051/734023843.jpg')"></div>
+  <!-- A random current hero on every load: PSBPPhotos.mountBanner() in
+       photo-credits.js picks it from the live hero pool, so nothing here names
+       a photo file and a hero swap can never break this banner. No curation:
+       cover-crop + the fixed --hero-veil opacity handle any photo. -->
+  <div class="page-hero-bg"></div>
   <div class="page-hero-content" style="text-align:center;margin:0 auto">
     <div class="label label-light">Plan Your Visit</div>
     <h1>Pull up and walk in.</h1>
@@ -177,7 +177,7 @@
       and point your phone at a sign when something stops you. Come back in a month and
       something different will be in flower.</p>
   </div>
-  <div class="page-hero-credit" style="position:absolute;right:.9rem;bottom:.7rem;z-index:3;font-size:.72rem;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.65);letter-spacing:.02em">© Randall Carter · CC-BY-NC · iNaturalist</div>
+  <div class="page-hero-credit" style="position:absolute;right:.9rem;bottom:.7rem;z-index:3;font-size:.72rem;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.65);letter-spacing:.02em"></div>
 </div>
 
 <!-- ============================================================
@@ -578,16 +578,13 @@
 </section>
 
 <div id="footer-placeholder"></div>
+<script src="js/photo-credits.js"></script>
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false });
 
-heroRotate([
-  { img: 'photos/PSBP-00051/734023843.jpg', credit: '© Randall Carter (CC-BY-NC), via iNaturalist' },
-  { img: 'photos/PSBP-00621/681678425.jpg', credit: '© Rob Carr (CC-BY-NC), via iNaturalist' },
-  { img: 'photos/PSBP-00072/703871348.jpg', credit: '© Rhonda Olschefskie (CC-BY-NC), via iNaturalist' },
-  { img: 'photos/PSBP-00476/723663668.jpg', credit: '© Randall Carter (CC-BY-NC), via iNaturalist' },
-]);
+// Banner: a random current hero on every load, never a named file.
+PSBPPhotos.mountBanner();
 
 // Announcements bar
 loadAnnouncements('announcementsList');

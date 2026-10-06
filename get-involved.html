@@ -222,14 +222,14 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 
 <!-- ══════════════════ HERO ══════════════════ -->
 <div class="page-hero">
-  <div class="page-hero-bg" style="background-image:url('https://inaturalist-open-data.s3.amazonaws.com/photos/366864093/large.jpg')"></div>
+  <div class="page-hero-bg"></div>
   <div class="page-hero-content" style="text-align:center;margin:0 auto">
     <div class="label label-light">Get Involved</div>
     <h1>This park belongs to all of us</h1>
     <p>The gate is open every day and there is no admission fee. That is possible because people give what they can —
        time, talent, or a few dollars. Here's how to be one of them.</p>
   </div>
-  <div class="page-hero-credit" style="position:absolute;right:.9rem;bottom:.7rem;z-index:3;font-size:.72rem;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.65);letter-spacing:.02em">© Sherry Nigro · CC-BY-NC · iNaturalist</div>
+  <div class="page-hero-credit" style="position:absolute;right:.9rem;bottom:.7rem;z-index:3;font-size:.72rem;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.65);letter-spacing:.02em"></div>
 </div>
 
 <!-- ══════════════════ WAYS IN ══════════════════ -->
@@ -719,15 +719,13 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 </section>
 
 <div id="footer-placeholder"></div>
+<script src="js/photo-credits.js"></script>
 <script src="js/site.js"></script>
 <script>
 injectShared({ inatBar: false });
 
-heroRotate([
-  { img: 'https://inaturalist-open-data.s3.amazonaws.com/photos/366864093/large.jpg', credit: '© Sherry Nigro (CC-BY-NC), via iNaturalist' },
-  { img: 'photos/PSBP-00621/681678425.jpg', credit: '© Rob Carr (CC-BY-NC), via iNaturalist' },
-  { img: 'photos/PSBP-00072/703871348.jpg', credit: '© Rhonda Olschefskie (CC-BY-NC), via iNaturalist' },
-]);
+// Banner: a random current hero on every load, never a named file.
+PSBPPhotos.mountBanner();
 
 /* ════════════════════════════════════════════════════════════════════
    PAYPAL — membership tier links.  PASTE the share link for each tier's
