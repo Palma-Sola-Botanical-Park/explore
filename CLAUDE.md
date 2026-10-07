@@ -271,8 +271,10 @@ is editing the live screens.
   vote). Every other iNat use is read-only.
 - **Every log line carries the date and the time.** Scripts, batch files, scheduled tasks on the
   office PCs, all of them. A log you cannot date is a log you cannot use.
-- **The Office and Galleria PCs are configured identically** except where they do different jobs:
-  same task names, same triggers, same log paths, same folders. A difference is a bug.
+- **The Office and Galleria PCs are meant to match** except where they do different jobs: same
+  task names, triggers, log paths and folders. They do not match today. As of 2026-10-06 Galleria
+  runs a smaller local controller than Office's central one, and Office has not been audited.
+  Audit each PC before standardizing; never copy one to the other blindly.
 
 **iNat rules of thumb**
 - Park scope for READS is the polygon in code (`PARK_POLYGON` in `species_manager.py` and
