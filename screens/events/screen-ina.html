@@ -267,6 +267,12 @@ body{font-family:var(--sans);color:var(--paper);cursor:none;-webkit-font-smoothi
    slide. To add a photo later, set this to a path (e.g.
    '../../images/ina-baden.jpg') and the welcome slide uses it as a full-bleed
    background automatically. */
+/* Species photos come from the park's media library (R2):
+   <MEDIA_BASE>/inat/<photo_id>/v1/{original|web|thumb}.jpg. Same constant as
+   psbp_common.py MEDIA_BASE; change both when the bucket moves to
+   media.palmasolabp.org. No pixel reads here, so no CORS rule is needed. */
+var MEDIA_BASE = 'https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev';
+function mediaUrl(photoId, size){ return MEDIA_BASE + '/inat/' + photoId + '/v1/' + (size || 'web') + '.jpg'; }
 var PHOTO_URL = '../../images/memorial-ina-baden.jpg'; // Ina herself — from her own obituary photo, smiling by the water
 
 /* WELCOME is the "home base" slide — office monitor, meant to spark
@@ -325,7 +331,7 @@ var VIGNETTES = [
       + '<div class="rule"></div>'
       + '<div class="body">Ina had a way of making people feel like they were her favorite. She often told them, &ldquo;I&rsquo;m the president of your fan club.&rdquo;</div>' },
 
-  { id: 'vignette05', bg: 'https://inaturalist-open-data.s3.amazonaws.com/photos/733826471/large.jpg', credit: { name: 'Helen Lewis', date: 'Sep 13, 2026' }, html:
+  { id: 'vignette05', bg: mediaUrl(733826471), credit: { name: 'Helen Lewis', date: 'Sep 13, 2026' }, html:
         '<div class="label">Adventure</div>'
       + '<div class="rule"></div>'
       + '<div class="body">She traveled to nearly every continent, scuba dived, rode horses, and took road trips on her big Harley.</div>' },
@@ -350,7 +356,7 @@ var VIGNETTES = [
       + '<div class="rule"></div>'
       + '<div class="body">Ina earned her commercial driver&rsquo;s license and helped launch the Manatee Blood Bank&rsquo;s mobile donation program &mdash; then drove the bus around town herself.</div>' },
 
-  { id: 'vignette08', bg: '../../photos/PSBP-00072/703871348.jpg', credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
+  { id: 'vignette08', bg: mediaUrl(703871348), credit: { name: 'Rhonda Olschefskie', date: 'Apr 15, 2026' }, html:
         '<div class="label">The Rose Garden</div>'
       + '<div class="rule"></div>'
       + '<div class="body">Ina loved her roses and proudly showed off her garden. She also collected shells from around the world, and thousands of photographs from a life well traveled.</div>' },
@@ -388,7 +394,7 @@ var VIGNETTES = [
       +   '<div class="flower-right"></div>'
       + '</div>' },
 
-  { id: 'donate', seconds: 30, bg: '../../photos/PSBP-00001/681679773.jpg', credit: { name: 'Rob Carr', date: 'May 28, 2023' }, noPhotoNote: true, html:
+  { id: 'donate', seconds: 30, bg: mediaUrl(681679773), credit: { name: 'Rob Carr', date: 'May 28, 2023' }, noPhotoNote: true, html:
         '<div class="label">Palma Sola</div>'
       + '<div class="rule"></div>'
       + '<div class="body">Ina spent many happy years working here. The park was important enough to her that her family asked that memorial gifts be made to Palma Sola Botanical Park.</div>'
@@ -460,7 +466,7 @@ var VIGNETTES = [
       +   '<div class="rule"></div>'
       +   '<div class="notes-grid cols-2">'
       +     '<div class="note-card wide with-photo">'
-      +       '<img class="nc-photo" src="photos/PSBP-00121/673659284.jpg" alt="The Baden family&rsquo;s Amazon Lily on Bird of Paradise Island">'
+      +       '<img class="nc-photo" src="' + mediaUrl(673659284) + '" alt="The Baden family&rsquo;s Amazon Lily on Bird of Paradise Island">'
       +       '<div class="nc-body">'
       +         '<div class="nc-head"><span class="nc-name">Randall Carter</span><span class="nc-date">Sep 17, 2026</span></div>'
       +         '<div class="nc-quote">Ina, as a volunteer here who works alongside our high school volunteers, I promise we&rsquo;ll help carry your legacy forward. We&rsquo;ll give special care to your family&rsquo;s Amazon lily on Bird of Paradise Island. It was knocked back hard by saltwater from the bay a couple of years ago, but we&rsquo;ll make it our mission to see it continue its comeback. We&rsquo;ll remember you.</div>'
@@ -491,9 +497,7 @@ fetch('../../data/sources/photo_credits.json').then(function(r){ return r.json()
   FLOWER_PHOTOS = (d.photos || []).filter(function(p){
     return p.publish_ok && Array.isArray(p.role) && p.role.indexOf('flower') !== -1;
   }).map(function(p){
-    // Mirrors the site's own convention (see any plant page's window.PHOTOS):
-    // a locally-mirrored file if one exists, else the iNaturalist original.
-    var src = p.filename ? ('../../photos/' + p.psbp_id + '/' + p.filename) : p.photo_url;
+    var src = p.photo_id ? mediaUrl(p.photo_id) : '';
     var date = '';
     var m = /^(\d{4})-(\d{2})-\d{2}$/.exec(p.observed_on || '');
     if (m) date = m[2] + '/' + m[1]; // MM/YYYY

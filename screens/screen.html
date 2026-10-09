@@ -979,9 +979,22 @@ function cohort(match, exclude){
   return logins;
 }
 function photoIdOf(path){
-  var m = /\/(\d+)\.jpe?g$/i.exec(path||'');
+  /* two shapes: photos/PSBP-xxxxx/<id>.jpg (today's plants.json) and the
+     media library's <MEDIA>/inat/<id>/v1/web.jpg (after the MEDIA_ON flip) */
+  var m = /\/(\d+)\.jpe?g$/i.exec(path||'') || /\/inat\/(\d+)\//.exec(path||'');
   return m ? m[1] : null;
 }
+
+/* SPECIES PHOTOS COME FROM THE PARK'S MEDIA LIBRARY (R2):
+   <MEDIA_BASE>/inat/<photo_id>/v1/{original|web|thumb}.jpg. Same constant as
+   psbp_common.py MEDIA_BASE; change both (and screen-brightfutures.html,
+   screen-ina.html) when the bucket moves to media.palmasolabp.org. A full-bleed
+   slide asks R2 for `original` and keeps the iNaturalist `large` as its
+   onerror fallback (data-fb), so a bucket hiccup shows a softer photo, not a
+   hole. No pixel reads on this screen, so no CORS rule is involved. */
+var MEDIA_BASE = 'https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev';
+function mediaUrl(photoId, size){ return MEDIA_BASE + '/inat/' + photoId + '/v1/' + size + '.jpg'; }
+function mediaOf(rec, size){ return rec && rec.photo_id ? mediaUrl(rec.photo_id, size) : ''; }
 
 /* RESOLUTION
    iNaturalist serves square / small / medium / large / original. The credits
@@ -999,6 +1012,7 @@ function inatSize(url, size){
 function bigPhoto(sp){
   if(!sp) return null;
   var rec = CREDITS[photoIdOf(sp.photo)];
+  if(rec && rec.photo_id) return mediaOf(rec, 'original');
   if(rec && rec.photo_url) return inatSize(rec.photo_url, 'original');
   return sp.photo ? BASE + sp.photo : null;
 }
@@ -1696,7 +1710,7 @@ function slideCohort(){
   var pile = picks.map(function(p, i){
     var col = i % 4, row = Math.floor(i / 4);
     return {
-      src:   p.photo_url || '',
+      src:   mediaOf(p, 'web') || p.photo_url || '',
       x:     40 + col * 14 + (Math.random()*7 - 3.5),
       y:      8 + row * 27 + (Math.random()*9 - 4.5),
       r:     (Math.random()*18 - 9).toFixed(1),
@@ -1754,7 +1768,7 @@ function slidePhotographer(p){
     photog: true,
     /* `original` from iNaturalist, not the `large` photo_url — same
        reasoning as bigPhoto() for every other full-bleed slide. */
-    bg: inatSize(ph.photo_url || '', 'original'),
+    bg: mediaOf(ph, 'original') || inatSize(ph.photo_url || '', 'original'),
     bgFallback: ph.photo_url || null,
     focus: ph.focus,
     seconds: Math.round(SECONDS * 1.2),
@@ -1877,7 +1891,7 @@ function slideWeek(){
   return {
     week:true,
     atmos: !!rec,
-    bg: rec ? inatSize(rec.photo_url || '', 'original') : null,
+    bg: rec ? (mediaOf(rec, 'original') || inatSize(rec.photo_url || '', 'original')) : null,
     bgFallback: rec ? (rec.photo_url || null) : null,
     focus: rec && rec.focus,
     credit: credit,
@@ -2019,7 +2033,7 @@ function slideCollection(){
     set:true,
     /* a fifth of the frame each — `large` is already more pixels than the
        panel can show, and five originals would be 20MB of wall */
-    grid: shots.map(function(x){ return { src: fallbackPhoto(x) || BASE+x.photo, focus: x.focus }; }),
+    grid: shots.map(function(x){ return { src: mediaOf(CREDITS[photoIdOf(x.photo)], 'web') || fallbackPhoto(x) || BASE+x.photo, focus: x.focus }; }),
     seconds: Math.round(SECONDS * (isWildlife ? 1.4 : 1.15)),
     html:
         '<div class="count">'+g.rows.length+'<small>'+esc(g.sub)+'</small></div>'
@@ -2038,7 +2052,7 @@ function slideAsk(a){
   return {
     ask: !posterImage(a),
     poster: posterImage(a),
-    bg: posterImage(a) ? null : (screenImage(a) || (pool.length ? BASE+pick(pool).photo : null)),
+    bg: posterImage(a) ? null : (screenImage(a) || (pool.length ? bigPhoto(pick(pool)) : null)),
     credit:'',
     html:
       (logoBlock(a, a.logo_label || '') || (a.emoji?'<div class="emoji">'+a.emoji+'</div>':''))
