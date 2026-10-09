@@ -1710,7 +1710,7 @@ function slideCohort(){
   var pile = picks.map(function(p, i){
     var col = i % 4, row = Math.floor(i / 4);
     return {
-      src:   mediaOf(p, 'web') || p.photo_url || '',
+      src:   mediaOf(p, 'original') || p.photo_url || '',
       x:     40 + col * 14 + (Math.random()*7 - 3.5),
       y:      8 + row * 27 + (Math.random()*9 - 4.5),
       r:     (Math.random()*18 - 9).toFixed(1),
@@ -2031,9 +2031,11 @@ function slideCollection(){
 
   return {
     set:true,
-    /* a fifth of the frame each — `large` is already more pixels than the
-       panel can show, and five originals would be 20MB of wall */
-    grid: shots.map(function(x){ return { src: mediaOf(CREDITS[photoIdOf(x.photo)], 'web') || fallbackPhoto(x) || BASE+x.photo, focus: x.focus }; }),
+    /* a fifth of the frame each. Originals (Randy, 10-08: "screw the
+       bandwidth unless it becomes embarrassing"): the next slide's photos
+       are fetched ahead by warmSlide(), so five of them are in the cache
+       before the slide comes up */
+    grid: shots.map(function(x){ return { src: mediaOf(CREDITS[photoIdOf(x.photo)], 'original') || fallbackPhoto(x) || BASE+x.photo, focus: x.focus }; }),
     seconds: Math.round(SECONDS * (isWildlife ? 1.4 : 1.15)),
     html:
         '<div class="count">'+g.rows.length+'<small>'+esc(g.sub)+'</small></div>'
@@ -2413,15 +2415,21 @@ function render(s){
    hold what is on screen and try again on the next turn. The feeds reload
    every ten minutes, so a transient outage recovers by itself and the worst
    case is a stale slide rather than a dead one. */
-function next(){
+/* LOADING AHEAD. A slide is built the moment it comes up, so its full-bleed
+   photo (R2 `original`, 1 to 3 MB) used to start downloading only then and
+   could pop in late. Now the NEXT slide is built while the current one is on
+   screen and its photos are fetched into the browser cache, so by its turn
+   they are already there (and Chrome keeps them for weeks, so each TV pulls a
+   given photo about once). Same trick as the Bright Futures deck's warmPhotos. */
+var pending = null;
+function makeNext(){
   var s = null, item = null, rebuilds = 0;
   while(s === null){
     if(at >= deck.length){
       if(++rebuilds > 1){
         console.error('screen.html: no slide could be built from a full deck — '
                     + 'holding, will retry. Check the feeds loaded.');
-        timer = setTimeout(next, SECONDS * 1000);
-        return;
+        return null;
       }
       deck = buildDeck(); at = 0;
     }
@@ -2436,8 +2444,28 @@ function next(){
       s = null;
     }
   }
+  return s;
+}
+function warmSlide(s){
+  var urls = [];
+  if(s.bg) urls.push(s.bg);
+  if(s.poster) urls.push(s.poster);
+  (s.grid || []).forEach(function(g){ if(g && g.src) urls.push(g.src); });
+  (s.pile || []).forEach(function(c){ if(c && c.src) urls.push(c.src); });
+  urls.forEach(function(u){ var im = new Image(); im.src = u; });
+}
+function next(){
+  var s = pending || makeNext();
+  pending = null;
+  if(!s){ timer = setTimeout(next, SECONDS * 1000); return; }
   var dur = render(s);
   timer=setTimeout(next, dur*1000);
+  /* build the following slide now, while this one is up; if that fails for
+     any reason the loop simply builds it on its own turn, as before */
+  try{
+    pending = makeNext();
+    if(pending) warmSlide(pending);
+  }catch(e){ pending = null; }
 }
 
 function tickClock(){
