@@ -2278,7 +2278,13 @@ function _rnCard(e, rec, cr) {
   const kind  = (e.kind || 'blooming').toLowerCase();
   const pill  = RN_PILL[kind] || 'In the park';
   const sci   = e.scientific_name || (rec && rec.sci) || (cr && cr.scientific_name) || '';
-  const photo = (rec && rec.photo) || (cr && cr.photo_url) || '';
+  // R2 first (the index's photo_web), then the index's own photo, then the media
+  // library by photo id, iNaturalist last. MEDIA_BASE is the same address as
+  // psbp_common.py; change both at the media. cutover. Also in photo-credits.js.
+  const MEDIA_BASE = 'https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev';
+  const photo = (rec && (rec.photo_web || rec.photo))
+    || (cr && cr.photo_id ? `${MEDIA_BASE}/inat/${cr.photo_id}/v1/web.jpg` : '')
+    || (cr && cr.photo_url) || '';
   const page  = (rec && rec.page)  || '';
   const focus = (rec && rec.focus) || (cr && cr.focus) || 'center';
   const isSighting = kind === 'sighting';
