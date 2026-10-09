@@ -239,7 +239,7 @@
      positioned so the focus sits two-thirds across and mid-height; and
      if the focus is on the LEFT, the words move to the right instead
      (.slide.flip) — you can't drag a left-side subject rightwards
-     without zooming it to mush. iNat's photo bucket allows cross-origin
+     without zooming it to mush. The media bucket (and iNat's) must allow cross-origin
      pixel reads; if a read ever fails the photo just stays centred.
      Scores cache in localStorage, so every photo is scored once ever. */
   var FOCUS_KEY = 'psbp-bf-focus', FOCUS_MEM = {};
@@ -276,7 +276,7 @@
     if(cached) return (FOCUS_MEM[key] = Promise.resolve(cached));
     /* only the open-data bucket allows pixel reads; static.inaturalist.org
        refuses, so don't ask (the photo just stays centred) */
-    if(url.indexOf('inaturalist-open-data') < 0) return (FOCUS_MEM[key] = Promise.resolve(null));
+    if(url.indexOf('inaturalist-open-data') < 0 && !isMedia(url)) return (FOCUS_MEM[key] = Promise.resolve(null));
     FOCUS_MEM[key] = new Promise(function(res){
       var img = new Image(); img.crossOrigin = 'anonymous';
       img.onload = function(){
@@ -287,7 +287,7 @@
       img.onerror = function(){ res(null); };
       /* the medium size is plenty for a 48-px score, and a distinct URL
          (plus ?f=1) never collides with the non-CORS cached full-size copy */
-      img.src = url.replace(/\/(large|original)\.(jpe?g|png)/i, '/medium.$2') + (url.indexOf('?') > -1 ? '&' : '?') + 'f=1';
+      img.src = url.replace(/\/(large|original)\.(jpe?g|png)/i, '/medium.$2').replace(/\/(web|original)\.jpg/i, '/thumb.jpg') + (url.indexOf('?') > -1 ? '&' : '?') + 'f=1';
     });
     return FOCUS_MEM[key];
   }
@@ -303,8 +303,21 @@
      already in the browser cache (Chrome keeps them for weeks). Not the
      site's local hero copies: "those were mainly for quick web site
      delivery of the index page." */
-  function bigUrl(url){ return url.replace(/\/(square|small|medium|large)\.(jpe?g|png)$/i, '/original.$2'); }
-  function photoKey(url){ return (url.match(/photos\/(\d+)\//) || [])[1] || url; }
+  /* Species photos come from the park's media library (R2), not iNat:
+     <MEDIA>/inat/<photo_id>/v1/{original|web|thumb}.jpg. One constant;
+     the same one psbp_common.py calls MEDIA_BASE. When the bucket moves
+     to media.palmasolabp.org, change it here too. The live iNat pulse
+     slides (this week's observations) still carry iNat addresses, so the
+     helpers below understand both shapes. R2 must send a CORS header
+     for the focus crop (pixel reads) to work. */
+  var MEDIA_BASE = 'https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev', MEDIA_REV = 'v1';
+  function mediaUrl(photoId, size){ return MEDIA_BASE+'/inat/'+photoId+'/'+MEDIA_REV+'/'+size+'.jpg'; }
+  function isMedia(url){ return url.indexOf(MEDIA_BASE) === 0; }
+  function bigUrl(url){
+    if(isMedia(url)) return url.replace(/\/(web|thumb)\.jpg$/i, '/original.jpg');
+    return url.replace(/\/(square|small|medium|large)\.(jpe?g|png)$/i, '/original.$2');
+  }
+  function photoKey(url){ return (url.match(/(?:photos|inat)\/(\d+)\//) || [])[1] || url; }
   var WARM_DONE = {}, warmQueue = [], warming = false;
   function warmPhotos(urls){
     urls.forEach(function(u){ if(u && !WARM_DONE[photoKey(u)]){ WARM_DONE[photoKey(u)] = 1; warmQueue.push(bigUrl(u)); } });
@@ -1626,6 +1639,12 @@
         SHOWCASE = {};
         ((r[6] && r[6].photos) || []).forEach(function(s){ var id = s && (s.photo_id || s); if(id) SHOWCASE[String(id)] = 1; });
         var photos = (r[2] && r[2].photos) || r[2] || [];
+        /* point every species photo at the media library (web size now,
+           original swapped in by placeBg); the iNat address stays on the
+           row as inat_url in case a photo is ever missing from the bucket */
+        photos.forEach(function(p){
+          if(p && p.photo_id){ p.inat_url = p.photo_url; p.photo_url = mediaUrl(p.photo_id, 'web'); }
+        });
         var mine = crewOf(photos, bfSet);
         var hits = indexHits(r[3]); Object.assign(hits, indexHits(r[4]));
         /* the week's task-sheet photo: test-load it before the first
