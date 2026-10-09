@@ -14,9 +14,9 @@
 
    Standalone on purpose — does NOT modify site.js. Include AFTER site.js.
 
-   Image strategy: try the local file in photos/ first; if it isn't there,
-   fall back to the photo's remote iNaturalist URL. Nothing ever renders broken,
-   even if a local filename doesn't match.
+   Image strategy: the park's media library (R2) first, by photo id; if that
+   address fails, fall back to the photo's remote iNaturalist URL. Nothing ever
+   renders broken. The repo's photos/ folder is no longer read here.
 
    NOTE ON DATES: photo_credits.json now carries `observed_on` per photo (and the
    import can add optional `time_observed_at`), so hero/grid/plate attribution
@@ -48,7 +48,9 @@
   // If photo_credits.json is served from a different path, change this one line.
   var SRC        = 'data/sources/photo_credits.json';
   var ROSTER_SRC = 'data/sources/photographer_names.json';  // canonical login -> display name
-  var LOCAL_DIR  = 'photos/';   // where curated local hero JPGs live
+  // The media library (R2): <MEDIA_BASE>/inat/<photo_id>/v1/{original|web|thumb}.jpg.
+  // Same constant as psbp_common.py MEDIA_BASE; change both at the media. cutover.
+  var MEDIA_BASE = 'https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev';
   var HERO_COUNT = 10;          // slides in the top-right slideshow
   var GRID_COUNT = 4;           // tiles in the "Every acre" mosaic
 
@@ -296,34 +298,17 @@
     return _pool;
   }
 
-  // local path candidates, newest architecture first:
-  //   1. photos/<psbp_id>/<filename>   (subfolder collection model, DATA_ARCHITECTURE §3)
-  //   2. photos/<filename dashes>       (current flat layout, mid-migration)
-  // resolveSrc walks these, then falls back to the remote iNat URL — so it
-  // works before AND after the photos/ subfolder migration with no edit.
-  function localCandidates(p) {
-    var c = [];
-    if (p.psbp_id && p.filename) c.push(LOCAL_DIR + p.psbp_id + '/' + p.filename);
-    if (p.filename)              c.push(LOCAL_DIR + p.filename.replace(/_/g, '-'));
-    return c;
-  }
-
-  // resolve to a known-good URL: first local candidate that loads, else remote
+  // resolve to a known-good URL: the R2 `web` copy by photo id, else the
+  // photo's remote iNaturalist URL
   function resolveSrc(p) {
-    var cands = localCandidates(p);
     var remote = p.photo_url;
+    if (!p.photo_id) return Promise.resolve(remote);
+    var url = MEDIA_BASE + '/inat/' + p.photo_id + '/v1/web.jpg';
     return new Promise(function (res) {
-      var i = 0;
-      function tryNext() {
-        if (i >= cands.length) return res(remote || cands[0]);
-        var url = cands[i++];
-        var img = new Image();
-        img.onload = function () { res(url); };
-        img.onerror = tryNext;
-        img.src = url;
-      }
-      if (!cands.length) return res(remote);
-      tryNext();
+      var img = new Image();
+      img.onload = function () { res(url); };
+      img.onerror = function () { res(remote || url); };
+      img.src = url;
     });
   }
 
@@ -502,6 +487,7 @@
     ccBadge:            ccBadge,
     fmtDate:            fmtDate,
     loadPool:           loadPool,
+    resolveSrc:         resolveSrc,
     displayName:        displayName,
     photoCount:         photoCount,
     mountHeroSlideshow: mountHeroSlideshow,

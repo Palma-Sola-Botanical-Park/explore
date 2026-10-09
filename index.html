@@ -400,7 +400,7 @@ section[id]{scroll-margin-top:78px}
      the copy below literally true of the image it sits on. Credit comes from
      photo_credits.json via PSBPPhotos.attribution, so it can never be wrong or
      missing. Ships with a hardcoded photo as the fallback if the pool fails. -->
-<div class="cx-close" id="closePhoto" style="background-image:url('photos/PSBP-00005/662740624.jpg')">
+<div class="cx-close" id="closePhoto" style="background-image:url('https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/662740624/v1/web.jpg')">
   <div class="photo-attr photo-attr--muted" id="closeCredit"></div>
   <div>
     <!-- Was the address and the hours — for the THIRD time on this page, with
@@ -459,7 +459,7 @@ loadRightNow('rightNowStrip', { limit: 24, perPage: 3, rotateSeconds: 9,
    iNat is unreachable, which is why the markup ships with a real number. */
 /* Random credited photograph for the closing block, from the shared pool. */
 if (window.PSBPPhotos && PSBPPhotos.loadPool) {
-  PSBPPhotos.loadPool().then(pool => {
+  PSBPPhotos.loadPool().then(async pool => {
     /* The photo count in that paragraph used to be typed in by hand, so it sat
        at 1,205 while the collection grew past 1,370. photo_credits.json is
        already downloaded for the slideshow above, so the real number costs
@@ -470,7 +470,7 @@ if (window.PSBPPhotos && PSBPPhotos.loadPool) {
 
     if (!pool || !pool.length) return;
     const p = pool[Math.floor(Math.random() * pool.length)];
-    const src = p.local || p.photo_url;
+    const src = await PSBPPhotos.resolveSrc(p);
     if (!src) return;
     const box = document.getElementById('closePhoto');
     const cr  = document.getElementById('closeCredit');
