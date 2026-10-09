@@ -2325,7 +2325,7 @@ function _rnCard(e, rec, cr) {
         ${e.area ? `<div style="font-size:.78rem;color:var(--green-mid);font-weight:600">📍 ${_rnEsc(e.area)}</div>` : ''}
       </div>
       ${plate}
-      <span class="rn-flip-hint" aria-hidden="true">↺ more</span>
+      <span class="rn-flip-hint" aria-hidden="true">Flip for more ↻</span>
     </div>`;
 
   // BACK — bloom wash (gold-leaf for blooms, green-feather for sightings),
@@ -2354,6 +2354,25 @@ function _rnCard(e, rec, cr) {
   return `<div class="card plant-card rn-flip" tabindex="0" role="button" aria-label="${_rnEsc(e.common_name)} — tap for more">
       <div class="rn-flip-inner">${front}${back}</div>
     </div>`;
+}
+
+function rnRockOnce(strip) {
+  try {
+    if (sessionStorage.getItem('psbp-rn-rocked')) return;
+    sessionStorage.setItem('psbp-rn-rocked', '1');   // once per session, even if they never scroll here
+  } catch (_) {}
+  if (!('IntersectionObserver' in window)) return;
+  // Each card rocks as it scrolls into view. (Watching the strip as a whole fails
+  // on a phone, where the strip is several cards tall and never 60% visible.)
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      io.unobserve(en.target);
+      en.target.classList.add('nudge');
+      setTimeout(() => en.target.classList.remove('nudge'), 1300);
+    });
+  }, { threshold: 0.5 });
+  strip.querySelectorAll('.rn-page.on .rn-flip, :scope > .rn-flip').forEach(c => io.observe(c));
 }
 
 // loadRightNow(targetId, { limit, sectionId })
@@ -2442,6 +2461,11 @@ async function loadRightNow(targetId, opts) {
       active = incoming;
     }, EVERY);
   }
+
+  // Once per browser session, the first time the strip is on screen, each visible
+  // card rocks sideways once so a visitor sees that it turns over. The rock is
+  // a CSS animation on .nudge (psbp.css); reduced-motion users get none.
+  rnRockOnce(el);
 
   // Flip on click / tap / keyboard (delegated). The back-side link calls
   // stopPropagation, so following it never also toggles the card.
