@@ -2413,9 +2413,9 @@ function buildDeckNormal(){
 
 function buildDeck(){
   D.volunteer = (D.volunteer || []).filter(function(v){ return !/adult workday/i.test(v.title || ''); });
-  var normal = buildDeckNormal(), out = [], last = '', last2 = '', since = 0, gap = 5 + Math.floor(Math.random()*5);
+  var normal = buildDeckNormal(), out = [], last = '', last2 = '', since = 0, gap = 4 + Math.floor(Math.random()*4);
   function layoutNow(){
-    if(since >= gap && VOTM.length){ since = 0; gap = 5 + Math.floor(Math.random()*5); return 'votm'; }
+    if(since >= gap && VOTM.length){ since = 0; gap = 4 + Math.floor(Math.random()*4); return 'votm'; }
     var names = Object.keys(WALL).filter(function(k){ return k !== last && k !== last2; });
     return names[Math.floor(Math.random()*names.length)];
   }
