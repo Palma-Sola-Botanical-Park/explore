@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Display Status · Palma Sola Botanical Park</title>
+  <link rel="icon" href="images/favicon.png">
+  <style>
+    :root { color-scheme: light; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #193d31; background: #f7f7f2; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 780px; margin: 0 auto; padding: 64px 22px 36px; }
+    .park { font-size: 12px; font-weight: 650; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { font-size: clamp(28px, 5vw, 40px); letter-spacing: -.04em; margin: 12px 0 8px; }
+    .intro, footer { color: #52645c; font-size: 14px; line-height: 1.6; }
+    .columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin: 30px 0 24px; }
+    section { background: white; border: 1px solid #dde5dd; border-radius: 18px; padding: 24px; }
+    h2 { font-size: 22px; margin: 0 0 12px; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    .check { display: flex; align-items: center; gap: 15px; min-height: 85px; border-top: 1px solid #edf0eb; }
+    .dot { width: 19px; height: 19px; border-radius: 50%; flex-shrink: 0; background: #8a9298; box-shadow: 0 0 0 5px #f0f2f3; }
+    [data-status="up"] .dot { background: #208348; box-shadow: 0 0 0 5px #eaf5ed; }
+    [data-status="late"] .dot { background: #b57506; box-shadow: 0 0 0 5px #fff4db; }
+    [data-status="down"] .dot { background: #c33939; box-shadow: 0 0 0 5px #fcecec; }
+    .label { display: block; font-weight: 600; font-size: 15px; }
+    .state { display: block; margin-top: 4px; font-size: 13px; color: #52645c; }
+    .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 8px; font-size: 12px; }
+    footer p { margin: 8px 0; }
+    #refresh { font-variant-numeric: tabular-nums; }
+    noscript p { padding: 12px; background: #fff4db; }
+    @media (max-width: 480px) { main { padding: 32px 14px; } .columns { gap: 10px; } section { padding: 18px 13px; } .check { gap: 10px; min-height: 95px; } .dot { width: 15px; height: 15px; box-shadow: none !important; } .label { font-size: 13px; } h2 { font-size: 20px; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="park">Palma Sola Botanical Park</div>
+    <h1>Display status</h1>
+    <p class="intro">Monitoring for the park’s two display computers.</p>
+  </header>
+  <noscript><p>Enable JavaScript to load current status. Gray dots mean status is unavailable.</p></noscript>
+  <div class="columns">
+    <section aria-labelledby="office">
+      <h2 id="office">Office screen</h2>
+      <ul>
+        <li class="check" data-status="unknown" data-badge="https://healthchecks.io/b/3/cbea4696-f587-4c75-b50f-8b49ec8b6bdb.json"><span class="dot" aria-hidden="true"></span><div><span class="label">Computer is awake</span><span class="state">Unknown</span></div></li>
+        <li class="check" data-status="unknown" data-badge="https://healthchecks.io/b/3/d9e6789d-6c24-45eb-a074-b30b294c8620.json"><span class="dot" aria-hidden="true"></span><div><span class="label">We can control display</span><span class="state">Unknown</span></div></li>
+        <li class="check" data-status="unknown" data-badge="https://healthchecks.io/b/3/02f8fece-d206-4bf7-8cf2-013cd5c0168b.json"><span class="dot" aria-hidden="true"></span><div><span class="label">Web page is on top</span><span class="state">Unknown</span></div></li>
+        <li class="check" data-status="unknown" data-badge="https://healthchecks.io/b/3/29f4fa72-9cdf-4e90-9ee1-e6fb20a220c9.json"><span class="dot" aria-hidden="true"></span><div><span class="label">Can be seen from the other</span><span class="state">Unknown</span></div></li>
+      </ul>
+    </section>
+    <section aria-labelledby="galleria">
+      <h2 id="galleria">Galleria screen</h2>
+      <ul>
+        <li class="check" data-status="unknown" data-badge="https://healthchecks.io/b/3/fe840a1f-e943-4baa-a4c3-0f8579711cfa.json"><span class="dot" aria-hidden="true"></span><div><span class="label">Computer is awake</span><span class="state">Unknown</span></div></li>
+        <li class="check" data-status="unknown" data-badge="https://healthchecks.io/b/3/3b046a66-381a-4a24-b4b3-6c2e8650a1f3.json"><span class="dot" aria-hidden="true"></span><div><span class="label">We can control display</span><span class="state">Unknown</span></div></li>
+        <li class="check" data-status="unknown" data-badge="https://healthchecks.io/b/3/434d6d52-0b6a-4641-8fce-6f9b99d4a60e.json"><span class="dot" aria-hidden="true"></span><div><span class="label">Web page is on top</span><span class="state">Unknown</span></div></li>
+        <li class="check" data-status="unknown" data-badge="https://healthchecks.io/b/3/6262deb4-bf02-4b69-9046-7d347346a3fd.json"><span class="dot" aria-hidden="true"></span><div><span class="label">Can be seen from the other</span><span class="state">Unknown</span></div></li>
+      </ul>
+    </section>
+  </div>
+  <footer>
+    <div class="legend"><span>Green · Healthy</span><span>Amber · Late</span><span>Red · Down</span><span>Gray · Unknown</span></div>
+    <p id="refresh" role="status">Loading status…</p>
+    <p>Refreshes every 30 seconds while this page is open. Monitoring does not verify TV power or input.</p>
+  </footer>
+</main>
+<script>
+'use strict';
+const checks = [...document.querySelectorAll('.check')];
+const refreshLabel = document.querySelector('#refresh');
+const fetchedAt = new Map();
+const labels = {up: 'Healthy', late: 'Late', down: 'Down', unknown: 'Unknown'};
+let refreshing = false;
+function show(check, status) {
+  check.dataset.status = status;
+  check.querySelector('.state').textContent = labels[status];
+}
+function expire() {
+  for (const check of checks) {
+    if (!fetchedAt.has(check) || Date.now() - fetchedAt.get(check) > 90000) {
+      show(check, 'unknown');
+    }
+  }
+}
+async function refresh() {
+  expire();
+  if (refreshing || document.hidden) return;
+  refreshing = true;
+  let unavailable = 0;
+  try {
+    await Promise.all(checks.map(async check => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      try {
+        const response = await fetch(check.dataset.badge, {
+          signal: controller.signal, cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer'
+        });
+        if (!response.ok) throw new Error('Status unavailable');
+        const data = await response.json();
+        if (data.total !== 1 || !['up', 'late', 'down'].includes(data.status)) throw new Error('Unexpected status');
+        show(check, data.status);
+        fetchedAt.set(check, Date.now());
+      } catch {
+        unavailable++;
+        fetchedAt.delete(check);
+        show(check, 'unknown');
+      } finally {
+        clearTimeout(timeout);
+      }
+    }));
+    const time = new Date().toLocaleTimeString([], {hour: 'numeric', minute: '2-digit', second: '2-digit'});
+    refreshLabel.textContent = unavailable
+      ? `Checked at ${time} · ${unavailable} of 8 statuses unavailable`
+      : `Updated at ${time}`;
+  } finally {
+    refreshing = false;
+  }
+}
+window.addEventListener('offline', () => {
+  fetchedAt.clear();
+  expire();
+  refreshLabel.textContent = 'You’re offline · Status unavailable';
+});
+window.addEventListener('online', refresh);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+setInterval(refresh, 30000);
+setInterval(expire, 5000);
+refresh();
+</script>
+</body>
+</html>

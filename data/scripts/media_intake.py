@@ -812,6 +812,7 @@ async function register(form){
   btn.disabled = true; btn.textContent = 'Registering…';
   const data = Object.fromEntries(new FormData(form).entries());
   data.kids = form.querySelector('[name=kids]').checked ? 'yes' : 'no';
+  withAlwaysTags(data);
   const msg = form.querySelector('.msg');
   let res = await post('/register', data);
   if (res.lookalike && confirm(res.error + '\\n\\nRegister it anyway?')){
@@ -859,7 +860,17 @@ function loadDrafts(){
   });
   writeDrafts(kept);                  // forget files that have left the inbox
 }
-const DEFAULT_FIELDS = ['made_by','credit_line','license','public','dropped_by'];
+const DEFAULT_FIELDS = ['made_by','credit_line','license','public','dropped_by','always_tags'];
+// "Always add these tags": merged into every photo at Register, even after Suggest has rewritten the tags.
+function withAlwaysTags(data){
+  let d = {}; try { d = JSON.parse(localStorage.getItem('intakeDefaults')||'{}'); } catch(e){}
+  const extra = (d.always_tags||'').split(',').map(t => t.trim()).filter(Boolean);
+  if(!extra.length) return data;
+  const have = (data.tags||'').split(',').map(t => t.trim()).filter(Boolean);
+  extra.forEach(t => { if(!have.some(h => h.toLowerCase() === t.toLowerCase())) have.push(t); });
+  data.tags = have.join(', ');
+  return data;
+}
 // One time only: the form used to start at "Not sure" and spell the field "licence".
 // Public now starts at Yes, so what this browser remembered is brought along.
 (function(){
@@ -1014,6 +1025,7 @@ def render_page():
     <label>License<select name='license' onchange='saveDefaults()'><option value=''>Unknown / not set</option>{lic_opts}</select></label>
     <label>May the public see it?<select name='public' onchange='saveDefaults()'>
       <option value='yes'>Yes</option><option value='not_sure'>Not sure</option><option value='no'>No</option></select></label>
+    <label>Always add these tags <small>comma separated, e.g. students</small><input name='always_tags' onchange='saveDefaults()'></label>
     <label>Dropped by<select name='dropped_by' onchange='saveDefaults()'><option value='randy'>Randy</option><option value='bev'>Bev</option><option value='other'>Other</option></select></label>
   </div>
   <div class='row'><button class='gold' onclick='suggestAll(this)'>Suggest all</button>

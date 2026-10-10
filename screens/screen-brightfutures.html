@@ -1075,13 +1075,14 @@
       + (push ? '<div class="body"><b>'+esc(push)+'</b></div>' : '') + '</div>' };
   }
 
-  /* Photos OF the crew, not photos they took — images/brightfutures-
-     local/photos.json. That whole folder is gitignored on purpose: these
-     are photos of minors, and this repo is public. Randy, 2026-09-25:
-     "ill keep on office computer" — so this only ever renders on a
-     machine that actually has the local folder populated; every other
-     machine (and GitHub Pages) just sees the empty-state teaser below,
-     which is the correct, safe default rather than a broken image. */
+  /* Photos OF the crew, not photos they took. Two sources, merged:
+     1. the media library (data/sources/media_library.json): any public,
+        uploaded photo tagged "students" (or "bright futures", "bf").
+        Add them in Media intake with the batch tag "students" and they
+        appear on every TV after its next refresh (2026-10-10, Randy).
+     2. images/brightfutures-local/photos.json, the older per-machine folder
+        (Office only). Still read, so nothing already there is lost.
+     With neither, the slide stays out of rotation. */
   function slideCrewMontage(crewPhotos){
     var rows = (crewPhotos && crewPhotos.photos) || [];
     /* Out of rotation while empty — a "coming soon" slide is dead air to
@@ -1151,7 +1152,9 @@
       ct.className = 'ct' + (Math.random() < 0.3 ? ' gold' : '');
       ct.style.cssText = 'left:'+r.x+'px;top:'+r.y+'px;width:'+r.w+'px;height:'+r.h+'px;'
         + 'animation-delay:'+(k*0.08/SPEED).toFixed(2)+'s';
-      ct.innerHTML = '<div class="sh"><img alt="" src="'+BASE+'images/brightfutures-local/'+pics[k].file+'"></div>';
+      ct.innerHTML = '<div class="sh"><img alt="" src="'+(pics[k].src || BASE+'images/brightfutures-local/'+pics[k].file)+'"'
+        + (pics[k].fb ? ' data-fb="'+pics[k].fb+'" onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.dataset.fb=\'\'}"' : '')
+        + '></div>';
       gridEl.appendChild(ct);
     });
   }
@@ -1634,7 +1637,8 @@
         grab(BASE+'data/sources/plant_signage.json'),
         grab(BASE+'data/sources/wildlife_signage.json'),
         grab(BASE+'images/brightfutures-local/photos.json'),
-        grab(BASE+'data/published/brightfutures_showcase.json')
+        grab(BASE+'data/published/brightfutures_showcase.json'),
+        grab(BASE+'data/sources/media_library.json')
       ]).then(function(r){
         SHOWCASE = {};
         ((r[6] && r[6].photos) || []).forEach(function(s){ var id = s && (s.photo_id || s); if(id) SHOWCASE[String(id)] = 1; });
@@ -1664,7 +1668,19 @@
             im.src = today.sheetUrl;
           });
         }
-        function build(){ buildSlides(today, r[1], photos, names, mine, hits, r[5]); }
+        var CREW_TAGS = ['students','student','bright futures','brightfutures','bright-futures','bf'],
+            CREW_NOT  = ['flyer','graphic'];
+        var libCrew = ((r[7] && r[7].items) || []).filter(function(m){
+          var t = (m.tags||[]).map(function(x){ return String(x).trim().toLowerCase(); });
+          return m.kind === 'photo' && m.public === 'yes' && m.state === 'done' && m.url
+              && CREW_TAGS.some(function(x){ return t.indexOf(x) > -1; })
+              && !CREW_NOT.some(function(x){ return t.indexOf(x) > -1; });
+        }).map(function(m){
+          var by = {}; (m.files||[]).forEach(function(f){ by[f.role] = f.url; });
+          return { src: by.original || by.web || m.url, fb: by.web || null, id: m.media_id };
+        });
+        var crewPhotos = { photos: libCrew.concat((r[5] && r[5].photos) || []) };
+        function build(){ buildSlides(today, r[1], photos, names, mine, hits, crewPhotos); }
         function finalBuild(){ NICE_ARMED = true; build(); }
         return sheetReady.then(function(){ build(); pulse.then(finalBuild, finalBuild); });
       });
