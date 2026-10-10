@@ -2157,25 +2157,42 @@ function interleave(items){
 
 
 /* ═════════════════════════════════════════════════════════════════════
-   ADULT WORKDAY  (screens/screen-adultworkday.html, 2026-10-09)
+   ADULT WORKDAY  (screens/screen-adultworkday.html, 2026-10-10)
    Two thirds of the deck is volunteers; one third is the normal screen.
-   Crew photos: data/published/adultworkday_photos.json when it exists
-   ([{src, credit}] — src is a media URL or a repo path), otherwise the
-   stand-ins below. Volunteer of the Month: data/published/volunteer_photos.json.
+
+   Crew photos come straight from data/sources/media_library.json, so adding
+   photos in Media intake is all it takes: they appear on the next refresh
+   (every ten minutes, after the TV pulls the repo). A photo is used when it is
+   public, uploaded (state done) and tagged "volunteer" or "volunteers" — and is
+   left out if it also carries a Bright Futures tag (students, bright futures,
+   bf) or is a flyer / Volunteer-of-the-Month graphic. Tag Bright Futures photos
+   "students" and they stay on the Bright Futures screen. No dates needed:
+   photos are drawn in random order, never repeating until all have shown.
+   Volunteer of the Month: data/published/volunteer_photos.json.
    VOL_PER_NORMAL is the dial: 2 = two thirds volunteers, 1 = half.
    ═════════════════════════════════════════════════════════════════════ */
 var VOL_PER_NORMAL = 2;
-var CREW_STANDINS = ['images/events/fallplant.jpg','images/events/fallplant-2.jpg','images/events/fallplant-3.jpg',
-  'images/events/groovin-2.jpg','images/events/groovin-2026.jpg','images/events/winternights.jpg',
-  'images/events/winternights-2.jpg','images/events/winternights-3.jpg','images/events/art-in-the-park-2026-09.jpg',
-  'images/events/yoga-in-the-park.jpg'].map(function(p){ return {src:p, credit:null, demo:true}; });
-var CREW_ROWS = CREW_STANDINS, VOTM = [];
+var CREW_ROWS = [], VOTM = [];
+var CREW_TAGS = ['volunteer','volunteers'];
+var CREW_NOT  = ['students','student','bright futures','brightfutures','bright-futures','bf',
+                 'flyer','graphic','volunteer of month','volunteer of the month'];
+function tagSet(r){ return (r.tags||[]).map(function(t){ return String(t).trim().toLowerCase(); }); }
+function crewFromLibrary(lib){
+  return ((lib && lib.items) || []).filter(function(r){
+    var t = tagSet(r);
+    return r.kind === 'photo' && r.public === 'yes' && r.state === 'done' && r.url
+        && CREW_TAGS.some(function(x){ return t.indexOf(x) > -1; })
+        && !CREW_NOT.some(function(x){ return t.indexOf(x) > -1; });
+  }).map(function(r){
+    var by = {}; (r.files||[]).forEach(function(f){ by[f.role] = f.url; });
+    return { src: by.original || by.web || r.url, fb: by.web || null, credit: r.credit_line || r.made_by || null, id: r.media_id };
+  });
+}
 var CREW_LINES = ['Many hands.','Good company, good work.','Dirt under the nails.','Same park, same crew.','Food and drink on us.'];
 
 function crewUrl(r){ return /^https?:/.test(r.src) ? r.src : BASE + r.src.replace(/^\//,''); }
 function crewCredit(r){
-  if(r.credit) return { name:r.credit, terms:'' };
-  return r.demo ? { name:'Stand-in photo', terms:'Your workday photos replace these' } : null;
+  return r.credit ? { name:r.credit, terms:'' } : null;
 }
 function slideCrew(n){
   var rows = takeFrom('crew', CREW_ROWS, Math.min(n, CREW_ROWS.length));
@@ -2183,14 +2200,14 @@ function slideCrew(n){
   if(rows.length < n) n = rows.length >= 2 ? 2 : 1;
   var line = pick(CREW_LINES);
   if(n === 1){
-    return fromArt({poster:null, bg:crewUrl(rows[0]), bgFallback:null, focus:null, atmos:false, credit:crewCredit(rows[0])}, {
+    return fromArt({poster:null, bg:crewUrl(rows[0]), bgFallback:rows[0].fb||null, focus:null, atmos:false, credit:crewCredit(rows[0])}, {
       seconds: Math.round(SECONDS*0.9),
       html: '<div class="eyebrow">Adult workday</div><div class="headline">'+esc(line)+'</div>'
     });
   }
   return {
     set:true, cls:'crew'+n,
-    grid: rows.slice(0,n).map(function(r){ return { src:crewUrl(r) }; }),
+    grid: rows.slice(0,n).map(function(r){ return { src:crewUrl(r), fb:r.fb||null }; }),
     credit: crewCredit(rows[0]),
     seconds: Math.round(SECONDS*1.0),
     html: '<div class="headline">'+esc(line)+'</div>'
@@ -2373,6 +2390,8 @@ function render(s){
     for(var gi=0; gi<s.grid.length; gi++){
       grid += '<div><img alt="" src="'+s.grid[gi].src+'"'
             + (s.grid[gi].focus?' style="object-position:'+s.grid[gi].focus.replace(/"/g,'')+'"':'')
+            + (s.grid[gi].fb && s.grid[gi].fb !== s.grid[gi].src
+                ? ' data-fb="'+s.grid[gi].fb+'" onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.dataset.fb=\'\'}"' : '')
             + '></div>';
     }
     grid += '</div>';
@@ -2570,9 +2589,10 @@ function tickClock(){
    anyone touching the TV, and do a hard reload in the small hours to clear
    any long-running drift. */
 function loadAdultExtras(){
-  return Promise.all([grab(FEEDS+'volunteer_photos.json'), grab(FEEDS+'adultworkday_photos.json')]).then(function(r){
+  return Promise.all([grab(FEEDS+'volunteer_photos.json'), grab(BASE+'data/sources/media_library.json')]).then(function(r){
     VOTM = (r[0] || []).filter(function(v){ return v && v.path; });
-    if(r[1] && r[1].length) CREW_ROWS = r[1];
+    CREW_ROWS = crewFromLibrary(r[1]);
+    if(SPEED !== 1 || /debug/.test(location.search)) console.log('adult workday: '+CREW_ROWS.length+' crew photos, '+VOTM.length+' volunteers of the month');
   }).catch(function(){});
 }
 function start(){
@@ -2611,6 +2631,7 @@ function start(){
       /* derived from the feeds, so they go stale with them */
       GROUPS = null;
       queues = {};
+      return loadAdultExtras();
     }).catch(function(){});
   }, (10*60*1000) / SPEED);
 
