@@ -2230,7 +2230,6 @@ function crewFromLibrary(lib){
     return { src: by.original || by.web || r.url, fb: by.web || null, credit: r.credit_line || r.made_by || null, id: r.media_id };
   });
 }
-var CREW_LINES = ['Many hands.','Good company, good work.','Dirt under the nails.','Same park, same crew.','Food and drink on us.'];
 
 function crewUrl(r){ return /^https?:/.test(r.src) ? r.src : BASE + r.src.replace(/^\//,''); }
 function crewCredit(r){
@@ -2322,9 +2321,17 @@ function slideVotm(v){
         + '<div class="headline">'+esc(v.first || v.name)+'</div>'
   });
 }
-function slideWorkday(){
-  var row = (D.volunteer||[]).filter(function(t){ return /adult workday/i.test(t.title||''); })[0];
-  return row ? slideVolunteer(row) : null;
+function slideWelcome(){
+  /* A fresh random crew photo behind it every time it comes round. */
+  var r = CREW_ROWS.length ? pick(CREW_ROWS) : null;
+  var art = r ? { poster:null, bg:crewUrl(r), bgFallback:r.fb||null, focus:null, atmos:false, credit:null }
+              : artFor({}, null);
+  return fromArt(art, {
+    seconds: Math.round(SECONDS*1.1),
+    html: '<div class="eyebrow">Adult Workday</div>'
+        + '<div class="headline">Welcome to the Adult Workday</div>'
+        + '<div class="body">Thank you for coming out. Food and drink are on us.</div>'
+  });
 }
 function volItem(layout){
   if(layout === 'votm'){
@@ -2403,9 +2410,8 @@ function buildDeckNormal(){
 
 
 function buildDeck(){
+  D.volunteer = (D.volunteer || []).filter(function(v){ return !/adult workday/i.test(v.title || ''); });
   var normal = buildDeckNormal(), out = [], last = '', last2 = '', since = 0, gap = 5 + Math.floor(Math.random()*5);
-  var wd = {type:'workday', make:slideWorkday};
-  out.push(wd);
   function layoutNow(){
     if(since >= gap && VOTM.length){ since = 0; gap = 5 + Math.floor(Math.random()*5); return 'votm'; }
     var names = Object.keys(WALL).filter(function(k){ return k !== last && k !== last2; });
@@ -2419,7 +2425,13 @@ function buildDeck(){
     }
     out.push(n); since++;
   });
-  return out;
+  /* the welcome opens the deck and comes round every 10-14 slides, each time over a new photo */
+  var final = [{type:'welcome', make:slideWelcome}], run = 0, every = 10 + Math.floor(Math.random()*5);
+  out.forEach(function(it){
+    final.push(it);
+    if(++run >= every){ final.push({type:'welcome', make:slideWelcome}); run = 0; every = 10 + Math.floor(Math.random()*5); }
+  });
+  return final;
 }
 
 /* Wrap every word in its own span, measure which rendered line each landed on,
