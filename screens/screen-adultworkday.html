@@ -2235,7 +2235,7 @@ function crewUrl(r){ return /^https?:/.test(r.src) ? r.src : BASE + r.src.replac
 function crewCredit(r){
   return r.credit ? { name:r.credit, terms:'' } : null;
 }
-var WALL = {polaroid:5, mosaic:5, strip:4, scrapbook:3, matpair:2, bubbles:6, film:5};
+var WALL = {polaroid:5, mosaic:5, strip:4, scrapbook:3, matpair:2, bubbles:11, film:5};
 var CREW_LINES = ['Look at this crew.','Many hands.','Gloves on.','Still smiling.','Good company, good work.',
   'Dirt under the nails.','Same park, same crew.','Hello, volunteers.','Spot yourself.','Find your friends.',
   'Remember this one?','Caught you.','Who is that?','Food and drink on us.','Come say hi.'];
@@ -2286,12 +2286,14 @@ function buildWall(layout, rows){
   } else if(layout === 'matpair'){                            /* two matted prints from either side */
     t.push(wtile(rows[0], {x:'2%',  y:'5%', w:'45%', h:'90%', r:R(-2.5,2.5), cls:'mat', a:'l', d:base}));
     t.push(wtile(rows[1], {x:'53%', y:'5%', w:'45%', h:'90%', r:R(-2.5,2.5), cls:'mat', a:'r', d:base+0.25}));
-  } else if(layout === 'bubbles'){                            /* round photos that pop up and bob */
-    var bxs = [0, 16.5, 33, 50, 66.5, 83], bys = [18, 2, 28, 6, 24, 10];
-    for(i=0;i<6;i++){
-      var d = R(24, 33).toFixed(1)+'vmin';
-      t.push(wtile(rows[i], {x:pc(bxs[i]+R(-1.5,1.5)), y:pc(bys[i]+R(-2,3)), w:d, h:d, r:0,
-                             cls:'round float', a:Math.random()<0.7 ? 'pop' : 'spin', d:base+i*0.3}));
+  } else if(layout === 'bubbles'){                            /* two loose rows of round photos that pop up and bob */
+    var ax = [0, 16.5, 33, 50, 66.5, 83], ay = [4, 0, 10, 2, 8, 3];
+    var bx = [7, 24, 41, 58, 75], by = [47, 52, 45, 53, 48];
+    for(i=0;i<11;i++){
+      var top = i < 6, k = top ? i : i - 6;
+      var d = (top ? R(22, 28) : R(20, 25)).toFixed(1)+'vmin';
+      t.push(wtile(rows[i], {x:pc((top ? ax[k] : bx[k])+R(-1.5,1.5)), y:pc((top ? ay[k] : by[k])+R(-2,3)), w:d, h:d, r:0,
+                             cls:'round float', a:Math.random()<0.7 ? 'pop' : 'spin', d:base+i*0.28}));
     }
   } else {                                                    /* film: a tilted strip slides in */
     out.cls = 'film';
