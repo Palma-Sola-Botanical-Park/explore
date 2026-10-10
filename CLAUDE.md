@@ -138,8 +138,9 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
     with a key in it is ever written to the tree.
 12. **Minors.** Bright Futures students are credited by first name and initial, or as a group.
     No profile page, no full name in a story, no contact. Randy deliberately has no channel to any
-    student outside Wednesday sessions; never propose reaching one. Photos of students live in
-    gitignored `images/brightfutures-local/`, never in the public tree.
+    student outside Wednesday sessions; never propose reaching one. Photos of students may be
+    published like any other photo (Randy, 2026-10-10); the credit rule above is unchanged.
+    `images/brightfutures-local/` stays gitignored, as a convenience.
 13. **Don't start servers for him.** Species Manager, `http.server`, anything holding a port.
     Print the command. If you must run one to verify, say so, name the port, kill it after.
 14. **AI writes only to Randy's local copy.** Never push. Never write to GitHub directly: no

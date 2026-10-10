@@ -204,8 +204,6 @@ def media_page_check(media_id):
         return None, f"{media_id} is not in media_library.json"
     if rec.get("public") != "yes":
         return None, f"{media_id} is not public ({rec.get('public')})"
-    if rec.get("kids"):
-        return None, f"{media_id} has kids in it"
     if rec.get("state") != "done" or not rec.get("url"):
         return None, f"{media_id} is not uploaded yet (state {rec.get('state')})"
     if not (rec.get("credit_line") or rec.get("made_by")):

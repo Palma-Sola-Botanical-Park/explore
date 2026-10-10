@@ -43,9 +43,9 @@ WHAT IT DOES
        skipped, so Upload is always safe to press again.
 
 RULES BUILT IN
-    - Photos with kids in them are refused. They are private, and the private
-      bucket is not built yet. Keep them out of the inbox for now.
-    - "No" and "Not sure" are registered but never uploaded (same reason).
+    - Photos with kids in them are fine (Randy, 2026-10-10). "Kids in it" is a note
+      on the record, not a block.
+    - "No" and "Not sure" are registered but never uploaded.
       Only public = yes reaches the bucket.
     - Unknown stays unknown. Nothing is guessed from a filename.
     - Never a name, event or date in a path. The id is the only path part.
@@ -380,7 +380,7 @@ def save_registry(reg):
                  "collection is park (the website, screens and signs; Randy's) or bev "
                  "(her link area, never referenced by a page). The key prefix follows it. "
                  "files[].key is the permanent address in the bucket; url is rebuilt from it "
-                 "on every upload. Kids and anything not public never reach the public bucket.",
+                 "on every upload. Anything not public never reaches the public bucket.",
         "updated": now_z(),
         "count": len(reg["items"]),
     })
@@ -459,9 +459,6 @@ def register(form):
     src = MEDIA_ROOT / "inbox" / name
     if not name or not src.is_file():
         raise ValueError(f"not in the inbox: {name}")
-    if form.get("kids") in ("yes", "true", "on", True):
-        raise ValueError("Kids in the photo: that is private, and the private bucket is not "
-                         "built yet. Take it out of the inbox for now; it was not registered.")
     title, tags, species = _title_tags_species(form)
     ext = src.suffix.lower().lstrip(".")
 
@@ -496,7 +493,7 @@ def register(form):
             "credit_line": opt("credit_line"),
             "license": form.get("license") if form.get("license") in LICENSES else None,
             "public": form.get("public") if form.get("public") in ("yes", "no", "not_sure") else "not_sure",
-            "kids": False,
+            "kids": form.get("kids") in ("yes", "true", "on", True),   # a note only; never blocks
             "tags": tags,
             "date": opt("date"),
             # Everything registered here was made at the park (Randy, 10-01: "I don't
@@ -1060,7 +1057,7 @@ def render_page():
     <label>Dropped by<select name='dropped_by'><option value='randy'>Randy</option><option value='bev'>Bev</option><option value='other'>Other</option></select></label>
     <label class='wide'>Caption <small>optional</small><input name='caption'></label>
     <label class='wide' style='flex-direction:row;gap:8px;align-items:center'>
-      <input type='checkbox' name='kids' style='width:auto'> Are there kids in it? <small>(then it is private and stays out for now)</small></label>
+      <input type='checkbox' name='kids' style='width:auto'> Are there kids in it? <small>(just a note; it can still be public)</small></label>
   </div>
   {dupe_note}
   <div class='row'><button type='submit'>Register</button>{"<button type='button' class='gold suggest' onclick='suggest(this)'>Suggest</button>" if kind == "photo" else ""}<div class='msg'></div></div>
