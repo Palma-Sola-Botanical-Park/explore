@@ -19,7 +19,8 @@ This file is the starting map and standing rules; the private docs are reference
 cover-to-cover reading. Explicit task instructions (including read-only) still govern all edits.
 
 **At the start**
-- Read this file and the current `HANDOFF.md` in the private docs location in §9. If the handoff
+- Read this file and the current `HANDOFF.md` in the private docs location in §9. For a species
+  batch, read the species handoff in §9 instead. If the handoff
   is long, read its current summary and the section for today's task; search other threads only
   as needed. If unavailable, say so briefly and proceed with accessible sources where possible.
 - Use Randy's request to identify the task. Read only relevant code and reference sections.
@@ -46,7 +47,8 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
 
 **When Randy says "wrap up" or "handoff"**
 - Treat this as a request to update the private HANDOFF, subject to any explicit read-only
-  restriction. Reread it before editing. Replace stale status for this task; preserve unrelated
+  restriction. A species-batch session updates the species handoff in §9 instead, never the
+  shared HANDOFF. Reread it before editing. Replace stale status for this task; preserve unrelated
   open threads and constraints. Do not append a transcript.
 - Keep the opening summary about one page: current goal; completed work and verification;
   decisions and reasons; unresolved questions; next concrete step; relevant paths. Link to
@@ -389,6 +391,9 @@ or with no in-text photo while gallery photos are approved; amber there means "s
 
 - `HANDOFF.md` — current summary first, then the relevant task. Keep it current using §0;
   preserve other open threads when updating one task.
+- `../park-library/drafts chatgpt/CLAUDE_SPECIES_HANDOFF.md` — species batches only: current state,
+  the batch method, "The raised bar", lessons, Randy's standing answers, the next-batch prompt.
+  Species sessions keep this one current (§0), not `HANDOFF.md`.
 - `CLAUDE_ONBOARDING.md` — the people, history, and working relationship; consult relevant
   sections when this file and the handoff do not provide enough context.
 - `PSBP_ARCHITECTURE.md` + `_APPENDIX.md` — deep technical reference
