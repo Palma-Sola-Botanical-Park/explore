@@ -10573,6 +10573,13 @@ def render_todo():
     .td-name{font-weight:700;}
     .td-sub{font-size:12px;color:#7a828a;}
     .td-empty{font-size:13px;color:#7a828a;padding:6px 0;}
+    .td-subtabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid #e3e6ea;margin:2px 0 14px;}
+    .td-subtab{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px 16px;font-size:14px;font-weight:700;color:#556;cursor:pointer;}
+    .td-subtab:hover{color:var(--green-deep);}
+    .td-subtab.active{color:var(--green-deep);border-bottom-color:var(--green-mid);}
+    .td-subtab .td-count{font-weight:400;font-size:12px;color:#7a828a;margin-left:6px;}
+    .td-panel{background:#fff;border:1px solid #e3e6ea;border-radius:10px;padding:12px 18px 16px;}
+    .td-panel .td-note{display:block;font-size:12px;color:#7a828a;margin:0 0 4px;}
     </style>
     <div class="td-intro">
       <h2>To do</h2>
@@ -10585,6 +10592,7 @@ def render_todo():
       <p class="td-meta" id="td-status" style="margin-top:6px;"></p>
     </div>
     <div id="td-pills" class="td-pills"></div>
+    <div id="td-subtabs" class="td-subtabs"></div>
     <div id="td-sections"></div>
     <script>
     function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -10600,16 +10608,32 @@ def render_todo():
       obj = obj || {};
       return '<h3>Feature</h3>' + rows(obj.feature, fmt) + '<h3>Standard</h3>' + rows(obj.standard, fmt);
     }
-    function section(title, note, inner, open){
-      return '<details class="td-sec"' + (open ? ' open' : '') + '><summary>' + esc(title) +
-             '<span class="td-note">' + esc(note) + '</span></summary><div class="td-body">' + inner + '</div></details>';
+    var TD_TAB = 'review', TD_PANELS = [];
+    try { TD_TAB = localStorage.getItem('tdTab') || 'review'; } catch(e) {}
+    function showTab(id){
+      TD_TAB = id;
+      try { localStorage.setItem('tdTab', id); } catch(e) {}
+      var bar = '', body = '';
+      TD_PANELS.forEach(function(p){
+        var on = p.id === TD_TAB;
+        bar += '<button class="td-subtab' + (on ? ' active' : '') + '" data-tab="' + p.id + '">' + esc(p.title) +
+               (p.count != null ? '<span class="td-count">' + p.count + '</span>' : '') + '</button>';
+        if(on) body = '<div class="td-panel"><span class="td-note">' + esc(p.note) + '</span>' + p.html + '</div>';
+      });
+      document.getElementById('td-subtabs').innerHTML = bar;
+      document.getElementById('td-sections').innerHTML = body;
+      Array.prototype.forEach.call(document.querySelectorAll('.td-subtab'), function(b){
+        b.addEventListener('click', function(){ showTab(this.getAttribute('data-tab')); });
+      });
     }
+    function total(o){ o = o || {}; return (o.feature || []).length + (o.standard || []).length; }
     function render(t){
       var meta = document.getElementById('td-meta');
       if(!t){
         meta.textContent = 'Never built. Press Refresh now.';
         document.getElementById('td-pills').innerHTML = '';
         document.getElementById('td-sections').innerHTML = '';
+        document.getElementById('td-subtabs').innerHTML = '';
         return;
       }
       var m = t.meta || {}, r = (t.review || {}), c = r.counts || {};
@@ -10635,23 +10659,33 @@ def render_todo():
         rv += '<div class="td-empty">No review dates are set yet (they start 2026-11-30). First in line when they are:</div>' +
               rows(r.not_scheduled_first, function(x){ return nameLine(x, x.tier + ' - ' + x.kind); });
       }
-      var html = section('1. Pages to review', 'A person looks at the live page and certifies it. Dates are set by hand.', rv, true) +
-        section('2. Stale observations', 'Plants that have gone longest without an iNaturalist observation.', twoTier(t.stale, function(x){
-          return nameLine(x, x.task + (x.where ? ' ' + x.where.slice(0, 150) + (x.where.length > 150 ? '...' : '') : ''));
-        }), true) +
-        section('3. Better pictures', 'Fewest approved photos first (target 10).', twoTier(t.photos, function(x){
-          return nameLine(x, x.photos + ' of ' + (x.of_target || 10) + ' photos' + (x.newest ? ' - newest ' + x.newest : ''));
-        }), false) +
-        section('4. Spot checks', 'Placements nobody has confirmed lately (placements.json, read only).', twoTier(t.spot_check, function(x){
-          return nameLine(x, x.reason + ' ' + (x.area ? '(' + x.area + ')' : ''));
-        }), false);
+      TD_PANELS = [
+        {id:'review', title:'1. Pages to review', count:(r.due_now || []).length,
+         note:'A person looks at the live page and certifies it. Dates are set by hand.', html: rv},
+        {id:'stale', title:'2. Stale observations', count:total(t.stale),
+         note:'Plants that have gone longest without an iNaturalist observation.',
+         html: twoTier(t.stale, function(x){
+           return nameLine(x, x.task + (x.where ? ' ' + x.where.slice(0, 150) + (x.where.length > 150 ? '...' : '') : ''));
+         })},
+        {id:'photos', title:'3. Better pictures', count:total(t.photos),
+         note:'Fewest approved photos first (target 10).',
+         html: twoTier(t.photos, function(x){
+           return nameLine(x, x.photos + ' of ' + (x.of_target || 10) + ' photos' + (x.newest ? ' - newest ' + x.newest : ''));
+         })},
+        {id:'spot', title:'4. Spot checks', count:total(t.spot_check),
+         note:'Placements nobody has confirmed lately (placements.json, read only).',
+         html: twoTier(t.spot_check, function(x){
+           return nameLine(x, x.reason + ' ' + (x.area ? '(' + x.area + ')' : ''));
+         })}
+      ];
       var over = t.too_many_photos || {};
-      if((over.feature || []).length || (over.standard || []).length){
-        html += section('Over the photo ceiling', 'More than 15 approved photos: review the oldest for discarding.', twoTier(over, function(x){
-          return nameLine(x, x.task);
-        }), false);
+      if(total(over)){
+        TD_PANELS.push({id:'over', title:'Over the photo ceiling', count:total(over),
+          note:'More than 15 approved photos: review the oldest for discarding.',
+          html: twoTier(over, function(x){ return nameLine(x, x.task); })});
       }
-      document.getElementById('td-sections').innerHTML = html;
+      if(!TD_PANELS.some(function(p){ return p.id === TD_TAB; })) TD_TAB = 'review';
+      showTab(TD_TAB);
     }
     function load(){
       fetch('/api/todo').then(function(r){ return r.json(); }).then(function(d){ render(d.todo); })

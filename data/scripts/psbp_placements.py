@@ -119,6 +119,18 @@ def load_species():
     ]
 
 
+def _other_names():
+    """Common names for pins this tool does not list: landmarks, unpublished plants, wildlife."""
+    names = {}
+    for fname, key in (("landmarks.json", "landmarks"), ("plant_signage.json", "species"),
+                       ("wildlife_signage.json", "species"), ("research.json", "species")):
+        for r in _read(SOURCES / fname, {}).get(key, []) or []:
+            n = (r.get("name") or r.get("common_name") or "").strip()
+            if r.get("id") and n:
+                names.setdefault(r["id"], n)
+    return names
+
+
 def load_payload():
     """Everything the browser needs in one round trip."""
     species = load_species()
@@ -126,6 +138,7 @@ def load_payload():
     raw = _read(PLACEMENTS, {"placements": []}).get("placements", [])
 
     pins, unlinked = [], []
+    other = _other_names()
     for p in raw:
         rec = {
             "pid":    p.get("placement_id"),
@@ -151,7 +164,7 @@ def load_payload():
         # invisible in the UI but still ride along on every save. Surface it.
         (pins if rec["sid"] in known else unlinked).append(
             rec if rec["sid"] in known
-            else {**rec, "name": p.get("common_name") or rec["sid"]}
+            else {**rec, "name": p.get("common_name") or other.get(rec["sid"]) or rec["sid"]}
         )
 
     areas = sorted({p["area"] for p in pins if p.get("area")})
@@ -235,20 +248,18 @@ def api_save(body):
         out.append(rec)
 
     placed = sum(1 for p in out if p["latitude"] is not None)
-    doc = {
-        "meta": {
-            "generated": datetime.date.today().isoformat(),
-            "source": "psbp_placements.py",
-            "placement_count": len(out),
-            "placed_count": placed,
-            "schema_version": "2.0",
-            "note": "sign_state: has_sign | needs_sign | not_needed | null "
-                    "(not yet reviewed). latitude/longitude null = location "
-                    "not yet recorded.",
-            "updated": datetime.datetime.now().isoformat(timespec="seconds"),
-        },
-        "placements": out,
-    }
+    # Keep the file's own meta (schema_version and the note that defines last_seen / last_checked). It used to be
+    # replaced wholesale with a "2.0" stub, which would have erased that note on the first save.
+    meta = dict(_read(PLACEMENTS, {}).get("meta") or {})
+    meta.update({
+        "generated": datetime.date.today().isoformat(),
+        "source": meta.get("source") or "psbp_placements.py",
+        "placement_count": len(out),
+        "placed_count": placed,
+        "updated": datetime.datetime.now().isoformat(timespec="seconds"),
+    })
+    meta.setdefault("schema_version", "3.0")
+    doc = {"meta": meta, "placements": out}
 
     if DRY_RUN:
         return 200, {"ok": True, "dry_run": True, "count": len(out),
@@ -341,6 +352,12 @@ input:focus,button:focus-visible{outline:2px solid var(--new);outline-offset:1px
 .x{background:none;border:none;color:var(--dim);font-size:15px;line-height:1;padding:2px 5px;border-radius:4px}
 .x:hover{color:var(--warn);background:rgba(255,138,122,.12)}
 .seg{display:flex;gap:4px}
+.check{display:flex;gap:4px;margin-top:6px}
+.check button{flex:1;background:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 4px;font-size:11px;color:var(--dim);cursor:pointer}
+.check button.c-yes:hover{border-color:var(--has);color:var(--has)}
+.check button.c-no:hover{border-color:#c9a227;color:#c9a227}
+.seen{font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:4px}
+.seen.warn{color:#c9a227}
 .seg button{flex:1;background:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 4px;font-size:11px;color:var(--dim)}
 .seg button[aria-pressed=true].s-has{background:var(--has);border-color:var(--has);color:#052D1D;font-weight:700}
 .seg button[aria-pressed=true].s-need{background:var(--need);border-color:var(--need);color:#2A1B00;font-weight:700}
@@ -533,6 +550,23 @@ function undoDel(){
   save(); render(); toast('Pin restored');
 }
 function focusArea(pid,all){ const el=document.querySelector('#pinlist input[data-pid="'+pid+'"]'); if(el){ el.focus(); if(all) el.select(); } }
+/* Spot checks. last_seen = a person confirmed the plant is there; last_checked = a person looked. A last_checked
+   newer than last_seen means looked for and not found (the To do tab reads these two dates). Dates are the local day. */
+const todayStr=()=>new Date().toLocaleDateString('en-CA');
+function seenLine(p){
+  const r=p._raw||{}, seen=r.last_seen||null, chk=r.last_checked||null;
+  const missed=!!chk&&(!seen||chk>seen);
+  return '<div class="seen'+(missed?' warn':'')+'">Confirmed '+(seen||'never')+' · Looked '+(chk||'never')+(missed?' · NOT FOUND last look':'')+'</div>';
+}
+function markCheck(p,kind){
+  const raw=p._raw||(p._raw={});
+  const before={seen:raw.last_seen||null,checked:raw.last_checked||null,upd:p.updated};
+  const t=todayStr();
+  if(kind==='yes'){ raw.last_seen=t; raw.last_checked=t; } else { raw.last_checked=t; }
+  p.updated=new Date().toISOString(); selPin=p.pid; save(); drawPins();
+  toast((kind==='yes'?'Confirmed here: ':'Looked, not found: ')+nameOf(p.sid),'Undo',()=>{
+    raw.last_seen=before.seen; raw.last_checked=before.checked; p.updated=before.upd; save(); drawPins(); });
+}
 function drawPins(){
   const box=document.getElementById('pinlist'), prev=document.activeElement;
   const keep=(prev&&prev.dataset&&prev.dataset.pid)?{pid:prev.dataset.pid,at:prev.selectionStart}:null;
@@ -550,6 +584,8 @@ function drawPins(){
       '<input type="text" list="areas" data-pid="'+esc(p.pid)+'" value="'+esc(p.area||'')+'" placeholder="Name this spot" spellcheck="false">'+
       '<button class="x" title="Delete pin">&times;</button></div>'+
       '<div class="seg">'+STATES.map(s=>'<button class="s-'+s.cls+'" data-s="'+s.k+'" aria-pressed="'+(p.state===s.k)+'">'+s.label+'</button>').join('')+'</div>'+
+      '<div class="check"><button class="c-yes" title="You stood here and the plant is there">Confirmed here today</button><button class="c-no" title="You looked and it is not there">Looked, not found today</button></div>'+
+      seenLine(p)+
       (located(p)
         ? '<div class="coord"><span>'+p.lat.toFixed(6)+', '+p.lng.toFixed(6)+'</span><span>'+esc(p.pid)+'</span></div>'
         : '<button class="place'+(placing===p.pid?' arm':'')+'">'+(placing===p.pid?'Now click the map':'Set location on map')+'</button>'+
@@ -567,6 +603,8 @@ function drawPins(){
       p.state=p.state===b.dataset.s?null:b.dataset.s;
       p.updated=new Date().toISOString(); selPin=p.pid; save(); drawList(); drawPins(); drawMap();
     });
+    d.querySelector('.c-yes').onclick=e=>{ e.stopPropagation(); markCheck(p,'yes'); };
+    d.querySelector('.c-no').onclick=e=>{ e.stopPropagation(); markCheck(p,'no'); };
     box.appendChild(d);
   });
   if(keep){ const el=box.querySelector('input[data-pid="'+keep.pid+'"]'); if(el){ el.focus(); try{ el.setSelectionRange(keep.at,keep.at); }catch(_){} } }
@@ -578,10 +616,18 @@ function drawBanner(){
   const b=document.getElementById('banner');
   if(!unlinked.length){ b.style.display='none'; return; }
   b.style.display='block';
-  b.innerHTML='<b>'+unlinked.length+' pin'+(unlinked.length>1?'s':'')+' reference a species that is no longer in plant_signage.json:</b><br>'+
-    unlinked.map(u=>esc(u.name||u.sid)+' <span style="color:var(--dim)">('+esc(u.pid)+')</span>').join('<br>')+
-    '<br><button id="dropunlinked">Remove them</button>';
-  document.getElementById('dropunlinked').onclick=()=>{ const n=unlinked.length; unlinked=[]; save(); drawBanner(); toast('Removed '+n+' unlinked pin'+(n>1?'s':'')); };
+  const open=b.dataset.open==='1';
+  // group by name so twelve pins for one plant read as one line
+  const groups={}; unlinked.forEach(u=>{ const k=u.name||u.sid; groups[k]=(groups[k]||0)+1; });
+  const list=Object.keys(groups).sort().map(k=>esc(k)+(groups[k]>1?' <span style="color:var(--dim)">x'+groups[k]+'</span>':'')).join('<br>');
+  b.innerHTML='<b>'+unlinked.length+' other pins</b> (landmarks and plants not in the published list) are kept and saved untouched. '+
+    '<a href="#" id="banntoggle" style="color:var(--dim)">'+(open?'Hide':'Show')+'</a>'+
+    (open?'<div style="max-height:160px;overflow:auto;margin-top:6px">'+list+'</div>'+
+      '<button id="dropunlinked">Delete these pins...</button>':'');
+  document.getElementById('banntoggle').onclick=e=>{ e.preventDefault(); b.dataset.open=open?'0':'1'; drawBanner(); };
+  const d=document.getElementById('dropunlinked');
+  if(d) d.onclick=()=>{ if(!confirm('Permanently delete '+unlinked.length+' pins (landmarks and unpublished plants) from placements.json? This cannot be undone from here.')) return;
+    const n=unlinked.length; unlinked=[]; save(); drawBanner(); toast('Deleted '+n+' pins'); };
 }
 
 /* ---------- controls ---------- */
