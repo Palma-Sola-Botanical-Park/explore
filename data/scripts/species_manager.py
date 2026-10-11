@@ -235,6 +235,7 @@ TABS = [
     {"id": "publish",  "label": "Preview & Publish", "route": "/publish", "icon": "🚀"},
     {"id": "signs",    "label": "Signs",           "route": "/signs",   "icon": "🪧"},
     {"id": "verify",   "label": "Verify",          "route": "/verify",  "icon": "🔎"},
+    {"id": "todo",     "label": "To do",           "route": "/todo",    "icon": "✅"},
     {"id": "health",   "label": "Health",          "route": "/health",  "icon": "🩺"},
 ]
 
@@ -10507,6 +10508,172 @@ def render_health():
     """
 
 
+# ════════════════════════════════════════════════════════════════════════════
+# TO DO — the park's standing maintenance list  (built 2026-10-11)
+#
+# Shows data/published/maintenance_todo.json: pages to review, plants with stale
+# observations, plants that need better pictures, and placements that need a
+# spot check. Feature plants first, then Standard; Background is never listed.
+# The "Refresh now" button runs maintenance_todo.py on THIS Mac (about 25 s, it
+# sweeps iNaturalist inside the park polygon); you commit the refreshed file
+# with your normal commits. Nothing here writes a master, placements.json or a
+# review date: `reviewed_on` / `review_due` are manual (assign_review_due.py is
+# run only on Randy's word, by name).
+# ════════════════════════════════════════════════════════════════════════════
+
+TODO_JSON = os.path.join(REPO, "data", "published", "maintenance_todo.json")
+
+
+def _read_todo():
+    try:
+        with open(TODO_JSON, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:                                             # noqa: BLE001
+        return None
+
+
+def handle_api_todo(params):
+    """GET /api/todo — the last-built list (or null if it has never been built)."""
+    return {"todo": _read_todo()}
+
+
+def handle_api_todo_refresh(params):
+    """POST /api/todo/refresh — rebuild the list now (read-only on every master)."""
+    script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "maintenance_todo.py")
+    try:
+        proc = subprocess.run([sys.executable, script], capture_output=True, text=True, timeout=240)
+    except Exception as e:                                        # noqa: BLE001
+        return {"ok": False, "error": f"maintenance_todo.py did not run: {e}", "todo": _read_todo()}
+    out = ((proc.stdout or "") + (proc.stderr or "")).strip()
+    return {"ok": proc.returncode == 0, "log": out[-1200:], "todo": _read_todo(),
+            "error": None if proc.returncode == 0 else "The script reported an error; see the log."}
+
+
+def render_todo():
+    """To do tab. Raw string on purpose: the JS has braces and backslashes."""
+    return r"""
+    <style>
+    .td-intro{background:#fff;border:1px solid #e5e0d5;border-left:4px solid var(--green-mid);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+    .td-intro h2{font-size:16px;color:var(--green-deep);margin:0 0 4px;}
+    .td-intro p{font-size:13px;color:var(--gray-600);margin:0 0 4px;}
+    .td-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 0;}
+    .td-btn{background:var(--green-mid);color:#fff;border:0;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
+    .td-btn[disabled]{opacity:.55;cursor:wait;}
+    .td-meta{font-size:12px;color:#7a828a;}
+    .td-pills{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;}
+    .td-pill{background:#eef1f4;color:#445;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;}
+    .td-pill.warn{background:#fdf5e2;color:#8a6400;}
+    .td-sec{border:1px solid #e3e6ea;border-radius:10px;margin-bottom:10px;background:#fff;overflow:hidden;}
+    .td-sec>summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:15px;color:var(--green-deep);}
+    .td-sec .td-note{font-size:12px;color:#7a828a;font-weight:400;display:block;margin-top:2px;}
+    .td-body{padding:4px 16px 14px;}
+    .td-body h3{font-size:13px;color:#556;margin:12px 0 4px;text-transform:uppercase;letter-spacing:.04em;}
+    .td-row{padding:7px 0;border-top:1px solid #f0f1f3;font-size:14px;}
+    .td-row:first-of-type{border-top:0;}
+    .td-name{font-weight:700;}
+    .td-sub{font-size:12px;color:#7a828a;}
+    .td-empty{font-size:13px;color:#7a828a;padding:6px 0;}
+    </style>
+    <div class="td-intro">
+      <h2>To do</h2>
+      <p>Feature plants first, then Standard. Background plants are never listed. Review dates are set by a person,
+         never by the publisher or a script that runs on its own.</p>
+      <div class="td-bar">
+        <button class="td-btn" id="td-refresh">Refresh now</button>
+        <span class="td-meta" id="td-meta">Loading...</span>
+      </div>
+      <p class="td-meta" id="td-status" style="margin-top:6px;"></p>
+    </div>
+    <div id="td-pills" class="td-pills"></div>
+    <div id="td-sections"></div>
+    <script>
+    function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function rows(list, fmt){
+      if(!list || !list.length) return '<div class="td-empty">Nothing in this list.</div>';
+      return list.map(function(c){ return '<div class="td-row">' + fmt(c) + '</div>'; }).join('');
+    }
+    function nameLine(c, sub){
+      return '<span class="td-name">' + esc(c.name) + '</span>' +
+             (sub ? '<div class="td-sub">' + esc(sub) + '</div>' : '');
+    }
+    function twoTier(obj, fmt){
+      obj = obj || {};
+      return '<h3>Feature</h3>' + rows(obj.feature, fmt) + '<h3>Standard</h3>' + rows(obj.standard, fmt);
+    }
+    function section(title, note, inner, open){
+      return '<details class="td-sec"' + (open ? ' open' : '') + '><summary>' + esc(title) +
+             '<span class="td-note">' + esc(note) + '</span></summary><div class="td-body">' + inner + '</div></details>';
+    }
+    function render(t){
+      var meta = document.getElementById('td-meta');
+      if(!t){
+        meta.textContent = 'Never built. Press Refresh now.';
+        document.getElementById('td-pills').innerHTML = '';
+        document.getElementById('td-sections').innerHTML = '';
+        return;
+      }
+      var m = t.meta || {}, r = (t.review || {}), c = r.counts || {};
+      meta.textContent = 'Built ' + (m.generated || '?') + ' - iNaturalist: ' + (m.inat || '?') +
+                         ' - placements read: ' + (m.placements_read || 0);
+      document.getElementById('td-pills').innerHTML =
+        '<span class="td-pill">' + (c.species || 0) + ' species</span>' +
+        '<span class="td-pill' + (c.not_scheduled ? ' warn' : '') + '">' + (c.not_scheduled || 0) + ' not scheduled</span>' +
+        '<span class="td-pill">' + (c.scheduled || 0) + ' scheduled</span>' +
+        '<span class="td-pill' + (c.overdue ? ' warn' : '') + '">' + (c.overdue || 0) + ' overdue</span>' +
+        '<span class="td-pill">' + (c.never_reviewed || 0) + ' never reviewed</span>';
+
+      var rv = '';
+      if((r.due_now || []).length){
+        rv += '<h3>Due now</h3>' + rows(r.due_now, function(x){
+          return nameLine(x, x.tier + ' - due ' + x.review_due + (x.reviewed_on ? ' - last reviewed ' + x.reviewed_on : ' - never reviewed'));
+        });
+      }
+      if((r.next_up || []).length){
+        rv += '<h3>Coming up</h3>' + rows(r.next_up, function(x){ return nameLine(x, x.tier + ' - due ' + x.review_due); });
+      }
+      if(!(r.due_now || []).length && !(r.next_up || []).length){
+        rv += '<div class="td-empty">No review dates are set yet (they start 2026-11-15). First in line when they are:</div>' +
+              rows(r.not_scheduled_first, function(x){ return nameLine(x, x.tier + ' - ' + x.kind); });
+      }
+      var html = section('1. Pages to review', 'A person looks at the live page and certifies it. Dates are set by hand.', rv, true) +
+        section('2. Stale observations', 'Plants that have gone longest without an iNaturalist observation.', twoTier(t.stale, function(x){
+          return nameLine(x, x.task + (x.where ? ' ' + x.where.slice(0, 150) + (x.where.length > 150 ? '...' : '') : ''));
+        }), true) +
+        section('3. Better pictures', 'Fewest approved photos first (target 10).', twoTier(t.photos, function(x){
+          return nameLine(x, x.photos + ' of ' + (x.of_target || 10) + ' photos' + (x.newest ? ' - newest ' + x.newest : ''));
+        }), false) +
+        section('4. Spot checks', 'Placements nobody has confirmed lately (placements.json, read only).', twoTier(t.spot_check, function(x){
+          return nameLine(x, x.reason + ' ' + (x.area ? '(' + x.area + ')' : ''));
+        }), false);
+      var over = t.too_many_photos || {};
+      if((over.feature || []).length || (over.standard || []).length){
+        html += section('Over the photo ceiling', 'More than 15 approved photos: review the oldest for discarding.', twoTier(over, function(x){
+          return nameLine(x, x.task);
+        }), false);
+      }
+      document.getElementById('td-sections').innerHTML = html;
+    }
+    function load(){
+      fetch('/api/todo').then(function(r){ return r.json(); }).then(function(d){ render(d.todo); })
+        .catch(function(e){ document.getElementById('td-meta').textContent = 'Could not load: ' + e; });
+    }
+    document.getElementById('td-refresh').addEventListener('click', function(){
+      var b = this; b.disabled = true; b.textContent = 'Refreshing (about 25 s)...';
+      document.getElementById('td-status').textContent = '';
+      fetch('/api/todo/refresh', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'})
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          b.disabled = false; b.textContent = 'Refresh now';
+          document.getElementById('td-status').textContent = d.ok ? 'Done. Commit data/published/maintenance_todo.json with your next commit.' : (d.error || 'Failed') + ' ' + (d.log || '');
+          render(d.todo);
+        })
+        .catch(function(e){ b.disabled = false; b.textContent = 'Refresh now'; document.getElementById('td-status').textContent = 'Failed: ' + e; });
+    });
+    load();
+    </script>
+    """
+
+
 def render_signs():
     """Signs tab — pick species, build a print-ready PDF on this Mac.
 
@@ -10739,6 +10906,7 @@ PAGE_ROUTES = {
     "/publish": ("publish",  render_publish),
     "/verify":  ("verify",   render_verify),
     "/health":  ("health",   render_health),
+    "/todo":    ("todo",     render_todo),
 }
 
 # API routes: path → handler_function
@@ -12691,6 +12859,8 @@ API_ROUTES = {
     "/api/signs/open":       handle_api_signs_open,
     "/api/signs/archive":    handle_api_signs_archive,
     "/api/health":           handle_api_health,
+    "/api/todo":             handle_api_todo,
+    "/api/todo/refresh":     handle_api_todo_refresh,
     "/api/overview":         handle_api_overview,
     "/api/species":          handle_api_species_list,
     "/api/intake/list":      handle_api_intake_list,
