@@ -262,6 +262,7 @@ is editing the live screens.
 | `psbp_page_drift.py` | | read-only; the TRUE staleness check (renders and compares) |
 | `maintenance_todo.py` | | read-only on every master; writes `data/published/maintenance_todo.json`: pages to review, plants with stale observations, plants needing better pictures, placements to spot-check. Feature before Standard, Background never listed. Run by the To do tab's Refresh button |
 | `photo_wanted.py` | | the earlier, smaller version (stale and fewest-photos lists); `maintenance_todo.py` reuses its iNat helpers |
+| `check_inat_obscured.py` | | dry run by default; writes `inat_obscured` (true/false, a fact from iNaturalist's `taxon_geoprivacy`) on Randy's word, with a HEAD guard. `obscure_on_map` is Randy's own decision, set by hand; the publisher only reads it and builds no species map where it is true |
 | `assign_review_due.py` | | dry run by default; writes `review_due` only (never `reviewed_on`), on Randy's word by name, with a HEAD guard |
 | `fetch_sheets.py` → `validate_promote.py` | | the sync, run by the Action |
 | `shrink.sh` | | JPEG size budget via sips; `DRY_RUN=1` prints a banner but still writes, verify before trusting |
