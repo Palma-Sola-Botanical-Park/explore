@@ -155,7 +155,7 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
     refresh-all can never fake a review. Randy sets them by hand, or runs `assign_review_due.py` (the only
     script allowed to write `review_due`, never `reviewed_on`) when he asks for it by name. The publisher may
     read them to display the date; the merge tool aborts if either changes. Intervals by `feature_tier`:
-    Feature 8 months, Standard 10, Background 12; the schedule starts 2026-11-15.
+    Feature 8 months, Standard 10, Background 12; review dates start 2026-11-30.
 
 ---
 

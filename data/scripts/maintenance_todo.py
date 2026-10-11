@@ -20,7 +20,7 @@ writes them; Randy edits them by hand or asks for `assign_review_due.py` by name
 shows as "not scheduled yet".
 
 Review intervals by feature_tier: Feature 8 months, Standard 10, Background 12 (a species with no tier counts as
-Standard). The schedule starts 2026-11-15; until the dates exist the lists still fill from the data. Standard
+Standard). Review dates start 2026-11-30; until the dates exist the lists still fill from the data. Standard
 library only. Every log line carries the date and the time. The park scope is the polygon in species_manager (pin
 only), reused through photo_wanted.
 """
@@ -34,7 +34,7 @@ from photo_wanted import park_observations, newest_by_taxon, when, log   # reuse
 REPO = HERE.parents[1]
 SRC = REPO / "data/sources"
 OUT = REPO / "data/published/maintenance_todo.json"
-SCHEDULE_START = "2026-11-15"
+SCHEDULE_START = "2026-11-30"
 LIST_N, PHOTO_TARGET, PHOTO_CEILING = 10, 10, 15
 INTERVAL_MONTHS = {"Feature": 8, "Standard": 10, "Background": 12}
 

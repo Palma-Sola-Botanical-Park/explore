@@ -24,7 +24,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 SRC = REPO / "data/sources"
-START = datetime.date(2026, 11, 15)
+START = datetime.date(2026, 11, 30)   # a Monday; review dates begin here (Randy, 2026-10-11: near the end of November)
 INTERVAL = {"Feature": 8, "Standard": 10, "Background": 12}
 FILES = [("plant_signage.json", "plant"), ("wildlife_signage.json", "wildlife")]
 

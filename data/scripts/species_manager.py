@@ -10632,7 +10632,7 @@ def render_todo():
         rv += '<h3>Coming up</h3>' + rows(r.next_up, function(x){ return nameLine(x, x.tier + ' - due ' + x.review_due); });
       }
       if(!(r.due_now || []).length && !(r.next_up || []).length){
-        rv += '<div class="td-empty">No review dates are set yet (they start 2026-11-15). First in line when they are:</div>' +
+        rv += '<div class="td-empty">No review dates are set yet (they start 2026-11-30). First in line when they are:</div>' +
               rows(r.not_scheduled_first, function(x){ return nameLine(x, x.tier + ' - ' + x.kind); });
       }
       var html = section('1. Pages to review', 'A person looks at the live page and certifies it. Dates are set by hand.', rv, true) +
