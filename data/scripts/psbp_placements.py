@@ -344,7 +344,12 @@ input:focus,button:focus-visible{outline:2px solid var(--new);outline-offset:1px
 #pins h2{margin:0;padding:9px 12px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line)}
 #pinlist{overflow-y:auto}
 .pin{padding:9px 12px;border-bottom:1px solid rgba(39,64,54,.6)}
-.pin.sel{background:var(--panel2)}
+.pin.sel{background:#e9f2ec;color:#0b1d15;box-shadow:inset 6px 0 0 #63b4e8}
+.pin.sel .num{color:#0b1d15;font-weight:700}
+.pin.sel .coord span,.pin.sel .seen{color:#33493e}
+.pin.sel .seen.warn{color:#8a5a00}
+.pin.sel .top input{background:#fff;color:#0b1d15;border-color:#63b4e8}
+.pin.sel .seg button:not([aria-pressed=true]),.pin.sel .check button{background:#d3e3d8;color:#2c4a3a;border-color:#b5cdbc}
 .pin.unplaced{box-shadow:inset 3px 0 0 var(--new)}
 .pin .top{display:flex;gap:6px;align-items:center;margin-bottom:6px}
 .pin .num{font-family:var(--mono);font-size:11px;color:var(--dim);width:18px}
@@ -368,7 +373,8 @@ input:focus,button:focus-visible{outline:2px solid var(--new);outline-offset:1px
 .empty{padding:14px 12px;font-size:12px;color:var(--dim);line-height:1.5}
 .mk{width:16px;height:16px;border-radius:50%;border:2px solid rgba(6,16,12,.85);box-shadow:0 0 0 1px rgba(255,255,255,.35)}
 .mk.m-has{background:var(--has)}.mk.m-need{background:var(--need)}.mk.m-skip{background:var(--skip)}.mk.m-new{background:var(--new)}
-.mk.act{transform:scale(1.45);box-shadow:0 0 0 3px rgba(99,180,232,.5)}
+.mk.act{transform:scale(2.1);border-color:#fff;border-width:3px;box-shadow:0 0 0 3px #63b4e8,0 0 10px 4px rgba(99,180,232,.8)}
+.mk .n{display:block;font:700 10px/12px var(--mono);text-align:center;color:#06100c;pointer-events:none}
 .mk.ghostpin{opacity:.4;width:11px;height:11px}
 #legend{bottom:12px;right:12px;padding:9px 12px;font-size:11px;display:flex;flex-direction:column;gap:5px}
 #legend div{display:flex;gap:7px;align-items:center;color:var(--dim)}
@@ -476,11 +482,12 @@ function initMap(){
   });
 }
 function lastArea(){ const m=pinsOf(active).filter(p=>p.area); return m.length?m[m.length-1].area:''; }
-function icon(p,mine,ghost){
+function icon(p,mine,ghost,num){
   const c=['mk','m-'+stateCls(p.state)];
   if(mine&&p.pid===selPin) c.push('act');
   if(ghost) c.push('ghostpin');
-  return L.divIcon({className:'',html:'<div class="'+c.join(' ')+'"></div>',iconSize:[16,16],iconAnchor:[8,8]});
+  // the number matches the entry in the Locations list, so a dot and its list entry can be told apart
+  return L.divIcon({className:'',html:'<div class="'+c.join(' ')+'">'+(mine&&num?'<span class="n">'+num+'</span>':'')+'</div>',iconSize:[16,16],iconAnchor:[8,8]});
 }
 function drawMap(){
   layer.clearLayers();
@@ -488,8 +495,9 @@ function drawMap(){
     if(!located(p)) return;
     const mine=p.sid===active;
     if(!mine&&!showAll) return;
-    const m=L.marker([p.lat,p.lng],{icon:icon(p,mine,!mine),draggable:mine,riseOnHover:true,zIndexOffset:mine?500:0});
-    m.on('click',ev=>{ L.DomEvent.stop(ev); if(!mine) selectSpecies(p.sid); selPin=p.pid; render(); });
+    const num=mine?(pinsOf(active).indexOf(p)+1):0;
+    const m=L.marker([p.lat,p.lng],{icon:icon(p,mine,!mine,num),draggable:mine,riseOnHover:true,zIndexOffset:(mine&&p.pid===selPin)?1500:(mine?500:0)});
+    m.on('click',ev=>{ L.DomEvent.stop(ev); if(!mine) selectSpecies(p.sid); selPin=p.pid; render(); revealEntry(p.pid); });
     m.on('dragend',ev=>{ const ll=ev.target.getLatLng(); p.lat=+ll.lat.toFixed(7); p.lng=+ll.lng.toFixed(7);
                          p.updated=new Date().toISOString(); save(); render(); });
     if(!mine) m.bindTooltip(nameOf(p.sid),{direction:'right',offset:[8,0]});
@@ -537,7 +545,12 @@ function selectSpecies(id){
 }
 
 /* ---------- pin panel ---------- */
-function setSel(pid){ selPin=pid; document.querySelectorAll('.pin').forEach(n=>n.classList.toggle('sel',n.dataset.pid===pid)); drawMap(); }
+function revealEntry(pid){ const el=document.querySelector('#pinlist .pin[data-pid="'+pid+'"]'); if(el) el.scrollIntoView({block:'nearest',behavior:'smooth'}); }
+function setSel(pid){
+  selPin=pid; document.querySelectorAll('.pin').forEach(n=>n.classList.toggle('sel',n.dataset.pid===pid)); drawMap();
+  const p=pins.find(x=>x.pid===pid);
+  if(p&&located(p)&&!map.getBounds().pad(-0.15).contains([p.lat,p.lng])) map.panTo([p.lat,p.lng]);   // bring a far-off dot into view
+}
 function removePin(pid){
   const i=pins.findIndex(x=>x.pid===pid); if(i<0) return;
   lastDel={p:pins[i],i}; pins.splice(i,1); if(selPin===pid) selPin=null;
