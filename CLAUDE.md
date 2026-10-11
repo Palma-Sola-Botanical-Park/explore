@@ -327,6 +327,8 @@ Wednesday volunteer deck, standalone. All read the same published JSON as the si
 
 ## 7. Copy and design
 
+**The one rule (Randy, 2026-10-11): make the page interesting and make the park look good.** Every other writing, photo and layout rule below is a guideline that serves that, some firmer than others. When a guideline would make a page duller or the park look worse, use judgment and say what you did. (The hard rules in section 2, about data, IDs, secrets, pushing and the like, are a different thing and stay hard.)
+
 **Type and colour.** Playfair Display for headings, Source Sans 3 for body. Tokens in
 `css/site.css` and `css/psbp.css`: `--green-deep #1a3a1f`, `--green-mid #2d6a35`, `--gold #c5922a`,
 `--gold-light #eabc5a`, `--cream #faf8f3`. Body text is `--t-base` (17 px). **Nothing a reader
@@ -338,7 +340,7 @@ follows goes below it**: captions, tips, list items, instructions are reading te
 **Voice on species pages.** A stroll with someone who knows the plant and is easy to talk to.
 Terse, thorough, fun to read, accurate. The good fact is a mechanism or a consequence, not a
 category. Never "according to Kew" or "UF/IFAS says" in prose; state what we believe. Never an
-iNat detail (observation, grade, identifier) in visitor copy. Two to four photos per page, never
+iNat detail (observation, grade, identifier) in visitor copy. Two to four photos per page (the hero may be repeated in the text), never
 two adjacent, each after the prose it illustrates. Captions add a detail, never carry the point.
 Don't rewrite what is already good; fix what's wrong, write what's missing, say what changed.
 
