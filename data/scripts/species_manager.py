@@ -10514,8 +10514,8 @@ def render_health():
 # Shows data/published/maintenance_todo.json: pages to review, plants with stale
 # observations, plants that need better pictures, and placements that need a
 # spot check. Feature plants first, then Standard; Background is never listed.
-# The "Refresh now" button runs maintenance_todo.py on THIS Mac (about 25 s, it
-# sweeps iNaturalist inside the park polygon); you commit the refreshed file
+# The "Refresh now" button runs maintenance_todo.py on THIS Mac (about a minute, it
+# sweeps iNaturalist inside the park polygon and asks the observer roster about hidden species); you commit the refreshed file
 # with your normal commits. Nothing here writes a master, placements.json or a
 # review date: `reviewed_on` / `review_due` are manual (assign_review_due.py is
 # run only on Randy's word, by name).
@@ -10658,7 +10658,7 @@ def render_todo():
         .catch(function(e){ document.getElementById('td-meta').textContent = 'Could not load: ' + e; });
     }
     document.getElementById('td-refresh').addEventListener('click', function(){
-      var b = this; b.disabled = true; b.textContent = 'Refreshing (about 25 s)...';
+      var b = this; b.disabled = true; b.textContent = 'Refreshing (about a minute)...';
       document.getElementById('td-status').textContent = '';
       fetch('/api/todo/refresh', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'})
         .then(function(r){ return r.json(); })

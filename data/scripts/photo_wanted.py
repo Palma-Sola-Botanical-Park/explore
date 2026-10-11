@@ -38,14 +38,28 @@ def log(msg):
     print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), msg, flush=True)
 
 
+COMPLETE = False   # set by park_observations: True only when every iNat page came back
+
+
 def park_observations(offline):
     """In-park observations as light v2 records, or None if iNat could not be reached.
     Reuses species_manager's polygon sweep so the boundary rule lives in one place."""
     if offline:
         return None
+    global COMPLETE
+    COMPLETE = False
     try:
         import species_manager as sm
+        import time
         rows = sm._park_observations_lite()
+        # the sweep only caches a COMPLETE result; a failed page leaves the cache empty and the rows partial
+        if rows and sm._LITE_CACHE.get("rows") is None:
+            log("iNat sweep was incomplete (a page failed); retrying once")
+            time.sleep(8)
+            rows = sm._park_observations_lite()
+        COMPLETE = bool(rows) and sm._LITE_CACHE.get("rows") is not None
+        if rows and not COMPLETE:
+            log("WARNING: the iNat sweep is still incomplete; stale-observation dates may be too old")
     except Exception as e:                       # network down, import trouble: the list still builds
         log(f"iNat sweep failed ({type(e).__name__}: {e}); continuing with approved photos only")
         return None

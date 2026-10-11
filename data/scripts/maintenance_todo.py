@@ -30,8 +30,48 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from photo_wanted import park_observations, newest_by_taxon, when, log   # reuse: the polygon rule lives in one place
+import photo_wanted
+
+
+def pw_complete():
+    return photo_wanted.COMPLETE
+
 
 REPO = HERE.parents[1]
+
+
+def roster_newest(taxon_ids):
+    """Newest observation date for taxa the park polygon cannot see.
+
+    iNaturalist obscures threatened taxa: the public pin lands kilometres away, so a polygon query returns nothing.
+    This is the same fallback Species Manager uses for Find photos (species_manager._inat_observations): ask the
+    park's observer roster for the taxon, accept an obscured record when its pin is inside the park's 0.2 degree
+    cell, and an honest-pin record only when it is inside the polygon. One query per taxon (a per-observer loop hit
+    iNaturalist's rate limit). Dates only: the true position is never used or stored. Returns {taxon_id: date}.
+    A date found this way is APPROXIMATE (an observation in the cell, not certified as in the park)."""
+    try:
+        import species_manager as sm
+        roster = sm._project_observers()
+    except Exception as e:
+        log(f"roster fallback unavailable ({type(e).__name__}: {e})")
+        return {}
+    if not roster:
+        log("roster fallback: no observer roster")
+        return {}
+    import time
+    found = {}
+    for tid in taxon_ids:
+        url = ("https://api.inaturalist.org/v1/observations"
+               f"?taxon_id={tid}&user_login={','.join(roster)}&per_page=60&verifiable=any"
+               "&order=desc&order_by=observed_on")
+        data = sm._inat_get(url)
+        time.sleep(1.0)
+        for o in (data or {}).get("results", []):
+            ok = sm._in_park_cell(o) if o.get("obscured") else sm._in_park(o)
+            if ok and o.get("observed_on"):
+                found[tid] = o["observed_on"]       # newest first, so the first accepted record is the newest
+                break
+    return found
 SRC = REPO / "data/sources"
 OUT = REPO / "data/published/maintenance_todo.json"
 SCHEDULE_START = "2026-11-30"
@@ -80,18 +120,29 @@ def main():
     rows = park_observations(offline)
     seen = newest_by_taxon(rows, [r["inat_taxon_id"] for r in listed_plants if r.get("inat_taxon_id")]) if rows else {}
     log(f"iNat park sweep: {len(rows) if rows else 'not used'} observations")
+    # taxa the polygon cannot see (obscured): ask the observer roster, mark the date approximate
+    approx = {}
+    if rows:
+        blind = [r["inat_taxon_id"] for r in listed_plants if r.get("inat_taxon_id") and r["inat_taxon_id"] not in seen]
+        approx = roster_newest(blind)
+        log(f"{len(blind)} taxa had no in-park observation; roster fallback found a date for {len(approx)}")
     stats = []
     for r in listed_plants:
         ap = approved.get(r["id"], [])
         dates = [p["observed_on"] for p in ap if p.get("observed_on")]
+        is_approx = False
         if r.get("inat_taxon_id") in seen:
             dates.append(seen[r["inat_taxon_id"]])
-        stats.append(dict(r=r, ap=ap, n=len(ap), newest=max(dates) if dates else "", t=0 if tier_of(r) == "Feature" else 1))
+        elif r.get("inat_taxon_id") in approx:
+            dates.append(approx[r["inat_taxon_id"]])
+            is_approx = approx[r["inat_taxon_id"]] >= max([d for d in dates[:-1]] or [""])   # approximate only if it is the newest
+        stats.append(dict(r=r, ap=ap, n=len(ap), newest=max(dates) if dates else "", approx=is_approx,
+                          t=0 if tier_of(r) == "Feature" else 1))
 
     def card(s, task):
         r = s["r"]
         out = dict(id=r["id"], name=r["common_name"], botanical=r["botanical_name"], tier=tier_of(r),
-                   photos=s["n"], newest=s["newest"] or None, task=task,
+                   photos=s["n"], newest=s["newest"] or None, newest_approximate=bool(s["approx"]), task=task,
                    email=f"{task} Take a clear photo and add it to iNaturalist, or send it to Randy.")
         hero = next((p for p in s["ap"] if p.get("hero")), None)
         if hero:
@@ -107,7 +158,8 @@ def main():
 
     def stale_task(s):
         return card(s, f"Find {s['r']['common_name']} and add a fresh observation. " +
-                    (f"The newest we have is from {when(s['newest'])}." if s["newest"] else "We have no observation of it yet."))
+                    (f"The newest we have is from {when(s['newest'])}" + (" (approximate: an observation whose position iNaturalist hides)." if s["approx"] else ".")
+                     if s["newest"] else "We have no observation of it yet."))
 
     def photo_task(s):
         c = card(s, f"Take a better picture of {s['r']['common_name']}. We have {s['n']} of {PHOTO_TARGET} photos.")
@@ -149,7 +201,7 @@ def main():
 
     result = dict(
         meta=dict(generated=datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                  schedule_start=SCHEDULE_START, inat="skipped" if offline else ("ok" if rows else "unavailable"),
+                  schedule_start=SCHEDULE_START, inat="skipped" if offline else (("ok" if pw_complete() else "partial") if rows else "unavailable"),
                   placements_read=len(placements),
                   note="review dates are manual (a person certified the page); everything else is computed. Background plants are never listed."),
         review=review, stale=stale, photos=photo_lists, too_many_photos=over, spot_check=spot)
