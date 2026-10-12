@@ -362,7 +362,7 @@ Small things get a comparison ("pea-sized"). Areas get a local yardstick, not a 
   lines only, never globally, never in species prose.
 - Invasives and problem plants: state the observable fact. Never "kept as an educational
   example", never "we are fighting it".
-- Donors: name the donor and what they gave. Never the amount, never Randy's matching gift.
+- People: the default is no names on a species page (donors, volunteers, staff, board). Name someone only after they have agreed (Randy, 2026-10-12; Rhonda didn't mind). When a donor is named, say what they gave; never the amount, never Randy's matching gift.
 - No chips, badges, or traffic lights for anything contested. Invasive status, toxicity, and
   edibility are prose by decision. Do not propose new true/false or enum fields for nuance.
 - One "little challenge" per page at most, anchored in something real about this specimen,
