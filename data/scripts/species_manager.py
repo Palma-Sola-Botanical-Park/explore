@@ -10549,42 +10549,93 @@ def handle_api_todo_refresh(params):
             "error": None if proc.returncode == 0 else "The script reported an error; see the log."}
 
 
+def handle_api_todo_mark(params):
+    """POST /api/todo/mark-reviewed {ids:[...], date:'YYYY-MM-DD', apply:bool}: Randy's click on "Mark reviewed".
+    apply false = preview the two dates; apply true = write reviewed_on and the next review_due on those records only.
+    The ONLY other writer of these fields is mark_reviewed.py run by Claude on Randy's word (CLAUDE.md rule 15)."""
+    body = params.get("_body") or {}
+    try:
+        import mark_reviewed, maintenance_todo
+        res = mark_reviewed.mark(body.get("ids") or [], body.get("date") or None, apply=bool(body.get("apply")))
+        todo = maintenance_todo.refresh_review_only() if body.get("apply") else None
+    except Exception as e:                                        # noqa: BLE001
+        return {"ok": False, "error": str(e)}
+    return {"ok": True, "results": res, "todo": todo}
+
+
+def handle_api_todo_undo(params):
+    """POST /api/todo/undo-reviewed {items:[{id, reviewed_on, review_due}]}: put the earlier values back."""
+    body = params.get("_body") or {}
+    try:
+        import mark_reviewed, maintenance_todo
+        mark_reviewed.restore(body.get("items") or [])
+        todo = maintenance_todo.refresh_review_only()
+    except Exception as e:                                        # noqa: BLE001
+        return {"ok": False, "error": str(e)}
+    return {"ok": True, "todo": todo}
+
+
 def render_todo():
-    """To do tab. Raw string on purpose: the JS has braces and backslashes."""
+    """To do tab: folder-style tabs, Feature / Standard / Background sections, and a Mark reviewed button.
+    Raw string on purpose: the JS has braces and backslashes."""
     return r"""
     <style>
-    .td-intro{background:#fff;border:1px solid #e5e0d5;border-left:4px solid var(--green-mid);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
-    .td-intro h2{font-size:16px;color:var(--green-deep);margin:0 0 4px;}
-    .td-intro p{font-size:13px;color:var(--gray-600);margin:0 0 4px;}
+    :root{--td-cream:#faf8f3;--td-paper:#f1ead6;--td-manila:#e9dfc4;--td-edge:#c9b98a;--td-gold:#c5922a;--td-gold-lt:#d9a843;--td-g1:#1a3a1f;--td-g2:#2d6a35;}
+    .td-intro{background:var(--td-cream);border:1px solid var(--td-edge);border-left:5px solid var(--td-gold);border-radius:12px;padding:14px 18px;margin-bottom:12px;}
+    .td-intro h2{font-size:18px;color:var(--td-g1);margin:0 0 4px;}
+    .td-intro p{font-size:13px;color:#555;margin:0 0 4px;}
     .td-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 0;}
-    .td-btn{background:var(--green-mid);color:#fff;border:0;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
+    .td-btn{background:var(--td-g2);color:#fff;border:0;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
     .td-btn[disabled]{opacity:.55;cursor:wait;}
     .td-meta{font-size:12px;color:#7a828a;}
-    .td-pills{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;}
-    .td-pill{background:#eef1f4;color:#445;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;}
-    .td-pill.warn{background:#fdf5e2;color:#8a6400;}
-    .td-sec{border:1px solid #e3e6ea;border-radius:10px;margin-bottom:10px;background:#fff;overflow:hidden;}
-    .td-sec>summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:15px;color:var(--green-deep);}
-    .td-sec .td-note{font-size:12px;color:#7a828a;font-weight:400;display:block;margin-top:2px;}
-    .td-body{padding:4px 16px 14px;}
-    .td-body h3{font-size:13px;color:#556;margin:12px 0 4px;text-transform:uppercase;letter-spacing:.04em;}
-    .td-row{padding:7px 0;border-top:1px solid #f0f1f3;font-size:14px;}
-    .td-row:first-of-type{border-top:0;}
-    .td-name{font-weight:700;}
-    .td-sub{font-size:12px;color:#7a828a;}
-    .td-empty{font-size:13px;color:#7a828a;padding:6px 0;}
-    .td-subtabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid #e3e6ea;margin:2px 0 14px;}
-    .td-subtab{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-2px;padding:10px 16px;font-size:14px;font-weight:700;color:#556;cursor:pointer;}
-    .td-subtab:hover{color:var(--green-deep);}
-    .td-subtab.active{color:var(--green-deep);border-bottom-color:var(--green-mid);}
-    .td-subtab .td-count{font-weight:400;font-size:12px;color:#7a828a;margin-left:6px;}
-    .td-panel{background:#fff;border:1px solid #e3e6ea;border-radius:10px;padding:12px 18px 16px;}
-    .td-panel .td-note{display:block;font-size:12px;color:#7a828a;margin:0 0 4px;}
+    .td-pills{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px;}
+    .td-pill{background:var(--td-paper);color:#4a4430;border:1px solid var(--td-edge);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;}
+    .td-pill.warn{background:#fbeec4;color:#7a5400;border-color:var(--td-gold);}
+    /* folder tabs */
+    .td-subtabs{display:flex;gap:3px;flex-wrap:wrap;padding-left:16px;margin:0;position:relative;z-index:2;}
+    .td-subtab{position:relative;top:4px;margin-bottom:-1px;background:var(--td-manila);color:#6b5d36;border:1px solid var(--td-edge);border-radius:14px 14px 0 0;padding:10px 20px 9px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:inset 0 -6px 8px -8px rgba(80,60,10,.35);}
+    .td-subtab:hover{background:#f0e8d0;color:var(--td-g1);}
+    .td-subtab.active{top:0;background:var(--td-cream);color:var(--td-g1);border-bottom-color:var(--td-cream);box-shadow:inset 0 4px 0 var(--td-gold);z-index:3;}
+    .td-subtab .td-count{font-weight:400;font-size:12px;color:#8a7d55;margin-left:6px;}
+    .td-subtab.active .td-count{color:#6b5d36;}
+    .td-panel{position:relative;z-index:1;background:var(--td-cream);border:1px solid var(--td-edge);border-radius:0 14px 14px 14px;padding:16px 18px 6px;box-shadow:0 2px 8px rgba(26,58,31,.08);}
+    .td-note{display:block;font-size:12.5px;color:#6b6552;margin:0 0 12px;}
+    /* sectioned-off spaces */
+    .td-zone{border-radius:12px;margin:0 0 16px;overflow:hidden;border:1px solid;}
+    .td-zhead{display:flex;align-items:baseline;gap:10px;padding:9px 16px;font-weight:700;font-size:15px;letter-spacing:.02em;}
+    .td-zhead .td-zc{font-weight:400;font-size:12px;opacity:.85;}
+    .td-zbody{padding:2px 16px 10px;}
+    .td-zone.feature{border-color:var(--td-g2);background:#eef4ea;}
+    .td-zone.feature .td-zhead{background:linear-gradient(90deg,var(--td-g1),var(--td-g2));color:#f6f0dc;}
+    .td-zone.standard{border-color:var(--td-gold);background:#fbf4e1;}
+    .td-zone.standard .td-zhead{background:linear-gradient(90deg,var(--td-gold),var(--td-gold-lt));color:var(--td-g1);}
+    .td-zone.background{border-color:#b9b39a;background:#f3f1e8;}
+    .td-zone.background .td-zhead{background:#d9d4be;color:#3d3a2c;}
+    .td-row{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:9px 0;border-top:1px solid rgba(26,58,31,.13);font-size:14px;}
+    .td-row:first-child{border-top:0;}
+    .td-rowmain{flex:1;min-width:0;}
+    .td-name{font-weight:700;color:var(--td-g1);}
+    .td-sub{font-size:12.5px;color:#6b6552;margin-top:1px;}
+    .td-sub.warn{color:#8a5a00;font-weight:600;}
+    .td-empty{font-size:13px;color:#7a828a;padding:8px 0;}
+    .td-mark{flex:none;background:var(--td-g2);color:#fff;border:0;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+    .td-mark:hover{background:var(--td-g1);}
+    /* confirm box + undo bar */
+    .td-modal-bg{position:fixed;inset:0;background:rgba(20,30,20,.45);display:flex;align-items:center;justify-content:center;z-index:60;}
+    .td-modal{background:var(--td-cream);border:1px solid var(--td-edge);border-top:5px solid var(--td-gold);border-radius:14px;padding:20px 22px;width:min(470px,92vw);box-shadow:0 14px 44px rgba(0,0,0,.3);}
+    .td-modal h3{margin:0 0 4px;font-size:17px;color:var(--td-g1);}
+    .td-modal p{font-size:14px;color:#444;margin:6px 0;}
+    .td-modal label{font-size:13px;color:#555;display:block;margin:12px 0 4px;}
+    .td-modal input[type=date]{font-size:14px;padding:6px 8px;border:1px solid var(--td-edge);border-radius:6px;background:#fff;}
+    .td-modal .td-next{background:#eef4ea;border:1px solid var(--td-g2);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--td-g1);margin-top:12px;}
+    .td-modal .td-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;}
+    .td-cancel{background:none;border:1px solid var(--td-edge);color:#555;border-radius:8px;padding:8px 16px;font-size:14px;cursor:pointer;}
+    #td-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--td-g1);color:#f6f0dc;border-radius:10px;padding:12px 18px;font-size:14px;z-index:70;display:none;box-shadow:0 6px 24px rgba(0,0,0,.3);}
+    #td-toast button{margin-left:14px;background:var(--td-gold);color:var(--td-g1);border:0;border-radius:6px;padding:4px 12px;font-weight:700;cursor:pointer;}
     </style>
     <div class="td-intro">
       <h2>To do</h2>
-      <p>Feature plants first, then Standard. Background plants are never listed. Review dates are set by a person,
-         never by the publisher or a script that runs on its own.</p>
+      <p>Feature plants first, then Standard. Background plants are never listed in the observation, picture or spot-check lists. A review date is set only when a person certifies the page: press <b>Mark reviewed</b> after you have looked at it.</p>
       <div class="td-bar">
         <button class="td-btn" id="td-refresh">Refresh now</button>
         <span class="td-meta" id="td-meta">Loading...</span>
@@ -10594,22 +10645,50 @@ def render_todo():
     <div id="td-pills" class="td-pills"></div>
     <div id="td-subtabs" class="td-subtabs"></div>
     <div id="td-sections"></div>
+    <div id="td-toast"></div>
     <script>
     function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-    function rows(list, fmt){
-      if(!list || !list.length) return '<div class="td-empty">Nothing in this list.</div>';
-      return list.map(function(c){ return '<div class="td-row">' + fmt(c) + '</div>'; }).join('');
+    function todayStr(){ return new Date().toLocaleDateString('en-CA'); }
+    function post(url, body){
+      return fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)}).then(function(r){ return r.json(); });
     }
-    function nameLine(c, sub){
-      return '<span class="td-name">' + esc(c.name) + '</span>' +
-             (sub ? '<div class="td-sub">' + esc(sub) + '</div>' : '');
+    var TD_TAB = 'review', TD_PANELS = [], TD_TODO = null, TD_TOAST_T = null;
+    try { TD_TAB = localStorage.getItem('tdTab') || 'review'; } catch(e) {}
+
+    function nameLine(c, sub, warn){
+      return '<span class="td-name">' + esc(c.name) + '</span>' + (sub ? '<div class="td-sub' + (warn ? ' warn' : '') + '">' + esc(sub) + '</div>' : '');
+    }
+    function rows(list, fmt, withMark){
+      if(!list || !list.length) return '<div class="td-empty">Nothing in this list.</div>';
+      return list.map(function(c){
+        return '<div class="td-row"><div class="td-rowmain">' + fmt(c) + '</div>' +
+               (withMark ? '<button class="td-mark" data-id="' + esc(c.id) + '" data-name="' + esc(c.name) + '">Mark reviewed</button>' : '') + '</div>';
+      }).join('');
+    }
+    function zone(cls, title, count, inner){
+      return '<div class="td-zone ' + cls + '"><div class="td-zhead">' + esc(title) +
+             (count != null ? '<span class="td-zc">' + esc(count) + '</span>' : '') + '</div><div class="td-zbody">' + inner + '</div></div>';
     }
     function twoTier(obj, fmt){
       obj = obj || {};
-      return '<h3>Feature</h3>' + rows(obj.feature, fmt) + '<h3>Standard</h3>' + rows(obj.standard, fmt);
+      return zone('feature', 'Feature plants', (obj.feature || []).length + ' shown', rows(obj.feature, fmt)) +
+             zone('standard', 'Standard plants', (obj.standard || []).length + ' shown', rows(obj.standard, fmt));
     }
-    var TD_TAB = 'review', TD_PANELS = [];
-    try { TD_TAB = localStorage.getItem('tdTab') || 'review'; } catch(e) {}
+    function total(o){ o = o || {}; return (o.feature || []).length + (o.standard || []).length; }
+
+    function reviewPanel(r){
+      var bt = (r && r.by_tier) || {}, html = '';
+      [['Feature','feature','Feature'],['Standard','standard','Standard'],['Background','background','Background']].forEach(function(t){
+        var g = bt[t[0]] || {first:[], total:0, reviewed:0};
+        html += zone(t[1], t[2] + ' pages', g.reviewed + ' of ' + g.total + ' reviewed',
+          rows(g.first, function(x){
+            var sub = (x.reviewed_on ? 'last reviewed ' + x.reviewed_on : 'never reviewed') + (x.review_due ? ' - due ' + x.review_due : ' - no date yet') + (x.overdue ? ' (overdue)' : '');
+            return nameLine(x, x.kind + ' - ' + sub, x.overdue);
+          }, true));
+      });
+      return html;
+    }
+
     function showTab(id){
       TD_TAB = id;
       try { localStorage.setItem('tdTab', id); } catch(e) {}
@@ -10625,9 +10704,13 @@ def render_todo():
       Array.prototype.forEach.call(document.querySelectorAll('.td-subtab'), function(b){
         b.addEventListener('click', function(){ showTab(this.getAttribute('data-tab')); });
       });
+      Array.prototype.forEach.call(document.querySelectorAll('.td-mark'), function(b){
+        b.addEventListener('click', function(){ openMark(this.getAttribute('data-id'), this.getAttribute('data-name')); });
+      });
     }
-    function total(o){ o = o || {}; return (o.feature || []).length + (o.standard || []).length; }
+
     function render(t){
+      TD_TODO = t;
       var meta = document.getElementById('td-meta');
       if(!t){
         meta.textContent = 'Never built. Press Refresh now.';
@@ -10637,56 +10720,86 @@ def render_todo():
         return;
       }
       var m = t.meta || {}, r = (t.review || {}), c = r.counts || {};
-      meta.textContent = 'Built ' + (m.generated || '?') + ' - iNaturalist: ' + (m.inat || '?') +
-                         ' - placements read: ' + (m.placements_read || 0);
+      meta.textContent = 'Built ' + (m.generated || '?') + ' - iNaturalist: ' + (m.inat || '?') + ' - placements read: ' + (m.placements_read || 0);
       document.getElementById('td-pills').innerHTML =
         '<span class="td-pill">' + (c.species || 0) + ' species</span>' +
         '<span class="td-pill' + (c.not_scheduled ? ' warn' : '') + '">' + (c.not_scheduled || 0) + ' not scheduled</span>' +
         '<span class="td-pill">' + (c.scheduled || 0) + ' scheduled</span>' +
         '<span class="td-pill' + (c.overdue ? ' warn' : '') + '">' + (c.overdue || 0) + ' overdue</span>' +
         '<span class="td-pill">' + (c.never_reviewed || 0) + ' never reviewed</span>';
-
-      var rv = '';
-      if((r.due_now || []).length){
-        rv += '<h3>Due now</h3>' + rows(r.due_now, function(x){
-          return nameLine(x, x.tier + ' - due ' + x.review_due + (x.reviewed_on ? ' - last reviewed ' + x.reviewed_on : ' - never reviewed'));
-        });
-      }
-      if((r.next_up || []).length){
-        rv += '<h3>Coming up</h3>' + rows(r.next_up, function(x){ return nameLine(x, x.tier + ' - due ' + x.review_due); });
-      }
-      if(!(r.due_now || []).length && !(r.next_up || []).length){
-        rv += '<div class="td-empty">No review dates are set yet (they start 2026-11-30). First in line when they are:</div>' +
-              rows(r.not_scheduled_first, function(x){ return nameLine(x, x.tier + ' - ' + x.kind); });
-      }
       TD_PANELS = [
-        {id:'review', title:'1. Pages to review', count:(r.due_now || []).length,
-         note:'A person looks at the live page and certifies it. Dates are set by hand.', html: rv},
+        {id:'review', title:'1. Pages to review', count:(c.species || 0) - (c.never_reviewed || 0) + ' done',
+         note:'Look at the live page, tweak it, then press Mark reviewed. It records today and sets the next review date.', html: reviewPanel(r)},
         {id:'stale', title:'2. Stale observations', count:total(t.stale),
          note:'Plants that have gone longest without an iNaturalist observation.',
-         html: twoTier(t.stale, function(x){
-           return nameLine(x, x.task + (x.where ? ' ' + x.where.slice(0, 150) + (x.where.length > 150 ? '...' : '') : ''));
-         })},
+         html: twoTier(t.stale, function(x){ return nameLine(x, x.task + (x.where ? ' ' + x.where.slice(0, 150) + (x.where.length > 150 ? '...' : '') : '')); })},
         {id:'photos', title:'3. Better pictures', count:total(t.photos),
          note:'Fewest approved photos first (target 10).',
-         html: twoTier(t.photos, function(x){
-           return nameLine(x, x.photos + ' of ' + (x.of_target || 10) + ' photos' + (x.newest ? ' - newest ' + x.newest : ''));
-         })},
+         html: twoTier(t.photos, function(x){ return nameLine(x, x.photos + ' of ' + (x.of_target || 10) + ' photos' + (x.newest ? ' - newest ' + x.newest : '')); })},
         {id:'spot', title:'4. Spot checks', count:total(t.spot_check),
          note:'Placements nobody has confirmed lately (placements.json, read only).',
-         html: twoTier(t.spot_check, function(x){
-           return nameLine(x, x.reason + ' ' + (x.area ? '(' + x.area + ')' : ''));
-         })}
+         html: twoTier(t.spot_check, function(x){ return nameLine(x, x.reason + ' ' + (x.area ? '(' + x.area + ')' : '')); })}
       ];
       var over = t.too_many_photos || {};
       if(total(over)){
         TD_PANELS.push({id:'over', title:'Over the photo ceiling', count:total(over),
-          note:'More than 15 approved photos: review the oldest for discarding.',
-          html: twoTier(over, function(x){ return nameLine(x, x.task); })});
+          note:'More than 15 approved photos: review the oldest for discarding.', html: twoTier(over, function(x){ return nameLine(x, x.task); })});
       }
       if(!TD_PANELS.some(function(p){ return p.id === TD_TAB; })) TD_TAB = 'review';
       showTab(TD_TAB);
     }
+
+    /* ---- Mark reviewed: confirm box, then the write, then an Undo ---- */
+    function closeModal(){ var m = document.getElementById('td-modal'); if(m) m.parentNode.removeChild(m); }
+    function toast(msg, undo){
+      var t = document.getElementById('td-toast');
+      t.innerHTML = esc(msg) + (undo ? '<button id="td-undo">Undo</button>' : '');
+      t.style.display = 'block';
+      clearTimeout(TD_TOAST_T);
+      TD_TOAST_T = setTimeout(function(){ t.style.display = 'none'; }, undo ? 25000 : 5000);
+      if(undo){ document.getElementById('td-undo').addEventListener('click', undo); }
+    }
+    function openMark(id, name){
+      closeModal();
+      var bg = document.createElement('div'); bg.className = 'td-modal-bg'; bg.id = 'td-modal';
+      bg.innerHTML = '<div class="td-modal"><h3>Mark reviewed</h3><p><b>' + esc(name) + '</b></p>' +
+        '<label for="td-date">Date of the review</label><input type="date" id="td-date" value="' + todayStr() + '">' +
+        '<div class="td-next" id="td-next">Working out the next review date...</div>' +
+        '<p style="font-size:12.5px;color:#6b6552;">By pressing Mark reviewed you are certifying that you looked at the live page and it is good until then.</p>' +
+        '<div class="td-actions"><button class="td-cancel" id="td-cancel">Cancel</button><button class="td-btn" id="td-confirm" disabled>Mark reviewed</button></div></div>';
+      document.body.appendChild(bg);
+      var preview = function(){
+        var d = document.getElementById('td-date').value;
+        document.getElementById('td-confirm').disabled = true;
+        post('/api/todo/mark-reviewed', {ids:[id], date:d, apply:false}).then(function(res){
+          var box = document.getElementById('td-next'); if(!box) return;
+          if(!res.ok){ box.textContent = 'Could not work out the date: ' + (res.error || 'unknown error'); return; }
+          var x = res.results[0];
+          box.innerHTML = 'Next review: <b>' + esc(x.review_due) + '</b><br><span style="font-size:12.5px;color:#4a5a4a;">' + esc(x.tier) + ' = every ' + x.interval_months +
+            ' months (' + esc(x.target) + '), moved ' + Math.abs(x.shift_days) + ' day' + (Math.abs(x.shift_days) === 1 ? '' : 's') + (x.shift_days < 0 ? ' earlier' : ' later') + ' to a quieter week.</span>';
+          document.getElementById('td-confirm').disabled = false;
+        });
+      };
+      document.getElementById('td-date').addEventListener('change', preview);
+      document.getElementById('td-cancel').addEventListener('click', closeModal);
+      bg.addEventListener('click', function(e){ if(e.target === bg) closeModal(); });
+      document.getElementById('td-confirm').addEventListener('click', function(){
+        var d = document.getElementById('td-date').value, btn = this; btn.disabled = true; btn.textContent = 'Saving...';
+        post('/api/todo/mark-reviewed', {ids:[id], date:d, apply:true}).then(function(res){
+          closeModal();
+          if(!res.ok){ toast('Not saved: ' + (res.error || 'unknown error')); return; }
+          var x = res.results[0];
+          if(res.todo) render(res.todo);
+          toast(name + ' marked reviewed. Next review ' + x.review_due + '.', function(){
+            post('/api/todo/undo-reviewed', {items:[{id:x.id, reviewed_on:x.prev_reviewed_on, review_due:x.prev_review_due}]}).then(function(u){
+              if(u.ok){ if(u.todo) render(u.todo); toast('Undone: ' + name + ' is back as it was.'); } else { toast('Could not undo: ' + (u.error || '')); }
+            });
+          });
+        });
+      });
+      preview();
+    }
+
     function load(){
       fetch('/api/todo').then(function(r){ return r.json(); }).then(function(d){ render(d.todo); })
         .catch(function(e){ document.getElementById('td-meta').textContent = 'Could not load: ' + e; });
@@ -10694,8 +10807,7 @@ def render_todo():
     document.getElementById('td-refresh').addEventListener('click', function(){
       var b = this; b.disabled = true; b.textContent = 'Refreshing (about a minute)...';
       document.getElementById('td-status').textContent = '';
-      fetch('/api/todo/refresh', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'})
-        .then(function(r){ return r.json(); })
+      post('/api/todo/refresh', {})
         .then(function(d){
           b.disabled = false; b.textContent = 'Refresh now';
           document.getElementById('td-status').textContent = d.ok ? 'Done. Commit data/published/maintenance_todo.json with your next commit.' : (d.error || 'Failed') + ' ' + (d.log || '');
@@ -12895,6 +13007,8 @@ API_ROUTES = {
     "/api/health":           handle_api_health,
     "/api/todo":             handle_api_todo,
     "/api/todo/refresh":     handle_api_todo_refresh,
+    "/api/todo/mark-reviewed": handle_api_todo_mark,
+    "/api/todo/undo-reviewed": handle_api_todo_undo,
     "/api/overview":         handle_api_overview,
     "/api/species":          handle_api_species_list,
     "/api/intake/list":      handle_api_intake_list,

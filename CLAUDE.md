@@ -152,8 +152,9 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
 15. **`reviewed_on` and `review_due` are MANUAL, forever.** `reviewed_on` means a person looked at the live
     page, thought about how it reflects the park, checked anything questionable, and certified it until the
     next review. No publisher, merge script, batch tool or nightly job ever writes either field, so a
-    refresh-all can never fake a review. Randy sets them by hand, or runs `assign_review_due.py` (the only
-    script allowed to write `review_due`, never `reviewed_on`) when he asks for it by name. The publisher may
+    refresh-all can never fake a review. Randy sets them by hand, or tells Claude "mark review complete" for a named species, and Claude runs
+    `mark_reviewed.py` (writes `reviewed_on` and the next `review_due`); `assign_review_due.py` (fills
+    missing `review_due` only, never `reviewed_on`) runs only when he asks for it by name. The publisher may
     read them to display the date; the merge tool aborts if either changes. Intervals by `feature_tier`:
     Feature 8 months, Standard 10, Background 12; review dates start 2026-11-30.
 
@@ -263,6 +264,7 @@ is editing the live screens.
 | `maintenance_todo.py` | | read-only on every master; writes `data/published/maintenance_todo.json`: pages to review, plants with stale observations, plants needing better pictures, placements to spot-check. Feature before Standard, Background never listed. Run by the To do tab's Refresh button |
 | `photo_wanted.py` | | the earlier, smaller version (stale and fewest-photos lists); `maintenance_todo.py` reuses its iNat helpers |
 | `check_inat_obscured.py` | | dry run by default; writes `inat_obscured` (true/false, a fact from iNaturalist's `taxon_geoprivacy`) on Randy's word, with a HEAD guard. `obscure_on_map` is Randy's own decision, set by hand; the publisher only reads it and builds no species map where it is true |
+| `mark_reviewed.py` | | on Randy's word ("mark review complete" for a named species): writes `reviewed_on` (today) and the next `review_due` (his tier interval, moved up to a month either way to the least crowded week). Dry run by default, HEAD guard |
 | `assign_review_due.py` | | dry run by default; writes `review_due` only (never `reviewed_on`), on Randy's word by name, with a HEAD guard |
 | `fetch_sheets.py` → `validate_promote.py` | | the sync, run by the Action |
 | `shrink.sh` | | JPEG size budget via sips; `DRY_RUN=1` prints a banner but still writes, verify before trusting |

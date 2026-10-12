@@ -83,7 +83,59 @@ def tier_of(r):
     return r.get("feature_tier") or "Standard"
 
 
+def build_review(plants, wild, today):
+    """The pages-to-review block, from review_due / reviewed_on on the published records. Fast: no iNaturalist."""
+    def rcard(r, kind):
+        return dict(id=r["id"], name=r["common_name"], kind=kind, tier=tier_of(r),
+                    reviewed_on=r.get("reviewed_on"), review_due=r.get("review_due"),
+                    interval_months=INTERVAL_MONTHS.get(tier_of(r), 10))
+    every = [rcard(r, "plant") for r in plants] + [rcard(r, "wildlife") for r in wild]
+    scheduled = [c for c in every if c["review_due"]]
+    soon = (today + datetime.timedelta(days=14)).isoformat()
+    due_now = sorted([c for c in scheduled if c["review_due"] <= soon], key=lambda c: (c["review_due"], c["tier"] != "Feature"))
+    unscheduled = sorted([c for c in every if not c["review_due"]], key=lambda c: (c["tier"] != "Feature", c["tier"] == "Background", c["name"]))
+    by_tier = {}
+    for t in ("Feature", "Standard", "Background"):
+        mine = [c for c in every if c["tier"] == t]
+        mine.sort(key=lambda c: (c["review_due"] or "9999-12-31", c["name"]))
+        for c in mine:
+            c["overdue"] = bool(c["review_due"] and c["review_due"] < today.isoformat())
+            c["due_soon"] = bool(c["review_due"] and c["review_due"] <= soon)
+        by_tier[t] = dict(total=len(mine), reviewed=len([c for c in mine if c.get("reviewed_on")]), first=mine[:12])
+    return dict(
+        counts=dict(species=len(every), scheduled=len(scheduled), not_scheduled=len(unscheduled),
+                    overdue=len([c for c in scheduled if c["review_due"] < today.isoformat()]),
+                    never_reviewed=len([c for c in every if not c.get("reviewed_on")])),
+        due_now=due_now[:30],
+        next_up=sorted([c for c in scheduled if c["review_due"] > soon], key=lambda c: c["review_due"])[:15],
+        not_scheduled_first=unscheduled[:15],
+        by_tier=by_tier)
+
+
+def _published():
+    plants = [r for r in json.load(open(SRC / "plant_signage.json", encoding="utf-8"))["species"] if r.get("status") == "html"]
+    wild = [r for r in json.load(open(SRC / "wildlife_signage.json", encoding="utf-8"))["species"] if r.get("status") == "html"]
+    return plants, wild
+
+
+def refresh_review_only():
+    """Replace only the review block of the existing maintenance_todo.json (instant; used after a review is marked).
+    Returns the updated document, or None if the file has never been built."""
+    try:
+        doc = json.load(open(OUT, encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    plants, wild = _published()
+    doc["review"] = build_review(plants, wild, datetime.date.today())
+    OUT.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    return doc
+
+
 def main():
+    if "--review-only" in sys.argv:
+        doc = refresh_review_only()
+        log("review block refreshed" if doc else "no maintenance_todo.json yet: run it without --review-only first")
+        return
     offline, dry = "--offline" in sys.argv, "--dry" in sys.argv
     today = datetime.date.today()
     plants = [r for r in json.load(open(SRC / "plant_signage.json", encoding="utf-8"))["species"] if r.get("status") == "html"]
@@ -99,22 +151,7 @@ def main():
     log(f"{len(plants)} plants, {len(wild)} wildlife published; {len(listed_plants)} plants listed (Background left out)")
 
     # ---- 1 review
-    def rcard(r, kind):
-        return dict(id=r["id"], name=r["common_name"], kind=kind, tier=tier_of(r),
-                    reviewed_on=r.get("reviewed_on"), review_due=r.get("review_due"),
-                    interval_months=INTERVAL_MONTHS.get(tier_of(r), 10))
-    every = [rcard(r, "plant") for r in plants] + [rcard(r, "wildlife") for r in wild]
-    scheduled = [c for c in every if c["review_due"]]
-    soon = (today + datetime.timedelta(days=14)).isoformat()
-    due_now = sorted([c for c in scheduled if c["review_due"] <= soon], key=lambda c: (c["review_due"], c["tier"] != "Feature"))
-    unscheduled = sorted([c for c in every if not c["review_due"]], key=lambda c: (c["tier"] != "Feature", c["tier"] == "Background", c["name"]))
-    review = dict(
-        counts=dict(species=len(every), scheduled=len(scheduled), not_scheduled=len(unscheduled),
-                    overdue=len([c for c in scheduled if c["review_due"] < today.isoformat()]),
-                    never_reviewed=len([c for c in every if not c.get("reviewed_on")])),
-        due_now=due_now[:30],
-        next_up=sorted([c for c in scheduled if c["review_due"] > soon], key=lambda c: c["review_due"])[:15],
-        not_scheduled_first=unscheduled[:15])
+    review = build_review(plants, wild, today)
 
     # ---- 2 stale and 3 photos (plants only)
     rows = park_observations(offline)
