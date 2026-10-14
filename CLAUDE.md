@@ -243,6 +243,7 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 | `photo_credits.json` | `{meta, photos:[…]}` | ~1,640 rows keyed by `psbp_id` + `photo_id` |
 | `photographer_names.json` | `{login: {display_name, credit_as?, note}}` | keyed by lowercase iNat login |
 | `placements.json` | `{meta, placements:[…]}` | where each specimen stands; READ ONLY for you |
+| `todo_snoozes.json` | `{meta, snoozes:[{id, until}]}` | plants Randy parked from the To do stale/picture lists until a date; written by Species Manager's To do tab, read by `maintenance_todo.py` |
 | `landmarks.json`, `park_geometry.json` | | the park polygon and named places |
 | `publish_state.json` | machine-owned | fingerprints for staleness; safe to delete |
 | `provenance/PSBP-xxxxx.json` | | AI draft/revise event log per species |
@@ -300,7 +301,7 @@ is editing the live screens.
 | `psbp_placements.py` | 8701 | placement pinning UI (collides with the plant publisher's port; run one at a time) |
 | `audit_psbp.py` | | read-only; sections PHOTOS CREDITS CONTENT PAGE LINK DISK INDEX R2 FK TAXA, `--only X`, `--json`; `--only R2` flags any publishable photo not in the media bucket (offline; `--r2-live` asks the bucket and refreshes the local record) |
 | `psbp_page_drift.py` | | read-only; the TRUE staleness check (renders and compares) |
-| `maintenance_todo.py` | | read-only on every master; writes `data/published/maintenance_todo.json`: pages to review, plants with stale observations, plants needing better pictures, placements to spot-check. Feature before Standard, Background never listed. Run by the To do tab's Refresh button |
+| `maintenance_todo.py` | | read-only on every master; writes `data/published/maintenance_todo.json`: pages to review, plants with stale observations, plants needing better pictures, placements to spot-check. Feature before Standard, Background never listed. Skips plants in `todo_snoozes.json` until their date; also lists last-30-day park observations not yet at species with one identifier (`needs_id`, links only, no observer or photo). Run by the To do tab's Refresh button |
 | `photo_wanted.py` | | the earlier, smaller version (stale and fewest-photos lists); `maintenance_todo.py` reuses its iNat helpers |
 | `check_inat_obscured.py` | | dry run by default; writes `inat_obscured` (true/false, a fact from iNaturalist's `taxon_geoprivacy`) on Randy's word, with a HEAD guard. `obscure_on_map` is Randy's own decision, set by hand; the publisher only reads it and builds no species map where it is true |
 | `mark_reviewed.py` | | on Randy's word ("mark review complete" for a named species): writes `reviewed_on` (today) and the next `review_due` (his tier interval, moved up to a month either way to the least crowded week). Dry run by default, HEAD guard |

@@ -13,6 +13,17 @@ feeders) is left out of lists 2 to 4 and never flagged.
                 more than 15 (the oldest are discard candidates)
   4 spot_check  which placements need someone to stand there and see whether the plant still exists (placements.json)
 
+TWO ADDITIONS (Randy, 2026-10-13).
+  snooze    Randy can park a plant that cannot be photographed or found right now (cut back to the ground, say).
+            `data/sources/todo_snoozes.json` holds {id, until}; a snoozed plant is left out of `stale` and
+            `photos` until that date arrives, so the lists fill from the next plants down. Species Manager's To do
+            tab writes the file; this script only reads it. The parked plants are echoed in `snoozed`.
+  needs_id  observations from the last 30 days, inside the park polygon, that are EITHER not at species yet (any
+            number of identifiers) OR at species with only ONE person's identification (usually the observer's own).
+            Newest first. Randy can snooze one for a date or "always" (observation_snoozes in the snooze file). For the
+            identifiers. Links to iNaturalist only: no observer, no photo, no place text (rule 7, and nobody is
+            tied to a person). Obscured observations are skipped; casual grade never appears (needs_id excludes it).
+
 THE REVIEW DATES ARE MANUAL, FOREVER. `reviewed_on` means a person looked at the live page, thought about how it
 reflects the park, looked for new stories, checked anything questionable, and certified it until the next review.
 `review_due` is the next date. This script only READS them. Nothing here, no publisher and no batch tool, ever
@@ -79,6 +90,186 @@ LIST_N, PHOTO_TARGET, PHOTO_CEILING = 10, 10, 15
 INTERVAL_MONTHS = {"Feature": 8, "Standard": 10, "Background": 12}
 
 
+SNOOZES = SRC / "todo_snoozes.json"
+NEEDS_ID_DAYS, NEEDS_ID_MAX = 30, 100
+FOREVER = "always"
+SPECIES_RANKS = ("species", "subspecies", "variety", "form", "hybrid", "infrahybrid", "genushybrid")
+
+
+def _read_snooze_doc():
+    try:
+        doc = json.load(open(SNOOZES, encoding="utf-8"))
+    except (OSError, ValueError):
+        doc = {}
+    return doc.get("snoozes", []), doc.get("observation_snoozes", [])
+
+
+def read_snoozes():
+    """{plant id: 'YYYY-MM-DD'} for every plant snooze on file (expired ones included; filter with active_snoozes)."""
+    return {x["id"]: x["until"] for x in _read_snooze_doc()[0] if x.get("id") and x.get("until")}
+
+
+def _live(until, today_iso):
+    return until == FOREVER or until > today_iso          # an observation snooze may be "always"
+
+
+def active_snoozes(today=None):
+    """Plant snoozes still in force: the plant comes back ON the until date."""
+    today = (today or datetime.date.today()).isoformat()
+    return {i: u for i, u in read_snoozes().items() if u > today}
+
+
+def active_obs_snoozes(today=None):
+    """{iNat observation id: {until, what}} still in force; until is a date or "always"."""
+    today = (today or datetime.date.today()).isoformat()
+    return {x["id"]: x for x in _read_snooze_doc()[1] if x.get("id") and x.get("until") and _live(x["until"], today)}
+
+
+def _write_snoozes(plants, observations):
+    doc = {"meta": {"note": "Parked from the To do lists until the date. snoozes = plants (stale observations, better "
+                            "pictures); observation_snoozes = iNaturalist observations on the Needs an ID list ('always' "
+                            "= never again). Written by Species Manager's To do tab; read by maintenance_todo.py. "
+                            "Expired rows are harmless."},
+           "snoozes": [{"id": i, "until": u} for i, u in sorted(plants.items())],
+           "observation_snoozes": sorted(observations, key=lambda x: x["id"])}
+    SNOOZES.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def snooze(pid, until):
+    """Park plant `pid` until `until` (YYYY-MM-DD, must be in the future). Re-reads the file first (CLAUDE.md rule 4)."""
+    datetime.date.fromisoformat(until)
+    if until <= datetime.date.today().isoformat():
+        raise ValueError("The date has to be after today.")
+    plants, _ = _published()
+    if pid not in {r["id"] for r in plants}:
+        raise ValueError(f"{pid} is not a published plant.")
+    cur = read_snoozes()
+    cur[pid] = until
+    _write_snoozes(cur, _read_snooze_doc()[1])
+    return refresh_snoozes_only()
+
+
+def unsnooze(pid):
+    cur = read_snoozes()
+    cur.pop(pid, None)
+    _write_snoozes(cur, _read_snooze_doc()[1])
+    return refresh_snoozes_only()
+
+
+def snooze_obs(oid, until):
+    """Park iNat observation `oid` until a date, or "always". The label (what it is called so far) is kept so the
+    Resting list can show it; it comes from the built list, and is public taxon text only."""
+    oid = int(oid)
+    if until != FOREVER:
+        datetime.date.fromisoformat(until)
+        if until <= datetime.date.today().isoformat():
+            raise ValueError("The date has to be after today.")
+    try:
+        items = json.load(open(OUT, encoding="utf-8")).get("needs_id", {}).get("items", [])
+    except (OSError, ValueError):
+        items = []
+    what = next((x["what"] for x in items if x["id"] == oid), "Observation")
+    rows = [x for x in _read_snooze_doc()[1] if x.get("id") != oid] + [dict(id=oid, until=until, what=what)]
+    _write_snoozes(read_snoozes(), rows)
+    return refresh_snoozes_only()
+
+
+def unsnooze_obs(oid):
+    oid = int(oid)
+    _write_snoozes(read_snoozes(), [x for x in _read_snooze_doc()[1] if x.get("id") != oid])
+    return refresh_snoozes_only()
+
+
+def snoozed_block(plants, today=None):
+    names = {r["id"]: r["common_name"] for r in plants}
+    return sorted(({"id": i, "name": names.get(i, i), "until": u} for i, u in active_snoozes(today).items()),
+                  key=lambda x: (x["until"], x["name"]))
+
+
+def snoozed_obs_block(today=None):
+    return sorted(({"id": i, "what": x.get("what") or "Observation", "until": x["until"],
+                    "url": f"https://www.inaturalist.org/observations/{i}"} for i, x in active_obs_snoozes(today).items()),
+                  key=lambda x: (x["until"] == FOREVER, x["until"], x["id"]))
+
+
+def refresh_snoozes_only():
+    """Apply the snooze file to the existing maintenance_todo.json at once (no iNaturalist): newly parked plants and
+    observations drop out, the Resting lists are rebuilt. A list is not refilled from further down until the next full
+    build, and anything whose snooze was lifted comes back at that build too. Returns the document, or None if never built."""
+    try:
+        doc = json.load(open(OUT, encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    plants, _ = _published()
+    parked, parked_obs = active_snoozes(), active_obs_snoozes()
+    for key in ("stale", "photos"):
+        for tier in ("feature", "standard"):
+            doc[key][tier] = [c for c in doc[key].get(tier, []) if c["id"] not in parked]
+    nid = doc.get("needs_id") or {}
+    nid["items"] = [x for x in nid.get("items", []) if x["id"] not in parked_obs]
+    nid["count"] = len(nid["items"])
+    doc["needs_id"] = nid
+    doc["snoozed"] = snoozed_block(plants)
+    doc["snoozed_observations"] = snoozed_obs_block()
+    OUT.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    return doc
+
+
+def build_needs_id(offline, previous=None):
+    """Last 30 days, inside the park polygon, and EITHER above species (any number of identifiers) OR at species with
+    exactly one identifier. Snoozed observations skipped. Newest first.
+    Returns the block, or `previous` (marked) when iNaturalist cannot be reached."""
+    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    keep = dict(previous or {}, stale=True) if previous else dict(generated=None, items=[], stale=True)
+    if offline:
+        return keep
+    try:
+        import species_manager as sm, time
+    except Exception as e:
+        log(f"needs_id: species_manager unavailable ({type(e).__name__}: {e})")
+        return keep
+    since = (datetime.date.today() - datetime.timedelta(days=NEEDS_ID_DAYS)).isoformat()
+    scope = sm.INAT_SCOPE.replace("&verifiable=any", "")        # v1 needs_id already means verifiable
+    found, page = [], 1
+    while page <= 5:
+        data = sm._inat_get("https://api.inaturalist.org/v1/observations?quality_grade=needs_id"
+                            f"&d1={since}&{scope}&per_page=200&page={page}&order_by=observed_on&order=desc")
+        if not data:
+            log(f"needs_id: iNat page {page} failed; keeping the previous list")
+            return keep
+        batch = data.get("results", [])
+        found.extend(batch)
+        if len(batch) < 200:
+            break
+        page += 1
+        time.sleep(1.0)
+    items = []
+    parked_obs = active_obs_snoozes()
+    for o in found:
+        if o.get("obscured") or o.get("geoprivacy") or o.get("taxon_geoprivacy") or not sm._in_park(o):
+            continue
+        if o.get("captive"):
+            continue
+        if o["id"] in parked_obs:
+            continue
+        t = o.get("taxon") or {}
+        # OR: anything above species wants help whoever has looked at it; a species-level guess wants a second
+        # opinion only while one person (usually the observer) has made it
+        voices = {(i.get("user") or {}).get("id") for i in o.get("identifications", [])
+                  if i.get("current") and i.get("taxon")}
+        if t.get("rank") in SPECIES_RANKS and len(voices) > 1:
+            continue
+        what = (t.get("preferred_common_name") or t.get("name")) if t else None
+        items.append(dict(id=o["id"], observed_on=o.get("observed_on") or "",
+                          url=f"https://www.inaturalist.org/observations/{o['id']}",
+                          group=(t.get("iconic_taxon_name") if t else None) or "Unknown",
+                          rank=t.get("rank") if t else None,
+                          what=what or "Not identified at all yet"))
+    items.sort(key=lambda x: (x["observed_on"], x["id"]), reverse=True)
+    log(f"needs_id: {len(found)} needs-ID observations in the box, {len(items)} qualify")
+    return dict(generated=stamp, window_days=NEEDS_ID_DAYS, count=len(items), items=items[:NEEDS_ID_MAX])
+
+
 def tier_of(r):
     return r.get("feature_tier") or "Standard"
 
@@ -131,6 +322,13 @@ def refresh_review_only():
     return doc
 
 
+def _previous_needs_id():
+    try:
+        return json.load(open(OUT, encoding="utf-8")).get("needs_id")
+    except (OSError, ValueError):
+        return None
+
+
 def main():
     if "--review-only" in sys.argv:
         doc = refresh_review_only()
@@ -148,6 +346,8 @@ def main():
             approved.setdefault(p["psbp_id"], []).append(p)
     names = {r["id"]: r for r in plants + wild}
     listed_plants = [r for r in plants if tier_of(r) != "Background"]
+    parked = active_snoozes(today)
+    log(f"{len(parked)} plants snoozed")
     log(f"{len(plants)} plants, {len(wild)} wildlife published; {len(listed_plants)} plants listed (Background left out)")
 
     # ---- 1 review
@@ -165,6 +365,8 @@ def main():
         log(f"{len(blind)} taxa had no in-park observation; roster fallback found a date for {len(approx)}")
     stats = []
     for r in listed_plants:
+        if r["id"] in parked:
+            continue                        # snoozed: out of stale and photos until its date
         ap = approved.get(r["id"], [])
         dates = [p["observed_on"] for p in ap if p.get("observed_on")]
         is_approx = False
@@ -241,10 +443,12 @@ def main():
                   schedule_start=SCHEDULE_START, inat="skipped" if offline else (("ok" if pw_complete() else "partial") if rows else "unavailable"),
                   placements_read=len(placements),
                   note="review dates are manual (a person certified the page); everything else is computed. Background plants are never listed."),
-        review=review, stale=stale, photos=photo_lists, too_many_photos=over, spot_check=spot)
+        review=review, stale=stale, photos=photo_lists, too_many_photos=over, spot_check=spot,
+        snoozed=snoozed_block(plants, today), snoozed_observations=snoozed_obs_block(today), needs_id=build_needs_id(offline, _previous_needs_id()))
 
     c = review["counts"]
     log(f"review: {c['scheduled']} scheduled, {c['not_scheduled']} not scheduled, {c['overdue']} overdue, {c['never_reviewed']} never reviewed")
+    log(f"needs_id: {result['needs_id'].get('count', 0)} listed")
     for label, lst in (("stale", stale), ("photos", photo_lists), ("too_many", over), ("spot_check", spot)):
         log(f"{label}: feature {len(lst['feature'])}, standard {len(lst['standard'])}")
     if dry:

@@ -10575,6 +10575,24 @@ def handle_api_todo_undo(params):
     return {"ok": True, "todo": todo}
 
 
+def handle_api_todo_snooze(params):
+    """POST /api/todo/snooze {id, until:'YYYY-MM-DD'}: park a plant out of the stale and picture lists until that date.
+    POST /api/todo/unsnooze {id}: bring it back (at the next Refresh). Add kind:'obs' for a Needs an ID observation
+    (its until may be 'always'). Writes only data/sources/todo_snoozes.json."""
+    body = params.get("_body") or {}
+    try:
+        import maintenance_todo
+        if body.get("kind") == "obs":
+            todo = (maintenance_todo.snooze_obs(body.get("id"), body["until"]) if body.get("until")
+                    else maintenance_todo.unsnooze_obs(body.get("id")))
+        else:
+            todo = (maintenance_todo.snooze(body.get("id") or "", body["until"]) if body.get("until")
+                    else maintenance_todo.unsnooze(body.get("id") or ""))
+    except Exception as e:                                        # noqa: BLE001
+        return {"ok": False, "error": str(e)}
+    return {"ok": True, "todo": todo}
+
+
 def render_todo():
     """To do tab: folder-style tabs, Feature / Standard / Background sections, and a Mark reviewed button.
     Raw string on purpose: the JS has braces and backslashes."""
@@ -10620,6 +10638,8 @@ def render_todo():
     .td-empty{font-size:13px;color:#7a828a;padding:8px 0;}
     .td-mark{flex:none;background:var(--td-g2);color:#fff;border:0;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
     .td-mark:hover{background:var(--td-g1);}
+    .td-snz{flex:none;background:none;color:#6b5d36;border:1px solid var(--td-edge);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+    .td-snz:hover{background:var(--td-manila);color:var(--td-g1);}
     /* confirm box + undo bar */
     .td-modal-bg{position:fixed;inset:0;background:rgba(20,30,20,.45);display:flex;align-items:center;justify-content:center;z-index:60;}
     .td-modal{background:var(--td-cream);border:1px solid var(--td-edge);border-top:5px solid var(--td-gold);border-radius:14px;padding:20px 22px;width:min(470px,92vw);box-shadow:0 14px 44px rgba(0,0,0,.3);}
@@ -10658,21 +10678,22 @@ def render_todo():
     function nameLine(c, sub, warn){
       return '<span class="td-name">' + esc(c.name) + '</span>' + (sub ? '<div class="td-sub' + (warn ? ' warn' : '') + '">' + esc(sub) + '</div>' : '');
     }
-    function rows(list, fmt, withMark){
+    function rows(list, fmt, withMark, withSnooze){
       if(!list || !list.length) return '<div class="td-empty">Nothing in this list.</div>';
       return list.map(function(c){
         return '<div class="td-row"><div class="td-rowmain">' + fmt(c) + '</div>' +
-               (withMark ? '<button class="td-mark" data-id="' + esc(c.id) + '" data-name="' + esc(c.name) + '">Mark reviewed</button>' : '') + '</div>';
+               (withMark ? '<button class="td-mark" data-id="' + esc(c.id) + '" data-name="' + esc(c.name) + '">Mark reviewed</button>' : '') +
+               (withSnooze ? '<button class="td-snz" data-id="' + esc(c.id) + '" data-name="' + esc(c.name) + '">Snooze</button>' : '') + '</div>';
       }).join('');
     }
     function zone(cls, title, count, inner){
       return '<div class="td-zone ' + cls + '"><div class="td-zhead">' + esc(title) +
              (count != null ? '<span class="td-zc">' + esc(count) + '</span>' : '') + '</div><div class="td-zbody">' + inner + '</div></div>';
     }
-    function twoTier(obj, fmt){
+    function twoTier(obj, fmt, withSnooze){
       obj = obj || {};
-      return zone('feature', 'Feature plants', (obj.feature || []).length + ' shown', rows(obj.feature, fmt)) +
-             zone('standard', 'Standard plants', (obj.standard || []).length + ' shown', rows(obj.standard, fmt));
+      return zone('feature', 'Feature plants', (obj.feature || []).length + ' shown', rows(obj.feature, fmt, false, withSnooze)) +
+             zone('standard', 'Standard plants', (obj.standard || []).length + ' shown', rows(obj.standard, fmt, false, withSnooze));
     }
     function total(o){ o = o || {}; return (o.feature || []).length + (o.standard || []).length; }
 
@@ -10704,6 +10725,18 @@ def render_todo():
       Array.prototype.forEach.call(document.querySelectorAll('.td-subtab'), function(b){
         b.addEventListener('click', function(){ showTab(this.getAttribute('data-tab')); });
       });
+      Array.prototype.forEach.call(document.querySelectorAll('.td-snz[data-id]'), function(b){
+        b.addEventListener('click', function(){
+          var id = this.getAttribute('data-id'), nm = this.getAttribute('data-name');
+          if(this.classList.contains('td-wake')) wakeNow(id, nm); else openSnooze(id, nm);
+        });
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('.td-snz[data-obs]'), function(b){
+        b.addEventListener('click', function(){
+          var id = this.getAttribute('data-obs'), nm = this.getAttribute('data-name');
+          if(this.classList.contains('td-wake')) wakeNow(id, nm, true); else openSnooze(id, nm, true);
+        });
+      });
       Array.prototype.forEach.call(document.querySelectorAll('.td-mark'), function(b){
         b.addEventListener('click', function(){ openMark(this.getAttribute('data-id'), this.getAttribute('data-name')); });
       });
@@ -10731,15 +10764,34 @@ def render_todo():
         {id:'review', title:'1. Pages to review', count:(c.species || 0) - (c.never_reviewed || 0) + ' done',
          note:'Look at the live page, tweak it, then press Mark reviewed. It records today and sets the next review date.', html: reviewPanel(r)},
         {id:'stale', title:'2. Stale observations', count:total(t.stale),
-         note:'Plants that have gone longest without an iNaturalist observation.',
-         html: twoTier(t.stale, function(x){ return nameLine(x, x.task + (x.where ? ' ' + x.where.slice(0, 150) + (x.where.length > 150 ? '...' : '') : '')); })},
+         note:'Plants that have gone longest without an iNaturalist observation. Snooze one that cannot be found right now (cut back, say); it returns on the date you pick.',
+         html: twoTier(t.stale, function(x){ return nameLine(x, x.task + (x.where ? ' ' + x.where.slice(0, 150) + (x.where.length > 150 ? '...' : '') : '')); }, true)},
         {id:'photos', title:'3. Better pictures', count:total(t.photos),
          note:'Fewest approved photos first (target 10).',
-         html: twoTier(t.photos, function(x){ return nameLine(x, x.photos + ' of ' + (x.of_target || 10) + ' photos' + (x.newest ? ' - newest ' + x.newest : '')); })},
+         html: twoTier(t.photos, function(x){ return nameLine(x, x.photos + ' of ' + (x.of_target || 10) + ' photos' + (x.newest ? ' - newest ' + x.newest : '')); }, true)},
         {id:'spot', title:'4. Spot checks', count:total(t.spot_check),
          note:'Placements nobody has confirmed lately (placements.json, read only).',
          html: twoTier(t.spot_check, function(x){ return nameLine(x, x.reason + ' ' + (x.area ? '(' + x.area + ')' : '')); })}
       ];
+      var parked = t.snoozed || [], parkedObs = t.snoozed_observations || [];
+      TD_PANELS.push({id:'rest', title:'Resting', count:parked.length + parkedObs.length,
+        note:'Snoozed from the observation and picture lists until the date shown, then they come back on their own. Wake now takes effect at the next Refresh.',
+        html: (parked.length ? zone('background', 'Snoozed plants', parked.length + ' resting', parked.map(function(x){
+          return '<div class="td-row"><div class="td-rowmain">' + nameLine(x, 'back on ' + x.until) + '</div><button class="td-snz td-wake" data-id="' + esc(x.id) + '" data-name="' + esc(x.name) + '">Wake now</button></div>';
+        }).join('')) : '') +
+        (parkedObs.length ? zone('standard', 'Snoozed observations', parkedObs.length + ' resting', parkedObs.map(function(x){
+          return '<div class="td-row"><div class="td-rowmain">' + nameLine({name: x.what}, x.until === 'always' ? 'snoozed for good' : 'back on ' + x.until) +
+                 '</div><a class="td-snz" href="' + esc(x.url) + '" target="_blank" rel="noopener" style="text-decoration:none;">Open</a>' +
+                 '<button class="td-snz td-wake" data-obs="' + esc(x.id) + '" data-name="' + esc(x.what) + '">Wake now</button></div>';
+        }).join('')) : '') + (parked.length || parkedObs.length ? '' : '<div class="td-empty">Nothing is snoozed.</div>')});
+      var nid = t.needs_id || {}, nitems = nid.items || [];
+      TD_PANELS.push({id:'needid', title:'5. Needs an ID', count:nitems.length,
+        note:'Park observations from the last ' + (nid.window_days || 30) + ' days that are not at species yet and have only one identifier. Newest first. For the identifiers.' + (nid.stale ? ' (iNaturalist could not be reached at the last build, so this is the earlier list.)' : ''),
+        html: nitems.length ? zone('feature', 'Waiting for a second opinion', nitems.length + ' observations', nitems.map(function(x){
+          return '<div class="td-row"><div class="td-rowmain">' + nameLine({name: x.what}, x.group + (x.rank ? ' - ' + x.rank : '') + ' - seen ' + x.observed_on) +
+                 '</div><a class="td-snz" href="' + esc(x.url) + '" target="_blank" rel="noopener" style="text-decoration:none;">Open</a>' +
+                 '<button class="td-snz" data-obs="' + esc(x.id) + '" data-name="' + esc(x.what) + '">Snooze</button></div>';
+        }).join('')) : '<div class="td-empty">Nothing waiting.</div>'});
       var over = t.too_many_photos || {};
       if(total(over)){
         TD_PANELS.push({id:'over', title:'Over the photo ceiling', count:total(over),
@@ -10798,6 +10850,44 @@ def render_todo():
         });
       });
       preview();
+    }
+
+    /* ---- Snooze: pick a date, plant leaves the stale and picture lists until then ---- */
+    function plusDays(n){ var d = new Date(); d.setDate(d.getDate() + n); return d.toLocaleDateString('en-CA'); }
+    function openSnooze(id, name, isObs){
+      closeModal();
+      var bg = document.createElement('div'); bg.className = 'td-modal-bg'; bg.id = 'td-modal';
+      bg.innerHTML = '<div class="td-modal"><h3>Snooze</h3><p><b>' + esc(name) + '</b></p>' +
+        '<p style="font-size:13px;color:#555;">It leaves the observation and picture lists until the date below, then comes back by itself.</p>' +
+        '<label for="td-until">Back on</label><input type="date" id="td-until" value="' + plusDays(90) + '" min="' + plusDays(1) + '">' +
+        '<div style="margin-top:8px;"><button class="td-cancel" data-d="30">1 month</button> <button class="td-cancel" data-d="90">3 months</button> <button class="td-cancel" data-d="182">6 months</button> <button class="td-cancel" data-d="365">1 year</button>' +
+        (isObs ? ' <button class="td-cancel" id="td-always">Always (never show it again)</button>' : '') + '</div>' +
+        '<div class="td-actions"><button class="td-cancel" id="td-cancel">Cancel</button><button class="td-btn" id="td-confirm">Snooze</button></div></div>';
+      document.body.appendChild(bg);
+      Array.prototype.forEach.call(bg.querySelectorAll('button[data-d]'), function(b){
+        b.addEventListener('click', function(){ document.getElementById('td-until').value = plusDays(parseInt(this.getAttribute('data-d'), 10)); });
+      });
+      document.getElementById('td-cancel').addEventListener('click', closeModal);
+      bg.addEventListener('click', function(e){ if(e.target === bg) closeModal(); });
+      var save = function(u, btn){
+        btn.disabled = true; btn.textContent = 'Saving...';
+        post('/api/todo/snooze', {id:id, until:u, kind: isObs ? 'obs' : 'plant'}).then(function(res){
+          closeModal();
+          if(!res.ok){ toast('Not saved: ' + (res.error || 'unknown error')); return; }
+          if(res.todo) render(res.todo);
+          toast(name + (u === 'always' ? ' snoozed for good.' : ' snoozed until ' + u + '.') + ' The list refills from further down at the next Refresh. Commit data/sources/todo_snoozes.json.');
+        });
+      };
+      document.getElementById('td-confirm').addEventListener('click', function(){ save(document.getElementById('td-until').value, this); });
+      var al = document.getElementById('td-always');
+      if(al) al.addEventListener('click', function(){ save('always', this); });
+    }
+    function wakeNow(id, name, isObs){
+      post('/api/todo/unsnooze', {id:id, kind: isObs ? 'obs' : 'plant'}).then(function(res){
+        if(!res.ok){ toast('Not saved: ' + (res.error || 'unknown error')); return; }
+        if(res.todo) render(res.todo);
+        toast(name + ' will be back on the lists at the next Refresh.');
+      });
     }
 
     function load(){
@@ -12581,6 +12671,76 @@ def _placements_on_file(species_id):
             for a, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))]
 
 
+# ── The species dossier (added 2026-10-13, Randy approved the wording as text).
+# park-library/species-editorial/ keeps one dossier per species: what past editors
+# rejected, held back, or set aside, and why. The model must see it, or it can add
+# back a fact we already killed whenever its searches "confirm" it. Fails open:
+# if park-library is not next to this repo, or the dossier is missing, nothing is
+# added and the button works exactly as before.
+_WORK_DOSSIER_BLOCK = (
+    "\n\nTHE SPECIES DOSSIER. The user message includes this species' dossier from the "
+    "park's private editorial notes: what past editors rejected, held back or set aside, "
+    "and why. Treat every item under REJECTED, HELD and DO NOT RE-ADD as settled. Do not "
+    "put it back on the page, even if your searches appear to confirm it, unless the "
+    "editor's notes ask for it, and then say so in _summary. If your searches turn up a "
+    "new fact, check it against the dossier first. You cannot edit the dossier: in "
+    "_summary, list in one line each any new fact you looked at and rejected or held, so "
+    "it can be recorded."
+)
+_DOSSIER_DIR = os.path.normpath(os.path.join(REPO, "..", "park-library",
+                                             "species-editorial", "species"))
+
+
+def _dossier_highlights(species_id, kingdom, limit=6000):
+    """Short text of the species' dossier for the model, or "" if there is none.
+    Keeps: Before you edit, To confirm or fix on the live page, and the first
+    column of the rejected (3), held (4) and set-aside (5) rows."""
+    try:
+        sub = "plants" if kingdom == "plants" else "wildlife"
+        d = os.path.join(_DOSSIER_DIR, sub)
+        if not os.path.isdir(d):
+            return ""
+        name = next((f for f in sorted(os.listdir(d))
+                     if f.startswith(species_id + "-") and f.endswith(".md")), None)
+        if not name:
+            return ""
+        with open(os.path.join(d, name), encoding="utf-8") as fh:
+            text = fh.read()
+
+        def section(head):
+            i = text.find(head)
+            if i < 0:
+                return ""
+            m = re.search(r"\n## ", text[i + len(head):])
+            return text[i:i + len(head) + (m.start() if m else len(text))].strip()
+
+        out = []
+        if "STUB (script-built" in text:
+            out.append("(This dossier is a STUB: its evidence has not been judged. Treat "
+                       "every removed item below as probably set aside on purpose.)")
+        for head in ("## Before you edit", "## To confirm or fix on the live page"):
+            sec = section(head)
+            if sec:
+                out.append(sec)
+        for head, label in (("## 3.", "REJECTED OR REMOVED (do not re-add)"),
+                            ("## 4.", "HELD (not on the page until resolved)"),
+                            ("## 5.", "SET ASIDE (true but left out)")):
+            rows = []
+            for ln in section(head).split("\n"):
+                if ln.startswith("|") and not re.match(r"\|[-| :]+\|$", ln):
+                    cell = ln.strip("|").split("|")[0].strip()
+                    if cell and not cell.lower().startswith(("claim", "fact", "what the page")):
+                        rows.append("- " + (cell if len(cell) <= 200 else cell[:200] + "…"))
+                elif ln.startswith("- **") and ("replaced" in ln or "last seen" in ln):
+                    rows.append(ln[:240])
+            if rows:
+                out.append(label + ":\n" + "\n".join(rows[:40]))
+        res = "\n\n".join(out)
+        return res if len(res) <= limit else res[:limit] + "\n[dossier cut for length]"
+    except Exception:
+        return ""
+
+
 def _ai_build_work_messages(species, kingdom, notes, placements=None):
     """(system, user) for the one-button pass. Plants in page mode only."""
     spec = _draft_spec(kingdom, True)
@@ -12610,7 +12770,8 @@ def _ai_build_work_messages(species, kingdom, notes, placements=None):
               sci_field: species.get(sci_field, ""),
               "family": tax.get("family", ""), "category": species.get("category", "")}
 
-    system = _HOUSE_RULES + _WORK_SYSTEM_BLOCK
+    dossier = _dossier_highlights(species.get("id", ""), kingdom)
+    system = _HOUSE_RULES + _WORK_SYSTEM_BLOCK + (_WORK_DOSSIER_BLOCK if dossier else "")
     notes = (notes or "").strip()
 
     user = (
@@ -12643,6 +12804,7 @@ def _ai_build_work_messages(species, kingdom, notes, placements=None):
         + (f"Here are {len(exemplars)} existing published pages from this park, for TONE, "
            "depth and structure only — match this quality; do NOT reuse their facts:\n"
            f"{json.dumps(exemplars, indent=2, ensure_ascii=False)}\n\n" if exemplars else "")
+        + (f"THE SPECIES DOSSIER (decisions already made for this species; see the system note):\n{dossier}\n\n" if dossier else "")
         + f"{_CRAFT_RULES_PLANT_PAGE if kingdom == 'plants' else _CRAFT_RULES_WILDLIFE_PAGE}\n\n"
         "EDITOR'S NOTES — read these before you write anything. They are from the person "
         "who runs this park's pages and are the most important input you have:\n"
@@ -13009,6 +13171,8 @@ API_ROUTES = {
     "/api/todo/refresh":     handle_api_todo_refresh,
     "/api/todo/mark-reviewed": handle_api_todo_mark,
     "/api/todo/undo-reviewed": handle_api_todo_undo,
+    "/api/todo/snooze":      handle_api_todo_snooze,
+    "/api/todo/unsnooze":    handle_api_todo_snooze,
     "/api/overview":         handle_api_overview,
     "/api/species":          handle_api_species_list,
     "/api/intake/list":      handle_api_intake_list,
