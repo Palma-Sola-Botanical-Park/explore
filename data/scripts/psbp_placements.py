@@ -105,7 +105,7 @@ def file_rev(path=PLACEMENTS):
 
 
 def load_species():
-    """Published plants only — a sign placement for a draft page is premature."""
+    """Published and spotted plants. Research candidates stay out until they are spotted."""
     data = _read(PLANT_SIGNAGE, {"species": []})
     return [
         {
@@ -115,7 +115,7 @@ def load_species():
             "k": s.get("category") or "",
         }
         for s in data.get("species", [])
-        if s.get("status") == "html"
+        if s.get("status") in ("html", "spotted")
     ]
 
 
