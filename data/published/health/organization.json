@@ -1,7 +1,7 @@
 {
   "tab": "organization",
   "human": "Board members and front office staff — one row per person.",
-  "generated_at": "2026-10-13T16:18:21+00:00",
+  "generated_at": "2026-10-15T13:03:22+00:00",
   "status": "amber",
   "published": true,
   "block_reason": null,
@@ -11,7 +11,7 @@
     "published": 15,
     "dropped_display": 0,
     "quarantined": 0,
-    "warned": 1
+    "warned": 2
   },
   "volume_guard": {
     "min": 1,
@@ -63,9 +63,13 @@
       "scope": "field",
       "status": "amber",
       "evaluated": 15,
-      "passed": 14,
-      "flagged": 1,
+      "passed": 13,
+      "flagged": 2,
       "examples": [
+        {
+          "row": "row",
+          "reason": "'placeholder' is not an allowed value"
+        },
         {
           "row": "row",
           "reason": "'placeholder' is not an allowed value"
@@ -80,6 +84,12 @@
       "added": 1,
       "changed": 0,
       "removed": 1
+    },
+    {
+      "at": "2026-10-15T13:03:22+00:00",
+      "added": 0,
+      "changed": 1,
+      "removed": 0
     }
   ],
   "schema": {
