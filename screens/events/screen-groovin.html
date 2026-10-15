@@ -1851,13 +1851,16 @@ function qrUrlOf(row, fallback){
           || fallback || '').trim();
 }
 
-/* A QR has to carry somewhere a phone can actually go, so repo-relative paths
-   like "docs/news/Hort_Magazine.pdf" get resolved against the page's own URL
-   before they're encoded. */
+/* Feed paths belong to the repository root, including /docs/... entries.
+   Resolve them against BASE, which already climbs out of screens/events/.
+   A localhost preview uses the public BASE so phones get a public URL too. */
 function absUrl(u){
   if(!u) return '';
   if(/^https?:/i.test(u)) return u;
-  try { return new URL(u.replace(/^\//,''), location.href).href; }
+  try {
+    if(/^\/\//.test(u)) return new URL(u, location.href).href;
+    return new URL(u.replace(/^\/+/,''), new URL(BASE || './', location.href)).href;
+  }
   catch(e){ return u; }
 }
 
