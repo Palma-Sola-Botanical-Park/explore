@@ -779,7 +779,8 @@ body.paper-active .credit .lbl,body.paper-active .credit .terms{color:#627144}
 .slide.jazz-feature .qr-card img{width:12vmin;height:12vmin}
 .jazz-poster{position:relative;z-index:3;margin:0;flex:0 0 auto;width:36vw;max-width:70vmin}
 .jazz-poster img{display:block;width:100%;max-height:72vmin;object-fit:contain;padding:.8vmin;background:#fffdf5;outline:1px solid #a9af80;outline-offset:1vmin;box-shadow:0 1vmin 4vmin #25371f29}
-.slide.jazz-feature .music-quiet{left:auto;right:4vw;width:30vw;height:5vmin;opacity:.35}
+.slide.jazz-feature .music-quiet{left:4vw;right:4vw;bottom:2.8vmin;width:auto;height:3.3vmin;opacity:.24}
+.slide.jazz-feature .music-quiet img{bottom:-4.8vmin}
 .slide.community-story{align-items:center;gap:5vw;justify-content:center;padding:11vmin 6vw 9vmin}
 .slide.community-story .copy{padding:0;flex:0 0 40vw;width:40vw;max-width:40vw!important}
 .slide.community-story .eyebrow{font-size:2.4vmin;letter-spacing:.17em}
@@ -859,6 +860,12 @@ body.nature-active .credit .who{color:#204b33}
 /* The shared program footer stays clear of the photo credit and crew tiles. */
 .slide.bf-photo .bf-program{position:static;width:100%;margin-top:4vmin}
 .slide.bf-crew .crewgrid{bottom:24vmin}
+
+/* The magazine feature's subject sits on the left of its photograph. */
+.slide.nature-page.horticulture-feature{justify-content:flex-end}
+.slide.nature-page.horticulture-feature .copy{margin:0 6.9vmin 9vmin 0}
+.slide.nature-page.horticulture-feature .qr{left:8vmin;right:auto}
+body.nature-active.horticulture-active .credit{left:6.9vmin;right:auto;text-align:left}
 
 </style>
 </head>
@@ -1558,6 +1565,7 @@ function slideNews(n){
   var beats = beatsFrom([n.blurb, n.intro, n.body2], 3);
   var art = artFor(n, n.hero_image ? BASE+n.hero_image : null);
   return fromArt(art, {
+    cls: /horticulture magazine/i.test(n.headline||'')||/Hort_Magazine\.pdf/i.test(n.link_url||'')?'horticulture-feature':'',
     /* Set here, so fromArt() leaves it alone: a story with three turns needs
        longer than a species photo. */
     seconds: art.poster ? Math.round(SECONDS * 1.6)
@@ -2766,8 +2774,10 @@ var GROOVIN = {
 var BF = {photos:[],people:[],species:0,showcase:[],crew:[]};
 /* Feature-tier species supply the nature artwork in this event deck.
    Preserve the complete catalog for lookup, credits and truthful totals. */
+var EVENT_EXCLUDED_SPECIES={'PSBP-00033':true}; // Wild Lime: excluded from this one-time event deck.
+function eventSpeciesAllowed(id){return !EVENT_EXCLUDED_SPECIES[id];}
 function featurePhoto(s){
-  return !!(s && s.photo && String(s.tier||'').trim().toLowerCase()==='feature');
+  return !!(s && eventSpeciesAllowed(s.id) && s.photo && String(s.tier||'').trim().toLowerCase()==='feature');
 }
 var buildNormalGroups=buildGroups;
 buildGroups=function(){
@@ -2937,14 +2947,15 @@ function slideStudentSummary(){
       brightFuturesProgramFooter()};
 }
 function nextStudentPhoto(){
-  var pool=BF.showcase.length?BF.showcase:BF.photos;
+  var pool=BF.showcase.filter(function(p){return eventSpeciesAllowed(p.psbp_id);});
+  if(!pool.length)pool=BF.photos.filter(function(p){return eventSpeciesAllowed(p.psbp_id);});
   if(!pool.length) return null;
   var fresh=pool.filter(function(p){return bfUsed.indexOf(String(p.photo_id))<0;});
   if(!fresh.length){bfUsed=[];fresh=pool;}
   var p=pick(fresh);bfUsed.push(String(p.photo_id));return p;
 }
 function slideStudentPhoto(selected){
-  var p=selected||nextStudentPhoto();if(!p)return null;
+  var p=selected&&eventSpeciesAllowed(selected.psbp_id)?selected:nextStudentPhoto();if(!p)return null;
   return {id:'student-photo-'+p.photo_id,cls:'bf-photo',seconds:SECONDS*1.35,
     preload:[BASE+'images/psbp_logo_green.png',BASE+'images/logos/bright-futures.png'],
     photoArt:{src:mediaOf(p,'original'),fb:mediaOf(p,'web')||p.photo_url,alt:p.common_name||'Student nature photograph'},
@@ -3701,6 +3712,7 @@ render=function(s){
   if(nature)asNaturePage(s);
   var duration=renderBeforeNatureDesign(s);
   document.body.classList.toggle('nature-active',nature);
+  document.body.classList.toggle('horticulture-active',nature&&/\bhorticulture-feature\b/.test(s.cls||''));
   if(nature){
     var trim=document.createElement('div'),art=document.createElement('img');trim.className='nature-music-trim';trim.setAttribute('aria-hidden','true');
     art.src=MUSIC_ART;art.alt='';trim.appendChild(art);cur.appendChild(trim);
