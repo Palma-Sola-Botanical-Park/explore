@@ -2862,6 +2862,7 @@ loadAll=function(){
       var copy=Object.assign({},r);
       /* Randy confirmed 6–9 pm on 2026-10-14. Override in this deck only. */
       if(/winter nights/i.test(copy.title||''))copy.time='6PM - 9PM';
+      if(/shakespeare/i.test(copy.title||''))copy.description=String(copy.description||'').replace(/\bSDMC\b/g,'Manatee County');
       return copy;
     });
     D.classes=D.classes.filter(botanicalClass);
