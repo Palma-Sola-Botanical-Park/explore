@@ -656,11 +656,12 @@ body.paper-active .credit .lbl,body.paper-active .credit .terms{color:#627144}
 .slide.pops-slide.soft-paper{align-items:center}
 .slide.pops-slide.soft-paper .bg img{opacity:1;filter:none;animation:none!important}
 .slide.pops-slide.soft-paper .scrim{background:transparent}
-.slide.pops-slide.soft-paper .copy{width:63vw;max-width:63vw;padding-top:8vmin;padding-bottom:0}
-.slide.pops-slide .headline{font-size:6.6vmin;line-height:1.05}
+.slide.pops-slide.soft-paper .copy{width:67vw;max-width:67vw;padding-top:8vmin;padding-left:7.5vw;padding-bottom:0}
+.slide.pops-slide.soft-paper .copy::before{content:"";position:absolute;z-index:-1;inset:5vmin -2vw -3vmin 4vw;background:rgba(251,248,234,.94);filter:blur(2.2vmin);border-radius:5vmin;pointer-events:none}
+.slide.pops-slide .headline{font-size:7.7vmin;line-height:1.04}
 .pops-history{font:italic 3.4vmin/1.3 var(--serif);color:#747f30;margin-top:2.4vmin}
-.slide.pops-slide .body{max-width:51ch;font-size:3.05vmin;line-height:1.45;margin-top:2.2vmin}
-.pops-brand{top:25vmin;left:73vw;right:auto;transform:translateX(-50%);width:21vmin;height:21vmin;padding:0;background:transparent}
+.slide.pops-slide .body{max-width:56ch;font-size:3.2vmin;line-height:1.45;margin-top:2.2vmin}
+.pops-brand{top:26vmin;left:73vw;right:auto;transform:translateX(-50%);width:23vmin;height:23vmin;padding:0;background:transparent}
 .slide.pops-slide .qr{left:73vw;right:auto;bottom:15vmin;transform:translateX(-50%)}
 .slide.pops-slide .qr img{width:19vmin;height:19vmin}
 .slide.pops-slide .qr .cap{font-size:1.8vmin;max-width:25vmin;color:#52662e}
@@ -671,6 +672,61 @@ body.paper-active .credit .lbl,body.paper-active .credit .terms{color:#627144}
 .concert-date{font:600 2.1vmin/1.2 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#758036}
 .pops-concerts b{font:700 3.7vmin/1.15 var(--serif);color:#204b33}
 .concert-note{font-size:2.1vmin;line-height:1.25;color:#53644a;max-width:48ch}
+
+/* A lighter companion to the illustrated welcome, on plain announcements. */
+.announcement-edges{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.announcement-edges svg{position:absolute;overflow:visible}
+.edge-sprig{right:1.3vw;top:7vmin;width:24vw;height:49vmin;opacity:.58}
+.edge-meadow{left:1.1vw;bottom:3.2vmin;width:28vw;height:32vmin;opacity:.53}
+.announcement-edges .twig{stroke:#788447;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.announcement-edges .twig.faint{stroke-width:1;opacity:.45}
+.announcement-edges .leaf{fill:#98a653;fill-opacity:.64}
+.announcement-edges .gold-dot{fill:#bc9a42;fill-opacity:.8}
+.announcement-edges .gold-line{stroke:#bc9a42;stroke-width:1.5;stroke-linecap:round;opacity:.68}
+
+/* Patron pages have the restraint of an engraved thank-you; invitations
+   retain airy botanical corners. These accents stay outside the text. */
+.garden-patron .copy{width:76vw;max-width:76vw!important;padding:5vmin 5vw!important;border:1px solid #a6ad7d66;border-radius:.5vmin;background:#fffdf477;box-shadow:0 1vmin 5vmin #62552b09}
+.garden-patron .headline{font-size:6.6vmin}
+.garden-patron .body{max-width:46ch;font-size:2.9vmin}
+.garden-patron .edge-sprig{right:2vw;top:auto;bottom:4vmin;width:17vw;height:31vmin;transform:rotate(8deg);opacity:.4}
+.garden-patron .edge-meadow{left:1.5vw;bottom:4vmin;width:20vw;height:25vmin;opacity:.4}
+.garden-venue .edge-sprig{right:2vw;top:9vmin;width:18vw;height:38vmin;transform:rotate(-8deg)}
+.garden-venue .edge-meadow{left:1vw;bottom:2vmin;width:33vw;height:37vmin}
+
+/* The donor's work is the picture, with a generous clear reading column. */
+.slide.donor-story{align-items:center;justify-content:center;gap:5vw;padding:12vmin 6vw 9vmin}
+.slide.donor-story .copy{padding:0;flex:0 0 36vw;width:36vw;max-width:36vw;text-align:left}
+.slide.donor-story .headline{font-size:6vmin;line-height:1.05}
+.slide.donor-story .body{font-size:2.9vmin;line-height:1.45;max-width:32ch}
+.slide.donor-story .logo{margin-bottom:3vmin}
+.donor-art{position:relative;z-index:3;margin:0;flex:0 0 45vw;width:45vw;display:flex;flex-direction:column;gap:2vmin}
+.donor-art img{width:100%;max-height:66vmin;object-fit:contain;background:#fffdf6;padding:.8vmin;box-shadow:0 1vmin 4vmin #25371f29;outline:1px solid #a9af80;outline-offset:1vmin}
+.donor-art figcaption{font:italic 2.4vmin/1.3 var(--serif);color:#7c7f41;text-align:center}
+.slide.donor-story::after{content:"";position:absolute;left:6vw;bottom:8vmin;width:24vw;height:1px;background:linear-gradient(90deg,#af9b55,transparent)}
+
+/* Bright Futures achievements read as a designed recognition page. */
+.slide.bf-summary .bf-metrics{gap:1.2vmin}
+.slide.bf-summary .bf-metrics>div{padding-bottom:.8vmin;border-bottom:1px solid #a8ad7d55;background:linear-gradient(90deg,#fffdf455,transparent)}
+.slide.bf-summary .bf-rosters{border:1px solid #abb08777;border-radius:.6vmin;background:linear-gradient(135deg,#fffdf6bb,#eee8d455);box-shadow:0 .8vmin 3vmin #5362380b}
+.slide.bf-summary .bf-rosters::before{content:"STUDENT PHOTOGRAPHERS";position:absolute;top:2.7vmin;left:3vmin;font:700 1.7vmin/1.3 var(--sans);letter-spacing:.19em;color:#78813b}
+.slide.bf-summary .bf-roster-page{inset:6vmin 3vmin 2.5vmin}
+
+/* A centered pair closes the gap beside portrait photos. The frame follows
+   each photograph's real dimensions rather than a fixed empty image box. */
+.slide.bf-photo{align-items:center;justify-content:center;gap:5vmin;padding:11vmin 6vw 14vmin}
+.slide.bf-photo .copy{flex:0 0 30vw;width:30vw;max-width:30vw;padding:0 0 0 2.2vw;border-left:2px solid #a6a35d}
+.slide.bf-photo .body{max-width:27ch}
+.bf-photo-art{position:relative;left:auto;right:auto;top:auto;bottom:auto;flex:0 1 auto;flex-direction:column;gap:2.1vmin;max-width:53vw;max-height:69vmin}
+.bf-photo-art img{width:auto;height:auto;max-width:53vw;max-height:60vmin;padding:.7vmin;background:#fffdf5;outline:1px solid #a9af80;outline-offset:.8vmin;box-shadow:0 .8vmin 3.5vmin #25371f26}
+.bf-photo-species{position:static;right:auto;left:auto;bottom:auto;font:italic 2.5vmin/1.25 var(--serif);color:#687745!important}
+.slide.crew-gallery .copy{padding-top:11vmin}
+.slide.crew-gallery .copy::after{content:"";display:block;width:11vmin;height:2px;background:#b2a35f;margin-top:2vmin}
+.crewgrid .ct .sh{background:#fffdf5;box-shadow:0 .5vmin 2vmin #4a48212b}
+.crewgrid .ct.gold .sh{background:#b4aa70}
+.pops-season .pops-concerts{width:54vw;max-width:100%;gap:1.3vmin}
+.pops-season .pops-concerts>div{padding:1.35vmin 2vmin;border-left:2px solid #ae9b51;border-bottom:1px solid #a5ad7544;background:linear-gradient(90deg,#fffdf4cc,#fffdf455)}
+.pops-season .concert-note{max-width:60ch}
 
 </style>
 </head>
@@ -2684,7 +2740,7 @@ function slideGroovinWelcome(){
 function slidePops(){
   return {id:'pops',cls:'pops-slide',bg:POPS_ART,seconds:SECONDS*1.5,
     html:'<div class="eyebrow">Our musical guests</div>'+
-      '<div class="headline">The Pops Orchestra<br>of Bradenton &amp; Sarasota</div>'+
+      '<div class="headline">The Pops Orchestra of<br>Bradenton &amp; Sarasota</div>'+
       '<div class="pops-history">Making music on the Suncoast since 1975</div>'+
       '<div class="body">The Jazz Combo you’re hearing today is part of a 65-piece nonprofit orchestra led by Dr. Robyn Bell.</div>'+
       '<div class="body">Your gift supports live music and opportunities for young musicians.</div>'+
@@ -2732,8 +2788,8 @@ function nextStudentPhoto(){
   if(!fresh.length){bfUsed=[];fresh=pool;}
   var p=pick(fresh);bfUsed.push(String(p.photo_id));return p;
 }
-function slideStudentPhoto(){
-  var p=nextStudentPhoto();if(!p)return null;
+function slideStudentPhoto(selected){
+  var p=selected||nextStudentPhoto();if(!p)return null;
   return {id:'student-photo-'+p.photo_id,cls:'bf-photo',seconds:SECONDS*1.35,
     photoArt:{src:mediaOf(p,'original'),fb:mediaOf(p,'web')||p.photo_url,alt:p.common_name||'Student nature photograph'},
     credit:{name:studentCredit(p),terms:(p.license||'').replace(/^CC-/,'CC ')+' · via iNaturalist'},
@@ -2810,6 +2866,17 @@ function crewSwap(grid,rows){
   });
 }
 FAMILY.student_summary='students';FAMILY.student_photo='students';FAMILY.student_crew='students';FAMILY.pops='pops';FAMILY.pops_season='pops';
+function slideGroovinAsk(a){
+  var s=slideAsk(a);
+  s.announcementStyle=/Bishop Parker/.test(a.title||'')?'donor-photo':
+    /Foundation/.test(a.title||'')?'patron':/Galleria/.test(a.title||'')?'venue':'invitation';
+  /* An identifiable improvement deserves a visible photograph, rather than
+     the faint background treatment used on everyday park announcements. */
+  if(s.announcementStyle==='donor-photo'&&screenImage(a)){
+    s.bg=null;s.ask=false;s.donorPhoto=screenImage(a);s.cls='donor-story';
+  }
+  return s;
+}
 function withWelcomeBreaks(items){
   var turns=Math.max(1,Math.round(items.length/(GROOVIN.welcomeEvery-1))),out=[];
   for(var t=0;t<turns;t++){
@@ -2845,14 +2912,19 @@ function groovinDeck(){
   }
   if(BF.crew.length)for(i=0;i<GROOVIN.crewGalleries;i++)pool.push({type:'student_crew',make:slideStudentCrew});
   /* Two park announcements a cycle, with The Pops as a third ask. */
-  add('ask',D.announcements,slideAsk,2);
+  add('ask',D.announcements,slideGroovinAsk,2);
   pool.push({type:'pops',make:slidePops});
   if(POPS_CONCERTS.some(function(c){return daysUntil(c.end)>=0;}))pool.push({type:'pops_season',make:slidePopsSeason});
   return withWelcomeBreaks(interleave(pool));
 }
 buildDeck=groovinDeck;
-var reviewBuilders={welcome:slideGroovinWelcome,pops:slidePops,season:slidePopsSeason,students:slideStudentSummary,photo:slideStudentPhoto,crew:slideStudentCrew,
-  ask:function(){return slideAsk(D.announcements[0]);},
+var reviewBuilders={welcome:slideGroovinWelcome,pops:slidePops,season:slidePopsSeason,students:slideStudentSummary,
+  photo:function(){return slideStudentPhoto(Q.has('photo')?BF.showcase[Number(Q.get('photo'))||0]:null);},crew:slideStudentCrew,
+  ask:function(){return slideGroovinAsk(D.announcements[Number(Q.get('announcement'))||0]||D.announcements[0]);},
+  event:function(){return slideEvent(upcoming(D.events)[Number(Q.get('item'))||0]);},
+  news:function(){return slideNews(D.news[Number(Q.get('item'))||0]);},
+  volunteer:function(){return slideVolunteer(D.volunteer[Number(Q.get('item'))||0]);},
+  spotlight:slideSpotlight,ambient:slideAmbient,
   collection:slideCollection,
   winter:function(){return slideEvent(D.events.filter(function(e){return /winter nights/i.test(e.title);})[0]);},
   shakespeare:function(){return slideEvent(D.events.filter(function(e){return /shakespeare/i.test(e.title);})[0]);}};
@@ -2860,11 +2932,32 @@ if(reviewBuilders[Q.get('review')]){
   buildDeck=function(){return [{type:Q.get('review'),make:reviewBuilders[Q.get('review')]}];};
 }
 var eventRender=render;
+/* Original corner ornaments echo the welcome's garden palette without
+   repeating its illustrated border. The readable center stays open. */
+function announcementEdges(){
+  return '<div class="announcement-edges" aria-hidden="true">'+
+    '<svg class="edge-sprig" viewBox="0 0 360 410" fill="none" xmlns="http://www.w3.org/2000/svg">'+
+      '<path class="twig" d="M358 12C250 78 327 209 180 393M308 91L238 60M304 153L355 105M280 218L212 180M244 288L314 257M214 338L149 315"/>'+
+      '<path class="leaf" d="M304 92Q233 112 225 48Q283 40 304 92ZM303 154Q310 87 359 87Q373 139 303 154ZM281 218Q216 229 202 167Q259 158 281 218ZM244 289Q263 224 325 246Q314 298 244 289ZM213 339Q150 355 138 301Q185 289 213 339Z"/>'+
+      '<path class="twig faint" d="M336 26C311 111 354 227 267 350"/>'+
+      '<circle class="gold-dot" cx="244" cy="115" r="5"/><circle class="gold-dot" cx="333" cy="209" r="3"/><circle class="gold-dot" cx="175" cy="276" r="4"/>'+
+    '</svg>'+
+    '<svg class="edge-meadow" viewBox="0 0 380 270" fill="none" xmlns="http://www.w3.org/2000/svg">'+
+      '<path class="twig" d="M8 268C72 211 116 211 199 95M49 236L42 174M91 215L149 209M133 177L117 130M167 138L213 136"/>'+
+      '<path class="leaf" d="M49 237Q18 210 35 162Q70 183 49 237ZM91 216Q113 181 161 205Q133 234 91 216ZM133 178Q95 159 111 120Q143 132 133 178ZM167 139Q190 109 224 130Q203 154 167 139Z"/>'+
+      '<path class="gold-line" d="M34 269C127 245 182 255 255 193M18 255C79 247 98 234 124 214"/>'+
+      '<circle class="gold-dot" cx="223" cy="187" r="4"/><circle class="gold-dot" cx="267" cy="166" r="2.5"/><circle class="gold-dot" cx="88" cy="154" r="3"/>'+
+    '</svg></div>';
+}
 render=function(s){
   var dur=eventRender(s);
   if(s.cls)s.cls.split(/\s+/).filter(Boolean).forEach(function(cls){cur.classList.add(cls);});
   var paper=!!(s.poster||s.ask||s.photoArt||s.crew||s.roster||(!s.bg&&!s.grid&&!s.pile)||s.id==='pops'||s.id==='pops-season');
   if(paper)cur.classList.add('soft-paper');
+  if(paper&&s.ask&&!s.poster){
+    cur.classList.add('garden-announcement','garden-'+(s.announcementStyle||'invitation'));
+    var edges=document.createElement('div');edges.innerHTML=announcementEdges();cur.appendChild(edges.firstChild);
+  }
   cur.dataset.slideId=s.id||'';
   document.body.classList.toggle('welcome-active',s.id==='welcome');
   document.body.classList.toggle('paper-active',paper);
@@ -2874,7 +2967,13 @@ render=function(s){
     var im=document.createElement('img');im.src=s.photoArt.src;im.alt=s.photoArt.alt;
     im.onerror=function(){if(s.photoArt.fb&&im.src!==s.photoArt.fb){im.src=s.photoArt.fb;}};
     frame.appendChild(im);cur.appendChild(frame);
-    var label=cur.querySelector('.bf-photo-species');if(label)cur.appendChild(label);
+    var label=cur.querySelector('.bf-photo-species');if(label)frame.appendChild(label);
+  }
+  if(s.donorPhoto){
+    var art=document.createElement('figure');art.className='donor-art';
+    var photo=document.createElement('img');photo.src=s.donorPhoto;photo.alt='The rebuilt Galleria deck and stairs';
+    var caption=document.createElement('figcaption');caption.textContent='A lasting gift to the park';
+    art.appendChild(photo);art.appendChild(caption);cur.appendChild(art);
   }
   if(s.id==='pops'||s.id==='pops-season'){
     var logo=cur.querySelector('.pops-brand');if(logo)cur.appendChild(logo);
@@ -2896,6 +2995,164 @@ render=function(s){
 var eventWarm=warmSlide;
 warmSlide=function(s){eventWarm(s);if(s.photoArt){var im=new Image();im.src=s.photoArt.src;}
   if(s.crew)s.crew.forEach(function(p){var im=new Image();im.src=p.fb||p.src;});};
+
+/* Event-only, cache-first photographs. Cache Storage keeps the original bytes
+   on disk for 24 hours; a small object-URL working set feeds the image tags.
+   No service worker or changes to other park screens are required. */
+var PHOTO_CACHE_NAME='psbp-groovin-photos-v1',PHOTO_CACHE_HOURS=24;
+var photoDisk=null,photoFlights={},photoObjects={},photoPreparing={};
+var photoWarmQueue=[],photoWarmSeen={},photoWarmActive=0,photoWarmTimer=null;
+var photoDiskFull=false,photoCacheWarning=false;
+function cacheablePhoto(url){
+  if(typeof url!=='string'||!/^https:\/\//i.test(url))return false;
+  try{return /(^|\.)r2\.dev$/i.test(new URL(url).hostname);}catch(e){return false;}
+}
+function openPhotoCache(){
+  if(!photoDisk)photoDisk=Promise.resolve().then(function(){
+    if(typeof Q!=='undefined'&&Q.get('cache')==='off')return null;
+    return typeof caches!=='undefined'?caches.open(PHOTO_CACHE_NAME):null;
+  }).catch(function(){return null;});
+  return photoDisk;
+}
+function cachedPhotoBlob(url){
+  if(!cacheablePhoto(url))return Promise.resolve(null);
+  if(photoFlights[url])return photoFlights[url];
+  var task=openPhotoCache().then(function(cache){
+    if(!cache)return null;
+    return cache.match(url).then(function(hit){
+      var saved=hit&&Number(hit.headers.get('X-Groovin-Cached-At'));
+      if(hit&&saved&&Date.now()-saved<PHOTO_CACHE_HOURS*3600000)return hit.blob();
+      var controller=typeof AbortController!=='undefined'?new AbortController():null;
+      var timeout=controller?setTimeout(function(){controller.abort();},20000):null;
+      return fetch(url,{mode:'cors',credentials:'omit',cache:'force-cache',
+        signal:controller?controller.signal:undefined}).then(function(response){
+        if(!response.ok||!/^image\//i.test(response.headers.get('Content-Type')||''))return null;
+        return response.blob();
+      }).finally(function(){if(timeout)clearTimeout(timeout);}).then(function(blob){
+        if(!blob||!blob.size)return null;
+        var stored=new Response(blob,{headers:{'Content-Type':blob.type||'image/jpeg',
+          'X-Groovin-Cached-At':String(Date.now())}});
+        return cache.put(url,stored).catch(function(error){
+          if(error&&error.name==='QuotaExceededError')photoDiskFull=true;
+          if(!photoCacheWarning){photoCacheWarning=true;
+            console.warn('Groovin photo cache: storage unavailable; using normal image loading.');}
+        }).then(function(){return blob;});
+      });
+    });
+  }).catch(function(){return null;});
+  photoFlights[url]=task;
+  task.finally(function(){delete photoFlights[url];});
+  return task;
+}
+function slidePhotoURLs(s){
+  if(!s)return [];
+  var urls=[s.bg,s.poster,s.donorPhoto];
+  (s.grid||[]).concat(s.pile||[],s.crew||[]).forEach(function(p){if(p)urls.push(p.src);});
+  if(s.photoArt)urls.push(s.photoArt.src);
+  return urls.filter(function(u,i,a){return u&&a.indexOf(u)===i;});
+}
+function trimPhotoObjects(){
+  var keys=Object.keys(photoObjects);if(keys.length<=40)return;
+  var held={};
+  if(stage&&stage.querySelectorAll)Array.prototype.forEach.call(stage.querySelectorAll('img'),function(im){held[im.src]=true;});
+  slidePhotoURLs(pending).forEach(function(u){if(photoObjects[u])held[photoObjects[u].url]=true;});
+  keys.sort(function(a,b){return photoObjects[a].used-photoObjects[b].used;});
+  var remaining=keys.length;
+  while(remaining>40&&keys.length){
+    var key=keys.shift(),entry=photoObjects[key];
+    if(held[entry.url])continue;
+    URL.revokeObjectURL(entry.url);delete photoObjects[key];remaining--;
+  }
+}
+function prepareCachedPhoto(url){
+  if(photoObjects[url]){photoObjects[url].used=Date.now();return Promise.resolve(photoObjects[url].url);}
+  if(photoPreparing[url])return photoPreparing[url];
+  var job=cachedPhotoBlob(url).then(function(blob){
+    if(!blob)return url;
+    var local=URL.createObjectURL(blob),im=new Image();im.src=local;
+    var ready=im.decode?im.decode():new Promise(function(resolve){im.onload=resolve;im.onerror=resolve;});
+    return ready.then(function(){
+      photoObjects[url]={url:local,used:Date.now()};trimPhotoObjects();return local;
+    }).catch(function(){
+      URL.revokeObjectURL(local);
+      openPhotoCache().then(function(cache){if(cache)return cache.delete(url);}).catch(function(){});
+      return url;
+    });
+  }).catch(function(){return url;});
+  photoPreparing[url]=job;job.finally(function(){delete photoPreparing[url];});return job;
+}
+function photoDisplayURL(url){
+  var entry=photoObjects[url];if(!entry)return url;
+  entry.used=Date.now();return entry.url;
+}
+function cachedSlideImages(s){
+  var copy=Object.assign({},s);
+  ['bg','bgFallback','poster','donorPhoto'].forEach(function(k){if(s[k])copy[k]=photoDisplayURL(s[k]);});
+  ['grid','pile','crew'].forEach(function(k){if(s[k])copy[k]=s[k].map(function(p){
+    var row=Object.assign({},p);row.src=photoDisplayURL(p.src);if(p.fb)row.fb=photoDisplayURL(p.fb);return row;
+  });});
+  if(s.photoArt){copy.photoArt=Object.assign({},s.photoArt);copy.photoArt.src=photoDisplayURL(s.photoArt.src);
+    copy.photoArt.fb=photoDisplayURL(s.photoArt.fb);}
+  return copy;
+}
+/* Only two background downloads at once. The next slide's warmSlide calls
+   start immediately, rather than sitting behind the all-evening queue. */
+function pumpPhotoWarmQueue(){
+  photoWarmTimer=null;
+  if(photoDiskFull)return;
+  while(photoWarmActive<2&&photoWarmQueue.length){
+    var url=photoWarmQueue.shift();photoWarmActive++;
+    cachedPhotoBlob(url).finally(function(){photoWarmActive--;
+      photoWarmTimer=setTimeout(pumpPhotoWarmQueue,250);});
+  }
+}
+function planPhotoWarm(){
+  if(typeof caches==='undefined'||(typeof Q!=='undefined'&&Q.get('cache')==='off'))return;
+  var features=D.plants.concat(D.wildlife).filter(featurePhoto),urls=[];
+  /* Heroes and the student pages first, then the alternate feature photos. */
+  features.forEach(function(s){urls.push(bigPhoto(s));});
+  BF.showcase.forEach(function(p){urls.push(mediaOf(p,'original'));});
+  BF.crew.forEach(function(p){urls.push(p.src);});
+  withGallery(features).forEach(function(s){urls.push(bigPhoto(s));});
+  [D.events,D.classes,D.news,D.announcements,D.volunteer,D.series,D.newsletters].forEach(function(rows){
+    rows.forEach(function(r){urls.push(posterImage(r));urls.push(screenImage(r));});
+  });
+  urls.forEach(function(u){if(cacheablePhoto(u)&&!photoWarmSeen[u]){photoWarmSeen[u]=true;photoWarmQueue.push(u);}});
+  if(!photoWarmTimer)photoWarmTimer=setTimeout(pumpPhotoWarmQueue,2500);
+}
+/* Expiry is independent of midnight, so an evening's photos stay cached all
+   night. Purge only this deck's expired entries, never another screen's cache. */
+openPhotoCache().then(function(cache){if(!cache)return;
+  return cache.keys().then(function(keys){return Promise.all(keys.map(function(key){
+    return cache.match(key).then(function(hit){
+      var saved=hit&&Number(hit.headers.get('X-Groovin-Cached-At'));
+      if(!saved||Date.now()-saved>=PHOTO_CACHE_HOURS*3600000)return cache.delete(key);
+    });
+  }));});
+}).catch(function(){});
+var loadPhotoCacheData=loadAll;
+loadAll=function(){return loadPhotoCacheData().then(function(){planPhotoWarm();});};
+warmSlide=function(s){
+  return Promise.all(slidePhotoURLs(s).map(function(url){
+    if(cacheablePhoto(url))return prepareCachedPhoto(url);
+    if(!/^data:/.test(url)){var im=new Image();im.src=url;}
+    return Promise.resolve(url);
+  }));
+};
+var renderWithEventDesign=render;
+render=function(s){
+  var ready=warmSlide(s),dur=renderWithEventDesign(cachedSlideImages(s));
+  var target=typeof cur!=='undefined'?cur:null;
+  /* On the initial page, a late download can still finish after rendering.
+     Switch that image to its decoded local copy as soon as it is ready. */
+  ready.then(function(){if(!target||!target.isConnected)return;
+    Array.prototype.forEach.call(target.querySelectorAll('img'),function(im){
+      var source=im.getAttribute('src'),local=photoDisplayURL(source);
+      if(local&&local!==source)im.src=local;
+    });
+  }).catch(function(){});
+  return dur;
+};
 
 loadAll().then(start).catch(function(){ fallback(); start(); });
 </script>
