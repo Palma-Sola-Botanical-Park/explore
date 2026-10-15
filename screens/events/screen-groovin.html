@@ -3010,6 +3010,17 @@ var photoDisk=null,photoFlights={},photoObjects={},photoPreparing={};
 var photoWarmQueue=[],photoWarmSeen={},photoWarmActive=0,photoWarmTimer=null;
 var photoDiskFull=false,photoCacheWarning=false;
 var currentPhotoSources=[];
+var photoCacheStats={state:'Checking',hits:0,saved:0,errors:0,last:''};
+function photoCacheStatus(state,error){
+  if(state)photoCacheStats.state=state;
+  if(error){photoCacheStats.errors++;photoCacheStats.last=String(error.message||error).slice(0,120);}
+  if(typeof Q==='undefined'||Q.get('cache_status')!=='1')return;
+  var panel=document.getElementById('photo-cache-status');
+  if(!panel){panel=document.createElement('aside');panel.id='photo-cache-status';
+    panel.style.cssText='position:fixed;z-index:100;bottom:2vmin;left:2vw;max-width:70vw;padding:1vmin 1.5vmin;background:#fffdf5;color:#204b33;border:1px solid #9aab6c;font:14px/1.4 sans-serif';document.body.appendChild(panel);}
+  panel.textContent='Photo cache: '+photoCacheStats.state+' · '+photoCacheStats.saved+' saved · '+photoCacheStats.hits+' disk hits · '+photoWarmQueue.length+' queued'+
+    (photoCacheStats.errors?' · '+photoCacheStats.errors+' issues · '+photoCacheStats.last:'');
+}
 function cacheablePhoto(url){
   if(typeof url!=='string'||!/^https:\/\//i.test(url))return false;
   try{return /(^|\.)r2\.dev$/i.test(new URL(url).hostname);}catch(e){return false;}
@@ -3017,8 +3028,9 @@ function cacheablePhoto(url){
 function openPhotoCache(){
   if(!photoDisk)photoDisk=Promise.resolve().then(function(){
     if(typeof Q!=='undefined'&&Q.get('cache')==='off')return null;
-    return typeof caches!=='undefined'?caches.open(PHOTO_CACHE_NAME):null;
-  }).catch(function(){return null;});
+    if(typeof caches==='undefined'){photoCacheStatus('Unavailable');return null;}
+    return caches.open(PHOTO_CACHE_NAME).then(function(cache){photoCacheStatus('Ready');return cache;});
+  }).catch(function(error){photoCacheStatus('Unavailable',error);return null;});
   return photoDisk;
 }
 function cachedPhotoBlob(url){
@@ -3028,25 +3040,26 @@ function cachedPhotoBlob(url){
     if(!cache)return null;
     return cache.match(url).then(function(hit){
       var saved=hit&&Number(hit.headers.get('X-Groovin-Cached-At'));
-      if(hit&&saved&&Date.now()-saved<PHOTO_CACHE_HOURS*3600000)return hit.blob();
+      if(hit&&saved&&Date.now()-saved<PHOTO_CACHE_HOURS*3600000){photoCacheStats.hits++;photoCacheStatus();return hit.blob();}
       var controller=typeof AbortController!=='undefined'?new AbortController():null;
       var timeout=controller?setTimeout(function(){controller.abort();},20000):null;
       return fetch(url,{mode:'cors',credentials:'omit',cache:'force-cache',
         signal:controller?controller.signal:undefined}).then(function(response){
-        if(!response.ok||!/^image\//i.test(response.headers.get('Content-Type')||''))return null;
+        if(!response.ok||!/^image\//i.test(response.headers.get('Content-Type')||'')){photoCacheStatus(null,'Photo HTTP '+response.status);return null;}
         return response.blob();
       }).finally(function(){if(timeout)clearTimeout(timeout);}).then(function(blob){
         if(!blob||!blob.size)return null;
         var stored=new Response(blob,{headers:{'Content-Type':blob.type||'image/jpeg',
           'X-Groovin-Cached-At':String(Date.now())}});
-        return cache.put(url,stored).catch(function(error){
+        return cache.put(url,stored).then(function(){photoCacheStats.saved++;photoCacheStatus();}).catch(function(error){
+          photoCacheStatus(null,error);
           if(error&&error.name==='QuotaExceededError')photoDiskFull=true;
           if(!photoCacheWarning){photoCacheWarning=true;
             console.warn('Groovin photo cache: storage unavailable; using normal image loading.');}
         }).then(function(){return blob;});
       });
     });
-  }).catch(function(){return null;});
+  }).catch(function(error){photoCacheStatus(null,error);return null;});
   photoFlights[url]=task;
   task.finally(function(){delete photoFlights[url];});
   return task;
@@ -3108,6 +3121,7 @@ function cachedSlideImages(s){
    start immediately, rather than sitting behind the all-evening queue. */
 function pumpPhotoWarmQueue(){
   photoWarmTimer=null;
+  photoCacheStatus();
   if(photoDiskFull)return;
   while(photoWarmActive<2&&photoWarmQueue.length){
     var url=photoWarmQueue.shift();photoWarmActive++;
