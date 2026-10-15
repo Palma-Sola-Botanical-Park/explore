@@ -844,6 +844,18 @@ body.nature-active .credit .who{color:#204b33}
 .slide.nature-page .logo img{max-height:7vmin}
 .slide.soft-paper .poster-art img{box-shadow:0 .8vmin 3.5vmin #25371f26;outline:1px solid #a9af8077;outline-offset:.7vmin}
 
+/* Name the scholarship program clearly, paired with the park where these
+   students volunteer. Reserve a footer below the rotating recognition list. */
+.slide.bf-summary .eyebrow{font-size:2.4vmin;letter-spacing:.15em}
+.slide.bf-summary .bf-rosters{bottom:24vmin}
+.bf-program{position:absolute;z-index:4;left:47vw;right:7vw;bottom:6.8vmin;display:flex;flex-direction:column;align-items:center;gap:1.5vmin}
+.bf-program-marks{display:flex;align-items:center;justify-content:center;gap:2.4vmin;padding-top:1.8vmin;border-top:1px solid #a6ad7d66;width:100%}
+.bf-program-marks img{display:block;object-fit:contain}
+.bf-program-marks .bf-park-mark{width:20vmin;height:10vmin}
+.bf-program-marks .bf-scholarship-mark{width:20vmin;height:10.6vmin;background:#fff;padding:.5vmin}
+.bf-program-divider{height:7vmin;width:1px;background:#a6ad7d88}
+.bf-program-caption{font-size:1.9vmin;line-height:1.3;color:#53643c;text-align:center}
+
 </style>
 </head>
 <body>
@@ -2903,13 +2915,19 @@ function slideStudentSummary(){
       '<small>Student photographers '+(Math.floor(i/size)+1)+' of '+total+'</small></div>');
   }
   return {id:'student-summary',cls:'bf-summary',seconds:Math.max(SECONDS*1.5,total*9/SPEED),roster:true,
-    html:'<div class="eyebrow">Bright Futures</div><div class="headline">The students<br>behind the photos</div>'+
+    preload:[BASE+'images/psbp_logo_green.png',BASE+'images/logos/bright-futures.png'],
+    html:'<div class="eyebrow">Bright Futures student volunteers</div><div class="headline">The students<br>behind the photos</div>'+
       '<div class="bf-context">Every Wednesday, high school volunteers help care for this park and learn about the plants and wildlife around them.</div>'+
       '<div class="bf-metrics"><div><b>'+BF.photos.length+'</b><span>published photographs</span></div>'+
       '<div><b>'+BF.people.length+'</b><span>student photographers</span></div>'+
       '<div><b>'+BF.species+'</b><span>species documented</span></div></div>'+
       '<div class="bf-scope">Their published photos in the park’s iNaturalist collection.</div>'+
-      '<div class="bf-rosters">'+pages.join('')+'</div>'};
+      '<div class="bf-rosters">'+pages.join('')+'</div>'+
+      '<div class="bf-program"><div class="bf-program-marks">'+
+      '<img class="bf-park-mark" src="'+BASE+'images/psbp_logo_green.png" alt="Palma Sola Botanical Park">'+
+      '<span class="bf-program-divider" aria-hidden="true"></span>'+
+      '<img class="bf-scholarship-mark" src="'+BASE+'images/logos/bright-futures.png" alt="Florida Bright Futures Scholarship Program">'+
+      '</div><div class="bf-program-caption">Student volunteer service at Palma Sola</div></div>'};
 }
 function nextStudentPhoto(){
   var pool=BF.showcase.length?BF.showcase:BF.photos;
@@ -3130,6 +3148,7 @@ render=function(s){
   }
   if(s.roster){
     var rosters=cur.querySelector('.bf-rosters');cur.appendChild(rosters);
+    var program=cur.querySelector('.bf-program');if(program)cur.appendChild(program);
     var pages=rosters.querySelectorAll('.bf-roster-page');
     for(var p=1;p<pages.length;p++)(function(idx){beatTimers.push(setTimeout(function(){
       for(var j=0;j<pages.length;j++)pages[j].classList.toggle('on',j===idx);
