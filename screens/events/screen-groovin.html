@@ -3517,6 +3517,51 @@ addEventListener('resize',function(){
   },120);
 });
 
+/* Six intervening displayed slides before the same subject can return.
+   Welcome is exempt. Keep this history across deck rebuilds and feed refreshes.
+   Track displayed slides, rather than counting the next slide's preload. */
+var GROOVIN_REPEAT_GAP=6,recentGroovinSlides=[],deferredGroovinSlides=[];
+function groovinSlideKey(s){
+  if(s.id)return 'id:'+s.id;
+  var heading=/class=["']headline["'][^>]*>([\s\S]*?)<\/div>/i.exec(s.html||'');
+  if(heading)return 'heading:'+heading[1].replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+  if(s.bg)return 'photo:'+s.bg;
+  return 'content:'+(s.html||'')+'|'+(s.grid||[]).map(function(p){return p.src;}).join('|');
+}
+function groovinSlideEligible(s){
+  return s.id==='welcome'||recentGroovinSlides.indexOf(groovinSlideKey(s))<0;
+}
+function rememberGroovinSlide(s){
+  recentGroovinSlides.push(groovinSlideKey(s));
+  recentGroovinSlides=recentGroovinSlides.slice(-GROOVIN_REPEAT_GAP);
+}
+var makeNextBeforeSpacing=makeNext;
+makeNext=function(){
+  /* Single-slide review links deliberately keep their selected page. */
+  if(reviewBuilders[Q.get('review')])return makeNextBeforeSpacing();
+  for(var i=0;i<deferredGroovinSlides.length;i++){
+    if(groovinSlideEligible(deferredGroovinSlides[i]))return deferredGroovinSlides.splice(i,1)[0];
+  }
+  var limit=Math.max(16,deck.length*2+8);
+  for(var attempt=0;attempt<limit;attempt++){
+    var s=makeNextBeforeSpacing();if(!s)return null;
+    if(groovinSlideEligible(s))return s;
+    var key=groovinSlideKey(s);
+    /* One waiting copy per subject keeps a sparse feed from building up a
+       backlog. Each deferred gallery keeps its already selected photographs. */
+    if(!deferredGroovinSlides.some(function(held){return groovinSlideKey(held)===key;}))deferredGroovinSlides.push(s);
+  }
+  /* With too little content, hold the current page and retry instead of
+     breaking the spacing rule or spinning through builders indefinitely. */
+  return null;
+};
+var renderBeforeSpacing=render;
+render=function(s){
+  var duration=renderBeforeSpacing(s);
+  rememberGroovinSlide(s);
+  return duration;
+};
+
 loadAll().then(start).catch(function(){ fallback(); start(); });
 </script>
 </body>
