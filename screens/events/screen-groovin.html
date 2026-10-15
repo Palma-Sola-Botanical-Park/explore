@@ -867,6 +867,17 @@ body.nature-active .credit .who{color:#204b33}
 .slide.nature-page.horticulture-feature .qr{left:8vmin;right:auto}
 body.nature-active.horticulture-active .credit{left:6.9vmin;right:auto;text-align:left}
 
+/* This one-time membership appeal connects tonight to the park's ambitions. */
+.slide.park-growth .copy{width:76vw;max-width:76vw;padding:0 5vw}
+.slide.park-growth .eyebrow{font-size:2.4vmin;letter-spacing:.18em;margin-bottom:2vmin}
+.slide.park-growth .headline{font-size:6.8vmin;line-height:1.05}
+.growth-intro{font:italic 3.1vmin/1.35 var(--serif);color:#687539;margin-top:2.3vmin}
+.slide.park-growth .body{font-size:3vmin;line-height:1.5;max-width:58ch;margin-top:2.4vmin}
+.growth-invitation{font-size:3vmin;line-height:1.35;font-weight:600;color:#204b33;margin-top:2.5vmin}
+.slide.park-growth .qr{flex-direction:row;align-items:center;gap:2vmin;margin-top:2.4vmin}
+.slide.park-growth .qr-card img{width:11vmin;height:11vmin}
+.slide.park-growth .qr .cap{font-size:1.9vmin;max-width:12ch;text-align:left}
+
 </style>
 </head>
 <body>
@@ -2859,8 +2870,10 @@ loadAll=function(){
     D.announcements=D.announcements.filter(function(r){return inDate(r)&&GROOVIN.announcements.indexOf(r.title)>-1;}).map(function(r){
       var c=Object.assign({},r);
       if(c.title==='Help keep Palma Sola growing'){
-        c.body='Membership supports the gardens you’re enjoying today.';
-        c.link_text='Scan to become a member';
+        c.title='Help our botanical park grow';
+        c.eventGrowth=true;
+        c.body='More plants. More care for the gardens. More signs and tours. More music and more days to volunteer.';
+        c.link_text='Your membership helps make it happen.';
       }
       return c;
     });
@@ -3044,6 +3057,15 @@ function slideGroovinAsk(a){
   /* Public event pages use botanical artwork and real partner logos. */
   var s=slideAsk(Object.assign({},a,{emoji:''}));
   s.bg=MUSIC_ART;
+  if(a.eventGrowth){
+    s.id='park-growth';s.cls='park-growth';s.seconds=28/SPEED;
+    s.html='<div class="eyebrow">Your community botanical park</div>'+
+      '<div class="headline">Help our botanical<br>park grow.</div>'+
+      '<div class="growth-intro">Tonight is a glimpse of what we can do together.</div>'+
+      '<div class="body">'+esc(a.body)+'</div>'+
+      '<div class="growth-invitation">'+esc(a.link_text)+'</div>'+
+      qrBlock(a,'Join as a member',a.link_url);
+  }
   s.announcementStyle=/Bishop Parker/.test(a.title||'')?'donor-photo':
     /Foundation/.test(a.title||'')?'patron':/Galleria/.test(a.title||'')?'venue':'invitation';
   /* An identifiable improvement deserves a visible photograph, rather than
