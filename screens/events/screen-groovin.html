@@ -805,6 +805,35 @@ body.paper-active .credit .lbl,body.paper-active .credit .terms{color:#627144}
 body:not(.paper-active) .credit .lbl{letter-spacing:.17em;font-size:1.4vmin}
 @media(prefers-reduced-motion:reduce){.community-gallery .ct,.pops-gallery .ct{animation:none;opacity:1}}
 
+/* Nature photographs belong to the same ivory-and-olive event design.
+   Keep the image large and bright; give the words their own quiet surface. */
+.slide.nature-page{background:#f8f4e7;color:#204b33}
+.slide.nature-page .bg{inset:6vmin 4.8vmin;background:#e8e5d5;outline:1px solid #a9af8077;box-shadow:0 .5vmin 2.5vmin #4a482121}
+.slide.nature-page .scrim{background:none!important}
+.slide.nature-page .copy{margin:0 0 9vmin 6.9vmin;padding:2.7vmin 3.2vmin;max-width:46vw;background:rgba(251,248,234,.95);border:1px solid #b4b88c88;box-shadow:0 .5vmin 3vmin #25371f20}
+.slide.nature-page .headline{font-size:6.2vmin;line-height:1.05;color:#16472d;text-shadow:none}
+.slide.nature-page .eyebrow{font-size:2.4vmin;letter-spacing:.19em;color:#6a762f;margin-bottom:1.5vmin}
+.slide.nature-page .eyebrow .where{color:#6a762f}
+.slide.nature-page .latin{font-size:2.6vmin;color:#68734c;margin-top:.8vmin}
+.slide.nature-page .body{font-size:2.5vmin;line-height:1.4;max-width:45ch;color:#36543e;font-weight:400;margin-top:1.8vmin;text-shadow:none}
+.slide.nature-page .body.len-2{font-size:2.35vmin}
+.slide.nature-page .body.len-3{font-size:2.15vmin}
+.slide.nature-page .body b,.slide.nature-page .body strong{color:#16472d}
+.slide.nature-page .beat.fact{border-color:#a29b57}
+.slide.nature-page .count{font-size:7vmin;color:#927126;text-shadow:none}
+.slide.nature-page .count small{color:#6a762f;font-size:1.8vmin}
+.slide.nature-page .roster,.slide.nature-page .shot{font-size:2vmin;line-height:1.35;color:#53644a;text-shadow:none;margin-top:1.8vmin}
+.slide.nature-collection .collection{inset:6vmin 4.8vmin;gap:.7vmin}
+.slide.nature-collection .veil{display:none}
+.nature-music-trim{position:absolute;z-index:2;left:5vw;right:5vw;bottom:2.8vmin;height:2.5vmin;overflow:hidden;opacity:.4;pointer-events:none}
+.nature-music-trim img{position:absolute;bottom:-4.8vmin;left:0;width:100%;height:auto}
+body.nature-active .credit{max-width:31vw;right:6.9vmin;bottom:9vmin;padding:1.1vmin 1.6vmin;background:rgba(251,248,234,.94);border:1px solid #b4b88c88;text-shadow:none}
+body.nature-active .credit .lbl,body.nature-active .credit .terms{color:#6a744e}
+body.nature-active .credit .who{color:#204b33}
+.slide.nature-page.ambient .copy{display:none}
+.slide.nature-page .qr{left:auto;right:8vmin;bottom:23vmin;transform:none}
+.slide.nature-page .qr .cap{color:#36543e;background:#fbf8eaee;padding:.5vmin}
+
 </style>
 </head>
 <body>
@@ -3559,6 +3588,77 @@ var renderBeforeSpacing=render;
 render=function(s){
   var duration=renderBeforeSpacing(s);
   rememberGroovinSlide(s);
+  return duration;
+};
+
+/* The demo should introduce what this event is about before the quieter
+   nature interludes. Later rotations keep their existing content weights. */
+function natureDeckItem(item){return ['spotlight','right_now','ambient','collection'].indexOf(item.type)>=0;}
+function spaceNatureItems(items){
+  var remaining=items.slice(),out=[];
+  while(remaining.length){
+    var index=0;
+    if(out.length&&natureDeckItem(out[out.length-1])&&natureDeckItem(remaining[0])){
+      for(var i=1;i<remaining.length;i++)if(!natureDeckItem(remaining[i])){index=i;break;}
+    }
+    out.push(remaining.splice(index,1)[0]);
+  }
+  return out;
+}
+var firstGroovinOpening=true,buildBeforeEventOpening=buildDeck;
+buildDeck=function(){
+  var items=buildBeforeEventOpening();
+  if(reviewBuilders[Q.get('review')])return items;
+  if(firstGroovinOpening){
+    firstGroovinOpening=false;
+    var remaining=items.filter(function(item){return item.type!=='welcome';}),opening=[];
+    function lead(types){
+      for(var t=0;t<types.length;t++){
+        for(var i=0;i<remaining.length;i++)if(remaining[i].type===types[t]){opening.push(remaining.splice(i,1)[0]);return;}
+      }
+    }
+    lead(['partnership','pops']);
+    lead(['community_photos','student_summary','adult_volunteers']);
+    lead(['pops_gallery','pops_season','pops']);
+    lead(['event','ask']);
+    items=withWelcomeBreaks(opening.concat(remaining));
+  }
+  return spaceNatureItems(items);
+};
+function asNaturePage(slide,extra){
+  if(slide)slide.cls=((slide.cls||'')+' nature-page '+(extra||'')).trim();
+  return slide;
+}
+var spotlightBeforeNatureDesign=slideSpotlight,rightNowBeforeNatureDesign=slideRightNow;
+var ambientBeforeNatureDesign=slideAmbient,collectionBeforeNatureDesign=slideCollection;
+slideSpotlight=function(){return asNaturePage(spotlightBeforeNatureDesign());};
+slideRightNow=function(row){return asNaturePage(rightNowBeforeNatureDesign(row));};
+slideAmbient=function(){return asNaturePage(ambientBeforeNatureDesign());};
+slideCollection=function(){return asNaturePage(collectionBeforeNatureDesign(),'nature-collection');};
+reviewBuilders.spotlight=slideSpotlight;reviewBuilders.ambient=slideAmbient;reviewBuilders.collection=slideCollection;
+var renderBeforeNatureDesign=render;
+render=function(s){
+  var duration=renderBeforeNatureDesign(s),nature=/\bnature-page\b/.test(s.cls||'');
+  document.body.classList.toggle('nature-active',nature);
+  if(nature){
+    var trim=document.createElement('div'),art=document.createElement('img');trim.className='nature-music-trim';trim.setAttribute('aria-hidden','true');
+    art.src=MUSIC_ART;art.alt='';trim.appendChild(art);cur.appendChild(trim);
+    /* The cream panel changes the text measure. Re-measure its line cascade
+       and stacked facts after the event classes have been applied. */
+    var bodies=cur.querySelectorAll('.body');
+    for(var i=0;i<bodies.length;i++){
+      var words=bodies[i].querySelectorAll('.w'),line=-1,top=null;
+      for(var j=0;j<words.length;j++){
+        var y=words[j].offsetTop;if(top===null||Math.abs(y-top)>4){line++;top=y;}
+        words[j].style.transitionDelay=(LINE_LEAD+line*LINE_STEP).toFixed(2)+'s';
+      }
+    }
+    var beats=cur.querySelector('.beats');if(beats){
+      var children=beats.querySelectorAll('.beat'),height=0;
+      for(i=0;i<children.length;i++)height=Math.max(height,children[i].offsetHeight);
+      beats.style.minHeight=Math.max(height,1)+'px';
+    }
+  }
   return duration;
 };
 
