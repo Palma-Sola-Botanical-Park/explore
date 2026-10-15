@@ -588,7 +588,8 @@ body.welcome-active .frame{border-color:rgba(112,128,46,.45)}
 .slide.bf-summary .scrim{background:linear-gradient(90deg,rgba(8,18,9,.95),rgba(8,18,9,.9))}
 .slide.bf-summary .copy{padding-bottom:0;max-width:43vw}
 .slide.bf-summary .headline{font-size:6.1vmin}
-.bf-metrics{margin-top:4vmin;display:flex;flex-direction:column;gap:1.8vmin}
+.bf-context{font-size:2.6vmin;line-height:1.4;color:#36543e;max-width:37ch;margin-top:2.2vmin}
+.bf-metrics{margin-top:2.8vmin;display:flex;flex-direction:column;gap:1.8vmin}
 .bf-metrics div{display:flex;gap:1.5vmin;align-items:baseline}
 .bf-metrics b{font:700 7.4vmin/1 var(--serif);color:var(--gold);min-width:3ch}
 .bf-metrics span{font-size:2.7vmin;line-height:1.25;max-width:17ch}
@@ -2706,10 +2707,11 @@ function slideStudentSummary(){
   }
   return {id:'student-summary',cls:'bf-summary',seconds:Math.max(SECONDS*1.5,total*9/SPEED),roster:true,
     html:'<div class="eyebrow">Bright Futures</div><div class="headline">The students<br>behind the photos</div>'+
+      '<div class="bf-context">Every Wednesday, high school volunteers help care for this park and learn about the plants and wildlife around them.</div>'+
       '<div class="bf-metrics"><div><b>'+BF.photos.length+'</b><span>published photographs</span></div>'+
       '<div><b>'+BF.people.length+'</b><span>student photographers</span></div>'+
       '<div><b>'+BF.species+'</b><span>species documented</span></div></div>'+
-      '<div class="bf-scope">From the park’s registered iNaturalist photo library. Every photograph has a credit.</div>'+
+      '<div class="bf-scope">Their published photos in the park’s iNaturalist collection.</div>'+
       '<div class="bf-rosters">'+pages.join('')+'</div>'};
 }
 function nextStudentPhoto(){
@@ -2725,14 +2727,14 @@ function slideStudentPhoto(){
     photoArt:{src:mediaOf(p,'original'),fb:mediaOf(p,'web')||p.photo_url,alt:p.common_name||'Student nature photograph'},
     credit:{name:studentCredit(p),terms:(p.license||'').replace(/^CC-/,'CC ')+' · via iNaturalist'},
     html:'<div class="eyebrow">Bright Futures photography</div><div class="headline">Through a<br>student’s lens</div>'+
-      '<div class="body">High school volunteers help document the plants and wildlife you can discover here.</div>'+
+      '<div class="body">High school volunteers take many of the nature photos on this screen. Using iNaturalist, they learn what they’re seeing and share it with visitors.</div>'+
       '<div class="bf-photo-species">'+esc(p.common_name||'')+'</div>'};
 }
 function slideStudentCrew(){
   if(!BF.crew.length)return null;
   return {id:'student-crew',cls:'crew-gallery',seconds:GROOVIN.crewSeconds/SPEED,crew:BF.crew,
     html:'<div class="eyebrow">Bright Futures at the park</div><div class="headline">The crew<br>at work</div>'+
-      '<div class="body">Planting around the ponds, helping in the nursery, and getting ready for Winter Nights.</div>'+
+      '<div class="body">Each week, our high school volunteers help care for the park you’re enjoying today. The work gives them a chance to learn about nature, too.</div>'+
       '<div class="crewgrid"></div>'};
 }
 /* The Wednesday deck's irregular rectangular layout, with event pacing.
