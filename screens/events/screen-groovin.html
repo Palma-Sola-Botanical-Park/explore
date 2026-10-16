@@ -895,6 +895,25 @@ body.nature-active.horticulture-active .credit{left:6.9vmin;right:auto;text-alig
 .sponsor-thanks{font:400 2.8vmin/1.4 var(--sans);color:#53613d;margin-top:3vmin}
 .slide.presenting-sponsors .paper-music-accent{height:11vmin;opacity:.35}
 
+/* A venue invitation pairs the real deck with a smaller reception view. */
+.slide.galleria-venue{align-items:center;justify-content:flex-end;padding:12vmin 5vw 12vmin}
+.slide.galleria-venue .copy{width:31vw;max-width:31vw!important;padding:0 0 0 2vw!important;text-align:left;align-items:flex-start;border-left:1px solid #ad9d61;z-index:4}
+.slide.galleria-venue .eyebrow{font-size:2.1vmin;letter-spacing:.16em;margin-bottom:2.2vmin;justify-content:flex-start}
+.slide.galleria-venue .headline{font-size:5.8vmin;line-height:1.08;text-wrap:balance}
+.slide.galleria-venue .body{font-size:2.85vmin;line-height:1.45;max-width:30ch;margin:2.7vmin 0 0;text-align:left}
+.venue-name{white-space:nowrap}
+.slide.galleria-venue .scrim{background:none!important}
+.slide.galleria-venue .qr{position:static;transform:none;flex-direction:row;align-items:center;justify-content:flex-start;gap:2vmin;margin:3vmin 0 0}
+.slide.galleria-venue .qr-card img{width:12vmin;height:12vmin}
+.slide.galleria-venue .qr .cap{font-size:1.9vmin;text-align:left;max-width:16ch;letter-spacing:.14em}
+.venue-hero{position:absolute;z-index:2;left:4vw;top:9vmin;width:57vw;height:74vmin;margin:0;padding:.8vmin;background:#fffdf5;outline:1px solid #a9af8088;box-shadow:0 .8vmin 3vmin #25371f24}
+.venue-hero img{display:block;width:100%;height:100%;object-fit:cover}
+.venue-inset{position:absolute;z-index:3;left:7vw;bottom:7.5vmin;width:26vw;margin:0;padding:.9vmin 1vmin 1.1vmin;background:#fffdf5;outline:1px solid #a9af8077;box-shadow:0 .7vmin 3vmin #25371f33}
+.venue-inset img{display:block;width:100%;max-height:30vmin;object-fit:contain}
+.venue-inset figcaption{font:italic 2.05vmin/1.3 var(--serif);color:#687745;margin-top:1vmin;text-align:center}
+.venue-flourish{position:absolute;z-index:2;right:4vw;bottom:3.2vmin;width:32vw;height:9vmin;overflow:hidden;opacity:.38;pointer-events:none;mask-image:linear-gradient(to top,transparent,#000 22%,#000 52%,transparent),linear-gradient(to right,transparent,#000 12%,#000 88%,transparent);mask-composite:intersect}
+.venue-flourish img{position:absolute;bottom:-1.2vmin;left:0;width:100%;height:auto}
+
 </style>
 </head>
 <body>
@@ -3099,7 +3118,23 @@ function crewSwap(grid,rows,planned){
 }
 FAMILY.student_summary='students';FAMILY.student_photo='students';FAMILY.student_crew='students';FAMILY.pops='pops';FAMILY.pops_season='pops';
 FAMILY.partnership='pops';
+/* Curated public R2 assets: keep photo binaries out of the repository. */
+var GALLERIA_VENUE_PHOTOS=[
+  {src:MEDIA_BASE+'/media/PM-000100/v1/original.jpeg',fb:MEDIA_BASE+'/media/PM-000100/v1/web.jpg',
+    alt:'The Galleria covered deck overlooking the gardens'},
+  {src:MEDIA_BASE+'/media/PM-000055/v1/original.jpg',fb:MEDIA_BASE+'/media/PM-000055/v1/web.jpg',
+    alt:'Reception tables and string lights inside the Galleria'}
+];
+function slideGalleriaVenue(a){
+  return {id:'galleria-venue',cls:'galleria-venue',ask:true,announcementStyle:'venue-photo',seconds:28/SPEED,
+    venuePhotos:GALLERIA_VENUE_PHOTOS,preload:GALLERIA_VENUE_PHOTOS.map(function(p){return p.src;}).concat([MUSIC_ART]),
+    html:'<div class="eyebrow">A place to come together</div>'+
+      '<div class="headline">Your next gathering,<br>in the gardens.</div>'+
+      '<div class="body"><span class="venue-name">The Galleria at Palma Sola</span>—classes, meetings, dinners and celebrations.</div>'+
+      qrBlock(a,'Explore the space.',a.link_url)};
+}
 function slideGroovinAsk(a){
+  if(/Galleria/i.test(a.title||''))return slideGalleriaVenue(a);
   /* Public event pages use botanical artwork and real partner logos. */
   var s=slideAsk(Object.assign({},a,{emoji:''}));
   s.bg=MUSIC_ART;
@@ -3800,6 +3835,48 @@ render=function(s){
   }
   return duration;
 };
+
+/* The photo pair also participates in the existing next-slide image cache
+   through preload; late cached copies replace these image tags normally. */
+var renderBeforeVenueDesign=render;
+render=function(s){
+  var duration=renderBeforeVenueDesign(s);if(!s.venuePhotos)return duration;
+  s.venuePhotos.forEach(function(p,i){
+    var figure=document.createElement('figure'),image=document.createElement('img');
+    figure.className=i?'venue-inset':'venue-hero';
+    image.src=photoDisplayURL(p.src);image.alt=p.alt;
+    image.onerror=function(){if(p.fb){image.onerror=null;image.src=photoDisplayURL(p.fb);}};
+    figure.appendChild(image);
+    if(i){var label=document.createElement('figcaption');label.textContent='Inside the Galleria';figure.appendChild(label);}
+    cur.appendChild(figure);
+  });
+  var flourish=document.createElement('div'),art=document.createElement('img');
+  flourish.className='venue-flourish';flourish.setAttribute('aria-hidden','true');
+  art.src=photoDisplayURL(MUSIC_ART);art.alt='';flourish.appendChild(art);cur.appendChild(flourish);
+  return duration;
+};
+
+
+/* Final event pacing: music receives 4% more time; species and student
+   features receive 4% less. Welcome and other park subjects keep their pace. */
+function withSpeciesPacing(make){
+  return function(){var s=make.apply(this,arguments);if(s)s.eventPacing='species';return s;};
+}
+slideSpotlight=withSpeciesPacing(slideSpotlight);
+slideAmbient=withSpeciesPacing(slideAmbient);
+slideRightNow=withSpeciesPacing(slideRightNow);
+slideCollection=withSpeciesPacing(slideCollection);
+reviewBuilders.spotlight=slideSpotlight;reviewBuilders.ambient=slideAmbient;reviewBuilders.collection=slideCollection;
+function groovinPacingFactor(s){
+  if(/^(pops($|-)|jazz-masters$|partnership$)/.test(s.id||''))return 1.04;
+  if(s.eventPacing==='species'||/^student-/.test(s.id||''))return .96;
+  return 1;
+}
+var renderBeforeFinalPacing=render;
+render=function(s){
+  return renderBeforeFinalPacing(Object.assign({},s,{seconds:(s.seconds||SECONDS)*groovinPacingFactor(s)}));
+};
+
 
 loadAll().then(start).catch(function(){ fallback(); start(); });
 </script>
