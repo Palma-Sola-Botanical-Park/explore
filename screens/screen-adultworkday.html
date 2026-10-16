@@ -729,6 +729,28 @@ body{
                    repeating-linear-gradient(90deg,transparent 0 2.2vmin,rgba(250,248,243,.55) 2.2vmin 3.4vmin,transparent 3.4vmin 5.6vmin);
   background-size:100% 1.6vmin,100% 1.6vmin;background-position:0 1.2vmin,0 calc(100% - 1.2vmin);background-repeat:no-repeat}
 @keyframes wallSlide{from{opacity:0;transform:translateX(70vmin) rotate(-2.4deg)} to{opacity:1;transform:translateX(0) rotate(-2.4deg)}}
+
+/* ── NEED PHOTOS / LAST LOGGED ───────────────────────────────────────────────
+   Five species listed on the left, the lit one's current photo on the right
+   with a hand-scrawled arrow from the name to the picture. The photo steps
+   down the list; the words stay put. */
+.slide.need .copy{max-width:44vw}
+.slide.need .headline{font-size:clamp(2.2rem,5.6vmin,5.2rem);margin-bottom:3vmin}
+.need-list{display:flex;flex-direction:column;gap:1.4vmin}
+.need-row{border-left:.8vmin solid transparent;padding:.4vmin 0 .4vmin 2.2vmin;opacity:.5;transition:opacity .35s ease}
+.need-row .nm{display:block;font-size:clamp(1.4rem,3.6vmin,3rem);color:var(--paper);font-weight:400;line-height:1.2}
+.need-row .sub{display:none;margin-top:.5vmin;font-size:clamp(1.1rem,2.5vmin,2.1rem);color:var(--gold);font-weight:600}
+.need-row.on{opacity:1;border-left-color:var(--gold)}
+.need-row.on .nm{font-size:clamp(1.8rem,4.8vmin,4rem);font-weight:700}
+.need-row.on .sub{display:block}
+.needstage{position:absolute;z-index:3;top:12vmin;bottom:22vmin;right:calc(var(--frame) + var(--pad));width:48vw}
+.needstage img{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;border-radius:.8vmin;
+  box-shadow:0 1.4vmin 4.6vmin rgba(0,0,0,.6);animation:needIn .45s ease-out}
+@keyframes needIn{from{opacity:0}to{opacity:1}}
+.needstage svg.arrows{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.needstage .scrawl{fill:none;stroke:var(--gold);stroke-linecap:round;stroke-linejoin:round;opacity:.95;
+  transition:stroke-dashoffset .55s ease-in-out,opacity .3s ease}
+.needstage .scrawl.out{opacity:0}
 </style>
 </head>
 <body>
@@ -836,7 +858,8 @@ var FAMILY = {
                                             them apart from each other too */
   event:'schedule', klass:'schedule', klass_fitness:'schedule', klass_nature:'schedule', series:'schedule',
   news:'news', newsletter:'news',
-  volunteer:'people', ask:'ask'
+  volunteer:'people', ask:'ask',
+  need_photos:'need', need_obs:'need'          /* the two list-and-photo slides: keep them apart */
 };
 function famOf(item){ return FAMILY[item.type] || item.type; }
 
@@ -892,7 +915,8 @@ function loadAll(){
     grab(BASE+'data/sources/plant_signage.json'),
     grab(BASE+'data/sources/wildlife_signage.json'),
     grab(BASE+'data/sources/photographer_names.json'),
-    grab(FEEDS+'photographers.json')
+    grab(FEEDS+'photographers.json'),
+    grab(FEEDS+'maintenance_todo.json')
   ]).then(function(r){
     D.right_now=onScreen(r[0]); D.events=onScreen(r[1]);
     D.classes=onScreen(r[2]);   D.news=onScreen(r[3]);
@@ -903,6 +927,7 @@ function loadAll(){
     indexHits(r[11]); indexHits(r[12]);
     NAMES = r[13] || {};
     D.photographers=onScreen(r[14]);
+    NEEDS = r[15] || null;
     if(!D.right_now.length && !D.plants.length) fallback();
   });
 }
@@ -2109,6 +2134,124 @@ function slideAsk(a){
   };
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NEED PHOTOS / LAST LOGGED  (Randy, 2026-10-15, twin of the Bright Futures pair)
+   Reads data/published/maintenance_todo.json (the To do tab's file). Photos =
+   the species with the fewest approved photos; last logged = the species whose
+   newest observation is oldest. Ten per page, Feature before Standard, five to
+   a slide, shuffled each cycle; a species on the photos page stays off the
+   last-logged page in the same cycle. No commentary here (the Bright Futures
+   deck gets the stamped one-liners). Hands over to render() via s.need.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var NEEDS = null;
+function needMonthYear(iso){
+  var d = iso ? new Date(iso+'T12:00') : null;
+  return d && !isNaN(d) ? d.toLocaleDateString('en-US',{month:'long',year:'numeric'}) : '';
+}
+function needItems(){
+  if(!NEEDS) return [];
+  function usable(x){ var r = CREDITS[String(x.hero_photo_id)]; return !!(r && (r.photo_id || r.photo_url)); }
+  var ph = NEEDS.photos || {}, st = NEEDS.stale || {};
+  var photoPool = shuffle(((ph.feature||[]).concat(ph.standard||[])).filter(usable).slice(0,10));
+  var onPhotos = {}; photoPool.forEach(function(x){ onPhotos[x.id] = 1; });
+  var obsPool = shuffle(((st.feature||[]).concat(st.standard||[])).filter(function(x){ return usable(x) && !onPhotos[x.id]; }).slice(0,10));
+  var out = [];
+  [['photos', photoPool], ['obs', obsPool]].forEach(function(pair){
+    var kind = pair[0], pool = pair[1];
+    if(pool.length < 2) return;
+    var half = pool.length > 5 ? Math.ceil(pool.length/2) : pool.length;
+    var chunks = [pool.slice(0, half)]; if(pool.length > half) chunks.push(pool.slice(half));
+    chunks.forEach(function(chunk){ out.push({ type:'need_'+kind, make: slideNeed.bind(null, kind, chunk) }); });
+  });
+  return out;
+}
+function slideNeed(kind, chunk){
+  var steps = chunk.map(function(x){
+    var rec = CREDITS[String(x.hero_photo_id)] || {};
+    var lic = (rec.license || '').replace(/^CC-/,'CC ').replace(/_/g,' ');
+    var when = rec.observed_on ? new Date(rec.observed_on+'T12:00').toLocaleDateString('en-US',{month:'long',year:'numeric'}) : '';
+    return { ms: SECONDS*250, src: rec.photo_id ? mediaOf(rec,'original') : inatSize(rec.photo_url,'original'),
+             fb: rec.photo_url || '', credit: rec.photographer_name ? { name: rec.photographer_name, terms: [lic, when].filter(Boolean).join('  ·  ') } : null };
+  });
+  var head = kind === 'photos'
+    ? '<div class="eyebrow">Photos wanted</div><div class="headline">We need better photos of these.</div>'
+    : '<div class="eyebrow">Last logged</div><div class="headline">Nobody has logged these lately.</div>';
+  var list = '<div class="need-list">' + chunk.map(function(y){
+    var sub = kind === 'photos' ? 'We have ' + y.photos + (y.photos === 1 ? ' photo' : ' photos') : 'Last logged ' + needMonthYear(y.newest);
+    return '<div class="need-row"><span class="nm">'+esc(y.name||'')+'</span><span class="sub">'+esc(sub)+'</span></div>';
+  }).join('') + '</div>';
+  var total = steps.reduce(function(a, st){ return a + st.ms; }, 0) / 1000;
+  return { cls:'need', seconds: total, need: { steps: steps }, credit: steps[0].credit, html: head + list };
+}
+
+/* The step engine: light the next row, swap the photo, draw the arrow. */
+function startNeed(el, s){
+  var stageEl = document.createElement('div'); stageEl.className = 'needstage'; el.appendChild(stageEl);
+  var rows = el.querySelectorAll('.need-row'), timers = el._needTimers = [], i = 0;
+  function show(){
+    if(!el.isConnected) return;
+    var st = s.need.steps[i], k;
+    for(k = 0; k < rows.length; k++) rows[k].classList.toggle('on', k === i);
+    stageEl.innerHTML = '<img alt="" src="'+st.src+'"'
+      + (st.fb && st.fb !== st.src ? ' data-fb="'+st.fb+'" onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.dataset.fb=\'\'}"' : '')
+      + '><svg class="arrows"></svg>';
+    var img = stageEl.querySelector('img'), drawn = false;
+    function go(){ if(drawn) return; drawn = true; needArrow(el, stageEl, img, timers, st.ms); }
+    img.addEventListener('load', go);
+    if(img.complete && img.naturalWidth) go();
+    if(st.credit){
+      credEl.innerHTML = '<span class="lbl">Photograph</span><span class="who">'+esc(st.credit.name)+'</span>'
+        + (st.credit.terms ? '<span class="terms">'+esc(st.credit.terms)+'</span>' : '');
+      credEl.classList.add('on');
+    } else credEl.classList.remove('on');
+    i++;
+    if(i < s.need.steps.length) timers.push(setTimeout(show, st.ms));
+  }
+  show();
+}
+
+/* A hand-scrawled arrow from the lit name to the photo: wobbly points, two
+   marker passes, a loose V for the head. Draws left to right, fades just
+   before the next step. */
+function needArrow(el, stageEl, img, timers, stepMs){
+  var row = el.querySelector('.need-row.on .nm'), svg = stageEl.querySelector('svg.arrows');
+  if(!row || !svg || !stageEl.isConnected) return;
+  var S = stageEl.getBoundingClientRect(), R = img.getBoundingClientRect(), vmin = Math.min(innerWidth, innerHeight)/100;
+  svg.setAttribute('viewBox', '0 0 '+S.width+' '+S.height);
+  var rg = document.createRange(); rg.selectNodeContents(row);
+  var T = rg.getBoundingClientRect();
+  var x1 = T.right - S.left + 1.2*vmin, y1 = (T.top + T.bottom)/2 - S.top;
+  var x2 = R.left - S.left - 1.2*vmin;
+  var y2 = Math.max(R.top - S.top + 4*vmin, Math.min(R.bottom - S.top - 4*vmin, y1));
+  if(x2 - x1 < 3*vmin) return;
+  var cx = (x1 + x2)/2, cy = Math.min(y1, y2) - 5*vmin;
+  function pt(t){ var u = 1 - t; return [u*u*x1 + 2*u*t*cx + t*t*x2, u*u*y1 + 2*u*t*cy + t*t*y2]; }
+  function jig(k){ return (Math.random() - 0.5) * k * vmin; }
+  var made = [];
+  function add(d, w, delay){
+    var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('class','scrawl'); path.setAttribute('d', d); path.style.strokeWidth = (w*vmin)+'px';
+    svg.appendChild(path);
+    var L = path.getTotalLength(); path.style.strokeDasharray = L; path.style.strokeDashoffset = L;
+    made.push(path);
+    timers.push(setTimeout(function(){ path.style.strokeDashoffset = 0; }, delay/SPEED));
+  }
+  function body(w, jit, delay){
+    var N = 16, pts = [];
+    for(var i = 0; i <= N; i++){ var q = pt(i/N); if(i > 0 && i < N){ q[0] += jig(jit); q[1] += jig(jit); } pts.push(q); }
+    var d = 'M'+pts[0][0]+' '+pts[0][1];
+    for(var k = 1; k < N; k++){ var m = [(pts[k][0]+pts[k+1][0])/2, (pts[k][1]+pts[k+1][1])/2]; d += ' Q'+pts[k][0]+' '+pts[k][1]+' '+m[0]+' '+m[1]; }
+    add(d + ' L'+pts[N][0]+' '+pts[N][1], w, delay);
+  }
+  body(0.55, 0.7, 350); body(0.3, 1.2, 450);
+  var ang = Math.atan2(y2 - cy, x2 - cx), len = 3.2*vmin;
+  function barb(sign){ var a2 = ang + Math.PI + sign*0.45; return [x2 + Math.cos(a2)*len + jig(0.6), y2 + Math.sin(a2)*len + jig(0.6)]; }
+  var h1 = barb(1), h2 = barb(-1);
+  add('M'+h1[0]+' '+h1[1]+' L'+(x2 + jig(0.4))+' '+(y2 + jig(0.4))+' L'+h2[0]+' '+h2[1], 0.55, 900);
+  timers.push(setTimeout(function(){ made.forEach(function(m){ m.classList.add('out'); }); }, Math.max(1200, stepMs - 400)));
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    THE DECK
    Weighted, shuffled, no two consecutive slides of the same type, and an ask
@@ -2385,6 +2528,8 @@ function buildDeckNormal(){
     if(who) pool.push({type:'photographer', make:slidePhotographer.bind(null, who)});
   }
 
+  needItems().forEach(function(it){ pool.push(it); });
+
   pool = interleave(pool);
 
   /* Asks, spaced evenly through the deck.
@@ -2412,6 +2557,8 @@ function buildDeckNormal(){
 
 
 function buildDeck(){
+  var only = (Q.get('only') || '').trim();
+  if(only){ var o = needItems().filter(function(it){ return it.type.indexOf(only.replace(/^need/, 'need_')) === 0; }); if(o.length) return o; }
   D.volunteer = (D.volunteer || []).filter(function(v){ return !/adult workday/i.test(v.title || ''); });
   var normal = buildDeckNormal(), out = [], last = '', last2 = '', since = 0, gap = 4 + Math.floor(Math.random()*4);
   function layoutNow(){
@@ -2610,7 +2757,10 @@ function render(s){
     revealTimer = setTimeout(function(){ el.classList.add('reveal'); }, 1400 / SPEED);
   }
 
+  if(s.need) startNeed(el, s);
+
   if(cur){
+    if(cur._needTimers) cur._needTimers.forEach(clearTimeout);
     var old=cur; old.classList.remove('on');
     setTimeout(function(){ old.remove(); }, 1400 / SPEED);
   }
