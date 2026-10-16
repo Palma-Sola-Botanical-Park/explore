@@ -3459,15 +3459,6 @@ def render_preview_html(kingdom, species_id):
         _gen = getattr(pub, "generate_html_v2", None) or pub.generate_html
         html = _gen(species, hero, galleries.get(species_id, []))
 
-        # Banner. Preview-only; nothing here touches the data or the published page.
-        banner = (
-            '<div style="position:fixed;top:0;left:0;right:0;z-index:99999;'
-            'background:#c5922a;color:#1a3a1f;font:600 13px system-ui;'
-            'padding:7px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);">'
-            f'PREVIEW · {species_id} · status: {species.get("status","?")} · '
-            'not yet published — dry run'
-            '</div><div style="height:34px;"></div>'
-        )
         # Photos are referenced two ways in the published markup:
         #   gallery / relative :  "photos/PSBP-xxxxx/file.jpg"
         #   hero & lightbox    :  "../photos/PSBP-xxxxx/file.jpg"  (published pages
@@ -3492,13 +3483,6 @@ def render_preview_html(kingdom, species_id):
             html = html.replace(f'{q}../css/', f'{q}/css-file/')
             html = html.replace(f'{q}css/',    f'{q}/css-file/')
 
-        # Inject the banner right after <body>
-        if "<body" in html:
-            idx = html.index("<body")
-            close = html.index(">", idx) + 1
-            html = html[:close] + banner + html[close:]
-        else:
-            html = banner + html
         return (html, 200)
     except Exception as e:
         import traceback
@@ -10394,7 +10378,6 @@ def render_todo():
       </div>
       <p class="td-meta" id="td-status" style="margin-top:6px;"></p>
     </div>
-    <div id="td-pills" class="td-pills"></div>
     <div id="td-subtabs" class="td-subtabs"></div>
     <div id="td-sections"></div>
     <div id="td-toast"></div>
@@ -10479,34 +10462,41 @@ def render_todo():
       var meta = document.getElementById('td-meta');
       if(!t){
         meta.textContent = 'Never built. Press Refresh now.';
-        document.getElementById('td-pills').innerHTML = '';
         document.getElementById('td-sections').innerHTML = '';
         document.getElementById('td-subtabs').innerHTML = '';
         return;
       }
       var m = t.meta || {}, r = (t.review || {}), c = r.counts || {};
       meta.textContent = 'Built ' + (m.generated || '?') + ' - iNaturalist: ' + (m.inat || '?') + ' - placements read: ' + (m.placements_read || 0);
-      document.getElementById('td-pills').innerHTML =
+      var pills = '<div class="td-pills">' +
         '<span class="td-pill">' + (c.species || 0) + ' species</span>' +
         '<span class="td-pill' + (c.not_scheduled ? ' warn' : '') + '">' + (c.not_scheduled || 0) + ' not scheduled</span>' +
         '<span class="td-pill">' + (c.scheduled || 0) + ' scheduled</span>' +
         '<span class="td-pill' + (c.overdue ? ' warn' : '') + '">' + (c.overdue || 0) + ' overdue</span>' +
-        '<span class="td-pill">' + (c.never_reviewed || 0) + ' never reviewed</span>';
+        '<span class="td-pill">' + (c.never_reviewed || 0) + ' never reviewed</span></div>';
       TD_PANELS = [
-        {id:'review', title:'1. Pages to review', count:(c.species || 0) - (c.never_reviewed || 0) + ' done',
-         note:'Look at the live page, tweak it, then press Mark reviewed. It records today and sets the next review date.', html: reviewPanel(r)},
-        {id:'stale', title:'2. Stale observations', count:total(t.stale),
+        {id:'review', title:'Page Review', count:(c.species || 0) - (c.never_reviewed || 0) + ' done',
+         note:'Look at the live page, tweak it, then press Mark reviewed. It records today and sets the next review date.', html: pills + reviewPanel(r)},
+        {id:'stale', title:'Need observation', count:total(t.stale),
          note:'Plants that have gone longest without an iNaturalist observation. Snooze one that cannot be found right now (cut back, say); it returns on the date you pick.',
          html: twoTier(t.stale, function(x){ return nameLine(x, x.task + (x.where ? ' ' + x.where.slice(0, 150) + (x.where.length > 150 ? '...' : '') : '')); }, true)},
-        {id:'photos', title:'3. Better pictures', count:total(t.photos),
+        {id:'photos', title:'Need pics', count:total(t.photos),
          note:'Fewest approved photos first (target 10).',
          html: twoTier(t.photos, function(x){ return nameLine(x, x.photos + ' of ' + (x.of_target || 10) + ' photos' + (x.newest ? ' - newest ' + x.newest : '')); }, true)},
-        {id:'spot', title:'4. Spot checks', count:total(t.spot_check),
+        {id:'spot', title:'Spotcheck', count:total(t.spot_check),
          note:'Placements nobody has confirmed lately (placements.json, read only).',
          html: twoTier(t.spot_check, function(x){ return nameLine(x, x.reason + ' ' + (x.area ? '(' + x.area + ')' : '')); })}
       ];
+      var nid = t.needs_id || {}, nitems = nid.items || [];
+      TD_PANELS.push({id:'needid', title:'ID work', count:nitems.length,
+        note:'Park observations from the last ' + (nid.window_days || 30) + ' days that are not at species yet and have only one identifier. Newest first. For the identifiers.' + (nid.stale ? ' (iNaturalist could not be reached at the last build, so this is the earlier list.)' : ''),
+        html: nitems.length ? zone('feature', 'Waiting for a second opinion', nitems.length + ' observations', nitems.map(function(x){
+          return '<div class="td-row"><div class="td-rowmain">' + nameLine({name: x.what}, x.group + (x.rank ? ' - ' + x.rank : '') + ' - seen ' + x.observed_on) +
+                 '</div><a class="td-snz" href="' + esc(x.url) + '" target="_blank" rel="noopener" style="text-decoration:none;">Open</a>' +
+                 '<button class="td-snz" data-obs="' + esc(x.id) + '" data-name="' + esc(x.what) + '">Snooze</button></div>';
+        }).join('')) : '<div class="td-empty">Nothing waiting.</div>'});
       var parked = t.snoozed || [], parkedObs = t.snoozed_observations || [];
-      TD_PANELS.push({id:'rest', title:'Resting', count:parked.length + parkedObs.length,
+      TD_PANELS.push({id:'rest', title:'Snoozed', count:parked.length + parkedObs.length,
         note:'Snoozed from the observation and picture lists until the date shown, then they come back on their own. Wake now takes effect at the next Refresh.',
         html: (parked.length ? zone('background', 'Snoozed plants', parked.length + ' resting', parked.map(function(x){
           return '<div class="td-row"><div class="td-rowmain">' + nameLine(x, 'back on ' + x.until) + '</div><button class="td-snz td-wake" data-id="' + esc(x.id) + '" data-name="' + esc(x.name) + '">Wake now</button></div>';
@@ -10516,14 +10506,6 @@ def render_todo():
                  '</div><a class="td-snz" href="' + esc(x.url) + '" target="_blank" rel="noopener" style="text-decoration:none;">Open</a>' +
                  '<button class="td-snz td-wake" data-obs="' + esc(x.id) + '" data-name="' + esc(x.what) + '">Wake now</button></div>';
         }).join('')) : '') + (parked.length || parkedObs.length ? '' : '<div class="td-empty">Nothing is snoozed.</div>')});
-      var nid = t.needs_id || {}, nitems = nid.items || [];
-      TD_PANELS.push({id:'needid', title:'5. Needs an ID', count:nitems.length,
-        note:'Park observations from the last ' + (nid.window_days || 30) + ' days that are not at species yet and have only one identifier. Newest first. For the identifiers.' + (nid.stale ? ' (iNaturalist could not be reached at the last build, so this is the earlier list.)' : ''),
-        html: nitems.length ? zone('feature', 'Waiting for a second opinion', nitems.length + ' observations', nitems.map(function(x){
-          return '<div class="td-row"><div class="td-rowmain">' + nameLine({name: x.what}, x.group + (x.rank ? ' - ' + x.rank : '') + ' - seen ' + x.observed_on) +
-                 '</div><a class="td-snz" href="' + esc(x.url) + '" target="_blank" rel="noopener" style="text-decoration:none;">Open</a>' +
-                 '<button class="td-snz" data-obs="' + esc(x.id) + '" data-name="' + esc(x.what) + '">Snooze</button></div>';
-        }).join('')) : '<div class="td-empty">Nothing waiting.</div>'});
       var over = t.too_many_photos || {};
       if(total(over)){
         TD_PANELS.push({id:'over', title:'Over the photo ceiling', count:total(over),
