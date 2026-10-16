@@ -480,12 +480,12 @@ _RESEARCH_ONLY_FIELDS = {
 
 # Key content fields per kingdom — used for completeness indicators.
 _PLANT_CONTENT_KEYS = [
-    "quick_hits", "more_information", "origin", "wildlife_value",
+    "more_information", "origin", "wildlife_value",
     "reproduction", "growing_conditions", "safety_note",
     "alternate_names", "butterfly", "form",
 ]
 _WILDLIFE_CONTENT_KEYS = [
-    "quick_hits", "more_information", "range_and_origin", "diet",
+    "more_information", "range_and_origin", "diet",
     "behavior", "habitat", "sounds", "identification",
     "also_known_as", "seasonality", "size",
 ]
@@ -3393,189 +3393,11 @@ def handle_api_photos_trash(params):
             "remaining": len(credits["photos"]), "demoted_to": "skipped",
             "page": regen}
 
-# ── Gap audit (preview-only; never touches data or the publisher) ──────────
-#
-# Defines which signage fields matter for a complete page, and what counts as
-# "thin." Used ONLY to render the Gaps overlay in preview. Nothing here is ever
-# written to JSON or seen by a visitor.
-#
-# Each entry: (label, accessor, kind, arg)
-#   kind "text"  → flag if empty/whitespace; thin if very short (arg "prose")
-#   kind "list"  → flag if empty; thin if below arg
-#   kind "blocks"→ list of {label,text}; flag if empty
-#   kind "vocab" → flag if empty, OR if the value is not in arg (a set of allowed
-#                  values). This is the only kind that can report a field as
-#                  WRONG rather than absent — see the note below.
-#   accessor is a dotted path into the species dict (supports one level of nesting)
-#
-# ON "vocab": every other kind here asks "is there content?" That question is
-# blind to a field holding a real-looking value that is simply not true, which
-# is how a Common Raccoon reached `spotted` filed as animal_group "Fly" — a
-# valid key, mapping to the same theme bucket as Mammal, so it rendered
-# perfectly and every presence check passed. `vocab` closes that for fields
-# with a closed set of legal values. It cannot close it for prose, and nothing
-# here can: a field can be fluent, well-formed and wrong.
-
-PLANT_GAP_SPEC = [
-    ("Common name",       "common_name",        "text",   None),
-    ("Scientific name",   "botanical_name",     "text",   None),
-    ("Family",            "taxonomy.family",    "text",   None),
-    ("Category",          "category",           "text",   None),
-    ("Quick hits",        "quick_hits",         "list",   3),
-    ("Origin",            "origin",             "text",   "prose"),
-    ("More information",  "more_information",   "list",   2),
-    ("Wildlife value",    "wildlife_value",     "list",   1),
-    ("Reproduction blocks", "reproduction.blocks", "blocks", None),
-    ("What to look for",  "reproduction.what_to_look_for", "text", "prose"),
-    ("Size",              "size.height_length", "text",   None),
-    ("Growing light",     "growing_conditions.light", "text", None),
-    ("Edibility detail",  "edibility.detail",   "text",   None),
-    ("Toxicity (people)", "toxicity.people",    "text",   None),
-]
-
-WILDLIFE_GAP_SPEC = [
-    ("Common name",       "common_name",        "text",   None),
-    ("Scientific name",   "scientific_name",    "text",   None),
-    ("Animal group",      "animal_group",       "vocab",  VALID_ANIMAL_GROUPS),
-    ("Category",          "category",           "text",   None),
-    ("Quick hits",        "quick_hits",         "list",   3),
-    ("Range & origin",    "range_and_origin",   "text",   "prose"),
-    ("More information",  "more_information",   "list",   2),
-    ("Identification blocks", "identification.blocks", "blocks", None),
-    ("What to look for",  "identification.what_to_look_for", "text", "prose"),
-    ("Diet",              "diet",               "text",   "prose"),
-    ("Behavior",          "behavior",           "text",   "prose"),
-    ("Voice / sounds",    "sounds",             "text",   "prose"),
-    ("Where to look",     "where_to_look",      "text",   "prose"),
-    ("When to see",       "when_to_see",        "text",   "prose"),
-    ("Habitat",           "habitat",            "text",   "prose"),
-]
-
-# Placeholder strings that should count as EMPTY even though the field has text.
-_PLACEHOLDER_MARKERS = (
-    "to be expanded", "to be documented", "to be drafted", "first-pass stub",
-    "see full writeup", "see quick hit", "future review", "content to be",
-)
-
-def _dig(species, path):
-    """Follow a dotted path one or two levels deep; return the value or None."""
-    cur = species
-    for part in path.split("."):
-        if not isinstance(cur, dict):
-            return None
-        cur = cur.get(part)
-    return cur
-
-
-def _looks_placeholder(text):
-    t = (text or "").strip().lower()
-    if not t or t == "—" or t == "-":
-        return True
-    return any(m in t for m in _PLACEHOLDER_MARKERS)
-
-
-def audit_gaps(kingdom, species):
-    """Return a list of gap findings for a species. Preview-only.
-
-    Each finding: {"label","level"} where level is "missing", "thin" or
-    "invalid". An "invalid" finding may carry "detail" naming the bad value.
-    """
-    spec = PLANT_GAP_SPEC if kingdom == "plants" else WILDLIFE_GAP_SPEC
-    findings = []
-
-    for label, path, kind, minimum in spec:
-        val = _dig(species, path)
-
-        if kind == "text":
-            if not val or _looks_placeholder(str(val)):
-                findings.append({"label": label, "level": "missing"})
-            elif minimum == "prose" and len(str(val).strip()) < 25:
-                findings.append({"label": label, "level": "thin"})
-
-        elif kind == "list":
-            items = [x for x in (val or []) if not _looks_placeholder(str(x))]
-            if not items:
-                findings.append({"label": label, "level": "missing"})
-            elif minimum and len(items) < minimum:
-                findings.append({"label": label, "level": "thin"})
-
-        elif kind == "blocks":
-            blocks = val or []
-            good = [b for b in blocks
-                    if isinstance(b, dict) and not _looks_placeholder(b.get("text", ""))]
-            if not good:
-                findings.append({"label": label, "level": "missing"})
-
-        elif kind == "vocab":
-            allowed = minimum or ()
-            text = str(val).strip() if val is not None else ""
-            if not text:
-                findings.append({"label": label, "level": "missing"})
-            elif text not in allowed:
-                findings.append({"label": label, "level": "invalid",
-                                 "detail": text})
-
-    return findings
-
-
-def _gaps_overlay_html(findings):
-    """Build the floating Gaps panel injected into preview when gaps=1."""
-    if not findings:
-        return (
-            '<div id="gaps-panel" style="position:fixed;right:16px;top:50px;width:230px;'
-            'z-index:99998;background:#1a3a1f;color:#fff;border-radius:10px;'
-            'padding:14px 16px;font:13px system-ui;box-shadow:0 4px 20px rgba(0,0,0,.3);">'
-            '<strong style="display:block;margin-bottom:4px;">✓ No gaps</strong>'
-            'Every tracked field has real content. Looks publish-ready.</div>'
-        )
-    # Invalid leads: an empty field is obvious the moment you look at the page,
-    # but a wrong-but-well-formed value renders perfectly and is the one thing
-    # here you would otherwise never notice.
-    invalid = [f for f in findings if f["level"] == "invalid"]
-    missing = [f for f in findings if f["level"] == "missing"]
-    thin = [f for f in findings if f["level"] == "thin"]
-    rows = ""
-    for f in invalid:
-        detail = f.get("detail") or ""
-        shown = (detail[:18] + "…") if len(detail) > 19 else detail
-        rows += (f'<div style="display:flex;gap:6px;align-items:center;margin:3px 0;">'
-                 f'<span style="color:#ff9d3a;">▲</span>'
-                 f'<span>{f["label"]}</span>'
-                 f'<span style="margin-left:auto;font-size:10px;opacity:.85;">'
-                 f'not valid: {shown}</span></div>')
-    for f in missing:
-        rows += (f'<div style="display:flex;gap:6px;align-items:center;margin:3px 0;">'
-                 f'<span style="color:#ff6b6b;">●</span>'
-                 f'<span>{f["label"]}</span>'
-                 f'<span style="margin-left:auto;font-size:10px;opacity:.7;">empty</span></div>')
-    for f in thin:
-        rows += (f'<div style="display:flex;gap:6px;align-items:center;margin:3px 0;">'
-                 f'<span style="color:#ffd24a;">●</span>'
-                 f'<span>{f["label"]}</span>'
-                 f'<span style="margin-left:auto;font-size:10px;opacity:.7;">thin</span></div>')
-    counts = f'{len(missing)} empty, {len(thin)} thin'
-    if invalid:
-        counts = f'{len(invalid)} not valid, ' + counts
-    return (
-        '<div id="gaps-panel" style="position:fixed;right:16px;top:50px;width:250px;'
-        'z-index:99998;background:#1a3a1f;color:#fff;border-radius:10px;'
-        'padding:14px 16px;font:13px system-ui;box-shadow:0 4px 20px rgba(0,0,0,.3);'
-        'max-height:80vh;overflow:auto;">'
-        f'<strong style="display:block;margin-bottom:8px;">Gaps to fill '
-        f'({counts})</strong>'
-        f'{rows}'
-        '<div style="margin-top:10px;font-size:11px;opacity:.7;line-height:1.4;">'
-        'Orange = value not in the allowed list · Red = empty/placeholder · '
-        'Yellow = present but short. '
-        'These flags are preview-only and never publish.</div></div>'
-    )
-
-
 def _esc_html(s):
     return (str(s or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 
-def render_preview_html(kingdom, species_id, gaps_mode=False):
+def render_preview_html(kingdom, species_id):
     """Render a species page in memory using the publisher's generator.
 
     Returns (html_string, status_code). Never writes files or changes status —
@@ -3607,13 +3429,10 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
         # through Intake, hit Preview, get a traceback, and nothing anywhere
         # says which field is at fault.
         #
-        # It also made the Gaps view useless for exactly the field it most needs
-        # to report, since the render died before the overlay was injected.
-        # Fail with an explanation and still show the gaps panel.
+        # Fail with an explanation instead.
         if kingdom != "plants":
             ok_ag, ag_reason = check_animal_group(species)
             if not ok_ag:
-                gaps_html = _gaps_overlay_html(audit_gaps(kingdom, species))
                 return (
                     '<div style="font:15px/1.6 system-ui;max-width:640px;'
                     'margin:60px auto;padding:0 20px;color:#1a3a1f;">'
@@ -3628,8 +3447,7 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
                     'that, or the taxonomy did not settle it (a snake, an unplaced '
                     'insect).</p>'
                     f'<p style="opacity:.75;">Valid values: '
-                    f'{", ".join(sorted(VALID_ANIMAL_GROUPS))}.</p></div>'
-                    + gaps_html, 200)
+                    f'{", ".join(sorted(VALID_ANIMAL_GROUPS))}.</p></div>', 200)
 
         # v2 layout (2026-09-07). Preview must render what Publish will WRITE —
         # write_html() now calls generate_html_v2, so a preview on the old
@@ -3641,24 +3459,13 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
         _gen = getattr(pub, "generate_html_v2", None) or pub.generate_html
         html = _gen(species, hero, galleries.get(species_id, []))
 
-        # Banner + a toggle between Visitor view and Gaps view. The gaps overlay
-        # is rendered from a preview-only audit — nothing here touches the data
-        # or the published page.
-        other_mode = "0" if gaps_mode else "1"
-        other_label = "Visitor view" if gaps_mode else "Gaps view"
-        toggle = (
-            f'<a href="/preview?kingdom={kingdom}&id={species_id}&gaps={other_mode}" '
-            'style="margin-left:14px;color:#1a3a1f;background:rgba(255,255,255,.55);'
-            'padding:2px 10px;border-radius:10px;text-decoration:none;font-weight:700;">'
-            f'⇄ {other_label}</a>'
-        )
+        # Banner. Preview-only; nothing here touches the data or the published page.
         banner = (
             '<div style="position:fixed;top:0;left:0;right:0;z-index:99999;'
             'background:#c5922a;color:#1a3a1f;font:600 13px system-ui;'
             'padding:7px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.2);">'
             f'PREVIEW · {species_id} · status: {species.get("status","?")} · '
-            + ('GAPS VIEW' if gaps_mode else 'not yet published — dry run')
-            + toggle +
+            'not yet published — dry run'
             '</div><div style="height:34px;"></div>'
         )
         # Photos are referenced two ways in the published markup:
@@ -3685,22 +3492,13 @@ def render_preview_html(kingdom, species_id, gaps_mode=False):
             html = html.replace(f'{q}../css/', f'{q}/css-file/')
             html = html.replace(f'{q}css/',    f'{q}/css-file/')
 
-        # Gaps overlay panel — only when the Gaps view is deliberately asked for.
-        # Preview-only; never touches the published page.
-        #
-        # The index-flags strip that used to ride along on EVERY preview was
-        # removed 2026-09-20. Randy: "I'd rather just look at the page. Over time
-        # I'll get a feel for what is thin and what is missing." A checklist
-        # pinned over the page is not how he wants to read his own work.
-        overlay = (_gaps_overlay_html(audit_gaps(kingdom, species)) if gaps_mode else "")
-
-        # Inject banner + overlay right after <body>
+        # Inject the banner right after <body>
         if "<body" in html:
             idx = html.index("<body")
             close = html.index(">", idx) + 1
-            html = html[:close] + banner + overlay + html[close:]
+            html = html[:close] + banner + html[close:]
         else:
-            html = banner + overlay + html
+            html = banner + html
         return (html, 200)
     except Exception as e:
         import traceback
@@ -5338,12 +5136,6 @@ main {
     color: var(--green-deep);
     border-color: var(--gold);
 }
-.pub-btn.gaps {
-    background: white;
-    color: #b8860b;
-    border-color: #e0c66a;
-}
-.pub-btn.gaps:hover { background: #fff8e1; border-color: var(--gold); }
 
 /* Picker triage counts */
 .pi-counts {
@@ -6676,67 +6468,12 @@ def render_intake():
                     <a href="${{taxUrl}}" target="_blank" class="inat-link-btn"
                        style="border-color:var(--gray-200); background:white; color:var(--gray-600);">
                         📖 iNat Taxon Page</a>
-                    <button class="inat-check-btn" id="inat-check-btn"
-                            onclick="intakeCheckInat(${{sp.inat_taxon_id}})">
-                        🌐 Check Quality</button>
                 </div>
-                <div id="inat-summary"></div>`;
+                <div id="inat-summary" data-taxon="${{sp.inat_taxon_id}}"><span style="font-size:13px;color:var(--gray-400);">Checking observations…</span></div>`;
         }} else {{
             inatHtml = `<div class="intake-inat-row">
                 <span style="font-size:12px; color:var(--gray-400);">No iNat taxon ID — cannot link to observations</span>
             </div>`;
-        }}
-
-        // Content field audit
-        const contentFields = isPlant ? [
-            ['quick_hits',        'Quick Hits'],
-            ['more_information',  'Description'],
-            ['origin',            'Origin'],
-            ['wildlife_value',    'Wildlife Value'],
-            ['reproduction',      'Growth & Form'],
-            ['growing_conditions','Growing Conditions'],
-            ['edibility',         'Edibility'],
-            ['toxicity',          'Toxicity'],
-            ['alternate_names',   'Alternate Names'],
-            ['butterfly_host',    'Butterfly Host'],
-        ] : [
-            ['quick_hits',        'Quick Hits'],
-            ['more_information',  'Description'],
-            ['range_and_origin',  'Range & Origin'],
-            ['diet',              'Diet'],
-            ['behavior',          'Behavior'],
-            ['habitat',           'Habitat'],
-            ['sounds',            'Sounds'],
-            ['identification',    'ID Tips'],
-            ['also_known_as',     'Also Known As'],
-            ['seasonality',       'Seasonality'],
-            ['size',              'Size'],
-        ];
-
-        let filled = 0;
-        const fieldRows = contentFields.map(([key, label]) => {{
-            const val = sp[key];
-            const ok = isFilled(val);
-            if (ok) filled++;
-            const det = ok ? fieldSummary(val) : '';
-            return `<div class="intake-field ${{ok ? 'filled' : 'empty'}}">
-                <span class="if-check">${{ok ? '✓' : '✗'}}</span>
-                <span class="if-label">${{label}}</span>
-                ${{det ? `<span class="if-detail">${{det}}</span>` : ''}}
-            </div>`;
-        }}).join('');
-
-        // Quick hits preview
-        let quickHitsHtml = '';
-        if (sp.quick_hits && sp.quick_hits.length) {{
-            const preview = sp.quick_hits.slice(0, 2);
-            quickHitsHtml = `
-                <div class="intake-section">
-                    <h3>Quick Hits Preview</h3>
-                    ${{preview.map(h => `<p class="intake-qh">• ${{esc(h)}}</p>`).join('')}}
-                    ${{sp.quick_hits.length > 2
-                        ? `<p class="intake-qh-more">+ ${{sp.quick_hits.length - 2}} more</p>` : ''}}
-                </div>`;
         }}
 
         // Taxonomy
@@ -6800,30 +6537,29 @@ def render_intake():
                 <div class="intake-chips">${{chips.join('')}}</div>
                 ${{tagsHtml}}
                 ${{inatHtml}}
-
-                <div class="intake-section">
-                    <h3>Content Fields
-                        <span class="intake-fill-count">${{filled}} of ${{contentFields.length}}</span>
-                    </h3>
-                    <div class="intake-fields">${{fieldRows}}</div>
-                </div>
-
-                ${{quickHitsHtml}}
-                ${{notesHtml}}
                 ${{actionsHtml}}
+                ${{notesHtml}}
             </div>
         `;
+        if (sp.inat_taxon_id) intakeCheckInat(sp.inat_taxon_id);
     }}
 
+    const intakeInatCache = {{}};
     async function intakeCheckInat(taxonId) {{
-        const btn = document.getElementById('inat-check-btn');
         const sumDiv = document.getElementById('inat-summary');
-        if (btn) {{ btn.disabled = true; btn.textContent = '⏳ Checking…'; }}
+        if (!sumDiv) return;
         try {{
-            const resp = await fetch(`/api/intake/inat-check?taxon_id=${{taxonId}}`);
-            const data = await resp.json();
+            let data = intakeInatCache[taxonId];
+            if (!data) {{
+                const resp = await fetch(`/api/intake/inat-check?taxon_id=${{taxonId}}`);
+                data = await resp.json();
+                if (!data.error) intakeInatCache[taxonId] = data;
+            }}
+            // a late answer for a species no longer on screen must not land on another one
+            const nowDiv = document.getElementById('inat-summary');
+            if (!nowDiv || String(nowDiv.dataset.taxon) !== String(taxonId)) return;
             if (data.error) {{
-                sumDiv.innerHTML = `<div class="inat-summary" style="color:#c62828;">
+                nowDiv.innerHTML = `<div class="inat-summary" style="color:#c62828;">
                     Failed: ${{esc(data.error)}}</div>`;
             }} else {{
                 const rg = data.quality_grades.research || 0;
@@ -6842,7 +6578,7 @@ def render_intake():
                     ? '⚠ Single observer — needs independent confirmation'
                     : '⚠ No research-grade IDs yet';
 
-                sumDiv.innerHTML = `<div class="inat-summary">
+                nowDiv.innerHTML = `<div class="inat-summary">
                     <strong>${{total}}</strong> observation${{total !== 1 ? 's' : ''}} ·
                     <strong>${{obs}}</strong> observer${{obs !== 1 ? 's' : ''}} ·
                     <strong>${{rg}}</strong> research grade ·
@@ -6856,7 +6592,6 @@ def render_intake():
             sumDiv.innerHTML = `<div class="inat-summary" style="color:#c62828;">
                 Network error — is the dashboard online?</div>`;
         }}
-        if (btn) {{ btn.disabled = false; btn.textContent = '🌐 Check Quality'; }}
     }}
 
     async function intakeSetSpeciesStatus(id, newStatus, obsCount) {{
@@ -8508,9 +8243,7 @@ def render_publish():
         let actions = '';
         const previewBtn = sp.has_hero
             ? `<button class="pub-btn preview" onclick="pubPreview('${{sp.id}}', 0)"
-                       title="Open the generated page in a new browser tab">👁 Preview</button>
-               <button class="pub-btn gaps" onclick="pubPreview('${{sp.id}}', 1)"
-                       title="Preview with missing/thin fields flagged">⚠ Gaps</button>`
+                       title="Open the generated page in a new browser tab">👁 Preview</button>`
             : '';
         const workBtn = `<button class="pub-btn aiwork" onclick="pubWorkOpen('${{sp.id}}')"
                     title="Claude drafts what is missing, reviews what is there, and reads your notes first. The live page is rebuilt when it writes.">🤖 Work on this page</button>`;
@@ -8877,9 +8610,8 @@ def render_publish():
         }}
     }}
 
-    function pubPreview(id, gaps) {{
-        const g = gaps ? '&gaps=1' : '';
-        window.open(`/preview?kingdom=${{pubKingdom}}&id=${{id}}${{g}}`, '_blank');
+    function pubPreview(id) {{
+        window.open(`/preview?kingdom=${{pubKingdom}}&id=${{id}}`, '_blank');
     }}
 
     async function pubPromote(id) {{
@@ -11199,7 +10931,6 @@ _DRAFT_SPEC_PLANTS_MAPPED = {
     "form":               ("str",  "growth form — EXACTLY one of: Tree | Shrub & Vine | Palm & Cycad | Groundcover & Wildflower | Foliage & Accent | Aquatic & Wetland"),
     "alternate_names":    ("list", "common alternate names — list of short strings"),
     "butterfly":          ("dict", 'object {"larval_food":bool,"larval_species":[str],"adult_food":bool,"adult_species":[str],"notes":str|null} — larval_food + larval_species: documented larval HOST for named butterflies/moths as "Common (Scientific)"; adult_food: notable nectar source (keep adult_species [] unless ONE specific specialist); notes: brief caveat or null'),
-    "quick_hits":         ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings). LEAN LOCAL where the species offers it — Florida, the Gulf coast, Manatee County, this park. A preference, not a quota: park-level detail beats a Florida angle, which beats a general fact. What you are avoiding is a set that reads like Wikipedia. Never manufacture a local detail — a good general fact beats a thin local one."),
     "origin":             ("list", "native range and how it came to Florida cultivation, as a list of one or two paragraph strings (never newlines inside a string)"),
     "more_information":   ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
     "wildlife_value":     ("list", "1-2 short paragraphs on the pollinators and wildlife it supports — this is where any real butterfly host / nectar value belongs, in prose (list of strings)."),
@@ -11512,8 +11243,7 @@ def _page_mode(kingdom, species=None):
 _DRAFT_SPEC_WILDLIFE = {
     "native":           ("bool", "true if native to Florida; false if introduced"),
     "also_known_as":    ("list", "alternate common names — list of strings"),
-    "teaser":           ("str",  "One or two sentences, 120-175 characters, for the quick-view drawer — the first thing a visitor reads. It must carry a DIFFERENT FACT from quick_hits[0], not the same fact reworded ('forages by day' to 'works the day shift' is the same fact and is the failure). Prefer quick_hits[2] or [3]: the page opens with [0], and the photo is already identical on both surfaces, so the words are all that can differ. Make somebody want the page; don't summarise it."),
-    "quick_hits":       ("list", "2-4 facts a visitor would stop and tell a friend. Rank candidates by 'huh, didn't know that' and keep only the vivid, specific, or surprising ones; drop the obvious. Don't repeat what other fields say. Lead with your best. One or two sentences each (list of strings). LEAN LOCAL where the species offers it — Florida, the Gulf coast, Manatee County, this park. A preference, not a quota: park-level detail beats a Florida angle, which beats a general fact. What you are avoiding is a set that reads like Wikipedia. Never manufacture a local detail — a good general fact beats a thin local one."),
+    "teaser":           ("str",  "One or two sentences, 120-175 characters, for the quick-view drawer — the first thing a visitor reads. It must carry a DIFFERENT FACT from the first fact on the page (at a glance), not the same fact reworded ('forages by day' to 'works the day shift' is the same fact and is the failure). Prefer a later at-a-glance fact: the page opens with the first, and the photo is already identical on both surfaces, so the words are all that can differ. Make somebody want the page; don't summarise it."),
     "range_and_origin": ("str",  "short paragraph: native range and status in Florida"),
     "more_information": ("list", "1-3 engaging natural-history paragraphs (list of strings)"),
     "identification":   ("dict", 'object {"blocks":[{"label":str,"text":str}], "what_to_look_for":str}'),
@@ -13240,8 +12970,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
         if path == "/preview":
             kingdom = params.get("kingdom", ["plants"])[0]
             species_id = params.get("id", [""])[0]
-            gaps_mode = params.get("gaps", ["0"])[0] == "1"
-            html, code = render_preview_html(kingdom, species_id, gaps_mode)
+            html, code = render_preview_html(kingdom, species_id)
             self._html_response(code, html)
             return
 

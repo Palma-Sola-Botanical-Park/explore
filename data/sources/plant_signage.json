@@ -5,7 +5,7 @@
     "species_count": 312,
     "schema_version": "1.5",
     "note": "Added researcher-owned flags: native_notes, watch_invasive(+notes), rare_fruit, butterfly{}. Legacy invasive/butterfly_host retained pending site update. Backfilled safety_note for all published (html) species from legacy edibility/toxicity fields; legacy fields retained. | 2026-08-14: added 16 threatened palms as spotted from iNat My Observations export. | 2026-08-19: 22 quick hits edited so each stands alone on the office screen — opening back-references replaced with the concrete noun. Bodies unchanged. | 2026-08-19b: merged a duplicated Purple Heart hit and de-dated two time-sensitive claims. 1.5 (2026-08-25): added `teaser` and `origin_short` — sign-length copy merged from a hand-curated sign_copy.json. `teaser` is a self-contained 100-200 char hook (quick_hits is the long form); `origin_short` is a place name of a dozen characters (`origin` is the full prose). Written for the printed signs, where the length limit is real — which is why they read tighter than anything derived automatically. Both are curated: regenerate at your peril.",
-    "updated": "2026-10-02T12:20:55",
+    "updated": "2026-10-15T23:44:23",
     "has_sign_note": "2026-08-28: species-level has_sign zeroed. A sign belongs to an individual plant, not a species — track installs in placements.json 'sign_state'. The 27 flags cleared here had drifted: none matched any placement, and roughly 160 cards are printed with 20-30 believed installed and unrecorded."
   },
   "species": [
@@ -21506,7 +21506,9 @@
       "native": false,
       "alternate_names": [
         "Marvel of Peru",
-        "Belle de Nuit"
+        "Belle de Nuit",
+        "Beauty of the Night",
+        "Don Diego de Noche"
       ],
       "quick_hits": [
         "Opens at four in the afternoon. Closes the next morning. The name is precise — it is one of the more reliable plant clocks in horticulture, triggered by declining light intensity rather than temperature.",
@@ -21580,12 +21582,79 @@
       "form": "Shrub & Vine",
       "safety_note": [],
       "butterfly": {
-        "larval_food": false,
-        "larval_species": [],
-        "adult_food": false,
+        "larval_food": true,
+        "larval_species": [
+          "White-lined Sphinx Moth (Hyles lineata)"
+        ],
+        "adult_food": true,
         "adult_species": [],
         "notes": null
-      }
+      },
+      "page": {
+        "at_a_glance": [
+          {
+            "text": "The flowers open reliably around four in the afternoon — triggered by declining light — and close the next morning. The name is not approximate."
+          },
+          {
+            "text": "Cross a red-flowered plant with a white one and every offspring is pink — not a blend, but an exact genetic intermediate. A single bush can carry red, yellow, pink, and white flowers at the same time."
+          },
+          {
+            "text": "The fragrance is aimed at night-flying moths. Daytime visitors largely miss it."
+          },
+          {
+            "text": "It has been a garden plant since the 16th century — one of the earliest American ornamentals to reach European gardens."
+          }
+        ],
+        "how_to_know_it": [
+          {
+            "label": "Flowers",
+            "text": "Trumpet-shaped, in pink, red, yellow, white, or striped combinations — sometimes several colors on the same plant. Open from late afternoon onward; close and fur tightly by mid-morning."
+          },
+          {
+            "label": "Form",
+            "text": "A bushy, rounded perennial two to four feet tall with opposite, smooth, medium-green leaves. It dies back to a large tuberous root after cold weather and resprouts in spring."
+          },
+          {
+            "text": "Time your visit: in the morning the flowers are tightly furled into tubes. Return after four in the afternoon and find them fully open. That daily rhythm, combined with the mixed flower colors on a single plant, settles it."
+          }
+        ],
+        "what_it_does_here": [
+          {
+            "text": "The evening flowers draw sphinx moths — Florida's hovering, long-tongued nocturnal pollinators. Visit at dusk and you may catch one working the trumpets, probing for nectar while hovering in place."
+          },
+          {
+            "text": "The white-lined sphinx moth (Hyles lineata) uses Four-o'clock foliage as a larval host, so the plant contributes on both sides of that moth's life cycle."
+          }
+        ],
+        "where_it_comes_from": [
+          {
+            "text": "Native to tropical America — Mexico, Central America, and south through Peru and Chile — and cultivated well before European contact. It appears in the Badianus Manuscript, an Aztec herbal compiled in 1552, as a plant already in use for medicinal purposes."
+          },
+          {
+            "text": "Spanish explorers brought it to Europe in the 16th century, where it spread quickly through gardens. It is a member of Nyctaginaceae — the same family as bougainvillea."
+          },
+          {
+            "label": "A name with a complicated history",
+            "text": "Linnaeus named it jalapa in the belief that it was the source of jalap, a powerful purgative drug then in use in Europe. It is not — the true jalap comes from a morning glory, Ipomoea purga. The roots of Four-o'clock are mildly purgative, which probably caused the confusion."
+          }
+        ],
+        "how_it_grows": [
+          {
+            "text": "A tuberous root lets the plant ride out drought and cold, dying back to the ground and resprouting reliably. In frost-free climates it persists as a perennial; in cooler zones it behaves as an annual grown from that same root."
+          },
+          {
+            "text": "It self-seeds freely. That is both the reason it spreads so easily and the reason it has naturalized well beyond its native range. Not a current invasive concern in Florida, but worth deadheading if you prefer to contain it."
+          }
+        ],
+        "take_care": [
+          {
+            "label": "Seeds and roots",
+            "text": "The seeds and tuberous roots are toxic if eaten. The ripe seed is black, hard, and roughly the size and shape of a whole black peppercorn — an easy thing for a small child to mistake for food. Handling the roots can also irritate skin."
+          }
+        ]
+      },
+      "teaser": "Its flowers open at four in the afternoon, close the next morning, and are aimed entirely at night-flying moths. The daytime garden mostly misses them.",
+      "origin_short": "Tropical America"
     },
     {
       "id": "PSBP-00107",
