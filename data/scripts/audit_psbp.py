@@ -163,6 +163,8 @@ def main():
     # the first quick hit — and on 38 records in Aug 2026 those were the same
     # sentence. The scan should reward them, not repeat the placard.
     #
+    # (2026-10-15: the page now leads with page.at_a_glance; quick_hits[0] is only the
+    # fallback when a page has none. The rule below applies to whichever the page shows.)
     # The rule (Medium #5 part 4): teaser and quick_hits[0] must carry DIFFERENT
     # facts. Measured as Jaccard word overlap; 0.50 flags the tail without
     # firing on the many records that legitimately share a few common words.
@@ -216,16 +218,27 @@ def main():
             if sp.get("status") != "html":
                 continue
             teaser = sp.get("teaser")
-            hits = sp.get("quick_hits") or []
-            if not isinstance(teaser, str) or not hits or not isinstance(hits[0], str):
+            # The page shows page.at_a_glance; quick_hits is only the fallback
+            # for a page that has no authored At a glance.
+            glance = (sp.get("page") or {}).get("at_a_glance")
+            first, label = None, "quick_hits[0]"
+            if glance:
+                label = "first At a glance item"
+                first = next((b.get("text") for b in glance
+                              if isinstance(b, dict) and isinstance(b.get("text"), str)
+                              and b["text"].strip()), None)
+            else:
+                hits = sp.get("quick_hits") or []
+                first = hits[0] if hits and isinstance(hits[0], str) else None
+            if not isinstance(teaser, str) or not first:
                 continue
-            a, b = _words(teaser), _words(hits[0])
+            a, b = _words(teaser), _words(first)
             if not a or not b:
                 continue
             j = len(a & b) / len(a | b)
             if j >= 0.50:
                 add("CONTENT", "WARN",
-                    f"{sp['id']} {sp.get('common_name')}: teaser and quick_hits[0] "
+                    f"{sp['id']} {sp.get('common_name')}: teaser and {label} "
                     f"overlap {j:.0%} — the sign and the page say the same thing")
 
         # UNITS — imperial, spelled out, rounded. Randy, 2026-09-01: "I prefer

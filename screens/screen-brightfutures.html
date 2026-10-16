@@ -139,7 +139,7 @@
           var t = o.taxon; if(!t || !t.id) return;
           var key = t.id;
           if(!bySpecies[key]) bySpecies[key] = {
-            name: t.preferred_common_name || t.name, count:0, logins:{}, photos:[], obs:[]
+            name: t.preferred_common_name || t.name, sci: t.name || '', count:0, logins:{}, photos:[], obs:[]
           };
           bySpecies[key].count++;
           if(o.user && o.user.login) bySpecies[key].logins[o.user.login] = 1;
@@ -962,6 +962,67 @@
       + '<div class="body">Shoot a better one. It goes up with your name under it.</div></div>' };
   }
 
+  /* NEED PHOTOS / NEED SIGHTINGS — Randy, 2026-10-15: "one screen that lists
+     what species I need photos of; one that lists what species I need
+     observations of... maybe 10 for each page, with 5 at a time, cycled
+     in." Both read data/published/maintenance_todo.json (the To do tab's
+     file). Photos = the species with the fewest approved photos; sightings
+     = the species whose newest observation is oldest. Ten per page, Feature
+     before Standard, five to a slide, a fresh shuffle every rebuild. A
+     species the crew has already logged this month drops off the sightings
+     page by itself (the live pulse knows), so it never asks for what
+     they just did. A species on the photos page stays off the sightings
+     page in the same rebuild. Plants only, no names, no ranking: a list for
+     the whole crew. Rows reuse the events slide's .task layout. */
+  var NEEDS = null;
+  function needsSeen(){
+    var names = {}, sci = [];
+    ((PULSE && PULSE.speciesList) || []).forEach(function(s){
+      if(s.name) names[String(s.name).toLowerCase()] = 1;
+      if(s.sci){ names[String(s.sci).toLowerCase()] = 1; sci.push(String(s.sci).toLowerCase()); }
+    });
+    return function(item){
+      var n = String(item.name||'').toLowerCase(), b = String(item.botanical||'').toLowerCase();
+      if(names[n] || (b && names[b])) return true;
+      return !!b && sci.some(function(x){ return x.indexOf(b+' ') === 0; });
+    };
+  }
+  function needsPools(){
+    if(!NEEDS) return null;
+    var ph = NEEDS.photos || {}, st = NEEDS.stale || {};
+    var photoPool = pickN(((ph.feature||[]).concat(ph.standard||[])).slice(0,10), 10);
+    var onPhotos = {}; photoPool.forEach(function(x){ onPhotos[x.id] = 1; });
+    var crewSeen = needsSeen();
+    var obsPool = pickN(((st.feature||[]).concat(st.standard||[]))
+      .filter(function(x){ return !onPhotos[x.id] && !crewSeen(x); }).slice(0,10), 10);
+    return { photos: photoPool, obs: obsPool };
+  }
+  function monthYear(iso){
+    var d = iso ? new Date(iso+'T12:00') : null;
+    return d && !isNaN(d) ? d.toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '';
+  }
+  function needSlides(kind){
+    var pools = needsPools(); if(!pools) return [];
+    var pool = pools[kind === 'photos' ? 'photos' : 'obs'];
+    if(pool.length < 2) return [];
+    var half = pool.length > 5 ? Math.ceil(pool.length/2) : pool.length;
+    var chunks = [pool.slice(0, half)]; if(pool.length > half) chunks.push(pool.slice(half));
+    return chunks.map(function(chunk, i){
+      var rows = chunk.map(function(x){
+        var tag = kind === 'photos' ? (x.photos + (x.photos === 1 ? ' photo' : ' photos')) : monthYear(x.newest);
+        return '<div class="task"><span class="team">'+esc(tag)+'</span><span class="job">'+esc(x.name||'')+'</span></div>';
+      }).join('');
+      var head = kind === 'photos'
+        ? '<div class="label">The website</div><h2>We need better photos of these.</h2>'
+        : '<div class="label">Last logged</div><h2>Nobody’s logged these lately.</h2>';
+      var foot = kind === 'photos'
+        ? 'Artsy, or close and sharp. Both belong on the page. Your name goes under it.'
+        : 'Find it. Shoot it. Post it to iNat.';
+      return { id:(kind === 'photos' ? 'needphotos-' : 'needobs-')+(i+1), seconds: SECONDS*1.5, html:
+          '<div class="copy">'+head+'<div class="task-list">'+rows+'</div><div class="body">'+foot+'</div></div>' };
+    });
+  }
+
   function slideWhyMultiple(mine){
     var p = randomPhoto(mine);
     return { id:'multiple', seconds: SECONDS*1.1, bg: p && p.photo_url, credit: p && creditText(p), html:
@@ -1482,7 +1543,7 @@
   function welcomeEvery(){ return !arrivalWindow() ? 0 : nowMins() < 15*60+30 ? 4 : 7; }
   function tasksEvery(){   return !arrivalWindow() ? 0 : nowMins() < 15*60+30 ? 6 : 9; }
   function familyOf(id){
-    return id.replace(/-w\d+$/, '').replace(/^(who|spotlight|lives|first|ex|mostphoto|month)-.*$/, '$1');
+    return id.replace(/-w\d+$/, '').replace(/^(who|spotlight|lives|first|ex|mostphoto|month|needphotos|needobs)-.*$/, '$1');
   }
 
   function next(){
@@ -1589,7 +1650,9 @@
       .concat(monthSlides(names))
       .concat([slideMostPhotographed(names, 0), slideMostPhotographed(names, 1), slideMostPhotographed(names, 2)])
       .concat(weighted(slideSigns(mine, tasksData), 2))
-      .concat(weighted(slideWebsite(mine), 2))
+      .concat(weighted(slideWebsite(mine), 1))
+      .concat(needSlides('photos'))
+      .concat(needSlides('obs'))
       .concat(weighted(slideChallenge(mine), 2))
       .concat(weighted(tasksSlide, tasksN))
       .concat(spotlights)
@@ -1638,8 +1701,10 @@
         grab(BASE+'data/sources/wildlife_signage.json'),
         grab(BASE+'images/brightfutures-local/photos.json'),
         grab(BASE+'data/published/brightfutures_showcase.json'),
-        grab(BASE+'data/sources/media_library.json')
+        grab(BASE+'data/sources/media_library.json'),
+        grab(BASE+'data/published/maintenance_todo.json')
       ]).then(function(r){
+        NEEDS = r[8];
         SHOWCASE = {};
         ((r[6] && r[6].photos) || []).forEach(function(s){ var id = s && (s.photo_id || s); if(id) SHOWCASE[String(id)] = 1; });
         var photos = (r[2] && r[2].photos) || r[2] || [];
