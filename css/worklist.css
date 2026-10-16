@@ -1,0 +1,87 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   WORKLIST.CSS — the two "this week's list" sheets on the Citizen Science cards.
+   Observers get a ruled notebook page; identifiers get a yellow scratch pad.
+   Both are one <dialog>, built by js/worklist.js. Reading text is never under
+   var(--t-base)-sized 17px.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* the button sits under the card's other button */
+.wl-open{ margin-top:.7rem; align-self:flex-start; }
+
+dialog.wl-dialog{
+  border:none; padding:0; background:transparent; color:var(--text);
+  width:min(980px, calc(100vw - 1.5rem)); max-width:none; max-height:calc(100vh - 1.5rem);
+  margin:auto; overflow:visible;
+}
+dialog.wl-dialog::backdrop{ background:rgba(20,28,18,.62); backdrop-filter:blur(2px); }
+
+.wl-paper{
+  position:relative; max-height:calc(100vh - 2rem); overflow:auto;
+  background:#fffef9; border-radius:6px; padding:1.6rem 1.8rem 1.4rem 4.2rem;
+  box-shadow:0 18px 50px rgba(0,0,0,.45); transform:rotate(-.5deg);
+  font-size:1.0625rem; line-height:1.4;
+}
+/* notebook: red margin line, punched holes down the left edge */
+.wl-paper.notebook{
+  background-image:linear-gradient(to right, transparent 3.1rem, #e8858c 3.1rem, #e8858c calc(3.1rem + 2px), transparent calc(3.1rem + 2px));
+}
+.wl-paper.notebook::before{
+  content:''; position:absolute; left:.9rem; top:1.4rem; bottom:1.4rem; width:1.1rem;
+  background:radial-gradient(circle, #cfc9bb 0 .42rem, transparent .46rem) 0 0/1.1rem 5.2rem repeat-y;
+}
+/* scratch pad: yellow stock with a tear-off binding strip across the top */
+.wl-paper.scratch{ background:#fff7c2; padding:3.1rem 1.8rem 1.4rem 1.8rem; transform:rotate(.5deg); }
+.wl-paper.scratch::before{
+  content:''; position:absolute; left:0; right:0; top:0; height:1.6rem; border-radius:6px 6px 0 0;
+  background:linear-gradient(#7a2b2b, #5e1f1f);
+}
+
+.wl-close{
+  position:absolute; top:.5rem; right:.7rem; z-index:2; background:rgba(255,255,255,.85); border:none;
+  border-radius:50%; width:2.4rem; height:2.4rem; font-size:1.5rem; line-height:1; cursor:pointer; color:#444;
+}
+.wl-close:hover{ background:#fff; color:#000; }
+
+.wl-title{ font-family:'Caveat','Segoe Print','Bradley Hand',cursive; font-size:2.5rem; line-height:1.05; color:#1d3b8a; margin:0 0 .25rem; }
+.wl-lede{ font-size:1.0625rem; color:#3a3a3a; margin:0 0 1.1rem; max-width:62ch; }
+
+.wl-cols{ display:grid; grid-template-columns:1fr 1fr; gap:1.2rem 2.2rem; }
+.wl-col h3{
+  font-family:'Caveat','Segoe Print','Bradley Hand',cursive; font-size:1.85rem; line-height:1.1; color:#1d3b8a;
+  margin:0 0 .15rem; display:flex; align-items:baseline; gap:.5rem; flex-wrap:wrap;
+}
+.wl-col h3 small{ font-family:'Source Sans 3',sans-serif; font-size:1.0625rem; font-weight:600; color:#555; }
+.wl-sub{ font-size:1.0625rem; color:#555; margin:0 0 .5rem; }
+.wl-col ol{ list-style:none; margin:0; padding:0; counter-reset:wl; }
+.wl-col li{
+  counter-increment:wl; display:flex; align-items:baseline; gap:.6rem; flex-wrap:wrap;
+  padding:.42rem 0 .38rem; border-bottom:1px solid rgba(40,70,160,.22);
+}
+.wl-scratchpad .wl-col li{ border-bottom-color:rgba(120,90,20,.28); }
+.wl-col li::before{ content:counter(wl) "."; min-width:1.5rem; color:#999; font-size:1.0625rem; }
+.wl-col li a.wl-name{ font-weight:700; color:#13306b; text-decoration:none; border-bottom:2px solid rgba(19,48,107,.25); }
+.wl-col li a.wl-name:hover{ border-bottom-color:#13306b; }
+.wl-col li .wl-note{ color:#555; font-size:1.0625rem; margin-left:auto; text-align:right; }
+.wl-col li .wl-what{ flex:1 1 12rem; }
+.wl-col li .wl-go{ font-weight:700; color:#13306b; text-decoration:none; white-space:nowrap; }
+.wl-col li .wl-go:hover{ text-decoration:underline; }
+.wl-more{ margin:.6rem 0 0; font-size:1.0625rem; color:#555; }
+
+.wl-foot{ margin:1.2rem 0 0; padding-top:.8rem; display:flex; gap:.6rem 1.4rem; flex-wrap:wrap; align-items:center; font-size:1.0625rem; color:#444; }
+.wl-foot .btn{ font-size:1.0625rem; }
+.wl-asof{ margin-left:auto; color:#777; }
+.wl-empty{ font-size:1.0625rem; color:#555; padding:.6rem 0; }
+
+@media (max-width:720px){
+  .wl-paper{ padding:1.2rem 1rem 1.2rem 3.2rem; transform:none; }
+  .wl-paper.notebook{ background-image:linear-gradient(to right, transparent 2.3rem, #e8858c 2.3rem, #e8858c calc(2.3rem + 2px), transparent calc(2.3rem + 2px)); }
+  .wl-paper.notebook::before{ left:.55rem; }
+  .wl-paper.scratch{ padding:2.8rem 1rem 1.2rem; transform:none; }
+  .wl-cols{ grid-template-columns:1fr; }
+  .wl-title{ font-size:2.1rem; }
+  .wl-asof{ margin-left:0; }
+}
+@media (prefers-reduced-motion:no-preference){
+  dialog.wl-dialog[open] .wl-paper{ animation:wlIn .28s ease-out; }
+  @keyframes wlIn{ from{ opacity:0; transform:translateY(2rem) rotate(-3deg) scale(.96); } }
+}
