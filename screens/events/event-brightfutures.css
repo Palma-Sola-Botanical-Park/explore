@@ -352,4 +352,8 @@
 
 .need-row.on .sub{display:block}
 .slide.need .idstage img{animation:needImgIn .45s ease-out}
-@keyframes needImgIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+@keyframes needImgIn{from{opacity:0}to{opacity:1}}
+/* the hand-scrawled arrow on the need slides (needArrow()) */
+.idstage .scrawl{fill:none;stroke:var(--gold);stroke-linecap:round;stroke-linejoin:round;opacity:.95;
+  transition:stroke-dashoffset .55s ease-in-out,opacity .3s ease}
+.idstage .scrawl.out{opacity:0}

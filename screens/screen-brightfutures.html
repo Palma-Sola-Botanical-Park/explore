@@ -10,7 +10,7 @@
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
 <link rel="stylesheet" href="events/event-deck.css?v=20260925o">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20261015b">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20261015c">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -900,11 +900,12 @@
     });
   }
 
-  /* NEED slides: a curved arrow from the lit species on the left to its photo on
-     the right. Drawn in the stage's own svg (placeCallouts has just sized it and
-     added the arrowhead), so it starts left of the stage's edge, which the svg
-     allows (overflow visible). */
-  function needArrow(el, stage, img, timers){
+  /* NEED slides: a hand-scrawled arrow from the lit species to its photo, drawn
+     left to right on each step, then faded just before the next step so it
+     re-draws from the next species. Wobbly points (not a clean curve), two
+     marker passes, and a V-shaped head made of two loose strokes. Drawn in
+     the stage's own svg (overflow visible lets it start left of the stage). */
+  function needArrow(el, stage, img, timers, stepMs){
     var row = el.querySelector('.need-row.on .nm'), svg = stage.querySelector('svg.arrows');
     if(!row || !svg || !stage.isConnected) return;
     var S = stage.getBoundingClientRect(), R = img.getBoundingClientRect(), vmin = Math.min(innerWidth, innerHeight)/100;
@@ -914,13 +915,31 @@
     var x2 = R.left - S.left - 1.2*vmin;
     var y2 = Math.max(R.top - S.top + 4*vmin, Math.min(R.bottom - S.top - 4*vmin, y1));
     if(x2 - x1 < 3*vmin) return;
-    var path = document.createElementNS('http://www.w3.org/2000/svg','path');
-    path.setAttribute('class','arrow');
-    path.setAttribute('d','M'+x1+' '+y1+' Q'+((x1+x2)/2)+' '+(Math.min(y1,y2) - 7*vmin)+' '+x2+' '+y2);
-    path.setAttribute('marker-end','url(#ah)');
-    svg.appendChild(path);
-    var L = path.getTotalLength(); path.style.strokeDasharray = L; path.style.strokeDashoffset = L;
-    timers.push(setTimeout(function(){ path.style.strokeDashoffset = 0; }, 350/SPEED));
+    var cx = (x1 + x2)/2, cy = Math.min(y1, y2) - 5*vmin;
+    function pt(t){ var u = 1 - t; return [u*u*x1 + 2*u*t*cx + t*t*x2, u*u*y1 + 2*u*t*cy + t*t*y2]; }
+    function jig(k){ return (Math.random() - 0.5) * k * vmin; }
+    var made = [];
+    function add(d, w, delay){
+      var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('class','scrawl'); path.setAttribute('d', d); path.style.strokeWidth = (w*vmin)+'px';
+      svg.appendChild(path);
+      var L = path.getTotalLength(); path.style.strokeDasharray = L; path.style.strokeDashoffset = L;
+      made.push(path);
+      timers.push(setTimeout(function(){ path.style.strokeDashoffset = 0; }, delay/SPEED));
+    }
+    function body(w, jit, delay){
+      var N = 16, pts = [];
+      for(var i = 0; i <= N; i++){ var q = pt(i/N); if(i > 0 && i < N){ q[0] += jig(jit); q[1] += jig(jit); } pts.push(q); }
+      var d = 'M'+pts[0][0]+' '+pts[0][1];
+      for(var k = 1; k < N; k++){ var m = [(pts[k][0]+pts[k+1][0])/2, (pts[k][1]+pts[k+1][1])/2]; d += ' Q'+pts[k][0]+' '+pts[k][1]+' '+m[0]+' '+m[1]; }
+      add(d + ' L'+pts[N][0]+' '+pts[N][1], w, delay);
+    }
+    body(0.55, 0.7, 350); body(0.3, 1.2, 450);
+    var ang = Math.atan2(y2 - cy, x2 - cx), len = 3.2*vmin;
+    function barb(sign){ var a2 = ang + Math.PI + sign*0.45; return [x2 + Math.cos(a2)*len + jig(0.6), y2 + Math.sin(a2)*len + jig(0.6)]; }
+    var h1 = barb(1), h2 = barb(-1);
+    add('M'+h1[0]+' '+h1[1]+' L'+(x2 + jig(0.4))+' '+(y2 + jig(0.4))+' L'+h2[0]+' '+h2[1], 0.55, 900);
+    timers.push(setTimeout(function(){ made.forEach(function(m){ m.classList.add('out'); }); }, Math.max(1200, stepMs - 400)));
   }
 
   /* THE HERO SHOT, annotated — the rubric slide (five numbered rows for
@@ -1487,7 +1506,7 @@
             el._stepTimers.push(setTimeout(function(){ stampEl.classList.add('in'); }, 1100/SPEED));
           }
           var img = stage.querySelector('img');
-          img.onload = function(){ placeCallouts(stage, img, st.callouts || [], el._stepTimers); if(s.listHtml) needArrow(el, stage, img, el._stepTimers); };
+          img.onload = function(){ placeCallouts(stage, img, st.callouts || [], el._stepTimers); if(s.listHtml) needArrow(el, stage, img, el._stepTimers, st.seconds*1000); };
           if(img.complete && img.naturalWidth) img.onload();
           setCredit(st.credit || '', CREDIT_LAG/SPEED);
         } else {
