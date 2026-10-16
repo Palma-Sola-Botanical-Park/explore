@@ -741,20 +741,20 @@ body.paper-active .credit .lbl,body.paper-active .credit .terms{color:#627144}
 
 /* Each quiet page gets its own crop and placement: a musical staff below
    recognition, a climbing corner beside a photo, a low flourish for gifts. */
-.paper-music-accent{position:absolute;left:3vw;right:3vw;bottom:2.8vmin;height:5.5vmin;z-index:2;pointer-events:none;overflow:hidden;opacity:.38;mask-image:linear-gradient(to top,#000 70%,transparent)}
-.paper-music-accent img{position:absolute;bottom:0;left:0;width:100%;height:auto;max-width:none}
-.music-recognition{left:3.5vw;right:6vw;opacity:.32}
+/* Feather both vertical edges: this is a flourish, not a sliced-off picture. */
+.paper-music-accent{position:absolute;left:3vw;right:3vw;bottom:2.8vmin;height:9vmin;z-index:2;pointer-events:none;overflow:hidden;opacity:.38;mask-image:linear-gradient(to top,transparent,#000 22%,#000 52%,transparent)}
+.paper-music-accent img{position:absolute;bottom:-1.2vmin;left:0;width:100%;height:auto;max-width:none}
+.music-recognition{left:3.5vw;right:55vw;height:7vmin;opacity:.32}
 .music-picture{left:auto;right:1.5vw;top:7vmin;bottom:auto;width:16vw;height:35vmin;opacity:.43;mask-image:linear-gradient(to bottom,#000 35%,transparent)}
 .music-picture img{top:0;bottom:auto;left:auto;right:0;width:42vw}
-.music-gallery{left:4vw;right:4vw;height:3.7vmin;opacity:.4}
-.music-gift{left:5vw;right:auto;bottom:7.5vmin;width:30vw;height:13vmin;opacity:.56;mask-image:linear-gradient(to top,#000 70%,transparent)}
+.music-gallery{left:4vw;right:4vw;height:6vmin;opacity:.4}
+.music-gift{left:5vw;right:auto;bottom:7.5vmin;width:30vw;height:13vmin;opacity:.56}
 .music-gift img{width:145%}
 .slide.donor-story::after{display:none}
 .music-poster{left:4vw;right:auto;bottom:4.5vmin;width:40vw;height:11vmin;opacity:.38}
 .music-poster img{width:125%}
-.music-poster-tight{left:4vw;bottom:2.8vmin;width:43vw;height:2.7vmin;opacity:.3}
+.music-poster-tight{left:4vw;bottom:2.8vmin;width:43vw;height:5.3vmin;opacity:.3}
 .music-poster-tight img{width:100%}
-.music-recognition img,.music-gallery img,.music-poster-tight img{bottom:-4.8vmin}
 
 /* The final community and music pages share the event's paper and gallery frames. */
 .slide.community-gallery .copy,.slide.pops-gallery .copy{max-width:35vw;padding-bottom:0}
@@ -779,8 +779,7 @@ body.paper-active .credit .lbl,body.paper-active .credit .terms{color:#627144}
 .slide.jazz-feature .qr-card img{width:12vmin;height:12vmin}
 .jazz-poster{position:relative;z-index:3;margin:0;flex:0 0 auto;width:36vw;max-width:70vmin}
 .jazz-poster img{display:block;width:100%;max-height:72vmin;object-fit:contain;padding:.8vmin;background:#fffdf5;outline:1px solid #a9af80;outline-offset:1vmin;box-shadow:0 1vmin 4vmin #25371f29}
-.slide.jazz-feature .music-quiet{left:4vw;right:4vw;bottom:2.8vmin;width:auto;height:3.3vmin;opacity:.24}
-.slide.jazz-feature .music-quiet img{bottom:-4.8vmin}
+.slide.jazz-feature .music-quiet{left:4vw;right:4vw;bottom:2.8vmin;width:auto;height:6vmin;opacity:.24}
 .slide.community-story{align-items:center;gap:5vw;justify-content:center;padding:11vmin 6vw 9vmin}
 .slide.community-story .copy{padding:0;flex:0 0 40vw;width:40vw;max-width:40vw!important}
 .slide.community-story .eyebrow{font-size:2.4vmin;letter-spacing:.17em}
@@ -799,14 +798,14 @@ body.paper-active .credit .lbl,body.paper-active .credit .terms{color:#627144}
 .community-nature-grid figcaption{padding:.8vmin .5vmin .3vmin;display:flex;flex-direction:column;gap:.35vmin;color:#36543e;font-size:1.6vmin;line-height:1.3}
 .community-nature-grid figcaption strong{font-family:var(--serif);font-size:2.1vmin}
 .community-nature-grid figcaption span{color:#6a744e}
-.slide.community-story .music-quiet{height:4vmin;opacity:.35}
+.slide.community-story .music-quiet{height:6vmin;opacity:.35}
 body:not(.paper-active) .credit .lbl{letter-spacing:.17em;font-size:1.4vmin}
 @media(prefers-reduced-motion:reduce){.community-gallery .ct,.pops-gallery .ct{animation:none;opacity:1}}
 
 /* Nature photographs belong to the same ivory-and-olive event design.
    Keep the image large and bright; give the words their own quiet surface. */
 .slide.nature-page{background:#f8f4e7;color:#204b33}
-.slide.nature-page .bg{inset:6vmin 4.8vmin;background:#e8e5d5;outline:1px solid #a9af8077;box-shadow:0 .5vmin 2.5vmin #4a482121}
+.slide.nature-page .bg{inset:6vmin 4.8vmin 7.8vmin;background:#e8e5d5;outline:1px solid #a9af8077;box-shadow:0 .5vmin 2.5vmin #4a482121}
 .slide.nature-page .scrim{background:none!important}
 .slide.nature-page .copy{margin:0 0 9vmin 6.9vmin;padding:2.7vmin 3.2vmin;max-width:46vw;background:rgba(251,248,234,.95);border:1px solid #b4b88c88;box-shadow:0 .5vmin 3vmin #25371f20}
 .slide.nature-page .headline{font-size:6.2vmin;line-height:1.05;color:#16472d;text-shadow:none}
@@ -821,10 +820,10 @@ body:not(.paper-active) .credit .lbl{letter-spacing:.17em;font-size:1.4vmin}
 .slide.nature-page .count{font-size:7vmin;color:#927126;text-shadow:none}
 .slide.nature-page .count small{color:#6a762f;font-size:1.8vmin}
 .slide.nature-page .roster,.slide.nature-page .shot{font-size:2vmin;line-height:1.35;color:#53644a;text-shadow:none;margin-top:1.8vmin}
-.slide.nature-collection .collection{inset:6vmin 4.8vmin;gap:.7vmin}
+.slide.nature-collection .collection{inset:6vmin 4.8vmin 7.8vmin;gap:.7vmin}
 .slide.nature-collection .veil{display:none}
-.nature-music-trim{position:absolute;z-index:2;left:5vw;right:5vw;bottom:2.8vmin;height:2.5vmin;overflow:hidden;opacity:.4;pointer-events:none}
-.nature-music-trim img{position:absolute;bottom:-4.8vmin;left:0;width:100%;height:auto}
+.nature-music-trim{position:absolute;z-index:2;left:5vw;right:5vw;bottom:2.8vmin;height:4.8vmin;overflow:hidden;opacity:.4;pointer-events:none;mask-image:linear-gradient(to top,transparent,#000 22%,#000 52%,transparent)}
+.nature-music-trim img{position:absolute;bottom:-1.2vmin;left:0;width:100%;height:auto}
 body.nature-active .credit{max-width:31vw;right:6.9vmin;bottom:9vmin;padding:1.1vmin 1.6vmin;background:rgba(251,248,234,.94);border:1px solid #b4b88c88;text-shadow:none}
 body.nature-active .credit .lbl,body.nature-active .credit .terms{color:#6a744e}
 body.nature-active .credit .who{color:#204b33}
@@ -860,6 +859,7 @@ body.nature-active .credit .who{color:#204b33}
 /* The shared program footer stays clear of the photo credit and crew tiles. */
 .slide.bf-photo .bf-program{position:static;width:100%;margin-top:4vmin}
 .slide.bf-crew .crewgrid{bottom:24vmin}
+.slide.bf-crew .music-gallery{right:55vw}
 
 /* The magazine feature's subject sits on the left of its photograph. */
 .slide.nature-page.horticulture-feature{justify-content:flex-end}
@@ -893,7 +893,7 @@ body.nature-active.horticulture-active .credit{left:6.9vmin;right:auto;text-alig
 .sponsor-name{font:600 3.35vmin/1.23 var(--serif);color:#204b33}
 .sponsor-abbreviation{font:500 1.7vmin/1.2 var(--sans);letter-spacing:.15em;color:#6a762f;margin-top:.7vmin}
 .sponsor-thanks{font:400 2.8vmin/1.4 var(--sans);color:#53613d;margin-top:3vmin}
-.slide.presenting-sponsors .paper-music-accent{height:5vmin;opacity:.35}
+.slide.presenting-sponsors .paper-music-accent{height:11vmin;opacity:.35}
 
 </style>
 </head>
