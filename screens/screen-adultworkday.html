@@ -751,6 +751,13 @@ body{
 .needstage .scrawl{fill:none;stroke:var(--gold);stroke-linecap:round;stroke-linejoin:round;opacity:.95;
   transition:stroke-dashoffset .55s ease-in-out,opacity .3s ease}
 .needstage .scrawl.out{opacity:0}
+
+/* ── VOLUNTEER OF THE MONTH ─ a small framed print, words clear of it ── */
+.slide.votm .copy{max-width:52vw}
+.votm-card{position:absolute;z-index:3;right:calc(var(--frame) + var(--pad) + 5vmin);top:50%;
+  transform:translateY(-52%) rotate(-2deg);background:var(--paper);padding:1.4vmin 1.4vmin 4.4vmin;
+  border-radius:.4vmin;box-shadow:0 1.6vmin 5vmin rgba(0,0,0,.55)}
+.votm-card img{display:block;height:46vmin;width:auto;max-width:34vw;object-fit:contain}
 </style>
 </head>
 <body>
@@ -2460,11 +2467,16 @@ function slideCrew(layout){
 function slideVotm(v){
   var m = (v.month||'').split('-'), label = '';
   if(m.length === 2) label = new Date(+m[0], +m[1]-1, 1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  return fromArt({poster:null, bg:BASE+v.path, bgFallback:null, focus:null, atmos:false, credit:null}, {
-    seconds: Math.round(SECONDS*1.1),
+  /* The portraits are small (115 to 1,200 px), so full-bleed made them a
+     zoomed, soft close-up of a face. Now a small framed print beside the words;
+     onload caps its size at about 2.4x the file so a tiny one stays modest. */
+  return {
+    cls:'votm', credit:null, seconds: Math.round(SECONDS*1.1),
+    card: '<div class="votm-card"><img alt="" src="'+BASE+v.path+'" '
+        + 'onload="var k=Math.min(1,2.4*this.naturalHeight/(innerHeight*.46));this.style.height=(46*k)+\'vmin\'"></div>',
     html: '<div class="eyebrow">Volunteer of the Month'+(label?' &middot; '+esc(label):'')+'</div>'
         + '<div class="headline">'+esc(v.first || v.name)+'</div>'
-  });
+  };
 }
 function slideWelcome(){
   /* A fresh random crew photo behind it every time it comes round. */
@@ -2558,6 +2570,7 @@ function buildDeckNormal(){
 
 function buildDeck(){
   var only = (Q.get('only') || '').trim();
+  if(only === 'votm' && VOTM.length) return shuffle(VOTM.slice()).map(function(v){ return { type:'votm', make:slideVotm.bind(null, v) }; });
   if(only){ var o = needItems().filter(function(it){ return it.type.indexOf(only.replace(/^need/, 'need_')) === 0; }); if(o.length) return o; }
   D.volunteer = (D.volunteer || []).filter(function(v){ return !/adult workday/i.test(v.title || ''); });
   var normal = buildDeckNormal(), out = [], last = '', last2 = '', since = 0, gap = 4 + Math.floor(Math.random()*4);
@@ -2711,6 +2724,7 @@ function render(s){
   if(longest > 175 && el.querySelector('.copy')) el.querySelector('.copy').classList.add('tall');
 
   stage.appendChild(el);
+  if(s.card) el.insertAdjacentHTML('beforeend', s.card);
 
   /* Beats are absolutely stacked, so the container has to reserve the height of
      the taller one or the slide jumps at the turn. Measure after append. */
