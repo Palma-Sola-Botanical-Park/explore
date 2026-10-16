@@ -84,12 +84,11 @@
     var second = items.filter(function(i){ return i.rank === 'species'; });
     var deeper = items.filter(function(i){ return i.rank !== 'species'; });
     function row(i, kind){
-      var g = GROUP[i.group] || '';
-      var what = kind === 'second'
-        ? '<span class="wl-what"><b>' + esc(i.what) + '</b> — one person has weighed in</span>'
-        : '<span class="wl-what">' + (i.rank ? 'Only at <b>' + esc(i.rank) + '</b>: ' + esc(i.what) : '<b>Not identified at all yet</b>') + '</span>';
-      return '<li>' + what + '<span class="wl-note">' + esc([g, shortDate(i.observed_on)].filter(Boolean).join(' · '))
-           + '</span><a class="wl-go" href="' + esc(i.url) + '" target="_blank" rel="noopener">Open on iNaturalist &rarr;</a></li>';
+      var g = GROUP[i.group] || '', when = shortDate(i.observed_on);
+      var label = kind === 'second' ? i.what : (i.rank ? i.what : 'Not identified at all yet');
+      var meta = kind === 'second' ? [g, when] : [i.rank ? 'at ' + i.rank : '', g, when];
+      return '<li><a class="wl-name" href="' + esc(i.url) + '" target="_blank" rel="noopener">' + esc(label) + ' &#8599;</a>'
+           + '<span class="wl-note">' + esc(meta.filter(Boolean).join(' · ')) + '</span></li>';
     }
     function col(title, hint, rows, kind){
       var shown = rows.slice(0, 10);
@@ -99,7 +98,7 @@
         + (rows.length > shown.length ? '<p class="wl-more">…and ' + (rows.length - shown.length) + ' more on iNaturalist.</p>' : '') + '</div>';
     }
     return '<h2 class="wl-title" id="wl-title">Needs a look</h2>'
-      + '<p class="wl-lede">Recent observations from the park. Each link opens iNaturalist, where you can add your identification.</p>'
+      + '<p class="wl-lede">Recent observations from the park. Tap one to open it on iNaturalist and add your identification.</p>'
       + '<div class="wl-cols wl-scratchpad">'
       +   col('Needs a second look', 'An ID is in, and nobody has confirmed it yet.', second, 'second')
       +   col('Can go deeper', 'Stuck at family, order or higher. If you know the group, narrow it down.', deeper, 'deeper')
