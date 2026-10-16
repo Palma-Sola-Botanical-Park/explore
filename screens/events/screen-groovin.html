@@ -926,7 +926,8 @@ var SECONDS = +(Q.get('seconds') || 0) || 18;   // lingers; 14 read as rushed on
    turns, line cascades, Ken Burns and cross-fades all together, so the timing
    stays in proportion. For reviewing a full rotation in a couple of minutes
    rather than half an hour. Not for the wall. */
-var SPEED = Math.max(0.1, Math.min(20, +(Q.get('speed') || 1) || 1));
+/* Event default: 12% faster, as requested after the Pops preview. */
+var SPEED = Math.max(0.1, Math.min(20, +(Q.get('speed') || 1.12) || 1.12));
 SECONDS = SECONDS / SPEED;
 var BASE    = Q.get('base') || (function(){
   if(location.protocol === 'file:' || /^(localhost|127\.0\.0\.1)$/.test(location.hostname))
