@@ -10,7 +10,7 @@
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
 <link rel="stylesheet" href="events/event-deck.css?v=20260925o">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20260927c">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20261015a">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -987,39 +987,63 @@
       return !!b && sci.some(function(x){ return x.indexOf(b+' ') === 0; });
     };
   }
-  function needsPools(){
+  function needsPools(byPhoto){
     if(!NEEDS) return null;
     var ph = NEEDS.photos || {}, st = NEEDS.stale || {};
-    var photoPool = pickN(((ph.feature||[]).concat(ph.standard||[])).slice(0,10), 10);
+    /* a species is only asked for if its current photo has a credit row to show */
+    function usable(x){ var r = byPhoto[String(x.hero_photo_id)]; return !!(r && r.photo_url); }
+    var photoPool = pickN(((ph.feature||[]).concat(ph.standard||[])).filter(usable).slice(0,10), 10);
     var onPhotos = {}; photoPool.forEach(function(x){ onPhotos[x.id] = 1; });
     var crewSeen = needsSeen();
     var obsPool = pickN(((st.feature||[]).concat(st.standard||[]))
-      .filter(function(x){ return !onPhotos[x.id] && !crewSeen(x); }).slice(0,10), 10);
+      .filter(function(x){ return usable(x) && !onPhotos[x.id] && !crewSeen(x); }).slice(0,10), 10);
     return { photos: photoPool, obs: obsPool };
   }
   function monthYear(iso){
     var d = iso ? new Date(iso+'T12:00') : null;
     return d && !isNaN(d) ? d.toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '';
   }
-  function needSlides(kind){
-    var pools = needsPools(); if(!pools) return [];
+  /* Randy, 2026-10-15: "kinda boring... cycle through the photos on the
+     right, highlight the species on the left, put up 'Is this the best we
+     can do??'... make it fun so it catches their eye and challenges them."
+     One species at a time: its current hero on the right with a stamped
+     line, the same five listed on the left with the current one lit. Same
+     engine as the detail shot (s.steps). The stamp is aimed at the
+     situation ("we"), never at a photographer: a hero shot by one of the
+     crew gets only the friendly challenges. */
+  var QUIPS_PHOTO = ['Is this the best we can do??', 'We can do better!', 'Really? That’s all we’ve got?',
+    'Needs a glow-up.', 'Come on. Beat this.', 'Not our finest.', 'Your turn.', 'We know you can top this.'];
+  var QUIPS_PHOTO_CREW = ['Good start. Can you top it?', 'Beat this one.', 'Your turn.', 'Make it a hero.'];
+  var QUIPS_OBS = ['Wanted.', 'Missing!', 'Has anyone seen this?', 'Where did it go?', 'Hiding from us.', 'Go find it.', 'It’s out there.'];
+  function needSlides(kind, photos, mine){
+    var byPhoto = {}, crewIds = {};
+    (photos||[]).forEach(function(p){ if(p && p.photo_id) byPhoto[String(p.photo_id)] = p; });
+    (mine||[]).forEach(function(p){ crewIds[String(p.photo_id)] = 1; });
+    var pools = needsPools(byPhoto); if(!pools) return [];
     var pool = pools[kind === 'photos' ? 'photos' : 'obs'];
     if(pool.length < 2) return [];
     var half = pool.length > 5 ? Math.ceil(pool.length/2) : pool.length;
     var chunks = [pool.slice(0, half)]; if(pool.length > half) chunks.push(pool.slice(half));
-    return chunks.map(function(chunk, i){
-      var rows = chunk.map(function(x){
-        var tag = kind === 'photos' ? (x.photos + (x.photos === 1 ? ' photo' : ' photos')) : monthYear(x.newest);
-        return '<div class="task"><span class="team">'+esc(tag)+'</span><span class="job">'+esc(x.name||'')+'</span></div>';
-      }).join('');
+    var deal = dealt(kind === 'photos' ? QUIPS_PHOTO : QUIPS_OBS), dealCrew = dealt(QUIPS_PHOTO_CREW), n = 0;
+    return chunks.map(function(chunk, ci){
       var head = kind === 'photos'
         ? '<div class="label">The website</div><h2>We need better photos of these.</h2>'
         : '<div class="label">Last logged</div><h2>Nobody’s logged these lately.</h2>';
-      var foot = kind === 'photos'
-        ? 'Artsy, or close and sharp. Both belong on the page. Your name goes under it.'
-        : 'Find it. Shoot it. Post it to iNat.';
-      return { id:(kind === 'photos' ? 'needphotos-' : 'needobs-')+(i+1), seconds: SECONDS*1.5, html:
-          '<div class="copy">'+head+'<div class="task-list">'+rows+'</div><div class="body">'+foot+'</div></div>' };
+      var steps = chunk.map(function(x, i){
+        var row = byPhoto[String(x.hero_photo_id)];
+        var sub = kind === 'photos' ? 'We have ' + x.photos + (x.photos === 1 ? ' photo' : ' photos') : 'Last logged ' + monthYear(x.newest);
+        var list = chunk.map(function(y, k){
+          return '<div class="need-row'+(k === i ? ' on' : '')+'"><span class="nm">'+esc(y.name||'')+'</span>'
+               + (k === i ? '<span class="sub">'+esc(sub)+'</span>' : '') + '</div>';
+        }).join('');
+        var friendly = kind === 'photos' && crewIds[String(x.hero_photo_id)];
+        return { seconds: SECONDS*0.4, photo: row.photo_url, credit: creditText(row), callouts: [],
+                 stamp: friendly ? dealCrew(n++) : deal(n++),
+                 copy: head + '<div class="need-list">'+list+'</div>' };
+      });
+      var total = steps.reduce(function(a, st){ return a + st.seconds; }, 0);
+      return { id:(kind === 'photos' ? 'needphotos-' : 'needobs-')+(ci+1), cls:'split', noflip:true, seconds: total, steps: steps,
+               html:'<div class="copy"></div><div class="idstage"></div>' };
     });
   }
 
@@ -1403,6 +1427,12 @@
           bgEl2.style.opacity = 0; if(scrimEl) scrimEl.style.opacity = 0;
           stage.innerHTML = '<img alt="" src="'+st.photo+'"><svg class="arrows"></svg>';
           stage.classList.add('in');
+          if(st.stamp){
+            var stampEl = document.createElement('div'); stampEl.className = 'stamp';
+            stampEl.style.setProperty('--rot', (Math.random()*8 - 5).toFixed(1)+'deg');
+            stampEl.textContent = st.stamp; stage.appendChild(stampEl);
+            el._stepTimers.push(setTimeout(function(){ stampEl.classList.add('in'); }, 1100/SPEED));
+          }
           var img = stage.querySelector('img');
           img.onload = function(){ placeCallouts(stage, img, st.callouts || [], el._stepTimers); };
           if(img.complete && img.naturalWidth) img.onload();
@@ -1651,8 +1681,8 @@
       .concat([slideMostPhotographed(names, 0), slideMostPhotographed(names, 1), slideMostPhotographed(names, 2)])
       .concat(weighted(slideSigns(mine, tasksData), 2))
       .concat(weighted(slideWebsite(mine), 1))
-      .concat(needSlides('photos'))
-      .concat(needSlides('obs'))
+      .concat(needSlides('photos', photos, mine))
+      .concat(needSlides('obs', photos, mine))
       .concat(weighted(slideChallenge(mine), 2))
       .concat(weighted(tasksSlide, tasksN))
       .concat(spotlights)
