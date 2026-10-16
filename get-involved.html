@@ -7,6 +7,10 @@
 <link rel="icon" type="image/png" href="images/favicon.png">
 <link rel="apple-touch-icon" href="images/favicon.png">
 <link rel="stylesheet" href="css/psbp.css">
+<link rel="stylesheet" href="css/worklist.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
 /* ───────────────────────────────────────────────
    GET INVOLVED — merged page (Support + Volunteer + Citizen Science)
@@ -75,6 +79,8 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 .give-path.lasting{ border-left:5px solid var(--gold); }
 .give-path h3{ font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--green-deep); margin-bottom:.5rem; }
 .give-path p{ font-size:1rem; color:var(--text-soft); line-height:1.7; margin-bottom:1.4rem; flex:1; }
+.give-btns{ display:flex; flex-wrap:wrap; gap:.7rem; align-items:center; }
+.give-btns .wl-open{ margin-top:0; }
 
 /* ── Tier cards (carried from members.html) ── */
 .tier-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1.4rem; margin-top:2rem; }
@@ -632,7 +638,10 @@ section[id], div[id]{ scroll-margin-top: 84px; }
           helps confirm what each one is, so you don't need to know before you post. Do it on any walk, or with
           the Wednesday crew.
         </p>
-        <a href="get-started.html#observe" class="btn btn-green">How observing works &rarr;</a>
+        <div class="give-btns">
+          <a href="get-started.html#observe" class="btn btn-green">How observing works &rarr;</a>
+          <button type="button" class="btn btn-outline wl-open" data-worklist="observe">See this week's list</button>
+        </div>
       </div>
 
       <div class="give-path lasting">
@@ -646,7 +655,10 @@ section[id], div[id]{ scroll-margin-top: 84px; }
         <!-- green, matching "How observing works" in the box beside it. Both are
              navigation to get-started.html, not the ask. Gold is reserved for the
              one real call to action in each section — here, the sign-up above. -->
-        <a href="get-started.html#identify" class="btn btn-green">How identifying works &rarr;</a>
+        <div class="give-btns">
+          <a href="get-started.html#identify" class="btn btn-green">How identifying works &rarr;</a>
+          <button type="button" class="btn btn-outline wl-open" data-worklist="identify">See what needs a look</button>
+        </div>
       </div>
     </div>
 
@@ -721,6 +733,7 @@ section[id], div[id]{ scroll-margin-top: 84px; }
 <div id="footer-placeholder"></div>
 <script src="js/photo-credits.js"></script>
 <script src="js/site.js"></script>
+<script src="js/worklist.js"></script>
 <script>
 injectShared({ inatBar: false });
 
