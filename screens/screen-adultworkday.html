@@ -752,12 +752,20 @@ body{
   transition:stroke-dashoffset .55s ease-in-out,opacity .3s ease}
 .needstage .scrawl.out{opacity:0}
 
-/* ── VOLUNTEER OF THE MONTH ─ a small framed print, words clear of it ── */
-.slide.votm .copy{max-width:52vw}
-.votm-card{position:absolute;z-index:3;right:calc(var(--frame) + var(--pad) + 5vmin);top:50%;
-  transform:translateY(-52%) rotate(-2deg);background:var(--paper);padding:1.4vmin 1.4vmin 4.4vmin;
-  border-radius:.4vmin;box-shadow:0 1.6vmin 5vmin rgba(0,0,0,.55)}
-.votm-card img{display:block;height:46vmin;width:auto;max-width:34vw;object-fit:contain}
+/* ── VOLUNTEER OF THE MONTH ─ a framed print over a blurred wash of the same photo ── */
+.slide.votm{align-items:center}
+.slide.votm .copy{max-width:50vw;padding-bottom:0}
+.slide.votm .headline{font-size:clamp(3rem,11vmin,10rem)}
+.slide.votm .subhead{margin-top:2.4vmin;font-size:clamp(1.3rem,3.4vmin,2.8rem);color:var(--ink-invert)}
+.votm-wash{position:absolute;inset:-8vmin;z-index:1;background-size:cover;background-position:center;
+  filter:blur(6vmin) brightness(.78) saturate(1.5);opacity:.95}
+.votm-wash::after{content:'';position:absolute;inset:0;background:rgba(43,30,56,.5)}
+.votm-card{position:absolute;z-index:3;right:calc(var(--frame) + var(--pad) + 6vmin);top:50%;
+  transform:translateY(-50%) rotate(-2deg);background:var(--paper);padding:1.6vmin 1.6vmin 5vmin;
+  border-radius:.4vmin;box-shadow:0 1.8vmin 6vmin rgba(0,0,0,.6)}
+.votm-card img{display:block;height:auto;width:30vmin}   /* real size set on load from the photo's own shape */
+.slide.votm-b .votm-card{right:auto;left:calc(var(--frame) + var(--pad) + 6vmin);transform:translateY(-50%) rotate(2deg)}
+.slide.votm-b .copy{margin-left:auto;max-width:44vw;padding-left:0;padding-right:calc(var(--frame) + var(--pad))}
 </style>
 </head>
 <body>
@@ -2464,18 +2472,28 @@ function slideCrew(layout){
     html: '<div class="headline">'+esc(pick(CREW_LINES))+'</div>'
   };
 }
+var VOTM_LEFT = Math.random() < .5;
 function slideVotm(v){
   var m = (v.month||'').split('-'), label = '';
   if(m.length === 2) label = new Date(+m[0], +m[1]-1, 1).toLocaleDateString('en-US',{month:'long',year:'numeric'});
   /* The portraits are small (115 to 1,200 px), so full-bleed made them a
-     zoomed, soft close-up of a face. Now a small framed print beside the words;
-     onload caps its size at about 2.4x the file so a tiny one stays modest. */
+     zoomed, soft close-up of a face. Now a framed print, sized up to about
+     3.2x its file, with the SAME photo blurred and darkened as the wash behind
+     it so the page keeps the photo's colours without a face anywhere near
+     full size. The print alternates sides (left, right, left...); ?votm=a or
+     ?votm=b pins one for proofing. */
+  var vq = (Q.get('votm') || '').toLowerCase(), vb;
+  if(vq === 'a' || vq === 'b') vb = vq === 'b';
+  else { VOTM_LEFT = !VOTM_LEFT; vb = VOTM_LEFT; }   /* alternate sides, from a random start */
+  var src = BASE + v.path;
   return {
-    cls:'votm', credit:null, seconds: Math.round(SECONDS*1.1),
-    card: '<div class="votm-card"><img alt="" src="'+BASE+v.path+'" '
-        + 'onload="var k=Math.min(1,2.4*this.naturalHeight/(innerHeight*.46));this.style.height=(46*k)+\'vmin\'"></div>',
+    cls:'votm' + (vb ? ' votm-b' : ''), credit:null, seconds: Math.round(SECONDS*1.1),
+    card: '<div class="votm-wash" style="background-image:url(\''+src+'\')"></div>'
+        + '<div class="votm-card"><img alt="" src="'+src+'" '
+        + 'onload="var k=Math.min(innerHeight*.62/this.naturalHeight,innerWidth*.38/this.naturalWidth,3.2);this.style.width=(this.naturalWidth*k)+\'px\'"></div>',
     html: '<div class="eyebrow">Volunteer of the Month'+(label?' &middot; '+esc(label):'')+'</div>'
         + '<div class="headline">'+esc(v.first || v.name)+'</div>'
+        + '<div class="subhead">Thank you for all you do.</div>'
   };
 }
 function slideWelcome(){
