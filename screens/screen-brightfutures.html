@@ -10,7 +10,7 @@
      for 10 minutes; bump it whenever the stylesheet changes or the TV
      keeps showing the old look after a pull. -->
 <link rel="stylesheet" href="events/event-deck.css?v=20260925o">
-<link rel="stylesheet" href="events/event-brightfutures.css?v=20261015a">
+<link rel="stylesheet" href="events/event-brightfutures.css?v=20261015b">
 <!-- Standalone deck for the Wednesday Bright Futures high-school session.
      Randy, 2026-09-25: "volunteers would refer to adults so the name of
      this html is wrong imo. We call this crew Bright Futures" — this is
@@ -900,6 +900,29 @@
     });
   }
 
+  /* NEED slides: a curved arrow from the lit species on the left to its photo on
+     the right. Drawn in the stage's own svg (placeCallouts has just sized it and
+     added the arrowhead), so it starts left of the stage's edge, which the svg
+     allows (overflow visible). */
+  function needArrow(el, stage, img, timers){
+    var row = el.querySelector('.need-row.on .nm'), svg = stage.querySelector('svg.arrows');
+    if(!row || !svg || !stage.isConnected) return;
+    var S = stage.getBoundingClientRect(), R = img.getBoundingClientRect(), vmin = Math.min(innerWidth, innerHeight)/100;
+    var rg = document.createRange(); rg.selectNodeContents(row);
+    var T = rg.getBoundingClientRect();
+    var x1 = T.right - S.left + 1.2*vmin, y1 = (T.top + T.bottom)/2 - S.top;
+    var x2 = R.left - S.left - 1.2*vmin;
+    var y2 = Math.max(R.top - S.top + 4*vmin, Math.min(R.bottom - S.top - 4*vmin, y1));
+    if(x2 - x1 < 3*vmin) return;
+    var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('class','arrow');
+    path.setAttribute('d','M'+x1+' '+y1+' Q'+((x1+x2)/2)+' '+(Math.min(y1,y2) - 7*vmin)+' '+x2+' '+y2);
+    path.setAttribute('marker-end','url(#ah)');
+    svg.appendChild(path);
+    var L = path.getTotalLength(); path.style.strokeDasharray = L; path.style.strokeDashoffset = L;
+    timers.push(setTimeout(function(){ path.style.strokeDashoffset = 0; }, 350/SPEED));
+  }
+
   /* THE HERO SHOT, annotated — the rubric slide (five numbered rows for
      35 s) was the last thing on the deck that read like a presentation.
      Same five headings, Randy's own from the awards deck, now pointed at
@@ -1008,41 +1031,67 @@
      can do??'... make it fun so it catches their eye and challenges them."
      One species at a time: its current hero on the right with a stamped
      line, the same five listed on the left with the current one lit. Same
-     engine as the detail shot (s.steps). The stamp is aimed at the
-     situation ("we"), never at a photographer: a hero shot by one of the
-     crew gets only the friendly challenges. */
-  var QUIPS_PHOTO = ['Is this the best we can do??', 'We can do better!', 'Really? That’s all we’ve got?',
-    'Needs a glow-up.', 'Come on. Beat this.', 'Not our finest.', 'Your turn.', 'We know you can top this.'];
-  var QUIPS_PHOTO_CREW = ['Good start. Can you top it?', 'Beat this one.', 'Your turn.', 'Make it a hero.'];
-  var QUIPS_OBS = ['Wanted.', 'Missing!', 'Has anyone seen this?', 'Where did it go?', 'Hiding from us.', 'Go find it.', 'It’s out there.'];
+     engine as the detail shot (s.steps). The list is ranked by how MANY
+     photos a species has, never by quality (a stunning hero can sit on it),
+     so the stamps only talk about quantity and invitation, never judge the
+     picture. */
+  var QUIPS_PHOTO = ['Only {n}?! Rookie numbers.', 'This plant is lonely.', 'Paparazzi, assemble!', 'Feed the website!',
+    'Go full influencer.', 'Main-character treatment. Go.', 'Artsy? Close-up? BOTH.', 'Our camera roll is crying.',
+    'Plant fans are waiting.', 'Hot take: it deserves more photos.', 'Give it a glow-up.', 'Be this plant’s photographer.'];
+  /* the "is it the picture?" register — the list can't judge quality, so these
+     only land on species without a showcase photo, and Randy asked for the mix */
+  var QUIPS_PHOTO_BAD = ['Is this the best we can do??', 'We can do better!', 'Not our finest.', 'Beat this one.'];
+  /* invitations, not claims: the photo roles are too sparse to say "no flower
+     photo yet", so each is a question or a request, and only for forms that can have it */
+  var PLANT_FORM = {};
+  var FORMS_FLOWER = ['Palm & Cycad', 'Shrub & Vine', 'Tree', 'Groundcover & Wildflower'];
+  var FORMS_FRUIT  = ['Palm & Cycad', 'Shrub & Vine', 'Tree'];
+  var FORMS_BARK   = ['Palm & Cycad', 'Tree'];
+  var lastStamp = '';
+  function photoStamp(x){
+    var f = PLANT_FORM[x.id] || '', pool = QUIPS_PHOTO.concat(QUIPS_PHOTO_BAD);
+    pool.push('Need a good shot of a leaf.', 'Get a leaf up close. Veins and all.');
+    if(FORMS_FLOWER.indexOf(f) > -1) pool.push('Is it flowering? Go see!', 'Catch it in bloom!');
+    if(FORMS_FRUIT.indexOf(f) > -1)  pool.push('Fruit yet? Go look!');
+    if(FORMS_BARK.indexOf(f) > -1)   pool.push('Get the trunk up close.');
+    var q; for(var i=0; i<6; i++){ q = pool[Math.floor(Math.random()*pool.length)]; if(q !== lastStamp) break; }
+    lastStamp = q; return q;
+  }
+  var QUIPS_OBS = ['Wanted. Reward: fame.', 'Missing!', 'It ghosted us.', 'Hide-and-seek champion.',
+    'Be the one who finds it.', 'Plot twist: nobody checked.', 'Go be a plant detective.', 'Where did it go?!',
+    'Has anyone seen this??', 'It’s out there. Go.', 'Bring it back to iNat.'];
+  /* A hero that is on the hand-picked showcase list (brightfutures_showcase.json)
+     is a stunner: it gets "nice shot, but we still need more" instead of the
+     usual lines. Nothing else in the data says a photo is good. */
+  var QUIPS_STUNNER_PHOTO = ['Well OK, this one’s gorgeous. But we need MORE!', 'Nice shot! This plant still wants friends.',
+    'Stunning. Now give it company.', 'Okay, we’ll allow it. Now shoot another!'];
+  var QUIPS_STUNNER_OBS = ['Pretty! But where did it go?!', 'Gorgeous. Now find it again.', 'Great shot. It’s been a while, though.'];
   function needSlides(kind, photos, mine){
-    var byPhoto = {}, crewIds = {};
+    var byPhoto = {};
     (photos||[]).forEach(function(p){ if(p && p.photo_id) byPhoto[String(p.photo_id)] = p; });
-    (mine||[]).forEach(function(p){ crewIds[String(p.photo_id)] = 1; });
     var pools = needsPools(byPhoto); if(!pools) return [];
     var pool = pools[kind === 'photos' ? 'photos' : 'obs'];
     if(pool.length < 2) return [];
     var half = pool.length > 5 ? Math.ceil(pool.length/2) : pool.length;
     var chunks = [pool.slice(0, half)]; if(pool.length > half) chunks.push(pool.slice(half));
-    var deal = dealt(kind === 'photos' ? QUIPS_PHOTO : QUIPS_OBS), dealCrew = dealt(QUIPS_PHOTO_CREW), n = 0;
+    var deal = dealt(kind === 'photos' ? QUIPS_PHOTO : QUIPS_OBS), dealStun = dealt(kind === 'photos' ? QUIPS_STUNNER_PHOTO : QUIPS_STUNNER_OBS), n = 0;
     return chunks.map(function(chunk, ci){
       var head = kind === 'photos'
         ? '<div class="label">The website</div><h2>We need better photos of these.</h2>'
         : '<div class="label">Last logged</div><h2>Nobody’s logged these lately.</h2>';
+      var listHtml = head + '<div class="need-list">' + chunk.map(function(y){
+        var sub = kind === 'photos' ? 'We have ' + y.photos + (y.photos === 1 ? ' photo' : ' photos') : 'Last logged ' + monthYear(y.newest);
+        return '<div class="need-row"><span class="nm">'+esc(y.name||'')+'</span><span class="sub">'+esc(sub)+'</span></div>';
+      }).join('') + '</div>';
+      /* the left side is built once; each step only moves the light down the list
+         (s.listHtml / step.at in render()) and swaps the photo and stamp */
       var steps = chunk.map(function(x, i){
         var row = byPhoto[String(x.hero_photo_id)];
-        var sub = kind === 'photos' ? 'We have ' + x.photos + (x.photos === 1 ? ' photo' : ' photos') : 'Last logged ' + monthYear(x.newest);
-        var list = chunk.map(function(y, k){
-          return '<div class="need-row'+(k === i ? ' on' : '')+'"><span class="nm">'+esc(y.name||'')+'</span>'
-               + (k === i ? '<span class="sub">'+esc(sub)+'</span>' : '') + '</div>';
-        }).join('');
-        var friendly = kind === 'photos' && crewIds[String(x.hero_photo_id)];
-        return { seconds: SECONDS*0.4, photo: row.photo_url, credit: creditText(row), callouts: [],
-                 stamp: friendly ? dealCrew(n++) : deal(n++),
-                 copy: head + '<div class="need-list">'+list+'</div>' };
+        return { seconds: SECONDS*0.4, photo: row.photo_url, credit: creditText(row), callouts: [], at: i,
+                 stamp: String((SHOWCASE && SHOWCASE[String(x.hero_photo_id)]) ? dealStun(n++) : kind === 'photos' ? photoStamp(x) : deal(n++)).replace('{n}', x.photos) };
       });
       var total = steps.reduce(function(a, st){ return a + st.seconds; }, 0);
-      return { id:(kind === 'photos' ? 'needphotos-' : 'needobs-')+(ci+1), cls:'split', noflip:true, seconds: total, steps: steps,
+      return { id:(kind === 'photos' ? 'needphotos-' : 'needobs-')+(ci+1), cls:'split need', noflip:true, seconds: total, steps: steps, listHtml: listHtml,
                html:'<div class="copy"></div><div class="idstage"></div>' };
     });
   }
@@ -1422,7 +1471,11 @@
       function showStep(){
         if(!el.isConnected) return;
         var st = s.steps[si];
-        copyEl.innerHTML = st.copy;
+        if(s.listHtml){
+          if(si === 0) copyEl.innerHTML = s.listHtml;
+          var nrows = copyEl.querySelectorAll('.need-row');
+          for(var nk=0; nk<nrows.length; nk++) nrows[nk].classList.toggle('on', nk === st.at);
+        } else copyEl.innerHTML = st.copy;
         if(st.photo){
           bgEl2.style.opacity = 0; if(scrimEl) scrimEl.style.opacity = 0;
           stage.innerHTML = '<img alt="" src="'+st.photo+'"><svg class="arrows"></svg>';
@@ -1434,7 +1487,7 @@
             el._stepTimers.push(setTimeout(function(){ stampEl.classList.add('in'); }, 1100/SPEED));
           }
           var img = stage.querySelector('img');
-          img.onload = function(){ placeCallouts(stage, img, st.callouts || [], el._stepTimers); };
+          img.onload = function(){ placeCallouts(stage, img, st.callouts || [], el._stepTimers); if(s.listHtml) needArrow(el, stage, img, el._stepTimers); };
           if(img.complete && img.naturalWidth) img.onload();
           setCredit(st.credit || '', CREDIT_LAG/SPEED);
         } else {
@@ -1746,6 +1799,7 @@
         });
         var mine = crewOf(photos, bfSet);
         var hits = indexHits(r[3]); Object.assign(hits, indexHits(r[4]));
+        PLANT_FORM = {}; ((r[3] && r[3].species) || []).forEach(function(sp){ if(sp && sp.id) PLANT_FORM[sp.id] = sp.form || ''; });
         /* the week's task-sheet photo: test-load it before the first
            build (local image, well under a second; a 404 fails fast) so
            the tasks slide is the split-pane version from the first pick */
