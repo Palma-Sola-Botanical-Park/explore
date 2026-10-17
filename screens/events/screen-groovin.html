@@ -916,11 +916,12 @@ body.nature-active.horticulture-active .credit{left:6.9vmin;right:auto;text-alig
 .venue-flourish{position:absolute;z-index:2;right:4vw;bottom:3.2vmin;width:32vw;height:9vmin;overflow:hidden;opacity:.38;pointer-events:none;mask-image:linear-gradient(to top,transparent,#000 22%,#000 52%,transparent),linear-gradient(to right,transparent,#000 12%,#000 88%,transparent);mask-composite:intersect}
 .venue-flourish img{position:absolute;bottom:-1.2vmin;left:0;width:100%;height:auto}
 
-/* Final photo framing: keep the subject intact and let the picture breathe. */
-.slide.nature-page .copy{max-width:40vw;padding:2.2vmin 2.8vmin}
-.slide.nature-page .headline{font-size:5.8vmin}
-.slide.nature-page .body{max-width:40ch}
-.slide.nature-page .bg img{animation:none!important;object-fit:contain;object-position:right center!important;will-change:auto}
+/* Keep the magazine feature's earlier approved framing and reading panel.
+   Other slide layouts remain unchanged pending individual review. */
+.slide.nature-page:not(.horticulture-feature) .copy{max-width:40vw;padding:2.2vmin 2.8vmin}
+.slide.nature-page:not(.horticulture-feature) .headline{font-size:5.8vmin}
+.slide.nature-page:not(.horticulture-feature) .body{max-width:40ch}
+.slide.nature-page:not(.horticulture-feature) .bg img{animation:none!important;object-fit:contain;object-position:right center!important;will-change:auto}
 .slide.nature-page.ambient .bg img{object-position:center!important}
 /* A closer, balanced season composition rather than long empty row rules. */
 .slide.pops-season.soft-paper .copy{width:59vw;max-width:59vw;padding-left:11vw}
