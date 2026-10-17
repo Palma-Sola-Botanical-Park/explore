@@ -1836,7 +1836,7 @@ function fromArt(art, slide){
 
 /* A photograph from the collection, for slides with nothing of their own. */
 function atmosPhoto(){
-  var all = withGallery(D.plants.concat(D.wildlife).filter(featurePhoto));
+  var all = withGallery(D.plants.concat(D.wildlife).filter(wideFeaturePhoto));
   var pool = preferOrient(all, 'landscape', 12);
   return pool.length ? pick(pool) : (all.length ? pick(all) : null);
 }
@@ -2156,12 +2156,12 @@ function slideWeek(){
 
 /* ── ambient ─────────────────────────────────────────────────────────────── */
 function slideAmbient(){
-  var pool = withGallery(D.plants.concat(D.wildlife).filter(featurePhoto));
+  var pool = withGallery(D.plants.concat(D.wildlife).filter(wideFeaturePhoto));
   /* No text to carry the slide, so the crop has to be right: wide photographs
      with the pixels to fill a 4K width. */
   pool = preferOrient(pool, 'landscape', 12)
            .filter(function(x){ return bigEnough(x, 1800); });
-  if(!pool.length) pool = D.plants.concat(D.wildlife).filter(featurePhoto);
+  if(!pool.length) pool = D.plants.concat(D.wildlife).filter(wideFeaturePhoto);
   if(!pool.length) return null;
   var s = pick(pool);
   return {
@@ -2838,10 +2838,20 @@ var GROOVIN = {
 var BF = {photos:[],people:[],species:0,showcase:[],crew:[]};
 /* Feature-tier species supply the nature artwork in this event deck.
    Preserve the complete catalog for lookup, credits and truthful totals. */
-var EVENT_EXCLUDED_SPECIES={'PSBP-00033':true}; // Wild Lime: excluded from this one-time event deck.
+var EVENT_EXCLUDED_SPECIES={'PSBP-00033':true,'PSBP-00301':true}; // Wild Lime and Rainbow Eucalyptus: excluded from this event deck.
 function eventSpeciesAllowed(id){return !EVENT_EXCLUDED_SPECIES[id];}
 function featurePhoto(s){
   return !!(s && eventSpeciesAllowed(s.id) && s.photo && String(s.tier||'').trim().toLowerCase()==='feature');
+}
+/* Wide backgrounds only: verified dimensions, at least 1800px across and
+   a 3:2-or-wider shape. Portrait photographs remain available to galleries. */
+function eventWidePhoto(p){
+  return !!(p&&p.publish_ok&&p.photo_id&&Number(p.w)>=1800&&Number(p.h)>0&&Number(p.w)/Number(p.h)>=1.5);
+}
+function wideFeaturePhoto(sp){
+  if(!featurePhoto(sp))return false;
+  var hero=CREDITS[photoIdOf(sp.photo)];
+  return (BY_SPECIES[sp.id]||[]).concat(hero&&hero.psbp_id===sp.id?[hero]:[]).some(eventWidePhoto);
 }
 var buildNormalGroups=buildGroups;
 buildGroups=function(){
@@ -2929,7 +2939,7 @@ loadAll=function(){
       D[key]=D[key].filter(eventRecognitionAllowed);
     });
     D.classes=D.classes.filter(botanicalClass);
-    D.right_now=D.right_now.filter(function(r){return featurePhoto(speciesById(r.psbp_id));});
+    D.right_now=D.right_now.filter(function(r){return wideFeaturePhoto(speciesById(r.psbp_id));});
     D.series=D.series.filter(function(r){return !physicalClass(r);});
     D.announcements=D.announcements.filter(function(r){return inDate(r)&&GROOVIN.announcements.indexOf(r.title)>-1;}).map(function(r){
       var c=Object.assign({},r);
@@ -3574,12 +3584,13 @@ function preferredEventPhotographer(p){
   return EVENT_PHOTOGRAPHERS.indexOf(p.photographer)>=0||
     (/bright futures student/i.test(note)&&!/not a bright futures|placeholder|probably/i.test(note));
 }
-function preferredNatureShot(sp,landscape,requireWide){
+function preferredNatureShot(sp,landscape,requireWide,tvWide){
   if(!sp)return sp;
   var hero=CREDITS[photoIdOf(sp.photo)],records=(BY_SPECIES[sp.id]||[]).slice();
   if(hero&&hero.psbp_id===sp.id&&!records.some(function(p){return String(p.photo_id)===String(hero.photo_id);}))records.push(hero);
   records=records.filter(function(p){return p.publish_ok&&p.photo_id;});
-  if(!records.length)return sp;
+  if(tvWide)records=records.filter(eventWidePhoto);
+  if(!records.length)return tvWide?null:sp;
   if(requireWide){var onlyWide=records.filter(function(p){return p.orient==='landscape'&&(!p.w||p.w>=1800);});if(onlyWide.length)records=onlyWide;}
   var preferred=records.filter(preferredEventPhotographer),others=records.filter(function(p){return !preferredEventPhotographer(p);});
   var pool=preferred.length&&(!others.length||Math.random()<.8)?preferred:(others.length?others:records);
@@ -3595,18 +3606,18 @@ function preferredNatureShot(sp,landscape,requireWide){
 function curateNatureSlide(slide,species){
   if(!slide||!slide.bg)return slide;
   var record=CREDITS[photoIdOf(slide.bg)],sp=species||(record&&speciesById(record.psbp_id));
-  if(!sp||!featurePhoto(sp))return slide;
-  var chosen=preferredNatureShot(sp,true);
+  if(!sp||!wideFeaturePhoto(sp))return null;
+  var chosen=preferredNatureShot(sp,true,false,true);
   slide.bg=bigPhoto(chosen);slide.bgFallback=fallbackPhoto(chosen);slide.focus=chosen.focus;slide.credit=creditFor(chosen);
   return slide;
 }
 var uncroppedEventAmbient=slideAmbient,uncroppedEventRightNow=slideRightNow;
 slideSpotlight=function(){
-  var all=D.plants.concat(D.wildlife).filter(featurePhoto);if(!all.length)return null;
+  var all=D.plants.concat(D.wildlife).filter(wideFeaturePhoto);if(!all.length)return null;
   var pool=all.filter(function(s){return seenSpecies.indexOf(s.id)<0;});
   if(!pool.length){seenSpecies=[];pool=all;}
   var species=pick(pool);seenSpecies.push(species.id);
-  var s=preferredNatureShot(species,true);
+  var s=preferredNatureShot(species,true,false,true);
   return {bg:bigPhoto(s),bgFallback:fallbackPhoto(s),focus:s.focus,credit:creditFor(s),
     html:'<div class="eyebrow">From the collection</div>'+
       '<div class="headline">'+esc(s.common)+'</div>'+
@@ -3615,7 +3626,7 @@ slideSpotlight=function(){
 slideAmbient=function(){return curateNatureSlide(uncroppedEventAmbient());};
 slideRightNow=function(r){return curateNatureSlide(uncroppedEventRightNow(r),r.psbp_id?speciesById(r.psbp_id):null);};
 var uncuratedAtmosPhoto=atmosPhoto;
-atmosPhoto=function(){return preferredNatureShot(uncuratedAtmosPhoto(),true);};
+atmosPhoto=function(){return preferredNatureShot(uncuratedAtmosPhoto(),true,false,true);};
 reviewBuilders.spotlight=slideSpotlight;reviewBuilders.ambient=slideAmbient;
 function slideCommunityPhotos(){
   var all=D.plants.concat(D.wildlife).filter(featurePhoto),shots=[],used={};
