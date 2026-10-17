@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>INTERNET OUT Groovin — Palma Sola Botanical Park</title>
+<style>
+@font-face{font-family:ParkPlayfair;src:url('../../fonts/PlayfairDisplay-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:ParkPlayfair;src:url('../../fonts/PlayfairDisplay-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+@font-face{font-family:ParkPlayfair;src:url('../../fonts/PlayfairDisplay-Italic.ttf') format('truetype');font-style:italic;font-display:swap}
+:root{--paper:#f8f4e7;--ink:#204b33;--olive:#707a3d;--gold:#aa9150;--line:#a9af8077;--serif:ParkPlayfair,Georgia,serif;--sans:'Segoe UI',Arial,sans-serif}
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--paper);color:var(--ink)}
+body{font-family:var(--sans);cursor:none}.frame{position:fixed;inset:3.2vmin;border:1px solid var(--line);z-index:10;pointer-events:none}
+.wordmark{position:fixed;top:2vmin;left:6vmin;background:var(--paper);padding:0 1.7vmin;font-size:2vmin;font-weight:600;letter-spacing:.25em;text-transform:uppercase;z-index:11}
+.clock{position:fixed;right:6vmin;top:2vmin;padding:0 1.3vmin;background:var(--paper);color:#65714b;font-size:1.7vmin;letter-spacing:.13em;font-variant-numeric:tabular-nums;z-index:11}
+#stage{position:fixed;inset:0}.slide{position:absolute;inset:0;opacity:0;transition:opacity .7s ease;background:var(--paper);overflow:hidden}.slide.on{opacity:1;z-index:2}
+.full-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.welcome .full-art{object-fit:contain}.welcome-note{position:absolute;left:10%;right:10%;bottom:8vmin;text-align:center;font-size:2.4vmin;letter-spacing:.1em;color:#53693f}
+.welcome-note b{font-weight:600}.welcome-note span{display:block;font:italic 2.1vmin/1.4 var(--serif);margin-top:.9vmin;color:#727444}
+.photo-page{padding:8.5vmin 5.3vw 6.8vmin;display:flex;flex-direction:column;gap:2vmin}
+.photo-page figure{position:relative;flex:1;min-height:0;margin:0;background:#e9e6d8;outline:1px solid var(--line);padding:.75vmin;box-shadow:0 .6vmin 2.7vmin #3b422418;display:flex;align-items:center;justify-content:center}
+.photo-page figure img{width:100%;height:100%;min-height:0;object-fit:contain;display:block;background:#f0eddf}
+.caption{display:flex;gap:3vw;align-items:flex-end;justify-content:space-between;padding:.4vmin .3vmin 0}
+.caption-title{max-width:64%;min-width:0}.eyebrow{font-size:1.8vmin;letter-spacing:.18em;text-transform:uppercase;color:var(--olive);font-weight:600;margin:0 0 .8vmin}
+.caption h1{font:400 3.8vmin/1.12 var(--serif);margin:0;text-wrap:balance}.photo-credit{text-align:right;max-width:38%;font-size:1.7vmin;line-height:1.45;color:#566747}.photo-credit strong{display:block;font-weight:600;font-size:1.9vmin;color:var(--ink)}
+.photo-credit .terms{display:block}.photo-credit .credit-label{display:block;font-size:1.65vmin;letter-spacing:.08em;margin-bottom:.3vmin}
+.montage{padding:10vmin 5vw 8vmin;display:flex;align-items:center;gap:4vw}.gallery-copy{width:27vw;flex:none;position:relative;z-index:1}
+.gallery-copy .eyebrow{font-size:2.1vmin;letter-spacing:.16em;line-height:1.5}.gallery-copy h1{font:400 6.3vmin/1.08 var(--serif);margin:1.6vmin 0 2.6vmin;text-wrap:balance}
+.gallery-copy p{font-size:2.5vmin;line-height:1.48;margin:0;max-width:29ch;color:#526543}.gallery-copy .signature{font:italic 2.4vmin/1.5 var(--serif);margin-top:3vmin;color:#7a7d46}
+.gallery-logo{display:block;width:17vmin;height:12vmin;object-fit:contain;margin-top:3vmin}.program-logos{display:flex;gap:1.7vmin;align-items:center;margin-top:3vmin;padding-top:2vmin;border-top:1px solid var(--line)}
+.program-logos img{width:13vmin;height:8vmin;object-fit:contain}.gallery-grid{flex:1;min-width:0;height:76vmin;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:1.6vmin}
+.tile{min-width:0;min-height:0;background:#fffdf5;padding:.65vmin;outline:1px solid var(--line);box-shadow:0 .4vmin 2vmin #3545221c;margin:0;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity .4s ease}
+.tile img{display:block;width:100%;height:100%;object-fit:contain;min-width:0;min-height:0;background:#e8e5d6}.tile.feature{grid-row:1 / 3}.gallery-grid.feature-right .tile.feature{grid-column:3}.gallery-grid.feature-left .tile.feature{grid-column:1}
+.partnership .partnership-copy{position:absolute;inset:17vmin 19vw 15vmin;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.partnership .marks{display:flex;align-items:center;justify-content:center;gap:3vmin;margin-bottom:3vmin}.partnership .marks img{width:24vmin;height:14vmin;object-fit:contain}.partnership .marks .pops{width:15vmin}
+.partnership .marks span{font:italic 5vmin var(--serif);color:var(--gold)}.partnership h1{font:400 6.7vmin/1.1 var(--serif);margin:0 0 2.5vmin;text-wrap:balance}.partnership p{font-size:2.7vmin;line-height:1.55;max-width:50ch;margin:0;color:#536440}
+.music-trim{position:absolute;left:6vw;right:6vw;bottom:3.7vmin;height:3.6vmin;overflow:hidden;opacity:.33;pointer-events:none;mask-image:linear-gradient(to top,transparent,#000 25%,#000 55%,transparent)}.music-trim img{position:absolute;width:100%;height:auto;bottom:-1.3vmin;left:0}
+#bar{position:fixed;z-index:15;bottom:0;left:0;height:.35vmin;background:#aa9656;width:0;transition:width linear}
+.message{position:fixed;inset:0;padding:14vmin 12vw;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;z-index:20;background:var(--paper);cursor:auto}.message[hidden]{display:none}.message h1{font:400 6vmin/1.15 var(--serif);margin:0 0 3vmin}.message p{font-size:2.5vmin;line-height:1.6;max-width:70ch;margin:0 0 1.8vmin}.message code{font-size:2vmin;line-height:1.5;overflow-wrap:anywhere;color:#53613d}.message .label{font-size:1.8vmin;letter-spacing:.16em;color:var(--olive);text-transform:uppercase;margin-bottom:2vmin}
+@media(max-aspect-ratio:1/1){.wordmark{font-size:1.7vmin;letter-spacing:.13em}.clock{top:5vmin;font-size:1.7vmin}.photo-page{padding-top:12vmin}.caption{align-items:flex-start;gap:2vmin}.caption h1{font-size:4vmin}.montage{flex-direction:column;justify-content:center;gap:5vmin;padding:13vmin 7vw 8vmin}.gallery-copy{width:100%}.gallery-copy h1{font-size:6vmin;margin:1vmin 0 2vmin}.gallery-copy p{max-width:55ch}.gallery-copy .signature,.gallery-logo,.program-logos{display:none}.gallery-grid{width:100%;height:56vh;flex:none;gap:2vmin}.partnership .partnership-copy{inset:14vmin 10vw}.partnership .marks{flex-wrap:wrap}.partnership h1{font-size:7vmin}.welcome-note{bottom:23vh}.message{padding:12vmin 8vw}}
+@media(prefers-reduced-motion:reduce){.slide,.tile{transition:none}}
+</style>
+</head>
+<body>
+<div class="frame" aria-hidden="true"></div>
+<div class="wordmark">Palma Sola Botanical Park</div>
+<div class="clock" id="clock"></div>
+<main id="stage" aria-label="Groovin’ in the Gardens slideshow"></main>
+<div id="bar" aria-hidden="true"></div>
+<section id="message" class="message" role="status">
+  <div class="label">Groovin’ in the Gardens</div>
+  <h1 id="message-title">Getting the gardens ready…</h1>
+  <p id="message-body">Loading the pictures saved on this computer.</p>
+  <code id="message-detail"></code>
+</section>
+<noscript><section class="message"><h1>Enable JavaScript to play the slideshow.</h1></section></noscript>
+<script src="groovin-local-data.js?v=20261016-local1"></script>
+<script src="groovin-local.js?v=20261016-local1"></script>
+</body>
+</html>
