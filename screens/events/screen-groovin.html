@@ -3898,11 +3898,7 @@ render=function(s){
 };
 
 
-</script>
-<script src="groovin-local-cache.js"></script>
-<script>
-Promise.resolve(typeof initGroovinBackup==='function' ? initGroovinBackup() : false)
-  .then(function(){return loadAll();}).then(start).catch(function(){ fallback(); start(); });
+loadAll().then(start).catch(function(){ fallback(); start(); });
 </script>
 </body>
 </html>
