@@ -400,6 +400,8 @@ input:focus,button:focus-visible{outline:2px solid var(--new);outline-offset:1px
         <button class="chip" data-f="review" aria-pressed="false">Unreviewed</button>
         <button class="chip" data-f="need" aria-pressed="false">Needs sign</button>
         <button class="chip" data-f="noloc" aria-pressed="false">No coordinates</button>
+        <button class="chip" data-f="noseen" aria-pressed="false">No last seen</button>
+        <button class="chip" data-f="noarea" aria-pressed="false">No location name</button>
       </div>
       <div class="chips">
         <button class="chip" id="reload">Reload from file</button>
@@ -517,6 +519,8 @@ function matches(s){
   if(filter==='review')   return ps.some(p=>!p.state);
   if(filter==='need')     return ps.some(p=>p.state==='needs_sign');
   if(filter==='noloc')    return ps.some(p=>!located(p));
+  if(filter==='noseen')   return ps.some(p=>!(p._raw&&p._raw.last_seen));
+  if(filter==='noarea')   return ps.some(p=>!p.area);
   return true;
 }
 function drawList(){
