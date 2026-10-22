@@ -246,7 +246,7 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 | `todo_snoozes.json` | `{meta, snoozes:[{id, until}]}` | plants Randy parked from the To do stale/picture lists until a date; written by Species Manager's To do tab, read by `maintenance_todo.py` |
 | `landmarks.json`, `park_geometry.json` | | the park polygon and named places |
 | `publish_state.json` | machine-owned | fingerprints for staleness; safe to delete |
-| `provenance/PSBP-xxxxx.json` | | AI draft/revise event log per species |
+| `provenance/PSBP-xxxxx.json` | | old AI draft/revise event logs; retired 2026-10-22, nothing new is written |
 
 **Species lifecycle:** `research → spotted → html`. Identity (name, filename, QR) is free to
 change at `spotted` and is just as easy after (a rename moves the page; run
@@ -293,7 +293,7 @@ is editing the live screens.
 
 | Script | Port | Does |
 |---|---|---|
-| `species_manager.py` | 8700 | the dashboard: Overview, Intake, Photos, Cultivated, Preview & Publish, Signs, Verify, To do, Health. Mints IDs. Has the "Work on this page" AI button. Holds JSON in browser memory (see rule 4). |
+| `species_manager.py` | 8700 | the dashboard: Overview, Intake, Photos, Cultivated, Preview & Publish, Signs, Verify, To do, Health. Mints IDs. Its "Work on this page" AI button is retired (2026-10-22); use it for preview and publish only. Holds JSON in browser memory (see rule 4). |
 | `signs/make_signs.py` | | print sign PDFs (reportlab + Pillow, so it runs as a subprocess of the Signs tab). Output to `~/Documents/PSBP/signs_out/builds/`, never the repo. QR is the short `/p/` permalink. |
 | `propagate_species_name.py` | | after a species rename: preview lists every place the old name is still stored; `--apply` fixes the mechanical ones (record, photo rows, page, `/p/` stub, indexes) and leaves a checklist of prose, hand-kept files and docs. No args = drift scan. Like `propagate_names.py` (photographers). One species at a time. |
 | `plant_publisher.py` | 8701 | `--generate PSBP-xxxxx`, `--generate-all`, `--demote`; writes `plants/` and `plants.json` |
@@ -424,14 +424,22 @@ date, time, and title is a Sheet row, not a document.
 
 0. **Before anything else, read the species' dossier** (`before_edit.py PSBP-xxxxx`, rule 16). If the dossier lists a
    claim as rejected, held, or "do not re-add", it stays out unless Randy says otherwise and you record why.
-1. Randy clicks "Work on this page" in Species Manager, with notes.
-2. He runs the result past ChatGPT, then Work again. Two or three rounds.
+**Manual drafting (Randy, 2026-10-22).** The Species Manager "Work on this page" button and its
+provenance logs are retired. The process, the roles and the rules are written in
+`../Active-PSBP-Docs/species-editorial/WORKFLOW.md`; read it right after the dossier. In short:
+
+1. Claude drafts in `species-editorial/drafts/<id>.page.json` (private repo), with Randy talking to it directly.
+2. ChatGPT enriches (good cop) and fact-checks (bad cop); Claude judges both against the dossier and the record.
 3. Randy curates the gallery in `photo_credits.json` and picks the hero. Do not add new
    photographs or change the gallery choices on his behalf.
 4. Claude does finals: cut repetition, cut what another section says better, check each section
    still does its own job, verify claims against the record, inspect the approved gallery,
    choose the photos that illustrate passages, place them in-flow, and write captions.
-5. He previews and publishes.
+5. On Randy's word, Claude writes the finished teaser and `page` into the master JSON (dry run first,
+   rule 4), then he previews and publishes in Species Manager.
+
+The dossier records every fact found, kept, rejected or held, with date and check; it is how a later
+edit avoids repeating a settled mistake (rule 16).
 
 ChatGPT drafts arrive in `Active-PSBP-Docs/species-editorial/` (see its README; older ones are in the old `park-library/archive/drafts chatgpt/`). Before reading one, check
 its line-2 botanical name against the record. Read the "Unverified" list at the bottom first.
