@@ -469,7 +469,7 @@ or with no in-text photo while gallery photos are approved; amber there means "s
 - `BOTANICAL_QUESTIONS.md` — open ID questions, for the horticulture crew
 - `SPECIES_PAGES.md` — how species pages are written: sections, voice, photos, Take care,
   units, the block rules (§10), the daily loop, the ChatGPT review brief
-- `PAGE_COPY_FLAGS.md` — per-page log of what the copy must not say
+- *(`PAGE_COPY_FLAGS.md` retired 2026-10-22; its notes live in the species dossiers, §6. Original is in the old `park-library`.)*
 - `PARK_BACKGROUND.md` — the park itself: where things are (by placement area), the ponds,
   the Helene salt event, history, buildings, stories
 - `WEB_MIGRATION_MASTER.md` — the current one-stop domain cutover roadmap; older web-migration docs are archived in the old `park-library` repo
