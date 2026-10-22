@@ -334,7 +334,7 @@ def main():
     # ── PAGE ──────────────────────────────────────────────────────────────
     # The page.* block contract, locked 2026-09-21 at Randy's instruction:
     # "since we created the page.* thing ourselves- LET'S SET THE RULES NOW."
-    # Full spec in park-library/system docs/PAGE_BLOCK_CONTRACT.md.
+    # Full spec in old park-library repo, system docs/Stuff in Case Needed/PAGE_BLOCK_CONTRACT.md.
     #
     # Why this section exists: _v2_block_html tests `if b.get("photo")` first,
     # renders the figure and returns, so ANY text on that same block is thrown
@@ -438,7 +438,7 @@ def main():
             # came out at ~225 words against ~490 for the pages Randy likes.
             # Both are WARN, not ERROR: a short page can be right (the evidence
             # really is thin) but it needs a one-line reason at handover.
-            # Rules in park-library/system docs/SPECIES_PAGES.md, "Consistency".
+            # Rules in Active-PSBP-Docs/system docs/SPECIES_PAGES.md, "Consistency".
             _blocks = [b for v in page.values() if isinstance(v, list)
                        for b in v if isinstance(b, dict)]
             # Only a page that is really authored: three or more sections with

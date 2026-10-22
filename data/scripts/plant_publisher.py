@@ -656,7 +656,7 @@ def render_gallery(species, gallery_photos, hero):
 # ══════════════════════════════════════════════════════════════════════════
 # PLANT PAGE v2 — seven sections, with a page.* override
 #
-# Agreed with Randy 2026-09-08; full reasoning in park-library
+# Agreed with Randy 2026-09-08; full reasoning in the old park-library repo
 # system docs/PLANT_PAGE_PORT.md. The contract:
 #
 #     page.<section> present  ->  render it verbatim      (authored)
@@ -968,7 +968,7 @@ def _v2_fact_html(text):
 
 def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
     """The seven-section plant page. See V2_SECTIONS for the order and the
-    mapping, and park-library system docs/PLANT_PAGE_PORT.md for the reasoning."""
+    mapping, and the old park-library repo, system docs/PLANT_PAGE_PORT.md for the reasoning."""
     pid    = species["id"]
     common = species["common_name"]
     sci    = species.get("botanical_name", "")

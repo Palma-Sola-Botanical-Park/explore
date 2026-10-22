@@ -8,31 +8,31 @@ Randy is the only maintainer. He decides. You propose, build, verify, and report
 
 **THIS REPO IS PUBLIC.** Board members and visitors can read every commit message, HTML comment,
 JSON field, and this file. Reasoning that is internal, political, or undecided goes to the
-private `park-library` repo (`../park-library/system docs/`) or nowhere. Never here.
+private `Active-PSBP-Docs` repo (`../Active-PSBP-Docs/system docs/`) or nowhere. Never here.
 
 ---
 
 ## 00. Task router: what to read FIRST for each kind of job
 
-Find the job; read what it says before you change anything. Paths marked **PL** are in the private
-`../park-library/` (read them there; never copy their text into this public repo). Randy should never
-have to remind you of any of this.
+Find the job; read what it says before you change anything. Paths marked **AD** are in the private
+`../Active-PSBP-Docs/` (read them there; never copy their text into this public repo). Randy should never
+have to remind you of any of this. The old `park-library` repo (`../park-library/`) is now a read-only archive of retired docs (since 2026-10-22); look there only for history.
 
 | If the job is… | Read / run first |
 |---|---|
-| Editing a **plant or wildlife page**, a teaser, caption or species record text | `PL species-editorial/README.md`, then `python3 ../park-library/species-editorial/tools/before_edit.py PSBP-xxxxx` for each species. Rule 16. |
+| Editing a **plant or wildlife page**, a teaser, caption or species record text | `AD species-editorial/README.md`, then `python3 ../Active-PSBP-Docs/species-editorial/tools/before_edit.py PSBP-xxxxx` for each species. Rule 16. |
 | "mark review complete" for a species | the species' dossier (`before_edit.py`), then `mark_reviewed.py` (rule 15). |
-| A new batch of species pages, or judging dossiers | `PL species-editorial/STATE.md` (current snapshot), then `PL species-editorial/README.md`. |
-| A **volunteer's story or review** (Randy pastes an email) | `PL volunteer-input/README.md`. |
-| **Where something is in the park** / bearings | `PL system docs/PARK_BACKGROUND.md`. Only Randy's words count. |
-| The **TV decks / Office and Galleria PCs** | `PL system docs/HANDOFF.md`, then `display-system/README.md`; the Bright Futures deck: `PL system docs/BRIGHT_FUTURES_DECK.md`. |
-| **DNS, hosting, the move to palmasolabp.org** | `PL system docs/WEB_MIGRATION_MASTER.md` (lead with what cannot break). |
-| **Photos, R2, `photos/`** | `PL system docs/PHOTOS_TO_R2.md`; rules 7 and 9 here. |
+| A new batch of species pages, or judging dossiers | `AD species-editorial/STATE.md` (current snapshot), then `AD species-editorial/README.md`. |
+| A **volunteer's story or review** (Randy pastes an email) | `AD volunteer-input/README.md`. |
+| **Where something is in the park** / bearings | `AD system docs/PARK_BACKGROUND.md`. Only Randy's words count. |
+| The **TV decks / Office and Galleria PCs** | `AD system docs/HANDOFF.md`, then `display-system/README.md`; the Bright Futures deck: `AD system docs/BRIGHT_FUTURES_DECK.md`. |
+| **DNS, hosting, the move to palmasolabp.org** | `AD system docs/WEB_MIGRATION_MASTER.md` (lead with what cannot break). |
+| **Photos, R2, `photos/`** | `AD system docs/PHOTOS_TO_R2.md`; rules 7 and 9 here. |
 | **Signs** (QR, print PDFs) | `data/scripts/signs/` and the Signs tab in Species Manager; rule 1 (signs before 2026-10-04 are beta). |
 | **Events, news, classes, the Google Sheet** | rule 6 and section 4 here; fix content in the Sheet, never in the published JSON. |
-| **Tours** | `PL system docs/TOURS.md` (to be revamped in 2027; stale teasers there are not findings). |
-| **What is open / what to do next** | `PL system docs/PSBP_ACTIONS.md` (start with the index) and `PL system docs/HANDOFF.md`. |
-| Anything else, or a new kind of job | `PL system docs/CLAUDE_ONBOARDING.md` and `PSBP_ARCHITECTURE.md`; search the headings, do not read it all. |
+| **Tours** | `AD system docs/TOURS.md` (to be revamped in 2027; stale teasers there are not findings). |
+| **What is open / what to do next** | `AD system docs/PSBP_ACTIONS.md` (start with the index) and `AD system docs/HANDOFF.md`. |
+| Anything else, or a new kind of job | `AD system docs/CLAUDE_ONBOARDING.md` and `PSBP_ARCHITECTURE.md`; search the headings, do not read it all. |
 
 If a job is not in this table and you had to find its notes yourself, add a row.
 
@@ -59,8 +59,8 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
   and completed history; a historical action item is not authorization to implement it.
 
 - **Species pages (plant or wildlife): dossier first.** Before you change any page text, teaser, caption, or species
-  record field, read `../park-library/species-editorial/README.md` (start here), then run
-  `python3 ../park-library/species-editorial/tools/before_edit.py PSBP-xxxxx` for each species. Each species has a
+  record field, read `../Active-PSBP-Docs/species-editorial/README.md` (start here), then run
+  `python3 ../Active-PSBP-Docs/species-editorial/tools/before_edit.py PSBP-xxxxx` for each species. Each species has a
   dossier of what past editors rejected, held back, or left out, and why. A fact found on the web may already be in it
   as rejected. Do this even when Randy only says "edit X" and does not mention it (2026-10-13: a rejected fact was
   added back because the session was never told).
@@ -190,7 +190,7 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
     missing `review_due` only, never `reviewed_on`) runs only when he asks for it by name. The publisher may
     read them to display the date; the merge tool aborts if either changes. Intervals by `feature_tier`:
     Feature 8 months, Standard 10, Background 12; review dates start 2026-11-30.
-16. **Read the species dossier before any species edit, and update it after.** `park-library/species-editorial/`
+16. **Read the species dossier before any species edit, and update it after.** `Active-PSBP-Docs/species-editorial/`
     (private) holds one dossier per species: what the page says and why, what was rejected, held, or set aside, and
     the live-page problems still to fix. Run `before_edit.py PSBP-xxxxx` first; never add or restore a fact without
     checking it against the dossier. After the edit, record what you evaluated (kept, rejected, held, boring), with the
@@ -388,7 +388,7 @@ Don't rewrite what is already good; fix what's wrong, write what's missing, say 
 
 **Facts.** Never invent a park observation ("three or four species at once" from "multiple").
 Never infer where a plant stands from a photo. Where-to-find-it comes from Randy or
-`park-library/system docs/PARK_BACKGROUND.md`. When sources conflict, say so plainly and land
+`Active-PSBP-Docs/system docs/PARK_BACKGROUND.md`. When sources conflict, say so plainly and land
 on what is not in dispute; never silently pick a number. Describe the tagged species with
 confidence and log ID doubt in `BOTANICAL_QUESTIONS.md`, not on the page.
 
@@ -433,7 +433,7 @@ date, time, and title is a Sheet row, not a document.
    choose the photos that illustrate passages, place them in-flow, and write captions.
 5. He previews and publishes.
 
-ChatGPT drafts arrive as `park-library/drafts chatgpt/*_FINISHED.md`. Before reading one, check
+ChatGPT drafts arrive in `Active-PSBP-Docs/species-editorial/` (see its README; older ones are in the old `park-library/archive/drafts chatgpt/`). Before reading one, check
 its line-2 botanical name against the record. Read the "Unverified" list at the bottom first.
 Pace is about two per day; old pages are fine as they are.
 
@@ -446,11 +446,11 @@ or with no in-text photo while gallery photos are approved; amber there means "s
 
 ---
 
-## 9. Where the deeper docs are (private repo, `../park-library/system docs/`)
+## 9. Where the deeper docs are (private repo, `../Active-PSBP-Docs/system docs/`)
 
 - `HANDOFF.md` — current summary first, then the relevant task. Keep it current using §0;
   preserve other open threads when updating one task.
-- `../park-library/drafts chatgpt/CLAUDE_SPECIES_HANDOFF.md` — species batches only: current state,
+- `../Active-PSBP-Docs/species-editorial/STATE.md` — species batches only: current state,
   the batch method, "The raised bar", lessons, Randy's standing answers, the next-batch prompt.
   Species sessions keep this one current (§0), not `HANDOFF.md`.
 - `CLAUDE_ONBOARDING.md` — the people, history, and working relationship; consult relevant
@@ -464,7 +464,7 @@ or with no in-text photo while gallery photos are approved; amber there means "s
 - `PAGE_COPY_FLAGS.md` — per-page log of what the copy must not say
 - `PARK_BACKGROUND.md` — the park itself: where things are (by placement area), the ponds,
   the Helene salt event, history, buildings, stories
-- `WEB_MIGRATION_MASTER.md` — the current one-stop domain cutover roadmap; older web-migration docs are archived in `park-library/stuff we may need/`
+- `WEB_MIGRATION_MASTER.md` — the current one-stop domain cutover roadmap; older web-migration docs are archived in the old `park-library` repo
 - `PSBP_Mini_PC_Display_System_Deployment_Plan_UPDATED.md` — the TV computers
 - `BRIGHT_FUTURES_DECK.md` — every slide of the Wednesday deck, its words, timing and weight
 - `../prototypes/` — demo pages and print drafts kept out of the public site, each folder has a README

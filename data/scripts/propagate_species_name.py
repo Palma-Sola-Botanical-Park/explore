@@ -58,7 +58,7 @@ import psbp_common as pc                                           # noqa: E402
 REPO = pc.REPO
 SOURCES = REPO / "data" / "sources"
 SIGNS_ROOT = Path(os.environ.get("PSBP_SIGNS_ROOT") or os.path.expanduser("~/Documents/PSBP/signs_out"))
-PARK_LIBRARY_DOCS = REPO.parent / "park-library" / "system docs"
+PARK_LIBRARY_DOCS = REPO.parent / "Active-PSBP-Docs" / "system docs"
 
 MASTERS = [  # (label, path, kind) — searched in this order for the id
     ("plant_signage.json", SOURCES / "plant_signage.json", "plants"),
@@ -213,7 +213,7 @@ def show(pid, old, new, label, kind, rec, found, filenames, rename_record):
     for f, n, snip in found["files"]:
         print(f"   - {f} (x{n}): {snip}")
     for d, n in found["docs"]:
-        print(f"   - park-library/system docs/{d} (x{n})")
+        print(f"   - Active-PSBP-Docs/system docs/{d} (x{n})")
     if seen:
         print("   After editing those records, republish their pages: "
               + ", ".join(sorted(seen)))

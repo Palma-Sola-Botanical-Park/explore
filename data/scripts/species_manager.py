@@ -1454,7 +1454,7 @@ def _inat_observations(taxon_id, exclude_taxa=None):
     Veitchia arecina, which the park grows at Big Pond, returns ZERO anywhere).
     They cannot be counted, listed, or have photos pulled by location. Routes:
       • The observer-roster fallback below
-      • Appeal the obscuring — see park-library INAT_OBSCURING_APPEALS.md
+      • Appeal the obscuring — see Active-PSBP-Docs INAT_OBSCURING_APPEALS.md
       • Set INAT_TOKEN (below) to an account trusted with the project's hidden
         coordinates, which makes them visible to this function
 
@@ -12384,10 +12384,10 @@ def _placements_on_file(species_id):
 
 
 # ── The species dossier (added 2026-10-13, Randy approved the wording as text).
-# park-library/species-editorial/ keeps one dossier per species: what past editors
+# Active-PSBP-Docs/species-editorial/ keeps one dossier per species: what past editors
 # rejected, held back, or set aside, and why. The model must see it, or it can add
 # back a fact we already killed whenever its searches "confirm" it. Fails open:
-# if park-library is not next to this repo, or the dossier is missing, nothing is
+# if Active-PSBP-Docs is not next to this repo, or the dossier is missing, nothing is
 # added and the button works exactly as before.
 _WORK_DOSSIER_BLOCK = (
     "\n\nTHE SPECIES DOSSIER. The user message includes this species' dossier from the "
@@ -12399,7 +12399,7 @@ _WORK_DOSSIER_BLOCK = (
     "_summary, list in one line each any new fact you looked at and rejected or held, so "
     "it can be recorded."
 )
-_DOSSIER_DIR = os.path.normpath(os.path.join(REPO, "..", "park-library",
+_DOSSIER_DIR = os.path.normpath(os.path.join(REPO, "..", "Active-PSBP-Docs",
                                              "species-editorial", "species"))
 
 
