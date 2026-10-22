@@ -58,7 +58,8 @@ import psbp_common as pc                                           # noqa: E402
 REPO = pc.REPO
 SOURCES = REPO / "data" / "sources"
 SIGNS_ROOT = Path(os.environ.get("PSBP_SIGNS_ROOT") or os.path.expanduser("~/Documents/PSBP/signs_out"))
-PARK_LIBRARY_DOCS = REPO.parent / "Active-PSBP-Docs" / "system docs"
+ACTIVE_DOCS = REPO.parent / "Active-PSBP-Docs"
+PARK_LIBRARY_DOCS = [ACTIVE_DOCS / d for d in ("system docs", "park-knowledge", "open-questions", "species-editorial")]  # top-level *.md of each
 
 MASTERS = [  # (label, path, kind) — searched in this order for the id
     ("plant_signage.json", SOURCES / "plant_signage.json", "plants"),
@@ -179,14 +180,16 @@ def collect(pid, old, kind, rec):
     # B3: this species' own provenance file (keyed by id, may quote the name)
     # is already covered by the walk above (data/sources/provenance/*.json).
     # B4: private docs
-    if PARK_LIBRARY_DOCS.is_dir():
-        for p in sorted(PARK_LIBRARY_DOCS.glob("*.md")):
+    for docdir in PARK_LIBRARY_DOCS:
+        if not docdir.is_dir():
+            continue
+        for p in sorted(docdir.glob("*.md")):
             try:
                 t = p.read_text(encoding="utf-8")
             except Exception:                                      # noqa: BLE001
                 continue
             if old in t:
-                r["docs"].append((p.name, t.count(old)))
+                r["docs"].append((f"{docdir.name}/{p.name}", t.count(old)))
     return r
 
 
@@ -213,7 +216,7 @@ def show(pid, old, new, label, kind, rec, found, filenames, rename_record):
     for f, n, snip in found["files"]:
         print(f"   - {f} (x{n}): {snip}")
     for d, n in found["docs"]:
-        print(f"   - Active-PSBP-Docs/system docs/{d} (x{n})")
+        print(f"   - Active-PSBP-Docs/{d} (x{n})")
     if seen:
         print("   After editing those records, republish their pages: "
               + ", ".join(sorted(seen)))

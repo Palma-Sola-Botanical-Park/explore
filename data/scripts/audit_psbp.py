@@ -438,7 +438,7 @@ def main():
             # came out at ~225 words against ~490 for the pages Randy likes.
             # Both are WARN, not ERROR: a short page can be right (the evidence
             # really is thin) but it needs a one-line reason at handover.
-            # Rules in Active-PSBP-Docs/system docs/SPECIES_PAGES.md, "Consistency".
+            # Rules in Active-PSBP-Docs/species-editorial/SPECIES_PAGES.md, "Consistency".
             _blocks = [b for v in page.values() if isinstance(v, list)
                        for b in v if isinstance(b, dict)]
             # Only a page that is really authored: three or more sections with

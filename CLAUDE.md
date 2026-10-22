@@ -8,7 +8,7 @@ Randy is the only maintainer. He decides. You propose, build, verify, and report
 
 **THIS REPO IS PUBLIC.** Board members and visitors can read every commit message, HTML comment,
 JSON field, and this file. Reasoning that is internal, political, or undecided goes to the
-private `Active-PSBP-Docs` repo (`../Active-PSBP-Docs/system docs/`) or nowhere. Never here.
+private `Active-PSBP-Docs` repo (`../Active-PSBP-Docs/`) or nowhere. Never here.
 
 ---
 
@@ -24,13 +24,13 @@ have to remind you of any of this. The old `park-library` repo (`../park-library
 | "mark review complete" for a species | the species' dossier (`before_edit.py`), then `mark_reviewed.py` (rule 15). |
 | A new batch of species pages, or judging dossiers | `AD species-editorial/STATE.md` (current snapshot), then `AD species-editorial/README.md`. |
 | A **volunteer's story or review** (Randy pastes an email) | `AD volunteer-input/README.md`. |
-| **Where something is in the park** / bearings | `AD system docs/PARK_BACKGROUND.md`. Only Randy's words count. |
+| **Where something is in the park** / bearings | `AD park-knowledge/PARK_BACKGROUND.md`. Only Randy's words count. |
 | The **TV decks / Office and Galleria PCs** | `AD system docs/HANDOFF.md`, then `display-system/README.md`; the Bright Futures deck: `AD system docs/BRIGHT_FUTURES_DECK.md`. |
 | **DNS, hosting, the move to palmasolabp.org** | `AD system docs/WEB_MIGRATION_MASTER.md` (lead with what cannot break). |
 | **Photos, R2, `photos/`** | `AD system docs/PHOTOS_TO_R2.md`; rules 7 and 9 here. |
 | **Signs** (QR, print PDFs) | `data/scripts/signs/` and the Signs tab in Species Manager; rule 1 (signs before 2026-10-04 are beta). |
 | **Events, news, classes, the Google Sheet** | rule 6 and section 4 here; fix content in the Sheet, never in the published JSON. |
-| **Tours** | `AD system docs/TOURS.md` (to be revamped in 2027; stale teasers there are not findings). |
+| **Tours** | `AD park-knowledge/TOURS.md` (to be revamped in 2027; stale teasers there are not findings). |
 | **What is open / what to do next** | `AD system docs/PSBP_ACTIONS.md` (start with the index) and `AD system docs/HANDOFF.md`. |
 | Anything else, or a new kind of job | `AD system docs/CLAUDE_ONBOARDING.md` and `PSBP_ARCHITECTURE.md`; search the headings, do not read it all. |
 
@@ -388,7 +388,7 @@ Don't rewrite what is already good; fix what's wrong, write what's missing, say 
 
 **Facts.** Never invent a park observation ("three or four species at once" from "multiple").
 Never infer where a plant stands from a photo. Where-to-find-it comes from Randy or
-`Active-PSBP-Docs/system docs/PARK_BACKGROUND.md`. When sources conflict, say so plainly and land
+`Active-PSBP-Docs/park-knowledge/PARK_BACKGROUND.md`. When sources conflict, say so plainly and land
 on what is not in dispute; never silently pick a number. Describe the tagged species with
 confidence and log ID doubt in `BOTANICAL_QUESTIONS.md`, not on the page.
 
@@ -454,28 +454,35 @@ or with no in-text photo while gallery photos are approved; amber there means "s
 
 ---
 
-## 9. Where the deeper docs are (private repo, `../Active-PSBP-Docs/system docs/`)
+## 9. Where the deeper docs are (private repo, `../Active-PSBP-Docs/`)
 
+Two kinds of thing (Randy, 2026-10-22). **Guts** = how the system works, plus the to-do lists.
+**Content** = what we say about the park. The repo's `README.md` is the map.
+
+**Guts: `system docs/`**
 - `HANDOFF.md` — current summary first, then the relevant task. Keep it current using §0;
   preserve other open threads when updating one task.
-- `../Active-PSBP-Docs/species-editorial/STATE.md` — species batches only: current state,
-  the batch method, "The raised bar", lessons, Randy's standing answers, the next-batch prompt.
-  Species sessions keep this one current (§0), not `HANDOFF.md`.
+- `PSBP_ACTIONS.md` — the to-do list (all kinds of work). Start with the active index; search details/history only when needed.
+  **Randy reads only the index rows**, ~80 chars each. Completed entries are history, not tasks.
 - `CLAUDE_ONBOARDING.md` — the people, history, and working relationship; consult relevant
   sections when this file and the handoff do not provide enough context.
 - `PSBP_ARCHITECTURE.md` + `_APPENDIX.md` — deep technical reference
-- `PSBP_ACTIONS.md` — start with the active index; search details/history only when needed.
-  **Randy reads only the index rows**, ~80 chars each. Completed entries are history, not tasks.
-- `BOTANICAL_QUESTIONS.md` — open ID questions, for the horticulture crew
-- `SPECIES_PAGES.md` — how species pages are written: sections, voice, photos, Take care,
-  units, the block rules (§10), the daily loop, the ChatGPT review brief
-- *(`PAGE_COPY_FLAGS.md` retired 2026-10-22; its notes live in the species dossiers, §6. Original is in the old `park-library`.)*
-- `PARK_BACKGROUND.md` — the park itself: where things are (by placement area), the ponds,
-  the Helene salt event, history, buildings, stories
 - `WEB_MIGRATION_MASTER.md` — the current one-stop domain cutover roadmap; older web-migration docs are archived in the old `park-library` repo
-- `PSBP_Mini_PC_Display_System_Deployment_Plan_UPDATED.md` — the TV computers
-- `BRIGHT_FUTURES_DECK.md` — every slide of the Wednesday deck, its words, timing and weight
-- `../prototypes/` — demo pages and print drafts kept out of the public site, each folder has a README
+- `PHOTOS_TO_R2.md`, `PSBP_Park_Media_Library_Architecture.md` — photos and media storage
+- `display-system/`, `office-sheet-sync/`, `presentation-pipeline/`, `BRIGHT_FUTURES_DECK.md` — the TV computers and decks
+
+**Content**
+- `species-editorial/` — how species pages are made and the memory of every decision: `WORKFLOW.md`,
+  `SPECIES_PAGES.md` (how a page is written: sections, voice, photos, Take care, units, block rules §10),
+  dossiers, drafts, `STATE.md` (species batches: current state; keep this one current, not `HANDOFF.md`)
+- `park-knowledge/` — the park itself: `PARK_BACKGROUND.md` (where things are by placement area, the ponds,
+  the Helene salt event, history, buildings, stories), `LANDMARKS.md`, `PALM_FIELDWORK.md`, `TOURS.md`,
+  `FEATURE_TIER.md`, `INAT_OBSCURING_APPEALS.md`, `maps/`
+- `open-questions/` — `BOTANICAL_QUESTIONS.md` (open ID questions, for the horticulture crew) and
+  `CONTENT_LOCKDOWN.md` (published content that is wrong or unverified)
+- `volunteer-input/` — stories and reviews from volunteers
+- `prototypes/` — demo pages and print drafts kept out of the public site, each folder has a README
+- *(`PAGE_COPY_FLAGS.md` retired 2026-10-22; its notes live in the species dossiers, §6. Original is in the old `park-library`.)*
 
 Any specific claim in those docs is a lead, not a fact. Verify against the code or the JSON
 before acting on it or repeating it, and cite the file and line when you do.
