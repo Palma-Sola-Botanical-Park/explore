@@ -110,7 +110,6 @@ document.addEventListener('keydown',function(e){
   function describe(d){
     var s='<b>'+esc(d.area||'A planting here')+'</b>';
     if(d.cultivar) s+=' <span class=soft>&middot; planted as &lsquo;'+esc(d.cultivar)+'&rsquo;</span>';
-    if(d.seen) s+='<br>Still there as of '+esc(d.seen)+'.';
     if(d.near&&d.near.length){
       s+='<br>Near it: '+d.near.map(function(n){return '<a href="'+esc(n.href)+'">'+esc(n.name)+'</a>';}).join(', ')+'.';
     }

@@ -838,13 +838,6 @@ def _map_data():
     return _MAP_DATA
 
 
-def _map_month(iso):
-    try:
-        return date.fromisoformat(iso[:10]).strftime("%B %Y")
-    except (ValueError, TypeError):
-        return ""
-
-
 def _map_area_phrase(area, n):
     """'one on the Welcome Island', 'three at the Pavilion Gazebo'."""
     nums = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
@@ -896,9 +889,10 @@ def v2_species_map(species, species_lookup=None):
                          "href": page_filename(q["sid"], o["common_name"])})
             if len(near) >= MAP_NEAR_MAX:
                 break
+        # last_seen is read but not shown: Randy dropped the "Still there as
+        # of October 2026" line on 2026-10-23 ("too much for now").
         dots.append({"id": p["id"], "px": p["px"], "py": p["py"], "area": p["area"],
-                     "cultivar": p["cultivar"], "seen": _map_month(p["last_seen"]),
-                     "near": near})
+                     "cultivar": p["cultivar"], "near": near})
 
     # The frame the map opens on: the dots plus room, never tighter than a
     # quarter of the park, always square, kept inside the image.
