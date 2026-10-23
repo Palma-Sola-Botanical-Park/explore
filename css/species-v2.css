@@ -422,6 +422,49 @@ body[data-bands="on"] .sp-sec:nth-of-type(3n+3)::before{background:var(--sunk)}
    double-tap zoom. Randy, 2026-09-11. */
 .lb-foot,.lb-close{touch-action:manipulation}
 @media (min-width:700px){.lb-hint{display:none}}
+
+/* ── SPECIES MAP ───────────────────────────────────────────────────────
+   A thumbnail of Bev's park map inside "Where to find it here" (the whole
+   thumbnail is the button), and the full-screen map it opens. Written by
+   v2_species_map in plant_publisher.py; behaviour in species-v2.js. Light
+   chrome, not the lightbox's dark: the map is cream artwork. Every piece of
+   reading text here is var(--t-base). Plan: SPECIES_MAP_PLAN.md (private). */
+.sp-map{margin:.4rem 0 1.6rem;max-width:var(--col)}
+.sp-map-thumb{display:flex;align-items:center;gap:1rem;width:100%;text-align:left;
+  font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--rule-strong);
+  border-radius:var(--r);padding:.6rem;cursor:pointer;touch-action:manipulation}
+.sp-map-thumb:hover{border-color:var(--green);background:var(--green-tint)}
+.sp-map-thumb svg{flex:none;width:9.5rem;height:9.5rem;border-radius:var(--r-sm);
+  background:#f4f1e8;display:block}
+.sp-map-cap{font-family:var(--sans);font-size:var(--t-base);line-height:1.5}
+.sp-map-cap b{display:block;color:var(--green-ink);font-weight:700}
+.sp-map-cap span{color:var(--green);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.spm-dot{fill:var(--gold-mark);stroke:#fff;stroke-width:4;pointer-events:none}
+.spm-hit{fill:transparent;cursor:pointer}
+.spm-dot.on{fill:#a7561f}
+.spm{position:fixed;inset:0;background:var(--paper);z-index:1000;display:none;
+  flex-direction:column;font-family:var(--sans)}
+.spm.on{display:flex}
+.spm-head{flex:none;display:flex;align-items:center;justify-content:space-between;
+  padding:.8rem 1rem .6rem 1.2rem;border-bottom:1px solid var(--rule)}
+.spm-title{font-family:var(--serif);font-size:1.35rem;font-weight:700;color:var(--green-ink)}
+.spm-close{background:var(--surface);border:1px solid var(--rule-strong);color:var(--ink);
+  width:48px;height:48px;border-radius:50%;font-size:1.7rem;cursor:pointer;line-height:1;
+  display:flex;align-items:center;justify-content:center;touch-action:manipulation}
+.spm-close:hover{border-color:var(--green)}
+.spm-stage{flex:1;min-height:0;background:#f4f1e8;display:flex;align-items:center;justify-content:center}
+.spm-stage svg{width:100%;height:100%;display:block}
+.spm-card{flex:none;font-size:var(--t-base);line-height:1.6;color:var(--ink);
+  padding:.9rem 1.2rem;border-top:1px solid var(--rule);min-height:3.6rem;max-height:34vh;overflow:auto}
+.spm-card b{color:var(--green-ink)}
+.spm-card .soft{color:var(--ink-soft)}
+.spm-card a{color:var(--green);font-weight:600}
+.spm-foot{flex:none;display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;align-items:center;
+  padding:.6rem 1.2rem 1rem;font-size:var(--t-base);color:var(--ink-soft);border-top:1px solid var(--rule)}
+.spm-foot button{font:inherit;font-weight:600;color:var(--green);background:none;border:0;padding:.2rem 0;
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;touch-action:manipulation}
+.spm-here{fill:#2a6fd6;stroke:#fff;stroke-width:4}
+.spm-here-ring{fill:#2a6fd6;fill-opacity:.12;stroke:#2a6fd6;stroke-width:2}
 @media (max-width:900px){
   .sp-cols{grid-template-columns:1fr;gap:0;padding-top:2rem}
   .sp-rail{display:none}           /* removed on mobile, not made scrollable */

@@ -20,6 +20,7 @@ Dashboard workflow:
 
 import http.server
 import json
+import math
 import os
 import re
 import sys
@@ -756,6 +757,214 @@ def _plant_zones():
     return _PLANT_ZONES
 
 
+# ── the species map ───────────────────────────────────────────────────────
+# A thumbnail of Bev's park map with this plant's placements dotted on it,
+# inside "Where to find it here", that opens a full-screen map. Plan and the
+# decisions behind it: Active-PSBP-Docs, system docs/SPECIES_MAP_PLAN.md
+# (2026-10-23). No pins → nothing rendered. `obscure_on_map` true → nothing
+# rendered, and the species is never listed as a neighbour either.
+#
+# Reads placements.json (never writes it, rule 5), park_geometry.json for the
+# metre projection, and parkmap_fit.json for metres → pixels on ParkMap.png.
+
+MAP_IMAGE = "../images/ParkMap.png"
+MAP_NEAR_FT = 75          # a neighbour is a published plant pinned within this
+MAP_NEAR_MAX = 5          # ...and we name at most this many, nearest first
+MAP_FRAME_MIN = 704       # the pop-up never opens tighter than this (px of 1408)
+MAP_FRAME_PAD = 130       # px of room round the dots
+
+# What to call the fit's control points when "Where am I?" says which way to
+# walk. Bev's map labels, not the geometry's: the north gazebo is "Palm Alley
+# Gazebo" in park_geometry.json but the Pavilion's gazebo to a visitor.
+MAP_LANDMARK_NAMES = {
+    "Front Pond": "the Front Pond", "Big Pond": "the Big Pond",
+    "Cypress Pond": "the Cypress Pond", "Galleria": "the Galleria",
+    "Nursery Building": "the Nursery", "Pavilion": "the Pavilion",
+    "Office Building": "the Office", "Restroom": "the restrooms",
+    "Palm Alley Gazebo": "the gazebo by the Pavilion",
+    "Gazebo Rare Fruit": "the Rare Fruit gazebo",
+}
+
+_MAP_DATA = None
+
+
+def _map_data():
+    """Everything the species map needs, loaded once per run. Re-reading the
+    masters on every page would be cheap but pointless: the publisher never
+    writes any of them."""
+    global _MAP_DATA
+    if _MAP_DATA is not None:
+        return _MAP_DATA
+    _MAP_DATA = {}
+    try:
+        geo = load_json(SOURCES / "park_geometry.json", {}) or {}
+        fit = load_json(SOURCES / "parkmap_fit.json", {}) or {}
+        raw = load_json(SOURCES / "placements.json", [])
+        rows = raw if isinstance(raw, list) else (raw.get("placements") or [])
+        b = geo["meta"]["bounds"]
+        klat = 110574.0
+        klng = 111320.0 * math.cos(math.radians((b["n"] + b["s"]) / 2))
+        u, v = fit["u"], fit["v"]
+        size = fit["meta"]["map_px"]
+
+        def metres(lat, lng):
+            return (lng - b["w"]) * klng, (b["n"] - lat) * klat
+
+        def pixels(x, y):
+            return (u[0] * x + u[1] * y + u[2], v[0] * x + v[1] * y + v[2])
+
+        pins = []
+        for r in rows:
+            if str(r.get("kind", "")).lower() != "species":
+                continue
+            if not (r.get("latitude") and r.get("longitude") and r.get("subject_id")):
+                continue
+            x, y = metres(float(r["latitude"]), float(r["longitude"]))
+            px, py = pixels(x, y)
+            pins.append({"id": r.get("placement_id"), "sid": str(r["subject_id"]),
+                         "x": x, "y": y, "px": round(px, 1), "py": round(py, 1),
+                         "area": (r.get("area") or "").strip(),
+                         "cultivar": (r.get("cultivar") or "").strip(),
+                         "last_seen": r.get("last_seen") or ""})
+        marks = [{"name": MAP_LANDMARK_NAMES.get(c["name"], c["name"]),
+                  "px": c["pixels"][0], "py": c["pixels"][1]}
+                 for c in fit.get("control_points", [])]
+        _MAP_DATA = {"pins": pins, "bounds": b, "klat": klat, "klng": klng,
+                     "u": u, "v": v, "w": size[0], "h": size[1], "marks": marks}
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        # Same rule as _plant_zones: never a bare except. A missing fit file
+        # must say so, not quietly publish 180 pages without their map.
+        print(f"  ⚠ species map unavailable: {exc}")
+    return _MAP_DATA
+
+
+def _map_month(iso):
+    try:
+        return date.fromisoformat(iso[:10]).strftime("%B %Y")
+    except (ValueError, TypeError):
+        return ""
+
+
+def _map_area_phrase(area, n):
+    """'one on the Welcome Island', 'three at the Pavilion Gazebo'."""
+    nums = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
+            6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
+    k = nums.get(n, str(n))
+    if not area:
+        return f"{k} more" if n > 1 else "one more"
+    prep = "on" if "island" in area.lower() else "at"
+    return f"{k} {prep} the {area}"
+
+
+def v2_species_map(species, species_lookup=None):
+    """Returns (thumbnail_html, panel_html, spmap_json) or ("", "", "") when
+    this plant has no pins or Randy has switched its map off.
+
+    `species_lookup` is only for the neighbour names; left out, the signage
+    master is read again here (rule 4: Randy edits it while the server runs)."""
+    if species.get("obscure_on_map"):
+        return "", "", ""
+    d = _map_data()
+    if not d:
+        return "", "", ""
+    pid = str(species["id"])
+    mine = [p for p in d["pins"] if p["sid"] == pid]
+    if not mine:
+        return "", "", ""
+    if species_lookup is None:
+        species_lookup = build_species_lookup(load_signage())
+
+    # Neighbours: other published plants, not obscured, pinned within reach.
+    others = []
+    for p in d["pins"]:
+        o = species_lookup.get(p["sid"])
+        if p["sid"] == pid or not o or o.get("status") != "html" or o.get("obscure_on_map"):
+            continue
+        others.append((p, o))
+    near_m = MAP_NEAR_FT / 3.28084
+
+    dots = []
+    for p in mine:
+        seen, near = set(), []
+        for q, o in sorted(others, key=lambda t: math.hypot(t[0]["x"] - p["x"], t[0]["y"] - p["y"])):
+            if math.hypot(q["x"] - p["x"], q["y"] - p["y"]) > near_m:
+                break
+            if q["sid"] in seen:
+                continue
+            seen.add(q["sid"])
+            near.append({"name": o["common_name"],
+                         "href": page_filename(q["sid"], o["common_name"])})
+            if len(near) >= MAP_NEAR_MAX:
+                break
+        dots.append({"id": p["id"], "px": p["px"], "py": p["py"], "area": p["area"],
+                     "cultivar": p["cultivar"], "seen": _map_month(p["last_seen"]),
+                     "near": near})
+
+    # The frame the map opens on: the dots plus room, never tighter than a
+    # quarter of the park, always square, kept inside the image.
+    W, H = d["w"], d["h"]
+    xs, ys = [p["px"] for p in mine], [p["py"] for p in mine]
+    side = max(MAP_FRAME_MIN, max(xs) - min(xs) + 2 * MAP_FRAME_PAD,
+               max(ys) - min(ys) + 2 * MAP_FRAME_PAD)
+    side = min(side, W, H)
+    fx = min(max((min(xs) + max(xs)) / 2 - side / 2, 0), W - side)
+    fy = min(max((min(ys) + max(ys)) / 2 - side / 2, 0), H - side)
+    frame = [round(fx), round(fy), round(side), round(side)]
+    whole = (side >= min(W, H))
+
+    # The opening sentence for a plant with several places.
+    by_area = {}
+    for p in mine:
+        by_area.setdefault(p["area"], []).append(p)
+    named = [(a, ps) for a, ps in by_area.items() if a]
+    blank = by_area.get("", [])
+    parts = [_map_area_phrase(a, len(ps)) for a, ps in named]
+    if blank:
+        parts.append(_map_area_phrase("", len(blank)))
+    n = len(mine)
+    words = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven",
+             8: "Eight", 9: "Nine", 10: "Ten"}
+    if n == 1:
+        count = ""
+    else:
+        joined = parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " and " + parts[-1]
+        count = f"{words.get(n, n)} plantings: {joined}. Tap a dot."
+
+    def circles(r, hit):
+        out = []
+        for p in dots:
+            out.append(f'<circle class="spm-hit" data-id="{h(p["id"])}" cx="{p["px"]}" cy="{p["py"]}" r="{hit}"/>'
+                       f'<circle class="spm-dot" data-id="{h(p["id"])}" cx="{p["px"]}" cy="{p["py"]}" r="{r}"/>')
+        return "".join(out)
+
+    vb = " ".join(str(x) for x in frame)
+    places = "One place" if n == 1 else f"{words.get(n, n)} places"
+    thumb = (
+        '<div class="sp-map">'
+        '<button type="button" class="sp-map-thumb" id="spmOpen" aria-haspopup="dialog" aria-controls="spm">'
+        f'<svg viewBox="{vb}" aria-hidden="true"><image href="{MAP_IMAGE}" x="0" y="0" width="{W}" height="{H}"/>'
+        f'{circles(22, 22)}</svg>'
+        f'<span class="sp-map-cap"><b>{places}</b><span>Tap to open the map</span></span>'
+        '</button></div>')
+
+    panel = (
+        '<div class="spm" id="spm" role="dialog" aria-modal="true" aria-label="Where to find it on the park map" aria-hidden="true">'
+        '<div class="spm-head"><div class="spm-title">Where to find it</div>'
+        '<button type="button" class="spm-close" id="spmClose" aria-label="Close the map">&times;</button></div>'
+        f'<div class="spm-stage" id="spmStage"><svg id="spmSvg" viewBox="{vb}" role="img" aria-label="The park map with this plant marked">'
+        f'<image href="{MAP_IMAGE}" x="0" y="0" width="{W}" height="{H}"/>{circles(16, 40)}<g id="spmHere"></g></svg></div>'
+        f'<div class="spm-card" id="spmCard">{h(count)}</div>'
+        '<div class="spm-foot"><span>Dots are approximate. North is up.</span>'
+        + ('' if whole else '<button type="button" id="spmWhole">Whole park</button>')
+        + '<button type="button" id="spmWhere">Where am I?</button></div>'
+        '</div>')
+
+    data = {"dots": dots, "frame": frame, "whole": [0, 0, W, H],
+            "bounds": d["bounds"], "klat": d["klat"], "klng": d["klng"],
+            "u": d["u"], "v": d["v"], "marks": d["marks"]}
+    return thumb, panel, json.dumps(data, ensure_ascii=False)
+
+
 # ── the seven mapping rules ───────────────────────────────────────────────
 
 def v2_map_at_a_glance(sp):
@@ -994,6 +1203,11 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
         species, "cultural_significance", v2_map_cultural_significance)
     single_fact = (len(cult_blocks) == 1 and not cult_authored)
 
+    # The species map rides inside "Where to find it here", right after the
+    # first prose block (the one that says where). An authored `[]`
+    # hides the section, and the map goes with it: the author's call wins.
+    map_thumb, map_panel, map_json = v2_species_map(species)
+
     rail, main = [], []
     for anchor, title, key, mapper in V2_SECTIONS:
         if key == "cultural_significance" and single_fact:
@@ -1007,10 +1221,20 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
                      + "".join(f"<li>{h(str(b.get('text', b)))}</li>" for b in blocks)
                      + "</ul></div>")
         else:
-            inner = "".join(_v2_block_html(b, photo_index) for b in blocks)
+            parts = [_v2_block_html(b, photo_index) for b in blocks]
+            if key == "where_to_find_it_here" and map_thumb:
+                # Right under the paragraph that says where (the first prose
+                # block), not at the end: on Tree Crinum a photograph and a
+                # "When" block follow it, and the map belongs with the words.
+                prose = [i for i, b in enumerate(blocks)
+                         if not (isinstance(b, dict) and (b.get("photo") or b.get("media")))]
+                parts.insert((prose[0] + 1) if prose else 0, map_thumb)
+            inner = "".join(parts)
             if key == "where_it_comes_from" and single_fact:
                 inner = _v2_fact_html(cult_blocks[0].get("text", "")) + inner
         main.append(_v2_section(anchor, title, inner))
+    if map_thumb and not any('id="find"' in m for m in main):
+        map_thumb, map_panel, map_json = "", "", ""   # section hidden → no map
 
     # ── photographs: a gallery of one is not a gallery ────────────────────
     strip = ""
@@ -1087,10 +1311,10 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
   <button class="lb-btn" id="lbNext" aria-label="Next photograph">&#8250;</button></div>
   <div class="lb-hint">Swipe to move between photographs</div></div>
 </div>
-
+{map_panel}
 <div id="footer-placeholder"></div>
 
-<script>window.PHOTOS={photos_js};</script>
+<script>window.PHOTOS={photos_js};{f"window.SPMAP={map_json};" if map_json else ""}</script>
 <script src="../js/species-v2.js"></script>
 <script src="../js/site.js"></script>
 <script>if (typeof injectShared === 'function') {{ injectShared({{ inatBar: false }}); }}</script>
