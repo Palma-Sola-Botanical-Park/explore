@@ -838,17 +838,6 @@ def _map_data():
     return _MAP_DATA
 
 
-def _map_area_phrase(area, n):
-    """'one on the Welcome Island', 'three at the Pavilion Gazebo'."""
-    nums = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five",
-            6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten"}
-    k = nums.get(n, str(n))
-    if not area:
-        return f"{k} more" if n > 1 else "one more"
-    prep = "on" if "island" in area.lower() else "at"
-    return f"{k} {prep} the {area}"
-
-
 def v2_species_map(species, species_lookup=None):
     """Returns (thumbnail_html, panel_html, spmap_json) or ("", "", "") when
     this plant has no pins or Randy has switched its map off.
@@ -906,23 +895,10 @@ def v2_species_map(species, species_lookup=None):
     frame = [round(fx), round(fy), round(side), round(side)]
     whole = (side >= min(W, H))
 
-    # The opening sentence for a plant with several places.
-    by_area = {}
-    for p in mine:
-        by_area.setdefault(p["area"], []).append(p)
-    named = [(a, ps) for a, ps in by_area.items() if a]
-    blank = by_area.get("", [])
-    parts = [_map_area_phrase(a, len(ps)) for a, ps in named]
-    if blank:
-        parts.append(_map_area_phrase("", len(blank)))
-    n = len(mine)
-    words = {2: "Two", 3: "Three", 4: "Four", 5: "Five", 6: "Six", 7: "Seven",
-             8: "Eight", 9: "Nine", 10: "Ten"}
-    if n == 1:
-        count = ""
-    else:
-        joined = parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " and " + parts[-1]
-        count = f"{words.get(n, n)} plantings: {joined}. Tap a dot."
+    # No counts anywhere (Randy, 2026-10-23): the pins are never promised to
+    # be every plant, and the prose already says where. The pop-up opens on
+    # the dots with nothing picked; a single pin is picked for the visitor.
+    count = "" if len(mine) == 1 else "Tap a dot to see what grows near it."
 
     def circles(r, hit):
         out = []
@@ -932,14 +908,15 @@ def v2_species_map(species, species_lookup=None):
         return "".join(out)
 
     vb = " ".join(str(x) for x in frame)
-    places = "One place" if n == 1 else f"{words.get(n, n)} places"
+    # A small square floated beside the find-it paragraph: the map, a pin in
+    # its corner, "Open map" under it. Nothing else said.
     thumb = (
-        '<div class="sp-map">'
-        '<button type="button" class="sp-map-thumb" id="spmOpen" aria-haspopup="dialog" aria-controls="spm">'
-        f'<svg viewBox="{vb}" aria-hidden="true"><image href="{MAP_IMAGE}" x="0" y="0" width="{W}" height="{H}"/>'
-        f'{circles(22, 22)}</svg>'
-        f'<span class="sp-map-cap"><b>{places}</b><span>Tap to open the map</span></span>'
-        '</button></div>')
+        '<button type="button" class="sp-map" id="spmOpen" aria-haspopup="dialog" aria-controls="spm" aria-label="Open the park map">'
+        f'<span class="sp-map-art"><svg viewBox="{vb}" aria-hidden="true"><image href="{MAP_IMAGE}" x="0" y="0" width="{W}" height="{H}"/>'
+        f'{circles(26, 26)}</svg>'
+        '<svg class="sp-map-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.4 7-11.5a7 7 0 1 0-14 0C5 15.6 12 22 12 22z" fill="#c5922a" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="10.5" r="2.6" fill="#fff"/></svg></span>'
+        '<span class="sp-map-cap">Open map</span>'
+        '</button>')
 
     panel = (
         '<div class="spm" id="spm" role="dialog" aria-modal="true" aria-label="Where to find it on the park map" aria-hidden="true">'
@@ -1217,12 +1194,12 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
         else:
             parts = [_v2_block_html(b, photo_index) for b in blocks]
             if key == "where_to_find_it_here" and map_thumb:
-                # Right under the paragraph that says where (the first prose
-                # block), not at the end: on Tree Crinum a photograph and a
-                # "When" block follow it, and the map belongs with the words.
+                # Just BEFORE the paragraph that says where (the first prose
+                # block): the thumbnail floats right, so it has to come first
+                # in the flow for that paragraph to wrap beside it.
                 prose = [i for i, b in enumerate(blocks)
                          if not (isinstance(b, dict) and (b.get("photo") or b.get("media")))]
-                parts.insert((prose[0] + 1) if prose else 0, map_thumb)
+                parts.insert(prose[0] if prose else 0, map_thumb)
             inner = "".join(parts)
             if key == "where_it_comes_from" and single_fact:
                 inner = _v2_fact_html(cult_blocks[0].get("text", "")) + inner
