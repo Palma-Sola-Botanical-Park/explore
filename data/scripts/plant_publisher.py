@@ -674,7 +674,7 @@ def render_gallery(species, gallery_photos, hero):
 V2_GROWS = {"reproduction", "propagation", "rhizomes", "pollination",
             "growth", "life cycle"}
 
-# An entry that talks about THIS PARK belongs in What it does here, not in
+# An entry that talks about THIS PARK belongs in What it does, not in
 # Where it comes from. 96 entries across 68 plants route this way — and they
 # are the most distinctive content in the catalogue.
 V2_PARK_RE = re.compile(
@@ -804,7 +804,7 @@ def v2_map_what_it_does_here(sp):
 
 
 def v2_map_where_it_comes_from(sp):
-    """Origin and how it got here. Park material goes to What it does here and
+    """Origin and how it got here. Park material goes to What it does and
     world-meaning material to Cultural significance, so this stays about
     provenance instead of becoming the dumping ground it was in the first
     mapping (249 words on Wild Lime against 55 authored)."""
@@ -910,7 +910,7 @@ V2_SECTIONS = [
     ("culture", "Cultural significance", "cultural_significance", v2_map_cultural_significance),
     ("from",    "Where it comes from",   "where_it_comes_from",   v2_map_where_it_comes_from),
     ("find",    "Where to find it here", "where_to_find_it_here", v2_map_where_to_find_it_here),
-    ("does",    "What it does here",     "what_it_does_here",     v2_map_what_it_does_here),
+    ("does",    "What it does",          "what_it_does_here",     v2_map_what_it_does_here),
     ("know",    "How to know it",        "how_to_know_it",        v2_map_how_to_know_it),
     ("grows",   "How it grows",          "how_it_grows",          v2_map_how_it_grows),
     ("care",    "Take care",             "take_care",             v2_map_take_care),

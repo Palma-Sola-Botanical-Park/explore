@@ -438,7 +438,7 @@ def render_tags(species):
 # ║                                                                          ║
 # ║  ASSEMBLY, NOT SYNTHESIS. These build sections from fields that already  ║
 # ║  exist. Four of six read as well as the hand-written page because the    ║
-# ║  source prose is already paragraph-shaped; "What it does here" will read ║
+# ║  source prose is already paragraph-shaped; "What it does" will read ║
 # ║  as stacked paragraphs rather than one argument. That gap is what a      ║
 # ║  later synthesis pass closes, per species, on top of this.               ║
 # ╚══════════════════════════════════════════════════════════════════════════╝
@@ -448,7 +448,7 @@ V2_SECTIONS = [
     ("know",   "How to know it"),
     ("find",   "Where to find it here"),
     ("lives",  "How it lives"),
-    ("does",   "What it does here"),
+    ("does",   "What it does"),
     ("care",   "Take care"),
     ("photos", "Photographs"),
 ]
@@ -656,7 +656,7 @@ def v2_what_it_does_here(species, photos_by_id=None):
     with range would bury the ecology behind a non-fact."""
     pol = _v2_polished(species, "what_it_does_here")
     if pol is not None:
-        return _v2_section("does", "What it does here",
+        return _v2_section("does", "What it does",
                            _v2_render_blocks(species, pol, species.get("id"), photos_by_id))
     inv = species.get("invasive") or {}
     origin = species.get("range_and_origin")
@@ -674,7 +674,7 @@ def v2_what_it_does_here(species, photos_by_id=None):
     # evolution story — the single best fact in the file, and unmapped until
     # the first template diff showed 44 words missing here.
     parts.append(species.get("more_information"))
-    return _v2_section("does", "What it does here", _v2_paras(*parts))
+    return _v2_section("does", "What it does", _v2_paras(*parts))
 
 
 def v2_take_care(species, photos_by_id=None):
