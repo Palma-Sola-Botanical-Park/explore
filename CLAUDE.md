@@ -178,10 +178,22 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
     `images/brightfutures-local/` stays gitignored, as a convenience.
 13. **Don't start servers for him.** Species Manager, `http.server`, anything holding a port.
     Print the command. If you must run one to verify, say so, name the port, kill it after.
-14. **AI writes only to Randy's local copy.** Never push. Never write to GitHub directly: no
-    cloud session, no connector, no API commit, no pull request, no branch made on GitHub. Edit
-    the files on his Mac and stop; he commits and pushes in GitHub Desktop. If a session cannot
-    reach his local copy, say so and do nothing to the repo.
+14. **AI writes only to Randy's local copy.** Never write to GitHub directly: no cloud session,
+    no connector, no API commit, no pull request, no branch made on GitHub. The harm this rule
+    prevents is real and specific: an AI working on GitHub while Randy pulls from it leaves his
+    GitHub Desktop full of warnings and conflicts. Edit the files on his Mac and stop; he commits
+    and pushes in GitHub Desktop. If a session cannot reach his local copy, say so and do nothing
+    to the repo.
+    **The one exception (Randy, 2026-10-23):** a session running on his Mac, in his local clone,
+    may `git commit` and `git push` to `main` **only when Randy says so in a message of his own,
+    naming what to push, after Claude has shown the list of files that will go in.** That is his
+    GitHub Desktop button pressed by proxy, from the road (Remote Control) or at his desk. Never
+    on a schedule, never from a side session, never from a worktree branch, never from the cloud,
+    never because a session "finished". Plain commit messages, no attribution lines.
+    **No machine writes to the repo either** (Randy, 2026-10-23): the Office and Galleria PCs only
+    `git pull`; the parked kit that would have had Office push is retired. The one bot commit that
+    remains is the Sheet sync Action (rule 6), and ACTIONS Medium #73 is the plan to retire it too
+    (feeds to R2 from Office). Never propose a new Action, PC task or script that commits.
 15. **`reviewed_on` and `review_due` are MANUAL, forever.** `reviewed_on` means a person looked at the live
     page, thought about how it reflects the park, checked anything questionable, and certified it until the
     next review. No publisher, merge script, batch tool or nightly job ever writes either field, so a

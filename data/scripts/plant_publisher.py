@@ -822,9 +822,12 @@ def _map_data():
                 continue
             x, y = metres(float(r["latitude"]), float(r["longitude"]))
             px, py = pixels(x, y)
+            area = (r.get("area") or "").strip()
+            if area.lower() == "verify":          # Randy's "not sure yet" marker = blank (10-23)
+                area = ""
             pins.append({"id": r.get("placement_id"), "sid": str(r["subject_id"]),
                          "x": x, "y": y, "px": round(px, 1), "py": round(py, 1),
-                         "area": (r.get("area") or "").strip(),
+                         "area": area,
                          "cultivar": (r.get("cultivar") or "").strip(),
                          "last_seen": r.get("last_seen") or ""})
         marks = [{"name": MAP_LANDMARK_NAMES.get(c["name"], c["name"]),
