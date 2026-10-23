@@ -324,6 +324,8 @@ body[data-hero="strip"] .sp-herogal{display:none}
      the introduced-species story. */
 .sp-figure{margin:1.8rem 0 2rem;max-width:var(--col)}
 .sp-figure img{width:100%;max-height:330px;object-fit:cover;display:block;border-radius:2px;cursor:zoom-in}
+/* fit:"whole" on a photo block: the photograph uncropped (a tall portrait of a whole plant) */
+.sp-figure--whole img{width:auto;max-width:100%;max-height:640px;object-fit:contain;margin:0 auto}
 .sp-figure figcaption{font-family:var(--sans);font-size:.86rem;line-height:1.6;
   color:var(--ink-soft);margin-top:.6rem;padding-left:.9rem;
   border-left:2px solid var(--gold-mark)}

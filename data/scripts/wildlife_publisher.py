@@ -833,7 +833,8 @@ def v2_inflow_figure(pid, rec):
     # that cut both off. Randy, 2026-09-09: "both silk floss photos were
     # cropped high ... Can't see the office well or the surface roots."
     focus = (rec.get("focus") or "50% 50%").strip()
-    return (f'<figure class="sp-figure"><img src="{h(_v2_photo_url(pid, rec))}" '
+    whole = " sp-figure--whole" if rec.get("fit") == "whole" else ""
+    return (f'<figure class="sp-figure{whole}"><img src="{h(_v2_photo_url(pid, rec))}" '
             f'alt="{h(rec.get("alt") or "")}" loading="lazy" '
             f'style="object-position:{h(focus)}">'
             f'<figcaption>{cap}</figcaption>{_v2_credit_plate_wide(rec)}</figure>')

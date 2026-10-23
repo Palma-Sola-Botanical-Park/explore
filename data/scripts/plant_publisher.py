@@ -950,6 +950,8 @@ def _v2_block_html(b, photo_index=None):
             r2["note"] = b["caption"]
         if b.get("focus"):
             r2["focus"] = b["focus"]   # the crop that suits THIS caption
+        if b.get("fit") == "whole":
+            r2["fit"] = "whole"        # show the photograph uncropped
         return v2_inflow_figure(rec.get("psbp_id"), r2)
     if b.get("media"):
         mrec, _why = media_page_check(str(b["media"]))

@@ -348,7 +348,7 @@ def main():
                        "how_it_grows", "take_care"}
         _WILD_SECS  = {"at_a_glance", "how_to_know_it", "where_to_find_it_here",
                        "how_it_lives", "what_it_does_here", "take_care"}
-        _BLOCK_KEYS = {"label", "text", "photo", "media", "focus", "caption", "links"}
+        _BLOCK_KEYS = {"label", "text", "photo", "media", "focus", "fit", "caption", "links"}
         # A media block names a park-media item (media_library.json). Whether the
         # page may show it is decided in psbp_common.media_page_check, the same
         # function the publishers render through, so the audit cannot disagree.
