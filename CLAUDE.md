@@ -246,7 +246,7 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 | `todo_snoozes.json` | `{meta, snoozes:[{id, until}]}` | plants Randy parked from the To do stale/picture lists until a date; written by Species Manager's To do tab, read by `maintenance_todo.py` |
 | `landmarks.json`, `park_geometry.json` | | the park polygon and named places |
 | `publish_state.json` | machine-owned | fingerprints for staleness; safe to delete |
-| `provenance/PSBP-xxxxx.json` | | old AI draft/revise event logs; retired 2026-10-22, nothing new is written |
+| *(`provenance/` gone, 2026-10-23)* | | the old AI draft/revise logs moved to `Active-PSBP-Docs/species-editorial/provenance/`; nothing writes them; the "Work on this page" button is hidden |
 
 **Species lifecycle:** `research → spotted → html`. Identity (name, filename, QR) is free to
 change at `spotted` and is just as easy after (a rename moves the page; run

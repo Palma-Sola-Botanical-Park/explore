@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8710", "--bind", "127.0.0.1"],
       "port": 8710
+    },
+    {
+      "name": "species-manager-check",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["data/scripts/species_manager.py", "--port", "8799"],
+      "port": 8799
     }
   ]
 }

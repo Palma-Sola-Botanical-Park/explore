@@ -177,8 +177,9 @@ def collect(pid, old, kind, rec):
                 continue
             if old in t:
                 r["files"].append((str(p.relative_to(REPO)), t.count(old), snippet(t, old)))
-    # B3: this species' own provenance file (keyed by id, may quote the name)
-    # is already covered by the walk above (data/sources/provenance/*.json).
+    # B3: the species' old provenance log moved to the private repo on
+    # 2026-10-23 (Active-PSBP-Docs/species-editorial/provenance/); the B4 walk
+    # over the private docs covers it now.
     # B4: private docs
     for docdir in PARK_LIBRARY_DOCS:
         if not docdir.is_dir():

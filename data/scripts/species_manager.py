@@ -8229,8 +8229,15 @@ def render_publish():
             ? `<button class="pub-btn preview" onclick="pubPreview('${{sp.id}}', 0)"
                        title="Open the generated page in a new browser tab">👁 Preview</button>`
             : '';
-        const workBtn = `<button class="pub-btn aiwork" onclick="pubWorkOpen('${{sp.id}}')"
-                    title="Claude drafts what is missing, reviews what is there, and reads your notes first. The live page is rebuilt when it writes.">🤖 Work on this page</button>`;
+        /* HIDDEN 2026-10-23 (Randy: "I do not intend to ever again use the
+           Species Manager drafting and editing features"). The drafting code,
+           its route and pubWorkOpen() are left in place untouched; only the
+           button is not rendered. The old markup, for the record:
+             <button class="pub-btn aiwork" onclick="pubWorkOpen('${{sp.id}}')"
+                     title="Claude drafts what is missing, reviews what is there, and reads your notes first. The live page is rebuilt when it writes.">🤖 Work on this page</button>
+           Its provenance folder moved to the private repo the same day; see
+           AI_PROVENANCE_DIR. */
+        const workBtn = '';
         if (sp.status === 'spotted') {{
             const disabled = sp.ready ? '' : 'disabled';
             const title = sp.ready ? 'Generate page and publish' : 'Complete the checklist first';
@@ -10893,6 +10900,13 @@ AI_WEB_SEARCH_USES = 8
 # and changed fields). Nothing reads this constant. Do not start writing it again.
 # Its whole history costs 0.6 MB packed — not worth rewriting history to remove.
 # AI_DRAFT_LOG     = os.path.join(REPO, "data", "sources", "ai_draft_log.json")
+# RETIRED 2026-10-22; folder MOVED OUT 2026-10-23. The drafting features are no
+# longer used (Randy talks to Claude directly; the "Work on this page" button is
+# hidden below). The 227 logs now live in the private repo,
+# Active-PSBP-Docs/species-editorial/provenance/, with a README. This path no
+# longer exists in explore: _last_ai_pass() returns None for every species and
+# _append_provenance() would recreate the folder if the button were ever
+# unhidden, so do not unhide it without deciding where the log should go.
 AI_PROVENANCE_DIR  = os.path.join(REPO, "data", "sources", "provenance")
 
 # Field → (json-shape, instruction). This is the ONLY surface the AI may write.
