@@ -299,7 +299,7 @@ is editing the live screens.
 | `plant_publisher.py` | 8701 | `--generate PSBP-xxxxx`, `--generate-all`, `--demote`; writes `plants/` and `plants.json` |
 | `wildlife_publisher.py` | 8702 | same for wildlife |
 | `psbp_placements.py` | 8701 | placement pinning UI (collides with the plant publisher's port; run one at a time) |
-| `audit_psbp.py` | | read-only; sections PHOTOS CREDITS CONTENT PAGE LINK DISK INDEX R2 FK TAXA, `--only X`, `--json`; `--only R2` flags any publishable photo not in the media bucket (offline; `--r2-live` asks the bucket and refreshes the local record) |
+| `audit_psbp.py` | | read-only; sections PHOTOS CREDITS CONTENT PAGE LINK DISK INDEX R2 FK TAXA, `--only X`, `--json`; `--only R2` flags any publishable photo not in the media bucket (offline; `--r2-live` asks the bucket and refreshes the local record; `--r2-fresh --r2-host URL` is the cutover proof: ignores the record, asks the named host for all three sizes of every photo, writes nothing) |
 | `psbp_page_drift.py` | | read-only; the TRUE staleness check (renders and compares) |
 | `maintenance_todo.py` | | read-only on every master; writes `data/published/maintenance_todo.json`: pages to review, plants with stale observations, plants needing better pictures, placements to spot-check. Feature before Standard, Background never listed. Skips plants in `todo_snoozes.json` until their date; also lists last-30-day park observations not yet at species with one identifier (`needs_id`, links only, no observer or photo). Run by the To do tab's Refresh button |
 | `photo_wanted.py` | | the earlier, smaller version (stale and fewest-photos lists); `maintenance_todo.py` reuses its iNat helpers |

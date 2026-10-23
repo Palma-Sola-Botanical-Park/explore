@@ -123,6 +123,14 @@ def main():
     ap.add_argument("--r2-live", action="store_true",
                     help="R2 section: ask the bucket about photos the local record does not know "
                          "(network; updates ~/PSBP-media/manifests/r2_confirmed.json)")
+    ap.add_argument("--r2-fresh", action="store_true",
+                    help="R2 section: the cutover check. Ignore the local record and ask the host "
+                         "for ALL THREE sizes of EVERY publishable photo (network, a few minutes; "
+                         "writes nothing). Use with --r2-host to prove a new address before "
+                         "MEDIA_BASE changes.")
+    ap.add_argument("--r2-host", default=None,
+                    help="R2 section: the media host to ask instead of MEDIA_BASE, "
+                         "e.g. https://media.palmasolabp.org (only with --r2-fresh)")
     ap.add_argument("--max", type=int, default=15,
                     help="max examples printed per finding group")
     ap.add_argument("--json", action="store_true",
@@ -698,7 +706,82 @@ def main():
     # record of photos already confirmed up (~/PSBP-media/manifests/
     # r2_confirmed.json). --r2-live asks the bucket about each photo the record
     # does not know, and remembers a yes.
-    if run("R2"):
+    #
+    # --r2-fresh is the CUTOVER check (2026-10-23). The offline record and
+    # --r2-live both trust r2_confirmed.json first and treat thumb.jpg as proof
+    # of all three sizes, so a clean run says nothing about a NEW host: it would
+    # pass media.palmasolabp.org without asking it once. --r2-fresh ignores the
+    # record and HEADs original, web and thumb for every publishable photo on
+    # the host named by --r2-host (default MEDIA_BASE), and writes nothing.
+    if run("R2") and args.r2_fresh:
+        try:
+            sys.path.insert(0, str(HERE.parent))
+            import psbp_common as _pc
+        except Exception as e:                                    # noqa: BLE001
+            add("R2", "INFO", f"R2 check skipped: could not import psbp_common ({e})")
+        else:
+            import urllib.error
+            import urllib.request
+            from concurrent.futures import ThreadPoolExecutor
+            host = (args.r2_host or _pc.MEDIA_BASE).rstrip("/")
+            rev = _pc.MEDIA_REV
+            sizes = ("original", "web", "thumb")
+            targets = []                                          # (sid, phid, size, url)
+            for ph in photos:
+                sid, phid = ph.get("psbp_id"), ph.get("photo_id")
+                if not ph.get("publish_ok") or not phid or sid not in sign_by_id:
+                    continue
+                for sz in sizes:
+                    targets.append((sid, str(phid), sz, f"{host}/inat/{phid}/{rev}/{sz}.jpg"))
+
+            # Polite on purpose: the first run (16 at once) got 429 Too Many
+            # Requests from r2.dev on 4,130 of 5,649 files. A 429 is never a
+            # verdict on the file; it is retried with a pause and, if it
+            # persists, counted separately. The production host should not
+            # rate-limit like the dev address, but the check must not lie
+            # either way.
+            import time as _time
+
+            def head(t):
+                req = urllib.request.Request(t[3], method="HEAD",
+                                             headers={"User-Agent": "psbp-audit"})
+                code = None
+                for pause in (0, 2, 6, 15):
+                    if pause:
+                        _time.sleep(pause)
+                    try:
+                        with urllib.request.urlopen(req, timeout=20) as r:
+                            return t, (200 <= r.status < 300), r.status
+                    except urllib.error.HTTPError as e:
+                        code = e.code
+                        if code != 429:
+                            return t, False, code
+                    except Exception as e:                        # noqa: BLE001
+                        return t, False, type(e).__name__
+                return t, False, 429
+
+            with ThreadPoolExecutor(max_workers=4) as ex:
+                results = list(ex.map(head, targets))
+            missing = defaultdict(list)                           # sid -> ["phid/size (code)"]
+            network = sum(1 for _, ok, code in results if not ok and not isinstance(code, int))
+            limited = sum(1 for _, ok, code in results if code == 429)
+            for t, ok, code in results:
+                if not ok and code != 429:
+                    missing[t[0]].append(f"{t[1]}/{t[2]} ({code})")
+            nphotos = len({(t[0], t[1]) for t in targets})
+            add("R2", "INFO",
+                f"fresh check of {host}: {nphotos} publishable photos, {len(targets)} files asked, "
+                f"{sum(len(v) for v in missing.values())} missing"
+                + (f", {network} network errors (not a verdict on those files)" if network else "")
+                + (f", {limited} still rate-limited after retries (not a verdict; run again later)"
+                   if limited else ""))
+            for sid in sorted(missing):
+                v = missing[sid]
+                level = "ERROR" if sign_by_id[sid].get("status") == "html" else "INFO"
+                add("R2", level,
+                    f"{sid} {sign_by_id[sid].get('common_name')}: {len(v)} file(s) not served by {host} "
+                    f"(e.g. {', '.join(v[:3])})")
+    elif run("R2"):
         try:
             sys.path.insert(0, str(HERE.parent))
             import psbp_common as _pc
