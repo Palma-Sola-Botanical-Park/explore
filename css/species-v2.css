@@ -435,19 +435,33 @@ body[data-bands="on"] .sp-sec:nth-of-type(3n+3)::before{background:var(--sunk)}
    thumbnail, floated or centred, never sat right: 2026-10-23). Its height
    follows the crop the publisher chose. The whole strip is the button; one
    "Open map" plate bottom-right says so, at reading size. */
-.sp-map{display:block;position:relative;width:100%;max-width:var(--col);margin:.4rem 0 1.6rem;
-  padding:0;border:0;background:none;font:inherit;cursor:pointer;text-align:left;
+.sp-map{display:block;width:100%;max-width:var(--col);margin:.4rem 0 1.6rem;padding:0;
+  border:1px solid var(--rule-strong);border-radius:var(--r);overflow:hidden;background:var(--surface);
+  font:inherit;color:var(--ink);cursor:pointer;text-align:left;
   touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.sp-map-art{display:block;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--rule-strong);
-  background:#f4f1e8}
-.sp-map-art svg{display:block;width:100%;height:auto}
-.sp-map:hover .sp-map-art{border-color:var(--green)}
-.sp-map-cap{position:absolute;right:.7rem;bottom:.7rem;display:inline-flex;align-items:center;gap:.45rem;
-  font-family:var(--sans);font-size:var(--t-base);font-weight:600;line-height:1;color:var(--green-ink);
-  background:rgba(253,252,248,.94);border:1px solid var(--rule-strong);border-radius:var(--r-pill);
-  padding:.55rem .9rem;box-shadow:0 1px 3px rgba(0,0,0,.12)}
-.sp-map-cap svg{width:1em;height:1em}
-.sp-map:hover .sp-map-cap{background:var(--green-tint);border-color:var(--green)}
+.sp-map:hover{border-color:var(--green)}
+.sp-map-art{display:block;position:relative;background:#f4f1e8}
+.sp-map-art>svg{display:block;width:100%;height:auto}
+.spm-dot-sm{fill:var(--gold-mark);stroke:#fff;stroke-width:3;pointer-events:none}
+.sp-map-expand{position:absolute;top:.6rem;right:.6rem;width:2.3rem;height:2.3rem;display:flex;
+  align-items:center;justify-content:center;color:var(--green-ink);background:rgba(253,252,248,.94);
+  border:1px solid var(--rule-strong);border-radius:var(--r-sm);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.sp-map-expand svg{width:1.1rem;height:1.1rem}
+.sp-map-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.8rem 1rem;border-top:1px solid var(--rule);font-family:var(--sans)}
+.sp-map-words{display:flex;flex-direction:column;gap:.15rem;font-size:var(--t-base);line-height:1.4;min-width:0}
+.sp-map-words b{color:var(--green-ink);font-weight:700}
+.sp-map-words>span{color:var(--ink-soft);display:flex;align-items:center;gap:.45rem}
+.sp-map-key{flex:none;width:.7rem;height:.7rem;border-radius:50%;background:var(--gold-mark);border:2px solid #fff;
+  box-shadow:0 0 0 1px var(--rule-strong)}
+.sp-map-btn{flex:none;display:inline-flex;align-items:center;gap:.5rem;font-size:var(--t-base);font-weight:600;
+  line-height:1;color:#fff;background:var(--green-ink);border-radius:var(--r-sm);padding:.75rem 1rem}
+.sp-map-btn svg{width:1em;height:1em}
+.sp-map:hover .sp-map-btn{background:var(--green)}
+@media (max-width:560px){
+  .sp-map-foot{flex-wrap:wrap}
+  .sp-map-btn{width:100%;justify-content:center}
+}
 .spm-dot{fill:var(--gold-mark);stroke:#fff;stroke-width:4;pointer-events:none}
 .spm-hit{fill:transparent;cursor:pointer}
 .spm-dot.on{fill:#a7561f}

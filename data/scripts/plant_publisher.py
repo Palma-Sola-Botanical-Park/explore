@@ -901,11 +901,11 @@ def v2_species_map(species, species_lookup=None):
     # the dots with nothing picked; a single pin is picked for the visitor.
     count = "" if len(mine) == 1 else "Tap a dot to see what grows near it."
 
-    def circles(r, hit):
+    def circles(r, hit, cls="spm-dot"):
         out = []
         for p in dots:
             out.append(f'<circle class="spm-hit" data-id="{h(p["id"])}" cx="{p["px"]}" cy="{p["py"]}" r="{hit}"/>'
-                       f'<circle class="spm-dot" data-id="{h(p["id"])}" cx="{p["px"]}" cy="{p["py"]}" r="{r}"/>')
+                       f'<circle class="{cls}" data-id="{h(p["id"])}" cx="{p["px"]}" cy="{p["py"]}" r="{r}"/>')
         return "".join(out)
 
     vb = " ".join(str(x) for x in frame)
@@ -914,8 +914,12 @@ def v2_species_map(species, species_lookup=None):
     # column, like the photographs (Randy, 2026-10-23, from a ChatGPT mock:
     # "spreading out a map on the species page that is still partial"). As
     # shallow as the dots allow (2:1), growing toward square when the dots
-    # run north–south, never cropping a dot out. Tap anywhere opens the map;
-    # one "Open map" plate bottom-right says so. Nothing else said.
+    # run north–south, never cropping a dot out. Tap anywhere opens the map.
+    # A footer names it as a map feature, not another photograph (Randy,
+    # 2026-10-23, keeping that from a ChatGPT mock): two lines on the left,
+    # no species name, no count; "Open full map" on the right; an expand
+    # icon top-right as the shortcut. The strip's dots are smaller than the
+    # pop-up's, which are sized for thumbs.
     sw = max(MAP_STRIP_MIN_W, max(xs) - min(xs) + 2 * MAP_FRAME_PAD)
     sh = max(sw / 2, max(ys) - min(ys) + 2 * MAP_FRAME_PAD)
     sw = max(sw, sh)                      # never taller than it is wide
@@ -923,12 +927,16 @@ def v2_species_map(species, species_lookup=None):
     sx = min(max((min(xs) + max(xs)) / 2 - sw / 2, 0), W - sw)
     sy = min(max((min(ys) + max(ys)) / 2 - sh / 2, 0), H - sh)
     svb = " ".join(str(round(v)) for v in (sx, sy, sw, sh))
+    expand = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+              '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>')
     thumb = (
         '<button type="button" class="sp-map" id="spmOpen" aria-haspopup="dialog" aria-controls="spm" aria-label="Open the park map">'
         f'<span class="sp-map-art"><svg viewBox="{svb}" aria-hidden="true"><image href="{MAP_IMAGE}" x="0" y="0" width="{W}" height="{H}"/>'
-        f'{circles(24, 24)}</svg></span>'
-        '<span class="sp-map-cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-        '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Open map</span>'
+        f'{circles(17, 17, "spm-dot-sm")}</svg>'
+        f'<span class="sp-map-expand">{expand}</span></span>'
+        '<span class="sp-map-foot"><span class="sp-map-words"><b>On the park map</b>'
+        '<span><i class="sp-map-key"></i>Gold dots are where it grows.</span></span>'
+        f'<span class="sp-map-btn">{expand}Open full map</span></span>'
         '</button>')
 
     panel = (
