@@ -908,8 +908,9 @@ def v2_species_map(species, species_lookup=None):
         return "".join(out)
 
     vb = " ".join(str(x) for x in frame)
-    # A small square floated beside the find-it paragraph: the map, a pin in
-    # its corner, "Open map" under it. Nothing else said.
+    # A small square centred under the find-it paragraph: the map, a pin in
+    # its corner, "Open map" under it, a hairline out to each side (CSS).
+    # Nothing else said.
     thumb = (
         '<button type="button" class="sp-map" id="spmOpen" aria-haspopup="dialog" aria-controls="spm" aria-label="Open the park map">'
         f'<span class="sp-map-art"><svg viewBox="{vb}" aria-hidden="true"><image href="{MAP_IMAGE}" x="0" y="0" width="{W}" height="{H}"/>'
@@ -1194,12 +1195,11 @@ def generate_html_v2(species, hero, gallery_photos=None, published_on=""):
         else:
             parts = [_v2_block_html(b, photo_index) for b in blocks]
             if key == "where_to_find_it_here" and map_thumb:
-                # Just BEFORE the paragraph that says where (the first prose
-                # block): the thumbnail floats right, so it has to come first
-                # in the flow for that paragraph to wrap beside it.
+                # Right under the paragraph that says where (the first prose
+                # block), centred, before any photograph or later block.
                 prose = [i for i, b in enumerate(blocks)
                          if not (isinstance(b, dict) and (b.get("photo") or b.get("media")))]
-                parts.insert(prose[0] if prose else 0, map_thumb)
+                parts.insert((prose[0] + 1) if prose else 0, map_thumb)
             inner = "".join(parts)
             if key == "where_it_comes_from" and single_fact:
                 inner = _v2_fact_html(cult_blocks[0].get("text", "")) + inner

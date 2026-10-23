@@ -429,28 +429,28 @@ body[data-bands="on"] .sp-sec:nth-of-type(3n+3)::before{background:var(--sunk)}
    v2_species_map in plant_publisher.py; behaviour in species-v2.js. Light
    chrome, not the lightbox's dark: the map is cream artwork. Every piece of
    reading text here is var(--t-base). Plan: SPECIES_MAP_PLAN.md (private). */
-/* The thumbnail floats right of the find-it paragraph (it is emitted just
-   before that paragraph), the words wrap beside it, and the figure or block
-   after clears it. Randy, 2026-10-23: "an unobtrusive map icon with an
-   'open map' label", no border, no count. */
-/* On a wide screen the main column is wider than the reading column, so a
-   plain right float lands at the far edge of the page. The margin-right pulls
-   it back to hang just outside the reading column's right edge; where there
-   is no room (phones) it goes to 0 and the words wrap beside it instead. */
-.sp-map{float:right;width:8.2rem;margin:.2rem max(0px,calc(100% - var(--col) - 9.4rem)) .6rem 1.2rem;
-  padding:0;border:0;background:none;
-  font:inherit;cursor:pointer;text-align:center;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.sp-map-art{position:relative;display:block;border-radius:var(--r-sm);overflow:hidden;
-  border:1px solid var(--rule-strong);background:#f4f1e8;aspect-ratio:1}
+/* The thumbnail sits centred under the find-it paragraph (it is emitted
+   right after that paragraph), "Open map" centred under it, a hairline
+   running out to the column edge on each side so it reads as an inset.
+   Randy, 2026-10-23: a right float looked "lopsided" on a wide screen; this
+   instead. No border box, no caption, no count. The whole thing is the
+   button; the hairlines are its ::before and ::after. */
+.sp-map{display:grid;grid-template-columns:1fr auto 1fr;grid-template-areas:"l art r" ". cap .";
+  align-items:center;column-gap:1.1rem;width:100%;max-width:var(--col);margin:.4rem 0 1.6rem;
+  padding:0;border:0;background:none;font:inherit;cursor:pointer;text-align:center;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.sp-map::before,.sp-map::after{content:"";display:block;height:1px;background:var(--rule-strong)}
+.sp-map::before{grid-area:l}
+.sp-map::after{grid-area:r}
+.sp-map-art{grid-area:art;position:relative;display:block;width:8.2rem;aspect-ratio:1;
+  border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--rule-strong);background:#f4f1e8}
 .sp-map-art>svg:first-child{display:block;width:100%;height:100%}
 .sp-map-pin{position:absolute;right:.3rem;bottom:.3rem;width:1.5rem;height:1.5rem;
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
 .sp-map:hover .sp-map-art{border-color:var(--green)}
-.sp-map-cap{display:block;margin-top:.35rem;font-family:var(--sans);font-size:var(--t-base);
+.sp-map-cap{grid-area:cap;display:block;margin-top:.35rem;font-family:var(--sans);font-size:var(--t-base);
   color:var(--green);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 .sp-map:hover .sp-map-cap{color:var(--green-ink)}
-.sp-sec .sp-figure,.sp-sec .sp-fact{clear:both}
-@media (max-width:560px){.sp-map{width:6.8rem;margin-left:1rem}}
 .spm-dot{fill:var(--gold-mark);stroke:#fff;stroke-width:4;pointer-events:none}
 .spm-hit{fill:transparent;cursor:pointer}
 .spm-dot.on{fill:#a7561f}
