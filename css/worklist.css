@@ -45,6 +45,10 @@ dialog.wl-dialog::backdrop{ background:rgba(20,28,18,.62); backdrop-filter:blur(
 .wl-title{ font-family:'Caveat','Segoe Print','Bradley Hand',cursive; font-size:2.5rem; line-height:1.05; color:#1d3b8a; margin:0 0 .25rem; }
 .wl-lede{ font-size:1.0625rem; color:#3a3a3a; margin:0 0 1.1rem; max-width:62ch; }
 
+.wl-filter{ margin:0 0 .9rem; }
+.wl-toggle{ font:inherit; font-size:1.0625rem; font-weight:600; color:#13306b; background:transparent; border:2px solid rgba(19,48,107,.35); border-radius:999px; padding:.3rem .95rem; cursor:pointer; }
+.wl-toggle:hover{ border-color:#13306b; }
+.wl-toggle[aria-pressed="true"]{ background:#13306b; color:#fff; border-color:#13306b; }
 .wl-cols{ display:grid; grid-template-columns:1fr 1fr; gap:1.2rem 2.2rem; }
 .wl-col h3{
   font-family:'Caveat','Segoe Print','Bradley Hand',cursive; font-size:1.85rem; line-height:1.1; color:#1d3b8a;

@@ -55,11 +55,22 @@
                 Fungi:'Fungus', Mammalia:'Mammal', Amphibia:'Amphibian', Mollusca:'Snail or slug', Unknown:'' };
 
   /* ── observers ─────────────────────────────────────────────────────────── */
+  var featureOnly = false;                            /* the toggle; each page load starts on everything */
+  function byKey(k1, k2){
+    return function(a, b){
+      var x = [a[k1], a[k2]], y = [b[k1], b[k2]];
+      for(var i = 0; i < 2; i++){ var u = x[i] == null ? '' : x[i], v = y[i] == null ? '' : y[i]; if(u < v) return -1; if(u > v) return 1; }
+      return 0;
+    };
+  }
   function observeHtml(data){
     var todo = data.todo, pages = data.pages, ph = todo.photos || {}, st = todo.stale || {};
-    var photos = (ph.feature || []).concat(ph.standard || []).slice(0, 10);
+    function pick(lists){
+      return (lists.feature || []).concat(featureOnly ? [] : (lists.standard || []));
+    }
+    var photos = pick(ph).sort(function(a, b){ return a.photos - b.photos || byKey('newest', 'id')(a, b); }).slice(0, 10);
     var onPhotos = {}; photos.forEach(function(x){ onPhotos[x.id] = 1; });
-    var sights = (st.feature || []).concat(st.standard || []).filter(function(x){ return !onPhotos[x.id]; }).slice(0, 10);
+    var sights = pick(st).filter(function(x){ return !onPhotos[x.id]; }).sort(byKey('newest', 'id')).slice(0, 10);
     function col(title, hint, rows, note){
       return '<div class="wl-col"><h3>' + esc(title) + '</h3><p class="wl-sub">' + esc(hint) + '</p>'
         + (rows.length ? '<ol>' + rows.map(function(x){
@@ -68,6 +79,7 @@
     }
     return '<h2 class="wl-title" id="wl-title">This week’s list</h2>'
       + '<p class="wl-lede">These are the plants we could use you on. Tap a name to see its page, then go find it.</p>'
+      + '<div class="wl-filter"><button type="button" class="wl-toggle" aria-pressed="' + featureOnly + '">Feature plants only</button></div>'
       + '<div class="wl-cols">'
       +   col('Better & more photos', 'Artsy or close and sharp. Both go on the page.', photos,
               function(x){ return 'we have ' + x.photos + (x.photos === 1 ? ' photo' : ' photos'); })
@@ -124,8 +136,13 @@
     var d = dialogFor(kind), body = d.querySelector('.wl-body');
     if(typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
     load().then(function(data){
-      body.innerHTML = kind === 'observe' ? observeHtml(data) : identifyHtml(data);
-      var t = body.querySelector('.wl-title'); if(t) t.id = 'wl-title-' + kind;
+      function render(){
+        body.innerHTML = kind === 'observe' ? observeHtml(data) : identifyHtml(data);
+        var t = body.querySelector('.wl-title'); if(t) t.id = 'wl-title-' + kind;
+        var tg = body.querySelector('.wl-toggle');
+        if(tg) tg.addEventListener('click', function(){ featureOnly = !featureOnly; render(); var n = body.querySelector('.wl-toggle'); if(n) n.focus(); });
+      }
+      render();
     }).catch(function(){
       body.innerHTML = '<p class="wl-empty">The list isn’t loading right now. Try again in a minute.</p>';
     });
