@@ -772,6 +772,7 @@ MAP_NEAR_FT = 75          # a neighbour is a published plant pinned within this
 MAP_NEAR_MAX = 5          # ...and we name at most this many, nearest first
 MAP_FRAME_MIN = 704       # the pop-up never opens tighter than this (px of 1408)
 MAP_FRAME_PAD = 130       # px of room round the dots
+MAP_STRIP_MIN_W = 820     # the in-page strip is never narrower than this (px of 1408)
 
 # What to call the fit's control points when "Where am I?" says which way to
 # walk. Bev's map labels, not the geometry's: the north gazebo is "Palm Alley
@@ -908,15 +909,26 @@ def v2_species_map(species, species_lookup=None):
         return "".join(out)
 
     vb = " ".join(str(x) for x in frame)
-    # A small square centred under the find-it paragraph: the map, a pin in
-    # its corner, "Open map" under it, a hairline out to each side (CSS).
-    # Nothing else said.
+
+    # The in-page preview: a strip of the map the full width of the reading
+    # column, like the photographs (Randy, 2026-10-23, from a ChatGPT mock:
+    # "spreading out a map on the species page that is still partial"). As
+    # shallow as the dots allow (2:1), growing toward square when the dots
+    # run north–south, never cropping a dot out. Tap anywhere opens the map;
+    # one "Open map" plate bottom-right says so. Nothing else said.
+    sw = max(MAP_STRIP_MIN_W, max(xs) - min(xs) + 2 * MAP_FRAME_PAD)
+    sh = max(sw / 2, max(ys) - min(ys) + 2 * MAP_FRAME_PAD)
+    sw = max(sw, sh)                      # never taller than it is wide
+    sw, sh = min(sw, W), min(sh, H)
+    sx = min(max((min(xs) + max(xs)) / 2 - sw / 2, 0), W - sw)
+    sy = min(max((min(ys) + max(ys)) / 2 - sh / 2, 0), H - sh)
+    svb = " ".join(str(round(v)) for v in (sx, sy, sw, sh))
     thumb = (
         '<button type="button" class="sp-map" id="spmOpen" aria-haspopup="dialog" aria-controls="spm" aria-label="Open the park map">'
-        f'<span class="sp-map-art"><svg viewBox="{vb}" aria-hidden="true"><image href="{MAP_IMAGE}" x="0" y="0" width="{W}" height="{H}"/>'
-        f'{circles(26, 26)}</svg>'
-        '<svg class="sp-map-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.4 7-11.5a7 7 0 1 0-14 0C5 15.6 12 22 12 22z" fill="#c5922a" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="10.5" r="2.6" fill="#fff"/></svg></span>'
-        '<span class="sp-map-cap">Open map</span>'
+        f'<span class="sp-map-art"><svg viewBox="{svb}" aria-hidden="true"><image href="{MAP_IMAGE}" x="0" y="0" width="{W}" height="{H}"/>'
+        f'{circles(24, 24)}</svg></span>'
+        '<span class="sp-map-cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Open map</span>'
         '</button>')
 
     panel = (
