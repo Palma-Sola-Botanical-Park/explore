@@ -31,6 +31,7 @@ have to remind you of any of this. The old `park-library` repo (`../park-library
 | **Signs** (QR, print PDFs) | `data/scripts/signs/` and the Signs tab in Species Manager; rule 1 (signs before 2026-10-04 are beta). |
 | **Events, news, classes, the Google Sheet** | rule 6 and section 4 here; fix content in the Sheet, never in the published JSON. |
 | **Tours** | `AD park-knowledge/TOURS.md` (to be revamped in 2027; stale teasers there are not findings). |
+| **Park Stories** (`story.html`, the stories JSON, the photographer page and its two data paths) | `AD system docs/PARK_STORIES_PLAN.md`, then ACTIONS Content #28. Planning only until Randy starts build step A. |
 | **What is open / what to do next** | `AD system docs/PSBP_ACTIONS.md` (start with the index) and `AD system docs/HANDOFF.md`. |
 | Anything else, or a new kind of job | `AD system docs/CLAUDE_ONBOARDING.md` and `PSBP_ARCHITECTURE.md`; search the headings, do not read it all. |
 
