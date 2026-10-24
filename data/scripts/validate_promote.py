@@ -425,7 +425,9 @@ def enrich_right_now(rows):
 
       * status == 'html'  -> stamp fitted `quick_hits` (if any) + has_page=True
                              (so the card may show the 'Full plant page ->' link)
-      * status == 'spotted' (in review, no page yet) -> stamp nothing, no link
+      * status == 'spotted' (in review, no page yet) -> no link; quick_hits
+                             stamped only if the record already carries an
+                             authored page.at_a_glance (since 2026-10-24)
       * no psbp_id (standalone sighting) / id not in a master -> stamp nothing
 
     has_page also closes a latent gap: without it the render can't tell a
@@ -440,9 +442,14 @@ def enrich_right_now(rows):
         rec = master.get(pid)
         if not rec:
             continue                       # bad/unknown id -> render fail-soft
-        if rec.get("status") != "html":
-            continue                       # spotted/in-progress: no facts, no page
-        row["has_page"] = True
+        # The page link is for published species only. The facts are not:
+        # since 2026-10-24 a `spotted` record may carry an authored
+        # `page.at_a_glance` (written so a sighting has a card back before the
+        # page exists; the same bullets become the page's glance later), and
+        # card_hits() returns [] for a record without one, so nothing is
+        # stamped for the ordinary in-review case.
+        if rec.get("status") == "html":
+            row["has_page"] = True
         # card_hits(), not rec["quick_hits"] — see psbp_common. An authored
         # species carries `page.at_a_glance`, which SUPERSEDES quick_hits
         # everywhere off the page itself. Reading the raw field here showed
