@@ -789,12 +789,15 @@ def sci_name_of(species):
 
 
 def card_hits(species):
-    """The bullets shown ANYWHERE OTHER THAN THE PAGE ITSELF: authored
-    `page.at_a_glance` if it exists, otherwise the original `quick_hits`.
+    """The bullets shown ANYWHERE OTHER THAN THE PAGE ITSELF: the authored
+    `page.at_a_glance`, and nothing else.
 
-    Randy, 2026-09-08: "we keep it and shift to pages.ataglance when it is
-    available. quick hit would ONLY go to index if at a glance isn't populated
-    of course."
+    Randy, 2026-10-11: "Nobody should EVER be writing quick hits." Until
+    2026-10-23 this fell back to the old draft field `quick_hits` when a record
+    had no glance (Randy, 2026-09-08). Every published record has had a glance
+    since 2026-10-15, so the fallback never fired for anything live; it is gone
+    (ACTIONS Medium #72, step 2). A record without a glance gets no card bullets
+    until it has a page. Do not add the fallback back.
 
     THIS LIVES HERE BECAUSE IT HAS THREE CALLERS, NOT TWO. Both publishers
     stamp it into plants.json / wildlife.json (search cards, the nature.html
@@ -816,7 +819,7 @@ def card_hits(species):
                 out.append(str(t))
         if out:
             return out
-    return species.get("quick_hits") or []
+    return []
 
 
 def credit_type(corpus):
