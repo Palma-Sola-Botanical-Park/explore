@@ -1517,7 +1517,9 @@ function slideRightNow(r){
      record's joined `quick` string if the row hasn't got them. */
   var hits = (r.quick_hits && r.quick_hits.length) ? r.quick_hits
            : hitsOf(sp);
-  var fact = freshHit(r.psbp_id || r.common_name, hits);
+  /* The Sheet's optional `fact` column is the second beat when filled
+     (2026-10-24); otherwise a fresh stamped hit, as before. */
+  var fact = (r.fact || '').trim() || freshHit(r.psbp_id || r.common_name, hits);
 
   var list = [note, fact].filter(Boolean);
   var body = beatsMarkup(list, list.length>1 ? 1 : null);

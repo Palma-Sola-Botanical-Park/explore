@@ -72,7 +72,9 @@ SCHEMA = {
         # psbp_id has NO rule on purpose: the engine has no regex check, and fk can't
         # target the species data (build_refs hardcodes 'series'). A bad/blank id is
         # handled at RENDER time -- fail-soft to a standalone card + log -- not here.
-        # scientific_name / note / area are free text; rules for absent columns are
-        # dormant anyway, so nothing to add.
+        # scientific_name / note / area / fact are free text; rules for absent columns
+        # are dormant anyway, so nothing to add. `fact` (added 2026-10-24, optional):
+        # one "did you know" line for the card back and the TV's second beat, so a
+        # spotted species (no stamped quick_hits) has something to say there.
     ],
 }

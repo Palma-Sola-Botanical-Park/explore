@@ -2331,8 +2331,15 @@ function _rnCard(e, rec, cr) {
   // BACK — bloom wash (gold-leaf for blooms, green-feather for sightings),
   // the stamped quick_hits, and the SAME species-page link that used to wrap
   // the whole card. Link gated on `page` existing (a 'spotted' species has none).
+  // The Sheet's optional `fact` column wins (one "did you know" line Bev or
+  // Randy writes for this sighting; added 2026-10-24 so a spotted species,
+  // which has no stamped hits, gets a real back instead of the note again).
+  // Then the stamped quick_hits, then the note.
+  const fact = (e.fact || '').trim();
   const hits = Array.isArray(e.quick_hits) ? e.quick_hits.filter(Boolean) : [];
-  const hitsHtml = hits.length
+  const hitsHtml = fact
+    ? `<p class="rn-hit">${_rnEsc(fact)}</p>`
+    : hits.length
     ? hits.map(h => `<p class="rn-hit">${_rnEsc(h)}</p>`).join('')
     : `<p class="rn-hit rn-hit--soft">${_rnEsc(e.note || 'Come find it in the park.')}</p>`;
   const link = page
