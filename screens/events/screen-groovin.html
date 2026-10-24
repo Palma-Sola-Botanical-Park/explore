@@ -1138,7 +1138,7 @@ function indexHits(blob){
 /* photo_id -> {observed_on, license, name}. The search index carries the
    photographer and license but not the date, so the credits master fills it in.
    Optional: if the file can't be reached the credit falls back to name + license. */
-var CREDITS = {}, BY_SHOOTER = {}, BY_SPECIES = {}, BY_NAME = {}, NAMES = {};
+var CREDITS = {}, BY_SHOOTER = {}, BY_SPECIES = {}, BY_NAME = {}, NAMES = {}, HERO_BY_SPECIES = {};
 function indexCredits(rows){
   var photos = (rows && rows.photos) || rows || [];
 
@@ -1158,7 +1158,7 @@ function indexCredits(rows){
      refresh, plants then wildlife, and uses assignment. Clearing at its top
      would make the wildlife pass erase the plants pass. */
   if(!photos.length) return;
-  CREDITS = {}; BY_SHOOTER = {}; BY_SPECIES = {}; BY_NAME = {};
+  CREDITS = {}; BY_SHOOTER = {}; BY_SPECIES = {}; BY_NAME = {}; HERO_BY_SPECIES = {};
 
   for(var i=0;i<photos.length;i++){
     var p=photos[i];
@@ -1179,6 +1179,12 @@ function indexCredits(rows){
     if(p.psbp_id && p.photo_id && !p.hero &&
        (p.role||[]).indexOf('gallery') > -1 && p.photo_url){
       (BY_SPECIES[p.psbp_id] = BY_SPECIES[p.psbp_id] || []).push(p);
+    }
+    /* The hero of every species in the credits, published or not. The Right
+       Now slide uses it for a `spotted` species, which is absent from the
+       published index (2026-10-24: the Red Cornsnake showed with no photo). */
+    if(p.psbp_id && p.photo_id && p.hero && p.publish_ok !== false && p.photo_url){
+      HERO_BY_SPECIES[p.psbp_id] = p;
     }
   }
 }
@@ -1510,8 +1516,26 @@ function rotate(key, list, n){
 
 function freshHit(id, hits){ return rotate('rn:'+id, hits, 1)[0] || ''; }
 
+/* A `spotted` species is not in plants.json / wildlife.json, but its hero is in
+   the credits master. Shape the hero row like an index record so bigPhoto(),
+   creditFor() and the focus crop all work unchanged: `photo` carries the id in
+   the path convention photoIdOf() reads (the same trick withGallery() uses).
+   The sync feed already supplies the words (note, quick_hits); this only adds
+   the photograph. Returns null when the species has no hero in the credits. */
+function spottedFromCredits(r){
+  var rec = r && r.psbp_id ? HERO_BY_SPECIES[r.psbp_id] : null;
+  if(!rec) return null;
+  return {
+    id: r.psbp_id,
+    common_name: r.common_name || rec.common_name || '',
+    sci: r.scientific_name || rec.scientific_name || '',
+    photo: 'photos/' + r.psbp_id + '/' + rec.photo_id + '.jpg',
+    focus: rec.focus || '',
+    _spotted: true
+  };
+}
 function slideRightNow(r){
-  var sp = r.psbp_id ? speciesById(r.psbp_id) : null;
+  var sp = r.psbp_id ? (speciesById(r.psbp_id) || spottedFromCredits(r)) : null;
   var note = (r.note || '').trim();
   /* quick_hits ride along in the right_now feed; fall back to the species
      record's joined `quick` string if the row hasn't got them. */
