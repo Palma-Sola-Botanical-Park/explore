@@ -239,6 +239,17 @@ TABS = [
     {"id": "health",   "label": "Health",          "route": "/health",  "icon": "🩺"},
 ]
 
+# Stories mode (B1, 2026-10-24): the same dashboard, a second set of tabs.
+# The Species | Stories switch in the header picks the set; Health is in both.
+# The master is PRIVATE (../Active-PSBP-Docs/stories/stories.json); the
+# publisher (story_publisher.py) writes stories/<id>.html, stories.html and
+# stories.json into this repo. See Active-PSBP-Docs/system docs/PARK_STORIES_PLAN.md.
+STORY_TABS = [
+    {"id": "stories",  "label": "Stories",         "route": "/stories", "icon": "📖"},
+    {"id": "health",   "label": "Health",          "route": "/health",  "icon": "🩺"},
+]
+STORY_TAB_IDS = {t["id"] for t in STORY_TABS} - {"health"}
+
 # Required fields for promotion readiness (per kingdom)
 # Plants use "botanical_name"; wildlife uses "scientific_name"
 # "teaser" added 2026-09-01. It began as SIGN copy — "the hook, under the photo"
@@ -4094,6 +4105,11 @@ header .subtitle {
     opacity: 0.7;
     margin-left: auto;
 }
+/* The Species | Stories switch (2026-10-24). Two pills; the lit one is the mode. */
+.mode-switch { display: inline-flex; margin-left: 18px; border: 1px solid rgba(255,255,255,.35); border-radius: 999px; padding: 2px; }
+.mode-switch a { color: rgba(255,255,255,.75); text-decoration: none; font-size: 13px; font-weight: 600; padding: 4px 14px; border-radius: 999px; }
+.mode-switch a.on { background: var(--gold); color: #1a3a1f; }
+.mode-switch a:not(.on):hover { color: #fff; }
 
 /* ── Tab Nav ────────────────────────────────────────────────── */
 nav.tabs {
@@ -5780,9 +5796,18 @@ main {
 
 
 def page_shell(active_tab_id, body_html):
-    """Wrap tab content in the shared page shell (header, nav, CSS)."""
+    """Wrap tab content in the shared page shell (header, nav, CSS).
+    The tab set follows the mode: Stories tabs when a Stories tab is active,
+    the Species tabs otherwise. Health is in both sets and opens in Species mode."""
+    mode = "stories" if active_tab_id in STORY_TAB_IDS else "species"
+    tabs = STORY_TABS if mode == "stories" else TABS
+    switch = (
+        '<nav class="mode-switch" aria-label="Mode">'
+        f'<a href="/" class="{"on" if mode == "species" else ""}">Species</a>'
+        f'<a href="/stories" class="{"on" if mode == "stories" else ""}">Stories</a>'
+        '</nav>')
     nav_items = ""
-    for tab in TABS:
+    for tab in tabs:
         cls = "active" if tab["id"] == active_tab_id else ""
         nav_items += (
             f'<a href="{tab["route"]}" class="{cls}">'
@@ -5795,13 +5820,14 @@ def page_shell(active_tab_id, body_html):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PSBP Species Manager</title>
+    <title>The Dirt · {"Stories" if mode == "stories" else "Species"}</title>
     <style>{BRAND_CSS}</style>
 </head>
 <body>
     <header>
-        <h1>🌿 PSBP Species Manager</h1>
-        <span class="subtitle">port {PORT}</span>
+        <h1>🌿 The Dirt</h1>
+        {switch}
+        <span class="subtitle">species and stories · port {PORT}</span>
     </header>
     <nav class="tabs">
         {nav_items}
@@ -10853,8 +10879,285 @@ def render_signs():
     """
 
 
+# ════════════════════════════════════════════════════════════════════════════
+# STORIES — Park Stories, build step B1 (2026-10-24)
+#
+# One implementation of everything: story_publisher.py renders, validates and
+# writes; this tab only calls it. The master is private and lives OUTSIDE this
+# repo (../Active-PSBP-Docs/stories/stories.json), so a draft is never on
+# GitHub. This tab writes exactly three fields back to it (stage, visibility,
+# home), re-reading the file first (CLAUDE.md rule 4). Everything else in a
+# story is edited in the JSON with Claude until the block editor exists.
+# Publish runs the publisher as a subprocess and shows what it wrote; Randy
+# commits in GitHub Desktop as always (rule 14).
+# ════════════════════════════════════════════════════════════════════════════
+
+def _sp():
+    import story_publisher
+    return story_publisher
+
+
+def _stories_master_path():
+    return _sp().MASTER_DEFAULT
+
+
+def _stories_load():
+    """(module, stories, collections, warnings) from the private master, or an error."""
+    sp = _sp()
+    path = _stories_master_path()
+    if not path.is_file():
+        return sp, {}, {}, [f"No stories master at {path}. Active-PSBP-Docs must sit next to this repo."]
+    sp.WARN.clear()
+    stories, collections = sp.load_master(path)
+    return sp, stories, collections, list(sp.WARN)
+
+
+def _story_page_state(sp, s, stories, collections, reg):
+    """What the page on disk is, compared with what the master would write now.
+    Render-and-compare, never a fingerprint (CLAUDE.md §5)."""
+    path = sp.OUT_DIR / f"{s['id']}.html"
+    on_disk = path.read_text(encoding="utf-8") if path.is_file() else None
+    stage, vis = s.get("stage"), s.get("visibility")
+    if stage != "published":
+        return ("draft, page on disk from an earlier publish" if on_disk else "draft, not written"), "draft"
+    ctx = {"rel": "../", "stories": stories, "collections": collections, "demo": False}
+    try:
+        if vis == "withdrawn":
+            want = sp.render_resting(s, ctx)
+        else:
+            want = (sp.render_collection if "members" in s else sp.render_story)(s, reg, ctx)
+    except ValueError as e:
+        return f"cannot publish: {e}", "bad"
+    if on_disk is None:
+        return "not published yet", "todo"
+    if on_disk == want:
+        return ("resting page, up to date" if vis == "withdrawn" else "up to date"), "ok"
+    return "published, with unpublished changes", "stale"
+
+
+def handle_api_stories_list(params):
+    """GET /api/stories/list — every story and collection in the private master, with page state."""
+    sp, stories, collections, warnings = _stories_load()
+    rows = []
+    if stories or collections:
+        reg = sp.Registry()
+        sp.WARN.clear()
+        for s in list(stories.values()) + list(collections.values()):
+            state, cls = _story_page_state(sp, s, stories, collections, reg)
+            rows.append({
+                "id": s["id"], "title": s.get("title", ""), "kicker": s.get("kicker", ""),
+                "kind": "collection" if "members" in s else "story",
+                "stage": s.get("stage", ""), "visibility": s.get("visibility", ""),
+                "home": bool(s.get("home")), "pinned": bool(s.get("pinned")),
+                "date": s.get("date", ""), "updated": s.get("updated", ""),
+                "blocks": len(s.get("blocks") or s.get("intro") or []),
+                "state": state, "state_class": cls,
+                "notes": str(sp.PRIVATE / "stories" / "notes" / f"{s['id']}.md"),
+            })
+        warnings += [w for w in sp.WARN if w not in warnings]
+    rows.sort(key=lambda r: (r["kind"] != "story", r["stage"] != "draft", r["date"]), reverse=False)
+    return {"master": str(_stories_master_path()), "rows": rows, "warnings": warnings,
+            "out_dir": str(sp.OUT_DIR)}
+
+
+def handle_api_stories_set(params):
+    """POST /api/stories/set {id, stage, visibility, home} — the three fields this tab
+    may write. Re-reads the master, changes one record, writes it back whole."""
+    body = params.get("_body") or {}
+    sid = str(body.get("id") or "")
+    stage = body.get("stage"); vis = body.get("visibility"); home = body.get("home")
+    if stage not in (None, "draft", "published"):
+        return {"ok": False, "error": f"stage must be draft or published, not {stage!r}"}
+    if vis not in (None, "listed", "unlisted", "withdrawn"):
+        return {"ok": False, "error": f"visibility must be listed, unlisted or withdrawn, not {vis!r}"}
+    path = _stories_master_path()
+    try:
+        with open(path, encoding="utf-8") as fh:          # rule 4: re-read, never a stale copy
+            master = json.load(fh)
+    except Exception as e:                                        # noqa: BLE001
+        return {"ok": False, "error": f"could not read the master: {e}"}
+    recs = (master.get("stories") or []) + (master.get("collections") or [])
+    rec = next((r for r in recs if r.get("id") == sid), None)
+    if not rec:
+        return {"ok": False, "error": f"{sid} is not in the master"}
+    changed = []
+    if stage is not None and rec.get("stage") != stage:
+        rec["stage"] = stage; changed.append(f"stage → {stage}")
+    if vis is not None and rec.get("visibility") != vis:
+        rec["visibility"] = vis; changed.append(f"visibility → {vis}")
+    if home is not None and bool(rec.get("home")) != bool(home):
+        if home:
+            for r in master.get("stories") or []:             # one home story, ever
+                if r.get("home") and r is not rec:
+                    r["home"] = False; changed.append(f"{r['id']} is no longer home")
+        rec["home"] = bool(home); changed.append(f"home → {bool(home)}")
+    if changed:
+        tmp = str(path) + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(master, fh, indent=2, ensure_ascii=False); fh.write("\n")
+        os.replace(tmp, path)
+    return {"ok": True, "changed": changed}
+
+
+def handle_api_stories_publish(params):
+    """POST /api/stories/publish {clean: bool} — run the publisher on the private master.
+    Writes stories/, stories.html and stories.json in this repo; commits nothing."""
+    body = params.get("_body") or {}
+    script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "story_publisher.py")
+    cmd = [sys.executable, script] + (["--clean"] if body.get("clean") else [])
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=240, cwd=REPO)
+    except Exception as e:                                        # noqa: BLE001
+        return {"ok": False, "error": f"story_publisher.py did not run: {e}"}
+    log = ((proc.stdout or "") + (proc.stderr or "")).strip()
+    files = ""
+    try:
+        g = subprocess.run(["git", "status", "--short", "--", "stories", "stories.html", "stories.json"],
+                           capture_output=True, text=True, timeout=30, cwd=REPO)
+        files = (g.stdout or "").strip()
+    except Exception:                                             # noqa: BLE001
+        pass
+    return {"ok": proc.returncode == 0, "log": log[-4000:], "files": files,
+            "error": None if proc.returncode == 0 else "The publisher reported an error; see the log."}
+
+
+def render_story_preview_html(story_id):
+    """One story from the private master, rendered the way the publisher writes it,
+    whatever its stage, with the DRAFT banner. Paths rewritten for this flat server."""
+    try:
+        sp, stories, collections, warnings = _stories_load()
+        s = stories.get(story_id) or collections.get(story_id)
+        if not s:
+            return (f"<h1>Not found</h1><p>{story_id} is not in the stories master.</p>", 404)
+        reg = sp.Registry()
+        sp.WARN.clear()
+        ctx = {"rel": "../", "stories": stories, "collections": collections, "demo": False, "preview": True}
+        html = (sp.render_collection if "members" in s else sp.render_story)(s, reg, ctx)
+        if sp.WARN:
+            note = "".join(f"<li>{w}</li>" for w in sp.WARN)
+            html = html.replace('<div id="nav-placeholder"></div>',
+                                '<div id="nav-placeholder"></div><div class="st-demo" style="background:#ffebee;color:#b71c1c;text-align:left">'
+                                f'<strong>Publisher warnings</strong><ul style="margin:.3rem 0 0 1.2rem">{note}</ul></div>', 1)
+        for q in ('"', "'", '('):
+            html = html.replace(f'{q}../css/', f'{q}/css-file/')
+            html = html.replace(f'{q}../js/', f'{q}/js-file/')
+            html = html.replace(f'{q}../stories.html', f'{q}/stories')
+            html = html.replace(f'{q}../plants/', f'{q}/preview?kingdom=plants&id=')
+            html = html.replace(f'{q}../wildlife/', f'{q}/preview?kingdom=wildlife&id=')
+        # A species link is plants/PSBP-00042-Scorpion-Tail.html; the species preview wants the id alone.
+        html = re.sub(r'(/preview\?kingdom=\w+&id=PSBP-\d{5})-[^"\')]+\.html', r'\1', html)
+        return (html, 200)
+    except ValueError as e:
+        return (f"<h1>Cannot render {story_id}</h1><p>{e}</p>", 400)
+    except Exception:                                             # noqa: BLE001
+        import traceback
+        return (f"<h1>Preview error</h1><pre>{traceback.format_exc()[-1200:]}</pre>", 500)
+
+
+def render_stories():
+    """Stories tab — the list from the private master, with preview, stage and publish.
+    A raw string: the script below carries \\n escapes that must reach the browser as two characters."""
+    return r"""
+    <style>
+    .st-top { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
+    .st-top .path { font-size:12px; color:var(--gray-600); font-family:ui-monospace,Menlo,monospace; }
+    table.sg td select { font:inherit; font-size:13px; padding:3px 6px; }
+    .st-state { font-size:12px; font-weight:600; padding:2px 8px; border-radius:10px; white-space:nowrap; }
+    .st-state.ok { background:#e8f5e9; color:#2d6a35; }
+    .st-state.stale { background:#fff8e1; color:#8a6d2f; }
+    .st-state.todo { background:#e8eaf6; color:#283593; }
+    .st-state.draft { background:var(--gray-100); color:var(--gray-600); }
+    .st-state.bad { background:#ffebee; color:#b71c1c; }
+    .st-log { white-space:pre-wrap; font:12px/1.5 ui-monospace,Menlo,monospace; background:var(--gray-100); padding:10px 12px; border-radius:6px; margin-top:12px; display:none; }
+    .st-warn { background:#fff8e1; color:#5d4200; padding:8px 12px; border-radius:6px; font-size:13px; margin-bottom:12px; }
+    .st-help { font-size:13px; color:var(--gray-600); margin:0 0 14px; line-height:1.6; }
+    .st-help code { font-family:ui-monospace,Menlo,monospace; font-size:12px; }
+    </style>
+    <div class="card">
+      <h2 style="margin-bottom:6px">📖 Park Stories</h2>
+      <p class="st-help">Every story in the private master, draft and published. <strong>Preview</strong> shows a
+      story the way the publisher writes it, at any stage. Change <strong>stage</strong>, <strong>visibility</strong>
+      or <strong>home</strong> and press <strong>Save</strong> to write those three fields to the master.
+      <strong>Publish</strong> writes every published story's page, the catalog and the index into this repo;
+      you commit in GitHub Desktop as usual. Words, photos and blocks are still edited in the JSON with Claude.</p>
+      <div class="st-top">
+        <button class="pub-btn promote" id="stPublish">🚀 Publish stories</button>
+        <label style="font-size:13px;color:var(--gray-600)"><input type="checkbox" id="stClean"> also remove pages the master no longer produces (demo leftovers)</label>
+        <button class="pub-btn" id="stReload" style="background:white;border-color:var(--gray-200);color:var(--gray-600)">↻ Reload</button>
+        <span class="path" id="stMaster"></span>
+      </div>
+      <div id="stWarn"></div>
+      <table class="sg" id="stTable">
+        <thead><tr><th>Story</th><th>Kind</th><th>Stage</th><th>Visibility</th><th>Home</th><th>Date</th><th>Blocks</th><th>Page</th><th></th></tr></thead>
+        <tbody><tr><td colspan="9" style="color:var(--gray-600)">Loading…</td></tr></tbody>
+      </table>
+      <div class="st-log" id="stLog"></div>
+    </div>
+    <script>
+    (function(){
+      const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const tbody = document.querySelector('#stTable tbody');
+      const log = document.getElementById('stLog');
+      function showLog(text){ log.style.display = 'block'; log.textContent = text; }
+      function sel(name, value, opts){
+        return `<select data-f="${name}">` + opts.map(o => `<option value="${o}" ${o===value?'selected':''}>${o}</option>`).join('') + `</select>`;
+      }
+      async function load(){
+        const r = await fetch('/api/stories/list'); const d = await r.json();
+        document.getElementById('stMaster').textContent = d.master || '';
+        document.getElementById('stWarn').innerHTML = (d.warnings||[]).length
+          ? `<div class="st-warn"><strong>Publisher notes</strong><ul style="margin:.3rem 0 0 1.2rem">${d.warnings.map(w=>`<li>${esc(w)}</li>`).join('')}</ul></div>` : '';
+        if (!d.rows || !d.rows.length){ tbody.innerHTML = '<tr><td colspan="9" style="color:var(--gray-600)">No stories in the master yet.</td></tr>'; return; }
+        tbody.innerHTML = d.rows.map(r => `
+          <tr data-id="${esc(r.id)}" class="${r.stage==='draft'?'held':''}">
+            <td><strong>${esc(r.title)}</strong><br><span style="font-size:12px;color:var(--gray-600)">${esc(r.kicker)} · <code>${esc(r.id)}</code></span></td>
+            <td>${esc(r.kind)}</td>
+            <td>${sel('stage', r.stage, ['draft','published'])}</td>
+            <td>${sel('visibility', r.visibility, ['listed','unlisted','withdrawn'])}</td>
+            <td>${r.kind==='story' ? `<input type="checkbox" data-f="home" ${r.home?'checked':''}>` : ''}</td>
+            <td>${esc(r.date)}</td>
+            <td>${r.blocks}</td>
+            <td><span class="st-state ${esc(r.state_class)}">${esc(r.state)}</span></td>
+            <td style="white-space:nowrap">
+              <a class="pub-btn" style="text-decoration:none;background:white;border-color:var(--gray-200);color:var(--green-mid)" href="/stories-preview?id=${encodeURIComponent(r.id)}" target="_blank">👁 Preview</a>
+              <button class="pub-btn promote" data-save>Save</button>
+            </td>
+          </tr>`).join('');
+      }
+      tbody.addEventListener('click', async e => {
+        const b = e.target.closest('[data-save]'); if (!b) return;
+        const tr = b.closest('tr'); const id = tr.dataset.id;
+        const body = { id,
+          stage: tr.querySelector('[data-f=stage]').value,
+          visibility: tr.querySelector('[data-f=visibility]').value };
+        const home = tr.querySelector('[data-f=home]'); if (home) body.home = home.checked;
+        b.disabled = true; b.textContent = 'Saving…';
+        const r = await fetch('/api/stories/set', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+        const d = await r.json();
+        showLog(d.ok ? (d.changed.length ? `${id}: ` + d.changed.join('; ') : `${id}: nothing changed`) : `Error: ${d.error}`);
+        await load();
+      });
+      document.getElementById('stPublish').addEventListener('click', async () => {
+        const b = document.getElementById('stPublish'); b.disabled = true; b.textContent = 'Publishing…';
+        showLog('Running story_publisher.py…');
+        const r = await fetch('/api/stories/publish', {method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({clean: document.getElementById('stClean').checked})});
+        const d = await r.json();
+        showLog((d.log || '') + (d.files ? `\n\nFiles changed in the repo (git status):\n${d.files}` : '\n\nNo files changed.') + (d.error ? `\n\n${d.error}` : '')
+          + '\n\nNothing is committed. Review in GitHub Desktop and push when you are happy.');
+        b.disabled = false; b.textContent = '🚀 Publish stories';
+        await load();
+      });
+      document.getElementById('stReload').addEventListener('click', load);
+      load();
+    })();
+    </script>
+    """
+
+
 PAGE_ROUTES = {
     "/signs":   ("signs",    render_signs),
+    "/stories": ("stories",  render_stories),
 
     "/":        ("overview", render_overview),
     "/intake":  ("intake",   render_intake),
@@ -12940,6 +13243,9 @@ API_ROUTES = {
     "/api/ai/verify/apply":   handle_api_ai_verify_apply,
     "/api/cultivated/mark":    handle_api_cultivated_mark,
     "/api/cultivated/keep":    handle_api_cultivated_keep,
+    "/api/stories/list":       handle_api_stories_list,
+    "/api/stories/set":        handle_api_stories_set,
+    "/api/stories/publish":    handle_api_stories_publish,
 }
 
 
@@ -12960,6 +13266,21 @@ class DashboardHandler(BaseHTTPRequestHandler):
         # Preview-only. See _serve_css_file() for why this exists.
         if path.startswith("/css-file/"):
             self._serve_css_file(path[len("/css-file/"):])
+            return
+
+        # Scripts for the story preview (site.js, stories.js): same reason as /css-file/
+        if path.startswith("/js-file/"):
+            self._serve_repo_file("js", path[len("/js-file/"):], "application/javascript")
+            return
+        # The site logo and favicon that site.js injects into a previewed page
+        if path.startswith("/images/"):
+            self._serve_repo_file("images", path[len("/images/"):], "image/png")
+            return
+
+        # Story preview: render one story from the private master in memory, any stage
+        if path == "/stories-preview":
+            html, code = render_story_preview_html(params.get("id", [""])[0])
+            self._html_response(code, html)
             return
 
         # Live preview: render a species page in memory (no files written)
@@ -13069,6 +13390,31 @@ class DashboardHandler(BaseHTTPRequestHandler):
         except IOError:
             self._html_response(500, "Read error")
 
+    def _serve_repo_file(self, folder, rel_path, default_mime):
+        """Serve one file from a repo folder (js/ for the story preview). No cache,
+        no traversal, the same shape as _serve_css_file."""
+        import mimetypes
+        clean = os.path.normpath(rel_path)
+        if clean.startswith("..") or clean.startswith("/"):
+            self._html_response(403, "Forbidden")
+            return
+        full = os.path.join(REPO, folder, clean)
+        if not os.path.isfile(full):
+            self._html_response(404, "Not found")
+            return
+        mime = mimetypes.guess_type(full)[0] or default_mime
+        try:
+            with open(full, "rb") as f:
+                data = f.read()
+            self.send_response(200)
+            self.send_header("Content-Type", mime)
+            self.send_header("Content-Length", len(data))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(data)
+        except IOError:
+            self._html_response(500, "Read error")
+
     def _serve_css_file(self, rel_path):
         """Serve a stylesheet from the repo's css/ directory.
 
@@ -13124,13 +13470,14 @@ def main():
 
     server = ThreadingHTTPServer((host, port), DashboardHandler)
     print(f"╔══════════════════════════════════════════════════╗")
-    print(f"║  PSBP Species Manager                           ║")
+    print(f"║  The Dirt — species and stories                 ║")
     print(f"║  http://localhost:{port:<5}                       ║")
     print(f"╠══════════════════════════════════════════════════╣")
     print(f"║  Overview .... http://localhost:{port}/           ║")
     print(f"║  Intake ...... http://localhost:{port}/intake     ║")
     print(f"║  Photos ...... http://localhost:{port}/photos     ║")
     print(f"║  Publish ..... http://localhost:{port}/publish    ║")
+    print(f"║  Stories ..... http://localhost:{port}/stories    ║")
     print(f"╚══════════════════════════════════════════════════╝")
     print(f"  Data: {REPO}")
     if host not in ("127.0.0.1", "localhost"):

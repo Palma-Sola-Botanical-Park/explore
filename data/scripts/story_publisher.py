@@ -564,6 +564,16 @@ def render_catalog(stories, collections, reg, ctx):
     return html
 
 
+def orphan_pages(outputs):
+    """Pages in stories/ that the current master does not produce. Draft previews
+    (_draft-*.html) are never orphans; they are deleted by hand."""
+    if not OUT_DIR.is_dir():
+        return []
+    written = {p.resolve() for p in outputs}
+    return sorted(p for p in OUT_DIR.glob("*.html")
+                  if p.resolve() not in written and not p.name.startswith("_draft-"))
+
+
 # ── main ───────────────────────────────────────────────────────────────────
 
 def load_master(path):
@@ -599,6 +609,8 @@ def main():
     ap.add_argument("--master", help="path to stories.json (default: the private master)")
     ap.add_argument("--demo", action="store_true", help="render the SAMPLE master with a DEMO banner")
     ap.add_argument("--dry-run", action="store_true", help="resolve and render, write nothing")
+    ap.add_argument("--clean", action="store_true",
+                    help="after writing, delete pages in stories/ that this run did not write (demo leftovers, retired ids); never _draft-* previews")
     ap.add_argument("--preview", metavar="ID",
                     help="render one story whatever its stage, with a DRAFT banner, to stories/_draft-ID.html; nothing else is written")
     args = ap.parse_args()
@@ -675,6 +687,15 @@ def main():
             path.write_text(html, encoding="utf-8")
         INDEX.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"wrote {len(outputs)} pages, {INDEX.name} ({len(index['stories'])} stories, {len(index['collections'])} collections)")
+        orphans = orphan_pages(outputs)
+        if orphans:
+            if args.clean:
+                for o in orphans:
+                    o.unlink()
+                print(f"cleaned {len(orphans)} page(s) this run did not write: " + ", ".join(o.name for o in orphans))
+            else:
+                print(f"{len(orphans)} page(s) in stories/ that this run did not write (demo leftovers or retired ids; "
+                      "--clean removes them): " + ", ".join(o.name for o in orphans))
     if WARN:
         print(f"\n{len(WARN)} warning(s) above need a look.")
     return 0

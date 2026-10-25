@@ -31,7 +31,7 @@ have to remind you of any of this. The old `park-library` repo (`../park-library
 | **Signs** (QR, print PDFs) | `data/scripts/signs/` and the Signs tab in Species Manager; rule 1 (signs before 2026-10-04 are beta). |
 | **Events, news, classes, the Google Sheet** | rule 6 and section 4 here; fix content in the Sheet, never in the published JSON. |
 | **Tours** | `AD park-knowledge/TOURS.md` (to be revamped in 2027; stale teasers there are not findings). |
-| **Park Stories** (`story.html`, the stories JSON, the photographer page and its two data paths) | `AD system docs/PARK_STORIES_PLAN.md`, then ACTIONS Content #28. Planning only until Randy starts build step A. |
+| **Park Stories** (`stories/`, `stories.html`, `story_publisher.py`, the Stories mode of The Dirt, the photographer page) | `AD system docs/PARK_STORIES_PLAN.md`, then ACTIONS Content #28. The master is private: `AD stories/stories.json`, notes in `AD stories/notes/`. |
 | **What is open / what to do next** | `AD system docs/PSBP_ACTIONS.md` (start with the index) and `AD system docs/HANDOFF.md`. |
 | Anything else, or a new kind of job | `AD system docs/CLAUDE_ONBOARDING.md` and `PSBP_ARCHITECTURE.md`; search the headings, do not read it all. |
 
@@ -306,8 +306,9 @@ is editing the live screens.
 
 | Script | Port | Does |
 |---|---|---|
-| `species_manager.py` | 8700 | the dashboard: Overview, Intake, Photos, Cultivated, Preview & Publish, Signs, Verify, To do, Health. Mints IDs. Its "Work on this page" AI button is retired (2026-10-22); use it for preview and publish only. Holds JSON in browser memory (see rule 4). |
+| `species_manager.py` | 8700 | the dashboard, named **The Dirt** (2026-10-24), with a Species \| Stories switch in the header. Species mode: Overview, Intake, Photos, Cultivated, Preview & Publish, Signs, Verify, To do, Health. Stories mode: Stories (list, preview, stage/visibility/home, publish) and Health. Mints IDs. Its "Work on this page" AI button is retired (2026-10-22); use it for preview and publish only. Holds JSON in browser memory (see rule 4). |
 | `signs/make_signs.py` | | print sign PDFs (reportlab + Pillow, so it runs as a subprocess of the Signs tab). Output to `~/Documents/PSBP/signs_out/builds/`, never the repo. QR is the short `/p/` permalink. |
+| `story_publisher.py` | | Park Stories. Reads the PRIVATE master `../Active-PSBP-Docs/stories/stories.json` (the one master not in `data/sources/`, so a draft is never on GitHub); writes `stories/<id>.html`, `stories.html`, `stories.json`. `--preview ID` renders one draft with a banner; `--demo` renders the sample master; `--clean` removes pages the master no longer produces. Plan: `AD system docs/PARK_STORIES_PLAN.md` |
 | `propagate_species_name.py` | | after a species rename: preview lists every place the old name is still stored; `--apply` fixes the mechanical ones (record, photo rows, page, `/p/` stub, indexes) and leaves a checklist of prose, hand-kept files and docs. No args = drift scan. Like `propagate_names.py` (photographers). One species at a time. |
 | `plant_publisher.py` | 8701 | `--generate PSBP-xxxxx`, `--generate-all`, `--demote`; writes `plants/` and `plants.json` |
 | `wildlife_publisher.py` | 8702 | same for wildlife |
