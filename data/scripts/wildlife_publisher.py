@@ -187,7 +187,7 @@ def build_wildlife_json_entry(species, hero):
 
 def render_badges(species):
     # RETAINED BUT NOT RENDERED. The chip/status row was removed from the page
-    # template (pages now go header → credit → Quick Hits). This function and the
+    # template (pages now go header → credit → At a glance). This function and the
     # .badge CSS are kept so the conditional-chip idea ("show only notable
     # conditions: Threatened, Dangerous, Invasive") can be revisited later without
     # rebuilding from scratch. Wire it back into the wild-content template to use.
@@ -232,7 +232,7 @@ def render_badges(species):
 def _allow_bold(text):
     """Escape all HTML, then restore ONLY <b>/</b> tags.
 
-    Lets signage authors bold a keyword with <b>...</b> in quick hits while
+    Lets authors bold a keyword with <b>...</b> in a glance bullet while
     keeping every other character safely escaped — a stray < or & can't break
     the page or inject markup. Bold is the only tag permitted.
     """
@@ -240,14 +240,6 @@ def _allow_bold(text):
     safe = safe.replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>")
     safe = safe.replace("&lt;B&gt;", "<b>").replace("&lt;/B&gt;", "</b>")
     return safe
-
-
-def render_quick_hits(species):
-    items = species.get("quick_hits") or []
-    if not items:
-        return ""
-    li = "".join(f"<li>{_allow_bold(q)}</li>" for q in items)
-    return f'<div class="wild-section"><div class="wild-section-header"><span class="wild-section-icon">⚡</span><span class="wild-section-title">Quick Hits</span></div><ul class="quick-hits-list">{li}</ul></div>'
 
 
 def render_identification(species):
@@ -560,12 +552,9 @@ def v2_at_a_glance(species):
                            '<div class="sp-quick"><ul>'
                            + "".join(f"<li>{_allow_bold(str(b.get('text', b) if isinstance(b, dict) else b))}</li>" for b in pol)
                            + "</ul></div>")
-    hits = species.get("quick_hits") or []
-    if not hits:
-        return ""
-    li = "".join(f"<li>{_allow_bold(q)}</li>" for q in hits)
-    return _v2_section("glance", "At a glance",
-                       f'<div class="sp-quick"><ul>{li}</ul></div>')
+    # No fallback. At a glance is authored (page.at_a_glance) or absent; the
+    # old quick_hits branch was retired 2026-10-24 (ACTIONS #72, step 3).
+    return ""
 
 
 def v2_similar(species):
@@ -1167,7 +1156,6 @@ def generate_html(species, hero, gallery_photos, published_on=""):
     gallery_section, lightbox_section = render_gallery(species, gallery_photos, hero)
 
     sections = []
-    sections.append(render_quick_hits(species))
     sections.append(render_identification(species))
     sections.append(render_diet(species))
     sections.append(render_where_when(species))
@@ -1470,7 +1458,7 @@ function renderFilters(){const bar=document.getElementById('filters');['html','s
 function renderList(){const q=(document.getElementById('search').value||'').toLowerCase();const list=document.getElementById('species-list');list.innerHTML='';DATA.species.filter(s=>{if(!activeFilters.has(s.status))return false;if(q){const hay=(s.common_name+' '+s.scientific_name+' '+s.id+' '+(s.animal_group||'')+' '+(s.tags||[]).join(' ')).toLowerCase();if(!hay.includes(q))return false;}return true;}).forEach(s=>{const d=document.createElement('div');d.className='species-item'+(s.id===selectedId?' selected':'');d.innerHTML='<div class="dot '+s.status+'"></div><div class="info"><div class="name">'+esc(s.common_name)+'</div><div class="sci">'+esc(s.scientific_name)+'</div></div><div class="id-tag">'+s.id+'</div>';d.onclick=()=>{selectedId=s.id;renderList();renderDetail(s.id);};list.appendChild(d);});}
 function renderDetail(id){const s=DATA.species.find(x=>x.id===id),hero=DATA.heroes[id]||null,gallery=DATA.galleries[id]||[],hasHero=!!hero;const main=document.getElementById('main');const heroUrl=hasHero?hero.photo_url:'';const heroHtml=hasHero?'<img src="'+esc(heroUrl)+'" alt="'+esc(s.common_name)+'">':'<div class="no-hero">No hero photo</div>';const pj=DATA.wj_lookup[id];
 main.innerHTML='<div class="detail"><div class="detail-header"><div class="detail-hero">'+heroHtml+'</div><div class="detail-meta"><h2>'+esc(s.common_name)+'</h2><div class="sci">'+esc(s.scientific_name)+'</div><div class="meta-row"><strong>ID:</strong> '+s.id+'</div><div class="meta-row"><strong>Group:</strong> '+esc(s.animal_group||'')+'</div><div class="meta-row"><strong>Category:</strong> '+esc(s.category||'')+'</div><div class="meta-row"><strong>Gallery photos:</strong> '+gallery.length+'</div><div class="meta-row"><strong>In wildlife.json:</strong> '+(pj?'Yes':'No')+'</div>'+(hasHero?'<div class="meta-row"><strong>Hero:</strong> '+esc(hero.photographer_name||hero.photographer)+' · '+esc(hero.filename||'')+'</div>':'<div class="meta-row" style="color:#c49a20"><strong>⚠ No hero photo</strong></div>')+'</div></div><div class="action-bar"><span class="status-badge '+s.status+'">'+s.status.toUpperCase()+'</span><button class="btn btn-publish" onclick="doPublish(&#39;'+id+'&#39;)" '+(hasHero?'':'disabled title="Needs hero photo"')+'>'+(s.status==='html'?'♻️ Regenerate':'🚀 Publish')+'</button><button class="btn btn-preview" onclick="window.open(&#39;/api/preview?id='+id+'&#39;,&#39;_blank&#39;)">👁 Preview</button>'+(s.status==='html'?'<button class="btn btn-demote" onclick="doDemote(&#39;'+id+'&#39;)">⬇ Demote</button>':'')+'<span class="action-msg" id="action-msg"></span></div>'+buildSections(s,gallery)+'</div>';}
-function buildSections(s,gallery){let h='';if(s.quick_hits?.length)h+=ds('Quick Hits',s.quick_hits.map((q,i)=>'<div class="text-block">'+(i+1)+'. '+esc(q)+'</div>').join(''));if(s.identification){let r='';(s.identification.blocks||[]).forEach(b=>{r+='<div class="data-row"><div class="label">'+esc(b.label)+'</div><div class="value">'+esc(b.text)+'</div></div>';});if(s.identification.what_to_look_for)r+='<div class="data-row"><div class="label">Look for</div><div class="value">'+esc(s.identification.what_to_look_for)+'</div></div>';h+=ds('Identification',r);}if(s.diet)h+=ds('Diet','<div class="text-block">'+esc(s.diet)+'</div>');if(s.where_to_look||s.when_to_see)h+=ds('Where & When','<div class="data-row"><div class="label">Where</div><div class="value">'+esc(s.where_to_look||'')+'</div></div><div class="data-row"><div class="label">When</div><div class="value">'+esc(s.when_to_see||'')+'</div></div>');if(s.more_information?.length)h+=ds('More Information',s.more_information.map(p=>'<div class="text-block">'+esc(p)+'</div>').join(''));if(s.interaction)h+=ds('Interaction','<div class="data-row"><div class="label">Level: '+esc(s.interaction.level||'')+'</div><div class="value">'+esc(s.interaction.guidance||'')+'</div></div>');if(gallery.length>1){let g='<div class="gal-preview">';gallery.forEach(p=>{if(p.photo_url)g+='<img src="'+esc(p.photo_url)+'">';});g+='</div>';h+=ds('Gallery ('+gallery.length+' photos)',g);}if(s.tags?.length)h+=ds('Tags','<div>'+s.tags.map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div>');return h;}
+function buildSections(s,gallery){let h='';if(s.identification){let r='';(s.identification.blocks||[]).forEach(b=>{r+='<div class="data-row"><div class="label">'+esc(b.label)+'</div><div class="value">'+esc(b.text)+'</div></div>';});if(s.identification.what_to_look_for)r+='<div class="data-row"><div class="label">Look for</div><div class="value">'+esc(s.identification.what_to_look_for)+'</div></div>';h+=ds('Identification',r);}if(s.diet)h+=ds('Diet','<div class="text-block">'+esc(s.diet)+'</div>');if(s.where_to_look||s.when_to_see)h+=ds('Where & When','<div class="data-row"><div class="label">Where</div><div class="value">'+esc(s.where_to_look||'')+'</div></div><div class="data-row"><div class="label">When</div><div class="value">'+esc(s.when_to_see||'')+'</div></div>');if(s.more_information?.length)h+=ds('More Information',s.more_information.map(p=>'<div class="text-block">'+esc(p)+'</div>').join(''));if(s.interaction)h+=ds('Interaction','<div class="data-row"><div class="label">Level: '+esc(s.interaction.level||'')+'</div><div class="value">'+esc(s.interaction.guidance||'')+'</div></div>');if(gallery.length>1){let g='<div class="gal-preview">';gallery.forEach(p=>{if(p.photo_url)g+='<img src="'+esc(p.photo_url)+'">';});g+='</div>';h+=ds('Gallery ('+gallery.length+' photos)',g);}if(s.tags?.length)h+=ds('Tags','<div>'+s.tags.map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div>');return h;}
 function ds(title,body){return '<div class="data-section"><div class="data-section-header" onclick="this.nextElementSibling.classList.toggle(&#39;collapsed&#39;)">'+esc(title)+' <span class="toggle">▾</span></div><div class="data-section-body">'+body+'</div></div>';}
 async function doPublish(id){const msg=document.getElementById('action-msg');msg.textContent='Publishing…';msg.style.color='#d4aa40';try{const r=await(await fetch('/api/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})})).json();if(r.ok){msg.textContent='✓ Published';msg.style.color='#4a9e56';showToast('Published '+r.filename);DATA=await(await fetch('/api/data')).json();renderCounts();renderList();renderDetail(id);}else{msg.textContent='✗ '+r.error;msg.style.color='#c44';}}catch(e){msg.textContent='✗ Network error';msg.style.color='#c44';}}
 async function doDemote(id){if(!confirm('Demote this species to spotted? It will be removed from wildlife.json.'))return;const msg=document.getElementById('action-msg');msg.textContent='Demoting…';msg.style.color='#d4aa40';try{const r=await(await fetch('/api/demote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})})).json();if(r.ok){msg.textContent='✓ Demoted';msg.style.color='#d4aa40';showToast(r.message);DATA=await(await fetch('/api/data')).json();renderCounts();renderList();renderDetail(id);}else{msg.textContent='✗ '+r.error;msg.style.color='#c44';}}catch(e){msg.textContent='✗ Network error';msg.style.color='#c44';}}
@@ -1579,7 +1567,8 @@ class DashboardHandler(http.server.BaseHTTPRequestHandler):
                     f"species in Edit &amp; Preview, then reload.</p>", 400)
                 return
             hero = heroes.get(pid)
-            preview = generate_html(sp, hero, galleries.get(pid, []))
+            # v2: preview what Publish writes (write_html uses generate_html_v2).
+            preview = generate_html_v2(sp, hero, galleries.get(pid, []))
             # Replace local hero path with iNat URL for preview
             if hero and hero.get("photo_url"):
                 preview = preview.replace(f"../photos/{pid}/{hero['filename']}", hero["photo_url"])

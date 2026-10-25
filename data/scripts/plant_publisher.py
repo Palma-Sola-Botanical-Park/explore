@@ -306,7 +306,7 @@ def render_badges(species):
 def _allow_bold(text):
     """Escape all HTML, then restore ONLY <b>/</b> tags.
 
-    Lets signage authors bold a keyword with <b>...</b> in quick hits while
+    Lets authors bold a keyword with <b>...</b> in a glance bullet while
     keeping every other character safely escaped — a stray < or & can't break
     the page or inject markup. Bold is the only tag permitted. Mirrors the
     identical helper in wildlife_publisher.py so both publishers share one
@@ -316,21 +316,6 @@ def _allow_bold(text):
     safe = safe.replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>")
     safe = safe.replace("&lt;B&gt;", "<b>").replace("&lt;/B&gt;", "</b>")
     return safe
-
-
-def render_quick_hits(species):
-    items = species.get("quick_hits") or []
-    if not items:
-        return ""
-    lines = []
-    for item in items:
-        lines.append(f"    <li>{_allow_bold(item)}</li>")
-    return f"""  <div class="plant-section">
-    <div class="plant-section-header"><span class="plant-section-icon">⚡</span><span class="plant-section-title">Quick Hits</span></div>
-    <ul class="quick-hits-list">
-{chr(10).join(lines)}
-    </ul>
-  </div>"""
 
 
 MAX_PARA_CHARS = 400   # readability cap — no rendered paragraph may exceed this (tunable)
@@ -963,7 +948,11 @@ def v2_species_map(species, species_lookup=None):
 # ── the seven mapping rules ───────────────────────────────────────────────
 
 def v2_map_at_a_glance(sp):
-    return [{"text": t} for t in _v2_lst(sp.get("quick_hits"))]
+    """No fallback. At a glance is authored (page.at_a_glance) or absent;
+    the old quick_hits mapping was retired 2026-10-24 (ACTIONS #72, step 3).
+    A page published without the key shows no glance section, and the PAGE
+    audit says so."""
+    return []
 
 
 def v2_map_how_to_know_it(sp):
@@ -1373,7 +1362,6 @@ def generate_html(species, hero, gallery_photos=None, published_on=""):
     # Build all sections
     gallery_section, lightbox_section = render_gallery(species, gallery_photos, hero)
     sections = []
-    sections.append(render_quick_hits(species))
     sections.append(render_origin(species))
     sections.append(render_more_info(species))
     sections.append(render_wildlife(species))
@@ -1842,11 +1830,6 @@ function renderDetail(id) {
 
 function renderDataSections(s, hero) {
   let html = '';
-
-  // Quick Hits
-  if (s.quick_hits?.length) {
-    html += dataSection('Quick Hits', s.quick_hits.map((q,i) => `<div class="text-block">${i+1}. ${esc(q)}</div>`).join(''));
-  }
 
   // Origin
   if (s.origin) {
