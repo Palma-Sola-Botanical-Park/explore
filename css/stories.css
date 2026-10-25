@@ -1,0 +1,147 @@
+/* ══ PARK STORIES ═══════════════════════════════════════════════════════════
+   Loads after psbp.css (tokens, nav, cards, credit plates) and species-v2.css
+   (the hero, .sp-figure, the lightbox, the credits roll). This file adds only
+   what a story needs that a species page does not: the reading column without
+   a rail, the pair, the quotation band, the gallery grid, tap-to-play video,
+   the inline link card, the catalog cards, and the DEMO banner.
+
+   Captions are reading text, so they sit at var(--t-base). The species
+   figcaption is .86rem; that is under the floor and is NOT copied here.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── demo banner (only with --demo) ─────────────────────────────────────── */
+.st-demo { background: var(--gold-light); color: #3a2a00; font-size: var(--t-base);
+  text-align: center; padding: .45rem 1rem; position: relative; z-index: 5; }
+.st-demo a { color: #3a2a00; font-weight: 700; text-decoration: underline; }
+
+/* ── hero: the species banner, with a dek instead of a Latin name ───────── */
+.st-hero .sp-eyebrow { color: var(--gold-light); }
+.st-dek { font-family: var(--sans); font-size: clamp(1.05rem, 2.2vw, 1.3rem); line-height: 1.5;
+  color: rgba(255,255,255,.9); max-width: 46ch; margin-top: .5rem; }
+
+/* ── the reading column ─────────────────────────────────────────────────── */
+.st-body { max-width: calc(var(--col) + 2.8rem); margin: 0 auto; padding: 1.6rem 1.4rem 3rem; }
+.st-body > * { max-width: var(--col); }
+.st-meta { font-size: var(--t-base); color: var(--ink-soft); padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--rule); margin-bottom: 1.8rem; }
+.st-meta a { color: var(--green); font-weight: 600; }
+.st-updated { font-size: var(--t-sm); color: var(--ink-faint); margin: 2rem 0 0; }
+.st-h { font-family: var(--serif); font-size: clamp(1.4rem, 3vw, 1.85rem); color: var(--green-ink);
+  margin: 2.6rem 0 .9rem; line-height: 1.2; }
+.st-h:first-child { margin-top: .4rem; }
+.st-text p { font-size: var(--t-base); line-height: 1.78; color: var(--ink); margin: 0 0 1.1rem; }
+.st-text p:last-child { margin-bottom: 0; }
+.st-text { margin-bottom: 1.4rem; }
+
+/* ── photographs: the species figure, larger, caption at the floor ──────── */
+.st-figure { margin: 2rem 0 2.4rem; }
+.st-figure img { max-height: 540px; cursor: zoom-in; }
+.st-figure figcaption, .st-gallery figcaption, .st-videowrap figcaption {
+  font-family: var(--sans); font-size: var(--t-base); line-height: 1.6; color: var(--ink-soft);
+  margin-top: .6rem; padding-left: .9rem; border-left: 2px solid var(--gold-mark); }
+.st-body .credit-plate { margin-top: .6rem; }
+
+/* ── pair / before-and-after: side by side, stacked on a phone ──────────── */
+.st-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin: 2rem 0 2.4rem; }
+.st-pair .st-figure { margin: 0; }
+.st-pair .st-figure img { max-height: 320px; height: 320px; }
+.st-pair-label { font-size: var(--t-cap); font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--green); margin-bottom: .4rem; }
+@media (max-width: 640px) { .st-pair { grid-template-columns: 1fr; } .st-pair .st-figure img { height: auto; } }
+
+/* ── quotation: one band, set large, full bleed like the species sections ─ */
+.st-quote { position: relative; margin: 2.6rem 0; padding: 2.2rem 0 2rem; max-width: none; }
+.st-quote::before { content: ""; position: absolute; top: 0; bottom: 0; left: -50vw; right: -50vw;
+  background: var(--wash); z-index: -1; }
+.st-quote p { font-family: var(--serif); font-style: italic; font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+  line-height: 1.45; color: var(--green-ink); margin: 0 0 .9rem; max-width: var(--col); }
+.st-quote p::before { content: "\201C"; color: var(--gold-mark); margin-right: .1em; }
+.st-quote p::after { content: "\201D"; color: var(--gold-mark); margin-left: .05em; }
+.st-quote footer { font-family: var(--sans); font-size: var(--t-base); font-weight: 600; color: var(--ink-soft); }
+.st-quote .st-when { font-weight: 400; color: var(--ink-faint); }
+.st-quote .st-when::before { content: " · "; }
+
+/* ── gallery: a curated grid, every tile opens the lightbox ─────────────── */
+.st-gallery { position: relative; margin: 2.4rem 0; padding: 1.6rem 0 1.4rem; max-width: none; }
+.st-gallery::before { content: ""; position: absolute; top: 0; bottom: 0; left: -50vw; right: -50vw;
+  background: var(--sunk); z-index: -1; }
+.st-gallery-intro { font-size: var(--t-base); color: var(--ink-soft); margin: 0 0 1.1rem; max-width: var(--col); }
+.st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem 1.1rem; }
+.st-grid figure { margin: 0; }
+.st-tile { aspect-ratio: 4 / 3; overflow: hidden; border-radius: 2px; background: var(--sunk); cursor: zoom-in; }
+.st-tile img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s ease; }
+.st-grid figure:hover .st-tile img { transform: scale(1.04); }
+.st-grid figcaption { border-left: 0; padding-left: 0; font-size: var(--t-base); margin-top: .45rem; }
+@media (max-width: 480px) { .st-grid { grid-template-columns: 1fr 1fr; gap: .6rem; } }
+
+/* ── video: a poster and a play button; nothing loads until tapped ──────── */
+.st-videowrap { margin: 2rem 0 2.4rem; }
+.st-video { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; overflow: hidden;
+  border-radius: 2px; background: var(--green-ink); }
+.st-video img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(.82); }
+.st-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.st-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: .55rem; padding: .7rem 1.3rem .7rem 1rem;
+  font: inherit; font-size: var(--t-base); font-weight: 700; color: var(--green-ink);
+  background: var(--gold-light); border: 0; border-radius: var(--r-pill); cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0,0,0,.35); }
+.st-play:hover { background: #fff; }
+video.st-video { aspect-ratio: auto; }
+
+/* ── inline link card: a species page, another story, a collection ──────── */
+.st-link { display: grid; grid-template-columns: 110px 1fr; gap: 1rem; align-items: center;
+  margin: 1.6rem 0 2rem; padding: .7rem; background: var(--surface); border: 1px solid var(--rule-strong);
+  border-left: 4px solid var(--gold-mark); border-radius: var(--r-sm); color: inherit; text-decoration: none;
+  transition: border-color .18s, box-shadow .18s; }
+.st-link:hover { border-color: var(--green); box-shadow: var(--lift); text-decoration: none; }
+.st-link img { width: 110px; height: 82px; object-fit: cover; border-radius: 2px; display: block; background: var(--sunk); }
+.st-link > span { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.st-link-eyebrow { font-size: var(--t-cap); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--green); }
+.st-link-title { font-family: var(--serif); font-size: var(--t-md); font-weight: 700; color: var(--green-ink); line-height: 1.2; }
+.st-link-text { font-size: var(--t-base); color: var(--ink-soft); line-height: 1.5; }
+@media (max-width: 480px) { .st-link { grid-template-columns: 84px 1fr; } .st-link img { width: 84px; height: 64px; } }
+
+/* ── keep reading, and the credits roll ─────────────────────────────────── */
+.st-related { margin-top: 2.6rem; border-top: 1px solid var(--rule); padding-top: .6rem; }
+.st-related-grid { display: grid; gap: .2rem; }
+.st-related .st-link { margin: .6rem 0; }
+.st-roll { margin-top: 2.6rem; }
+.st-roll-intro { color: var(--ink-soft); font-size: var(--t-base); margin-bottom: 1.2rem; }
+.st-gal .shot img { object-fit: cover; }
+.st-body .credit-name { white-space: normal; }
+
+/* ── collection members, wide ───────────────────────────────────────────── */
+.st-wide { max-width: var(--wide); margin: 0 auto; padding: 0 1.4rem 1rem; }
+.st-card-seq { display: inline-block; font-family: var(--serif); font-size: var(--t-lg); color: var(--gold-mark); margin-bottom: .2rem; }
+
+/* ── catalog ────────────────────────────────────────────────────────────── */
+.st-catalog { padding: 2.2rem 1.4rem 4rem; }
+.st-colls { display: grid; grid-template-columns: 1fr; gap: 1.4rem; margin-bottom: 2.2rem; }
+.st-filters { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin: 0 0 1.4rem; font-size: var(--t-base); }
+.st-filters a { color: var(--ink-soft); font-weight: 600; padding: .2rem 0; border-bottom: 2px solid transparent; }
+.st-filters a.on { color: var(--green-ink); border-bottom-color: var(--gold-mark); text-decoration: none; }
+.st-filters a:hover { color: var(--green); text-decoration: none; }
+.st-card { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--rule);
+  border-radius: var(--r); overflow: hidden; color: inherit; text-decoration: none;
+  transition: border-color .18s, transform .18s, box-shadow .18s; }
+.st-card:hover { text-decoration: none; border-color: var(--green); transform: translateY(-3px); box-shadow: var(--lift); }
+.st-card.is-hidden { display: none; }
+.st-card-img { position: relative; height: 200px; overflow: hidden; background: var(--sunk); }
+.st-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
+.st-card:hover .st-card-img img { transform: scale(1.04); }
+.st-card-n { position: absolute; left: .8rem; bottom: .7rem; background: rgba(12,20,13,.8); color: #fff;
+  font-size: var(--t-sm); font-weight: 700; padding: .25rem .7rem; border-radius: var(--r-pill); }
+.st-card-body { display: flex; flex-direction: column; gap: .3rem; padding: 1rem 1.1rem 1.1rem; flex: 1; }
+.st-card-title { font-family: var(--serif); font-size: var(--t-lg); font-weight: 700; color: var(--green-ink); line-height: 1.18; }
+.st-card-dek { font-size: var(--t-base); color: var(--ink-soft); line-height: 1.5; }
+.st-card-go { margin-top: auto; padding-top: .5rem; font-weight: 700; color: var(--green); font-size: var(--t-base); }
+.st-card--coll { flex-direction: row; }
+.st-card--coll .st-card-img { flex: 0 0 46%; height: auto; min-height: 260px; }
+.st-card--coll .st-card-body { padding: 1.6rem 1.8rem; justify-content: center; }
+.st-card--coll .st-card-title { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+@media (max-width: 720px) { .st-card--coll { flex-direction: column; } .st-card--coll .st-card-img { min-height: 200px; height: 200px; flex: none; } }
+
+/* ── resting page ───────────────────────────────────────────────────────── */
+.st-resting { padding-top: 3rem; min-height: 50vh; }
+.st-resting h1 { margin: .4rem 0 1rem; }
+.st-resting p { font-size: var(--t-base); line-height: 1.7; margin-bottom: 1.2rem; }
