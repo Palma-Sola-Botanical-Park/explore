@@ -17,7 +17,9 @@ not committed. The renderer that settles the look here is the one that ships.
 Rules this follows (PARK_STORIES_PLAN.md):
   · a draft is in no public file. Two kinds (Randy, 2026-10-24): stage "draft"
     is off the site, and any page it had comes down; stage "draft-live" keeps
-    the last published page up while the new version is written. Withdrawn
+    the last published page up while the new version is written. Stage "idea"
+    is a stub on the back burner: a title and a line, no hero or blocks needed,
+    never written. Withdrawn
     stories get a resting page; unlisted ones get a page but no card
   · a blocked hero, poster or pair member refuses the story and says why;
     a blocked in-flow or gallery photo publishes with a loud warning
@@ -661,7 +663,7 @@ def main():
     index = {"meta": {"source": master.name, "demo": args.demo}, "collections": [], "stories": []}
     for s in list(stories.values()) + list(collections.values()):
         is_coll = "members" in s
-        if s.get("stage") not in ("published", "draft", "draft-live"):
+        if s.get("stage") not in ("published", "draft", "draft-live", "idea"):
             warn(f"{s['id']}: unknown stage {s.get('stage')!r}; treated as draft, off the site")
         if s.get("stage") != "published":
             print(f"  - {s['id']}: {s.get('stage')}, not written")
@@ -710,9 +712,9 @@ def main():
         # stage "draft": the row says off the site, so the old page comes down now
         for s in list(stories.values()) + list(collections.values()):
             page = OUT_DIR / f"{s['id']}.html"
-            if s.get("stage") == "draft" and page.is_file():
+            if s.get("stage") in ("draft", "idea") and page.is_file():
                 page.unlink()
-                print(f"taken down (draft, off the site): {page.name}")
+                print(f"taken down ({s.get('stage')}, off the site): {page.name}")
         orphans = orphan_pages(outputs, keep_ids=set(stories) | set(collections))
         if orphans:
             if args.clean:

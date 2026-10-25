@@ -10919,6 +10919,8 @@ def _story_page_state(sp, s, stories, collections, reg):
     on_disk = path.read_text(encoding="utf-8") if path.is_file() else None
     stage, vis = s.get("stage"), s.get("visibility")
     # Only say something when Make it so has work to do, or the choice does not fit the site.
+    if stage == "idea":
+        return ("The old page is still up. Make it so takes it down." if on_disk else ""), "todo" if on_disk else "idea"
     if stage == "draft-live":
         return ("" if on_disk else "Nothing was ever published, so there is no old version to keep up."), "draft"
     if stage != "published":
@@ -10965,7 +10967,10 @@ def handle_api_stories_list(params):
         problem = sp.lead_problem(stories)
         if problem:
             warnings.insert(0, problem + " Make it so will refuse until then.")
-    rows.sort(key=lambda r: (r["kind"] != "story", r["stage"] != "draft", r["date"]), reverse=False)
+    # Working on it first, then on the site, then the back burner; newest first within each.
+    order = {"draft": 0, "draft-live": 0, "published": 1, "idea": 2}
+    rows.sort(key=lambda r: r["date"], reverse=True)
+    rows.sort(key=lambda r: (order.get(r["stage"], 1), r["kind"] != "story"))
     return {"master": str(_stories_master_path()), "rows": rows, "warnings": warnings,
             "out_dir": str(sp.OUT_DIR)}
 
@@ -10987,8 +10992,8 @@ def handle_api_stories_set(params):
         vis, home = "withdrawn", False
     elif where is not None:
         return {"ok": False, "error": f"where must be lead, catalog, hidden or withdrawn, not {where!r}"}
-    if stage not in (None, "draft", "draft-live", "published"):
-        return {"ok": False, "error": f"stage must be draft, draft-live or published, not {stage!r}"}
+    if stage not in (None, "idea", "draft", "draft-live", "published"):
+        return {"ok": False, "error": f"stage must be idea, draft, draft-live or published, not {stage!r}"}
     if vis not in (None, "listed", "unlisted", "withdrawn"):
         return {"ok": False, "error": f"visibility must be listed, unlisted or withdrawn, not {vis!r}"}
     path = _stories_master_path()
@@ -11097,15 +11102,25 @@ def render_stories():
     .st-go { display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:12px 14px; margin:0 0 16px;
              background:var(--gray-100); border-radius:var(--radius); }
     .st-go .note { font-size:13px; color:var(--gray-600); line-height:1.5; max-width:620px; }
+    .st-toggle { margin-left:auto; font-size:13px; color:var(--gray-600); white-space:nowrap; cursor:pointer; }
+    .st-toggle input { vertical-align:-2px; margin-right:4px; }
+    table.st tr.published.hidden { display:none; }
     .st-wrap { overflow-x:auto; }
-    table.st { border-collapse:collapse; width:100%; min-width:720px; font-size:14px; }
+    table.st { border-collapse:collapse; width:100%; min-width:760px; font-size:14px; table-layout:fixed; }
+    table.st col.c-story { width:auto; } table.st col.c-kind { width:72px; } table.st col.c-stage { width:232px; }
+    table.st col.c-where { width:188px; } table.st col.c-date { width:96px; } table.st col.c-act { width:200px; }
+    table.st td.nowrap, table.st th.nowrap { white-space:nowrap; }
+    table.st td.act { text-align:right; white-space:nowrap; }
+    table.st td.act .pub-btn { margin-left:6px; }
     table.st th { text-align:left; padding:10px 14px; font-size:12px; font-weight:600; color:var(--gray-600);
                   text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid var(--gray-200); white-space:nowrap; }
     table.st td { padding:14px; border-bottom:1px solid #eeebe3; vertical-align:middle; }
-    table.st tr.held td { color:var(--gray-600); }
-    table.st td:first-child { min-width:240px; }
+    table.st tr.idea td { color:var(--gray-600); }
+    table.st tr.idea td:first-child strong { color:var(--gray-600); font-weight:600; }
+    table.st tr.idea select { color:var(--gray-600); }
+    table.st td:first-child { overflow:hidden; }
     table.st td:first-child strong { font-size:15px; color:var(--green-deep); }
-    table.st td select { font:inherit; font-size:13px; padding:5px 8px; min-width:215px; border:1px solid var(--gray-200);
+    table.st td select { font:inherit; font-size:13px; padding:5px 8px; width:100%; max-width:220px; border:1px solid var(--gray-200);
                          border-radius:6px; background:white; }
     table.st td select.changed { border-color:var(--gold); background:#fff8e1; box-shadow:0 0 0 2px #fff3cd; }
     table.st [data-save]:disabled { visibility:hidden; }
@@ -11113,7 +11128,7 @@ def render_stories():
     .st-state.ok { background:#e8f5e9; color:#2d6a35; }
     .st-state.stale { background:#fff8e1; color:#8a6d2f; }
     .st-state.todo { background:#e8eaf6; color:#283593; }
-    .st-state.draft { background:var(--gray-100); color:var(--gray-600); }
+    .st-state.draft, .st-state.idea { background:var(--gray-100); color:var(--gray-600); }
     .st-state.bad { background:#ffebee; color:#b71c1c; }
     .st-log { white-space:pre-wrap; font:12px/1.5 ui-monospace,Menlo,monospace; background:var(--gray-100); padding:10px 12px; border-radius:6px; margin-top:12px; display:none; }
     .st-warn { background:#fff8e1; color:#5d4200; padding:8px 12px; border-radius:6px; font-size:13px; margin-bottom:12px; }
@@ -11127,7 +11142,8 @@ def render_stories():
         want it, Save, then press <strong>Make it so</strong>: it rebuilds the story pages and the catalog in this repo to
         match every row at once, publishing some, hiding others, removing what you deleted from the file. Then you commit
         in GitHub Desktop as always.</p>
-        <p class="st-help"><strong>Status.</strong> <em>Draft, off the site</em>: private, and any page it had comes down.
+        <p class="st-help"><strong>Status.</strong> <em>Idea, back burner</em>: a stub, a title and a line, listed at the bottom
+        in grey until you move it up. <em>Draft, working on it</em>: private, and any page it had comes down.
         <em>Draft, old version stays up</em>: you are writing an update; the last published page stays on the site until the
         new one is made so. <em>Published</em>: on the site. A note appears under the menu only when the site does not yet
         match your choice.</p>
@@ -11137,20 +11153,19 @@ def render_stories():
         <p class="st-help"><strong>Preview</strong> shows any story, finished or not, exactly as it will look.
         <strong>Save</strong> writes a row's choices to the private file. The words and photographs are still edited in
         that file with Claude.</p>
+        <p class="st-help"><strong>Private source file:</strong> <span class="st-path" id="stMaster"></span></p>
       </details>
       <div class="st-go">
         <button class="pub-btn promote" id="stPublish">🖖 Make it so</button>
         <span class="note">Rebuilds <strong>all</strong> story pages and the catalog in this repo from the saved choices;
         may remove pages. Nothing goes online until you review and push in GitHub Desktop.</span>
+        <label class="st-toggle"><input type="checkbox" id="stShowPub"> Show published stories <span id="stPubCount"></span></label>
       </div>
-      <details class="st-more">
-        <summary>Private source file</summary>
-        <div class="st-path" id="stMaster"></div>
-      </details>
       <div id="stWarn"></div>
       <div class="st-wrap">
       <table class="st" id="stTable">
-        <thead><tr><th>Story</th><th>Kind</th><th>Status</th><th>Where it shows</th><th>Date</th><th></th></tr></thead>
+        <colgroup><col class="c-story"><col class="c-kind"><col class="c-stage"><col class="c-where"><col class="c-date"><col class="c-act"></colgroup>
+        <thead><tr><th>Story</th><th>Kind</th><th>Status</th><th>Where it shows</th><th class="nowrap">Date</th><th></th></tr></thead>
         <tbody><tr><td colspan="6" style="color:var(--gray-600)">Loading…</td></tr></tbody>
       </table>
       </div>
@@ -11162,7 +11177,7 @@ def render_stories():
       const tbody = document.querySelector('#stTable tbody');
       const log = document.getElementById('stLog');
       function showLog(text){ log.style.display = 'block'; log.textContent = text; }
-      const WORDS = {draft:'Draft, off the site', 'draft-live':'Draft, old version stays up', published:'Published', lead:'Lead story', catalog:'In story catalog', hidden:'Hidden link', withdrawn:'Taken down'};
+      const WORDS = {idea:'Idea, back burner', draft:'Draft, working on it', 'draft-live':'Draft, old version stays up', published:'Published', lead:'Lead story', catalog:'In story catalog', hidden:'Hidden link', withdrawn:'Taken down'};
       function sel(name, value, opts){
         return `<select data-f="${name}" data-orig="${value}">` + opts.map(o => `<option value="${o}" ${o===value?'selected':''}>${WORDS[o]||o}</option>`).join('') + `</select>`;
       }
@@ -11180,18 +11195,28 @@ def render_stories():
           ? `<div class="st-warn"><strong>Publisher notes</strong><ul style="margin:.3rem 0 0 1.2rem">${d.warnings.map(w=>`<li>${esc(w)}</li>`).join('')}</ul></div>` : '';
         if (!d.rows || !d.rows.length){ tbody.innerHTML = '<tr><td colspan="6" style="color:var(--gray-600)">No stories in the master yet.</td></tr>'; return; }
         tbody.innerHTML = d.rows.map(r => `
-          <tr data-id="${esc(r.id)}" class="${r.stage==='draft'?'held':''}">
+          <tr data-id="${esc(r.id)}" class="${r.stage==='idea'?'idea':''} ${r.stage==='published'?'published':''}">
             <td><strong>${esc(r.title)}</strong><br><span style="font-size:12px;color:var(--gray-600)">${esc(r.kicker)} · <code>${esc(r.id)}</code></span></td>
             <td>${esc(r.kind)}</td>
-            <td>${sel('stage', r.stage, (r.on_site || r.stage==='draft-live') ? ['draft','draft-live','published'] : ['draft','published'])}${r.state ? `<div class="st-state ${esc(r.state_class)}">${esc(r.state)}</div>` : ''}</td>
+            <td>${sel('stage', r.stage, (r.on_site || r.stage==='draft-live') ? ['idea','draft','draft-live','published'] : ['idea','draft','published'])}${r.state ? `<div class="st-state ${esc(r.state_class)}">${esc(r.state)}</div>` : ''}</td>
             <td>${sel('where', r.where, r.kind==='story' ? ['lead','catalog','hidden'].concat(r.where==='withdrawn'?['withdrawn']:[]) : ['catalog','hidden'].concat(r.where==='withdrawn'?['withdrawn']:[]))}</td>
-            <td>${esc(r.date)}</td>
-            <td style="white-space:nowrap">
-              <a class="pub-btn" style="text-decoration:none;background:white;border-color:var(--gray-200);color:var(--green-mid)" href="/stories-preview?id=${encodeURIComponent(r.id)}" target="_blank">👁 Preview</a>
+            <td class="nowrap">${esc(r.date)}</td>
+            <td class="act">
+              ${r.stage==='idea' ? '' : `<a class="pub-btn" style="text-decoration:none;background:white;border-color:var(--gray-200);color:var(--green-mid)" href="/stories-preview?id=${encodeURIComponent(r.id)}" target="_blank">👁 Preview</a>`}
               <button class="pub-btn promote" data-save disabled>Save</button>
             </td>
           </tr>`).join('');
+        applyPub();
       }
+      // The list is a work-in-progress board: published rows hide unless the toggle says otherwise.
+      const showPub = document.getElementById('stShowPub');
+      try { showPub.checked = localStorage.getItem('stShowPub') === '1'; } catch (e) {}
+      function applyPub(){
+        const pub = tbody.querySelectorAll('tr.published');
+        pub.forEach(tr => tr.classList.toggle('hidden', !showPub.checked));
+        document.getElementById('stPubCount').textContent = pub.length ? `(${pub.length})` : '';
+      }
+      showPub.addEventListener('change', () => { try { localStorage.setItem('stShowPub', showPub.checked ? '1' : '0'); } catch (e) {} applyPub(); });
       tbody.addEventListener('click', async e => {
         const b = e.target.closest('[data-save]'); if (!b) return;
         const tr = b.closest('tr'); const id = tr.dataset.id;
