@@ -580,6 +580,107 @@ def orphan_pages(outputs, keep_ids=()):
                   and p.stem not in keep_ids)
 
 
+# ── checks ─────────────────────────────────────────────────────────────────
+
+def audit(stories, collections, reg):
+    """Every story check, in one place: the Stories-mode Health page reads
+    this, and `--check` prints it. Returns [{id, title, level, msg}], level
+    "error" (Make it so would refuse or drop something) or "warn"."""
+    out = []
+    def add(s, level, msg):
+        out.append({"id": s.get("id", "?"), "title": s.get("title", ""), "level": level, "msg": msg})
+    names = load_json(REPO / "data" / "sources" / "photographer_names.json", {}) or {}
+    everything = list(stories.values()) + list(collections.values())
+    leads = [s["id"] for s in stories.values() if listed(s) and s.get("home")]
+    for s in everything:
+        is_coll = "members" in s
+        if s.get("stage") not in ("idea", "draft", "draft-live", "published"):
+            add(s, "error", f"unknown status {s.get('stage')!r}")
+        if s.get("visibility") not in ("listed", "unlisted", "withdrawn"):
+            add(s, "error", f"unknown visibility {s.get('visibility')!r}")
+        if not s.get("title"):
+            add(s, "error", "no title")
+        if s.get("stage") == "idea":
+            continue                                   # a stub: nothing else to check yet
+        if not s.get("hero"):
+            add(s, "error", "no hero photo yet")
+        else:
+            hero, why = reg.resolve(s["hero"])
+            if not hero:
+                add(s, "error", f"hero: {why}")
+        blocks = s.get("intro") if is_coll else s.get("blocks")
+        if not blocks:
+            add(s, "warn", "no blocks yet" if not is_coll else "no introduction yet")
+        keys = set()
+        for b in blocks or []:
+            k = b.get("key", "?")
+            if k in keys:
+                add(s, "warn", f"block key {k} used twice")
+            keys.add(k)
+            t = b.get("type")
+            if t in ("heading", "text", "quote"):
+                if not (b.get("text") or "").strip():
+                    add(s, "warn", f"block {k}: empty {t}")
+            elif t == "photo":
+                p_, why = reg.resolve(b)
+                if not p_:
+                    add(s, "warn", f"block {k}: photograph would be dropped, {why}")
+            elif t == "pair":
+                for side in ("left", "right"):
+                    p_, why = reg.resolve(b.get(side) or {})
+                    if not p_:
+                        add(s, "error", f"block {k}: pair {side}, {why}")
+            elif t == "gallery":
+                items = b.get("items") or []
+                if not items:
+                    add(s, "warn", f"block {k}: empty gallery")
+                for it in items:
+                    p_, why = reg.resolve(it)
+                    if not p_:
+                        add(s, "warn", f"block {k}: gallery photograph would be dropped, {why}")
+            elif t == "video":
+                p_, why = reg.resolve(b.get("poster") or {})
+                if not p_:
+                    add(s, "error", f"block {k}: video poster, {why}")
+                if not (b.get("youtube") or b.get("media")):
+                    add(s, "error", f"block {k}: video has no youtube id or media file")
+                elif b.get("media"):
+                    v, why = media_page_check(str(b["media"]))
+                    if not v:
+                        add(s, "error", f"block {k}: video file, {why}")
+            elif t == "link":
+                if b.get("species") and b["species"] not in reg.species:
+                    add(s, "warn", f"block {k}: species {b['species']} has no published page; card would be skipped")
+                if b.get("story") and b["story"] not in stories:
+                    add(s, "warn", f"block {k}: story {b['story']} does not exist")
+                if b.get("collection") and b["collection"] not in collections:
+                    add(s, "warn", f"block {k}: collection {b['collection']} does not exist")
+            else:
+                add(s, "warn", f"block {k}: unknown block type {t!r}; it would be skipped")
+        rel = s.get("related") or {}
+        for sid in rel.get("stories") or []:
+            if sid not in stories:
+                add(s, "warn", f"related story {sid} does not exist")
+        for pid in rel.get("species") or []:
+            if pid not in reg.species:
+                add(s, "warn", f"related species {pid} has no published page")
+        for who in s.get("people") or []:
+            if who not in names:
+                add(s, "warn", f"person {who} is not in photographer_names.json")
+        if is_coll:
+            for mid in s.get("members") or []:
+                if mid not in stories:
+                    add(s, "error", f"member {mid} does not exist")
+                elif not listed(stories[mid]):
+                    add(s, "warn", f"member {mid} is not published and in the catalog, so it will not show")
+        if s.get("home") and not is_coll and s.get("stage") == "published" and s.get("visibility") != "listed":
+            add(s, "error", "lead story, but not in the catalog")
+    problem = lead_problem(stories)
+    if problem:
+        out.append({"id": "", "title": "Lead story", "level": "error", "msg": problem})
+    return out
+
+
 # ── main ───────────────────────────────────────────────────────────────────
 
 def load_master(path):
@@ -626,6 +727,7 @@ def main():
     ap.add_argument("--dry-run", action="store_true", help="resolve and render, write nothing")
     ap.add_argument("--clean", action="store_true",
                     help="after writing, delete pages in stories/ that this run did not write (demo leftovers, retired ids); never _draft-* previews")
+    ap.add_argument("--check", action="store_true", help="run every story check and print the findings; writes nothing")
     ap.add_argument("--preview", metavar="ID",
                     help="render one story whatever its stage, with a DRAFT banner, to stories/_draft-ID.html; nothing else is written")
     args = ap.parse_args()
@@ -639,6 +741,13 @@ def main():
         sys.exit("Nothing written. " + problem)
     if problem:
         warn(problem)
+
+    if args.check:
+        findings = audit(stories, collections, reg)
+        for f in findings:
+            print(f"  {'!!' if f['level'] == 'error' else ' !'} {f['id'] or f['title']}: {f['msg']}")
+        print("all clear" if not findings else f"{len(findings)} finding(s)")
+        return 1 if any(f["level"] == "error" for f in findings) else 0
 
     if args.preview:
         s = stories.get(args.preview) or collections.get(args.preview)

@@ -245,10 +245,10 @@ TABS = [
 # publisher (story_publisher.py) writes stories/<id>.html, stories.html and
 # stories.json into this repo. See Active-PSBP-Docs/system docs/PARK_STORIES_PLAN.md.
 STORY_TABS = [
-    {"id": "stories",  "label": "Stories",         "route": "/stories", "icon": "📖"},
-    {"id": "health",   "label": "Health",          "route": "/health",  "icon": "🩺"},
+    {"id": "stories",        "label": "Stories", "route": "/stories",        "icon": "📖"},
+    {"id": "stories-health", "label": "Health",  "route": "/stories-health", "icon": "🩺"},
 ]
-STORY_TAB_IDS = {t["id"] for t in STORY_TABS} - {"health"}
+STORY_TAB_IDS = {t["id"] for t in STORY_TABS}
 
 # Required fields for promotion readiness (per kingdom)
 # Plants use "botanical_name"; wildlife uses "scientific_name"
@@ -11047,6 +11047,51 @@ def handle_api_stories_publish(params):
             "error": None if proc.returncode == 0 else "The publisher reported an error; see the log."}
 
 
+def handle_api_stories_health(params):
+    """GET /api/stories/health — every story check, from story_publisher.audit()."""
+    sp, stories, collections, warnings = _stories_load()
+    if not stories and not collections:
+        return {"findings": [], "warnings": warnings, "count": 0}
+    reg = sp.Registry()
+    findings = sp.audit(stories, collections, reg)
+    return {"findings": findings, "warnings": warnings, "count": len(stories) + len(collections)}
+
+
+def render_stories_health():
+    """Stories-mode Health: story checks only, on its own page, so nothing bounces to Species mode."""
+    return r"""
+    <style>
+    .sh-ok { background:#e8f5e9; color:#2d6a35; padding:12px 14px; border-radius:var(--radius); font-size:14px; }
+    .sh-group { margin-top:16px; }
+    .sh-group h3 { font-size:15px; color:var(--green-deep); margin:0 0 6px; }
+    .sh-group ul { list-style:none; margin:0; padding:0; }
+    .sh-group li { font-size:13px; padding:6px 10px; border-left:3px solid var(--gray-200); margin-bottom:4px; background:var(--gray-100); border-radius:0 6px 6px 0; }
+    .sh-group li.error { border-left-color:#c62828; }
+    .sh-group li.warn { border-left-color:var(--gold); }
+    .sh-note { font-size:13px; color:var(--gray-600); margin:0 0 12px; line-height:1.6; }
+    </style>
+    <div class="card">
+      <h2 style="margin-bottom:6px">🩺 Story checks</h2>
+      <p class="sh-note">Runs every time this page opens. A red line is something Make it so would refuse or drop; a gold
+      line is worth a look. Ideas on the back burner are not checked.</p>
+      <div id="shBody"><span style="color:var(--gray-600)">Checking…</span></div>
+    </div>
+    <script>
+    (async function(){
+      const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const d = await (await fetch('/api/stories/health')).json();
+      const box = document.getElementById('shBody');
+      const all = (d.warnings||[]).map(w => ({id:'', title:'File', level:'warn', msg:w})).concat(d.findings||[]);
+      if (!all.length){ box.innerHTML = `<div class="sh-ok">All clear. ${d.count} stor${d.count===1?'y':'ies'} checked.</div>`; return; }
+      const groups = {};
+      all.forEach(f => { const k = f.title || f.id; (groups[k] = groups[k] || []).push(f); });
+      box.innerHTML = Object.keys(groups).map(k => `
+        <div class="sh-group"><h3>${esc(k)}</h3><ul>${groups[k].map(f => `<li class="${esc(f.level)}">${esc(f.msg)}</li>`).join('')}</ul></div>`).join('');
+    })();
+    </script>
+    """
+
+
 def render_story_preview_html(story_id):
     """One story from the private master, rendered the way the publisher writes it,
     whatever its stage, with the DRAFT banner. Paths rewritten for this flat server."""
@@ -11249,6 +11294,7 @@ def render_stories():
 PAGE_ROUTES = {
     "/signs":   ("signs",    render_signs),
     "/stories": ("stories",  render_stories),
+    "/stories-health": ("stories-health", render_stories_health),
 
     "/":        ("overview", render_overview),
     "/intake":  ("intake",   render_intake),
@@ -13337,6 +13383,7 @@ API_ROUTES = {
     "/api/stories/list":       handle_api_stories_list,
     "/api/stories/set":        handle_api_stories_set,
     "/api/stories/publish":    handle_api_stories_publish,
+    "/api/stories/health":     handle_api_stories_health,
 }
 
 
