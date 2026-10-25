@@ -15,8 +15,10 @@ Nothing in the repo's real data is read for writing, and the demo output is
 not committed. The renderer that settles the look here is the one that ships.
 
 Rules this follows (PARK_STORIES_PLAN.md):
-  · draft stories are in no public file; withdrawn ones get a resting page;
-    unlisted ones get a page but no card
+  · a draft is in no public file. Two kinds (Randy, 2026-10-24): stage "draft"
+    is off the site, and any page it had comes down; stage "draft-live" keeps
+    the last published page up while the new version is written. Withdrawn
+    stories get a resting page; unlisted ones get a page but no card
   · a blocked hero, poster or pair member refuses the story and says why;
     a blocked in-flow or gallery photo publishes with a loud warning
   · the credit comes from the registry, never from the story
@@ -564,14 +566,16 @@ def render_catalog(stories, collections, reg, ctx):
     return html
 
 
-def orphan_pages(outputs):
-    """Pages in stories/ that the current master does not produce. Draft previews
-    (_draft-*.html) are never orphans; they are deleted by hand."""
+def orphan_pages(outputs, keep_ids=()):
+    """Pages in stories/ whose id is no longer in the master at all. Pages of
+    stories still in the master are handled by stage (draft-live keeps its page,
+    draft loses it). Draft previews (_draft-*.html) are never orphans."""
     if not OUT_DIR.is_dir():
         return []
     written = {p.resolve() for p in outputs}
     return sorted(p for p in OUT_DIR.glob("*.html")
-                  if p.resolve() not in written and not p.name.startswith("_draft-"))
+                  if p.resolve() not in written and not p.name.startswith("_draft-")
+                  and p.stem not in keep_ids)
 
 
 # ── main ───────────────────────────────────────────────────────────────────
@@ -643,6 +647,8 @@ def main():
     index = {"meta": {"source": master.name, "demo": args.demo}, "collections": [], "stories": []}
     for s in list(stories.values()) + list(collections.values()):
         is_coll = "members" in s
+        if s.get("stage") not in ("published", "draft", "draft-live"):
+            warn(f"{s['id']}: unknown stage {s.get('stage')!r}; treated as draft, off the site")
         if s.get("stage") != "published":
             print(f"  - {s['id']}: {s.get('stage')}, not written")
             continue
@@ -687,15 +693,24 @@ def main():
             path.write_text(html, encoding="utf-8")
         INDEX.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print(f"wrote {len(outputs)} pages, {INDEX.name} ({len(index['stories'])} stories, {len(index['collections'])} collections)")
-        orphans = orphan_pages(outputs)
+        # stage "draft": the row says off the site, so the old page comes down now
+        for s in list(stories.values()) + list(collections.values()):
+            page = OUT_DIR / f"{s['id']}.html"
+            if s.get("stage") == "draft" and page.is_file():
+                page.unlink()
+                print(f"taken down (draft, off the site): {page.name}")
+        orphans = orphan_pages(outputs, keep_ids=set(stories) | set(collections))
         if orphans:
             if args.clean:
                 for o in orphans:
                     o.unlink()
                 print(f"cleaned {len(orphans)} page(s) this run did not write: " + ", ".join(o.name for o in orphans))
             else:
-                print(f"{len(orphans)} page(s) in stories/ that this run did not write (demo leftovers or retired ids; "
-                      "--clean removes them): " + ", ".join(o.name for o in orphans))
+                print(f"{len(orphans)} page(s) in stories/ whose id is not in the master (demo leftovers or deleted "
+                      "stories; --clean removes them): " + ", ".join(o.name for o in orphans))
+        kept = [s["id"] for s in stories.values() if s.get("stage") == "draft-live" and (OUT_DIR / f"{s['id']}.html").is_file()]
+        if kept:
+            print("kept on the site while in draft (the last published version): " + ", ".join(kept))
     if WARN:
         print(f"\n{len(WARN)} warning(s) above need a look.")
     return 0
