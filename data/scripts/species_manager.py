@@ -11077,15 +11077,39 @@ def render_story_preview_html(story_id):
 
 def render_stories():
     """Stories tab — the list from the private master, with preview, stage and publish.
-    A raw string: the script below carries \\n escapes that must reach the browser as two characters."""
+    A raw string: the script below carries \\n escapes that must reach the browser as two characters.
+    Layout polish 2026-10-24 night from a ChatGPT pass Randy brought back: short summary, the
+    long help under a disclosure, the path under another, scoped table styles (table.sg's rules
+    live inside render_signs(), so this tab needs its own)."""
     return r"""
     <style>
-    .st-top { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
-    .st-top .path { font-size:12px; color:var(--gray-600); font-family:ui-monospace,Menlo,monospace; }
-    table.sg td select { font:inherit; font-size:13px; padding:3px 6px; border:1px solid var(--gray-200); border-radius:6px; background:white; }
-    table.sg td select.changed { border-color:var(--gold); background:#fff8e1; box-shadow:0 0 0 2px #fff3cd; }
-    table.sg [data-save]:disabled { visibility:hidden; }
-    .st-state { font-size:12px; font-weight:600; padding:3px 8px; border-radius:6px; margin-top:6px; max-width:260px; line-height:1.4; }
+    .st-sum { font-size:14px; color:var(--gray-600); margin:0 0 14px; }
+    .st-help { font-size:13px; color:var(--gray-600); margin:0 0 6px; line-height:1.6; max-width:900px; }
+    .st-help + .st-help { margin-top:8px; }
+    .st-help strong { color:var(--green-deep); }
+    details.st-more { margin:0 0 14px; }
+    details.st-more summary { cursor:pointer; font-size:13px; font-weight:600; color:var(--green-mid); list-style:none; }
+    details.st-more summary::-webkit-details-marker { display:none; }
+    details.st-more summary::before { content:"▸ "; }
+    details.st-more[open] summary::before { content:"▾ "; }
+    details.st-more > *:not(summary) { margin-top:8px; }
+    .st-path { font-size:12px; color:var(--gray-600); font-family:ui-monospace,Menlo,monospace; word-break:break-all; }
+    .st-go { display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:12px 14px; margin:0 0 16px;
+             background:var(--gray-100); border-radius:var(--radius); }
+    .st-go .note { font-size:13px; color:var(--gray-600); line-height:1.5; max-width:620px; }
+    .st-wrap { overflow-x:auto; }
+    table.st { border-collapse:collapse; width:100%; min-width:720px; font-size:14px; }
+    table.st th { text-align:left; padding:10px 14px; font-size:12px; font-weight:600; color:var(--gray-600);
+                  text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid var(--gray-200); white-space:nowrap; }
+    table.st td { padding:14px; border-bottom:1px solid #eeebe3; vertical-align:middle; }
+    table.st tr.held td { color:var(--gray-600); }
+    table.st td:first-child { min-width:240px; }
+    table.st td:first-child strong { font-size:15px; color:var(--green-deep); }
+    table.st td select { font:inherit; font-size:13px; padding:5px 8px; min-width:215px; border:1px solid var(--gray-200);
+                         border-radius:6px; background:white; }
+    table.st td select.changed { border-color:var(--gold); background:#fff8e1; box-shadow:0 0 0 2px #fff3cd; }
+    table.st [data-save]:disabled { visibility:hidden; }
+    .st-state { display:inline-block; font-size:12px; font-weight:600; padding:3px 8px; border-radius:6px; margin-top:6px; max-width:260px; line-height:1.4; }
     .st-state.ok { background:#e8f5e9; color:#2d6a35; }
     .st-state.stale { background:#fff8e1; color:#8a6d2f; }
     .st-state.todo { background:#e8eaf6; color:#283593; }
@@ -11093,32 +11117,43 @@ def render_stories():
     .st-state.bad { background:#ffebee; color:#b71c1c; }
     .st-log { white-space:pre-wrap; font:12px/1.5 ui-monospace,Menlo,monospace; background:var(--gray-100); padding:10px 12px; border-radius:6px; margin-top:12px; display:none; }
     .st-warn { background:#fff8e1; color:#5d4200; padding:8px 12px; border-radius:6px; font-size:13px; margin-bottom:12px; }
-    .st-help { font-size:13px; color:var(--gray-600); margin:0 0 14px; line-height:1.6; }
-    .st-help code { font-family:ui-monospace,Menlo,monospace; font-size:12px; }
     </style>
     <div class="card">
       <h2 style="margin-bottom:6px">📖 Park Stories</h2>
-      <p class="st-help"><strong>How it works.</strong> Every story lives in one private file (the path below), whether
-      it is finished or not. Set each row the way you want it, Save, then press <strong>Make it so</strong>: it rebuilds
-      the story pages and the catalog in this repo to match every row at once, publishing some, hiding others, removing
-      what you deleted from the file. Then you commit in GitHub Desktop as always.<br>
-      <strong>Status</strong>: <em>Draft, off the site</em>: private, and any page it had comes down. <em>Draft, old version
-      stays up</em>: you are writing an update; the last published page stays on the site until the new one is made so.
-      <em>Published</em>: on the site. A note appears under the menu only when the site does not yet match your choice.<br>
-      <strong>Where it shows</strong>: <em>Lead story</em> = the one the home page features, and in the catalog. <em>In story catalog</em> =
-      on the Stories page for everyone. <em>Hidden link</em> = the page exists and the address works, but nothing links to it.
-      Picking a new lead story un-leads the old one.<br>
-      <strong>Preview</strong> shows any story, finished or not, exactly as it will look. <strong>Save</strong> writes a row's
-      choices to the private file. The words and photographs are still edited in that file with Claude.</p>
-      <div class="st-top">
+      <p class="st-sum">Preview any story. Save a row's choices, then rebuild the story pages with <strong>Make it so</strong>.</p>
+      <details class="st-more">
+        <summary>How it works</summary>
+        <p class="st-help">Every story lives in one private file, whether it is finished or not. Set each row the way you
+        want it, Save, then press <strong>Make it so</strong>: it rebuilds the story pages and the catalog in this repo to
+        match every row at once, publishing some, hiding others, removing what you deleted from the file. Then you commit
+        in GitHub Desktop as always.</p>
+        <p class="st-help"><strong>Status.</strong> <em>Draft, off the site</em>: private, and any page it had comes down.
+        <em>Draft, old version stays up</em>: you are writing an update; the last published page stays on the site until the
+        new one is made so. <em>Published</em>: on the site. A note appears under the menu only when the site does not yet
+        match your choice.</p>
+        <p class="st-help"><strong>Where it shows.</strong> <em>Lead story</em>: the one the home page features, and in the
+        catalog. <em>In story catalog</em>: on the Stories page for everyone. <em>Hidden link</em>: the page exists and the
+        address works, but nothing links to it. Picking a new lead story un-leads the old one.</p>
+        <p class="st-help"><strong>Preview</strong> shows any story, finished or not, exactly as it will look.
+        <strong>Save</strong> writes a row's choices to the private file. The words and photographs are still edited in
+        that file with Claude.</p>
+      </details>
+      <div class="st-go">
         <button class="pub-btn promote" id="stPublish">🖖 Make it so</button>
-        <span class="path" id="stMaster"></span>
+        <span class="note">Rebuilds <strong>all</strong> story pages and the catalog in this repo from the saved choices;
+        may remove pages. Nothing goes online until you review and push in GitHub Desktop.</span>
       </div>
+      <details class="st-more">
+        <summary>Private source file</summary>
+        <div class="st-path" id="stMaster"></div>
+      </details>
       <div id="stWarn"></div>
-      <table class="sg" id="stTable">
+      <div class="st-wrap">
+      <table class="st" id="stTable">
         <thead><tr><th>Story</th><th>Kind</th><th>Status</th><th>Where it shows</th><th>Date</th><th></th></tr></thead>
         <tbody><tr><td colspan="6" style="color:var(--gray-600)">Loading…</td></tr></tbody>
       </table>
+      </div>
       <div class="st-log" id="stLog"></div>
     </div>
     <script>
