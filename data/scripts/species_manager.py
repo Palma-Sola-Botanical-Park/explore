@@ -10919,7 +10919,7 @@ def _story_page_state(sp, s, stories, collections, reg):
     on_disk = path.read_text(encoding="utf-8") if path.is_file() else None
     stage, vis = s.get("stage"), s.get("visibility")
     if stage != "published":
-        return ("draft, page on disk from an earlier publish" if on_disk else "draft, not written"), "draft"
+        return ("draft (an old page is still on the site; Publish removes it)" if on_disk else "draft, not on the site"), "draft"
     ctx = {"rel": "../", "stories": stories, "collections": collections, "demo": False}
     try:
         if vis == "withdrawn":
@@ -10927,12 +10927,12 @@ def _story_page_state(sp, s, stories, collections, reg):
         else:
             want = (sp.render_collection if "members" in s else sp.render_story)(s, reg, ctx)
     except ValueError as e:
-        return f"cannot publish: {e}", "bad"
+        return f"cannot be published: {e}", "bad"
     if on_disk is None:
-        return "not published yet", "todo"
+        return "ready; press Publish", "todo"
     if on_disk == want:
-        return ("resting page, up to date" if vis == "withdrawn" else "up to date"), "ok"
-    return "published, with unpublished changes", "stale"
+        return ("taken down, resting page in place" if vis == "withdrawn" else "on the site, up to date"), "ok"
+    return "on the site, but changed since; press Publish", "stale"
 
 
 def handle_api_stories_list(params):
@@ -11075,20 +11075,26 @@ def render_stories():
     </style>
     <div class="card">
       <h2 style="margin-bottom:6px">📖 Park Stories</h2>
-      <p class="st-help">Every story in the private master, draft and published. <strong>Preview</strong> shows a
-      story the way the publisher writes it, at any stage. Change <strong>stage</strong>, <strong>visibility</strong>
-      or <strong>home</strong> and press <strong>Save</strong> to write those three fields to the master.
-      <strong>Publish</strong> writes every published story's page, the catalog and the index into this repo;
-      you commit in GitHub Desktop as usual. Words, photos and blocks are still edited in the JSON with Claude.</p>
+      <p class="st-help"><strong>How it works.</strong> Every story lives in one private file (the path below), whether
+      it is finished or not. Nothing reaches the website until you press <strong>Publish</strong>, and then only the
+      stories marked <em>Published</em>. Publish writes the story pages and the catalog into this repo; you commit in
+      GitHub Desktop as always.<br>
+      <strong>Status</strong>: <em>Draft</em> = still being written, never on the site. <em>Published</em> = goes to the site on the next Publish.<br>
+      <strong>Where it shows</strong>: <em>In the catalog</em> = on the Stories page, for everyone. <em>By link only</em> = the page
+      exists and the address works, but it is not listed anywhere (so still public). <em>Taken down</em> = the address shows a
+      short "this story is resting" page and nothing else.<br>
+      <strong>Front page</strong>: the one story the home page features. Ticking it unticks the other.<br>
+      <strong>Preview</strong> shows any story, finished or not, exactly as it will look. <strong>Save</strong> writes your
+      status choices to the private file. The words and photographs are still edited in that file with Claude.</p>
       <div class="st-top">
-        <button class="pub-btn promote" id="stPublish">🚀 Publish stories</button>
-        <label style="font-size:13px;color:var(--gray-600)"><input type="checkbox" id="stClean"> also remove pages the master no longer produces (demo leftovers)</label>
+        <button class="pub-btn promote" id="stPublish">🚀 Publish to the website files</button>
+        <label style="font-size:13px;color:var(--gray-600)"><input type="checkbox" id="stClean" checked> also remove story pages that are no longer in the private file</label>
         <button class="pub-btn" id="stReload" style="background:white;border-color:var(--gray-200);color:var(--gray-600)">↻ Reload</button>
         <span class="path" id="stMaster"></span>
       </div>
       <div id="stWarn"></div>
       <table class="sg" id="stTable">
-        <thead><tr><th>Story</th><th>Kind</th><th>Stage</th><th>Visibility</th><th>Home</th><th>Date</th><th>Blocks</th><th>Page</th><th></th></tr></thead>
+        <thead><tr><th>Story</th><th>Kind</th><th>Status</th><th>Where it shows</th><th>Front page</th><th>Date</th><th>Blocks</th><th>On the site</th><th></th></tr></thead>
         <tbody><tr><td colspan="9" style="color:var(--gray-600)">Loading…</td></tr></tbody>
       </table>
       <div class="st-log" id="stLog"></div>
@@ -11099,8 +11105,9 @@ def render_stories():
       const tbody = document.querySelector('#stTable tbody');
       const log = document.getElementById('stLog');
       function showLog(text){ log.style.display = 'block'; log.textContent = text; }
+      const WORDS = {draft:'Draft', published:'Published', listed:'In the catalog', unlisted:'By link only', withdrawn:'Taken down'};
       function sel(name, value, opts){
-        return `<select data-f="${name}">` + opts.map(o => `<option value="${o}" ${o===value?'selected':''}>${o}</option>`).join('') + `</select>`;
+        return `<select data-f="${name}">` + opts.map(o => `<option value="${o}" ${o===value?'selected':''}>${WORDS[o]||o}</option>`).join('') + `</select>`;
       }
       async function load(){
         const r = await fetch('/api/stories/list'); const d = await r.json();
@@ -11145,7 +11152,7 @@ def render_stories():
         const d = await r.json();
         showLog((d.log || '') + (d.files ? `\n\nFiles changed in the repo (git status):\n${d.files}` : '\n\nNo files changed.') + (d.error ? `\n\n${d.error}` : '')
           + '\n\nNothing is committed. Review in GitHub Desktop and push when you are happy.');
-        b.disabled = false; b.textContent = '🚀 Publish stories';
+        b.disabled = false; b.textContent = '🚀 Publish to the website files';
         await load();
       });
       document.getElementById('stReload').addEventListener('click', load);
