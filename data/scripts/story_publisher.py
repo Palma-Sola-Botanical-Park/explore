@@ -375,7 +375,7 @@ def head(title, desc, rel, hero_url=""):
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{rel}css/psbp.css">
 <link rel="stylesheet" href="{rel}css/species-v2.css">
-<link rel="stylesheet" href="{rel}css/stories.css?v=1">
+<link rel="stylesheet" href="{rel}css/stories.css?v=3">
 </head>
 <body data-bands="on">
 <div id="nav-placeholder"></div>
@@ -599,13 +599,22 @@ def load_master(path):
             warn(f"collection id {c.get('id')!r} is missing, a duplicate, or collides with a story; skipped")
             continue
         collections[c["id"]] = c
-    homes = [s["id"] for s in stories.values() if s.get("home")]
-    if len(homes) > 1:
-        warn(f"more than one story claims home: {', '.join(homes)}")
-    for hid in homes:
-        if stories[hid].get("stage") == "published" and not listed(stories[hid]):
-            warn(f"home story {hid} is published but not listed")
     return stories, collections
+
+
+def lead_problem(stories):
+    """One and only one lead story among the published, catalog-listed ones
+    (Randy, 2026-10-24). None needed while nothing is published. Returns the
+    sentence to show, or "" when all is well."""
+    live = [s for s in stories.values() if listed(s)]
+    leads = [s["id"] for s in live if s.get("home")]
+    if not live:
+        return ""
+    if not leads:
+        return "No lead story. Set one published story to Lead story first."
+    if len(leads) > 1:
+        return "More than one lead story: " + ", ".join(leads) + ". Only one can lead."
+    return ""
 
 
 def main():
@@ -623,6 +632,11 @@ def main():
     print(f"master: {master}")
     stories, collections = load_master(master)
     reg = Registry()
+    problem = lead_problem(stories)
+    if problem and not args.preview and not args.dry_run:
+        sys.exit("Nothing written. " + problem)
+    if problem:
+        warn(problem)
 
     if args.preview:
         s = stories.get(args.preview) or collections.get(args.preview)

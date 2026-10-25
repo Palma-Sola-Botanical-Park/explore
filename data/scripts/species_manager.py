@@ -10918,11 +10918,11 @@ def _story_page_state(sp, s, stories, collections, reg):
     path = sp.OUT_DIR / f"{s['id']}.html"
     on_disk = path.read_text(encoding="utf-8") if path.is_file() else None
     stage, vis = s.get("stage"), s.get("visibility")
+    # Only say something when Make it so has work to do, or the choice does not fit the site.
     if stage == "draft-live":
-        return (("Draft. The site shows the last published version until you make the new one so."
-                 if on_disk else "Draft. Nothing was ever published, so nothing is on the site."), "draft")
+        return ("" if on_disk else "Nothing was ever published, so there is no old version to keep up."), "draft"
     if stage != "published":
-        return (("Draft. The old page comes down when you make it so." if on_disk else "Draft. Not on the site."), "draft")
+        return ("The old page is still up. Make it so takes it down." if on_disk else ""), "todo" if on_disk else "draft"
     ctx = {"rel": "../", "stories": stories, "collections": collections, "demo": False}
     try:
         if vis == "withdrawn":
@@ -10932,10 +10932,10 @@ def _story_page_state(sp, s, stories, collections, reg):
     except ValueError as e:
         return f"Cannot be published: {e}", "bad"
     if on_disk is None:
-        return "Published, but not on the site yet. Make it so.", "todo"
+        return "Not on the site yet. Make it so.", "todo"
     if on_disk == want:
-        return ("Taken down. The resting page is in place." if vis == "withdrawn" else "Published. On the site, up to date."), "ok"
-    return "Published, but changed since. Make it so to update the site.", "stale"
+        return "", "ok"
+    return "Changed since it went up. Make it so to update the site.", "stale"
 
 
 def handle_api_stories_list(params):
@@ -10958,9 +10958,13 @@ def handle_api_stories_list(params):
                 "date": s.get("date", ""), "updated": s.get("updated", ""),
                 "blocks": len(s.get("blocks") or s.get("intro") or []),
                 "state": state, "state_class": cls,
+                "on_site": (sp.OUT_DIR / f"{s['id']}.html").is_file(),
                 "notes": str(sp.PRIVATE / "stories" / "notes" / f"{s['id']}.md"),
             })
         warnings += [w for w in sp.WARN if w not in warnings]
+        problem = sp.lead_problem(stories)
+        if problem:
+            warnings.insert(0, problem + " Make it so will refuse until then.")
     rows.sort(key=lambda r: (r["kind"] != "story", r["stage"] != "draft", r["date"]), reverse=False)
     return {"master": str(_stories_master_path()), "rows": rows, "warnings": warnings,
             "out_dir": str(sp.OUT_DIR)}
@@ -11078,7 +11082,9 @@ def render_stories():
     <style>
     .st-top { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px; }
     .st-top .path { font-size:12px; color:var(--gray-600); font-family:ui-monospace,Menlo,monospace; }
-    table.sg td select { font:inherit; font-size:13px; padding:3px 6px; }
+    table.sg td select { font:inherit; font-size:13px; padding:3px 6px; border:1px solid var(--gray-200); border-radius:6px; background:white; }
+    table.sg td select.changed { border-color:var(--gold); background:#fff8e1; box-shadow:0 0 0 2px #fff3cd; }
+    table.sg [data-save]:disabled { visibility:hidden; }
     .st-state { font-size:12px; font-weight:600; padding:3px 8px; border-radius:6px; margin-top:6px; max-width:260px; line-height:1.4; }
     .st-state.ok { background:#e8f5e9; color:#2d6a35; }
     .st-state.stale { background:#fff8e1; color:#8a6d2f; }
@@ -11096,9 +11102,9 @@ def render_stories():
       it is finished or not. Set each row the way you want it, Save, then press <strong>Make it so</strong>: it rebuilds
       the story pages and the catalog in this repo to match every row at once, publishing some, hiding others, removing
       what you deleted from the file. Then you commit in GitHub Desktop as always.<br>
-      <strong>Status</strong>: your choice on top, what the site has underneath. <em>Draft, off the site</em>: private, and any
-      page it had comes down. <em>Draft, old version stays up</em>: you are writing an update; the last published page stays
-      on the site until the new one is made so. <em>Published</em>: on the site.<br>
+      <strong>Status</strong>: <em>Draft, off the site</em>: private, and any page it had comes down. <em>Draft, old version
+      stays up</em>: you are writing an update; the last published page stays on the site until the new one is made so.
+      <em>Published</em>: on the site. A note appears under the menu only when the site does not yet match your choice.<br>
       <strong>Where it shows</strong>: <em>Lead story</em> = the one the home page features, and in the catalog. <em>In story catalog</em> =
       on the Stories page for everyone. <em>Hidden link</em> = the page exists and the address works, but nothing links to it.
       Picking a new lead story un-leads the old one.<br>
@@ -11106,8 +11112,6 @@ def render_stories():
       choices to the private file. The words and photographs are still edited in that file with Claude.</p>
       <div class="st-top">
         <button class="pub-btn promote" id="stPublish">🖖 Make it so</button>
-        <label style="font-size:13px;color:var(--gray-600)"><input type="checkbox" id="stClean" checked> also remove story pages that are no longer in the private file</label>
-        <button class="pub-btn" id="stReload" style="background:white;border-color:var(--gray-200);color:var(--gray-600)">↻ Reload</button>
         <span class="path" id="stMaster"></span>
       </div>
       <div id="stWarn"></div>
@@ -11125,8 +11129,15 @@ def render_stories():
       function showLog(text){ log.style.display = 'block'; log.textContent = text; }
       const WORDS = {draft:'Draft, off the site', 'draft-live':'Draft, old version stays up', published:'Published', lead:'Lead story', catalog:'In story catalog', hidden:'Hidden link', withdrawn:'Taken down'};
       function sel(name, value, opts){
-        return `<select data-f="${name}">` + opts.map(o => `<option value="${o}" ${o===value?'selected':''}>${WORDS[o]||o}</option>`).join('') + `</select>`;
+        return `<select data-f="${name}" data-orig="${value}">` + opts.map(o => `<option value="${o}" ${o===value?'selected':''}>${WORDS[o]||o}</option>`).join('') + `</select>`;
       }
+      // Gold on a menu that differs from the file; Save only lights up when something differs.
+      function mark(tr){
+        let dirty = false;
+        tr.querySelectorAll('select[data-orig]').forEach(x => { const d = x.value !== x.dataset.orig; x.classList.toggle('changed', d); dirty = dirty || d; });
+        const b = tr.querySelector('[data-save]'); if (b) b.disabled = !dirty;
+      }
+      tbody.addEventListener('change', e => { const tr = e.target.closest('tr'); if (tr) mark(tr); });
       async function load(){
         const r = await fetch('/api/stories/list'); const d = await r.json();
         document.getElementById('stMaster').textContent = d.master || '';
@@ -11137,12 +11148,12 @@ def render_stories():
           <tr data-id="${esc(r.id)}" class="${r.stage==='draft'?'held':''}">
             <td><strong>${esc(r.title)}</strong><br><span style="font-size:12px;color:var(--gray-600)">${esc(r.kicker)} · <code>${esc(r.id)}</code></span></td>
             <td>${esc(r.kind)}</td>
-            <td>${sel('stage', r.stage, ['draft','draft-live','published'])}<div class="st-state ${esc(r.state_class)}">${esc(r.state)}</div></td>
+            <td>${sel('stage', r.stage, (r.on_site || r.stage==='draft-live') ? ['draft','draft-live','published'] : ['draft','published'])}${r.state ? `<div class="st-state ${esc(r.state_class)}">${esc(r.state)}</div>` : ''}</td>
             <td>${sel('where', r.where, r.kind==='story' ? ['lead','catalog','hidden'].concat(r.where==='withdrawn'?['withdrawn']:[]) : ['catalog','hidden'].concat(r.where==='withdrawn'?['withdrawn']:[]))}</td>
             <td>${esc(r.date)}</td>
             <td style="white-space:nowrap">
               <a class="pub-btn" style="text-decoration:none;background:white;border-color:var(--gray-200);color:var(--green-mid)" href="/stories-preview?id=${encodeURIComponent(r.id)}" target="_blank">👁 Preview</a>
-              <button class="pub-btn promote" data-save>Save</button>
+              <button class="pub-btn promote" data-save disabled>Save</button>
             </td>
           </tr>`).join('');
       }
@@ -11162,14 +11173,13 @@ def render_stories():
         const b = document.getElementById('stPublish'); b.disabled = true; b.textContent = 'Making it so…';
         showLog('Running story_publisher.py…');
         const r = await fetch('/api/stories/publish', {method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({clean: document.getElementById('stClean').checked})});
+          body: JSON.stringify({clean: true})});
         const d = await r.json();
         showLog((d.log || '') + (d.files ? `\n\nFiles changed in the repo (git status):\n${d.files}` : '\n\nNo files changed.') + (d.error ? `\n\n${d.error}` : '')
           + '\n\nNothing is committed. Review in GitHub Desktop and push when you are happy.');
         b.disabled = false; b.textContent = '🖖 Make it so';
         await load();
       });
-      document.getElementById('stReload').addEventListener('click', load);
       load();
     })();
     </script>

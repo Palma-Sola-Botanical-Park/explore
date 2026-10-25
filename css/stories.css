@@ -15,6 +15,12 @@
 .st-demo a { color: #3a2a00; font-weight: 700; text-decoration: underline; }
 
 /* ── hero: the species banner, with a dek instead of a Latin name ───────── */
+/* About a third shorter than the species hero (clamp(340px,58vh,620px)): Randy,
+   2026-10-24, "way too big". A story opens on its words sooner. */
+.st-hero { height: clamp(200px, 28vh, 320px); }
+.st-hero .sp-hero-inner { padding: 1.2rem 1.4rem 1.1rem; }
+.st-hero .sp-name { font-size: clamp(1.5rem, 3.6vw, 2.3rem); }
+.st-hero .st-dek { font-size: clamp(.95rem, 1.8vw, 1.1rem); margin-top: .3rem; }
 .st-hero .sp-eyebrow { color: var(--gold-light); }
 .st-dek { font-family: var(--sans); font-size: clamp(1.05rem, 2.2vw, 1.3rem); line-height: 1.5;
   color: rgba(255,255,255,.9); max-width: 46ch; margin-top: .5rem; }
