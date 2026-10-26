@@ -375,7 +375,9 @@ input:focus,button:focus-visible{outline:2px solid var(--new);outline-offset:1px
 .mk.m-has{background:var(--has)}.mk.m-need{background:var(--need)}.mk.m-skip{background:var(--skip)}.mk.m-new{background:var(--new)}
 .mk.act{transform:scale(2.1);border-color:#fff;border-width:3px;box-shadow:0 0 0 3px #63b4e8,0 0 10px 4px rgba(99,180,232,.8)}
 .mk .n{display:block;font:700 10px/12px var(--mono);text-align:center;color:#06100c;pointer-events:none}
-.mk.ghostpin{opacity:.4;width:11px;height:11px}
+.mk.ghostpin{opacity:.55;width:11px;height:11px}
+.pinlbl{font:600 12px/1.2 var(--sans);padding:2px 6px;background:rgba(10,24,18,.88);color:#eef4ee;border:1px solid rgba(255,255,255,.22);border-radius:4px;box-shadow:none;pointer-events:none}
+.pinlbl::before{border-right-color:rgba(10,24,18,.88)}
 #legend{bottom:12px;right:12px;padding:9px 12px;font-size:11px;display:flex;flex-direction:column;gap:5px}
 #legend div{display:flex;gap:7px;align-items:center;color:var(--dim)}
 #toast{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:8px 14px;font-size:12px;z-index:900;opacity:0;transition:opacity .25s;pointer-events:none}
@@ -434,6 +436,7 @@ input:focus,button:focus-visible{outline:2px solid var(--new);outline-offset:1px
 const STATES=[{k:'has_sign',label:'Has sign',cls:'has'},{k:'needs_sign',label:'Needs sign',cls:'need'},{k:'not_needed',label:'No sign',cls:'skip'}];
 let SPECIES=[],AREAS=[],pins=[],unlinked=[],rev=0,seq=0,CENTER=[27.51365,-82.65985],DRY=false;
 let active=null,addMode=false,showAll=false,filter='all',selPin=null,lastDel=null,placing=null;
+const LABEL_ZOOM=20;   // names appear on every pin from this zoom in; below it, hover only
 
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const located=p=>p.lat!=null&&p.lng!=null;
@@ -464,6 +467,7 @@ window.addEventListener('beforeunload',e=>{ if(dirty){ e.preventDefault(); e.ret
 let map,layer;
 function initMap(){
   map=L.map('map',{zoomControl:true,maxZoom:22}).setView(CENTER,18);
+  map.on('zoomend',()=>{ if(showAll) drawMap(); });
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     {maxNativeZoom:19,maxZoom:22,attribution:'Imagery &copy; Esri'}).addTo(map);
   layer=L.layerGroup().addTo(map);
@@ -498,11 +502,13 @@ function drawMap(){
     const mine=p.sid===active;
     if(!mine&&!showAll) return;
     const num=mine?(pinsOf(active).indexOf(p)+1):0;
-    const m=L.marker([p.lat,p.lng],{icon:icon(p,mine,!mine,num),draggable:mine,riseOnHover:true,zIndexOffset:(mine&&p.pid===selPin)?1500:(mine?500:0)});
-    m.on('click',ev=>{ L.DomEvent.stop(ev); if(!mine) selectSpecies(p.sid); selPin=p.pid; render(); revealEntry(p.pid); });
+    const m=L.marker([p.lat,p.lng],{icon:icon(p,mine,!mine,num),draggable:true,riseOnHover:true,zIndexOffset:(mine&&p.pid===selPin)?1500:(mine?500:0)});
+    m.on('click',ev=>{ L.DomEvent.stop(ev); if(!mine) selectSpecies(p.sid,false); selPin=p.pid; render(); revealEntry(p.pid); });
     m.on('dragend',ev=>{ const ll=ev.target.getLatLng(); p.lat=+ll.lat.toFixed(7); p.lng=+ll.lng.toFixed(7);
                          p.updated=new Date().toISOString(); save(); render(); });
-    if(!mine) m.bindTooltip(nameOf(p.sid),{direction:'right',offset:[8,0]});
+    // Other species' pins carry their name: always on hover, and as a fixed label once zoomed in enough to read a row
+    // (Randy, 2026-10-25: "I can see All but do not know what those other pins are"). Any pin can be dragged.
+    if(!mine) m.bindTooltip(nameOf(p.sid),{permanent:map.getZoom()>=LABEL_ZOOM,direction:'right',offset:[6,0],className:'pinlbl'});
     m.addTo(layer);
   });
 }
@@ -540,9 +546,11 @@ function drawList(){
   document.getElementById('prog').textContent=done+' of '+SPECIES.length+' plants mapped · '+pins.length+' pins';
   document.getElementById('progbar').style.width=(SPECIES.length?done/SPECIES.length*100:0)+'%';
 }
-function selectSpecies(id){
-  active=id; addMode=true; selPin=null; placing=null;
-  document.getElementById('addbtn').classList.add('on');
+function selectSpecies(id,arm=true){
+  // arm=false when the species was picked by clicking one of its pins on the map: the user is tweaking, not dropping,
+  // and an armed map would add a placement on the next stray click (Randy, 2026-10-25).
+  active=id; addMode=arm; selPin=null; placing=null;
+  document.getElementById('addbtn').classList.toggle('on',arm);
   const s=SPECIES.find(x=>x.id===id);
   document.getElementById('active').innerHTML='<b>'+esc(s.c)+'</b><span>'+esc(s.b||'')+' · '+esc(s.id)+'</span>';
   fit(pinsOf(id)); render();
