@@ -376,8 +376,8 @@ const NAV_HTML = `
       <ul class="subnav">
         <li><a href="index.html">Welcome</a></li>
         <li><a href="index.html#happening">What's On</a></li>
-        <li><a href="index.html#whatsHere">What's Here</a></li>
         <li><a href="index.html#latelySection">Lately</a></li>
+        <li><a href="index.html#whatsHere">What's Here</a></li>
         <li><a href="news.html">News</a></li>
       </ul>
     </li>
@@ -436,8 +436,8 @@ const NAV_HTML = `
   <a href="index.html" class="nm-top">Home</a>
   <a href="index.html" class="nm-sub">Welcome</a>
   <a href="index.html#happening" class="nm-sub">What's On</a>
-  <a href="index.html#whatsHere" class="nm-sub">What's Here</a>
   <a href="index.html#latelySection" class="nm-sub">Lately</a>
+  <a href="index.html#whatsHere" class="nm-sub">What's Here</a>
   <a href="news.html" class="nm-sub">News</a>
   <a href="visit.html" class="nm-top">Visit</a>
   <a href="visit.html#getting-here" class="nm-sub">Getting here</a>

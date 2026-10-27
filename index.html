@@ -328,7 +328,33 @@ section[id]{scroll-margin-top:34px}  /* 64px menu, minus 30 of the section's own
   </div>
 </section>
 
-<!-- ══ 3 · THE PARK ITSELF — "What's here" and "Plan your visit" merged.
+<!-- ══ 3 · LATELY AT THE PARK — News + Right Now in one strip ═══════════
+     Moved above "What's here" on 2026-10-27 (Randy): the six text-only area
+     cards were the dullest thing near the top; the changing content leads now.
+     Was "Right now in the park" until 2026-10-26. Each set leads with one
+     recent News story; the nature cards fill the rest. Arrows, no timer. -->
+<section class="cx-sec bg-sunk" id="latelySection">
+  <div class="cx-in">
+    <span class="label">Lately</span>
+    <h2 class="cx-title">Lately at the park</h2>
+    <!-- The nature cards flip. Nothing on the page said so except a small "↺ more"
+         hint in the corner of each one, which is easy to miss entirely. -->
+    <p class="cx-sub">News from the park, and what's blooming, flying and newly planted.
+      Turn a nature card over for a few things worth knowing about it.</p>
+    <div class="rn-strip" id="latelyStrip"></div>
+    <div class="lt-nav">
+      <span class="lt-arrows" id="latelyArrows" style="display:none">
+        <button class="lt-arrow" type="button" data-step="-1" aria-label="Previous cards">‹</button>
+        <span class="lt-count" id="latelyCount" aria-live="polite"></span>
+        <button class="lt-arrow" type="button" data-step="1" aria-label="Next cards">›</button>
+      </span>
+      <a class="cx-more" href="news.html">All news →</a>
+      <a class="cx-more" href="nature.html">Browse the collection →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 4 · THE PARK ITSELF — "What's here" and "Plan your visit" merged.
         They were back-to-back and doing one job: six named places, then a map
         of those same six places, then how to reach them. Splitting it made a
         visitor scroll past an orientation section to reach an orientation
@@ -370,30 +396,6 @@ section[id]{scroll-margin-top:34px}  /* 64px menu, minus 30 of the section's own
       <div class="cx-map">
         <img src="images/ParkMap.png" alt="Map of Palma Sola Botanical Park">
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ 4 · LATELY AT THE PARK — News + Right Now in one strip ═══════════
-     Was "Right now in the park" until 2026-10-26. Each set leads with one
-     recent News story; the nature cards fill the rest. Arrows, no timer. -->
-<section class="cx-sec bg-sunk" id="latelySection">
-  <div class="cx-in">
-    <span class="label">Lately</span>
-    <h2 class="cx-title">Lately at the park</h2>
-    <!-- The nature cards flip. Nothing on the page said so except a small "↺ more"
-         hint in the corner of each one, which is easy to miss entirely. -->
-    <p class="cx-sub">News from the park, and what's blooming, flying and newly planted.
-      Turn a nature card over for a few things worth knowing about it.</p>
-    <div class="rn-strip" id="latelyStrip"></div>
-    <div class="lt-nav">
-      <span class="lt-arrows" id="latelyArrows" style="display:none">
-        <button class="lt-arrow" type="button" data-step="-1" aria-label="Previous cards">‹</button>
-        <span class="lt-count" id="latelyCount" aria-live="polite"></span>
-        <button class="lt-arrow" type="button" data-step="1" aria-label="Next cards">›</button>
-      </span>
-      <a class="cx-more" href="news.html">All news →</a>
-      <a class="cx-more" href="nature.html">Browse the collection →</a>
     </div>
   </div>
 </section>
