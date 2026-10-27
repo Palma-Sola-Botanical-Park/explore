@@ -948,6 +948,25 @@ loadVolDesk();
     }
   } catch (e) { /* fail-soft — section just stays empty */ }
 })();
+
+/* Arriving at get-involved.html#citizen-science on a phone landed in the
+   Volunteer of the Month photos (2026-10-26). The browser jumps to the anchor
+   immediately — then the volunteer desk, the places list and the photo grid
+   (about 2,900px on a phone) inject ABOVE it and push the target down. Chrome
+   keeps your place when that happens; iPhone Safari does not.
+   Same fix as index.html: if we arrived with a hash, scroll again once the
+   feeds have settled. Two passes because images resize the page after their
+   JSON does. Only ever runs when there IS a hash, so a normal visit is untouched. */
+(function reaimHash(){
+  const id = (location.hash || '').slice(1);
+  if (!id) return;
+  const go = () => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ block: 'start' });
+  };
+  window.addEventListener('load', () => { go(); setTimeout(go, 350); });
+  setTimeout(go, 1200);
+})();
 </script>
 </body>
 </html>

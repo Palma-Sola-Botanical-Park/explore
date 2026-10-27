@@ -754,9 +754,12 @@ var FEEDS   = BASE + 'data/published/';
    under the pre-existing quarter-of-the-deck ceiling in buildDeck(), so this
    can't run away even if the announcements feed grows. Randy: "at some point
    we should look at the algorithm and decide what the rules are" — this is
-   the small, reversible nudge, not that review. */
+   the small, reversible nudge, not that review.
+   Bev again, 2026-10-26, via Randy: "more events and slightly less species".
+   event PERIOD 2→1 (every upcoming event every loop) and CAP 5→6; one
+   collection spotlight less per loop in both profiles (SPOTLIGHTS below). */
 var PERIOD = {
-  event:         2,                            // timely, and the window already filters
+  event:         1,                            // every upcoming event, every loop (Bev, 2026-10-26)
   news:          PROFILE === 'office' ? 2 : 3,
   klass_fitness: 6,                            // yoga, Zumba — toned down, not removed
   klass_nature:  2,                            // talks, workshops — favored once they exist
@@ -767,13 +770,21 @@ var PERIOD = {
   right_now:     2,                            // what to go look at, right now
   ask:           PROFILE === 'office' ? 2 : 3
 };
-var CAP = { event:5, news:2, klass_fitness:1, klass_nature:2, klass:2,
+var CAP = { event:6, news:2, klass_fitness:1, klass_nature:2, klass:2,
             series:1, volunteer:2, newsletter:1, right_now:2 };
+
+/* FLAGSHIP EVENTS — Randy, 2026-10-26. A Save the Date event on the wall gets a
+   slide in EVERY loop, up to three of them, soonest first. Through the shared
+   queue, Winter Nights was turning up in about three loops of five, sharing
+   turns with a market morning and a workday. The other events share what is
+   left of the event cap, so the total never grows past CAP.event. Three is
+   the same ceiling as the poster band on the homepage and events.html. */
+var FLAGSHIPS = 3;
 var CLASS_CATS = { fitness:['Fitness & Wellness'], nature:['Talks & Learning','Workshops'] };
 
 /* The collection is the one pool with no feed behind it — 320 species, so it
    can't be periodised. A flat count, tuned against everything else. */
-var SPOTLIGHTS = PROFILE === 'office' ? 4 : 5;
+var SPOTLIGHTS = PROFILE === 'office' ? 3 : 4;   /* was 4 : 5 until 2026-10-26 */
 
 /* Two per cycle each — enough to change the rhythm, not enough to become the
    rhythm. The point of both is that they are a break from the pattern. */
@@ -1221,10 +1232,17 @@ function daysUntil(iso){
 }
 function yes(v){ return String(v||'').trim().toLowerCase() === 'yes'; }
 
+/* A run of days stays on the wall until its LAST day, not its first.
+   Checking only `date` dropped Winter Nights (Dec 17–20) on the 18th, with
+   three nights still to go. A date_end before the date is a typo; ignore it. */
+function lastDay(e){
+  return (e.date_end && e.date_end > e.date) ? e.date_end : e.date;
+}
+
 function eventWindow(e){
   if(!e.date) return false;
   var d = daysUntil(e.date);
-  if(d < 0) return false;
+  if(daysUntil(lastDay(e)) < 0) return false;
   var from = (e.screen_from || '').trim();
   if(from) return daysUntil(from) <= 0 && d <= FAR_DAYS;
   if(yes(e.save_the_date) || yes(e.closes_park)) return d <= FAR_DAYS;
@@ -1837,8 +1855,9 @@ function weekAhead(){
              + '-' + ('0'+when.getDate()).slice(-2);
     var items = [];
 
+    /* every day of a run, not just its first — Winter Nights is on all four */
     D.events.forEach(function(e){
-      if(e.date === iso) items.push({ time:e.time, title:e.title });
+      if(e.date && e.date <= iso && iso <= lastDay(e)) items.push({ time:e.time, title:e.title });
     });
     D.classes.forEach(function(c){
       if(DOWK[when.getDay()] === c.weekday) items.push({ time:c.time, title:c.title });
@@ -2183,16 +2202,21 @@ var cycle = 0;
 function buildDeck(){
   cycle++;
   var pool=[], i;
-  function add(type,rows,fn){
+  function add(type,rows,fn,cap){
     if(!rows || !rows.length) return;
     var n = Math.ceil(rows.length / (PERIOD[type] || 3));
-    n = Math.max(1, Math.min(n, CAP[type] || 3, rows.length));
+    n = Math.max(1, Math.min(n, cap || CAP[type] || 3, rows.length));
     var picks = takeFrom(type, rows, n);
     for(var p=0;p<picks.length;p++) pool.push({type:type,make:fn.bind(null,picks[p])});
   }
 
   add('right_now',  D.right_now,              slideRightNow);
-  add('event',      upcoming(D.events),       slideEvent);
+  /* flagships every loop (see FLAGSHIPS), the rest through the shared queue */
+  var events   = upcoming(D.events);
+  var flagship = events.filter(function(e){ return yes(e.save_the_date); }).slice(0, FLAGSHIPS);
+  flagship.forEach(function(e){ pool.push({type:'event', make:slideEvent.bind(null, e)}); });
+  add('event', events.filter(function(e){ return flagship.indexOf(e) < 0; }), slideEvent,
+      Math.max(1, CAP.event - flagship.length));
   add('news',       D.news.slice().reverse(), slideNews);
   /* add()'s floor is Math.max(1, …) — with any fitness rows at all, PERIOD
      alone can never bring it below one slide per cycle, however high it's
