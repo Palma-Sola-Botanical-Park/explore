@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Palma Sola Botanical Park — park screen, version 3</title>
+<meta name="robots" content="noindex">
+<!-- Version 3 of the park screen: the everyday deck with its colours following
+     the sun through the day (THE SUN PALETTE in screen.html). ONE deck lives in
+     screen.html; this stub only turns the palette on, so the controller URL
+     carries no query string. Edit screen.html, never this file.
+     Anything after ? is passed through: screen3.html?sunclock=fast plays a
+     whole day in three minutes, screen3.html?at=18:30 holds one time. -->
+<script>location.replace('screen.html?palette=sun' + (location.search ? '&' + location.search.slice(1) : ''));</script>
+<meta http-equiv="refresh" content="0; url=screen.html?palette=sun">
+</head>
+<body style="background:#0c1a10"></body>
+</html>
