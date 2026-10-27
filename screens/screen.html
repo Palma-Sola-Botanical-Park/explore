@@ -759,8 +759,13 @@ body{
   max-width:none;font-size:clamp(1.15rem,3vmin,2.4rem);font-weight:400;line-height:1.45}
 .slide.ask.split .logo{align-items:flex-start;margin:0 0 3vmin}
 .slide.ask.split .logo-plate{align-self:flex-start}
-.slide.ask.split .qr{align-items:flex-start;margin-top:3.6vmin}
-.slide.ask.split .qr .cap{text-align:left}
+/* the QR code takes the bottom-right corner, over the photograph (Randy,
+   2026-10-27); when it does, the photo credit moves to the photograph's
+   bottom-left, just past the seam */
+.slide.ask.split .qr{position:absolute;left:auto;right:calc(var(--frame) + var(--pad));
+  bottom:calc(var(--frame) + 3.2vmin);margin:0;transform:none;align-items:flex-end}
+.slide.ask.split .qr .cap{text-align:right}
+.credit.at-seam{right:auto;left:calc(42vw + var(--pad));text-align:left}
 </style>
 </head>
 <body>
@@ -2528,7 +2533,8 @@ function render(s){
      column and lands mid-paragraph. Lift it out to sit against the slide.
      On an ask it belongs in the flow, centered under the words — leave it. */
   var qrNode = el.querySelector('.qr');
-  if(qrNode && !s.ask && !s.poster){ el.appendChild(qrNode); el.classList.add('has-qr'); }
+  if(qrNode && (!s.ask || s.split) && !s.poster){ el.appendChild(qrNode); el.classList.add('has-qr'); }
+  credEl.classList.toggle('at-seam', !!(s.split && qrNode));
   el.style.setProperty('--kb', (dur+3)+'s');
   el.style.setProperty('--slide-s', dur+'s');   /* for reveals timed to the slide */
 
