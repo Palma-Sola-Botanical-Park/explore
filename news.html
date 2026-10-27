@@ -304,7 +304,7 @@ function paintNewsHero(i){
 }
 PSBPPhotos.pickBanner().then(b => { newsDefaultHero = b; paintNewsHero(newsActive); });
 
-function selectNews(i){
+function selectNews(i, picked){
   newsActive = i;
   readerEl.innerHTML = articleHTML(newsItems[i]);
   squaresEl.querySelectorAll('.news-square').forEach(b => b.classList.toggle('active', +b.dataset.idx === i));
@@ -313,12 +313,13 @@ function selectNews(i){
   // the top instead of a small dark band inside the article.
   paintNewsHero(i);
 
-  // TOP OF THE PAGE, not top of the article. The hero at the top has just
-  // changed to this story's photograph — scrolling to the article header sails
-  // straight past it, so the one thing that visibly responded to the click was
-  // the one thing you never saw. The article header sits just under the hero
-  // anyway, so this costs a few hundred pixels of scroll and shows the change.
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // A story picked from the list goes to ITS HEADLINE, not the top of the page.
+  // This used to scroll to the very top so the hero, which has just changed to
+  // this story's photograph, was seen. Randy, 2026-10-26: the banner has already
+  // been seen by then; land on the title of the story you chose. (.news-reader's
+  // scroll-margin-top keeps the date and headline clear of the fixed nav.)
+  // The first load of the page is not a pick and stays at the top.
+  if (picked) readerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function renderSquares(){
@@ -330,7 +331,7 @@ function renderSquares(){
       ${n.blurb?`<p>${n.blurb}</p>`:''}
     </button>`;
   }).join('');
-  squaresEl.querySelectorAll('.news-square').forEach(b => b.addEventListener('click', () => selectNews(+b.dataset.idx)));
+  squaresEl.querySelectorAll('.news-square').forEach(b => b.addEventListener('click', () => selectNews(+b.dataset.idx, true)));
   moreBtn.style.display = (newsShown < newsItems.length) ? 'block' : 'none';
 }
 

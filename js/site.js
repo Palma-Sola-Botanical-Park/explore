@@ -362,7 +362,7 @@ const NAV_HTML = `
     border-top:1px solid var(--border,#e6e2d6);margin-top:.35rem;
   }
   #navMobile .nm-top:first-child{border-top:0;margin-top:0}
-  #navMobile .nm-sub{padding-left:2.4rem;font-size:.95rem;font-weight:500;color:var(--text-soft,#5c5f56)}
+  #navMobile .nm-sub{padding-left:2.4rem;font-size:var(--t-base,1.0625rem);font-weight:500;color:var(--text-soft,#5c5f56)}
   #navMobile .nm-sub:hover,#navMobile .nm-sub:focus{color:var(--green-deep,#1a3a1f)}
   /* Make the open mobile menu fit the screen and scroll inside itself —
      otherwise the list overflows past the viewport and can't be reached,
@@ -2480,19 +2480,60 @@ async function loadLately(targetId, opts) {
     }
   }
 
-  let at = 0;
-  const show = () => {
-    el.innerHTML = pages[at].join('');
-    if (countEl) countEl.textContent = `${at + 1} of ${pages.length}`;
+  // PHONES SWIPE (Randy, 2026-10-26). Under 640px the sets become ONE row the
+  // visitor swipes through, each card nearly full width with the next one
+  // peeking in at the right edge — the peek is the cue. Same cards in the same
+  // order, each once: a story, its nature cards, the next story… The browser's
+  // own scroll-snap does the swiping (index.html, .lt-swipe). The arrows stay,
+  // and step one card at a time, for anyone who doesn't swipe.
+  const fill = PER - 1;
+  const row = [];
+  if (!news.length || !nature.length) row.push(...news, ...nature);
+  else {
+    const n = Math.max(news.length, Math.ceil(nature.length / fill));
+    for (let p = 0; p < n; p++) {
+      if (p < news.length) row.push(news[p]);
+      row.push(...nature.slice(p * fill, p * fill + fill));
+    }
+  }
+  const phone = window.matchMedia('(max-width: 640px)');
+  let swipe = false;
+  const step = () => {
+    const c = el.firstElementChild;
+    return c ? c.offsetWidth + parseFloat(getComputedStyle(el).columnGap || 0) : 1;
   };
-  show();
+  const swipeAt = () => Math.min(row.length - 1, Math.round(el.scrollLeft / step()));
+  const count = () => {
+    if (!countEl) return;
+    countEl.textContent = swipe ? `${swipeAt() + 1} of ${row.length}` : `${at + 1} of ${pages.length}`;
+  };
+
+  let at = 0;
+  const show = () => { el.innerHTML = pages[at].join(''); count(); };
+  const render = () => {
+    swipe = phone.matches;
+    el.classList.toggle('lt-swipe', swipe);
+    if (swipe) { el.innerHTML = row.join(''); el.scrollLeft = 0; count(); }
+    else show();
+    if (arrows) arrows.style.display = (swipe ? row.length : pages.length) > 1 ? '' : 'none';
+  };
+  render();
+  if (phone.addEventListener) phone.addEventListener('change', render);
+  else if (phone.addListener) phone.addListener(render);       // older Safari
+  el.addEventListener('scroll', () => { if (swipe) count(); }, { passive: true });
+
   if (arrows) {
-    arrows.style.display = pages.length > 1 ? '' : 'none';
     arrows.addEventListener('click', ev => {
       const b = ev.target.closest('[data-step]');
       if (!b) return;
-      at = (at + Number(b.dataset.step) + pages.length) % pages.length;
-      show();
+      const dir = Number(b.dataset.step);
+      if (swipe) {
+        const next = (swipeAt() + dir + row.length) % row.length;   // wraps, like the sets do
+        el.scrollTo({ left: next * step(), behavior: 'smooth' });
+      } else {
+        at = (at + dir + pages.length) % pages.length;
+        show();
+      }
     });
   }
 

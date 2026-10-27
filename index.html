@@ -98,6 +98,16 @@ section[id]{scroll-margin-top:34px}  /* 64px menu, minus 30 of the section's own
 .lt-arrow:hover{background:var(--green);color:#fff}
 .lt-count{font-size:var(--t-base);color:var(--text-soft);min-width:4.5em;text-align:center}
 .lt-nav .cx-more{margin-top:0}
+/* Phones: one swipeable row instead of stacked sets (loadLately adds .lt-swipe).
+   The row bleeds to the screen edges so the next card peeks in at the right —
+   that peek is the "swipe me" cue. Native scroll-snap does the work. */
+@media (max-width:640px){
+  .rn-strip.lt-swipe{display:flex;gap:var(--s3);overflow-x:auto;scroll-snap-type:x mandatory;
+    margin:0 -1.5rem;padding:0 1.5rem .4rem;scroll-padding:0 1.5rem;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+  .rn-strip.lt-swipe::-webkit-scrollbar{display:none}
+  .rn-strip.lt-swipe > *{flex:0 0 84%;scroll-snap-align:start}
+}
 
 /* ── what's happening ─────────────────────────────────────────────────── */
 .cx-bill{display:grid;gap:1.4rem;grid-template-columns:1fr}
