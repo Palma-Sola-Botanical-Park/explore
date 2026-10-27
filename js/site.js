@@ -1053,7 +1053,11 @@ function _dateSpan(a, b){
 function renderFeature(item){
   const _l    = _itemLink(item);          // falls back to the poster itself
   const href  = _l.url;
-  const label = _l.text || 'See the flyer';
+  // The flyer is already on the card, so a link that just opens that same
+  // flyer offers the bigger view (Randy, 2026-10-27). A label Bev wrote
+  // herself ("Join a workday", "Get tickets") is kept as it is.
+  const opensOwnFlyer = item.poster && href === item.poster && /^see the flyer/i.test(_l.text || 'See the flyer');
+  const label = opensOwnFlyer ? 'View full size' : (_l.text || 'See the flyer');
   // Events lead with their date. A series has no date, so it supplies its own
   // eyebrow (its category) — same card, honest top line.
   const when  = item.eyebrow
@@ -2392,21 +2396,39 @@ function rnRockOnce(strip) {
   strip.querySelectorAll('.rn-page.on .rn-flip, :scope > .rn-flip').forEach(c => io.observe(c));
 }
 
-// One News card for "Lately at the park". It leads with type, on purpose: it
-// reads as news at a glance beside the photo-led nature cards. The whole card
-// is a link to the story, and it never flips — nobody should have to discover
-// a flip to reach the article.
+// One News card for "Lately at the park". Built to the same skeleton as the
+// nature cards beside it, so their lines meet across the row (Randy,
+// 2026-10-27, from a ChatGPT mockup):
+//   a cream header the height of the nature photos (170px, set in _rnCard),
+//   the headline in it; then the summary with the story's own picture beside
+//   it, small; then a footer built like the "Photograph by" credit plate (the
+//   same classes, three lines), so its top rule lines up with theirs.
+// The whole card is one link to the story, and it never flips.
 function _latelyNewsCard(n) {
   const head  = (n.headline || '').trim();
   const href  = 'news.html?story=' + encodeURIComponent(head);   // news.html matches on the headline
   const d     = parseDateLocal(n.date);
-  const when  = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+  const when  = d ? d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
   const blurb = (n.blurb || n.subhead || '').trim();
+  // the story's own picture, at the media library's smaller size when it has one
+  const pic   = ((n.hero_image || n.image1 || '').trim())
+                  .replace(/(\/media\/PM-\d+\/v\d+\/)original\.(png|jpe?g|webp)$/i, '$1web.jpg');
   return `<a class="lt-news" href="${_rnEsc(href)}">
-      <span class="lt-news-eyebrow">News${when ? ' · ' + _rnEsc(when) : ''}</span>
-      <h3 class="lt-news-head">${_rnEsc(head)}</h3>
-      ${blurb ? `<p class="lt-news-blurb">${_rnEsc(blurb)}</p>` : ''}
-      <span class="lt-news-go">Read the story →</span>
+      <div class="lt-news-top">
+        <span class="lt-news-eyebrow">Park news</span>
+        <h3 class="lt-news-head">${_rnEsc(head)}</h3>
+      </div>
+      <div class="lt-news-body">
+        ${pic ? `<img class="lt-news-pic" src="${_rnEsc(pic)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+        ${blurb ? `<p class="lt-news-blurb">${_rnEsc(blurb)}</p>` : ''}
+      </div>
+      <div class="credit-plate lt-news-foot">
+        <div class="credit-byline">
+          <span class="credit-eyebrow">From the park</span>
+          <span class="credit-name lt-news-go">Read the story →</span>
+          ${when ? `<span class="credit-date">${_rnEsc(when)}</span>` : ''}
+        </div>
+      </div>
     </a>`;
 }
 

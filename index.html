@@ -81,16 +81,30 @@ section[id]{scroll-margin-top:34px}  /* 64px menu, minus 30 of the section's own
 .cx-more{display:inline-block;margin-top:1.8rem;font-size:var(--t-base);font-weight:700;color:var(--green)}
 
 /* ── lately at the park ───────────────────────────────────────────────── */
-/* A News card leads with type, on purpose: it reads as news at a glance,
-   beside the photo-led nature cards. The grid is .rn-strip (psbp.css). */
-.lt-news{display:flex;flex-direction:column;gap:.7rem;padding:1.4rem 1.3rem 1.3rem;
-  background:var(--green-deep);color:#fff;border-radius:var(--r);text-decoration:none;
-  border-top:4px solid var(--gold)}
-.lt-news:hover{background:var(--green-mid)}
-.lt-news-eyebrow{font-size:var(--t-base);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-light)}
-.lt-news-head{font-family:var(--serif);font-size:1.45rem;line-height:1.25;color:#fff;margin:0}
-.lt-news-blurb{font-size:var(--t-base);line-height:1.5;color:rgba(255,255,255,.88);margin:0;flex:1}
-.lt-news-go{font-size:var(--t-base);font-weight:700;color:var(--gold-light)}
+/* A News card is built like the nature cards beside it so their lines meet:
+   a 170px header (the nature photo's height), a body, and a footer that is a
+   credit plate. Cream and gold, with the story's own picture small in the text.
+   The grid is .rn-strip (psbp.css). */
+.lt-news{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--rule);
+  border-radius:var(--r);overflow:hidden;text-decoration:none;color:inherit;
+  transition:border-color .18s,transform .18s,box-shadow .18s}
+.lt-news:hover{text-decoration:none;border-color:var(--green);transform:translateY(-3px);box-shadow:var(--lift)}
+.lt-news-top{position:relative;height:170px;flex:none;padding:1.15rem 1.3rem 1rem;
+  background:var(--gold-tint);border-bottom:1px solid var(--gold-mark);
+  display:flex;flex-direction:column;gap:.45rem;overflow:hidden}
+.lt-news-top::before{content:'';position:absolute;inset:0 0 auto 0;height:4px;background:var(--gold)}
+.lt-news-eyebrow{font-size:var(--t-base);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+.lt-news-eyebrow::after{content:'';display:block;width:2.4rem;height:2px;background:var(--gold);margin-top:.4rem}
+.lt-news-head{font-family:var(--serif);font-size:1.35rem;line-height:1.18;color:var(--green-deep);margin:0;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.lt-news-body{padding:var(--s4);flex:1}
+.lt-news-body::after{content:'';display:block;clear:both}
+.lt-news-pic{float:right;width:42%;aspect-ratio:4/3;object-fit:cover;object-position:50% 30%;
+  margin:.2rem 0 .5rem .9rem;border-radius:4px;box-shadow:0 1px 6px rgba(0,0,0,.18)}
+.lt-news-blurb{font-size:var(--t-base);line-height:1.5;color:var(--text-soft);margin:0}
+.lt-news-foot{margin-top:auto}
+/* same box as the credit plate's name line, so the footer is exactly as tall */
+.lt-news-go{font-size:var(--t-base);line-height:calc(var(--t-sm) * 1.2);color:var(--green)}
 .lt-nav{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem 1.6rem;margin-top:1.4rem}
 .lt-arrows{display:flex;align-items:center;gap:.6rem}
 .lt-arrow{width:48px;height:48px;border-radius:50%;border:2px solid var(--green);background:#fff;
