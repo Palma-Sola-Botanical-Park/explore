@@ -377,7 +377,7 @@ const NAV_HTML = `
         <li><a href="index.html">Welcome</a></li>
         <li><a href="index.html#happening">What's On</a></li>
         <li><a href="index.html#whatsHere">What's Here</a></li>
-        <li><a href="index.html#rightNowSection">Right Now</a></li>
+        <li><a href="index.html#latelySection">Lately</a></li>
         <li><a href="news.html">News</a></li>
       </ul>
     </li>
@@ -437,7 +437,7 @@ const NAV_HTML = `
   <a href="index.html" class="nm-sub">Welcome</a>
   <a href="index.html#happening" class="nm-sub">What's On</a>
   <a href="index.html#whatsHere" class="nm-sub">What's Here</a>
-  <a href="index.html#rightNowSection" class="nm-sub">Right Now</a>
+  <a href="index.html#latelySection" class="nm-sub">Lately</a>
   <a href="news.html" class="nm-sub">News</a>
   <a href="visit.html" class="nm-top">Visit</a>
   <a href="visit.html#getting-here" class="nm-sub">Getting here</a>
@@ -492,7 +492,7 @@ const FOOTER_HTML = `
     <div class="footer-col">
       <h4>Explore</h4>
       <ul>
-        <li><a href="index.html#rightNowSection">Right Now</a></li>
+        <li><a href="index.html#latelySection">Lately</a></li>
         <li><a href="nature.html#plants">Plants &amp; Wildlife</a></li>
         <li><a href="news.html">Park News</a></li>
       </ul>
@@ -2326,13 +2326,13 @@ function _rnCard(e, rec, cr) {
       <div style="height:170px;overflow:hidden;position:relative;background:var(--sand)">
         ${photo ? `<img src="${_rnEsc(photo)}" alt="${_rnEsc(e.common_name)}" style="width:100%;height:100%;object-fit:cover;object-position:${_rnEsc(focus)};display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy">` : ''}
         <div style="display:${photo ? 'none' : 'flex'};height:100%;align-items:center;justify-content:center;font-size:2.6rem;color:var(--text-soft);opacity:.3">${glyph}</div>
-        <span style="position:absolute;top:.6rem;left:.6rem;background:${pillBg};color:${pillFg};font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.22rem .6rem;border-radius:20px;box-shadow:0 1px 5px rgba(0,0,0,.25)">${_rnEsc(pill)}</span>
+        <span style="position:absolute;top:.6rem;left:.6rem;background:${pillBg};color:${pillFg};font-size:var(--t-base);font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.22rem .7rem;border-radius:20px;box-shadow:0 1px 5px rgba(0,0,0,.25)">${_rnEsc(pill)}</span>
       </div>
       <div class="card-body" style="flex:1">
-        <h4 style="font-size:1rem;color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${_rnEsc(e.common_name)}</h4>
+        <h4 style="font-size:var(--t-md);color:var(--green-deep);line-height:1.3;margin-bottom:.2rem">${_rnEsc(e.common_name)}</h4>
         ${sci ? `<div class="sci-name" style="margin-bottom:.45rem">${_rnEsc(sci)}</div>` : ''}
-        ${e.note ? `<p style="font-size:.86rem;color:var(--text-soft);line-height:1.5;margin:0 0 .55rem">${_rnEsc(e.note)}</p>` : ''}
-        ${e.area ? `<div style="font-size:.78rem;color:var(--green-mid);font-weight:600">📍 ${_rnEsc(e.area)}</div>` : ''}
+        ${e.note ? `<p style="font-size:var(--t-base);color:var(--text-soft);line-height:1.5;margin:0 0 .55rem">${_rnEsc(e.note)}</p>` : ''}
+        ${e.area ? `<div style="font-size:var(--t-base);color:var(--green-mid);font-weight:600">📍 ${_rnEsc(e.area)}</div>` : ''}
       </div>
       ${plate}
       <span class="rn-flip-hint" aria-hidden="true">Flip for more ↻</span>
@@ -2392,91 +2392,108 @@ function rnRockOnce(strip) {
   strip.querySelectorAll('.rn-page.on .rn-flip, :scope > .rn-flip').forEach(c => io.observe(c));
 }
 
-// loadRightNow(targetId, { limit, sectionId })
-//   targetId  — grid container to fill
-//   limit     — max cards (home strip ~6; the full view omits it for all)
-//   sectionId — optional wrapping <section> to HIDE when the feed is empty
-//               (an empty Right Now is a valid state — the page falls through)
-async function loadRightNow(targetId, opts) {
+// One News card for "Lately at the park". It leads with type, on purpose: it
+// reads as news at a glance beside the photo-led nature cards. The whole card
+// is a link to the story, and it never flips — nobody should have to discover
+// a flip to reach the article.
+function _latelyNewsCard(n) {
+  const head  = (n.headline || '').trim();
+  const href  = 'news.html?story=' + encodeURIComponent(head);   // news.html matches on the headline
+  const d     = parseDateLocal(n.date);
+  const when  = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+  const blurb = (n.blurb || n.subhead || '').trim();
+  return `<a class="lt-news" href="${_rnEsc(href)}">
+      <span class="lt-news-eyebrow">News${when ? ' · ' + _rnEsc(when) : ''}</span>
+      <h3 class="lt-news-head">${_rnEsc(head)}</h3>
+      ${blurb ? `<p class="lt-news-blurb">${_rnEsc(blurb)}</p>` : ''}
+      <span class="lt-news-go">Read the story →</span>
+    </a>`;
+}
+
+// loadLately(targetId, { perPage, newsDays, limit, sectionId, arrowsId, countId })
+//
+// "Lately at the park" on the homepage — News and Right Now in one strip.
+// Replaced "Right now in the park" on 2026-10-26 (Randy: News barely showed on
+// the homepage, and there is no room for another section).
+//
+// Every set of cards leads with ONE recent News story and Right Now fills the
+// rest, shuffled per visit. Recent = dated in the last `newsDays` (30). The
+// stories come in the News page's own order — newest date first, same-date
+// stories in sheet order — so whatever tops news.html leads here too, and Bev
+// picks the lead by moving a row. The arrows walk through every recent story
+// and every nature card, then wrap. Nothing swaps by itself.
+//
+// No recent News → nature only, exactly the old strip. No nature → news only.
+// Neither → the section hides (an empty strip is a valid state).
+async function loadLately(targetId, opts) {
   opts = opts || {};
   const el = document.getElementById(targetId);
   if (!el) return;
+  const PER = opts.perPage || 3;
+  const section = opts.sectionId ? document.getElementById(opts.sectionId) : null;
+  const arrows  = opts.arrowsId  ? document.getElementById(opts.arrowsId)  : null;
+  const countEl = opts.countId   ? document.getElementById(opts.countId)   : null;
 
   const pathParts = window.location.pathname.split('/').filter(Boolean);
   const repoIdx = pathParts.indexOf('explore');
   const inSubfolder = repoIdx >= 0 && pathParts.length > repoIdx + 2;
   const base = inSubfolder ? '../' : '';
 
-  let rows;
-  try { rows = await fetchTab(TAB.right_now); }   // MIGRATED -> data/published/right_now.json
-  catch (_) { rows = []; }
+  const [newsRows, rnRows] = await Promise.all([
+    fetchTab(TAB.news).catch(() => []),
+    fetchTab(TAB.right_now).catch(() => []),   // MIGRATED -> data/published/right_now.json
+  ]);
 
-  rows = (rows || []).filter(r => WEB_DISPLAY.has(r.display));   // web + both only
-  // `limit` caps the POOL, not what is on screen. With rotation on, `perPage`
-  // decides how many show at once and the rest take their turn. (2026-08-27)
+  const today = new Date(); today.setHours(12, 0, 0, 0);
+  const oldest = new Date(today); oldest.setDate(oldest.getDate() - (opts.newsDays || 30));
+  const news = (newsRows || []).filter(isWebVisible).filter(r => (r.headline || '').trim())
+    .sort((a, b) => new Date(b.date) - new Date(a.date))          // same rule as news.html
+    .filter(r => { const d = parseDateLocal(r.date); return d && d >= oldest && d <= today; })
+    .map(_latelyNewsCard);
+
+  let rows = (rnRows || []).filter(r => WEB_DISPLAY.has(r.display));   // web + both only
   if (opts.limit) rows = rows.slice(0, opts.limit);
 
-  const section = opts.sectionId ? document.getElementById(opts.sectionId) : null;
-  if (!rows.length) {
-    if (section) section.style.display = 'none';   // empty is valid — hide the band
+  if (!news.length && !rows.length) {
+    if (section) section.style.display = 'none';
     el.innerHTML = '';
     return;
   }
-  const byId = await _rnSpeciesIndex(base);
-  const creditById = await _ensurePhotoCredits();   // shared psbp_id -> hero credit map
+  const byId = rows.length ? await _rnSpeciesIndex(base) : {};
+  const creditById = rows.length ? await _ensurePhotoCredits() : {};   // shared psbp_id -> hero credit map
+  const nature = _shuffle(rows, Math.random).map(e => _rnCard(e,
+    e.psbp_id ? byId[e.psbp_id] : null, e.psbp_id ? creditById[e.psbp_id] : null));
 
-  el.innerHTML = rows.map(e => {
-    const rec = e.psbp_id ? byId[e.psbp_id] : null;
-    const cr  = e.psbp_id ? creditById[e.psbp_id] : null;
-    return _rnCard(e, rec, cr);
-  }).join('');
+  // Build the sets once. With both kinds, there are enough sets to show every
+  // story and every nature card at least once; the shorter list repeats.
+  const pages = [];
+  if (!news.length || !nature.length) {
+    const only = news.length ? news : nature;
+    for (let i = 0; i < only.length; i += PER) pages.push(only.slice(i, i + PER));
+  } else {
+    const fill = PER - 1;
+    const n = Math.max(news.length, Math.ceil(nature.length / fill));
+    for (let p = 0; p < n; p++) {
+      const page = [news[p % news.length]];
+      for (let k = 0; k < fill; k++) page.push(nature[(p * fill + k) % nature.length]);
+      pages.push(page);
+    }
+  }
 
-  /* ── ROTATION ────────────────────────────────────────────────────────────
-     Added 2026-08-27. Randy: "I'm thinking I'll keep up to 10-20 most times.
-     I think a row of 3 that swaps out every X seconds would be good."
-
-     Same mechanism the home-page mosaic uses: two stacked pages, one visible,
-     crossfaded on a timer. Not a carousel — nothing slides, and there are no
-     controls to miss. A row of three simply becomes a different three.
-
-     It only engages when there is something to rotate TO. With three or fewer
-     rows the strip renders exactly as before and no timer is started, so the
-     common case pays nothing. */
-  const PER = opts.perPage || 3;
-  const EVERY = (opts.rotateSeconds || 9) * 1000;
-  if (el._rnTimer) { clearInterval(el._rnTimer); el._rnTimer = null; }
-
-  if (rows.length > PER) {
-    const cards = Array.prototype.slice.call(el.children);
-    const page = i => {
-      let h = '';
-      for (let k = 0; k < PER; k++) h += cards[(i + k) % cards.length].outerHTML;
-      return h;
-    };
-    // Both classes: the grid shape lives on .rn-strip and the stacking on
-    // .rn-cycling, and the CSS keys on the pair. Adding rn-strip here too means
-    // rotation still lays out correctly if a page ever forgets it in the markup.
-    el.classList.add('rn-strip', 'rn-cycling');
-    el.innerHTML = '<div class="rn-page on"></div><div class="rn-page"></div>';
-    const pages = el.querySelectorAll('.rn-page');
-    pages[0].innerHTML = page(0);
-
-    let active = 0, start = 0, hovering = false;
-    el.addEventListener('mouseenter', () => { hovering = true; });
-    el.addEventListener('mouseleave', () => { hovering = false; });
-    const anyFlipped = () => !!el.querySelector('.rn-flip.is-flipped');
-
-    // Wait for a calm moment: never swap the card somebody is reading or has
-    // just turned over.
-    el._rnTimer = setInterval(() => {
-      if (hovering || anyFlipped() || document.hidden) return;
-      start = (start + PER) % cards.length;
-      const incoming = 1 - active;
-      pages[incoming].innerHTML = page(start);
-      pages[incoming].classList.add('on');
-      pages[active].classList.remove('on');
-      active = incoming;
-    }, EVERY);
+  let at = 0;
+  const show = () => {
+    el.innerHTML = pages[at].join('');
+    if (countEl) countEl.textContent = `${at + 1} of ${pages.length}`;
+  };
+  show();
+  if (arrows) {
+    arrows.style.display = pages.length > 1 ? '' : 'none';
+    arrows.addEventListener('click', ev => {
+      const b = ev.target.closest('[data-step]');
+      if (!b) return;
+      at = (at + Number(b.dataset.step) + pages.length) % pages.length;
+      show();
+    });
   }
 
   // Once per browser session, the first time the strip is on screen, each visible
@@ -2485,21 +2502,19 @@ async function loadRightNow(targetId, opts) {
   rnRockOnce(el);
 
   // Flip on click / tap / keyboard (delegated). The back-side link calls
-  // stopPropagation, so following it never also toggles the card.
-  if (!el._rnFlipWired) {
-    const toggle = ev => {
-      const card = ev.target.closest('.rn-flip');
-      if (!card) return;
-      if (ev.type === 'keydown') {
-        if (ev.key !== 'Enter' && ev.key !== ' ') return;
-        ev.preventDefault();
-      }
-      card.classList.toggle('is-flipped');
-    };
-    el.addEventListener('click', toggle);
-    el.addEventListener('keydown', toggle);
-    el._rnFlipWired = true;
-  }
+  // stopPropagation, so following it never also toggles the card. News cards
+  // are not .rn-flip, so a tap on one simply follows its link.
+  const toggle = ev => {
+    const card = ev.target.closest('.rn-flip');
+    if (!card) return;
+    if (ev.type === 'keydown') {
+      if (ev.key !== 'Enter' && ev.key !== ' ') return;
+      ev.preventDefault();
+    }
+    card.classList.toggle('is-flipped');
+  };
+  el.addEventListener('click', toggle);
+  el.addEventListener('keydown', toggle);
 }
 
 /* ── ANALYTICS · GoatCounter ───────────────────────────────────────────────

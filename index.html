@@ -80,6 +80,25 @@ section[id]{scroll-margin-top:78px}
 .cx-sub{font-size:var(--t-base);color:var(--ink-soft);margin:0 0 1.6rem;line-height:1.6;max-width:56em}
 .cx-more{display:inline-block;margin-top:1.8rem;font-size:var(--t-base);font-weight:700;color:var(--green)}
 
+/* ── lately at the park ───────────────────────────────────────────────── */
+/* A News card leads with type, on purpose: it reads as news at a glance,
+   beside the photo-led nature cards. The grid is .rn-strip (psbp.css). */
+.lt-news{display:flex;flex-direction:column;gap:.7rem;padding:1.4rem 1.3rem 1.3rem;
+  background:var(--green-deep);color:#fff;border-radius:var(--r);text-decoration:none;
+  border-top:4px solid var(--gold)}
+.lt-news:hover{background:var(--green-mid)}
+.lt-news-eyebrow{font-size:var(--t-base);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-light)}
+.lt-news-head{font-family:var(--serif);font-size:1.45rem;line-height:1.25;color:#fff;margin:0}
+.lt-news-blurb{font-size:var(--t-base);line-height:1.5;color:rgba(255,255,255,.88);margin:0;flex:1}
+.lt-news-go{font-size:var(--t-base);font-weight:700;color:var(--gold-light)}
+.lt-nav{display:flex;flex-wrap:wrap;align-items:center;gap:.8rem 1.6rem;margin-top:1.4rem}
+.lt-arrows{display:flex;align-items:center;gap:.6rem}
+.lt-arrow{width:48px;height:48px;border-radius:50%;border:2px solid var(--green);background:#fff;
+  color:var(--green);font-size:1.5rem;line-height:1;cursor:pointer}
+.lt-arrow:hover{background:var(--green);color:#fff}
+.lt-count{font-size:var(--t-base);color:var(--text-soft);min-width:4.5em;text-align:center}
+.lt-nav .cx-more{margin-top:0}
+
 /* ── what's happening ─────────────────────────────────────────────────── */
 .cx-bill{display:grid;gap:1.4rem;grid-template-columns:1fr}
 @media(min-width:820px){.cx-bill{grid-template-columns:repeat(3,1fr)}}
@@ -331,17 +350,27 @@ section[id]{scroll-margin-top:78px}
   </div>
 </section>
 
-<!-- ══ 4 · RIGHT NOW — "Right now" + "Seen lately" merged into one ═══════ -->
-<section class="cx-sec bg-sunk" id="rightNowSection">
+<!-- ══ 4 · LATELY AT THE PARK — News + Right Now in one strip ═══════════
+     Was "Right now in the park" until 2026-10-26. Each set leads with one
+     recent News story; the nature cards fill the rest. Arrows, no timer. -->
+<section class="cx-sec bg-sunk" id="latelySection">
   <div class="cx-in">
-    <span class="label">This week</span>
-    <h2 class="cx-title">Right now in the park</h2>
-    <!-- The cards flip. Nothing on the page said so except a small "↺ more"
+    <span class="label">Lately</span>
+    <h2 class="cx-title">Lately at the park</h2>
+    <!-- The nature cards flip. Nothing on the page said so except a small "↺ more"
          hint in the corner of each one, which is easy to miss entirely. -->
-    <p class="cx-sub">What's blooming, what's fruiting, what's flying — and what somebody
-      just planted. Turn any card over for a few things worth knowing about it.</p>
-    <div class="rn-strip" id="rightNowStrip"></div>
-    <a class="cx-more" href="nature.html">Browse the collection →</a>
+    <p class="cx-sub">News from the park, and what's blooming, flying and newly planted.
+      Turn a nature card over for a few things worth knowing about it.</p>
+    <div class="rn-strip" id="latelyStrip"></div>
+    <div class="lt-nav">
+      <span class="lt-arrows" id="latelyArrows" style="display:none">
+        <button class="lt-arrow" type="button" data-step="-1" aria-label="Previous cards">‹</button>
+        <span class="lt-count" id="latelyCount" aria-live="polite"></span>
+        <button class="lt-arrow" type="button" data-step="1" aria-label="Next cards">›</button>
+      </span>
+      <a class="cx-more" href="news.html">All news →</a>
+      <a class="cx-more" href="nature.html">Browse the collection →</a>
+    </div>
   </div>
 </section>
 
@@ -447,9 +476,9 @@ loadHomeHappening({ posters:'homePosters', upcoming:'homeUpcoming', closure:'hom
 // Her welcome, if she wrote one this month. Silent if she didn't.
 loadDirectorNote({ into:'dnote', wrap:'dnoteWrap' });
 
-// Right now in the park — rotates 3 at a time; hides itself if the feed is empty.
-loadRightNow('rightNowStrip', { limit: 24, perPage: 3, rotateSeconds: 9,
-                                sectionId: 'rightNowSection' });
+// Lately at the park — News + Right Now, 3 at a time, arrows; hides itself if both are empty.
+loadLately('latelyStrip', { limit: 24, perPage: 3, newsDays: 30, sectionId: 'latelySection',
+                            arrowsId: 'latelyArrows', countId: 'latelyCount' });
 
 /* The observation count is the one number in the closing tally that grows by
    itself, so it is read live from the iNaturalist project rather than frozen
@@ -497,7 +526,7 @@ loadINat().then(d => {
   put('closeObservers', d.observers);
 }).catch(() => {});
 
-/* Arriving at index.html#rightNowSection from another page, the browser jumps to
+/* Arriving at index.html#latelySection from another page, the browser jumps to
    the anchor immediately — then the posters, the director's note and the Right
    Now cards inject ABOVE it and push the target down. You land wherever the
    slowest fetch left you, which is why it was intermittent.

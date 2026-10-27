@@ -633,14 +633,18 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .rn-back--flora { background: var(--gold-tint); --rn-wash: var(--gold-tint); }
 .rn-back--fauna { background: var(--green-tint); --rn-wash: var(--green-tint); }
 .rn-wm { position: absolute; right: -10px; bottom: -12px; width: 96px; height: 96px; color: var(--green); opacity: .1; pointer-events: none; }
-.rn-back-eyebrow { font-size: var(--t-cap); font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--green); position: relative; }
+.rn-back-eyebrow { font-size: var(--t-base); font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--green); position: relative; }
 .rn-back-name { font-family: var(--sans); font-size: var(--t-md); font-weight: 700; color: var(--green-ink); line-height: 1.2; margin-top: var(--s1); position: relative; }
 .rn-back-rule { display: block; width: 34px; height: 3px; background: var(--gold-mark); border-radius: 2px; margin: var(--s2) 0 var(--s3); }
 .rn-back-hits { position: relative; }
-.rn-hit { font-size: var(--t-sm); line-height: 1.5; margin-bottom: var(--s2); }
+/* Every word on these cards is reading text: 17 px floor (2026-10-26). The shared
+   .sci-name is smaller site-wide, so it is raised here only. The credit plate
+   is the site-wide one and is left as it is everywhere else. */
+.rn-flip .sci-name { font-size: var(--t-base); }
+.rn-hit, .rn-flip .rn-hit { font-size: var(--t-base); line-height: 1.5; margin-bottom: var(--s2); }
 .rn-hit--soft { color: var(--ink-soft); }
-.rn-back-link { position: relative; display: inline-block; margin-top: var(--s1); font-size: var(--t-sm); font-weight: 700; color: var(--green); }
-.rn-back-foot { position: absolute; bottom: var(--s2); right: var(--s3); font-size: var(--t-cap); font-weight: 700; color: var(--green-ink); opacity: .8; }
+.rn-back-link { position: relative; display: inline-block; margin-top: var(--s1); font-size: var(--t-base); font-weight: 700; color: var(--green); }
+.rn-back-foot { position: absolute; bottom: var(--s2); right: var(--s3); font-size: var(--t-base); font-weight: 700; color: var(--green-ink); opacity: .8; }
 
 /* ───────────────────────────────────────────────────────────── FOOTER ─── */
 /* The site's one permanent dark surface. */
