@@ -891,6 +891,15 @@ function _inlineLink(item){
 }
 
 // "Part of the {series} →" sentence, the series name linking the flyer.
+// Does naming the series just repeat the event's own title? "Adult Park
+// Workday" in "Adult Park Workdays", "Bright Futures" in "Bright Futures":
+// same words give or take a plural, so "(part of …)" tells nobody anything
+// (Randy, 2026-10-27). A talk in "Summer Fun Nature Series" still says so.
+function _seriesRepeatsTitle(title, series){
+  const norm = t => String(t || '').trim().toLowerCase().replace(/s$/, '');
+  return !!norm(series) && norm(series) === norm(title);
+}
+
 function _seriesLine(item, seriesMap){
   if (!item.series) return '';
   const label = item.series.trim();
@@ -902,7 +911,7 @@ function _seriesLine(item, seriesMap){
   // nobody, but returning nothing left the card with NO link at all, because
   // the inline link deliberately does not reach the series. So: drop the
   // sentence, keep the link.
-  if (label.toLowerCase() === (item.title || '').trim().toLowerCase()){
+  if (_seriesRepeatsTitle(item.title, label)){
     if (!sLink.url) return '';
     return `<div class="ev-series">${PSBP.linkTag(sLink.url, (sLink.text || 'See the flyer') + ' →',
       { title: label, back: _BACK(), className:'ev-series-link' })}</div>`;
@@ -1603,7 +1612,7 @@ async function loadHomeHappening(opts){
         const t = i.time ? `${_evEsc(_startTime(i.time))} · ` : '';
         // Naming the series gives a one-off talk some context — it is not a
         // stray event, it is the third of four in a partnership.
-        const ser = (i.series||'').trim()
+        const ser = (i.series||'').trim() && !_seriesRepeatsTitle(i.title, i.series)
           ? ` <span class="cx-ser">(part of ${_evEsc(i.series.trim())})</span>` : '';
         return `<div class="cx-row"><span class="d">${_evEsc(when)}</span>
           <span class="t">${t}<b>${_evEsc(i.title||'')}</b>${ser}</span></div>`;
