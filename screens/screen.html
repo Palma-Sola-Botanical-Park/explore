@@ -1801,9 +1801,12 @@ function slideCohort(){
      most — one has 116 photographs and would otherwise fill the table. */
   var byPerson = {};
   photos.forEach(function(p){ (byPerson[p.photographer] = byPerson[p.photographer] || []).push(p); });
+  /* 9 to 13 prints, a different number each time (Randy, 2026-10-27: a fixed
+     ten always fell as rows of 4, 4, 2) */
+  var want = 9 + Math.floor(Math.random() * 5);
   var keys = shuffle(Object.keys(byPerson)), picks = [], round = 0;
-  while(picks.length < 10 && round < 4){
-    for(var k=0; k<keys.length && picks.length<10; k++){
+  while(picks.length < want && round < 8){
+    for(var k=0; k<keys.length && picks.length<want; k++){
       var mine = byPerson[keys[k]];
       if(mine[round]) picks.push(mine[round]);
     }
@@ -1812,15 +1815,24 @@ function slideCohort(){
   if(picks.length < 6) return null;
 
   /* Scattered across the right-hand two thirds, tilted, dropped in one after
-     another. Positions are jittered per render, so the pile falls differently
-     every time it comes round. */
+     another. A loose scatter, not a grid: each print lands somewhere random,
+     kept a little apart from the ones already down (best of a few tries), so
+     the pile spreads over the table and still overlaps the way real prints do.
+     It falls differently every time it comes round. */
+  var spots = [];
   var pile = picks.map(function(p, i){
-    var col = i % 4, row = Math.floor(i / 4);
+    var best = null, bestGap = -1;
+    for(var t=0; t<6; t++){
+      var x = 38 + Math.random()*44, y = 3 + Math.random()*60, gap = 1e9;
+      spots.forEach(function(q){ gap = Math.min(gap, Math.hypot((x-q.x)*1.6, y-q.y)); });
+      if(gap > bestGap){ best = { x:x, y:y }; bestGap = gap; }
+    }
+    spots.push(best);
     return {
       src:   mediaOf(p, 'original') || p.photo_url || '',
-      x:     40 + col * 14 + (Math.random()*7 - 3.5),
-      y:      8 + row * 27 + (Math.random()*9 - 4.5),
-      r:     (Math.random()*18 - 9).toFixed(1),
+      x:     best.x,
+      y:     best.y,
+      r:     (Math.random()*22 - 11).toFixed(1),
       delay: ((0.7 + i * 0.34) / SPEED).toFixed(2)
     };
   });
