@@ -1275,6 +1275,62 @@ function buildEventFilters(container, cardContainers, opts){
 // opts: { agenda, filters, schedule, series, monthList,
 //         featured, featuredWrap, featuredMax (default 4),
 //         saveDate, saveDateWrap (legacy compact rail), viewTitle, windowDays }
+// THE POSTER BAND — one rule, shared by events.html and the homepage's
+// "Coming up at the park", so the two can never disagree about what is big.
+// Returns { band, overflow }: band is the poster cards, overflow the flagged
+// events that did not get one (the compact rail on events.html).
+function _posterBand(evItems, series, today, bandMax){
+  // SAVE THE DATE — the events Bev flags as the year's big ones.
+  //
+  // save_the_date WINS over closes_park. Winter Nights is a free public event
+  // that also shuts the park to normal daytime use, so it carries both flags;
+  // the old filter dropped every closure and the park's biggest event of the
+  // year never appeared here at all. A flagged event is featured, full stop.
+  //
+  // A multi-day event stays featured until its LAST day, not its first.
+  const seenStd = new Set();
+  const flagged = evItems
+    .filter(i => i.save_the_date && (i.date_end || i.date) >= today)
+    .sort(_byDateThenTime)
+    .filter(i => { const k=(i.title||'').trim().toLowerCase(); if(seenStd.has(k)) return false; seenStd.add(k); return true; });
+
+  // THREE is the ceiling for the poster band — the grid is 3-up on a wide
+  // screen, and a fourth poster wraps onto a lonely second row. Anything
+  // past three spills into the compact rail card instead of disappearing:
+  // still flagged, still dated, just without the artwork.
+  // THE BAND IS A POSTER BAND. A flagged event with no artwork does not get
+  // a slot — a text-only box beside two flyers is the one genuinely ugly
+  // state, and there is already a better home for it. No poster, or past the
+  // ceiling, and it goes to the compact rail instead. If NOTHING flagged has
+  // a poster the band hides itself and the page falls back to exactly the
+  // design that was here before.
+  const band     = flagged.filter(i => i.poster).slice(0, bandMax);
+  const inBand   = new Set(band);
+  const overflow = flagged.filter(i => !inBand.has(i));
+
+  // BACKFILL — in the quiet part of the year there may be only one or two
+  // events worth flagging, and a band of one looks like something failed to
+  // load. Active series with their own poster top it up, in sheet order: they
+  // are real, ongoing, and they already have artwork. Dated events always win
+  // the slots; a series never displaces one.
+  if (band.length && band.length < bandMax){
+    (series || []).filter(isWebVisible)
+      .filter(s => !s.active || _isYes(s.active))
+      .filter(s => (s.poster || s.screen_poster || '').trim())
+      .slice(0, bandMax - band.length)
+      .forEach(s => band.push({
+        kind: 'series',
+        eyebrow: (s.category || 'Ongoing series').trim(),
+        title: s.name,
+        description: s.blurb,
+        poster: (s.poster || s.screen_poster || '').trim(),
+        registration_url: '',
+        _link: { url: PSBP.rowLink(s).url, text: PSBP.rowLink(s).text || 'See the flyer' }
+      }));
+  }
+  return { band, overflow };
+}
+
 async function loadEventsPage(opts){
   opts = opts || {};
   const $ = id => id ? document.getElementById(id) : null;
@@ -1356,56 +1412,8 @@ async function loadEventsPage(opts){
     buildEventFilters(calFiltersEl, [listEl],
       { itemSelector: '.ml-rowwrap', groupSelector: '.ml-month' });
 
-    // SAVE THE DATE — the events Bev flags as the year's big ones.
-    //
-    // save_the_date WINS over closes_park. Winter Nights is a free public event
-    // that also shuts the park to normal daytime use, so it carries both flags;
-    // the old filter dropped every closure and the park's biggest event of the
-    // year never appeared here at all. A flagged event is featured, full stop.
-    //
-    // A multi-day event stays featured until its LAST day, not its first.
-    const seenStd = new Set();
-    const flagged = evItems
-      .filter(i => i.save_the_date && (i.date_end || i.date) >= today)
-      .sort(_byDateThenTime)
-      .filter(i => { const k=(i.title||'').trim().toLowerCase(); if(seenStd.has(k)) return false; seenStd.add(k); return true; });
-
-    // THREE is the ceiling for the poster band — the grid is 3-up on a wide
-    // screen, and a fourth poster wraps onto a lonely second row. Anything
-    // past three spills into the compact rail card instead of disappearing:
-    // still flagged, still dated, just without the artwork.
-    // THE BAND IS A POSTER BAND. A flagged event with no artwork does not get
-    // a slot — a text-only box beside two flyers is the one genuinely ugly
-    // state, and there is already a better home for it. No poster, or past the
-    // ceiling, and it goes to the compact rail instead. If NOTHING flagged has
-    // a poster the band hides itself and the page falls back to exactly the
-    // design that was here before.
-    const bandMax   = opts.featuredMax || 3;
-    const withArt   = flagged.filter(i => i.poster);
-    const band      = withArt.slice(0, bandMax);
-    const inBand    = new Set(band);
-    const overflow  = flagged.filter(i => !inBand.has(i));
-
-    // BACKFILL — in the quiet part of the year there may be only one or two
-    // events worth flagging, and a band of one looks like something failed to
-    // load. Active series with their own poster top it up: they are real,
-    // ongoing, and they already have artwork. Dated events always win the
-    // slots; a series never displaces one.
-    if (band.length && band.length < bandMax){
-      series.filter(isWebVisible)
-        .filter(s => !s.active || _isYes(s.active))
-        .filter(s => (s.poster || s.screen_poster || '').trim())
-        .slice(0, bandMax - band.length)
-        .forEach(s => band.push({
-          kind: 'series',
-          eyebrow: (s.category || 'Ongoing series').trim(),
-          title: s.name,
-          description: s.blurb,
-          poster: (s.poster || s.screen_poster || '').trim(),
-          registration_url: '',
-          _link: { url: PSBP.rowLink(s).url, text: PSBP.rowLink(s).text || 'See the flyer' }
-        }));
-    }
+    // SAVE THE DATE — the poster band. Same rule as the homepage; see _posterBand.
+    const { band, overflow } = _posterBand(evItems, series, today, opts.featuredMax || 3);
 
     if (featEl){
       featEl.innerHTML = band.map(renderFeature).join('');
@@ -1527,14 +1535,16 @@ async function loadDirectorNote(opts){
 
 // ── Homepage "what's happening" ───────────────────────────────────────────
 // Fills three slots from one fetch:
-//   posters  — up to 3 flagged events that HAVE artwork, as poster cards
+//   posters  — the events.html poster band (_posterBand): up to 3 cards,
+//              flagged dated posters first, then active series with posters
 //   upcoming — the ordinary next few days, events + class instances
 //   closure  — the next park closure, for the hero (answers "can I come
 //              Saturday?", which the homepage never used to answer)
 //
-// Deliberately mirrors events.html rather than inventing a second set of
-// rules: same save_the_date flag, same 3-poster ceiling, same "no poster, no
-// band slot". An event in the posters does not repeat in the list below.
+// Deliberately shares events.html's rule rather than inventing a second one:
+// same save_the_date flag, same 3-poster ceiling, same "no poster, no band
+// slot", same series backfill. A dated event in the posters does not repeat in
+// the list below.
 async function loadHomeHappening(opts){
   opts = opts || {};
   const $ = id => id ? document.getElementById(id) : null;
@@ -1542,23 +1552,19 @@ async function loadHomeHappening(opts){
   if (!postersEl && !upEl && !closEl) return;
 
   try {
-    const [events, classes, weddingCal] = await Promise.all([
+    const [events, classes, series, weddingCal] = await Promise.all([
       fetchTab(TAB.events).catch(()=>[]),
       fetchTab(TAB.classes).catch(()=>[]),
+      fetchTab(TAB.series).catch(()=>[]),
       fetchTab(TAB.wedding_calendar).catch(()=>[]),
     ]);
 
     const today = new Date(); today.setHours(12,0,0,0);
     const evItems = events.filter(isWebVisible).map(_eventItem).filter(Boolean);
 
-    // POSTERS — flagged, has artwork, still to come (a run stays until its last day)
-    const seen = new Set();
-    const posters = evItems
-      .filter(i => i.save_the_date && i.poster && (i.date_end || i.date) >= today)
-      .sort(_byDateThenTime)
-      .filter(i => { const k=(i.title||'').trim().toLowerCase();
-                     if (seen.has(k)) return false; seen.add(k); return true; })
-      .slice(0, opts.posterMax || 3);
+    // POSTERS — exactly the events.html band: dated flagged posters first,
+    // series backfill after. A series card leads with its category, not a date.
+    const posters = _posterBand(evItems, series, today, opts.posterMax || 3).band;
 
     if (postersEl){
       postersEl.innerHTML = posters.map(renderFeature).join('');
@@ -1574,7 +1580,11 @@ async function loadHomeHappening(opts){
     // near-identical lines that said the same thing four times. So: dated
     // events as rows, standing classes as a single line underneath.
     if (upEl){
-      const shown = new Set(posters.map(i => (i.title||'').trim().toLowerCase()));
+      // Only DATED posters are held back from the list. A series poster
+      // stands for the rhythm, so its individual dated days (each workday)
+      // still get their rows.
+      const shown = new Set(posters.filter(i => i.kind !== 'series')
+        .map(i => (i.title||'').trim().toLowerCase()));
       const end = new Date(today); end.setDate(end.getDate() + (opts.windowDays || 21));
 
       const dated = _expandMultiDay(evItems)
