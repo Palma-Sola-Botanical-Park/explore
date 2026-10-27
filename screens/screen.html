@@ -139,7 +139,11 @@
 :root{
   /* Ground — a botanical dark, not a tech dark. Pulled from --green-ink and
      deepened, so it still reads as the park's green under a lit room. */
-  --ground:#0c1a10; --ground-2:#122316; --veil:rgba(8,18,9,.55);
+  /* --shade is the colour of every darkener laid over a photograph (the veils
+     and scrims), as bare r,g,b so each can set its own alpha. Fixed here;
+     ?palette=sun moves it through the day (see THE SUN PALETTE). */
+  --shade:8,18,9;
+  --ground:#0c1a10; --ground-2:#122316; --veil:rgba(var(--shade),.55);
   /* Inherited from psbp.css, unchanged */
   --gold:#eabc5a; --gold-deep:#c5922a; --paper:#fdfcf8;
   --ink-invert:rgba(253,252,248,.78); --ink-quiet:rgba(253,252,248,.52);
@@ -242,9 +246,9 @@ body{
 .scrim{
   position:absolute;inset:0;
   background:
-    linear-gradient(to top,rgba(8,18,9,.94) 0%,rgba(8,18,9,.72) 26%,
-                    rgba(8,18,9,.30) 56%,rgba(8,18,9,.06) 80%),
-    linear-gradient(to right,rgba(8,18,9,.72) 0%,rgba(8,18,9,.10) 55%,transparent 78%);
+    linear-gradient(to top,rgba(var(--shade),.94) 0%,rgba(var(--shade),.72) 26%,
+                    rgba(var(--shade),.30) 56%,rgba(var(--shade),.06) 80%),
+    linear-gradient(to right,rgba(var(--shade),.72) 0%,rgba(var(--shade),.10) 55%,transparent 78%);
 }
 
 .copy{
@@ -389,10 +393,10 @@ body{
    somewhere to actually be seen. */
 .slide.atmos .scrim{
   background:
-    linear-gradient(to top,rgba(8,18,9,.90) 0%,rgba(8,18,9,.62) 32%,
-                    rgba(8,18,9,.28) 68%,rgba(8,18,9,.14) 100%),
-    linear-gradient(to right,rgba(8,18,9,.74) 0%,rgba(8,18,9,.20) 50%,
-                    rgba(8,18,9,0) 74%);
+    linear-gradient(to top,rgba(var(--shade),.90) 0%,rgba(var(--shade),.62) 32%,
+                    rgba(var(--shade),.28) 68%,rgba(var(--shade),.14) 100%),
+    linear-gradient(to right,rgba(var(--shade),.74) 0%,rgba(var(--shade),.20) 50%,
+                    rgba(var(--shade),0) 74%);
 }
 
 /* ── POSTER ──────────────────────────────────────────────────────────────
@@ -444,7 +448,7 @@ body{
    the words by the radial and no further. */
 .slide.ask .bg img{opacity:.42;filter:saturate(.8)}
 .slide.ask .scrim{background:radial-gradient(ellipse at center,
-  rgba(8,18,9,.78) 0%,rgba(8,18,9,.66) 45%,rgba(8,18,9,.42) 100%)}
+  rgba(var(--shade),.78) 0%,rgba(var(--shade),.66) 45%,rgba(var(--shade),.42) 100%)}
 .slide.ask .copy{
   padding:0 8vmin;max-width:none;text-align:center;
   display:flex;flex-direction:column;align-items:center;
@@ -495,8 +499,8 @@ body{
 }
 .slide.pile-slide .scrim{
   background:
-    linear-gradient(to top,rgba(8,18,9,.92) 0%,rgba(8,18,9,.70) 34%,rgba(8,18,9,.30) 70%,rgba(8,18,9,.12) 100%),
-    linear-gradient(to right,rgba(8,18,9,.93) 0%,rgba(8,18,9,.72) 30%,rgba(8,18,9,.22) 52%,rgba(8,18,9,0) 70%);
+    linear-gradient(to top,rgba(var(--shade),.92) 0%,rgba(var(--shade),.70) 34%,rgba(var(--shade),.30) 70%,rgba(var(--shade),.12) 100%),
+    linear-gradient(to right,rgba(var(--shade),.93) 0%,rgba(var(--shade),.72) 30%,rgba(var(--shade),.22) 52%,rgba(var(--shade),0) 70%);
 }
 .slide.pile-slide .copy{max-width:44vw}
 
@@ -551,8 +555,8 @@ body{
 
 .slide.ambient .copy{display:none}
 .slide.ambient .scrim{
-  background:linear-gradient(to top,rgba(8,18,9,.55) 0%,rgba(8,18,9,.16) 34%,
-                             rgba(8,18,9,0) 62%);
+  background:linear-gradient(to top,rgba(var(--shade),.55) 0%,rgba(var(--shade),.16) 34%,
+                             rgba(var(--shade),0) 62%);
 }
 
 /* ── COLLECTION ──────────────────────────────────────────────────────────
@@ -568,8 +572,8 @@ body{
 .slide.set .scrim{
   /* Vertical only — the horizontal half moved to .veil, where it belongs.
      This just seats the bottom edge so the credit line has ground under it. */
-  background:linear-gradient(to top,rgba(8,18,9,.72) 0%,rgba(8,18,9,.40) 22%,
-                             rgba(8,18,9,.10) 48%,rgba(8,18,9,0) 70%);
+  background:linear-gradient(to top,rgba(var(--shade),.72) 0%,rgba(var(--shade),.40) 22%,
+                             rgba(var(--shade),.10) 48%,rgba(var(--shade),0) 70%);
 }
 .slide.set .headline,.slide.set .count,
 .slide.set .roster,.slide.set .shot,
@@ -685,6 +689,19 @@ body{
   .beats{min-height:0 !important}
   #bar{transition:none}
 }
+/* ── THE SUN PALETTE (?palette=sun, screen3.html) ────────────────────────
+   Only with html.sun. The quiet photo slides (ambient, collection) take a
+   wash of the hour's colour; at midday the wash is zero, so they look as they
+   always have. Everything else follows the variables the script sets. */
+.sun .slide.ambient .bg::after,
+.sun .collection::after{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:rgb(var(--tint,0,0,0));mix-blend-mode:color;opacity:var(--tint-a,0);
+}
+/* preview label, only with ?sunclock=fast or ?at=HH:MM — never on the wall */
+#sunPreview{position:fixed;left:50%;bottom:.6vmin;transform:translateX(-50%);z-index:60;
+  font:600 1.9vmin var(--sans);letter-spacing:.08em;color:var(--paper);
+  background:rgba(var(--shade),.85);border:1px solid var(--rule);border-radius:99px;padding:.35vmin 1.6vmin}
 </style>
 </head>
 <body>
