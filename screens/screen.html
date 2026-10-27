@@ -595,6 +595,21 @@ body{
   margin-top:2.6vmin;font-size:1.6vmin;font-weight:700;letter-spacing:.12em;
   color:var(--gold);opacity:.9;
 }
+/* The answer: each panel's name, near its top (the words sit low on the
+   left), arriving one after another once about 60% of the slide has passed. */
+.collection > div{position:relative}
+.collection .tag{
+  position:absolute;z-index:2;left:1.4vmin;right:1.4vmin;top:calc(var(--frame) + 5.2vmin);
+  font-family:var(--serif);font-weight:700;font-size:clamp(1.05rem,2.5vmin,2rem);line-height:1.15;
+  color:var(--paper);text-shadow:0 2px 14px rgba(0,0,0,.9);
+  padding:.9vmin 1.2vmin;background:rgba(var(--shade),.62);border-left:.35vmin solid var(--gold);
+  opacity:0;transform:translateY(-.8vmin);
+}
+.slide.on .collection .tag{
+  animation:tagIn .9s ease both;
+  animation-delay:calc(var(--slide-s, 20s) * .6 + var(--i, 0) * .35s);
+}
+@keyframes tagIn{ to{opacity:1;transform:none} }
 
 /* ── PARTNER LOGOS ───────────────────────────────────────────────────────
    A partner logo is a CREDIT, not a takeover. On an event or a class the
@@ -702,6 +717,27 @@ body{
 #sunPreview{position:fixed;left:50%;bottom:.6vmin;transform:translateX(-50%);z-index:60;
   font:600 1.9vmin var(--sans);letter-spacing:.08em;color:var(--paper);
   background:rgba(var(--shade),.85);border:1px solid var(--rule);border-radius:99px;padding:.35vmin 1.6vmin}
+/* ── PORTRAIT: a volunteer photo as a framed print (slideVolunteer) ───────
+   Plain ground with a faint glow where the print hangs; a cream mat and a
+   soft shadow, the photo drifting gently inside its own frame. Faces sit in
+   the upper third, so that is where the crop holds. */
+.slide.portrait .bg{background:
+  radial-gradient(ellipse 42% 62% at 77% 50%, color-mix(in srgb, var(--gold) 13%, transparent), transparent 72%),
+  var(--ground-2)}
+.slide.portrait .copy{max-width:54vw}
+/* the words have half the wall to themselves here, so they can be read from
+   across the room: one size, whatever the length, and a regular weight */
+.slide.portrait .body,.slide.portrait .body.len-2,.slide.portrait .body.len-3{
+  font-size:clamp(1.15rem,3vmin,2.4rem);font-weight:400;max-width:44ch;line-height:1.45}
+.print{position:absolute;z-index:2;top:50%;right:calc(var(--frame) + var(--pad) + 4vw);
+  height:70vh;aspect-ratio:4/5;padding:1.3vmin;background:var(--paper);
+  box-shadow:0 2.6vmin 7vmin rgba(0,0,0,.55);
+  transform:translateY(-48%);opacity:0;
+  transition:opacity calc(var(--fade) * 1.4) ease .25s, transform calc(var(--fade) * 2) ease .25s}
+.slide.on .print{opacity:1;transform:translateY(-50%)}
+.print-crop{width:100%;height:100%;overflow:hidden;background:var(--ground)}
+.print-crop img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 28%}
+.slide.on .print-crop img{animation:kbIn var(--kb,24s) linear both}
 </style>
 </head>
 <body>
@@ -1476,7 +1512,7 @@ function slideVolunteer(v){
   var vArt = artFor(v, v.photo_url
     ? (/^https?:/.test(v.photo_url) ? v.photo_url : BASE+v.photo_url.replace(/^\//,''))
     : null);
-  return fromArt(vArt, {
+  var slide = fromArt(vArt, {
     html:
       '<div class="eyebrow">'+esc(v.role||'Volunteer')+'</div>'
     + '<div class="headline">'+esc(v.title)+'</div>'
@@ -1491,6 +1527,16 @@ function slideVolunteer(v){
        keeps the previous behavior. */
     + qrBlock(v, (v.link_text || '').trim() || 'Scan to sign up', v.link_url)
   });
+  /* A FACE IS NOT A LANDSCAPE. Full-bleed, a Volunteer of the Month portrait
+     filled a wall-sized TV with one face (Randy, 2026-10-27: "scary"). Every
+     volunteer row is about people, so its photo now hangs as a framed print on
+     the right, over the plain ground, and the words take the left. Nature
+     slides keep the full bleed. A row with no photo is unchanged. */
+  if(slide.bg && !slide.poster){
+    slide.portrait = slide.bg; slide.portraitFallback = slide.bgFallback;
+    slide.bg = null; slide.bgFallback = null; slide.atmos = false;
+  }
+  return slide;
 }
 
 function slideNewsletter(n){
@@ -2069,8 +2115,6 @@ function slideCollection(){
      photograph is, and there are 846 of them */
   var shots = shuffle(preferOrient(g.rows, 'portrait', 8).slice()).slice(0,5);
   if(shots.length < 5) shots = shuffle(g.rows.slice()).slice(0,5);
-  var names = shuffle(g.rows.slice()).slice(0,4)
-                .map(function(x){ return x.common; }).filter(Boolean);
   var who = [];
   shots.forEach(function(x){
     var n = x.credit_name || x.credit;
@@ -2097,12 +2141,17 @@ function slideCollection(){
        bandwidth unless it becomes embarrassing"): the next slide's photos
        are fetched ahead by warmSlide(), so five of them are in the cache
        before the slide comes up */
-    grid: shots.map(function(x){ return { src: mediaOf(CREDITS[photoIdOf(x.photo)], 'original') || fallbackPhoto(x) || BASE+x.photo, focus: x.focus }; }),
+    /* EACH PANEL CARRIES ITS OWN NAME. The roster used to be a second, separate
+       shuffle of the group, so the names never matched the photographs above
+       them (Randy, 2026-10-27: "caused confusion"). Now the name rides with its
+       photo and is held back: the slide asks "Know any of these?" and the names
+       arrive on their panels in the last third, as the answer. */
+    grid: shots.map(function(x){ return { src: mediaOf(CREDITS[photoIdOf(x.photo)], 'original') || fallbackPhoto(x) || BASE+x.photo, focus: x.focus, name: x.common }; }),
     seconds: Math.round(SECONDS * (isWildlife ? 1.4 : 1.15)),
     html:
         '<div class="count">'+g.rows.length+'<small>'+esc(g.sub)+'</small></div>'
       + '<div class="headline">'+esc(g.label)+'</div>'
-      + (names.length?'<div class="roster">'+esc(names.join('  ·  '))+'</div>':'')
+      + '<div class="roster">Know any of these?</div>'
       + (who.length?'<div class="shot">Photographs by '+esc(who.join(', '))+'</div>':'')
       + (invite?'<div class="body">'+invite+'</div>':'')
       + (invite?qrBlock({screen_qr:'https://www.inaturalist.org/projects/palma-sola-botanical-park'},
@@ -2337,7 +2386,7 @@ function render(s){
   var el=document.createElement('div');
   el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'')
              +(s.ambient?' ambient':'')+(s.set?' set':'')+(s.week?' week-slide':'')+(s.pile?' pile-slide':'')
-             +(s.photog?' photog':'');
+             +(s.photog?' photog':'')+(s.portrait?' portrait':'');
 
   /* pick a motion, never the same one twice running */
   var moves = KB.filter(function(k){ return k!==lastKB; });
@@ -2352,7 +2401,9 @@ function render(s){
     for(var gi=0; gi<s.grid.length; gi++){
       grid += '<div><img alt="" src="'+s.grid[gi].src+'"'
             + (s.grid[gi].focus?' style="object-position:'+s.grid[gi].focus.replace(/"/g,'')+'"':'')
-            + '></div>';
+            + '>'
+            + (s.grid[gi].name?'<span class="tag" style="--i:'+gi+'">'+esc(s.grid[gi].name)+'</span>':'')
+            + '</div>';
     }
     grid += '</div>';
   }
@@ -2379,7 +2430,11 @@ function render(s){
         : '')+'</div>'
     + '<div class="scrim"></div>'
     + '<div class="copy">'+s.html+'</div>'
-    + (s.poster?'<div class="poster-art"><img alt="" src="'+s.poster+'"></div>':'');
+    + (s.poster?'<div class="poster-art"><img alt="" src="'+s.poster+'"></div>':'')
+    + (s.portrait?'<div class="print"><div class="print-crop"><img alt="" src="'+s.portrait+'"'
+        + (s.portraitFallback && s.portraitFallback !== s.portrait
+            ? ' data-fb="'+s.portraitFallback+'" onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.dataset.fb=\'\'}"' : '')
+        + '></div></div>':'');
 
   /* .copy is position:relative, so a QR left inside it anchors to the text
      column and lands mid-paragraph. Lift it out to sit against the slide.
@@ -2387,6 +2442,7 @@ function render(s){
   var qrNode = el.querySelector('.qr');
   if(qrNode && !s.ask && !s.poster){ el.appendChild(qrNode); el.classList.add('has-qr'); }
   el.style.setProperty('--kb', (dur+3)+'s');
+  el.style.setProperty('--slide-s', dur+'s');   /* for reveals timed to the slide */
 
   /* step each body down by length so nothing is ever clipped */
   var bodies = el.querySelectorAll('.body'), longest = 0, bi;
