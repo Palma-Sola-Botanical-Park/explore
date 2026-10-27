@@ -738,6 +738,29 @@ body{
 .print-crop{width:100%;height:100%;overflow:hidden;background:var(--ground)}
 .print-crop img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 28%}
 .slide.on .print-crop img{animation:kbIn var(--kb,24s) linear both}
+/* ── ANNOUNCEMENT, SPLIT (slideAsk) ─────────────────────────────────────────
+   Words on the left on the plain ground, the photograph on the right at full
+   strength, a gold hairline at the seam. Overrides the old centred .ask look. */
+.slide.ask.split{align-items:stretch;justify-content:flex-start}
+.slide.ask.split .bg{left:42vw;border-left:1px solid var(--rule)}
+.slide.ask.split .bg img{opacity:1;filter:none}
+.slide.ask.split .scrim{left:42vw;background:
+  linear-gradient(to right,rgba(var(--shade),.45) 0%,rgba(var(--shade),0) 16%),
+  linear-gradient(to top,rgba(var(--shade),.55) 0%,rgba(var(--shade),0) 30%)}
+.slide.ask.split .copy{
+  position:absolute;left:0;top:0;bottom:0;width:42vw;max-width:none;
+  padding:calc(var(--frame) + 8vmin) 4.5vw calc(var(--frame) + 6vmin) calc(var(--frame) + var(--pad));
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;
+}
+.slide.ask.split .headline{font-size:clamp(2.3rem,7vmin,6rem);line-height:1.04}
+.slide.ask.split .headline::before{content:'';display:block;width:8vmin;height:.4vmin;
+  background:var(--gold);margin-bottom:3.2vmin}
+.slide.ask.split .body,.slide.ask.split .body.len-2,.slide.ask.split .body.len-3{
+  max-width:none;font-size:clamp(1.15rem,3vmin,2.4rem);font-weight:400;line-height:1.45}
+.slide.ask.split .logo{align-items:flex-start;margin:0 0 3vmin}
+.slide.ask.split .logo-plate{align-self:flex-start}
+.slide.ask.split .qr{align-items:flex-start;margin-top:3.6vmin}
+.slide.ask.split .qr .cap{text-align:left}
 </style>
 </head>
 <body>
@@ -912,7 +935,8 @@ function loadAll(){
     grab(BASE+'data/sources/plant_signage.json'),
     grab(BASE+'data/sources/wildlife_signage.json'),
     grab(BASE+'data/sources/photographer_names.json'),
-    grab(FEEDS+'photographers.json')
+    grab(FEEDS+'photographers.json'),
+    grab(BASE+'data/sources/media_library.json')
   ]).then(function(r){
     D.right_now=onScreen(r[0]); D.events=onScreen(r[1]);
     D.classes=onScreen(r[2]);   D.news=onScreen(r[3]);
@@ -923,6 +947,7 @@ function loadAll(){
     indexHits(r[11]); indexHits(r[12]);
     NAMES = r[13] || {};
     D.photographers=onScreen(r[14]);
+    LIB = libraryPhotos(r[15]);
     if(!D.right_now.length && !D.plants.length) fallback();
   });
 }
@@ -2171,16 +2196,67 @@ function slideCollection(){
   };
 }
 
-/* Asks get the centered treatment and a dimmed photograph behind. */
+/* ANNOUNCEMENTS (the "asks"): a split slide — Randy, 2026-10-27, after the
+   centred version: "zero visual appeal". The words get the left of the wall on
+   the plain ground, big and left-aligned; a real photograph takes the right at
+   full strength, drifting like every other slide. A flyer (poster) still shows
+   whole, as before.
+
+   THE EMOJI PICKS THE PHOTO, IT IS NOT SHOWN. Bev chooses an emoji in the Sheet
+   and keeps doing so; on the wall it was clip art. Now it says what kind of
+   photograph to hang: a bouquet means a wedding, a plate means the Galleria, and
+   so on (ASK_PHOTO_TAGS), drawn from the park's media library (Media intake
+   tags). The row's own screen_image always wins. Anything unmapped, or a tag
+   with no photos yet, gets a park landscape. */
+var LIB = [];
+/* never as scenery: printed things (a flyer stretched across half a wall) and
+   single-person portraits (a face at that size is the problem the volunteer
+   slide just fixed) */
+var LIB_NOT = ['flyer','poster','logo','graphic','illustration','artwork','event artwork','sign','screenshot','document','map','portrait'];
+function libraryPhotos(lib){
+  return ((lib && lib.items) || []).filter(function(r){
+    var t = (r.tags||[]).map(function(x){ return String(x).toLowerCase(); });
+    return r.kind === 'photo' && r.public === 'yes' && r.state === 'done'
+        && r.at_the_park !== 'no' && (r.url || (r.files||[]).length)
+        && !LIB_NOT.some(function(x){ return t.indexOf(x) > -1; });
+  }).map(function(r){
+    var by = {}; (r.files||[]).forEach(function(f){ by[f.role] = f.url; });
+    return { src: by.original || by.web || r.url, fb: by.web || null,
+             tags: (r.tags||[]).map(function(t){ return String(t).toLowerCase(); }),
+             credit: r.credit_line || r.made_by || null, id: r.media_id };
+  });
+}
+var ASK_PHOTO_TAGS = {
+  '💐':['wedding','reception'], '💍':['wedding'], '👰':['wedding'], '🥂':['reception','wedding','galleria'],
+  '🍽':['galleria','reception'],
+  '🎍':['nursery','plant sale'], '🪴':['nursery','plant sale'], '🌱':['nursery','planting','plant sale'],
+  '💚':['volunteers','garden'], '🙏':['garden','volunteers'], '🤝':['volunteers'],
+  '📷':['landscape','pond','path'], '📸':['landscape','pond','path'],
+  '🦋':['flower','garden'], '🌺':['flower','garden'], '🌸':['flower','garden'],
+  '🪵':['pavilion','path','garden']
+};
+var ASK_PHOTO_DEFAULT = ['landscape','pond','path','garden'];
+function askPhoto(a){
+  var e = String(a.emoji || '').replace(/[️‍]/g, '').trim();
+  var want = ASK_PHOTO_TAGS[e] || ASK_PHOTO_DEFAULT;
+  var hits = LIB.filter(function(r){ return want.some(function(t){ return r.tags.indexOf(t) > -1; }); });
+  if(!hits.length) hits = LIB.filter(function(r){
+    return ASK_PHOTO_DEFAULT.some(function(t){ return r.tags.indexOf(t) > -1; }); });
+  return hits.length ? pick(hits) : null;
+}
+
 function slideAsk(a){
+  var poster = posterImage(a);
+  var own = screenImage(a), lib = own ? null : askPhoto(a);
   var pool = D.plants.filter(function(s){ return s.photo; });
   return {
-    ask: !posterImage(a),
-    poster: posterImage(a),
-    bg: posterImage(a) ? null : (screenImage(a) || (pool.length ? bigPhoto(pick(pool)) : null)),
-    credit:'',
+    ask: true, split: !poster,
+    poster: poster,
+    bg: poster ? null : (own || (lib && lib.src) || (pool.length ? bigPhoto(pick(pool)) : null)),
+    bgFallback: lib && lib.fb,
+    credit: lib && lib.credit ? { name: lib.credit, terms: '' } : '',
     html:
-      (logoBlock(a, a.logo_label || '') || (a.emoji?'<div class="emoji">'+a.emoji+'</div>':''))
+      logoBlock(a, a.logo_label || '')
     + '<div class="headline">'+esc(a.title)+'</div>'
     + (a.body?'<div class="body">'+rich(a.body)+'</div>':'')
     + (a.link_text?'<div class="meta"><span>'+esc(a.link_text)+'</span></div>':'')
@@ -2396,7 +2472,7 @@ var lastKB = '';
 function render(s){
   var dur = s.seconds || SECONDS;
   var el=document.createElement('div');
-  el.className='slide'+(s.ask?' ask':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'')
+  el.className='slide'+(s.ask?' ask':'')+(s.split?' split':'')+(s.atmos?' atmos':'')+(s.poster?' poster':'')
              +(s.ambient?' ambient':'')+(s.set?' set':'')+(s.week?' week-slide':'')+(s.pile?' pile-slide':'')
              +(s.photog?' photog':'')+(s.portrait?' portrait':'');
 
