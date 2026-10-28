@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photo Directory · Palma Sola Botanical Park</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="stylesheet" href="css/psbp.css">
+<style>
+/* Photo directory: every public item in the media library, for the team to
+   find a photo and copy its address. Reads data/sources/media_library.json;
+   writes nothing. Not linked from the menu. */
+.pd-wrap { max-width: var(--wide); margin: 0 auto; padding: var(--s7) var(--s4) var(--s8); }
+.pd-head { max-width: var(--measure); margin-bottom: var(--s5); }
+.pd-head h1 { margin: 0 0 var(--s3); color: var(--green-ink); }
+.pd-head p { font-size: var(--t-base); color: var(--ink-soft); margin: 0; }
+
+.pd-search { position: sticky; top: 0; z-index: 5; background: var(--paper);
+  padding: var(--s3) 0; border-bottom: 1px solid var(--rule); margin-bottom: var(--s4); }
+.pd-search input { width: 100%; box-sizing: border-box; font: inherit; font-size: var(--t-md);
+  padding: .7rem 1rem; border: 1px solid var(--rule-strong); border-radius: var(--r);
+  background: var(--surface); color: var(--ink); }
+.pd-search input:focus { outline: 2px solid var(--green-lift); outline-offset: 1px; }
+.pd-tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s3); }
+.pd-tag { font: inherit; font-size: var(--t-base); padding: .3rem .8rem; border-radius: var(--r-pill);
+  border: 1px solid var(--rule-strong); background: var(--surface); color: var(--green); cursor: pointer; }
+.pd-tag:hover, .pd-tag.on { background: var(--green-tint); border-color: var(--green-lift); }
+.pd-count { font-size: var(--t-base); color: var(--ink-soft); margin: var(--s3) 0 0; }
+
+.pd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--s4); }
+.pd-card { display: block; width: 100%; padding: 0; text-align: left; font: inherit; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r); overflow: hidden; }
+.pd-card:hover { box-shadow: var(--lift); border-color: var(--rule-strong); }
+.pd-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--sunk); }
+.pd-card span { display: block; padding: var(--s2) var(--s3) var(--s3); font-size: var(--t-base);
+  line-height: 1.35; color: var(--ink); }
+.pd-empty { font-size: var(--t-base); color: var(--ink-soft); padding: var(--s6) 0; }
+
+/* The detail view */
+.pd-dialog { width: min(960px, 100vw - 2rem); max-height: calc(100vh - 2rem); margin: auto; padding: 0; border: 0;
+  border-radius: var(--r-lg); box-shadow: var(--lift-high); background: var(--surface); color: var(--ink); }
+.pd-dialog::backdrop { background: rgba(20, 28, 20, .6); }
+.pd-dlg-img { display: block; width: 100%; max-height: 60vh; object-fit: contain; background: #111; }
+.pd-dlg-body { padding: var(--s5); }
+.pd-dlg-body h2 { font-size: var(--t-lg); margin: 0 0 var(--s2); color: var(--green-ink); }
+.pd-dlg-body p { font-size: var(--t-base); margin: 0 0 var(--s3); }
+.pd-credit { color: var(--ink-soft); }
+.pd-dlg-tags { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s4); }
+.pd-sizes { display: grid; gap: var(--s3); }
+.pd-size { display: grid; grid-template-columns: 7.5rem 1fr auto auto; gap: var(--s3); align-items: center;
+  font-size: var(--t-base); padding: var(--s3); border: 1px solid var(--rule); border-radius: var(--r-sm); }
+.pd-size b { color: var(--green-ink); }
+.pd-size small { display: block; font-size: var(--t-base); color: var(--ink-soft); font-weight: 400; }
+.pd-size code { font-size: var(--t-base); overflow-wrap: anywhere; color: var(--ink-soft); }
+.pd-btn { font: inherit; font-size: var(--t-base); padding: .45rem .9rem; border-radius: var(--r-sm);
+  border: 1px solid var(--green); background: var(--green); color: #fff; cursor: pointer;
+  text-decoration: none; white-space: nowrap; }
+.pd-btn.ghost { background: var(--surface); color: var(--green); }
+/* Sticky, so it stays in reach while the sizes below are scrolled into view. */
+.pd-close { position: sticky; top: .6rem; float: right; margin: .6rem .6rem -3rem 0; z-index: 2; font: inherit; font-size: var(--t-base);
+  padding: .4rem .8rem; border: 0; border-radius: var(--r-pill); background: #fff; box-shadow: var(--lift-high);
+  color: var(--ink); cursor: pointer; }
+.pd-id { font-size: var(--t-base); color: var(--ink-faint); margin-top: var(--s4) !important; }
+
+@media (max-width: 640px) {
+  .pd-wrap { padding: var(--s5) var(--s4) var(--s7); }
+  .pd-search { position: static; }
+  .pd-grid { grid-template-columns: repeat(2, 1fr); gap: var(--s3); }
+  .pd-size { grid-template-columns: 1fr 1fr; }
+  .pd-size b, .pd-size code { grid-column: 1 / -1; }
+  .pd-size .pd-btn { text-align: center; }
+  .pd-dlg-body { padding: var(--s4); }
+}
+</style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<main class="pd-wrap">
+  <div class="pd-head">
+    <h1>Photo directory</h1>
+    <p>The park's own photographs. Search, click one, and copy the address of the size you need for a newsletter, a document or a sign. Keep the credit line with the photo.</p>
+  </div>
+
+  <div class="pd-search">
+    <input id="pdQuery" type="search" placeholder="Search: pond, wedding, volunteers, Rare Fruit…" autocomplete="off" aria-label="Search photos">
+    <div class="pd-tags" id="pdTags"></div>
+    <p class="pd-count" id="pdCount">Loading photos…</p>
+  </div>
+
+  <div class="pd-grid" id="pdGrid"></div>
+</main>
+
+<dialog class="pd-dialog" id="pdDialog">
+  <button class="pd-close" id="pdClose" type="button">Close ✕</button>
+  <img class="pd-dlg-img" id="pdDlgImg" alt="">
+  <div class="pd-dlg-body">
+    <h2 id="pdDlgTitle"></h2>
+    <p id="pdDlgCaption"></p>
+    <p class="pd-credit" id="pdDlgCredit"></p>
+    <div class="pd-dlg-tags" id="pdDlgTags"></div>
+    <div class="pd-sizes" id="pdDlgSizes"></div>
+    <p class="pd-id" id="pdDlgId"></p>
+  </div>
+</dialog>
+
+<div id="footer-placeholder"></div>
+<script src="js/site.js"></script>
+<script src="js/photo-search.js"></script>
+<script>
+injectShared({ inatBar: false });
+
+const SIZE_LABEL = {
+  original: ['Original', 'full size, for print and signs'],
+  web:      ['Web',      'for newsletters and documents'],
+  thumb:    ['Thumbnail', 'small preview']
+};
+const SIZE_ORDER = ['original', 'web', 'thumb'];
+const TOP_TAGS = 14;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const kb = n => n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round(n / 1024) + ' KB';
+const fileOf = (it, role) => (it.files || []).find(f => f.role === role);
+
+function creditOf(it) {
+  if (it.credit_line) return it.credit_line;
+  if (it.source && it.source.type === 'AI-generated illustration') return 'AI-generated illustration';
+  if (it.made_by) return it.made_by;
+  return 'Palma Sola Botanical Park';
+}
+
+let items = [], search = null, activeTag = '';
+
+fetch('data/sources/media_library.json', { cache: 'no-cache' })
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(data => {
+    // Public items with a web copy; quarantined duplicates stay out.
+    items = (data.items || []).filter(it =>
+      it.public === 'yes' && fileOf(it, 'web') && !/^DUPLICATE/.test(it.title || ''));
+    search = PSBPPhotoSearch.create(items, it => ({
+      title: it.title,
+      tags: it.tags,
+      other: [it.caption, (it.species || []).join(' '), it.media_id, creditOf(it)]
+    }));
+    drawTags();
+    const q = new URLSearchParams(location.search).get('q');
+    if (q) $('pdQuery').value = q;
+    draw();
+    const id = location.hash.slice(1);
+    const it = id && items.find(x => x.media_id === id);
+    if (it) open(it);
+  })
+  .catch(() => { $('pdCount').textContent = 'The photo list did not load. Try reloading the page.'; });
+
+function drawTags() {
+  const n = {};
+  items.forEach(it => (it.tags || []).forEach(t => { n[t] = (n[t] || 0) + 1; }));
+  const top = Object.keys(n).sort((a, b) => n[b] - n[a]).slice(0, TOP_TAGS);
+  $('pdTags').innerHTML = top.map(t =>
+    `<button class="pd-tag" type="button" data-tag="${esc(t)}">${esc(t)}</button>`).join('');
+}
+
+function draw() {
+  const q = $('pdQuery').value;
+  const list = search.search(q);
+  document.querySelectorAll('.pd-tag').forEach(b =>
+    b.classList.toggle('on', PSBPPhotoSearch.norm(b.dataset.tag) === PSBPPhotoSearch.norm(q)));
+  $('pdCount').textContent = q.trim()
+    ? `${list.length} of ${items.length} photos match “${q.trim()}”`
+    : `${items.length} photos`;
+  $('pdGrid').innerHTML = list.length ? list.map(it => {
+    const th = fileOf(it, 'thumb') || fileOf(it, 'web');
+    return `<button class="pd-card" type="button" data-id="${esc(it.media_id)}">
+      <img src="${esc(th.url)}" alt="" loading="lazy" decoding="async">
+      <span>${esc(it.title)}</span></button>`;
+  }).join('') : '<p class="pd-empty">No photos match. Try one word, or clear the search.</p>';
+}
+
+function open(it) {
+  const web = fileOf(it, 'web');
+  $('pdDlgImg').src = web.url;
+  $('pdDlgImg').alt = it.title || '';
+  $('pdDlgTitle').textContent = it.title || '';
+  $('pdDlgCaption').textContent = it.caption || '';
+  $('pdDlgCaption').hidden = !it.caption;
+  $('pdDlgCredit').textContent = 'Credit: ' + creditOf(it);
+  $('pdDlgTags').innerHTML = (it.tags || []).map(t =>
+    `<button class="pd-tag" type="button" data-tag="${esc(t)}">${esc(t)}</button>`).join('');
+  $('pdDlgSizes').innerHTML = SIZE_ORDER.map(role => {
+    const f = fileOf(it, role);
+    if (!f) return '';
+    const [name, use] = SIZE_LABEL[role];
+    return `<div class="pd-size">
+      <b>${name}<small>${kb(f.bytes)}</small></b>
+      <code title="${esc(use)}">${esc(f.url)}</code>
+      <button class="pd-btn" type="button" data-copy="${esc(f.url)}">Copy address</button>
+      <a class="pd-btn ghost" href="${esc(f.url)}" target="_blank" rel="noopener">Open</a>
+    </div>`;
+  }).join('');
+  $('pdDlgId').textContent = it.media_id;
+  history.replaceState(null, '', '#' + it.media_id);
+  if (!$('pdDialog').open) $('pdDialog').showModal();
+}
+
+function close() {
+  $('pdDialog').close();
+}
+
+$('pdDialog').addEventListener('close', () =>
+  history.replaceState(null, '', location.pathname + location.search));
+
+$('pdQuery').addEventListener('input', draw);
+$('pdClose').addEventListener('click', close);
+$('pdDialog').addEventListener('click', e => { if (e.target === $('pdDialog')) close(); });
+
+document.addEventListener('click', e => {
+  const card = e.target.closest('.pd-card');
+  if (card) { open(items.find(x => x.media_id === card.dataset.id)); return; }
+  const tag = e.target.closest('.pd-tag');
+  if (tag) {
+    const q = $('pdQuery');
+    q.value = PSBPPhotoSearch.norm(q.value) === PSBPPhotoSearch.norm(tag.dataset.tag) ? '' : tag.dataset.tag;
+    if ($('pdDialog').open) close();
+    draw();
+    window.scrollTo({ top: 0 });
+    return;
+  }
+  const copy = e.target.closest('[data-copy]');
+  if (copy) {
+    const url = copy.dataset.copy;
+    const done = () => { copy.textContent = 'Copied ✓'; setTimeout(() => { copy.textContent = 'Copy address'; }, 1600); };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(done, () => fallbackCopy(url, done));
+    } else fallbackCopy(url, done);
+  }
+});
+
+function fallbackCopy(text, done) {
+  const t = document.createElement('textarea');
+  t.value = text; t.style.position = 'fixed'; t.style.opacity = '0';
+  $('pdDialog').appendChild(t); t.select();
+  try { document.execCommand('copy'); done(); } catch (e) { prompt('Copy this address:', text); }
+  t.remove();
+}
+</script>
+</body>
+</html>
