@@ -1099,10 +1099,12 @@ V2_SECTIONS = [
     # He rejected hoisting Take care for hazardous plants: "I do not find it
     # persuasive that we could possibly prevent something from happening with
     # our plant species page, so order should be based on interest, not safety."
+    # 2026-10-27: Where to find it here moved above Where it comes from, so its
+    # photo or map breaks up the text near the top of the page.
     ("glance",  "At a glance",           "at_a_glance",           v2_map_at_a_glance),
     ("culture", "Cultural significance", "cultural_significance", v2_map_cultural_significance),
-    ("from",    "Where it comes from",   "where_it_comes_from",   v2_map_where_it_comes_from),
     ("find",    "Where to find it here", "where_to_find_it_here", v2_map_where_to_find_it_here),
+    ("from",    "Where it comes from",   "where_it_comes_from",   v2_map_where_it_comes_from),
     ("does",    "What it does",          "what_it_does_here",     v2_map_what_it_does_here),
     ("know",    "How to know it",        "how_to_know_it",        v2_map_how_to_know_it),
     ("grows",   "How it grows",          "how_it_grows",          v2_map_how_it_grows),
