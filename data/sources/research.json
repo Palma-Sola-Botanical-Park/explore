@@ -2,9 +2,9 @@
   "meta": {
     "generated": "2026-06-23",
     "description": "Staging file for species under research — not yet promoted to spotted or html. Plants and wildlife coexist, distinguished by the 'type' field.",
-    "species_count": 552,
-    "plant_count": 487,
-    "wildlife_count": 65,
+    "species_count": 551,
+    "plant_count": 485,
+    "wildlife_count": 66,
     "id_allocation": {
       "plants": "PSBP-00001 upward (next available: PSBP-00788)",
       "wildlife": "PSBP-90000–99999 band. Two blocks are in use: 99887–99999 (allocated downward from the ceiling, historically) and 90001–90016. The allocator computes max(band)+1, which overflows the 99999 ceiling, so it now gap-fills upward from the low block (next available: PSBP-90017).",
@@ -3957,33 +3957,6 @@
         "light": "PS - S",
         "zone": "3",
         "plant_date": ""
-      },
-      "research_source": "park_inventory"
-    },
-    {
-      "id": "PSBP-00297",
-      "type": "plant",
-      "common_name": "Dragon Tail",
-      "botanical_name": "Epipremnum pinnatum",
-      "inat_taxon_id": 124423,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Araceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": false,
-      "internal_notes": "Imported 2026-06-23 from park inventory (Sheet1). Known cultivars/varieties in park: Cebu Blue. Original CSV names: Epipremnum pinnatum; Epipremnum pinnatum 'Cebu Blue'.",
-      "import_source": "Sheet1",
-      "csv_data": {
-        "origin": "French Polynesia",
-        "height": "10-15'",
-        "spread": "",
-        "light": "PSh",
-        "zone": "3",
-        "plant_date": "7/28/20"
       },
       "research_source": "park_inventory"
     },
@@ -10842,25 +10815,6 @@
       "research_source": "inat_observed"
     },
     {
-      "id": "PSBP-00688",
-      "type": "plant",
-      "common_name": "Mexican Sunflower",
-      "botanical_name": "Tithonia diversifolia",
-      "inat_taxon_id": 132451,
-      "sign_level": "Species",
-      "taxonomy": {
-        "family": "Asteraceae"
-      },
-      "category": "",
-      "feature_tier": "Standard",
-      "has_sign": false,
-      "status": "research",
-      "native": null,
-      "internal_notes": "Imported 2026-06-23 from iNaturalist observations (1 obs at PSBP).",
-      "import_source": "iNat",
-      "research_source": "inat_observed"
-    },
-    {
       "id": "PSBP-00689",
       "type": "plant",
       "common_name": "",
@@ -12905,25 +12859,6 @@
       "inat_obs_count": 1
     },
     {
-      "id": "PSBP-00855",
-      "common_name": "common bird-of-paradise flower",
-      "botanical_name": "Strelitzia reginae",
-      "inat_taxon_id": 49143,
-      "inat_rank": "species",
-      "taxonomy": {
-        "family": "Strelitziaceae",
-        "genus": "Strelitzia",
-        "species": "reginae",
-        "class": "Liliopsida",
-        "order": "Zingiberales"
-      },
-      "type": "plant",
-      "status": "research",
-      "has_sign": false,
-      "research_source": "inat_observed",
-      "inat_obs_count": 1
-    },
-    {
       "id": "PSBP-00856",
       "common_name": "Philodendron angustisectum",
       "botanical_name": "Philodendron angustisectum",
@@ -13011,6 +12946,25 @@
         "species": "awabuki",
         "class": "Magnoliopsida",
         "order": "Dipsacales"
+      },
+      "type": "plant",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1
+    },
+    {
+      "id": "PSBP-00865",
+      "common_name": "Indian Coral Tree",
+      "botanical_name": "Erythrina variegata",
+      "inat_taxon_id": 139168,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Fabaceae",
+        "genus": "Erythrina",
+        "species": "variegata",
+        "class": "Magnoliopsida",
+        "order": "Fabales"
       },
       "type": "plant",
       "status": "research",
@@ -13765,6 +13719,27 @@
       "inat_obs_count": 1,
       "animal_group": "Wasp",
       "animal_group_source": "derived: Hymenoptera, family Vespidae"
+    },
+    {
+      "id": "PSBP-90072",
+      "common_name": "Rusty Millipede",
+      "scientific_name": "Trigoniulus corallinus",
+      "inat_taxon_id": 123010,
+      "inat_rank": "species",
+      "taxonomy": {
+        "family": "Pachybolidae",
+        "genus": "Trigoniulus",
+        "species": "corallinus",
+        "class": "Diplopoda",
+        "order": "Spirobolida"
+      },
+      "type": "wildlife",
+      "status": "research",
+      "has_sign": false,
+      "research_source": "inat_observed",
+      "inat_obs_count": 1,
+      "animal_group": null,
+      "animal_group_source": "undetermined: class Diplopoda has no mapping"
     },
     {
       "id": "PSBP-90073",
