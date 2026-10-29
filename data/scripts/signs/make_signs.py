@@ -141,7 +141,10 @@ FADE_KNEE = 0.62     # opacity where the hold ends and the fall begins
 IN = 72.0
 SIGN_W, SIGN_H = 7.475*IN, 4.6875*IN      # 538.2 x 337.5 — the TRIM size (was 7.6 x 4.75)
 PAGE_W, PAGE_H = 8.5*IN, 11.0*IN          # portrait letter print sheet
-SHEET_GAP      = 0.70*IN                  # space between the two signs
+# 0 = the two signs touch and share one cut line: 5 cuts a sheet instead of 6
+# (Randy, 2026-10-29). Both meeting edges are plain cream, so a cut that drifts
+# a hair only makes one sign a sliver taller. Was 0.70".
+SHEET_GAP      = 0.0*IN                   # space between the two signs
 SIGN_X  = (PAGE_W - SIGN_W)/2.0
 SIGN_Y0 = (PAGE_H - 2*SIGN_H - SHEET_GAP)/2.0     # bottom sign
 SIGN_Y1 = SIGN_Y0 + SIGN_H + SHEET_GAP            # top sign
@@ -569,17 +572,20 @@ def _sign_body(c, common, sci, family, kicker, url, photo_path, focus, pname, li
     return modules, mod_pt
 
 # ─────────────────────────── imposition ───────────────────────────
-def crop_marks(c, x, y, w, h, off=5, ln=14):
+def crop_marks(c, x, y, w, h, off=5, ln=14, shared=()):
+    """shared = edges ('top'/'bottom') this sign shares with its neighbour; the
+    vertical marks there are skipped, since they would run into the other sign."""
     c.saveState(); c.setStrokeColor(MARK); c.setLineWidth(0.4)
     for cx,dx in ((x,-1),(x+w,1)):
-        for cy,dy in ((y,-1),(y+h,1)):
+        for cy,dy,edge in ((y,-1,'bottom'),(y+h,1,'top')):
             c.line(cx+dx*off, cy, cx+dx*(off+ln), cy)
-            c.line(cx, cy+dy*off, cx, cy+dy*(off+ln))
+            if edge not in shared:
+                c.line(cx, cy+dy*off, cx, cy+dy*(off+ln))
     c.restoreState()
 
-def place(c, ox, oy, kw):
+def place(c, ox, oy, kw, shared=()):
     c.saveState(); c.translate(ox,oy); m=_sign_body(c,**kw); c.restoreState()
-    crop_marks(c, ox, oy, SIGN_W, SIGN_H)
+    crop_marks(c, ox, oy, SIGN_W, SIGN_H, shared=shared)
     return m
 
 # ─────────────────────────── copy resolution ───────────────────────────
@@ -787,8 +793,9 @@ def main():
     sheet=canvas.Canvas(os.path.join(OUT_DIR,'PRINT_SHEETS_2up.pdf'), pagesize=(PAGE_W,PAGE_H))
     for i in range(0,len(built),2):
         pair=built[i:i+2]
-        place(sheet, SIGN_X, SIGN_Y1, pair[0]['kw'])
-        if len(pair)>1: place(sheet, SIGN_X, SIGN_Y0, pair[1]['kw'])
+        touching = SHEET_GAP==0 and len(pair)>1
+        place(sheet, SIGN_X, SIGN_Y1, pair[0]['kw'], shared=('bottom',) if touching else ())
+        if len(pair)>1: place(sheet, SIGN_X, SIGN_Y0, pair[1]['kw'], shared=('top',) if touching else ())
         sheet.setFillColor(MARK); sheet.setFont(F('SansR'),6.5)
         sheet.drawCentredString(PAGE_W/2, SIGN_Y0-16,
             "trim on the marks  ·  both signs into ONE letter pouch  ·  laminate  ·  cut between them")
