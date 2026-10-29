@@ -29,7 +29,9 @@ USAGE
 THE RULE BEING ENFORCED
 -----------------------
     No photo may exist in photo_credits.json unless its species carries
-    status "html" or "spotted" in plant_signage.json or wildlife_signage.json.
+    status "html", "spotted" or "parked" in plant_signage.json or
+    wildlife_signage.json. Parked (2026-10-29) is a spotted species waiting on
+    a decision; its gallery is kept for the day it comes back.
 
 Everything else in here is a corollary of that, or its mirror image: things
 that should exist and don't.
@@ -138,7 +140,7 @@ def audit():
     for sid, rows in sorted(by_species.items()):
         if sid in sig:
             status = sig[sid][0]
-            if status not in ("html", "spotted"):
+            if status not in ("html", "spotted", "parked"):
                 add("credits_bad_status", {
                     "id": sid, "status": status, "photos": len(rows),
                     "name": sig[sid][2],
@@ -243,7 +245,7 @@ def audit():
 
 HEADINGS = [
     ("credits_orphaned",         "Credits for species that no longer exist in signage", True),
-    ("credits_bad_status",       "Credits for species that are neither html nor spotted", True),
+    ("credits_bad_status",       "Credits for species that are not html, spotted or parked", True),
     ("photo_dir_orphaned",       "Hero photo folders with no signage record", True),
     ("page_orphaned",            "Generated pages with no signage record", True),
     ("page_should_be_gone",      "Pages for species no longer published", True),

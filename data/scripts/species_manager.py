@@ -321,6 +321,13 @@ def _load(path):
     return {}
 
 
+# A signage record waiting on a decision or a botanist (Randy, 2026-10-29). It
+# keeps its photos, gallery and dossier; only the status changes, and Claude
+# flips it on his word. Counted on the Overview so it is not forgotten, hidden
+# from every list he works from (pickers, Photos, Preview & Publish).
+PARKED = "parked"
+
+
 def _get_species_list(raw):
     """Extract the species list from a signage JSON (handles meta wrapper)."""
     if isinstance(raw, dict):
@@ -465,6 +472,8 @@ def get_species_list(kingdom):
     species_list = _get_species_list(_load(path))
     result = []
     for sp in sorted(species_list, key=lambda s: s.get("id", "")):
+        if sp.get("status") == PARKED:
+            continue
         result.append({
             "id": sp.get("id", ""),
             "common_name": sp.get("common_name", ""),
@@ -863,6 +872,8 @@ def get_photos_summary(kingdom):
 
     result = []
     for sp in sorted(species_list, key=lambda s: s.get("id", "")):
+        if sp.get("status") == PARKED:
+            continue
         sid = sp.get("id", "")
         # Count photos for this species (filter by type if mixed)
         sp_photos = photos_by_species.get(sid, [])
@@ -3634,6 +3645,8 @@ def get_publish_list(kingdom):
 
     result = []
     for sp in sorted(species_list, key=lambda s: s.get("id", "")):
+        if sp.get("status") == PARKED:
+            continue
         sid = sp.get("id", "")
         hero = heroes.get(sid)
         checks, ready = _publish_readiness(kingdom, sp, hero)
@@ -4074,6 +4087,7 @@ BRAND_CSS = """
     --gray-800:    #222;
     --status-research: #78909c;
     --status-spotted:  #c5922a;
+    --status-parked:   #b0b5b9;
     --status-html:     #2d6a35;
     --radius:      6px;
     --shadow:      0 1px 3px rgba(0,0,0,0.08);
@@ -4206,6 +4220,7 @@ main {
 }
 .funnel-bar-fill.research { background: var(--status-research); }
 .funnel-bar-fill.spotted  { background: var(--status-spotted); }
+.funnel-bar-fill.parked   { background: var(--status-parked); }
 .funnel-bar-fill.html     { background: var(--status-html); }
 .rb-title { margin: 14px 0 6px; font-size: 11px; text-transform: uppercase;
             letter-spacing: .04em; color: #8a8f96; }
@@ -5920,6 +5935,9 @@ def render_overview():
                                (data.wildlife.by_status.html || 0);
         const totalSpotted = (data.plants.by_status.spotted || 0) +
                              (data.wildlife.by_status.spotted || 0);
+        // Parked: waiting on a decision or a botanist; counted so it is not forgotten.
+        const totalParked = (data.plants.by_status.parked || 0) +
+                            (data.wildlife.by_status.parked || 0);
         document.getElementById('stat-row').innerHTML = `
             <div class="stat-badge">
                 <div class="stat-num">${totalSpecies}</div>
@@ -5932,6 +5950,10 @@ def render_overview():
             <div class="stat-badge">
                 <div class="stat-num">${totalSpotted}</div>
                 <div class="stat-label">Spotted</div>
+            </div>
+            <div class="stat-badge">
+                <div class="stat-num">${totalParked}</div>
+                <div class="stat-label">Parked</div>
             </div>
             <div class="stat-badge">
                 <div class="stat-num">${data.photographers.total_photos}</div>
@@ -5958,16 +5980,18 @@ def render_overview():
         const el = document.getElementById(containerId);
         const research  = (kingdomData.research && kingdomData.research.total) || 0;
         const spotted   = kingdomData.by_status.spotted || 0;
+        const parked    = kingdomData.by_status.parked || 0;
         const published = kingdomData.by_status.html || 0;
-        const pipeline  = (research + spotted + published) || 1;
+        const pipeline  = (research + spotted + parked + published) || 1;
 
         const rows = [
             ['research', 'Research',  research],
             ['spotted',  'Spotted',   spotted],
+            ['parked',   'Parked',    parked],
             ['html',     'Published', published],
         ];
 
-        let html = `<div class="funnel-total">${research + spotted + published}</div>`;
+        let html = `<div class="funnel-total">${research + spotted + parked + published}</div>`;
         html += `<div class="funnel-total-label">in pipeline (research → published)</div>`;
 
         for (const [status, label, count] of rows) {

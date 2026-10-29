@@ -250,7 +250,7 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 
 | File | Shape | Notes |
 |---|---|---|
-| `plant_signage.json` | `{meta, species:[…]}` | ~300 records, `status` spotted or html |
+| `plant_signage.json` | `{meta, species:[…]}` | ~300 records, `status` spotted, parked or html |
 | `wildlife_signage.json` | `{meta, species:[…]}` | ~115 records; `animal_group` drives theme |
 | `research.json` | `{meta, species:[…]}` | ~550 candidates, status research |
 | `photo_credits.json` | `{meta, photos:[…]}` | ~1,640 rows keyed by `psbp_id` + `photo_id` |
@@ -261,7 +261,7 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 | `publish_state.json` | machine-owned | fingerprints for staleness; safe to delete |
 | *(`provenance/` gone, 2026-10-23)* | | the old AI draft/revise logs moved to `Active-PSBP-Docs/species-editorial/provenance/`; nothing writes them; the "Work on this page" button is hidden |
 
-**Species lifecycle:** `research → spotted → html`. Identity (name, filename, QR) is free to
+**Species lifecycle:** `research → spotted → html`. A spotted record waiting on a decision or a botanist can be `parked` (2026-10-29): it keeps its photos and gallery, the Overview counts it, every other Species Manager list hides it, and nothing publishes it. Claude flips spotted ↔ parked only on Randy's word ("park X", "unpark X"), re-reading the master first (rule 4). Identity (name, filename, QR) is free to
 change at `spotted` and is just as easy after (a rename moves the page; run
 `propagate_species_name.py`). Get the binomial right before promoting. For a species
 that came from iNaturalist, iNat's name is the first source; override it only in the rare case
