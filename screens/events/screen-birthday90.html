@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>90th Birthday — family photo deck</title>
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="event-deck.css">
+<link rel="stylesheet" href="event-birthday90.css">
+<!-- 90th birthday deck — a family photo album with a few snapshots of the
+     world he grew up in. Prototype, 2026-10-29. Plays IN ORDER and loops.
+
+     PHOTOS LIVE IN R2, never in the repo. Register each one with media
+     intake (it mints PM-000123 and uploads original/web/thumb); the deck
+     shows the ~1,600px "web" size: MEDIA_BASE/media/<PM-id>/v1/web.jpg.
+
+     His name, birth date, captions and the family's words go in
+     birthday90-family.js beside this file (format: birthday90-family.sample.js).
+     That file is gitignored: the repo is public, and this is Bev's family,
+     not the park. It is a few lines of text; copy it to C:\PSBP\repo\
+     screens\events\ on Office AND Galleria (git pull never touches it).
+
+     With no family file the page runs as a PROTOTYPE: "[Name]" in gold, a
+     dashed frame saying what picture goes where, and a "Prototype" tag.
+     With it, any slide whose photos aren't listed is left out.
+
+     Photos are preloaded before the deck starts (up to ~15s). A slide whose
+     photo can't be fetched (no internet, a typo'd PM number) is dropped, so
+     the TV never shows an empty frame and the kiosk Player check never sees
+     a broken <img>. Text slides need no network and always play.
+
+     ?speed=5 preview fast · ?start=N begin at slide N · ?demo=1 force the
+     prototype even when the local file is present -->
+</head>
+<body>
+<div class="frame"></div>
+<div class="clock" id="clock"></div>
+<div class="deck"></div>
+<div id="bar"></div>
+<script src="birthday90-family.js"></script>
+<script>
+(function(){
+  var Q = new URLSearchParams(location.search);
+  var B = (!Q.get('demo') && window.BIRTHDAY90) || null;
+  var DEMO = !B;
+  /* Same constant as psbp_common.py MEDIA_BASE; change both at the media. cutover. */
+  var MEDIA_BASE = 'https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev';
+  function photoUrl(src){ return /^https?:\/\//.test(src) ? src : MEDIA_BASE + '/media/' + src + '/v1/web.jpg'; }
+  B = B || {};
+  var P = B.photos || {};
+  var SKIP = B.skip || [];
+  var BORN = parseDate(B.born || '1936-11-27');   // prototype assumes late November 1936 — confirm with Bev
+
+  function parseDate(s){ var m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(1936, 10, 27); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function ageOn(y, m, d){ var a = y - BORN.getFullYear(); if (m - 1 < BORN.getMonth() || (m - 1 === BORN.getMonth() && d < BORN.getDate())) a--; return a; }
+  var NAME = DEMO ? '<span class="todo">[Name]</span>' : esc(B.name || '');
+  var FIRST = DEMO ? '<span class="todo">[Name]</span>' : esc(B.short || B.name || '');
+
+  // A photo slot is "name" -> a file, {src, caption}, or a list of those.
+  function list(slot){ var v = P[slot]; if (!v) return []; if (!Array.isArray(v)) v = [v];
+    return v.map(function(x){ return typeof x === 'string' ? {src:x} : x; }).filter(function(x){ return x && x.src; }); }
+  function has(slot, n){ return DEMO || list(slot).length >= (n || 1); }
+
+  // One framed print. In the prototype, a dashed frame that says what goes there.
+  function print(slot, i, hint, cls){
+    var cap = '';
+    var inner;
+    if (DEMO){ inner = '<div class="bd-ph">' + esc(hint) + '</div>'; }
+    else {
+      var p = list(slot)[i || 0]; if (!p) return '';
+      var url = esc(photoUrl(p.src)); WANT.push(photoUrl(p.src));
+      inner = '<img class="soft" src="' + url + '" alt="" onerror="bdGone(this)">'
+            + '<img class="main" src="' + url + '" alt="' + esc(p.caption || 'Family photo') + '" onerror="bdGone(this)">';
+      if (p.caption) cap = '<div class="bd-cap">' + esc(p.caption) + '</div>';
+    }
+    return '<div class="bd-print ' + (cls || '') + '"><div class="bd-pic">' + inner + '</div>' + cap + '</div>';
+  }
+  function ribbon(y, m, d){ var a = ageOn(y, m, d); return '<div class="bd-ribbon"><b>' + y + '</b> &middot; age ' + a + '</div>'; }
+  function when(y, m, d){ return 'When you were ' + ageOn(y, m, d); }
+  function note(text){ return '<div class="bd-ribbon">' + text + '</div>'; }
+
+  var S = [], WANT = [];
+  function add(id, seconds, html, ok){
+    var need = WANT; WANT = [];                       // the photo URLs this slide's html uses
+    if (ok === false || SKIP.indexOf(id) > -1) return;
+    S.push({ id:id, seconds:seconds, html:html, need:need });
+  }
+
+  /* 1 — welcome (home base, plays first every loop) */
+  add('welcome', 13,
+    '<div class="bd-split"><div class="bd-copy"><div class="bd-script">Celebrating</div><div class="bd-title">Happy 90th Birthday,<br><em>' + NAME + '!</em></div>'
+    + '<div class="bd-rule"></div><div class="bd-body">90 years of stories &mdash; and a whole lot of love.</div></div>'
+    + (has('welcome') ? '<!--side-->' + print('welcome', 0, 'A joyful recent portrait', 'bd-side') + '<!--/side-->' : '') + '</div>');
+
+  /* 2 — a favorite picture of him */
+  add('favorite', 11, print('favorite', 0, 'A favorite picture of him, simply framed', 'bd-solo'), has('favorite'));
+
+  /* 3 — 1936 */
+  add('year', 11,
+    '<div class="bd-split"><div class="bd-copy"><div class="bd-kicker">The beginning</div><div class="bd-h2">A very good year<br>for originals: <em>' + BORN.getFullYear() + '</em></div>'
+    + '<div class="bd-rule"></div><div class="bd-body">' + (DEMO ? 'Born <span class="todo">[date and place]</span>.' : esc(B.bornLine || '')) + '</div></div>'
+    + (has('baby') ? '<!--side-->' + print('baby', 0, 'Optional: a baby or childhood photo', 'bd-side') + '<!--/side-->' : '') + '</div>');
+
+  /* 4 — the week he was born: a magazine-stand card (original design, not a real cover) */
+  var lifeDays = Math.round((BORN - new Date(1936, 10, 23)) / 864e5);
+  add('magazine', 11,
+    '<div class="bd-split"><div class="bd-copy"><div class="bd-kicker">' + (Math.abs(lifeDays) <= 7 ? 'The week you were born' : 'The year you were born') + '</div>'
+    + '<div class="bd-h2">A brand-new picture magazine<br><em>hit the newsstands.</em></div><div class="bd-rule"></div>'
+    + '<div class="bd-body">LIFE magazine&rsquo;s first issue was dated November&nbsp;23, 1936 &mdash; and America started seeing the news in photographs.</div></div>'
+    + '<div class="bd-magwrap"><div class="bd-mag"><div class="price">10&cent;</div><div class="mast">News<br>of &rsquo;36</div>'
+    + '<div class="dateline"><span>Vol. 1 &middot; No. 1</span><span>Nov. 1936</span></div><div class="art"></div>'
+    + '<div class="head">A good-looking baby arrives. Nation pleased.</div></div></div></div>');
+
+  /* 5 — born the same year */
+  add('classmates', 10,
+    '<div class="bd-center"><div class="bd-kicker">Born in 1936, too</div><div class="bd-h2">You&rsquo;re in <em>good company.</em></div>'
+    + '<div class="bd-names"><div>Buddy Holly<span>musician</span></div><div>Mary Tyler Moore<span>actress</span></div><div>Robert Redford<span>actor</span></div>'
+    + '<div>Jim Henson<span>Muppets creator</span></div><div>Roy Orbison<span>singer</span></div><div>Alan Alda<span>actor</span></div></div></div>'
+    + note('<b>1936</b> &middot; where it all began'), BORN.getFullYear() === 1936);
+
+  /* 6 — what things cost */
+  add('prices', 10,
+    '<div class="bd-center"><div class="bd-kicker">In 1936, about&hellip;</div><div class="bd-h2">What a nickel and a dime <em>could do.</em></div>'
+    + '<div class="bd-prices"><div><b>3&cent;</b><span>to mail a letter</span></div><div><b>8&cent;</b><span>a loaf of bread</span></div><div><b>25&cent;</b><span>a movie ticket</span></div></div></div>',
+    BORN.getFullYear() === 1936);
+
+  /* 7 — childhood */
+  add('childhood', 12,
+    '<div class="bd-stack"><div class="bd-kicker">Early days</div><div class="bd-pair">'
+    + print('childhood', 0, 'A childhood photo') + (has('childhood', 2) ? print('childhood', 1, 'Another childhood photo') : '') + '</div></div>', has('childhood'));
+
+  /* 8 — not invented yet */
+  add('notyet', 11,
+    '<div class="bd-center"><div class="bd-kicker">When you were born, none of these existed yet</div><div class="bd-h2">And you&rsquo;ve seen <em>every one</em> arrive.</div>'
+    + '<ul class="bd-firsts"><li><i>1945</i>Ballpoint pens in stores</li><li><i>1947</i>The microwave oven</li><li><i>1940s</i>A TV in the living room</li>'
+    + '<li><i>1950</i>The credit card</li><li><i>1952</i>Jet airliners</li><li><i>1956</i>The interstate highways</li></ul></div>', BORN.getFullYear() <= 1940);
+
+  /* 9 — Jackie Robinson */
+  add('robinson', 11,
+    '<div class="bd-center"><div class="bd-kicker">' + when(1947, 4, 15) + '</div><div class="bd-h2">Jackie Robinson took the field<br><em>for the Brooklyn Dodgers.</em></div>'
+    + '<div class="bd-prompt">Did your family have a favorite team?</div></div>' + ribbon(1947, 4, 15));
+
+  /* 10 — school years */
+  add('teen', 11, print('teen', 0, 'A teenage or school-years picture', 'bd-solo') + note('The school years'), has('teen'));
+
+  /* 11 — I Love Lucy */
+  add('lucy', 11,
+    '<div class="bd-center"><div class="bd-kicker">' + when(1951, 10, 15) + '</div><div class="bd-h2"><em>I Love Lucy</em> premiered<br>on television.</div>'
+    + '<div class="bd-prompt">What did your family watch?</div></div>' + ribbon(1951, 10, 15));
+
+  /* 12 — music of the teens */
+  add('unforgettable', 11,
+    '<div class="bd-stack"><div class="bd-kicker">Music of your teens</div><div class="bd-records"><div class="bd-record"><div class="bd-disc"></div>'
+    + '<div class="bd-song">&ldquo;Unforgettable&rdquo;</div><div class="bd-artist">Nat King Cole</div><div class="bd-year">1951</div></div></div></div>' + ribbon(1951, 7, 1));
+
+  /* 13 — young adult */
+  add('young', 11, print('young', 0, 'A young-adult portrait or candid', 'bd-solo'), has('young'));
+
+  /* 14 — the soundtrack continues */
+  add('fifties', 12,
+    '<div class="bd-stack"><div class="bd-kicker">The soundtrack continues</div><div class="bd-records two">'
+    + '<div class="bd-record"><div class="bd-disc"></div><div class="bd-song">&ldquo;Hound Dog&rdquo;</div><div class="bd-artist">Elvis Presley</div><div class="bd-year">1956</div></div>'
+    + '<div class="bd-record alt"><div class="bd-disc"></div><div class="bd-song">&ldquo;You Send Me&rdquo;</div><div class="bd-artist">Sam Cooke</div><div class="bd-year">1957</div></div>'
+    + '</div></div>' + ribbon(1957, 1, 1));
+
+  /* 15 — family and friends */
+  add('family', 14,
+    '<div class="bd-stack"><div class="bd-kicker">Family &amp; friends</div><div class="bd-trio">'
+    + print('family', 0, 'Family photo') + (has('family', 2) ? print('family', 1, 'Family photo') : '') + (has('family', 3) ? print('family', 2, 'Family photo') : '')
+    + '</div></div>', has('family'));
+
+  /* 16 — music in his twenties (skip by id in birthday90-family.js if it doesn't suit him) */
+  add('sixties', 12,
+    '<div class="bd-stack"><div class="bd-kicker">In your twenties</div><div class="bd-records two">'
+    + '<div class="bd-record"><div class="bd-disc"></div><div class="bd-song">&ldquo;The Twist&rdquo;</div><div class="bd-artist">Chubby Checker</div><div class="bd-year">1960</div></div>'
+    + '<div class="bd-record alt"><div class="bd-disc"></div><div class="bd-song">&ldquo;Crazy&rdquo;</div><div class="bd-artist">Patsy Cline</div><div class="bd-year">1961</div></div>'
+    + '</div></div>' + ribbon(1961, 1, 1));
+
+  /* 17 — then and now */
+  add('thennow', 13,
+    '<div class="bd-pair">'
+    + '<div><span class="bd-tag">Then</span>' + print('then', 0, 'A younger picture of him') + '</div>'
+    + '<div><span class="bd-tag">Now</span>' + print('now', 0, 'A recent picture of him') + '</div></div>', has('then') && has('now'));
+
+  /* 18 — the Beatles */
+  add('beatles', 11,
+    '<div class="bd-center"><div class="bd-kicker">' + when(1964, 2, 9) + '</div><div class="bd-h2">The Beatles appeared on<br><em>The Ed Sullivan Show.</em></div>'
+    + '<div class="bd-prompt">Do you remember watching?</div></div>' + ribbon(1964, 2, 9));
+
+  /* 19 — his life: travel, work, a hobby */
+  add('life', 11, print('life', 0, 'Travel, work, a favorite hobby — whatever his pictures reveal', 'bd-solo'), has('life'));
+
+  /* 20 — the moon */
+  add('moon', 11,
+    '<div class="bd-center"><div class="bd-kicker">' + when(1969, 7, 20) + '</div><div class="bd-h2">People walked<br><em>on the moon.</em></div>'
+    + '<div class="bd-prompt">Where were you?</div></div>' + ribbon(1969, 7, 20));
+
+  /* 21 — by the numbers (counted to his 90th birthday) */
+  var ninety = new Date(BORN.getFullYear() + 90, BORN.getMonth(), BORN.getDate());
+  var days = Math.round((ninety - BORN) / 864e5);
+  add('numbers', 11,
+    '<div class="bd-center"><div class="bd-kicker">Ninety years, by the numbers</div><div class="bd-nums">'
+    + '<div class="bd-num"><b>' + days.toLocaleString('en-US') + '</b><span>mornings</span></div>'
+    + '<div class="bd-num"><b>' + Math.round(days / 29.53).toLocaleString('en-US') + '</b><span>full moons</span></div>'
+    + '<div class="bd-num"><b>15</b><span>presidents</span></div></div></div>', BORN.getFullYear() === 1936);
+
+  /* 22 — the people who love you */
+  add('people', 14,
+    '<div class="bd-stack"><div class="bd-kicker">The people who love you</div><div class="bd-trio">'
+    + print('people', 0, 'A family photo') + (has('people', 2) ? print('people', 1, 'A family photo') : '') + (has('people', 3) ? print('people', 2, 'A family photo') : '')
+    + '</div></div>', has('people'));
+
+  /* 23 — things we love about him */
+  var loves = DEMO ? ['<span class="todo">[A few words from the family]</span>', '<span class="todo">[His laugh? His stories?]</span>', '<span class="todo">[Whatever they say]</span>']
+                   : (B.loves || []).slice(0, 4).map(esc);
+  add('loves', 13,
+    '<div class="bd-center"><div class="bd-kicker">A few things we love about</div><div class="bd-h2"><em>' + FIRST + '</em></div>'
+    + '<ul class="bd-loves">' + loves.map(function(l){ return '<li>' + l + '</li>'; }).join('') + '</ul></div>', loves.length > 0);
+
+  /* 24+ — in his own words, one saying per slide */
+  var sayings = DEMO ? ['<span class="todo">[One of his sayings the whole family can finish]</span>'] : (B.sayings || []).map(esc);
+  sayings.forEach(function(q, i){
+    add('saying-' + (i + 1), 11, '<div class="bd-center"><div class="bd-kicker">In his own words</div><div class="bd-quote">' + q + '</div></div>');
+  });
+
+  /* toast */
+  add('toast', 11,
+    '<div class="bd-center"><div class="bd-script">A toast</div><div class="bd-title">90 years,<br><em>countless stories,</em></div>'
+    + '<div class="bd-h2" style="margin-top:2vmin">and a whole lot of love.</div><div class="bd-cake"></div></div>');
+
+  /* closing — then the loop comes home to the welcome */
+  add('closing', 13,
+    '<div class="bd-split"><div class="bd-copy"><div class="bd-title">Happy 90th,<br><em>' + FIRST + '!</em></div><div class="bd-rule"></div>'
+    + '<div class="bd-body">With love from all of us.</div></div>'
+    + (has('closing') ? '<!--side-->' + print('closing', 0, 'A family photo to end on', 'bd-side') + '<!--/side-->' : '') + '</div>');
+
+  if (DEMO){ var t = document.createElement('div'); t.className = 'bd-proto'; t.textContent = 'Prototype \u00b7 sample layout'; document.body.appendChild(t); }
+
+  // Preload every photo, drop slides that can't show theirs, then start the shared engine.
+  var urls = {}; S.forEach(function(s){ s.need.forEach(function(u){ urls[u] = 1; }); });
+  var bad = {}, pending = Object.keys(urls).length, started = false;
+  function start(){
+    if (started) return; started = true;
+    function missing(s){ return s.need.some(function(u){ return bad[u] || !urls[u].ok; }); }
+    window.SLIDES = S.map(function(s){
+      if (!missing(s)) return s;
+      // a garnish photo (welcome, 1936, closing): keep the words, drop the picture
+      if (s.html.indexOf('<!--side-->') > -1) return { id:s.id, seconds:s.seconds, html:s.html.replace(/<!--side-->[\s\S]*<!--\/side-->/, '') };
+      return null;                                     // a photo slide with no photo: leave it out
+    }).filter(Boolean);
+    if (S.length !== window.SLIDES.length) console.warn('Birthday deck: left out ' + (S.length - window.SLIDES.length) + ' photo slide(s) whose photos did not load');
+    window.DECK_ORDER = 'seq';
+    var e = document.createElement('script'); e.src = 'event-deck.js'; document.body.appendChild(e);
+  }
+  Object.keys(urls).forEach(function(u){
+    var im = new Image(); urls[u] = { ok:false };
+    im.onload = function(){ urls[u].ok = im.naturalWidth > 0; if (!urls[u].ok) bad[u] = 1; if (--pending === 0) start(); };
+    im.onerror = function(){ bad[u] = 1; console.warn('Birthday deck: could not load ' + u); if (--pending === 0) start(); };
+    im.src = u;
+  });
+  if (!pending) start(); else setTimeout(start, 15000);
+})();
+
+/* A photo that will not load is removed, never left broken (kiosk health check). */
+function bdGone(img){
+  var pic = img.parentNode; console.warn('Birthday deck: missing photo ' + img.getAttribute('src'));
+  if (pic){ pic.removeChild(img); if (!pic.querySelector('img')) pic.classList.add('missing'); }
+}
+</script>
+</body>
+</html>
