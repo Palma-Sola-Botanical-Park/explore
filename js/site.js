@@ -2069,7 +2069,7 @@ let WILDLIFE = [];
 // for the animal_group → theme mapping.
 const WILD_THEMES = [
   { key: 'bird',      label: '🐦 Birds' },
-  { key: 'butterfly', label: '🦋 Butterflies' },
+  { key: 'butterfly', label: '🦋 Butterflies & moths' },
   { key: 'other',     label: '🐾 Other' },
 ];
 
@@ -2183,7 +2183,7 @@ function renderWildPage() {
   else if (info) info.textContent = '';
 
   grid.innerHTML = slice.length ? slice.map(wildCard).join('') :
-    '<p class="text-soft" style="grid-column:1/-1;padding:2rem;text-align:center">No animals match. Try clearing some filters.</p>';
+    '<p class="text-soft" style="grid-column:1/-1;padding:2rem;text-align:center">Nothing matches. Try clearing some filters.</p>';
 
   if (pag) pag.style.display = totalPages > 1 ? 'flex' : 'none';
   if (label) label.textContent = `${_wildPage + 1} of ${totalPages}`;

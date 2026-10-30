@@ -309,6 +309,8 @@ ANIMAL_GROUP_TO_THEME = {
     "Spider":      "other",
     # Crustaceans
     "Crustacean":  "other",
+    # Fish (ray-finned; the first was Blackchin Tilapia, PSBP-90050, 2026-10-29)
+    "Fish":        "other",
 }
 
 # Derived — never edit; always in sync with the dict above.
@@ -373,6 +375,7 @@ def derive_animal_group(taxon):
             return None, f"Arachnida but order {order} is not a spider"
         return "Spider", "class Arachnida"
     if klass == "Malacostraca": return "Crustacean", "class Malacostraca"
+    if klass == "Actinopterygii": return "Fish", "class Actinopterygii"
 
     if klass == "Reptilia":
         if order == "Testudines": return "Turtle", "order Testudines"
