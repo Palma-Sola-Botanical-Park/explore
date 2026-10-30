@@ -174,7 +174,9 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
    over 5 MB. It is absolute. Never suggest `--no-verify`. Shrink with `data/scripts/shrink.sh`.
    Originals, generated PDFs, venvs, and triage folders stay outside the repo.
 10. **Quarantine before delete.** Retired script → `XXX` suffix. Duplicate species →
-    `DUPLICATE — see PSBP-xxxxx`, kept. Report, don't erase.
+    `DUPLICATE — see PSBP-xxxxx`, kept. Report, don't erase. **Research records are exempt**
+    (Randy, 2026-10-30): `research.json` is "stuff to think about and toss around"; he deletes
+    any record he likes, no archive, no conditions; leftovers elsewhere get cleaned up later.
 11. **No secrets.** `ANTHROPIC_API_KEY` and `INAT_TOKEN` come from the environment. Nothing
     with a key in it is ever written to the tree.
 12. **Minors.** Bright Futures students are credited by first name and initial, or as a group.
@@ -257,7 +259,7 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 |---|---|---|
 | `plant_signage.json` | `{meta, species:[…]}` | ~300 records, `status` spotted, parked or html |
 | `wildlife_signage.json` | `{meta, species:[…]}` | ~115 records; `animal_group` drives theme |
-| `research.json` | `{meta, species:[…]}` | ~550 candidates, status research; `promise` 1 likely / 2 maybe / 3 unlikely, with a one-line `promise_note` (a guess from park sightings, 2026-10-30; Randy overrules freely) |
+| `research.json` | `{meta, species:[…]}` | "a scratch pad of possibilities, nothing more" (Randy); ~550 candidates, status research; `promise` 1 likely / 2 maybe / 3 unlikely, with a one-line `promise_note` (a guess from park sightings, 2026-10-30; Randy overrules freely) |
 | `photo_credits.json` | `{meta, photos:[…]}` | ~1,640 rows keyed by `psbp_id` + `photo_id` |
 | `photographer_names.json` | `{login: {display_name, credit_as?, note}}` | keyed by lowercase iNat login |
 | `placements.json` | `{meta, placements:[…]}` | where each specimen stands; you add rows only as rule 5 says |

@@ -438,10 +438,13 @@ def get_overview_data():
         items = [s for s in get_research_list(kingdom)
                  if s.get("status") == "research"]
         by_source = {}
+        by_promise = {"1": 0, "2": 0, "3": 0, "none": 0}
         for s in items:
             src = s.get("source") or "unknown"
             by_source[src] = by_source.get(src, 0) + 1
-        return {"total": len(items), "by_source": by_source}
+            p = s.get("promise")
+            by_promise[str(p) if p in (1, 2, 3) else "none"] += 1
+        return {"total": len(items), "by_source": by_source, "by_promise": by_promise}
 
     plants_kd = analyze_kingdom(plant_species, PLANT_REQUIRED, "botanical_name")
     plants_kd["research"] = research_breakdown("plants")
@@ -2022,7 +2025,7 @@ def _park_observations_lite():
     if _LITE_CACHE["rows"] is not None and time.time() - _LITE_CACHE["at"] < _LITE_TTL:
         return _LITE_CACHE["rows"]
     scope = INAT_SCOPE.replace("&verifiable=any", "")
-    fields = ("id,location,captive,observed_on,taxon.id,taxon.name,"
+    fields = ("id,location,captive,observed_on,user.login,taxon.id,taxon.name,"
               "taxon.preferred_common_name,taxon.rank,taxon.iconic_taxon_name,"
               "taxon.ancestor_ids,taxon.default_photo.square_url")
     def get_page(page):
@@ -2429,6 +2432,7 @@ def add_discovered_to_research(payload):
         "research_source": "inat_observed",
         "inat_obs_count":  obs_count,
     }
+    entry["promise"], entry["promise_note"] = initial_promise(taxon_id, sci)
     if kingdom != "plants":
         # None when the taxonomy does not settle it — left blank on purpose so
         # the publish gate catches it and a human picks from the dropdown.
@@ -2447,6 +2451,82 @@ def add_discovered_to_research(payload):
     return {"ok": True, "id": new_id, "kingdom": kingdom,
             "common_name": entry["common_name"], "scientific_name": sci,
             "family": family, "warning": warn}
+
+
+# ── Promise: how likely a research record is to become a page ────────────────
+# Randy, 2026-10-30: research.json carries `promise` 1 likely / 2 maybe / 3
+# unlikely, with a one-line `promise_note`. The formula below is only the
+# STARTING POINT, for records added from the scan; Randy moves any record
+# between 1, 2 and 3 by hand from the scan cards, and the formula never
+# overwrites a rating that exists.
+PROMISE_RANDY = "randall_carter"
+
+
+def initial_promise(taxon_id, sci=""):
+    """(promise, note) for a taxon from park sightings, the 2026-10-30 formula:
+    1 = seen in the last two years by Randy or by two or more people;
+    2 = seen in the last two years by one other person, or older but by two or
+        more, or a genus where we already hold species (collision check);
+    3 = no park sighting, or one old sighting."""
+    try:
+        tid = int(taxon_id)
+    except (TypeError, ValueError):
+        return 3, "no iNaturalist taxon"
+    rows = [o for o in _park_observations_lite()
+            if tid in ((o.get("taxon") or {}).get("ancestor_ids") or [])
+            or (o.get("taxon") or {}).get("id") == tid]
+    if not rows:
+        return 3, "no park sighting of its own"
+    users = {(o.get("user") or {}).get("login") for o in rows}
+    latest = max((o.get("observed_on") or "") for o in rows)
+    randy = PROMISE_RANDY in users
+    who = ("you" if randy and len(users) == 1 else
+           f"{len(users)} people incl. you" if randy else
+           f"{len(users)} {'person' if len(users) == 1 else 'people'}")
+    note = f"{len(rows)} park sighting{'s' if len(rows) > 1 else ''} by {who}, latest {latest[:7]}"
+    cutoff = (datetime.date.today() - datetime.timedelta(days=730)).isoformat()
+    genus = " " not in (sci or "").strip()
+    kin = []
+    if genus and sci:
+        g = sci.strip().lower() + " "
+        for path in (PLANT_SIGNAGE, WILDLIFE_SIGNAGE, RESEARCH_JSON):
+            for e in _get_species_list(_load(path)):
+                n = (e.get("botanical_name") or e.get("scientific_name") or "").lower()
+                if n.startswith(g):
+                    kin.append(e.get("common_name") or n)
+    if kin:
+        note += "; we already have " + ", ".join(kin[:3]) + (" and more" if len(kin) > 3 else "") \
+                + " in this group, check for collisions"
+    if latest >= cutoff and (len(users) >= 2 or randy):
+        return (2 if kin else 1), note
+    if latest >= cutoff:
+        return 2, note
+    return (2 if len(users) >= 2 else 3), note + " (nothing in two years)"
+
+
+def handle_api_intake_set_promise(params):
+    """POST /api/intake/set-promise — Randy moves a research record to 1, 2 or 3.
+
+    Body: {"id": "PSBP-00123", "promise": 2}. Re-reads research.json here
+    (Randy may be editing elsewhere) and changes only this record.
+    """
+    body = params.get("_body", {})
+    species_id = body.get("id", "")
+    promise = body.get("promise")
+    if promise not in (1, 2, 3):
+        return {"ok": False, "error": f"Invalid promise: {promise}"}
+    research = _load(RESEARCH_JSON)
+    sp = next((x for x in _get_species_list(research) if x.get("id") == species_id), None)
+    if not sp:
+        return {"ok": False, "error": f"{species_id} not found in research.json"}
+    old = sp.get("promise")
+    if old == promise:
+        return {"ok": True, "id": species_id, "promise": promise, "note": "No change"}
+    sp["promise"] = promise
+    sp["promise_note"] = f"set by Randy {datetime.date.today().isoformat()}" + \
+        (f" (was {old}: {sp.get('promise_note')})" if old and sp.get("promise_note") else "")
+    write_json_atomic(RESEARCH_JSON, research)
+    return {"ok": True, "id": species_id, "promise": promise, "promise_note": sp["promise_note"]}
 
 
 def handle_api_intake_discover(params):
@@ -4227,6 +4307,11 @@ main {
     min-width: 2px;
 }
 .funnel-bar-fill.research { background: var(--status-research); }
+.funnel-bar-fill.segmented { display: flex; background: none; overflow: hidden; }
+.funnel-seg {
+    display: flex; align-items: center; justify-content: center; min-width: 0;
+    font-size: 12px; font-weight: 700; color: var(--green-deep); white-space: nowrap;
+}
 .funnel-bar-fill.spotted  { background: var(--status-spotted); }
 .funnel-bar-fill.parked   { background: var(--status-parked); }
 .funnel-bar-fill.html     { background: var(--status-html); }
@@ -4518,6 +4603,25 @@ main {
     flex-shrink: 0;
 }
 .pi-hero-dot.none { background: transparent; border: 1px dashed var(--gray-200); }
+/* Scan cards tinted by promise (Randy, 2026-10-30) */
+.discover-card.ready.promise-1 { background: #e6f3e6; border-left-color: var(--green-mid); }
+.discover-card.ready.promise-2 { background: #fbf0d2; border-left-color: var(--gold); }
+.discover-card.ready.promise-3 { background: #fbe4e0; border-left-color: #d9776b; }
+.promise-pick { display: flex; gap: 2px; margin-right: 8px; flex-shrink: 0; }
+.promise-pick button {
+    width: 30px; height: 30px; border: 1px solid var(--gray-300, #ccc); background: white;
+    border-radius: 6px; font-weight: 700; font-size: 14px; color: var(--gray-600); cursor: pointer;
+}
+.promise-pick button.on { background: var(--green-deep); color: white; border-color: var(--green-deep); }
+/* Work it panel opened inside the scan list, full width under its card */
+#intake-detail.inline { grid-column: 1 / -1; }
+#intake-detail.inline:empty { display: none; }
+.idc-grid { display: grid; grid-template-columns: 1fr 260px; gap: 20px; align-items: start; }
+.idc-side .intake-actions, .idc-side .intake-inat-row { display: flex; flex-direction: column; gap: 8px; margin: 0 0 8px; }
+.idc-side .intake-actions > *, .idc-side .intake-inat-row > * { width: 100%; text-align: center; box-sizing: border-box; }
+@media (max-width: 800px) {
+    .idc-grid { grid-template-columns: 1fr; }
+}
 .picker-group {
     padding: 10px 12px 4px;
     font-size: 15px;
@@ -6011,50 +6115,24 @@ def render_overview():
 
         for (const [status, label, count] of rows) {
             const pct = Math.round((count / pipeline) * 100);
+            // Research is shaded by promise (Randy, 2026-10-30): green 1 likely, gold 2
+            // maybe, light red 3 unlikely, grey unrated; each part carries its count.
+            const bp = (status === 'research' && kingdomData.research && kingdomData.research.by_promise) || null;
+            const PL = {'1': '1 · Likely', '2': '2 · Maybe', '3': '3 · Unlikely', 'none': 'Not rated'};
+            const segs = bp ? [['1', '#cfe8cf'], ['2', '#f5dfa0'], ['3', '#f3c4bd'], ['none', '#d5d9de']]
+                .filter(([k]) => bp[k] > 0)
+                .map(([k, c]) => `<div class="funnel-seg" style="flex:${bp[k]};background:${c}" title="${PL[k]}: ${bp[k]}">${bp[k]}</div>`)
+                .join('') : '';
             html += `
                 <div class="funnel-row">
                     <span class="funnel-label">${label}</span>
                     <div class="funnel-bar-track">
-                        <div class="funnel-bar-fill ${status}"
-                             style="width: ${Math.max(pct, 1)}%"></div>
+                        <div class="funnel-bar-fill ${status}${segs ? ' segmented' : ''}"
+                             style="width: ${Math.max(pct, 1)}%">${segs}</div>
                     </div>
                     <span class="funnel-count">${count}</span>
                 </div>
             `;
-        }
-
-        // Research pile broken down by source — the candidates feeding the funnel.
-        const src = (kingdomData.research && kingdomData.research.by_source) || {};
-        const SRC = [
-            ['inat_observed',       'iNat sighting',  '#c5922a'],
-            ['park_inventory+inat', 'Confirmed',      '#2d6a35'],
-            ['park_inventory',      'Inventory only', '#9aa0a6'],
-            ['prior_research',      'Prior research', '#5c6bc0'],
-        ];
-        const known = SRC.reduce((a, s) => a + (src[s[0]] || 0), 0);
-        const other = research - known;
-
-        if (research > 0) {
-            html += '<div class="rb-title">Research pile by source</div>';
-            html += '<div class="rb-bar">';
-            for (const [key, , color] of SRC) {
-                const n = src[key] || 0;
-                if (n > 0) html += `<div class="rb-seg" title="${n}" `
-                    + `style="width:${(n / research * 100).toFixed(1)}%;background:${color};"></div>`;
-            }
-            if (other > 0) html += `<div class="rb-seg" `
-                + `style="width:${(other / research * 100).toFixed(1)}%;background:#ccc;"></div>`;
-            html += '</div>';
-
-            html += '<div class="rb-legend">';
-            for (const [key, label, color] of SRC) {
-                const n = src[key] || 0;
-                if (n > 0) html += `<span class="rb-li">`
-                    + `<i class="rb-dot" style="background:${color};"></i>${label} <b>${n}</b></span>`;
-            }
-            if (other > 0) html += `<span class="rb-li">`
-                + `<i class="rb-dot" style="background:#ccc;"></i>Other <b>${other}</b></span>`;
-            html += '</div>';
         }
 
         el.innerHTML = html;
@@ -6549,10 +6627,11 @@ def render_intake():
             chips.push(`<span class="intake-chip">${{esc(sp.animal_group)}}</span>`);
 
         // iNat row (link + check button)
-        let inatHtml = '';
+        let inatHtml = '', inatSummary = '';
         if (sp.inat_taxon_id) {{
             const obsUrl = `https://www.inaturalist.org/observations?{INAT_SCOPE}&taxon_id=${{sp.inat_taxon_id}}`;
             const taxUrl = `https://www.inaturalist.org/taxa/${{sp.inat_taxon_id}}`;
+            inatSummary = `<div id="inat-summary" data-taxon="${{sp.inat_taxon_id}}"><span style="font-size:13px;color:var(--gray-400);">Checking observations…</span></div>`;
             inatHtml = `
                 <div class="intake-inat-row">
                     <a href="${{obsUrl}}" target="_blank" class="inat-link-btn">
@@ -6560,8 +6639,7 @@ def render_intake():
                     <a href="${{taxUrl}}" target="_blank" class="inat-link-btn"
                        style="border-color:var(--gray-200); background:white; color:var(--gray-600);">
                         📖 iNat Taxon Page</a>
-                </div>
-                <div id="inat-summary" data-taxon="${{sp.inat_taxon_id}}"><span style="font-size:13px;color:var(--gray-400);">Checking observations…</span></div>`;
+                </div>`;
         }} else {{
             inatHtml = `<div class="intake-inat-row">
                 <span style="font-size:12px; color:var(--gray-400);">No iNat taxon ID — cannot link to observations</span>
@@ -6623,14 +6701,21 @@ def render_intake():
                     <span class="status-pill ${{sp.status === 'research' ? 'research' : 'spotted'}}">${{esc(isDead ? setAsideLabel(sp) : sp.status)}}</span>
                 </div>
 
-                ${{deadBanner}}
-                ${{sourceBanner}}
-                ${{taxHtml}}
-                <div class="intake-chips">${{chips.join('')}}</div>
-                ${{tagsHtml}}
-                ${{inatHtml}}
-                ${{actionsHtml}}
-                ${{notesHtml}}
+                <div class="idc-grid">
+                    <div class="idc-main">
+                        ${{deadBanner}}
+                        ${{sourceBanner}}
+                        ${{taxHtml}}
+                        <div class="intake-chips">${{chips.join('')}}</div>
+                        ${{tagsHtml}}
+                        ${{inatSummary}}
+                        ${{notesHtml}}
+                    </div>
+                    <div class="idc-side">
+                        ${{actionsHtml}}
+                        ${{inatHtml}}
+                    </div>
+                </div>
             </div>
         `;
         if (sp.inat_taxon_id) intakeCheckInat(sp.inat_taxon_id);
@@ -6802,7 +6887,19 @@ def render_intake():
         }}
         btn.disabled = false; btn.textContent = '🌐 Re-scan iNaturalist';
     }}
+    let discoverLast = null;
+    // The Work it panel lives inside a scan card while open; put it back in its home
+    // before the scan results are redrawn, or the redraw would delete it.
+    function intakeDetailHome() {{
+        const det = document.getElementById('intake-detail');
+        const home = document.querySelector('.photos-layout');
+        if (det && home && det.parentElement !== home) home.appendChild(det);
+        if (det) det.innerHTML = '';
+        intakeSelected = null;
+    }}
     function discoverRender(d) {{
+        discoverLast = d;
+        intakeDetailHome();
         discoverNew = d.new || [];
         const ready = d.ready || [];
         // Feed the research pool's sort: count and latest date per tracked record.
@@ -6850,10 +6947,12 @@ def render_intake():
                     + (it.latest ? ` · last seen ${{esc(it.latest)}}` : '')
                     + (it.via_parent ? ` · logged as a ${{esc(it.rank || 'subspecies')}} of this species` : '')
                     + (dead ? ` · <span style="color:${{(it.new_since || 0) > 0 || it.status === 'died' || it.status === 'stolen' ? '#c62828' : 'var(--gray-600)'}};font-weight:600;">${{why}}</span>` : '');
+                const pick = dead ? '' : `<div class="promise-pick" title="How likely to become a page">${{
+                    [1, 2, 3].map(n => `<button class="${{it.promise === n ? 'on' : ''}}" onclick="discoverSetPromise('${{it.psbp_id}}', ${{n}}, this)">${{n}}</button>`).join('')}}</div>`;
                 const actions = dead
                     ? `<button class="discover-revive-btn" onclick="discoverRevive('${{it.psbp_id}}', this)">↩ Revive</button>`
-                    : `<button class="discover-open-btn" onclick="discoverOpenInPicker('${{it.psbp_id}}','${{it.kingdom}}','${{it.status}}')">→ Work it</button>`;
-                return `<div class="discover-card ready">
+                    : `${{pick}}<button class="discover-open-btn" onclick="discoverOpenInPicker('${{it.psbp_id}}','${{it.kingdom}}','${{it.status}}', this)">→ Work it</button>`;
+                return `<div class="discover-card ready ${{!dead && it.promise ? 'promise-' + it.promise : ''}}">
                     ${{photo}}
                     <div class="dc-body">
                         <div class="dc-name">${{esc(cn)}} ${{discoverStatusPill(it.status)}}</div>
@@ -6868,7 +6967,9 @@ def render_intake():
             html += '<div class="discover-section-label">⭐ In your research pile and now observed — ready to advance</div>';
             // Three groups by promise; the server already sorted them, count then date.
             [1, 2, 3, null].forEach(g => {{
-                const grp = working.filter(it => (it.promise || null) === g);
+                const grp = working.filter(it => (it.promise || null) === g)
+                    .sort((a, b) => (b.obs_count || 0) - (a.obs_count || 0)
+                        || ((b.latest || '') > (a.latest || '') ? 1 : (b.latest || '') < (a.latest || '') ? -1 : 0));
                 if (!grp.length) return;
                 html += `<div class="picker-group">${{g ? g + ' · ' + PROMISE_LABEL[g] : 'Not rated'}} (${{grp.length}})</div>`;
                 html += '<div class="discover-new-grid">' + grp.map(readyCard).join('') + '</div>';
@@ -6921,16 +7022,41 @@ def render_intake():
         }}
         results.innerHTML = html;
     }}
-    function discoverOpenInPicker(id, kingdom, status) {{
+    function discoverOpenInPicker(id, kingdom, status, btn) {{
+        // Randy, 2026-10-30: open the panel right under its card, full width, no jump.
+        // A second click on the same card's Work it closes it.
+        const card = btn && btn.closest('.discover-card');
+        const det = document.getElementById('intake-detail');
+        if (card && det && intakeSelected === id && card.nextElementSibling === det) {{
+            intakeDetailHome();
+            return;
+        }}
         const go = () => {{
+            if (card && det) {{ card.after(det); det.classList.add('inline'); }}
             intakeSelect(id);
-            const el = document.getElementById('intake-detail');
-            if (el) el.scrollIntoView({{behavior: 'smooth', block: 'start'}});
         }};
         let delay = 0;
         if (kingdom && kingdom !== intakeKingdom) {{ intakeSwitchKingdom(kingdom); delay = 450; }}
         if (status && status !== 'research') {{ intakeSetStatus('all'); }}
         setTimeout(go, delay);
+    }}
+    async function discoverSetPromise(id, n, btn) {{
+        btn.disabled = true;
+        try {{
+            const resp = await fetch('/api/intake/set-promise', {{
+                method: 'POST', headers: {{'Content-Type': 'application/json'}},
+                body: JSON.stringify({{id: id, promise: n}})
+            }});
+            const data = await resp.json();
+            if (!data.ok) {{ intakeToast(data.error || 'Could not save', true); btn.disabled = false; return; }}
+            (discoverLast.ready || []).forEach(it => {{
+                if (it.psbp_id === id) {{ it.promise = n; it.promise_note = data.promise_note || it.promise_note; }}
+            }});
+            discoverRender(discoverLast);
+            intakeToast(id + ' moved to ' + n + ' · ' + PROMISE_LABEL[n]);
+        }} catch (err) {{
+            intakeToast('Network error', true); btn.disabled = false;
+        }}
     }}
     async function discoverRevive(id, btn) {{
         btn.disabled = true; btn.textContent = 'Reviving…';
@@ -13440,6 +13566,7 @@ API_ROUTES = {
     "/api/intake/check":     handle_api_intake_check,
     "/api/intake/promote":   handle_api_intake_promote,
     "/api/intake/set-status": handle_api_intake_set_status,
+    "/api/intake/set-promise": handle_api_intake_set_promise,
     "/api/intake/inat-check": handle_api_intake_inat_check,
     "/api/intake/discover":   handle_api_intake_discover,
     "/api/intake/add-research": handle_api_intake_add_research,
