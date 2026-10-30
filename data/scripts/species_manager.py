@@ -2132,6 +2132,8 @@ def _known_taxa_index():
                 "scientific_name": e.get("botanical_name") or e.get("scientific_name") or "",
                 "set_aside_on":    e.get("set_aside_on"),
                 "set_aside_obs_count": e.get("set_aside_obs_count"),
+                "promise":         e.get("promise"),
+                "promise_note":    e.get("promise_note", ""),
             }
             if tid:
                 try:
@@ -2278,6 +2280,8 @@ def discover_reconcile():
             # usable) that is being observed in the park is a revive flag —
             # and the count it was set aside at says whether anything is NEW.
             item["revivable"] = match["status"] in SET_ASIDE
+            item["promise"] = match.get("promise")
+            item["promise_note"] = match.get("promise_note", "")
             if item["revivable"]:
                 item["set_aside_label"] = SET_ASIDE[match["status"]]
                 item["set_aside_on"] = match.get("set_aside_on")
@@ -2301,9 +2305,11 @@ def discover_reconcile():
     # want them cluttering the top."
     aside_order = list(SET_ASIDE)
     ready_items.sort(key=lambda x: x.get("latest") or "", reverse=True)
+    # Randy, 2026-10-30: the ones he is working on in three groups by `promise`
+    # (1 likely, 2 maybe, 3 unlikely, unrated last), each by count, then most recent.
     ready_items.sort(key=lambda x: (
         1 if x.get("revivable") else 0,
-        aside_order.index(x["status"]) if x.get("revivable") else 0,
+        aside_order.index(x["status"]) if x.get("revivable") else (x.get("promise") or 9),
         -(x.get("new_since") or 0),
         -(x.get("obs_count") or 0)))
 
@@ -6153,8 +6159,11 @@ def render_intake():
         <div class="discover-results" id="discover-results"></div>
     </div>
 
+    <!-- Randy, 2026-10-30: the Research Pool list below the scan was a confusing second
+         copy of what the scan shows. Hidden (not removed): the filters and the list still
+         drive the panel that opens from a scan card's "Work it". -->
     <!-- Top controls: kingdom toggle + status filter + count -->
-    <div class="photos-controls">
+    <div class="photos-controls" style="display:none;">
         <div class="control-group">
             <span class="control-group-label">Kingdom</span>
             <div class="mode-toggle" id="intake-kingdom-toggle">
@@ -6185,10 +6194,10 @@ def render_intake():
         </div>
     </div>
 
-    <!-- Two-column layout: picker + detail -->
-    <div class="photos-layout">
+    <!-- Two-column layout: picker + detail (picker hidden, see above) -->
+    <div class="photos-layout" style="grid-template-columns: 1fr;">
         <!-- Left: species picker from research.json -->
-        <div class="species-picker">
+        <div class="species-picker" style="display:none;">
             <div class="picker-header">
                 <h3>📥 Research Pool</h3>
                 <input type="text" class="picker-search" id="intake-search"
@@ -6208,7 +6217,7 @@ def render_intake():
 
         <!-- Right: detail card -->
         <div class="photos-main" id="intake-detail">
-            <div class="photos-select-prompt">
+            <div class="photos-select-prompt" style="display:none;">
                 <div class="psp-icon">📥</div>
                 <p>Select a species to preview</p>
                 <p style="font-size:12px; color:var(--gray-400); margin-top:4px;">
@@ -6318,9 +6327,8 @@ def render_intake():
     async function intakeLoad() {{
         const picker = document.getElementById('intake-picker-list');
         picker.innerHTML = '<div class="loading">Loading…</div>';
-        document.getElementById('intake-detail').innerHTML =
-            '<div class="photos-select-prompt"><div class="psp-icon">📥</div>'
-            + '<p>Select a species to preview</p></div>';
+        // Empty until a scan card's "Work it" opens a species (the pool list is hidden).
+        document.getElementById('intake-detail').innerHTML = '';
         try {{
             const resp = await fetch(`/api/intake/list?kingdom=${{intakeKingdom}}`);
             const data = await resp.json();
@@ -6836,7 +6844,9 @@ def render_intake():
                     else
                         why = `set aside as ${{lbl}}${{when}} — now ${{it.obs_count}} inside the park`;
                 }}
-                const meta = `${{esc(it.psbp_id)}} · ${{it.obs_count}} obs`
+                const meta = `${{esc(it.psbp_id)}}`
+                    + (it.promise && !dead ? ` · ${{it.promise}} ${{PROMISE_LABEL[it.promise]}}` : '')
+                    + ` · ${{it.obs_count}} obs`
                     + (it.latest ? ` · last seen ${{esc(it.latest)}}` : '')
                     + (it.via_parent ? ` · logged as a ${{esc(it.rank || 'subspecies')}} of this species` : '')
                     + (dead ? ` · <span style="color:${{(it.new_since || 0) > 0 || it.status === 'died' || it.status === 'stolen' ? '#c62828' : 'var(--gray-600)'}};font-weight:600;">${{why}}</span>` : '');
@@ -6849,13 +6859,20 @@ def render_intake():
                         <div class="dc-name">${{esc(cn)}} ${{discoverStatusPill(it.status)}}</div>
                         <div class="dc-sci">${{esc(it.scientific_name)}}</div>
                         <div class="dc-meta">${{meta}}</div>
+                        ${{it.promise_note && !dead ? `<div class="dc-meta">${{esc(it.promise_note)}}</div>` : ''}}
                     </div>
                     ${{actions}}
                 </div>`;
         }};
         if (working.length) {{
             html += '<div class="discover-section-label">⭐ In your research pile and now observed — ready to advance</div>';
-            html += '<div class="discover-new-grid">' + working.map(readyCard).join('') + '</div>';
+            // Three groups by promise; the server already sorted them, count then date.
+            [1, 2, 3, null].forEach(g => {{
+                const grp = working.filter(it => (it.promise || null) === g);
+                if (!grp.length) return;
+                html += `<div class="picker-group">${{g ? g + ' · ' + PROMISE_LABEL[g] : 'Not rated'}} (${{grp.length}})</div>`;
+                html += '<div class="discover-new-grid">' + grp.map(readyCard).join('') + '</div>';
+            }});
         }}
         if (asideReady.length) {{
             const withNew = asideReady.filter(it => (it.new_since || 0) > 0 || it.status === 'died' || it.status === 'stolen').length;
