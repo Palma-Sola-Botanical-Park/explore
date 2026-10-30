@@ -257,7 +257,7 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 |---|---|---|
 | `plant_signage.json` | `{meta, species:[…]}` | ~300 records, `status` spotted, parked or html |
 | `wildlife_signage.json` | `{meta, species:[…]}` | ~115 records; `animal_group` drives theme |
-| `research.json` | `{meta, species:[…]}` | ~550 candidates, status research |
+| `research.json` | `{meta, species:[…]}` | ~550 candidates, status research; `promise` 1 likely / 2 maybe / 3 unlikely, with a one-line `promise_note` (a guess from park sightings, 2026-10-30; Randy overrules freely) |
 | `photo_credits.json` | `{meta, photos:[…]}` | ~1,640 rows keyed by `psbp_id` + `photo_id` |
 | `photographer_names.json` | `{login: {display_name, credit_as?, note}}` | keyed by lowercase iNat login |
 | `placements.json` | `{meta, placements:[…]}` | where each specimen stands; you add rows only as rule 5 says |

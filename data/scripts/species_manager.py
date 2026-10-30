@@ -557,6 +557,8 @@ def get_research_list(kingdom):
             "inat_obs_count": sp.get("inat_obs_count"),
             "set_aside_on":   sp.get("set_aside_on"),
             "set_aside_obs_count": sp.get("set_aside_obs_count"),
+            "promise":        sp.get("promise"),
+            "promise_note":   sp.get("promise_note", ""),
         })
     return result
 
@@ -4510,6 +4512,13 @@ main {
     flex-shrink: 0;
 }
 .pi-hero-dot.none { background: transparent; border: 1px dashed var(--gray-200); }
+.picker-group {
+    padding: 10px 12px 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--green-deep);
+    border-bottom: 1px solid var(--gray-200);
+}
 .picker-empty {
     padding: 20px 16px;
     text-align: center;
@@ -6162,6 +6171,15 @@ def render_intake():
             </div>
         </div>
         <div class="control-group">
+            <span class="control-group-label">Promise</span>
+            <div class="mode-toggle" id="intake-promise-toggle">
+                <button class="active" onclick="intakeSetPromise('all')">Any</button>
+                <button onclick="intakeSetPromise(1)">1 Likely</button>
+                <button onclick="intakeSetPromise(2)">2 Maybe</button>
+                <button onclick="intakeSetPromise(3)">3 Unlikely</button>
+            </div>
+        </div>
+        <div class="control-group">
             <span class="control-group-label">Research Pool</span>
             <span id="intake-count" style="font-size:13px; color:var(--gray-600); font-weight:500;">—</span>
         </div>
@@ -6204,6 +6222,10 @@ def render_intake():
     <script>
     let intakeKingdom = 'plants';
     let intakeStatusFilter = 'research';
+    // research.json `promise`: 1 likely, 2 maybe, 3 unlikely to become a page, with a
+    // one-line `promise_note` saying why (first guess 2026-10-30 from park sightings).
+    let intakePromiseFilter = 'all';
+    const PROMISE_LABEL = {{1: 'Likely', 2: 'Maybe', 3: 'Unlikely'}};
     // Mirrors SET_ASIDE in Python — the reasons a research record can be set aside.
     const SET_ASIDE = {json.dumps(SET_ASIDE)};
     const isSetAside = s => !!(s && SET_ASIDE[s.status]);
@@ -6266,6 +6288,14 @@ def render_intake():
         intakeLoad();
     }}
 
+    function intakeSetPromise(f) {{
+        intakePromiseFilter = f;
+        const btns = document.querySelectorAll('#intake-promise-toggle button');
+        btns.forEach(b => b.classList.remove('active'));
+        btns[f === 'all' ? 0 : f].classList.add('active');
+        intakeRenderPicker();
+    }}
+
     function intakeSetStatus(f) {{
         intakeStatusFilter = f;
         const btns = document.querySelectorAll('#intake-status-toggle button');
@@ -6312,6 +6342,10 @@ def render_intake():
             filtered = filtered.filter(s => isSetAside(s));
         }}
 
+        if (intakePromiseFilter !== 'all') {{
+            filtered = filtered.filter(s => s.promise === intakePromiseFilter);
+        }}
+
         // Search
         if (q) {{
             filtered = filtered.filter(s =>
@@ -6331,6 +6365,12 @@ def render_intake():
         filtered.sort((a, b) => {{
             const aa = isSetAside(a) ? 1 : 0, ab = isSetAside(b) ? 1 : 0;
             if (aa !== ab) return aa - ab;
+            // Randy, 2026-10-30: research records in three groups by promise (1, 2, 3,
+            // unrated last), each sorted by observations, then most recent.
+            if (!aa) {{
+                const pa = a.promise || 9, pb = b.promise || 9;
+                if (pa !== pb) return pa - pb;
+            }}
             const sa = statOf(a), sb = statOf(b);
             if (aa) {{
                 const ta = asideOrder.indexOf(a.status), tb = asideOrder.indexOf(b.status);
@@ -6366,7 +6406,14 @@ def render_intake():
             return;
         }}
 
+        let lastGroup = null;
         list.innerHTML = filtered.map(s => {{
+            // A heading wherever the promise group changes (set-asides get one too).
+            const group = isSetAside(s) ? 'aside' : (s.promise || 'none');
+            const heading = group === lastGroup ? '' : `<div class="picker-group">${{
+                group === 'aside' ? 'Set aside' : group === 'none' ? 'Not rated'
+                : group + ' · ' + PROMISE_LABEL[group]}}</div>`;
+            lastGroup = group;
             const active = s.id === intakeSelected ? 'active' : '';
             const name = s.common_name || s.scientific_name || s.id;
             const sci = s.scientific_name || '';
@@ -6385,13 +6432,15 @@ def render_intake():
             const seen = st.latest ? 'last seen ' + new Date(st.latest + 'T12:00:00')
                 .toLocaleDateString([], {{month: 'short', day: 'numeric', year: 'numeric'}}) : '';
             const aside = isDead ? setAsideLabel(s) : '';
-            const meta = [s.id, obs, seen, srcLabel, aside].filter(Boolean).join(' · ');
+            const prom = s.promise ? `${{s.promise}} ${{PROMISE_LABEL[s.promise]}}` : '';
+            const meta = [s.id, prom, obs, seen, srcLabel, aside].filter(Boolean).join(' · ');
+            const why = s.promise_note ? `<div class="pi-meta">${{esc(s.promise_note)}}</div>` : '';
             const content = `<span class="pi-content ${{s.content_filled > 0 ? 'has' : 'none'}}" title="${{s.content_filled}} of ${{s.content_total}} content fields filled">${{s.content_filled}}/${{s.content_total}}</span>`;
             const actions = isDead
                 ? `<button class="pi-btn pi-revive" onclick="event.stopPropagation(); intakeSetSpeciesStatus('${{s.id}}','research')">↩ Revive</button>`
                 : `<button class="pi-btn pi-work" onclick="event.stopPropagation(); intakeWorkIt('${{s.id}}')">Work it</button>`
                   + setAsideSelect(s.id, 'pi-btn pi-dead');
-            return `<div class="picker-item card ${{active}} ${{srcCls}} ${{deadCls}}" onclick="intakeSelect('${{s.id}}')">
+            return heading + `<div class="picker-item card ${{active}} ${{srcCls}} ${{deadCls}}" onclick="intakeSelect('${{s.id}}')">
                 <div class="pi-top">
                     <div class="pi-name">
                         <span class="pi-common">${{esc(name)}}</span>
@@ -6400,6 +6449,7 @@ def render_intake():
                     ${{content}}
                 </div>
                 <div class="pi-meta">${{esc(meta)}}</div>
+                ${{why}}
                 <div class="pi-actions">${{actions}}</div>
             </div>`;
         }}).join('');
@@ -6925,6 +6975,9 @@ def render_intake():
     }}
 
     intakeLoad();
+    // Randy, 2026-10-30: scan on every visit, he pressed the button each time anyway.
+    // The server keeps the sweep for ten minutes, so a quick return is instant.
+    discoverScan();
     </script>
     """
 
