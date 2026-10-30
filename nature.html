@@ -6,7 +6,7 @@
 <title>Nature at Palma Sola · Flora & Fauna</title>
 <link rel="icon" type="image/png" href="images/favicon.png">
 <link rel="apple-touch-icon" href="images/favicon.png">
-<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/site.css?v=20261030">
 <link rel="stylesheet" href="css/photo-credits.css">
 <style>
 /* ── Nature-page specific ── */
@@ -666,7 +666,7 @@
 
 <div id="footer-placeholder"></div>
 <script src="js/photo-credits.js"></script>
-<script src="js/site.js"></script>
+<script src="js/site.js?v=20261030"></script>
 <script>
 /* Banner texture behind the title: a random current hero on every load. */
 PSBPPhotos.pickBanner().then(function (b) {
@@ -1248,7 +1248,7 @@ loadINat();
   document.getElementById('dwClose').addEventListener('click', close);
   scrim.addEventListener('click', close);
 
-  // Card click opens the panel. Modified clicks fall through to the real page.
+  // Card click goes to the full page; the corner "Quick view" link opens the panel.
   /* Quick view is a DESKTOP mechanism (High #4, decided 08-18, implemented
      08-25, threshold lowered to 1000 on 08-26). Below it the grid does not stay
      beside the drawer, and on a phone the drawer is a 90vh bottom
@@ -1282,16 +1282,12 @@ loadINat();
   document.addEventListener('click', function (e) {
     var card = e.target.closest && e.target.closest('a.plant-card');
     if (!card) return;
-    /* "Full page" on a card skips Quick View. It is a <span>, not an <a>,
-       because an anchor inside the card's anchor is invalid HTML. Shown by CSS
-       at the same 1000px threshold as drawerAllowed(); on a phone the whole
-       card already goes to the page. */
-    if (e.target.closest('[data-fullpage]')) {
-      e.preventDefault();
-      if (e.metaKey || e.ctrlKey) window.open(card.href, '_blank');
-      else location.href = card.href;
-      return;
-    }
+    /* Randy, 2026-10-30: the card goes to the full page (visitors were confused by
+       the panel opening first). Only the small "Quick view" link in the card's
+       corner opens the panel. It is a <span>, not an <a>, because an anchor inside
+       the card's anchor is invalid HTML; CSS shows it at the same 1000px threshold
+       as drawerAllowed(). Any other click falls through to the card's real href. */
+    if (!e.target.closest('[data-quickview]')) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     if (!drawerAllowed()) return;              // hand the click back to the browser
 

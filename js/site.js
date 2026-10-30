@@ -1925,7 +1925,7 @@ function plantCard(p) {
       <div class="sci-name">${p.sci}</div>
     </div>
     ${_speciesCreditPlate(p)}
-    <span class="card-fullpage" data-fullpage>Full page &rarr;</span>
+    <span class="card-quickview" data-quickview>Quick view</span>
   </a>`;
 }
 
@@ -2148,7 +2148,7 @@ function wildCard(w) {
       <div class="sci-name">${w.sci}</div>
     </div>
     ${_speciesCreditPlate(w)}
-    <span class="card-fullpage" data-fullpage>Full page &rarr;</span>
+    <span class="card-quickview" data-quickview>Quick view</span>
   </a>`;
 }
 
