@@ -154,8 +154,13 @@ cover-to-cover reading. Explicit task instructions (including read-only) still g
 4. **Re-read a source JSON inside the same script that writes it.** Randy edits the same files
    through Species Manager while you work. A copy parsed earlier in the session will clobber his
    work silently. After writing, `git diff --stat` the file and confirm the change count.
-5. **Never write `data/sources/placements.json`.** Not a row, not a field. He resolves species at
-   the tree, in iNaturalist. Reading it is fine.
+5. **`data/sources/placements.json`: add a pin only from Randy's own observation, on his word.**
+   He resolves species at the tree, in iNaturalist. When he says "pin it from my observation",
+   find that observation and copy its coordinates into a new row (`coord_source: inat_observation`,
+   the note names the observation and its accuracy), re-reading the file in the same script
+   (rule 4). Never pin from a photo, a map, walk order or a guess; never move, edit or delete an
+   existing row; never from an obscured observation (its public point is off; he places those
+   himself). Reading it is fine. (Randy, 2026-10-29.)
 6. **Sheet feeds are generated.** `data/published/*.json` comes from Bev's Google Sheet via the
    GitHub Action every ten minutes. Fix content in the Sheet, never in the JSON. The exceptions are
    the hand-maintained files listed in §4.
@@ -255,7 +260,7 @@ Run scripts from the repo root: `python3 data/scripts/<name>.py`. They self-loca
 | `research.json` | `{meta, species:[…]}` | ~550 candidates, status research |
 | `photo_credits.json` | `{meta, photos:[…]}` | ~1,640 rows keyed by `psbp_id` + `photo_id` |
 | `photographer_names.json` | `{login: {display_name, credit_as?, note}}` | keyed by lowercase iNat login |
-| `placements.json` | `{meta, placements:[…]}` | where each specimen stands; READ ONLY for you |
+| `placements.json` | `{meta, placements:[…]}` | where each specimen stands; you add rows only as rule 5 says |
 | `todo_snoozes.json` | `{meta, snoozes:[{id, until}]}` | plants Randy parked from the To do stale/picture lists until a date; written by Species Manager's To do tab, read by `maintenance_todo.py` |
 | `landmarks.json`, `park_geometry.json` | | the park polygon and named places |
 | `publish_state.json` | machine-owned | fingerprints for staleness; safe to delete |
