@@ -4308,6 +4308,10 @@ main {
 }
 .funnel-bar-fill.research { background: var(--status-research); }
 .funnel-bar-fill.segmented { display: flex; background: none; overflow: hidden; }
+.funnel-bar-track { position: relative; }
+.funnel-seg-out { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; gap: 4px;
+    margin-left: 6px; font-size: 12px; }
+.funnel-seg-out b { padding: 1px 6px; border-radius: 4px; color: var(--green-deep); }
 .funnel-seg {
     display: flex; align-items: center; justify-content: center; min-width: 0;
     font-size: 12px; font-weight: 700; color: var(--green-deep); white-space: nowrap;
@@ -6085,8 +6089,14 @@ def render_overview():
         `;
 
         // Funnels
-        renderFunnel('plants-funnel-body', data.plants);
-        renderFunnel('wildlife-funnel-body', data.wildlife);
+        // One scale for every bar on both cards (Randy, 2026-10-30): the largest count
+        // anywhere fills 80% of its track and every other bar is measured against it,
+        // so wildlife never looks bigger than plants.
+        const barCounts = k => [(k.research && k.research.total) || 0, k.by_status.spotted || 0,
+                                k.by_status.parked || 0, k.by_status.html || 0];
+        const scaleMax = Math.max(1, ...barCounts(data.plants), ...barCounts(data.wildlife));
+        renderFunnel('plants-funnel-body', data.plants, scaleMax);
+        renderFunnel('wildlife-funnel-body', data.wildlife, scaleMax);
 
         // The queues
         renderAttention('plants-attention', data.plants.in_progress);
@@ -6095,7 +6105,7 @@ def render_overview():
         // unneeded here at overview"); the Photos tab is where handles get resolved.
     }
 
-    function renderFunnel(containerId, kingdomData) {
+    function renderFunnel(containerId, kingdomData, scaleMax) {
         const el = document.getElementById(containerId);
         const research  = (kingdomData.research && kingdomData.research.total) || 0;
         const spotted   = kingdomData.by_status.spotted || 0;
@@ -6114,7 +6124,7 @@ def render_overview():
         html += `<div class="funnel-total-label">in pipeline (research → published)</div>`;
 
         for (const [status, label, count] of rows) {
-            const pct = Math.round((count / pipeline) * 100);
+            const pct = Math.round((count / (scaleMax || pipeline)) * 80);
             // Research is shaded by promise (Randy, 2026-10-30): green 1 likely, gold 2
             // maybe, light red 3 unlikely, grey unrated; each part carries its count.
             const bp = (status === 'research' && kingdomData.research && kingdomData.research.by_promise) || null;
@@ -6136,6 +6146,18 @@ def render_overview():
         }
 
         el.innerHTML = html;
+        // A narrow research bar (wildlife, on the shared scale) cannot hold its three
+        // counts. Then the counts sit just right of the bar, in the same colours.
+        el.querySelectorAll('.funnel-bar-fill.segmented').forEach(fill => {
+            const segs = [...fill.querySelectorAll('.funnel-seg')];
+            if (!segs.some(x => x.scrollWidth > x.clientWidth)) return;
+            const outside = document.createElement('span');
+            outside.className = 'funnel-seg-out';
+            outside.style.left = fill.style.width;
+            outside.innerHTML = segs.map(x => `<b style="background:${x.style.background}">${x.textContent}</b>`).join('');
+            segs.forEach(x => x.textContent = '');
+            fill.after(outside);
+        });
     }
 
     function renderAttention(containerId, items) {

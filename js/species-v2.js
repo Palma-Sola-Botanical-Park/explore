@@ -137,7 +137,20 @@ document.addEventListener('keydown',function(e){
     show();
   });
   function close(){ if(pushed){ pushed=false; history.back(); } else hide(); }
-  document.getElementById('spmClose').addEventListener('click',close);
+  /* Randy, 2026-10-30: two visitors in one day could not find the way out; a bare
+     x in the top corner is the hardest spot to reach on a phone. The top x becomes
+     a labelled pill, and a big button at the bottom, where the thumb is, goes back
+     to the page. Added here so every published map page gets it without a rebuild. */
+  var topX=document.getElementById('spmClose');
+  topX.innerHTML='&#x2715; Close'; topX.classList.add('spm-close-pill');
+  topX.addEventListener('click',close);
+  var foot=panel.querySelector('.spm-foot');
+  if(foot){
+    var back=document.createElement('button');
+    back.type='button'; back.className='spm-back'; back.innerHTML='&larr; Back to the page';
+    back.addEventListener('click',close);
+    foot.appendChild(back);
+  }
   window.addEventListener('popstate',function(){ if(isOpen){ pushed=false; hide(); } });
   document.addEventListener('keydown',function(e){ if(isOpen&&e.key==='Escape') close(); });
   if(whole) whole.addEventListener('click',function(){

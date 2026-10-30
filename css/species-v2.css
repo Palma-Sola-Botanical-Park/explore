@@ -475,6 +475,15 @@ body[data-bands="on"] .sp-sec:nth-of-type(3n+3)::before{background:var(--sunk)}
   width:48px;height:48px;border-radius:50%;font-size:1.7rem;cursor:pointer;line-height:1;
   display:flex;align-items:center;justify-content:center;touch-action:manipulation}
 .spm-close:hover{border-color:var(--green)}
+/* Labelled close (Randy, 2026-10-30): set by species-v2.js on every map page. */
+.spm-close.spm-close-pill{width:auto;height:44px;border-radius:22px;padding:0 1.1rem;
+  font-size:var(--t-base);font-weight:600;gap:.4rem;font-family:var(--sans)}
+.spm-foot .spm-back{margin-left:auto;font-size:var(--t-base);font-weight:600;color:#fff;
+  background:var(--green-ink);border-radius:var(--r-sm);padding:.75rem 1.2rem;text-decoration:none}
+.spm-foot .spm-back:hover{background:var(--green)}
+@media (max-width:560px){
+  .spm-foot .spm-back{width:100%;margin-left:0;padding:.9rem 1rem}
+}
 /* The SVG is positioned, not flexed: a percentage height inside the flex
    stage did not resolve on desktop (2026-10-23, Randy's screenshot), so the
    map sized itself from its width, overflowed, and sat hard against the left
