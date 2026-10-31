@@ -4309,9 +4309,6 @@ main {
 .funnel-bar-fill.research { background: var(--status-research); }
 .funnel-bar-fill.segmented { display: flex; background: none; overflow: hidden; }
 .funnel-bar-track { position: relative; }
-.funnel-seg-out { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; gap: 4px;
-    margin-left: 6px; font-size: 12px; }
-.funnel-seg-out b { padding: 1px 6px; border-radius: 4px; color: var(--green-deep); }
 .funnel-seg {
     display: flex; align-items: center; justify-content: center; min-width: 0;
     font-size: 12px; font-weight: 700; color: var(--green-deep); white-space: nowrap;
@@ -6126,12 +6123,13 @@ def render_overview():
         for (const [status, label, count] of rows) {
             const pct = Math.round((count / (scaleMax || pipeline)) * 80);
             // Research is shaded by promise (Randy, 2026-10-30): green 1 likely, gold 2
-            // maybe, light red 3 unlikely, grey unrated; each part carries its count.
+            // maybe, light red 3 unlikely, grey unrated. Colours only (Randy, 2026-10-30:
+            // no numbers); hovering a part shows its count.
             const bp = (status === 'research' && kingdomData.research && kingdomData.research.by_promise) || null;
             const PL = {'1': '1 · Likely', '2': '2 · Maybe', '3': '3 · Unlikely', 'none': 'Not rated'};
             const segs = bp ? [['1', '#cfe8cf'], ['2', '#f5dfa0'], ['3', '#f3c4bd'], ['none', '#d5d9de']]
                 .filter(([k]) => bp[k] > 0)
-                .map(([k, c]) => `<div class="funnel-seg" style="flex:${bp[k]};background:${c}" title="${PL[k]}: ${bp[k]}">${bp[k]}</div>`)
+                .map(([k, c]) => `<div class="funnel-seg" style="flex:${bp[k]};background:${c}" title="${PL[k]}: ${bp[k]}"></div>`)
                 .join('') : '';
             html += `
                 <div class="funnel-row">
@@ -6146,18 +6144,6 @@ def render_overview():
         }
 
         el.innerHTML = html;
-        // A narrow research bar (wildlife, on the shared scale) cannot hold its three
-        // counts. Then the counts sit just right of the bar, in the same colours.
-        el.querySelectorAll('.funnel-bar-fill.segmented').forEach(fill => {
-            const segs = [...fill.querySelectorAll('.funnel-seg')];
-            if (!segs.some(x => x.scrollWidth > x.clientWidth)) return;
-            const outside = document.createElement('span');
-            outside.className = 'funnel-seg-out';
-            outside.style.left = fill.style.width;
-            outside.innerHTML = segs.map(x => `<b style="background:${x.style.background}">${x.textContent}</b>`).join('');
-            segs.forEach(x => x.textContent = '');
-            fill.after(outside);
-        });
     }
 
     function renderAttention(containerId, items) {
