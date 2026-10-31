@@ -713,6 +713,27 @@ if (_filterParam) {
   })(40);
 }
 
+// ?form= picks a plant form in the dropdown (e.g. nature.html?form=Palm%20%26%20Cycad
+// from the home page's Rare Palms & Plumeria card, 2026-10-30). Same wait as ?filter=:
+// the dropdown fills only after plants.json has loaded.
+const _formParam = _urlParams.get('form');
+if (_formParam) {
+  (function applyForm(tries){
+    var sel = document.getElementById('plantForm');
+    var ok = sel && typeof setPlantForm === 'function' && typeof PLANTS !== 'undefined' && PLANTS.length
+          && [...sel.options].some(function(o){ return o.value === _formParam; });
+    if (ok) {
+      sel.value = _formParam;
+      setPlantForm(_formParam);
+      setTimeout(function(){
+        document.getElementById('plants')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
+    } else if (tries > 0) {
+      setTimeout(function(){ applyForm(tries - 1); }, 150);
+    }
+  })(40);
+}
+
 if (_familyParam || _searchParam) {
   const searchEl = document.getElementById('plantSearch');
   if (searchEl) {
