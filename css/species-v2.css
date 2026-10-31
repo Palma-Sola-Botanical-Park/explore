@@ -320,6 +320,13 @@ body[data-hero="strip"] .sp-herogal{display:none}
    point that carries over to other species. Its heading is a question the reader
    follows, so it reads at the body size, not as a small capitals label. */
 .sp-aside .sp-fact-h{font-size:var(--t-base);letter-spacing:0;text-transform:none}
+/* The list form: one row per term, the line right after it ("Pinnate. Leaflets
+   line…"), the term in bold green (Randy, 2026-10-31). */
+.sp-aside-list{margin:0;display:grid;gap:.8rem}
+.sp-aside-list dt{display:inline;font-weight:700;color:var(--green);font-size:var(--t-base)}
+.sp-aside-list dt::after{content:". "}
+.sp-aside-list dd{display:inline;margin:0;font-size:var(--t-base);line-height:1.6}
+.sp-aside p + .sp-aside-list{margin-top:.8rem}
 /* ── IN-FLOW PHOTOGRAPH — the main answer to "it's a wall of text".
      A species page had six photographs sitting in a pile at the end. Moving
      three of them INTO the prose breaks the column and puts the park's one

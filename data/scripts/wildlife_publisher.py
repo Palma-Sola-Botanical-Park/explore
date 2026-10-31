@@ -465,15 +465,25 @@ def _v2_block(label, text):
     return f'<div class="sp-block">{lab}<p>{_allow_bold(str(text))}</p></div>'
 
 
-def v2_aside(title, text):
-    """A science aside: {"aside": "Feather, fan, or fan with a rib?", "text": "…"}.
-    It steps out of the page's story to make one point that carries over to
-    other species (Randy, 2026-10-31), in the green-bar "Worth knowing" box.
-    Shared with plant_publisher, like _v2_block."""
-    if not text or not str(text).strip():
+def v2_aside(title, text="", items=None):
+    """A science aside. It steps out of the page's story to make one point that
+    carries over to other species (Randy, 2026-10-31), in the green-bar
+    "Worth knowing" box. Shared with plant_publisher, like _v2_block.
+      {"aside": "Science note", "text": "…"}                         one short paragraph
+      {"aside": "Science note", "items": [{"term": "Pinnate", "text": "…"}, …]}
+    The list form is for a few terms side by side: Randy found the paragraph
+    version a "wall of text"."""
+    body = f'<p>{_allow_bold(str(text))}</p>' if text and str(text).strip() else ""
+    rows = [i for i in (items or []) if isinstance(i, dict) and (i.get("text") or "").strip()]
+    if rows:
+        body += ('<dl class="sp-aside-list">'
+                 + "".join(f'<div><dt>{h(str(i.get("term") or ""))}</dt>'
+                           f'<dd>{_allow_bold(str(i["text"]))}</dd></div>' for i in rows)
+                 + '</dl>')
+    if not body:
         return ""
     return (f'<aside class="sp-fact sp-aside"><div class="sp-fact-h">{h(str(title))}</div>'
-            f'<p>{_allow_bold(str(text))}</p></aside>')
+            f'{body}</aside>')
 
 
 def _v2_section(anchor_id, title, inner, band=False):
@@ -552,7 +562,7 @@ def _v2_render_blocks(species, blocks, pid=None, photo_index=None):
         elif b.get("similar"):
             out.append(v2_similar(species))
         elif b.get("aside"):
-            out.append(v2_aside(b["aside"], b.get("text", "")))
+            out.append(v2_aside(b["aside"], b.get("text", ""), b.get("items")))
         else:
             out.append(_v2_block(b.get("label", ""), b.get("text", "")))
     return "".join(out)

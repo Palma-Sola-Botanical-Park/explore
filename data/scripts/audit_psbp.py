@@ -354,7 +354,7 @@ def main():
         _WILD_SECS  = {"at_a_glance", "how_to_know_it", "where_to_find_it_here",
                        "how_it_lives", "what_it_does_here", "take_care"}
         _BLOCK_KEYS = {"label", "text", "photo", "media", "focus", "fit", "caption", "links",
-                       "aside"}
+                       "aside", "items"}
         # A media block names a park-media item (media_library.json). Whether the
         # page may show it is decided in psbp_common.media_page_check, the same
         # function the publishers render through, so the audit cannot disagree.
@@ -409,14 +409,23 @@ def main():
                                 f"{sid} {cn}: {sec} opens with a photo — a photo follows the prose "
                                 f"it illustrates")
                     elif b.get("aside"):
-                        # A science aside (2026-10-31): its title and its text, nothing else.
+                        # A science aside (2026-10-31): a title, then text and/or a list of
+                        # {term, text} items. Nothing else.
                         if b.get("photo") or (b.get("label") or "").strip():
                             add("PAGE", "ERROR",
                                 f"{sid} {cn}: {sec}[{i}] aside with a photo or label — "
-                                f"an aside is a title and text only")
-                        if not (b.get("text") or "").strip():
+                                f"an aside is a title with text or items")
+                        _items = b.get("items")
+                        if _items is not None and not (isinstance(_items, list) and all(
+                                isinstance(it, dict) and set(it) <= {"term", "text"}
+                                and (it.get("term") or "").strip() and (it.get("text") or "").strip()
+                                for it in _items)):
                             add("PAGE", "ERROR",
-                                f"{sid} {cn}: {sec}[{i}] aside has no text — it renders as nothing")
+                                f"{sid} {cn}: {sec}[{i}] aside items must each be "
+                                f"{{term, text}}, both filled")
+                        if not ((b.get("text") or "").strip() or _items):
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: {sec}[{i}] aside has no text or items — it renders as nothing")
                         if sec == "at_a_glance":
                             add("PAGE", "ERROR",
                                 f"{sid} {cn}: at_a_glance[{i}] holds an aside — bullets show only its text")

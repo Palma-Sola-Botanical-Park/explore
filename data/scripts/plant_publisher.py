@@ -1154,7 +1154,7 @@ def _v2_block_html(b, photo_index=None):
             return ""
         return v2_media_figure(mrec, b.get("caption"), b.get("focus"))
     if b.get("aside"):
-        return v2_aside(b["aside"], b.get("text", ""))
+        return v2_aside(b["aside"], b.get("text", ""), b.get("items"))
     return _v2_block(b.get("label") or "", b.get("text", ""))
 
 
