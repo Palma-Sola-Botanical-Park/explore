@@ -353,7 +353,8 @@ def main():
                        "how_it_grows", "take_care"}
         _WILD_SECS  = {"at_a_glance", "how_to_know_it", "where_to_find_it_here",
                        "how_it_lives", "what_it_does_here", "take_care"}
-        _BLOCK_KEYS = {"label", "text", "photo", "media", "focus", "fit", "caption", "links"}
+        _BLOCK_KEYS = {"label", "text", "photo", "media", "focus", "fit", "caption", "links",
+                       "aside"}
         # A media block names a park-media item (media_library.json). Whether the
         # page may show it is decided in psbp_common.media_page_check, the same
         # function the publishers render through, so the audit cannot disagree.
@@ -407,6 +408,22 @@ def main():
                             add("PAGE", "WARN",
                                 f"{sid} {cn}: {sec} opens with a photo — a photo follows the prose "
                                 f"it illustrates")
+                    elif b.get("aside"):
+                        # A science aside (2026-10-31): its title and its text, nothing else.
+                        if b.get("photo") or (b.get("label") or "").strip():
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: {sec}[{i}] aside with a photo or label — "
+                                f"an aside is a title and text only")
+                        if not (b.get("text") or "").strip():
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: {sec}[{i}] aside has no text — it renders as nothing")
+                        if sec == "at_a_glance":
+                            add("PAGE", "ERROR",
+                                f"{sid} {cn}: at_a_glance[{i}] holds an aside — bullets show only its text")
+                        if not seen_prose:
+                            add("PAGE", "WARN",
+                                f"{sid} {cn}: {sec} opens with an aside — an aside steps out of "
+                                f"the prose before it")
                     elif b.get("photo"):
                         if has_txt:
                             add("PAGE", "ERROR",

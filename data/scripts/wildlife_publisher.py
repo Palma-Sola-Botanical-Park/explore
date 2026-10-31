@@ -465,6 +465,17 @@ def _v2_block(label, text):
     return f'<div class="sp-block">{lab}<p>{_allow_bold(str(text))}</p></div>'
 
 
+def v2_aside(title, text):
+    """A science aside: {"aside": "Feather, fan, or fan with a rib?", "text": "…"}.
+    It steps out of the page's story to make one point that carries over to
+    other species (Randy, 2026-10-31), in the green-bar "Worth knowing" box.
+    Shared with plant_publisher, like _v2_block."""
+    if not text or not str(text).strip():
+        return ""
+    return (f'<aside class="sp-fact sp-aside"><div class="sp-fact-h">{h(str(title))}</div>'
+            f'<p>{_allow_bold(str(text))}</p></aside>')
+
+
 def _v2_section(anchor_id, title, inner, band=False):
     """Banding is no longer decided here.
 
@@ -540,6 +551,8 @@ def _v2_render_blocks(species, blocks, pid=None, photo_index=None):
                 out.append(v2_media_figure(mrec, b.get("caption"), b.get("focus")))
         elif b.get("similar"):
             out.append(v2_similar(species))
+        elif b.get("aside"):
+            out.append(v2_aside(b["aside"], b.get("text", "")))
         else:
             out.append(_v2_block(b.get("label", ""), b.get("text", "")))
     return "".join(out)

@@ -60,7 +60,7 @@ from wildlife_publisher import (
     _v2_section, _v2_block, _v2_photo_url, _v2_hero_gallery_cue,
     _v2_credit_plate, _v2_credit_plate_wide, _v2_hero_attr,
     v2_photographs, v2_inflow_figure, v2_also_known_as,
-    v2_media_figure, _V2_GAL_SVG,
+    v2_media_figure, v2_aside, _V2_GAL_SVG,
 )
 
 PORT = 8701
@@ -1153,6 +1153,8 @@ def _v2_block_html(b, photo_index=None):
         if not mrec:                      # the audit names the reason
             return ""
         return v2_media_figure(mrec, b.get("caption"), b.get("focus"))
+    if b.get("aside"):
+        return v2_aside(b["aside"], b.get("text", ""))
     return _v2_block(b.get("label") or "", b.get("text", ""))
 
 
