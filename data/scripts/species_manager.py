@@ -10526,6 +10526,28 @@ def handle_api_todo_refresh(params):
             "error": None if proc.returncode == 0 else "The script reported an error; see the log."}
 
 
+def handle_api_rarefruit_refresh(params):
+    """POST /api/rarefruit/refresh — rebuild the data on rarefruit.html, Randy's Rare Fruit grove field page
+    (rarefruit_refresh.py: read-only on every master, writes only that page's DATA line)."""
+    script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rarefruit_refresh.py")
+    try:
+        proc = subprocess.run([sys.executable, script], capture_output=True, text=True, timeout=240)
+    except Exception as e:                                        # noqa: BLE001
+        return {"ok": False, "error": f"rarefruit_refresh.py did not run: {e}"}
+    out = ((proc.stdout or "") + (proc.stderr or "")).strip()
+    return {"ok": proc.returncode == 0, "log": out[-1500:],
+            "error": None if proc.returncode == 0 else "The script reported an error; see the log."}
+
+
+def handle_api_rarefruit_open(params):
+    """POST /api/rarefruit/open — open rarefruit.html in the Mac's browser."""
+    try:
+        subprocess.Popen(["open", os.path.join(REPO, "rarefruit.html")])
+    except Exception as e:                                        # noqa: BLE001
+        return {"ok": False, "error": f"Could not open it: {e}"}
+    return {"ok": True}
+
+
 def handle_api_todo_mark(params):
     """POST /api/todo/mark-reviewed {ids:[...], date:'YYYY-MM-DD', apply:bool}: Randy's click on "Mark reviewed".
     apply false = preview the two dates; apply true = write reviewed_on and the next review_due on those records only.
@@ -10638,6 +10660,12 @@ def render_todo():
         <span class="td-meta" id="td-meta">Loading...</span>
       </div>
       <p class="td-meta" id="td-status" style="margin-top:6px;"></p>
+      <div class="td-bar" style="margin-top:10px;">
+        <button class="td-btn" id="rf-refresh">Refresh rare fruit page</button>
+        <button class="td-snz" id="rf-open">Open it</button>
+        <span class="td-meta">rarefruit.html: the grove map, what still needs a pin, the MRFC hunt list</span>
+      </div>
+      <p class="td-meta" id="rf-status" style="margin-top:6px;white-space:pre-line;"></p>
     </div>
     <div id="td-subtabs" class="td-subtabs"></div>
     <div id="td-sections"></div>
@@ -10879,6 +10907,22 @@ def render_todo():
           render(d.todo);
         })
         .catch(function(e){ b.disabled = false; b.textContent = 'Refresh now'; document.getElementById('td-status').textContent = 'Failed: ' + e; });
+    });
+    document.getElementById('rf-refresh').addEventListener('click', function(){
+      var b = this, st = document.getElementById('rf-status');
+      b.disabled = true; b.textContent = 'Refreshing (about ten seconds)...'; st.textContent = '';
+      post('/api/rarefruit/refresh', {})
+        .then(function(d){
+          b.disabled = false; b.textContent = 'Refresh rare fruit page';
+          var lines = (d.log || '').split('\n').map(function(l){ return l.replace(/^\S+ \S+ /, ''); })
+            .filter(function(l){ return !/^asking iNaturalist/.test(l); });
+          st.textContent = d.ok ? lines.join('\n') + '\nDone. Commit rarefruit.html with your next commit.'
+                                : (d.error || 'Failed') + '\n' + lines.join('\n');
+        })
+        .catch(function(e){ b.disabled = false; b.textContent = 'Refresh rare fruit page'; st.textContent = 'Failed: ' + e; });
+    });
+    document.getElementById('rf-open').addEventListener('click', function(){
+      post('/api/rarefruit/open', {}).then(function(d){ if(!d.ok) document.getElementById('rf-status').textContent = d.error || 'Could not open it'; });
     });
     load();
     </script>
@@ -13563,6 +13607,8 @@ API_ROUTES = {
     "/api/health":           handle_api_health,
     "/api/todo":             handle_api_todo,
     "/api/todo/refresh":     handle_api_todo_refresh,
+    "/api/rarefruit/refresh": handle_api_rarefruit_refresh,
+    "/api/rarefruit/open":   handle_api_rarefruit_open,
     "/api/todo/mark-reviewed": handle_api_todo_mark,
     "/api/todo/undo-reviewed": handle_api_todo_undo,
     "/api/todo/snooze":      handle_api_todo_snooze,
