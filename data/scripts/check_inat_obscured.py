@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""check_inat_obscured.py: which published species does iNaturalist hide? DRY RUN unless --apply.
+"""check_inat_obscured.py: which species in the pipeline (published, spotted, parked) does iNaturalist hide? DRY RUN unless --apply.
 
   python3 data/scripts/check_inat_obscured.py                          # ask iNaturalist, print the findings, write nothing
   python3 data/scripts/check_inat_obscured.py --apply --head 1a2b3c4d  # write `inat_obscured` (HEAD guard: the commit you expect)
 
-RUN ONLY ON RANDY'S WORD, by name. It writes ONE field, `inat_obscured` (true / false), on published plants and
-wildlife, and nothing else. It never writes `obscure_on_map`: that is Randy's own decision, set by hand, and the
+RUN ONLY ON RANDY'S WORD, by name. It writes ONE field, `inat_obscured` (true / false), on published, spotted and parked
+plants and wildlife (widened from published only 2026-11-01, Randy: "for every plant that is obscured in iNat, we
+should know in our data if we need to think about obscuring it"), and nothing else. It never writes `obscure_on_map`: that is Randy's own decision, set by hand, and the
 publisher builds no species map for any species where it is true (the publisher only reads it, never writes it).
 
 HOW A SPECIES IS JUDGED (a fact from iNaturalist, not a guess):
@@ -51,8 +52,8 @@ def main():
         if raw != json.dumps(doc, indent=2, ensure_ascii=False) + "\n":
             sys.exit(f"ABORT: {fname} does not round-trip byte-identically")
         docs[fname] = doc
-        recs += [(fname, r) for r in doc["species"] if r.get("status") == "html" and r.get("inat_taxon_id")]
-    log(f"{len(recs)} published species with an iNaturalist taxon id")
+        recs += [(fname, r) for r in doc["species"] if r.get("status") in ("html", "spotted", "parked") and r.get("inat_taxon_id")]
+    log(f"{len(recs)} published, spotted or parked species with an iNaturalist taxon id")
 
     rows = park_observations(False)
     if not rows:
