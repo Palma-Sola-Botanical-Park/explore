@@ -33,6 +33,7 @@ have to remind you of any of this. The old `park-library` repo (`../park-library
 | **Tours** | `AD park-knowledge/TOURS.md` (to be revamped in 2027; stale teasers there are not findings). |
 | **Park Stories** (`stories/`, `stories.html`, `story_publisher.py`, the Stories mode of The Dirt, the photographer page) | `AD system docs/PARK_STORIES_PLAN.md`, then ACTIONS Content #28. The master is private: `AD stories/stories.json`, notes in `AD stories/notes/`. |
 | **What is open / what to do next** | `AD system docs/PSBP_ACTIONS.md` (start with the index) and `AD system docs/HANDOFF.md`. |
+| Randy **hands over a file** or says "file this" | put it in `AD dump/` and add a dated line to `AD dump/LOG.md`; never ask him where. Search there first for anything he gave you. |
 | Anything else, or a new kind of job | `AD system docs/CLAUDE_ONBOARDING.md` and `PSBP_ARCHITECTURE.md`; search the headings, do not read it all. |
 
 If a job is not in this table and you had to find its notes yourself, add a row.
