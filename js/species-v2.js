@@ -27,7 +27,13 @@ function paintLb(){
   var p=PHOTOS[cur]; if(!p) return;
   lbImg.src=p.src; lbImg.alt=p.alt;
   lbName.textContent=p.by;
-  lbMeta.innerHTML = p.date + ' &middot; CC-BY-NC, via iNaturalist';
+  /* The licence is the one this photograph's own credit shows on the page (its
+     gallery tile, or the hero credit on a one-photo page), never a default. */
+  var cc = document.querySelector('#gal figure[data-i="'+cur+'"] .cc-badge') ||
+           (cur===0 && document.querySelector('.sp-heroattr .cc-badge'));
+  lbMeta.innerHTML = p.date ? p.date + ' &middot; ' : '';
+  if(cc){ lbMeta.appendChild(cc.cloneNode(true)); lbMeta.appendChild(document.createTextNode(' ')); }
+  lbMeta.appendChild(document.createTextNode('via iNaturalist'));
   lbCount.textContent=(cur+1)+' / '+PHOTOS.length;
 }
 function openLb(i){ cur=i; paintLb(); lb.classList.add('on'); lb.setAttribute('aria-hidden','false');

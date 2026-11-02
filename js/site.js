@@ -514,9 +514,10 @@ const FOOTER_HTML = `
       </ul>
     </div>
   </div>
+  <p class="footer-photos">Every plant and wildlife photo on this site was taken here, by a visitor or a volunteer. Share yours on iNaturalist; the best new ones find their way onto our pages and signs. <a href="https://www.inaturalist.org/projects/palma-sola-botanical-park" target="_blank" rel="noopener">Share your park sightings →</a></p>
   <div class="footer-bottom">
     <span class="footer-util"><a href="contact.html">About</a> · <a href="contact.html#visit">Contact</a> · © 2026 Palma Sola Botanical Park Foundation, Inc. · 9800 17th Ave NW, Bradenton FL 34209</span>
-    <span style="color:rgba(255,255,255,.3)">Free. Always.</span>
+    <span style="color:rgba(255,255,255,.3)">Free to visit.</span>
   </div>
 </footer>`;
 

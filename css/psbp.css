@@ -443,16 +443,17 @@ a.card:hover, .card--link:hover {
 .species-tag .attr-species em { font-style: italic; font-weight: 400; opacity: .9; }
 
 .credit-plate {
-  display: grid; grid-template-columns: 1fr auto; align-items: center;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
   gap: var(--s2) var(--s3); padding: var(--s3) var(--s4);
   border-top: 1px solid var(--rule);
 }
-.credit-byline { display: flex; flex-direction: column; gap: .1rem; min-width: 0; }
+/* The name never gets cut off: it wraps, and the licence drops below it when the plate is narrow. */
+.credit-byline { display: flex; flex-direction: column; gap: .1rem; min-width: 0; flex: 1 1 9rem; }
 .credit-eyebrow { font-size: var(--t-cap); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--green); }
-.credit-name { font-size: var(--t-sm); font-weight: 700; color: var(--green-ink); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.credit-date { font-size: var(--t-xs); color: var(--ink-faint); }
-.credit-license { display: flex; flex-direction: column; align-items: flex-end; gap: .25rem; }
-.credit-src { font-size: var(--t-cap); font-style: italic; color: var(--ink-faint); }
+.credit-name { font-size: var(--t-base); font-weight: 700; color: var(--green-ink); line-height: 1.2; overflow-wrap: anywhere; }
+.credit-date { font-size: var(--t-base); color: var(--ink-faint); }
+.credit-license { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .5rem; }
+.credit-src { font-size: var(--t-base); font-style: italic; color: var(--ink-faint); }
 
 .cc-badge {
   display: inline-flex; align-items: stretch; vertical-align: middle;
@@ -662,6 +663,8 @@ a.tile:hover .tile__img img, .plant-card:hover img { transform: scale(1.04); }
 .footer-inat-stats { display: flex; gap: var(--s6); flex-wrap: wrap; }
 .footer-inat-stat strong { display: block; font-size: var(--t-md); color: var(--gold-light); font-family: var(--serif); }
 .footer-inat-stat span { font-size: var(--t-cap); text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.5); }
+.footer-photos { max-width: var(--wide); margin: 0 auto var(--s4); font-size: var(--t-base); line-height: 1.6; color: rgba(255,255,255,.75); }
+.footer-photos a { color: var(--gold-light); font-weight: 700; white-space: nowrap; }
 .footer-bottom { max-width: var(--wide); margin: 0 auto; border-top: 1px solid rgba(255,255,255,.1);
   padding-top: var(--s4); display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s3); font-size: var(--t-xs); }
 .social-links { display: flex; gap: var(--s2); }

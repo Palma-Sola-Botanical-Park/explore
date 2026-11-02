@@ -70,16 +70,17 @@
 /* ── Photographer byline, set like a field-guide credit. Sits BELOW a photo,
       on a pale surface. Photographer name is the featured element. ───────── */
 .credit-plate {
-  display: grid; grid-template-columns: 1fr auto; align-items: center;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
   gap: .5rem .7rem; padding: .72rem .9rem .8rem;
   border-top: 1px solid var(--green-pale);
 }
-.credit-byline { display: flex; flex-direction: column; gap: .12rem; min-width: 0; }
+/* The name never gets cut off: it wraps, and the licence drops below it when the plate is narrow. */
+.credit-byline { display: flex; flex-direction: column; gap: .12rem; min-width: 0; flex: 1 1 9rem; }
 .credit-eyebrow { font-size: .6rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--green-mid); }
-.credit-name { font-size: 1rem; font-weight: 700; color: var(--gold); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.credit-date { font-size: .72rem; color: var(--text-soft); }
-.credit-license { display: flex; flex-direction: column; align-items: flex-end; gap: .28rem; }
-.credit-src { font-size: .6rem; font-style: italic; color: var(--text-soft); opacity: .85; }
+.credit-name { font-size: var(--t-base, 1.0625rem); font-weight: 700; color: var(--gold); line-height: 1.2; overflow-wrap: anywhere; }
+.credit-date { font-size: var(--t-base, 1.0625rem); color: var(--text-soft); }
+.credit-license { display: flex; flex-wrap: wrap; align-items: center; gap: .28rem .5rem; }
+.credit-src { font-size: var(--t-base, 1.0625rem); font-style: italic; color: var(--text-soft); opacity: .85; }
 /* light CC badge for the pale plate */
 .credit-plate .cc-badge { border-color: rgba(26,58,31,.22); background: var(--cream); color: var(--green-deep); }
 .credit-plate .cc-badge .cc-term { border-left-color: rgba(26,58,31,.16); }
