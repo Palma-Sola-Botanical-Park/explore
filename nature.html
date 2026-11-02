@@ -853,6 +853,21 @@ if (_wFamilyParam || _wSearchParam) {
 
 if (window.location.hash === '#wildlife') showTab('wildlife');
 
+// ?wtheme= opens the Wildlife tab with one group button on (e.g. nature.html?wtheme=butterfly
+// from the butterfly garden page, 2026-11-02). Waits for wildlife.json and the buttons it builds.
+const _wThemeParam = _urlParams.get('wtheme');
+if (_wThemeParam) {
+  showTab('wildlife');
+  Promise.resolve(window._wildlifeReady).then(function () {
+    if (document.querySelector('#panel-wildlife .filter-btn[data-wfilter="' + _wThemeParam + '"]')) {
+      toggleWildFilter(_wThemeParam);
+      setTimeout(function () {
+        document.getElementById('wildlife')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
+    }
+  });
+}
+
 loadINat();
 </script>
 

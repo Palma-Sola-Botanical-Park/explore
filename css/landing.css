@@ -1,0 +1,84 @@
+/* landing.css: the collection landing pages (rarefruit.html, butterfly.html).
+   The map and card follow palms.html; the map here is one crop of the park, not the whole of it. */
+
+.lc-wrap{max-width:var(--wide);margin:0 auto;padding:0 16px}
+.lc-intro{max-width:var(--measure);margin:var(--s7) auto var(--s6)}
+.lc-intro p{font-size:var(--t-base);line-height:1.75;margin-bottom:var(--s4)}
+.lc-intro p:first-child{font-size:var(--t-md);color:var(--green-ink)}
+.lc-more-intro summary{font:700 var(--t-base)/1.4 var(--sans);color:var(--green);cursor:pointer;margin-bottom:var(--s3)}
+
+.lc-sec{padding:var(--s7) 0 var(--s4);border-bottom:1px solid var(--rule)}
+.lc-sec:last-of-type{border-bottom:0}
+.lc-sec h2{font-size:var(--t-xl);color:var(--green-ink);margin-bottom:var(--s3)}
+.lc-sec .words{max-width:var(--measure)}
+.lc-sec .words p{font-size:var(--t-base);line-height:1.75;margin-bottom:var(--s3)}
+
+/* the map beside its card; on a phone the card goes under the map */
+.lm-body{display:grid;gap:var(--s4);grid-template-columns:minmax(0,1fr);align-items:start}
+.lm-stage{position:relative;border-radius:var(--r);overflow:hidden;background:var(--sunk);width:100%;
+  border:1px solid var(--rule);box-shadow:var(--lift)}
+.lm-stage svg{display:block;width:100%;height:100%}
+.lm-tall .lm-stage{max-height:78vh;margin:0 auto;width:auto}
+.lm-dot{fill:var(--gold-mark);stroke:#3a2a00;stroke-width:1.2px}
+.lm-dot.sel{fill:#fff;stroke:var(--green-ink);stroke-width:2.6px}
+.lm-hit{fill:transparent;cursor:pointer}
+@media (min-width:820px){
+  .lm-body{grid-template-columns:minmax(0,2fr) minmax(0,3fr)}
+  .lm-tall .lm-body{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+  .lm-card{position:sticky;top:calc(var(--nav-h) + 16px)}
+}
+.lm-card{padding:var(--s4);border-radius:var(--r);background:var(--wash);font-size:var(--t-base);color:var(--ink-soft);touch-action:pan-y}
+.lm-card a{font-weight:700;color:var(--green)}
+.lm-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s4)}
+.lm-eyebrow{font:700 var(--t-cap)/1.2 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.lm-step{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-top:var(--s3)}
+.lm-head .lm-step{margin-top:0}
+.lm-step button{min-width:48px;min-height:44px;font:700 var(--t-md)/1 var(--sans);color:var(--green-ink);background:var(--paper);
+  border:1.5px solid var(--rule-strong);border-radius:var(--r-pill);cursor:pointer;padding:0 .9rem}
+.lm-step button:hover{border-color:var(--green)}
+.lm-step .n{font-size:var(--t-base);color:var(--ink-soft);white-space:nowrap}
+.lm-media{display:grid;grid-template-columns:clamp(104px,40%,220px) minmax(0,1fr);gap:var(--s4);align-items:center}
+.lm-photo{display:block;aspect-ratio:1/1;border-radius:var(--r);background:var(--sunk) center/cover no-repeat}
+.lm-media .credit-plate{margin:0;padding:0;border:0;background:none}
+.lm-media .credit-byline{flex-basis:100%}
+.lm-info{border-top:1px solid var(--rule);margin-top:var(--s4);padding-top:var(--s4)}
+.lm-info .nm{display:block;font:600 var(--t-lg)/1.15 var(--serif);color:var(--green-ink)}
+.lm-info .sci{display:block;font-style:italic;font-size:var(--t-md);color:var(--ink);margin-top:var(--s1)}
+.lm-info .where{display:block;color:var(--ink-soft);margin-top:var(--s2)}
+.lm-info p{color:var(--ink);font-size:var(--t-base);line-height:1.6;margin-top:var(--s3)}
+.lm-info a{display:inline-block;margin-top:var(--s3)}
+.lm-note{font-size:var(--t-base);color:var(--ink-soft);margin-top:var(--s2)}
+
+/* the grid of every plant in the collection */
+.lm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--s4);margin-top:var(--s5)}
+@media (min-width:1000px){.lm-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.lm-sp{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);
+  overflow:hidden;color:inherit;text-decoration:none;transition:box-shadow .2s,transform .2s}
+.lm-sp:hover{box-shadow:var(--lift-high);transform:translateY(-2px);text-decoration:none}
+.lm-sp:hover b{text-decoration:underline;text-underline-offset:3px}
+.lm-sp .ph{aspect-ratio:4/3;background:var(--sunk) center/cover no-repeat}
+.lm-sp .tx{padding:var(--s3) var(--s4) var(--s4)}
+.lm-sp b{display:block;font-family:var(--serif);font-size:var(--t-md);line-height:1.25;color:var(--green-ink)}
+.lm-sp .sci,.lm-sp .from{display:block;font-size:var(--t-base);color:var(--ink-soft);margin-top:2px}
+.lm-sp .credit-plate{margin-top:auto}
+.lm-sp .credit-byline{flex-basis:100%}
+@media (max-width:620px){
+  .lm-grid{grid-template-columns:1fr 1fr;gap:var(--s3)}
+  .lm-sp .tx{padding:var(--s2) var(--s3) var(--s3)}
+}
+
+/* a callout box: the partner, the certification */
+.lc-box{background:var(--surface);border:1px solid var(--rule);border-top:4px solid var(--gold-mark);border-radius:var(--r);
+  padding:var(--s5) var(--s6);max-width:var(--measure);box-shadow:var(--lift);margin-top:var(--s4)}
+.lc-box h3{font-size:var(--t-lg);color:var(--green-ink);margin-bottom:var(--s2)}
+.lc-box p{font-size:var(--t-base);line-height:1.7;margin-bottom:var(--s3)}
+.lc-box p:last-child{margin-bottom:0}
+
+/* a template slot still waiting for its words or photos */
+.lc-slot{border:2px dashed var(--rule-strong);border-radius:var(--r);padding:var(--s5);color:var(--ink-soft);
+  font-size:var(--t-base);line-height:1.6;background:var(--sunk);margin-top:var(--s3)}
+.lc-slot b{color:var(--green-ink)}
+.lc-photos{display:grid;gap:var(--s3);grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin-top:var(--s4)}
+.lc-photos .lc-slot{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;text-align:center;margin:0}
+
+.lc-links{display:flex;flex-wrap:wrap;gap:var(--s3);justify-content:center;margin:var(--s6) auto var(--s8)}

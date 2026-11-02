@@ -10527,7 +10527,7 @@ def handle_api_todo_refresh(params):
 
 
 def handle_api_rarefruit_refresh(params):
-    """POST /api/rarefruit/refresh — rebuild the data on rarefruit.html, Randy's Rare Fruit grove field page
+    """POST /api/rarefruit/refresh — rebuild the data on rarefruitToDo.html, Randy's Rare Fruit grove field page
     (rarefruit_refresh.py: read-only on every master, writes only that page's DATA line)."""
     script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "rarefruit_refresh.py")
     try:
@@ -10540,9 +10540,9 @@ def handle_api_rarefruit_refresh(params):
 
 
 def handle_api_rarefruit_open(params):
-    """POST /api/rarefruit/open — open rarefruit.html in the Mac's browser."""
+    """POST /api/rarefruit/open — open rarefruitToDo.html in the Mac's browser."""
     try:
-        subprocess.Popen(["open", os.path.join(REPO, "rarefruit.html")])
+        subprocess.Popen(["open", os.path.join(REPO, "rarefruitToDo.html")])
     except Exception as e:                                        # noqa: BLE001
         return {"ok": False, "error": f"Could not open it: {e}"}
     return {"ok": True}
@@ -10663,7 +10663,7 @@ def render_todo():
       <div class="td-bar" style="margin-top:10px;">
         <button class="td-btn" id="rf-refresh">Refresh rare fruit page</button>
         <button class="td-snz" id="rf-open">Open it</button>
-        <span class="td-meta">rarefruit.html: the grove map, what still needs a pin, the MRFC hunt list</span>
+        <span class="td-meta">rarefruitToDo.html: the grove map, what still needs a pin, the MRFC hunt list</span>
       </div>
       <p class="td-meta" id="rf-status" style="margin-top:6px;white-space:pre-line;"></p>
     </div>
@@ -10916,7 +10916,7 @@ def render_todo():
           b.disabled = false; b.textContent = 'Refresh rare fruit page';
           var lines = (d.log || '').split('\n').map(function(l){ return l.replace(/^\S+ \S+ /, ''); })
             .filter(function(l){ return !/^asking iNaturalist/.test(l); });
-          st.textContent = d.ok ? lines.join('\n') + '\nDone. Commit rarefruit.html with your next commit.'
+          st.textContent = d.ok ? lines.join('\n') + '\nDone. Commit rarefruitToDo.html with your next commit.'
                                 : (d.error || 'Failed') + '\n' + lines.join('\n');
         })
         .catch(function(e){ b.disabled = false; b.textContent = 'Refresh rare fruit page'; st.textContent = 'Failed: ' + e; });

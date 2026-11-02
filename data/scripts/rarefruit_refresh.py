@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""rarefruit_refresh.py: rebuild the data on rarefruit.html, Randy's Rare Fruit grove field page.
+"""rarefruit_refresh.py: rebuild the data on rarefruitToDo.html, Randy's Rare Fruit grove field page.
 
-  python3 data/scripts/rarefruit_refresh.py          # iNat grove sweep, rewrites the DATA line in rarefruit.html
+  python3 data/scripts/rarefruit_refresh.py          # iNat grove sweep, rewrites the DATA line in rarefruitToDo.html
   python3 data/scripts/rarefruit_refresh.py --dry    # print the summary and what moved, write nothing
 
 Run by the "Refresh rare fruit page" button on Species Manager's To do tab (Randy, 2026-11-01). READ-ONLY on every
 master: it reads plant_signage.json, research.json, placements.json and photo_credits.json, asks iNaturalist (read
-only) for observations pinned in the grove, and writes ONE line of rarefruit.html (`const DATA=...`). Nothing else.
+only) for observations pinned in the grove, and writes ONE line of rarefruitToDo.html (`const DATA=...`). Nothing else.
 
 THE GROVE is a box south of lat 27.5140 and east of lng -82.6595, kept to PARK_POLYGON (pin only, never project_id
 or place_id, verifiable=any). It takes in the Butterfly Garden and the bridge end of the Big Pond walkway; it is the
@@ -38,7 +38,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 REPO = HERE.parents[1]
 SRC = REPO / "data" / "sources"
-PAGE = REPO / "rarefruit.html"
+PAGE = REPO / "rarefruitToDo.html"
 
 NORTH, WEST = 27.5140, -82.6595
 MRFC_READ = "2026-11-01"
@@ -251,7 +251,7 @@ def main():
     log("asking iNaturalist for observations pinned in the grove")
     obs = grove_observations(sm)
     if obs is None:
-        log("ERROR: iNaturalist did not answer every page; rarefruit.html left as it was")
+        log("ERROR: iNaturalist did not answer every page; rarefruitToDo.html left as it was")
         return 1
     data, problems, obscured = build(sm, obs)
     for p in problems:
@@ -268,10 +268,10 @@ def main():
     new_line = "const DATA=" + json.dumps(data, ensure_ascii=False) + ";"
     text, n = re.subn(r"^const DATA=.*;$", lambda _: new_line, text, flags=re.M)
     if n != 1:
-        log(f"ERROR: expected one DATA line in rarefruit.html, found {n}; nothing written")
+        log(f"ERROR: expected one DATA line in rarefruitToDo.html, found {n}; nothing written")
         return 1
     PAGE.write_text(text, encoding="utf-8")
-    log(f"wrote rarefruit.html (data taken {data['snapshot']})")
+    log(f"wrote rarefruitToDo.html (data taken {data['snapshot']})")
     return 0
 
 

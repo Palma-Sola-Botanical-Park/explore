@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Butterfly Garden — Palma Sola Botanical Park</title>
+<meta name="description" content="Nectar flowers, caterpillar host plants and a certified Monarch Waystation in a free botanical park in Bradenton, Florida.">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/psbp.css">
+<link rel="stylesheet" href="css/landing.css?v=2026-11-02">
+</head>
+<body>
+<!-- TEMPLATE (2026-11-02): the dashed boxes are slots waiting for the volunteers' story and
+     general photos of the garden. The plant list, map and butterflies are live. -->
+<div id="nav-placeholder"></div>
+
+<div class="page-hero">
+  <div class="page-hero-bg" style="background-image:url('images/venue-butterfly-garden-card.jpg')"></div>
+  <div class="page-hero-content" style="text-align:center;margin:0 auto">
+    <div class="label label-light">Palma Sola Botanical Park</div>
+    <h1>The Butterfly Garden</h1>
+    <p>Flowers for the butterflies, leaves for their caterpillars, and a certified Monarch Waystation.</p>
+  </div>
+</div>
+
+<div class="lc-wrap">
+
+<div class="lc-intro">
+  <p>Nectar and host plants chosen to pull butterflies through the season, and to feed the caterpillars that become them. Come on a warm, still morning.</p>
+  <div class="lc-slot"><b>Intro from the garden's volunteers.</b> A paragraph or two: what the garden is for, what to look for when you walk in, the best time of year.</div>
+</div>
+
+<section class="lc-sec" id="photos">
+  <h2>The garden</h2>
+  <div class="lc-photos">
+    <div class="lc-slot">General photo of the garden</div>
+    <div class="lc-slot">General photo of the garden</div>
+    <div class="lc-slot">General photo of the garden</div>
+  </div>
+</section>
+
+<section class="lc-sec" id="story">
+  <h2>How the garden grew</h2>
+  <div class="lc-slot"><b>The volunteers' story.</b> How the garden got going, who planted what, what worked and what didn't.</div>
+  <div class="lc-box">
+    <h3>A certified Monarch Waystation</h3>
+    <p>A Monarch Waystation is a garden with the milkweed monarch caterpillars eat and the nectar flowers the adults need on their long migrations. Ours is certified.</p>
+    <div class="lc-slot" style="margin-top:0"><b>The certification story.</b> When it happened and what it took.</div>
+  </div>
+</section>
+
+<section class="lc-sec" id="map" aria-label="Map of the Butterfly Garden">
+  <h2>What's growing here</h2>
+  <div class="words"><p>The gold dots are the plants we have placed on the map so far. Tap one to see what it is.</p></div>
+  <div class="lm-body">
+    <div class="lm-stage" id="stage" tabindex="0"></div>
+    <div>
+      <div class="lm-card" id="card">Loading the map…</div>
+      <p class="lm-note">Roads © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
+    </div>
+  </div>
+  <div class="lm-grid" id="grid"></div>
+</section>
+
+<section class="lc-sec" id="butterflies">
+  <h2>Butterflies in the park</h2>
+  <div class="words"><p>Butterflies and moths that have been photographed in the park. Each card opens its own page.</p></div>
+  <div class="lm-grid" id="wgrid"></div>
+</section>
+
+<div class="lc-links">
+  <a class="btn btn-outline" href="nature.html?filter=butterfly">Every butterfly plant in the park →</a>
+  <a class="btn btn-outline" href="nature.html?wtheme=butterfly">Every butterfly in the park →</a>
+</div>
+
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="js/site.js"></script>
+<script src="js/photo-credits.js"></script>
+<script src="js/landing-map.js?v=2026-11-02"></script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
+<script>
+// Snapshot of the placement pins in the Butterfly Garden (2 November 2026), already placed on
+// images/park-map.svg. The plants themselves (names, photos, teasers) are read live from plants.json.
+var PINS = {"PSBP-00009":[[1176.9,444.4,"Butterfly Garden"]],"PSBP-00019":[[1170.3,485.4,"Butterfly Garden"]],"PSBP-00024":[[1199.8,462.9,"Butterfly Garden"]],"PSBP-00039":[[1193.7,524.3,"Butterfly Garden"]],"PSBP-00125":[[1127.3,539.7,"Butterfly Garden"]],"PSBP-00156":[[1152.1,457.1,"Butterfly Garden"],[1194.0,481.6,"Butterfly Garden"]],"PSBP-00414":[[1206.7,498.5,"Butterfly Garden"]],"PSBP-00366":[[1194.9,517.4,"Butterfly Garden"]],"PSBP-00437":[[1160.5,427.4,"Butterfly Garden"]],"PSBP-00415":[[1139.2,517.0,"Butterfly Garden"]],"PSBP-00163":[[1204.4,448.1,"Butterfly Garden"]],"PSBP-00072":[[1182.4,430.2,"Butterfly Garden"]],"PSBP-00062":[[1201.3,435.3,"Butterfly Garden"]],"PSBP-00074":[[1179.1,523.2,"Butterfly Garden"]],"PSBP-00089":[[1232.6,489.6,"Butterfly Garden"]],"PSBP-00098":[[1200.5,433.0,"Butterfly Garden"]]};
+
+// What a plant does for butterflies, in a few words: nectar, and whose caterpillars eat it.
+function role(p) {
+  // names only, and never a host the record itself marks as unverified
+  var hosts = (p.larval_species || []).filter(function (s) { return !/not verified/i.test(s); })
+    .map(function (s) { return String(s).replace(/\s*\(.*$/, ''); });
+  var bits = [];
+  if (p.nectar) bits.push('Nectar');
+  if (p.larval_host) bits.push(hosts.length ? 'caterpillars: ' + hosts.join(', ') : 'caterpillar host');
+  var s = bits.join(' · ');
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : p.origin_short;
+}
+
+LandingMap({
+  stage: document.getElementById('stage'),
+  card: document.getElementById('card'),
+  grid: document.getElementById('grid'),
+  viewBox: [1080, 375, 200, 200],     // the Butterfly Garden, beside the Pavilion
+  pins: PINS,
+  noun: 'plant',
+  tag: role
+});
+
+// The butterflies and moths: every published one, from wildlife.json.
+fetch('wildlife.json').then(function (r) { return r.json(); }).then(function (all) {
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  var g = document.getElementById('wgrid');
+  all.filter(function (w) { return w.theme === 'butterfly'; })
+    .sort(function (a, b) { return (b.tier === 'Feature') - (a.tier === 'Feature') || a.common.localeCompare(b.common); })
+    .forEach(function (w) {
+      var fit = /ND/.test(w.credit_license || '') ? ';background-size:contain' : '';
+      var a = document.createElement('a');
+      a.className = 'lm-sp'; a.href = w.page;
+      a.innerHTML = '<span class="ph" style="background-image:url(\'' + esc(w.photo_thumb || w.photo_web) +
+        '\');background-position:' + esc(w.focus || '50% 50%') + fit + '"></span><span class="tx"><b>' + esc(w.common) + '</b>' +
+        '<i class="sci">' + esc(w.sci) + '</i></span>' +
+        (w.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: w.credit_name, license: w.credit_license }) : '');
+      g.appendChild(a);
+    });
+});
+</script>
+</body>
+</html>
