@@ -89,6 +89,8 @@
    Medium action item logged: build lead-in pages for these (and maybe all
    Areas cards, for consistency) so this modifier goes away. */
 .area-card--static { cursor:default; }
+/* The two collections, palms and rare fruit, carry a gold bar under the photo. */
+.area-card.collection .area-body { border-top:4px solid var(--gold-mark); }
 .area-card--static:hover { transform:none; box-shadow:0 2px 10px rgba(0,0,0,.07); }
 .area-photo { height:170px; background-size:cover; background-position:center; background-color:var(--sand); position:relative; }
 .area-num {
@@ -267,7 +269,7 @@
           <div class="map-legend-item"><span class="map-legend-num">1</span> Rare Fruit Trail</div>
           <div class="map-legend-item"><span class="map-legend-num">2</span> Butterfly Garden</div>
           <div class="map-legend-item"><span class="map-legend-num">3</span> Serenity Garden</div>
-          <div class="map-legend-item"><span class="map-legend-num">4</span> Rare Palms &amp; Plumeria</div>
+          <div class="map-legend-item"><span class="map-legend-num">4</span> Rare Palm Collection</div>
           <div class="map-legend-item"><span class="map-legend-num">5</span> The Galleria</div>
           <div class="map-legend-item"><span class="map-legend-num">6</span> Hidden Garden Nursery</div>
         </div>
@@ -301,7 +303,7 @@
       </div>
       <div class="area-grid">
 
-        <a class="area-card" href="nature.html?filter=rare_fruit">
+        <a class="area-card collection" href="nature.html?filter=rare_fruit">
           <div class="area-photo" style="background-image:url('images/venue-rare-fruit-card.jpg')"><div class="area-num">1</div></div>
           <div class="area-body">
             <h3>Rare Fruit Trail</h3>
@@ -326,13 +328,14 @@
           </div>
         </div>
 
-        <div class="area-card area-card--static">
-          <div class="area-photo" style="background-image:url('images/venue-plumeria-palm-card.jpg')"><div class="area-num">4</div></div>
+        <a class="area-card collection" href="palms.html">
+          <div class="area-photo" style="background-image:url('images/palms-card.jpg')"><div class="area-num">4</div></div>
           <div class="area-body">
-            <h3>Rare Palms &amp; Plumeria</h3>
-            <p>Specimen palms you won't find in a typical yard, paired with fragrant plumeria that perfume the path in summer.</p>
+            <h3>Rare Palm Collection</h3>
+            <p>More than ninety kinds of palm, from Madagascar, New Caledonia, Fiji and Cuba to Florida's own. A few are scarcer in the wild than they are here.</p>
+            <span class="area-link">See the palm collection →</span>
           </div>
-        </div>
+        </a>
 
         <a class="area-card" href="viewer.html?url=images%2Fevents%2Fart-in-the-park-2026-09.jpg&amp;title=This+Month%27s+Artist&amp;back=visit.html">
           <div class="area-photo" style="background-image:url('images/venue-galleria-card.jpg')"><div class="area-num">5</div></div>
