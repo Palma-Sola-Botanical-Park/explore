@@ -62,17 +62,31 @@
 .pc-palm .ph{aspect-ratio:4/3;background:var(--sunk) center/cover no-repeat}
 .pc-palm .tx{padding:var(--s3) var(--s4) var(--s4)}
 .pc-palm b{display:block;font-family:var(--serif);font-size:var(--t-md);line-height:1.25;color:var(--green-ink)}
+.pc-palm .sci,.pc-feat .sci{display:block;font-size:var(--t-base);color:var(--ink-soft);margin-top:2px}
 .pc-palm .from{display:block;font-size:var(--t-base);color:var(--ink-soft);margin-top:2px}
-.pc-palm.feat{grid-column:span 2;flex-direction:row}
-.pc-palm.feat .ph{flex:0 0 46%;aspect-ratio:auto;min-height:200px}
-.pc-palm.feat .tx{padding:var(--s4)}
-.pc-palm.feat p{font-size:var(--t-base);line-height:1.6;margin-top:var(--s2)}
-.pc-palm .tag{display:inline-block;font:700 var(--t-cap)/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:var(--s2)}
+/* "Don't miss": photo two-fifths, words three-fifths; stacked on a phone */
+.pc-feats{display:grid;gap:var(--s5);margin-top:var(--s5)}
+.pc-feat{display:grid;grid-template-columns:2fr 3fr;background:var(--surface);border:1px solid var(--rule);
+  border-radius:var(--r);overflow:hidden;color:inherit;text-decoration:none;transition:box-shadow .2s}
+.pc-feat:hover{box-shadow:var(--lift-high)}
+.pc-feat .ph{min-height:300px;background:var(--sunk) center/cover no-repeat}
+.pc-feat .tx{display:flex;flex-direction:column;padding:var(--s5) var(--s6)}
+.pc-feat .tag{align-self:flex-start;background:none;border:0;padding:0;border-radius:0;font:700 var(--t-cap)/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:var(--s3)}
+.pc-feat b{font-family:var(--serif);font-size:var(--t-lg);line-height:1.2;color:var(--green-ink)}
+.pc-feat .from{font-size:var(--t-base);color:var(--ink-soft)}
+.pc-feat .story{font-size:var(--t-base);line-height:1.7;color:var(--ink);margin-top:var(--s3);max-width:var(--measure)}
+.pc-feat .go{font-weight:700;color:var(--green);margin-top:var(--s3)}
+.pc-feat .cr{font-size:var(--t-base);color:var(--ink-soft);margin-top:auto;padding-top:var(--s4)}
+.pc-also{font:600 var(--t-base)/1.2 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
+  margin-top:var(--s6)}
+.pc-also + .pc-grid{margin-top:var(--s3)}
+@media (max-width:760px){
+  .pc-feat{grid-template-columns:1fr}
+  .pc-feat .ph{min-height:0;aspect-ratio:4/3}
+  .pc-feat .tx{padding:var(--s4)}
+}
 @media (max-width:620px){
   .pc-grid{grid-template-columns:1fr 1fr;gap:var(--s3)}
-  .pc-palm.feat{flex-direction:column}
-  .pc-palm.feat .ph{flex:none;aspect-ratio:16/10;min-height:0}
   .pc-palm .tx{padding:var(--s2) var(--s3) var(--s3)}
 }
 .pc-more{max-width:var(--measure);margin:var(--s6) auto var(--s8);text-align:center;font-size:var(--t-base);color:var(--ink-soft)}
@@ -316,20 +330,44 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
     here.sort(function (a, b) {
       return (b.tier === 'Feature') - (a.tier === 'Feature') || a.name.localeCompare(b.name);
     });
+    // Feature palms get a wide row of their own, above the grid; everything else goes in the grid.
+    var feats = here.filter(function (p) { return p.tier === 'Feature' && sec !== rest; });
+    var others = here.filter(function (p) { return feats.indexOf(p) < 0; });
+    if (feats.length) {
+      var fw = document.createElement('div'); fw.className = 'pc-feats';
+      feats.forEach(function (p) {
+        // an ND photo is shown whole, never cropped
+        var fit = /ND/.test(p.lic || '') ? ';background-size:contain' : '';
+        var a = document.createElement('a'); a.className = 'pc-feat'; a.href = p.page;
+        a.innerHTML = '<span class="ph" style="background-image:url(\'' + esc(p.web || p.thumb) +
+          '\');background-position:' + esc(p.focus) + fit + '"></span><span class="tx">' +
+          '<span class="tag">Don\'t miss</span><b>' + esc(p.name) + '</b>' +
+          (p.sci ? '<i class="sci">' + esc(p.sci) + '</i>' : '') +
+          (p.from ? '<span class="from">' + esc(p.from) + '</span>' : '') +
+          (p.teaser ? '<span class="story">' + esc(p.teaser) + '</span>' : '') +
+          '<span class="go">Read about it →</span>' +
+          (p.credit ? '<span class="cr">Photo © ' + esc(p.credit) + (p.lic ? ' (' + esc(p.lic) + ')' : '') + '</span>' : '') +
+          '</span>';
+        fw.appendChild(a);
+      });
+      sec.appendChild(fw);
+      if (others.length) {
+        var also = document.createElement('h3'); also.className = 'pc-also'; also.textContent = 'Also growing here';
+        sec.appendChild(also);
+      }
+    }
     var grid = document.createElement('div'); grid.className = 'pc-grid';
-    here.forEach(function (p) {
-      var feat = p.tier === 'Feature' && sec !== rest;
+    others.forEach(function (p) {
       var where = sec === rest ? p.areas.filter(function (a) { return sectionOf(a) === sec.id; }).join(', ') : p.from;
       var a = document.createElement('a');
-      a.className = 'pc-palm' + (feat ? ' feat' : ''); a.href = p.page;
-      a.innerHTML = '<span class="ph" style="background-image:url(\'' + esc(p.thumb && feat ? p.web : p.thumb) +
+      a.className = 'pc-palm'; a.href = p.page;
+      a.innerHTML = '<span class="ph" style="background-image:url(\'' + esc(p.thumb) +
         '\');background-position:' + esc(p.focus) + '"></span><span class="tx">' +
-        (feat ? '<span class="tag">Don\'t miss</span>' : '') +
-        '<b>' + esc(p.name) + '</b><span class="from">' + esc(where) + '</span>' +
-        (feat && p.teaser ? '<p>' + esc(p.teaser) + '</p>' : '') + '</span>';
+        '<b>' + esc(p.name) + '</b>' + (p.sci ? '<i class="sci">' + esc(p.sci) + '</i>' : '') +
+        (where ? '<span class="from">' + esc(where) + '</span>' : '') + '</span>';
       grid.appendChild(a);
     });
-    sec.appendChild(grid);
+    if (others.length) sec.appendChild(grid);
     var btn = sec.querySelector('.pc-show');
     btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', 'panel');
     btn.addEventListener('click', function () { if (openSec === sec) closeMap(); else openIn(sec); });
