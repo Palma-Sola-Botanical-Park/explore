@@ -2710,7 +2710,7 @@ async function loadLately(targetId, opts) {
     return f;
   }
 
-  function remember(list, clickedId, kind) {
+  function remember(list, clickedId, kind, viaDrawer) {
     if (!list || !list.length) return;
     var ids = [], names = [], pages = [];
     for (var i = 0; i < list.length; i++) {
@@ -2727,7 +2727,8 @@ async function loadLately(targetId, opts) {
       from: location.pathname.split('/').pop() || 'nature.html',
       hash: kind === 'plant' ? '#plants' : '#wildlife',
       filters: captureFilters(),
-      current: clickedId || null
+      current: clickedId || null,
+      viaDrawer: !!viaDrawer        // left through the quick view panel, not a card
     });
   }
 
@@ -2773,16 +2774,19 @@ async function loadLately(targetId, opts) {
 
       list = isWild ? (typeof _filteredWild   !== 'undefined' ? _filteredWild   : null)
                     : (typeof _filteredPlants !== 'undefined' ? _filteredPlants : null);
-      remember(list, id, isWild ? 'wild' : 'plant');
+      remember(list, id, isWild ? 'wild' : 'plant', card.id === 'dwPage');
     } catch (err) {}
   }, true);
 
   /* Put the visitor back in front of the record they were reading. `current`
      has been stored since this shipped and was never used, so a return landed
      on the bare grid. On a phone the drawer does not exist and this no-ops,
-     which is correct — the species page WAS the quick view there. */
+     which is correct — the species page WAS the quick view there.
+     Only when the visitor LEFT through the panel (2026-11-02). Since 10-30 a card
+     click goes straight to the page, and reopening a panel they never opened was
+     disorienting (Randy). */
   function reopenPanel(s) {
-    if (!s.current) return;
+    if (!s.current || !s.viaDrawer) return;
     try {
       if (window.PSBPDrawer && PSBPDrawer.openById) PSBPDrawer.openById(s.kind, s.current);
     } catch (e) {}
