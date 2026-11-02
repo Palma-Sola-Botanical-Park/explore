@@ -23,7 +23,7 @@
 .pc-map h2{font-size:var(--t-lg);color:var(--green-ink);margin-bottom:var(--s2)}
 .pc-map .hint{font-size:var(--t-base);color:var(--ink-soft);margin-bottom:var(--s3)}
 /* the area buttons: "All palms" across the top, the nine areas three by three under it */
-.pc-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);max-width:720px;margin:0 0 var(--s4)}
+.pc-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);max-width:720px;margin:0 auto var(--s4)}
 .pc-chip{font:600 var(--t-base)/1.15 var(--sans);padding:.55rem .5rem;border-radius:var(--r);min-height:48px;text-align:center;
   border:1.5px solid var(--rule-strong);background:var(--paper);color:var(--green-ink);cursor:pointer}
 .pc-chip.all{grid-column:1/-1}
@@ -32,6 +32,8 @@
 .pc-chip{position:relative;transition:transform .15s,box-shadow .15s,background .15s}
 .pc-chip[aria-pressed="true"]{background:var(--gold-light);border:2.5px solid var(--gold);color:var(--green-deep);
   font-weight:700;transform:scale(1.07);box-shadow:var(--lift-high);z-index:1}
+/* the full-width button gets the gold but not the size-up, or it spills past the card's edges */
+.pc-chip.all[aria-pressed="true"]{transform:none}
 @media (prefers-reduced-motion:reduce){.pc-chip{transition:none}}
 .pc-more-intro{margin:0 0 var(--s5)}
 .pc-more-intro summary{font:700 var(--t-base)/1.4 var(--sans);color:var(--green);cursor:pointer;margin-bottom:var(--s3)}
