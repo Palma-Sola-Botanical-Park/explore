@@ -3088,3 +3088,30 @@ function heroRotate(pool) {
   if (bg) bg.style.backgroundImage = "url('" + pick.img + "')";
   if (credit && pick.credit) credit.textContent = pick.credit;
 }
+
+/* ============================================================
+   linkLatestArt: the Galleria cards (home and Visit) open the current
+   Art in the Park flyer from the events Sheet, so they never point at
+   last month's show. Current = the newest show already started; if none
+   has, the next one coming. No match in the feed leaves the link as written.
+   Usage: <a data-latest-art="visit.html" href="(a fallback flyer)">
+   ============================================================ */
+function linkLatestArt() {
+  var links = document.querySelectorAll('a[data-latest-art]');
+  if (!links.length) return;
+  fetch('data/published/events.json', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (rows) {
+    var today = new Date().toISOString().slice(0, 10);
+    var art = (Array.isArray(rows) ? rows : []).filter(function (e) {
+      return /^art in the park/i.test(e.title || '') && (e.poster || e.link_url) && e.date;
+    });
+    var started = art.filter(function (e) { return e.date <= today; }).sort(function (a, b) { return b.date.localeCompare(a.date); });
+    var coming = art.filter(function (e) { return e.date > today; }).sort(function (a, b) { return a.date.localeCompare(b.date); });
+    var show = started[0] || coming[0];
+    if (!show) return;
+    [].forEach.call(links, function (a) {
+      a.href = 'viewer.html?url=' + encodeURIComponent(show.poster || show.link_url) +
+        '&title=' + encodeURIComponent(show.title) + '&back=' + encodeURIComponent(a.getAttribute('data-latest-art'));
+    });
+  }).catch(function () {});
+}
+document.addEventListener('DOMContentLoaded', linkLatestArt);
