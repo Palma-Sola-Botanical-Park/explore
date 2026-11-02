@@ -51,6 +51,8 @@
 .pc-area h2{font-size:var(--t-xl);color:var(--green-ink)}
 .pc-show{font:600 var(--t-base)/1 var(--sans);color:var(--green);background:none;border:0;cursor:pointer;
   padding:.5rem 0;text-decoration:underline;text-underline-offset:3px}
+.pc-area .pc-panel{max-width:760px;margin:0 0 var(--s5)}
+.pc-away{margin:0}
 .pc-area .words{max-width:var(--measure)}
 .pc-area .words p{font-size:var(--t-base);line-height:1.75;margin-bottom:var(--s3)}
 .pc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--s4);margin-top:var(--s5)}
@@ -103,12 +105,14 @@
   <h2>Where the palms are</h2>
   <p class="hint">Pick an area, or tap any dot.</p>
   <div class="pc-chips" id="chips"></div>
-  <div class="pc-stage"><svg id="svg" viewBox="0 0 1408 1408" role="img" aria-label="The park map with each palm marked">
-    <g id="basemap"></g>
-    <g id="dots"></g>
-  </svg></div>
-  <div class="pc-card" id="card">Tap a gold dot to see which palm it is.</div>
-  <p class="hint" style="margin-top:var(--s2)">Roads © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
+  <div class="pc-panel" id="panel">
+    <div class="pc-stage"><svg id="svg" viewBox="0 0 1408 1408" role="img" aria-label="The park map with each palm marked">
+      <g id="basemap"></g>
+      <g id="dots"></g>
+    </svg></div>
+    <div class="pc-card" id="card">Tap a gold dot to see which palm it is.</div>
+    <p class="hint" style="margin-top:var(--s2)">Roads © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
+  </div>
 </section>
 
 <!-- Each area: the words are written here; the palms under them are filled in from
@@ -278,7 +282,7 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
   function chip(id, label) {
     var b = document.createElement('button');
     b.type = 'button'; b.className = 'pc-chip'; b.textContent = label; b.setAttribute('data-sec', id);
-    b.addEventListener('click', function () { focus(id); });
+    b.addEventListener('click', function () { if (openSec) closeMap(chips); focus(id); });
     chips.appendChild(b);
   }
   chip('', 'All palms');
@@ -326,10 +330,51 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
       grid.appendChild(a);
     });
     sec.appendChild(grid);
-    sec.querySelector('.pc-show').addEventListener('click', function () {
-      focus(sec.id);
-      document.getElementById('map').scrollIntoView({ behavior: 'smooth' });
+    var btn = sec.querySelector('.pc-show');
+    btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', 'panel');
+    btn.addEventListener('click', function () { if (openSec === sec) closeMap(); else openIn(sec); });
+  });
+
+  // "Show on the map" opens the map inside that section, under its heading, so the reader never
+  // leaves their place. There is one map: the panel moves, nothing is copied.
+  var panel = document.getElementById('panel'), home = document.getElementById('map'), openSec = null;
+  var away = document.createElement('p'); away.className = 'hint pc-away'; away.hidden = true;
+  home.insertBefore(away, panel);
+  // Moving the panel changes the height of the page above the reader; scroll by the same amount.
+  function keepPlace(anchor, change) {
+    var before = anchor.getBoundingClientRect().top;
+    change();
+    // instant, not the site's smooth scroll, or the page visibly slides
+    window.scrollBy({ top: anchor.getBoundingClientRect().top - before, behavior: 'instant' });
+  }
+  function setBtn(sec, open) {
+    var b = sec.querySelector('.pc-show');
+    b.textContent = open ? 'Hide the map' : 'Show on the map';
+    b.setAttribute('aria-expanded', String(open));
+  }
+  function openIn(sec) {
+    keepPlace(sec.querySelector('.pc-show'), function () {
+      if (openSec) setBtn(openSec, false);
+      sec.querySelector('.pc-area-head').after(panel);
+      openSec = sec; setBtn(sec, true);
+      away.innerHTML = 'The map is open under <a href="#' + sec.id + '">' + esc(sec.querySelector('h2').textContent) + '</a>.';
+      away.hidden = false;
     });
+    focus(sec.id);
+  }
+  function closeMap(anchor) {
+    if (!openSec) return;
+    var sec = openSec;
+    keepPlace(anchor || sec.querySelector('.pc-show'), function () {
+      setBtn(sec, false); openSec = null;
+      away.after(panel); away.hidden = true;
+    });
+    focus('');
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !openSec) return;
+    var b = openSec.querySelector('.pc-show');
+    closeMap(); b.focus();
   });
 
   focus('');
