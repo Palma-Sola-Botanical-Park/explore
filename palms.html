@@ -16,6 +16,7 @@
 .pc-intro{max-width:var(--measure);margin:var(--s7) auto var(--s6)}
 .pc-intro p{font-size:var(--t-base);line-height:1.75;margin-bottom:var(--s4)}
 .pc-intro p:first-child{font-size:var(--t-md);color:var(--green-ink)}
+.pc-intro .pc-tomap a{font-weight:700}
 
 /* the map */
 .pc-map{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
@@ -57,6 +58,10 @@
 .pc-list-h{font:600 var(--t-base)/1.2 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
   padding:var(--s3) 0 var(--s2);margin:0}
 .pc-list ul{list-style:none;margin:0;padding:0}
+.pc-find{display:block;width:100%;min-height:44px;font:400 var(--t-base)/1.3 var(--sans);padding:.5rem .75rem;
+  border:1.5px solid var(--rule-strong);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);margin:0 0 var(--s2);
+  position:sticky;top:0;z-index:1}
+.pc-list .none{padding:.6rem .4rem;color:var(--ink-soft)}
 .pc-list button{display:block;width:100%;min-height:44px;text-align:left;font:400 var(--t-base)/1.3 var(--sans);
   color:var(--green-ink);background:none;border:0;border-bottom:1px solid var(--rule);padding:.6rem .4rem;cursor:pointer}
 .pc-list button:hover{background:var(--wash)}
@@ -82,6 +87,10 @@
 .pc-area .words{max-width:var(--measure)}
 .pc-area .words p{font-size:var(--t-base);line-height:1.75;margin-bottom:var(--s3)}
 .pc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--s4);margin-top:var(--s5)}
+@media (min-width:1000px){.pc-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* the whole card is the link, but only the name and "Read about it" underline */
+.pc-palm:hover,.pc-feat:hover{text-decoration:none}
+.pc-palm:hover b,.pc-feat:hover b,.pc-feat:hover .go{text-decoration:underline;text-underline-offset:3px}
 .pc-palm{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);
   overflow:hidden;color:inherit;text-decoration:none;transition:box-shadow .2s,transform .2s}
 .pc-palm:hover{box-shadow:var(--lift-high);transform:translateY(-2px)}
@@ -136,6 +145,7 @@
 
 <div class="pc-intro">
   <p>More than ninety kinds of palm grow in this park, and we’re still finding and planting more. Some are Florida’s own. Others come from Madagascar, New Caledonia, Fiji, Vanuatu, Cuba, and tiny islands east of Madagascar. Together, they bring a remarkable slice of the palm world to these ten acres.</p>
+  <p class="pc-tomap"><a href="#map">Go straight to the map ↓</a></p>
   <p>Some are now rare in their native habitat. In 2019, only nineteen Spindle Palms were known in the wild. The Vanuatu Palm was known only from old fruit specimens until living trees were found in 1987. Both grow beside our Big Pond, a short walk apart.</p>
   <p>Thanks to generations of conservationists, growers, and palm enthusiasts, we have the chance to grow these palms here. Their stories reach far beyond the park: island forests, unlikely discoveries, and people determined to keep a species growing.</p>
   <p>You’ll find palms throughout the grounds, each area with its own feel: a shady corner, a palm-lined walk, an open field you cross on the grass. Some are recent plantings, still years from looking like the mature palms pictured in books. Others may be so familiar that you hardly notice them—including a few of our most interesting palms outside the fence, along the road.</p>
@@ -153,7 +163,9 @@
         <g id="dots"></g>
       </svg></div>
       <div class="pc-card" id="card">Tap a gold dot to see which palm it is.</div>
-      <div class="pc-list"><p class="pc-list-h" id="plist-h">All palms</p><ul id="plist" aria-labelledby="plist-h"></ul></div>
+      <div class="pc-list"><p class="pc-list-h" id="plist-h">All palms</p>
+        <input type="search" id="pfind" class="pc-find" placeholder="Find a palm…" autocomplete="off" aria-label="Find a palm by its common or scientific name">
+        <ul id="plist" aria-labelledby="plist-h"></ul></div>
     </div>
     <p class="hint" style="margin-top:var(--s2)">Roads © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
   </div>
@@ -181,7 +193,7 @@
 <section class="pc-area" id="natives" data-areas="Natives" data-native="1">
   <div class="pc-area-head"><h2>Florida's Own</h2><button class="pc-show" type="button">Show on the map</button></div>
   <div class="words">
-    <p>Every palm native to Florida is gathered here, wherever it grows in the park. Even the Royals by the Pavilion are Florida natives, from the hammocks of the far south.</p>
+    <p>Our Florida natives are gathered on this page, though they grow in several parts of the park. Even the Royals by the Pavilion are Florida natives, from the hammocks of the far south.</p>
     <p>At the southern tip, three elms shade a bench, a good place to rest. Along the south fence is a row of Florida's native palms. The Florida Thatch Palm puts on about six inches a year, so a trunk of any size on one is a long stretch of time.</p>
   </div>
 </section>
@@ -262,6 +274,11 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
   });
   var card = document.getElementById('card'), chips = document.getElementById('chips');
   var areas = [].slice.call(document.querySelectorAll('.pc-area'));
+  // When a palm's common name is just its scientific name, print it once, in italics.
+  function norm(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+  function sameName(p) { return !!p.sci && norm(p.sci) === norm(p.name); }
+  function title(p) { return sameName(p) ? '<i>' + esc(p.sci) + '</i>' : esc(p.name); }
+  function sciLine(p) { return p.sci && !sameName(p) ? '<i class="sci">' + esc(p.sci) + '</i>' : ''; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
   // Which section each placement area belongs to; "*" takes whatever no other section claims.
@@ -356,21 +373,27 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
   }
   // The list beside the map: every palm in view, so nobody has to hit a crowded dot.
   var plist = document.getElementById('plist'), plistH = document.getElementById('plist-h'), listBtns = [];
+  var pfind = document.getElementById('pfind');
+  // Typing searches every palm, by common or scientific name; an empty box shows the area in view.
   function fillList(id) {
-    var list = palmsIn(id).sort(function (a, b) { return a.name.localeCompare(b.name); });
-    plistH.textContent = (id ? document.getElementById(id).querySelector('h2').textContent : 'All palms') + ' (' + list.length + ')';
-    plist.innerHTML = ''; listBtns = [];
+    var q = norm(pfind.value);
+    var list = (q ? PALMS.filter(function (p) { return norm(p.name).indexOf(q) >= 0 || norm(p.sci).indexOf(q) >= 0; }) : palmsIn(id))
+      .sort(function (a, b) { return a.name.localeCompare(b.name); });
+    plistH.textContent = (q ? 'Matches' : id ? document.getElementById(id).querySelector('h2').textContent : 'All palms') + ' (' + list.length + ')';
+    plist.innerHTML = q && !list.length ? '<li class="none">No palm by that name. Try part of a word.</li>' : ''; listBtns = [];
     list.forEach(function (p) {
       var li = document.createElement('li'), b = document.createElement('button');
       b.type = 'button'; b.setAttribute('aria-pressed', 'false');
-      b.innerHTML = esc(p.name) + (p.pins.length ? '' : '<span class="nomap">Not shown on the map</span>');
+      b.innerHTML = title(p) + (p.pins.length ? '' : '<span class="nomap">Not shown on the map</span>');
       b.addEventListener('click', function () { choose(p); });
       li.appendChild(b); plist.appendChild(li); listBtns.push({ p: p, b: b });
     });
   }
 
+  pfind.addEventListener('input', function () { fillList(current); });
+
   function focus(id) {
-    current = id; fillList(id);
+    current = id; pfind.value = ''; fillList(id);
     [].forEach.call(chips.children, function (c) { c.classList.toggle('on', c.getAttribute('data-sec') === id); });
     dots.forEach(function (d) { d.el.classList.toggle('dim', !!id && !inSection(d, id)); d.el.classList.remove('sel'); });
     var inSec = id ? dots.filter(function (d) { return inSection(d, id); }) : dots;
@@ -390,9 +413,14 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
       if (on) { dotsG.insertBefore(o.el, firstHit); if (places.indexOf(o.area) < 0) places.push(o.area); }
     });
     listBtns.forEach(function (x) { x.b.setAttribute('aria-pressed', String(x.p === p)); });
+    var mine = dots.filter(function (o) { return o.p === p; });
+    if (!d && mine.some(function (o) { return o.el.classList.contains('dim'); })) {
+      mine.forEach(function (o) { o.el.classList.remove('dim'); });
+      zoomTo(frame(mine));
+    }
     var where = d ? d.area : places.join(', ');
     card.innerHTML = (p.thumb ? '<img src="' + esc(p.thumb) + '" alt="">' : '') +
-      '<div><b>' + esc(p.name) + '</b>' + esc(p.from) + (where ? ' · ' + esc(where) : '') +
+      '<div><b>' + title(p) + '</b>' + esc(p.from) + (where ? ' · ' + esc(where) : '') +
       (p.pins.length ? '' : ' · not shown on the map') +
       (p.teaser ? '<p>' + esc(p.teaser) + '</p>' : '') +
       '<a href="' + esc(p.page) + '">Read about it →</a></div>';
@@ -415,8 +443,7 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
         var a = document.createElement('a'); a.className = 'pc-feat'; a.href = p.page;
         a.innerHTML = '<span class="ph" style="background-image:url(\'' + esc(p.web || p.thumb) +
           '\');background-position:' + esc(p.focus) + fit + '"></span><span class="tx">' +
-          '<span class="tag">Don\'t miss</span><b>' + esc(p.name) + '</b>' +
-          (p.sci ? '<i class="sci">' + esc(p.sci) + '</i>' : '') +
+          '<span class="tag">Don\'t miss</span><b>' + title(p) + '</b>' + sciLine(p) +
           (p.from ? '<span class="from">' + esc(p.from) + '</span>' : '') +
           (p.teaser ? '<span class="story">' + esc(p.teaser) + '</span>' : '') +
           '<span class="go">Read about it →</span>' +
@@ -437,7 +464,7 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
       a.className = 'pc-palm'; a.href = p.page;
       a.innerHTML = '<span class="ph" style="background-image:url(\'' + esc(p.thumb) +
         '\');background-position:' + esc(p.focus) + '"></span><span class="tx">' +
-        '<b>' + esc(p.name) + '</b>' + (p.sci ? '<i class="sci">' + esc(p.sci) + '</i>' : '') +
+        '<b>' + title(p) + '</b>' + sciLine(p) +
         (where ? '<span class="from">' + esc(where) + '</span>' : '') + '</span>';
       grid.appendChild(a);
     });
