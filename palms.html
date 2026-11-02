@@ -43,14 +43,25 @@
 .pc-dot.dim{fill:#9a9a8a;stroke:#6a6a5c;opacity:.35}
 .pc-dot.sel{fill:#fff;stroke:var(--green-ink);stroke-width:calc(7px * var(--k, 1))}
 .pc-hit{fill:transparent;cursor:pointer}
-.pc-card{display:flex;gap:var(--s4);align-items:flex-start;margin-top:var(--s3);min-height:84px;
-  padding:var(--s3);border-radius:var(--r);background:var(--wash);font-size:var(--t-base);color:var(--ink-soft)}
-.pc-card img{width:84px;height:84px;object-fit:cover;border-radius:var(--r-sm);flex:0 0 auto}
-.pc-card b{display:block;font-family:var(--serif);font-size:var(--t-md);color:var(--green-ink)}
-.pc-card p{color:var(--ink);font-size:var(--t-base);line-height:1.55;margin-top:var(--s1)}
+/* the card under the map: a header row (label + ‹ n of N ›), the photo beside its credit,
+   then the palm itself across the full width */
+.pc-card{margin-top:var(--s3);padding:var(--s4);border-radius:var(--r);background:var(--wash);
+  font-size:var(--t-base);color:var(--ink-soft)}
 .pc-card a{font-weight:700;color:var(--green)}
-.pc-card > div{flex:1;min-width:0}
-.pc-card .credit-plate{margin-top:var(--s3);padding:var(--s3) 0 0}
+.pc-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s4)}
+.pc-eyebrow{font:700 var(--t-cap)/1.2 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.pc-head .pc-step{justify-content:flex-end}
+.pc-media{display:grid;grid-template-columns:clamp(104px,40%,200px) minmax(0,1fr);gap:var(--s4);align-items:center}
+.pc-photo{display:block;aspect-ratio:1/1;border-radius:var(--r);background:var(--sunk) center/cover no-repeat}
+.pc-media .credit-plate{margin:0;padding:0;border:0;background:none}
+.pc-media .credit-byline{flex-basis:100%}
+.pc-info{border-top:1px solid var(--rule);margin-top:var(--s4);padding-top:var(--s4)}
+.pc-info .nm{display:block;font:600 var(--t-lg)/1.15 var(--serif);color:var(--green-ink)}
+.pc-info .sci{display:block;font-style:italic;font-size:var(--t-md);color:var(--ink);margin-top:var(--s1)}
+.pc-info .where{display:block;color:var(--ink-soft);margin-top:var(--s2)}
+.pc-info p{color:var(--ink);font-size:var(--t-base);line-height:1.6;margin-top:var(--s3)}
+.pc-info a{display:inline-block;margin-top:var(--s3)}
+@media (max-width:340px){.pc-media{grid-template-columns:1fr}.pc-photo{max-width:200px}}
 
 /* the areas */
 .pc-area{padding:var(--s7) 0 var(--s4);border-bottom:1px solid var(--rule);scroll-margin-top:calc(var(--nav-h) + 12px)}
@@ -63,13 +74,13 @@
 .pc-body .pc-card{grid-area:card;margin-top:0}
 .pc-list{grid-area:list;max-height:50vh;overflow:auto;border-top:1px solid var(--rule);position:relative}
 /* step through the palms in the list: arrows and a count on the card; swipe it on a phone */
-.pc-card{flex-wrap:wrap;touch-action:pan-y}
-.pc-card > div.pc-step{flex:0 0 100%}
+.pc-card{touch-action:pan-y}
+.pc-card > .pc-step{margin-top:var(--s3)}
 .pc-step{display:flex;align-items:center;justify-content:space-between;gap:var(--s3)}
 .pc-step button{min-width:48px;min-height:44px;font:700 var(--t-md)/1 var(--sans);color:var(--green-ink);background:var(--paper);
   border:1.5px solid var(--rule-strong);border-radius:var(--r-pill);cursor:pointer;padding:0 .9rem}
 .pc-step button:hover{border-color:var(--green)}
-.pc-step .n{font-size:var(--t-base);color:var(--ink-soft)}
+.pc-step .n{font-size:var(--t-base);color:var(--ink-soft);white-space:nowrap}
 .pc-step .go{flex:1;text-align:center}
 .pc-list-h{font:600 var(--t-base)/1.2 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);
   padding:var(--s3) 0 var(--s2);margin:0}
@@ -106,7 +117,7 @@
 .pc-palm .from{display:block;font-size:var(--t-base);color:var(--ink-soft);margin-top:2px}
 /* grid cards and the map card are narrow: the licence always goes under the name */
 .pc-palm .credit-plate{margin-top:auto}
-.pc-palm .credit-byline,.pc-card .credit-byline{flex-basis:100%}
+.pc-palm .credit-byline{flex-basis:100%}
 /* "Don't miss": photo two-fifths, words three-fifths; stacked on a phone */
 .pc-feats{display:grid;gap:var(--s5);margin-top:var(--s5)}
 .pc-feat{display:grid;grid-template-columns:2fr 3fr;background:var(--surface);border:1px solid var(--rule);
@@ -494,19 +505,32 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
     });
     listBtns.forEach(function (x) { x.b.setAttribute('aria-pressed', String(x.p === p)); });
     var mine = dots.filter(function (o) { return o.p === p; });
-    var outOfView = mine.some(function (o) {
-      return o.x < cur[0] || o.x > cur[0] + cur[2] || o.y < cur[1] || o.y > cur[1] + cur[3];
-    });
-    if (!d && (outOfView || mine.some(function (o) { return o.el.classList.contains('dim'); }))) {
-      mine.forEach(function (o) { o.el.classList.remove('dim'); });
-      zoomTo(frame(mine));
+    // With an area chosen, a palm that grows there keeps the map on that area (the Bottle Palm's
+    // Nursery pin must not widen the Butterfly Garden view); the frame returns there if it drifted.
+    var here = current ? mine.filter(function (o) { return inSection(o, current); }) : [];
+    if (here.length) {
+      var areaFrame = frame(dots.filter(function (o) { return inSection(o, current); }));
+      if (areaFrame.some(function (v, i) { return Math.abs(v - cur[i]) > 1; })) zoomTo(areaFrame);
+    } else {
+      // all palms, or a palm found by search outside the area: bring its dots into view
+      var outOfView = mine.some(function (o) {
+        return o.x < cur[0] || o.x > cur[0] + cur[2] || o.y < cur[1] || o.y > cur[1] + cur[3];
+      });
+      if (!d && (outOfView || mine.some(function (o) { return o.el.classList.contains('dim'); }))) {
+        mine.forEach(function (o) { o.el.classList.remove('dim'); });
+        zoomTo(frame(mine));
+      }
     }
     var where = d ? d.area : places.join(', ');
-    card.innerHTML = stepRow() + (p.thumb ? '<img src="' + esc(p.thumb) + '" alt="">' : '') +
-      '<div><b>' + title(p) + '</b>' + esc(p.from) + (where ? ' · ' + esc(where) : '') +
-      (p.pins.length ? '' : ' · not shown on the map') +
+    var img = p.web || p.thumb, fit = /ND/.test(p.lic || '') ? ';background-size:contain' : '';
+    var place = [p.from, where, p.pins.length ? '' : 'not shown on the map'].filter(Boolean).join(' · ');
+    card.innerHTML = '<div class="pc-head"><span class="pc-eyebrow">Meet this palm</span>' + stepRow() + '</div>' +
+      (img ? '<div class="pc-media"><span class="pc-photo" role="img" aria-label="' + esc(p.name) + '" style="background-image:url(\'' +
+        esc(img) + '\');background-position:' + esc(p.focus) + fit + '"></span>' + plate(p) + '</div>' : '') +
+      '<div class="pc-info"><span class="nm">' + title(p) + '</span>' + sciLine(p) +
+      (place ? '<span class="where">' + esc(place) + '</span>' : '') +
       (p.teaser ? '<p>' + esc(p.teaser) + '</p>' : '') +
-      '<a href="' + esc(p.page) + '">Read about it →</a>' + (p.thumb ? plate(p) : '') + '</div>';
+      '<a href="' + esc(p.page) + '">Read about this palm →</a></div>';
   }
 
   // Cards under each section. A palm pinned in two sections appears in both.
