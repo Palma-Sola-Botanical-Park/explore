@@ -16,19 +16,25 @@
 .pc-intro{max-width:var(--measure);margin:var(--s7) auto var(--s6)}
 .pc-intro p{font-size:var(--t-base);line-height:1.75;margin-bottom:var(--s4)}
 .pc-intro p:first-child{font-size:var(--t-md);color:var(--green-ink)}
-.pc-intro .pc-tomap a{font-weight:700}
 
 /* the map */
 .pc-map{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-lg);
   padding:var(--s4);box-shadow:var(--lift);scroll-margin-top:calc(var(--nav-h) + 12px)}
 .pc-map h2{font-size:var(--t-lg);color:var(--green-ink);margin-bottom:var(--s2)}
 .pc-map .hint{font-size:var(--t-base);color:var(--ink-soft);margin-bottom:var(--s3)}
-.pc-chips{display:flex;gap:var(--s2);overflow-x:auto;padding-bottom:var(--s2);margin-bottom:var(--s3);
-  scrollbar-width:thin;-webkit-overflow-scrolling:touch}
-.pc-chip{flex:0 0 auto;font:600 var(--t-base)/1 var(--sans);padding:.6rem 1rem;border-radius:var(--r-pill);
-  border:1.5px solid var(--rule-strong);background:var(--paper);color:var(--green-ink);cursor:pointer;min-height:44px}
+/* the area buttons: "All palms" across the top, the nine areas three by three under it */
+.pc-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);max-width:720px;margin:0 0 var(--s4)}
+.pc-chip{font:600 var(--t-base)/1.15 var(--sans);padding:.55rem .5rem;border-radius:var(--r);min-height:48px;text-align:center;
+  border:1.5px solid var(--rule-strong);background:var(--paper);color:var(--green-ink);cursor:pointer}
+.pc-chip.all{grid-column:1/-1}
 .pc-chip:hover{border-color:var(--green)}
-.pc-chip.on{background:var(--green-ink);border-color:var(--green-ink);color:#fff}
+/* the chosen area: the park's gold, a size up, lifted off the page */
+.pc-chip{position:relative;transition:transform .15s,box-shadow .15s,background .15s}
+.pc-chip[aria-pressed="true"]{background:var(--gold-light);border:2.5px solid var(--gold);color:var(--green-deep);
+  font-weight:700;transform:scale(1.07);box-shadow:var(--lift-high);z-index:1}
+@media (prefers-reduced-motion:reduce){.pc-chip{transition:none}}
+.pc-more-intro{margin:0 0 var(--s5)}
+.pc-more-intro summary{font:700 var(--t-base)/1.4 var(--sans);color:var(--green);cursor:pointer;margin-bottom:var(--s3)}
 .pc-stage{position:relative;border-radius:var(--r);overflow:hidden;background:var(--sunk);aspect-ratio:1/1;max-height:72vh;width:100%}
 .pc-stage svg{display:block;width:100%;height:100%}
 .pc-dot{fill:var(--gold-mark);stroke:#3a2a00;stroke-width:calc(3px * var(--k, 1));transition:opacity .25s,fill .25s}
@@ -49,9 +55,6 @@
 .pc-area:last-of-type{border-bottom:0}
 .pc-area-head{display:flex;align-items:baseline;gap:var(--s4);flex-wrap:wrap;margin-bottom:var(--s3)}
 .pc-area h2{font-size:var(--t-xl);color:var(--green-ink)}
-.pc-show{font:600 var(--t-base)/1 var(--sans);color:var(--green);background:none;border:0;cursor:pointer;
-  padding:.5rem 0;text-decoration:underline;text-underline-offset:3px}
-.pc-area .pc-panel{max-width:1000px;margin:0 0 var(--s5)}
 /* the map, the card under it, and the list of palms in view (beside the map on a wide screen) */
 .pc-body{display:grid;gap:var(--s3);grid-template-areas:"stage" "card" "list";grid-template-columns:minmax(0,1fr)}
 .pc-body .pc-stage{grid-area:stage}
@@ -75,17 +78,6 @@
   .pc-list{max-height:72vh;border-top:0}
   .pc-list-h{padding-top:0}
 }
-/* "Jump to area": small, floating, only once you are among the areas */
-.pc-jump{position:fixed;right:16px;bottom:16px;z-index:40;opacity:0;pointer-events:none;transform:translateY(8px);
-  transition:opacity .2s,transform .2s}
-.pc-jump.show{opacity:1;pointer-events:auto;transform:none}
-.pc-jump select{font:600 var(--t-base)/1.2 var(--sans);min-height:44px;max-width:calc(100vw - 32px);
-  padding:.55rem 2.4rem .55rem 1rem;border:0;border-radius:var(--r-pill);background-color:var(--green-ink);color:#fff;
-  box-shadow:var(--lift-high);cursor:pointer;-webkit-appearance:none;appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 1rem center}
-@media (prefers-reduced-motion:reduce){.pc-jump{transition:none}}
-.pc-away{margin:0}
 .pc-area .words{max-width:var(--measure)}
 .pc-area .words p{font-size:var(--t-base);line-height:1.75;margin-bottom:var(--s3)}
 .pc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--s4);margin-top:var(--s5)}
@@ -150,17 +142,17 @@
 
 <div class="pc-intro">
   <p>More than ninety kinds of palm grow in this park, and we’re still finding and planting more. Some are Florida’s own. Others come from Madagascar, New Caledonia, Fiji, Vanuatu, Cuba, and tiny islands east of Madagascar. Together, they bring a remarkable slice of the palm world to these ten acres.</p>
-  <p class="pc-tomap"><a href="#map">Go straight to the map ↓</a></p>
-  <p>Some are now rare in their native habitat. In 2019, only nineteen Spindle Palms were known in the wild. The Vanuatu Palm was known only from old fruit specimens until living trees were found in 1987. Both grow beside our Big Pond, a short walk apart.</p>
-  <p>Thanks to generations of conservationists, growers, and palm enthusiasts, we have the chance to grow these palms here. Their stories reach far beyond the park: island forests, unlikely discoveries, and people determined to keep a species growing.</p>
-  <p>You’ll find palms throughout the grounds, each area with its own feel: a shady corner, a palm-lined walk, an open field you cross on the grass. Some are recent plantings, still years from looking like the mature palms pictured in books. Others may be so familiar that you hardly notice them—including a few of our most interesting palms outside the fence, along the road.</p>
-  <p>Our new signs and this guide offer a reason to take another look. There’s no need to see everything in one visit. Spend time in one area, notice what catches your eye, and come back for another. Use the map to get your bearings, then wander.</p>
+  <details class="pc-more-intro">
+    <summary>More about the collection</summary>
+    <p>Some are now rare in their native habitat. In 2019, only nineteen Spindle Palms were known in the wild. The Vanuatu Palm was known only from old fruit specimens until living trees were found in 1987. Both grow beside our Big Pond, a short walk apart.</p>
+    <p>Thanks to generations of conservationists, growers, and palm enthusiasts, we have the chance to grow these palms here. Their stories reach far beyond the park: island forests, unlikely discoveries, and people determined to keep a species growing.</p>
+    <p>You’ll find palms throughout the grounds, each area with its own feel: a shady corner, a palm-lined walk, an open field you cross on the grass. Some are recent plantings, still years from looking like the mature palms pictured in books. Others may be so familiar that you hardly notice them—including a few of our most interesting palms outside the fence, along the road.</p>
+    <p>Our new signs and this guide offer a reason to take another look. There’s no need to see everything in one visit. Spend time in one area, notice what catches your eye, and come back for another. Use the map to get your bearings, then wander.</p>
+  </details>
 </div>
 
 <section class="pc-map" id="map" aria-label="Map of the palm collection">
-  <h2>Where the palms are</h2>
-  <p class="hint">Pick an area, or tap any dot.</p>
-  <div class="pc-chips" id="chips"></div>
+  <div class="pc-chips" id="chips" role="group" aria-label="Choose an area; the map and the page below follow"></div>
   <div class="pc-panel" id="panel">
     <div class="pc-body">
       <div class="pc-stage"><svg id="svg" viewBox="0 0 1408 1408" role="img" aria-label="The park map with each palm marked">
@@ -180,7 +172,7 @@
      the published species list and the placement pins (data-areas = placement area names). -->
 
 <section class="pc-area" id="palm-alley" data-areas="Palm Alley">
-  <div class="pc-area-head"><h2>Palm Alley</h2><button class="pc-show" type="button">Show on the map</button></div>
+  <div class="pc-area-head"><h2>Palm Alley</h2></div>
   <div class="words">
     <p>Palm Alley is the walk along the south end of the Big Pond, between the Rare Fruit bridge and the elms at the park's southern tip. Palms set five to ten feet apart frame it the whole way.</p>
     <p>Some of the rarest palms in the park are on this one stretch: the Vanuatu Palm, the Pemba Palm from two patches of forest on one island off Tanzania, and the Teddy Bear Palm with its rust-red fuzz, Critically Endangered in Madagascar.</p>
@@ -188,7 +180,7 @@
 </section>
 
 <section class="pc-area" id="shade-palms" data-areas="Shade Palms">
-  <div class="pc-area-head"><h2>Shade Palms</h2><button class="pc-show" type="button">Show on the map</button></div>
+  <div class="pc-area-head"><h2>Shade Palms</h2></div>
   <div class="words">
     <p>Beyond the Royals, in the north-east corner near the front fence, is where we grow the palms that want shade. There is no set path. Wander in under the canopy and look around.</p>
     <p>Three king palms stand side by side here: the Purple King, the Myola King and the Peach River King. With the Piccabeen nearby, that is four of the six species in their genus in one corner. Several are young, so come back in a few years.</p>
@@ -196,7 +188,7 @@
 </section>
 
 <section class="pc-area" id="natives" data-areas="Natives" data-native="1">
-  <div class="pc-area-head"><h2>Florida's Own</h2><button class="pc-show" type="button">Show on the map</button></div>
+  <div class="pc-area-head"><h2>Florida's Own</h2></div>
   <div class="words">
     <p>Our Florida natives are gathered on this page, though they grow in several parts of the park. Even the Royals by the Pavilion are Florida natives, from the hammocks of the far south.</p>
     <p>At the southern tip, three elms shade a bench, a good place to rest. Along the south fence is a row of Florida's native palms. The Florida Thatch Palm puts on about six inches a year, so a trunk of any size on one is a long stretch of time.</p>
@@ -204,7 +196,7 @@
 </section>
 
 <section class="pc-area" id="sun-palms" data-areas="Sun Palms">
-  <div class="pc-area-head"><h2>Sun Palms</h2><button class="pc-show" type="button">Show on the map</button></div>
+  <div class="pc-area-head"><h2>Sun Palms</h2></div>
   <div class="words">
     <p>Turn right at the elms and you are in the open field of unusual palms, which runs north to the Plumeria beside the Cypress Pond. It is the biggest group in the collection and the most varied. There's no path through it: walk the grass.</p>
     <p>Look for the Buccaneer Palm, with only about two hundred left wild in Florida, and the Lifou Palm, from one patch of forest on one small island.</p>
@@ -212,7 +204,7 @@
 </section>
 
 <section class="pc-area" id="big-pond" data-areas="Big Pond">
-  <div class="pc-area-head"><h2>Big Pond</h2><button class="pc-show" type="button">Show on the map</button></div>
+  <div class="pc-area-head"><h2>Big Pond</h2></div>
   <div class="words">
     <p>The banks of the Big Pond carry palms of their own, all the way to the Carnaúba at the north end, where the walk meets the open field behind the Galleria.</p>
     <p>Coming down the Galleria steps, the palm on the pond bank to your left, green above and silver below, is the Hispaniolan Silver Palm.</p>
@@ -220,21 +212,21 @@
 </section>
 
 <section class="pc-area" id="outside-the-fence" data-areas="Outside Front Gate|Outside Back Gate">
-  <div class="pc-area-head"><h2>Outside the Fence</h2><button class="pc-show" type="button">Show on the map</button></div>
+  <div class="pc-area-head"><h2>Outside the Fence</h2></div>
   <div class="words">
     <p>Some of our most interesting palms are planted outside the fence, on the strip by the road, and they get enjoyed far less than they deserve. You are welcome to walk out and see the whole line.</p>
   </div>
 </section>
 
 <section class="pc-area" id="butterfly-garden" data-areas="Butterfly Garden">
-  <div class="pc-area-head"><h2>Butterfly Garden</h2><button class="pc-show" type="button">Show on the map</button></div>
+  <div class="pc-area-head"><h2>Butterfly Garden</h2></div>
   <div class="words">
     <p>Left of the Pavilion, a handful of palms grow among the flowers. Find the Bottle Palm: its trunk swells at the base. Its cousin the Spindle Palm, down by the Big Pond, swells in the middle instead.</p>
   </div>
 </section>
 
 <section class="pc-area" id="pavilion-event-field" data-areas="Pavilion Event Field">
-  <div class="pc-area-head"><h2>Pavilion Event Field</h2><button class="pc-show" type="button">Show on the map</button></div>
+  <div class="pc-area-head"><h2>Pavilion Event Field</h2></div>
   <div class="words">
     <p>Go through the trellis off the driveway and the Royal Palms are straight ahead: two rough rows, with strays around them. They are the oldest palms in the collection, and they got here by accident.</p>
     <p>This was a county nursery, and these were grown for county streets. When the county stopped growing its own trees, they were left where they stood and rooted through their pots. Look at the spacing: it is a nursery's, not a garden designer's.</p>
@@ -242,7 +234,7 @@
 </section>
 
 <section class="pc-area" id="all-the-rest" data-areas="*">
-  <div class="pc-area-head"><h2>All the Rest</h2><button class="pc-show" type="button">Show on the map</button></div>
+  <div class="pc-area-head"><h2>All the Rest</h2></div>
   <div class="words">
     <p>Palms turn up everywhere else too: on the islands in the drive, around the Front Pond, the office and the nursery, even in the Rare Fruit area. Each card says where.</p>
   </div>
@@ -364,8 +356,9 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
   var current = '';
   function chip(id, label) {
     var b = document.createElement('button');
-    b.type = 'button'; b.className = 'pc-chip'; b.textContent = label; b.setAttribute('data-sec', id);
-    b.addEventListener('click', function () { if (openSec) closeMap(chips); focus(id); });
+    b.type = 'button'; b.className = 'pc-chip' + (id ? '' : ' all'); b.textContent = label;
+    b.setAttribute('data-sec', id); b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', function () { select(id); });
     chips.appendChild(b);
   }
   chip('', 'All palms');
@@ -402,7 +395,7 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
 
   function focus(id) {
     current = id; pfind.value = ''; fillList(id);
-    [].forEach.call(chips.children, function (c) { c.classList.toggle('on', c.getAttribute('data-sec') === id); });
+    [].forEach.call(chips.children, function (c) { c.setAttribute('aria-pressed', String(c.getAttribute('data-sec') === id)); });
     dots.forEach(function (d) { d.el.classList.toggle('dim', !!id && !inSection(d, id)); d.el.classList.remove('sel'); });
     var inSec = id ? dots.filter(function (d) { return inSection(d, id); }) : dots;
     zoomTo(frame(inSec));
@@ -476,77 +469,23 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
       grid.appendChild(a);
     });
     if (others.length) sec.appendChild(grid);
-    var btn = sec.querySelector('.pc-show');
-    btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', 'panel');
-    btn.addEventListener('click', function () { if (openSec === sec) closeMap(); else openIn(sec); });
   });
 
-  // "Show on the map" opens the map inside that section, under its heading, so the reader never
-  // leaves their place. There is one map: the panel moves, nothing is copied.
-  var panel = document.getElementById('panel'), home = document.getElementById('map'), openSec = null;
-  var away = document.createElement('p'); away.className = 'hint pc-away'; away.hidden = true;
-  home.insertBefore(away, panel);
-  // Moving the panel changes the height of the page above the reader; scroll by the same amount.
-  function keepPlace(anchor, change) {
-    var before = anchor.getBoundingClientRect().top;
-    change();
-    // instant, not the site's smooth scroll, or the page visibly slides
-    window.scrollBy({ top: anchor.getBoundingClientRect().top - before, behavior: 'instant' });
+  // An area button filters the whole page: the map zooms to it, the list beside the map shows its
+  // palms, and only that area's section stays below. "All palms" shows everything. The address
+  // carries the choice (palms.html#sun-palms), so a sign or a shared link opens on one area.
+  function select(id) {
+    focus(id);
+    areas.forEach(function (sec) { sec.hidden = !!id && sec.id !== id; });
+    history.replaceState(null, '', id ? '#' + id : location.pathname + location.search);
   }
-  function setBtn(sec, open) {
-    var b = sec.querySelector('.pc-show');
-    b.textContent = open ? 'Hide the map' : 'Show on the map';
-    b.setAttribute('aria-expanded', String(open));
+  function fromHash() {
+    var id = location.hash.slice(1);
+    return areas.some(function (sec) { return sec.id === id; }) ? id : '';
   }
-  function openIn(sec) {
-    keepPlace(sec.querySelector('.pc-show'), function () {
-      if (openSec) setBtn(openSec, false);
-      sec.querySelector('.pc-area-head').after(panel);
-      openSec = sec; setBtn(sec, true);
-      away.innerHTML = 'The map is open under <a href="#' + sec.id + '">' + esc(sec.querySelector('h2').textContent) + '</a>.';
-      away.hidden = false;
-    });
-    focus(sec.id);
-  }
-  function closeMap(anchor) {
-    if (!openSec) return;
-    var sec = openSec;
-    keepPlace(anchor || sec.querySelector('.pc-show'), function () {
-      setBtn(sec, false); openSec = null;
-      away.after(panel); away.hidden = true;
-    });
-    focus('');
-  }
-  document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape' || !openSec) return;
-    var b = openSec.querySelector('.pc-show');
-    closeMap(); b.focus();
-  });
+  window.addEventListener('hashchange', function () { var id = fromHash(); if (id && id !== current) select(id); });
 
-  // "Jump to area": a small floating picker once you are among the areas; it names the one you are in.
-  var jump = document.createElement('div'), pickArea = document.createElement('select');
-  jump.className = 'pc-jump'; pickArea.setAttribute('aria-label', 'Jump to area');
-  pickArea.innerHTML = '<option value="">Jump to area…</option><option value="map">The map</option>' +
-    areas.map(function (s) { return '<option value="' + s.id + '">' + esc(s.querySelector('h2').textContent) + '</option>'; }).join('');
-  jump.appendChild(pickArea); document.body.appendChild(jump);
-  pickArea.addEventListener('change', function () {
-    var el = document.getElementById(pickArea.value);
-    if (!el) return;
-    el.scrollIntoView();   // the site's smooth scroll; instant when the reader asks for reduced motion
-    history.replaceState(null, '', '#' + pickArea.value);
-  });
-  if ('IntersectionObserver' in window) {
-    var seen = {};
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { seen[e.target.id] = e.isIntersecting; });
-      var now = areas.filter(function (s) { return seen[s.id]; })[0];
-      pickArea.value = now ? now.id : '';
-      jump.classList.toggle('show', !!now);
-    }, { rootMargin: '-45% 0px -50% 0px' });
-    areas.forEach(function (s) { io.observe(s); });
-  }
-
-  focus('');
+  if (fromHash()) select(fromHash()); else focus('');
 })();
 </script>
 </body>
