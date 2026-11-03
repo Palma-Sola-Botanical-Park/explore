@@ -35,8 +35,6 @@
 /* the full-width button gets the gold but not the size-up, or it spills past the card's edges */
 .pc-chip.all[aria-pressed="true"]{transform:none}
 @media (prefers-reduced-motion:reduce){.pc-chip{transition:none}}
-.pc-more-intro{margin:0 0 var(--s5)}
-.pc-more-intro summary{font:700 var(--t-base)/1.4 var(--sans);color:var(--green);cursor:pointer;margin-bottom:var(--s3)}
 .pc-stage{position:relative;border-radius:var(--r);overflow:hidden;background:var(--sunk);aspect-ratio:1/1;max-height:72vh;width:100%}
 .pc-stage svg{display:block;width:100%;height:100%}
 .pc-dot{fill:var(--gold-mark);stroke:#3a2a00;stroke-width:calc(3px * var(--k, 1));transition:opacity .25s,fill .25s}
@@ -214,14 +212,10 @@
 <div class="pc-wrap">
 
 <div class="pc-intro">
-  <p>More than ninety kinds of palm grow in this park, and we’re still finding and planting more. Some are Florida’s own. Others come from Madagascar, New Caledonia, Fiji, Vanuatu, Cuba, and tiny islands east of Madagascar. Together, they bring a remarkable slice of the palm world to these ten acres.</p>
-  <details class="pc-more-intro">
-    <summary>More about the collection</summary>
-    <p>Some are now rare in their native habitat. In 2019, only nineteen Spindle Palms were known in the wild. The Vanuatu Palm was known only from old fruit specimens until living trees were found in 1987. Both grow beside our Big Pond, a short walk apart.</p>
-    <p>Thanks to generations of conservationists, growers, and palm enthusiasts, we have the chance to grow these palms here. Their stories reach far beyond the park: island forests, unlikely discoveries, and people determined to keep a species growing.</p>
-    <p>You’ll find palms throughout the grounds, each area with its own feel: a shady corner, a palm-lined walk, an open field you cross on the grass. Some are recent plantings, still years from looking like the mature palms pictured in books. Others may be so familiar that you hardly notice them—including a few of our most interesting palms outside the fence, along the road.</p>
-    <p>Our new signs and this guide offer a reason to take another look. There’s no need to see everything in one visit. Spend time in one area, notice what catches your eye, and come back for another. Use the map to get your bearings, then wander.</p>
-  </details>
+  <p>More than ninety kinds of palm grow in this park. In Florida, palms are part of the scenery, and it’s easy to walk past them. Look closer: they come from Madagascar, New Caledonia, Fiji, Cuba and islands you may never have heard of, and each has something worth noticing.</p>
+  <p>This guide shares what grows here, what makes each palm remarkable, and what we’re still learning. We keep planting, too, and we look for palms with a story to tell.</p>
+  <p>Start with one area and meet a few of its palms. We’ll change the picks from time to time, so there’s something new to notice on your next visit.</p>
+  <p><b>Help tell their stories.</b> A new flower, ripening fruit, an opening frond, a strange trunk: photograph it and post it on iNaturalist. We look through what people find here, and a photo shared under a Creative Commons licence can join our collection, credited to you, like the work of <a href="photographers.html">our park photographers</a>.</p>
   <div class="pg-paths">
     <a class="btn btn-green" href="#meet">Meet the palms ↓</a>
     <a class="btn btn-outline" href="palm-finder.html">Find a palm on the map →</a>
@@ -242,9 +236,10 @@
 </section>
 
 <!-- Each area: the words are written here; up to three photos and a link to the finder follow,
-     filled in from the palm list below (data-areas = placement area names). -->
+     filled in from the palm list below (data-areas = placement area names). data-picks names the
+     photos to show, by common name, in order; an area without it gets the automatic choice. -->
 
-<section class="pc-area" id="palm-alley" data-areas="Palm Alley">
+<section class="pc-area" id="palm-alley" data-areas="Palm Alley" data-picks="Pemba Palm|Triangle Palm|Seashore Palm">
   <div class="pc-area-head"><h2>Palm Alley</h2></div>
   <div class="words">
     <p>Palm Alley is the walk along the south end of the Big Pond, between the Rare Fruit bridge and the elms at the park's southern tip. Palms set five to ten feet apart frame it the whole way.</p>
@@ -391,8 +386,8 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
   });
 
   // Each area: up to three photos, then a link that opens the map on that area.
-  // Pick order: palms the area's own words mention, then Feature palms, then A to Z.
-  // A palm already shown higher up is skipped unless this area's words mention it.
+  // Hand-picked (data-picks) first; otherwise palms the area's own words mention, then Feature
+  // palms, then A to Z, skipping a palm already shown higher up unless this area's words mention it.
   var shown = MEET.slice();
   areas.forEach(function (sec) {
     var words = norm(sec.querySelector('.words').textContent);
@@ -403,6 +398,10 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
       .sort(function (a, b) {
         return named(b) - named(a) || (b.tier === 'Feature') - (a.tier === 'Feature') || a.name.localeCompare(b.name);
       }).slice(0, 3);
+    var hand = sec.getAttribute('data-picks');
+    if (hand) picks = hand.split('|').map(function (n) {
+      return all.filter(function (p) { return p.name === n; })[0];
+    }).filter(Boolean).slice(0, 3);
     if (picks.length) {
       var g = document.createElement('div'); g.className = 'pg-cards area';
       picks.forEach(function (p) { g.appendChild(card(p, p.tier === 'Feature' ? 'Don\'t miss' : '')); shown.push(p.name); });
