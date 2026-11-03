@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rare Fruit Trail Map — Palma Sola Botanical Park</title>
+<meta name="description" content="Jackfruit, black sapote, dragon fruit and more: a grove of tropical fruit trees tended by the Manatee Rare Fruit Council in a free botanical park in Bradenton, Florida.">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="apple-touch-icon" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/psbp.css">
+<link rel="stylesheet" href="css/landing.css?v=2026-11-02b">
+</head>
+<body>
+<div id="nav-placeholder"></div>
+
+<div class="page-hero">
+  <div class="page-hero-bg" style="background-image:url('images/venue-rare-fruit-hero.jpg')"></div>
+  <div class="page-hero-content" style="text-align:center;margin:0 auto">
+    <div class="label label-light">Palma Sola Botanical Park</div>
+    <h1>Rare Fruit Trail Map</h1>
+    <p>Fruit trees from the tropics, growing in a corner of Manatee County that rarely sees a frost.</p>
+  </div>
+</div>
+
+<div class="lc-wrap">
+
+<div class="lc-intro">
+  <p class="lc-back"><a href="rarefruit.html">← Read about the Rare Fruit Trail</a></p>
+  <p>Every fruit tree we have placed on the trail, and every fruit in the collection.</p>
+</div>
+
+<section class="lc-sec lm-tall" id="map" aria-label="Map of the Rare Fruit Trail">
+  <h2>Walk the grove</h2>
+  <div class="words"><p>The gold dots are the trees we have placed on the map so far. More go on as we pin them.</p></div>
+  <div class="lm-body">
+    <div class="lm-stage" id="stage" tabindex="0"></div>
+    <div>
+      <div class="lm-card" id="card">Loading the map…</div>
+      <p class="lm-note">Roads © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
+    </div>
+  </div>
+</section>
+
+<section class="lc-sec" id="fruit">
+  <h2>Every fruit on the trail</h2>
+  <div class="words"><p>Each card opens that tree's own page. A few of these grow elsewhere in the park as well, and the card says where.</p></div>
+  <div class="lm-grid" id="grid"></div>
+</section>
+
+<div class="lc-links">
+  <a class="btn btn-outline" href="nature.html?filter=rare_fruit">Every rare fruit in the catalog →</a>
+</div>
+
+</div>
+
+<div id="footer-placeholder"></div>
+<script src="js/site.js"></script>
+<script src="js/photo-credits.js"></script>
+<script src="js/landing-map.js?v=2026-11-02"></script>
+<script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
+<script>
+// Snapshot of the placement pins for every rare fruit plant (2 November 2026), already placed on
+// images/park-map.svg. The plants themselves (names, photos, teasers) are read live from plants.json.
+var PINS = {"PSBP-00080":[[631.0,715.5,"Shade Garden"],[1225.6,771.1,"Rare Fruit"]],"PSBP-00086":[[412.4,576.5,"Front Pond"],[1217.3,1157.3,"Rare Fruit"]],"PSBP-00126":[[1174.2,826.7,"Rare Fruit"]],"PSBP-00127":[[1192.3,673.4,"Rare Fruit"]],"PSBP-00128":[[1203.4,634.4,"Rare Fruit"]],"PSBP-00130":[[530.4,805.7,"Cacti and Succulents"],[1024.9,656.1,"Rare Fruit"]],"PSBP-00132":[[1107.8,646.6,"Rare Fruit"]],"PSBP-00621":[[1084.9,662.9,"Rare Fruit"]],"PSBP-00701":[[1101.0,330.7,"Pavilion Field"]],"PSBP-00723":[[1102.1,1024.9,"Rare Fruit"]]};
+
+LandingMap({
+  stage: document.getElementById('stage'),
+  card: document.getElementById('card'),
+  grid: document.getElementById('grid'),
+  viewBox: [980, 590, 290, 610],      // the Rare Fruit area: a tall, narrow strip
+  pins: PINS,
+  pick: function (p) { return p.rare_fruit === true; },
+  noun: 'fruit tree',
+  tag: function (p) {
+    var away = (PINS[p.id] || []).map(function (pin) { return pin[2]; })
+      .filter(function (a, i, arr) { return a && a !== 'Rare Fruit' && arr.indexOf(a) === i; });
+    var onTrail = (PINS[p.id] || []).some(function (pin) { return pin[2] === 'Rare Fruit'; });
+    return [p.origin_short].concat(away.length ? [(onTrail ? 'also at ' : 'at ') + away.join(', ')] : []).filter(Boolean).join(' · ');
+  }
+});
+</script>
+</body>
+</html>

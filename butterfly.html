@@ -10,11 +10,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/psbp.css">
-<link rel="stylesheet" href="css/landing.css?v=2026-11-02">
+<link rel="stylesheet" href="css/landing.css?v=2026-11-02b">
 </head>
 <body>
 <!-- TEMPLATE (2026-11-02): the dashed boxes are slots waiting for the volunteers' story and
-     general photos of the garden. The plant list, map and butterflies are live. -->
+     general photos of the garden. The photos, counts and map are live. -->
 <div id="nav-placeholder"></div>
 
 <div class="page-hero">
@@ -31,19 +31,53 @@
 <div class="lc-intro">
   <p>Nectar and host plants chosen to pull butterflies through the season, and to feed the caterpillars that become them. Come on a warm, still morning.</p>
   <div class="lc-slot"><b>Intro from the garden's volunteers.</b> A paragraph or two: what the garden is for, what to look for when you walk in, the best time of year.</div>
+  <div class="pg-paths">
+    <a class="btn btn-green" href="#butterflies">Meet the butterflies ↓</a>
+    <a class="btn btn-outline" href="butterfly-finder.html">See the garden map →</a>
+  </div>
 </div>
 
-<section class="lc-sec" id="photos">
-  <h2>The garden</h2>
+
+<!-- Butterflies first: they are what people come for. Then the plants that bring them in, then how it works.
+     Each section: words, up to three photos (data-picks, by PSBP ID, in order), and a link to the map. -->
+
+<section class="lc-sec" id="butterflies">
+  <h2>Butterflies to look for</h2>
+  <div class="words"><p>Butterflies and moths that have been photographed in the park.</p></div>
+  <!-- Monarch, Zebra Longwing, Gulf Fritillary -->
+  <div class="pg-cards" data-picks="PSBP-99994 PSBP-99971 PSBP-99970"></div>
+  <a class="pg-see" href="butterfly-finder.html#butterflies">See all <span data-count="butterflies"></span> →</a>
+</section>
+
+<section class="lc-sec" id="plants">
+  <h2>The plants that bring them in</h2>
+  <div class="words"><p>Some plants here are for the butterflies: nectar to drink. Others are for their caterpillars, and many caterpillars eat the leaves of only one kind of plant.</p></div>
+  <!-- Giant Milkweed, Firebush, Firewheel -->
+  <div class="pg-cards" data-picks="PSBP-00039 PSBP-00074 PSBP-00009"></div>
+  <a class="pg-see" href="butterfly-finder.html">See all <span data-count="plants"></span> on the map →</a>
+  <div style="margin-top:var(--s6)"><a class="pg-find" href="butterfly-finder.html" aria-label="Open the Butterfly Garden map">
+  <svg class="pg-map" viewBox="1080 375 200 200" aria-hidden="true"><image href="images/park-map.svg?v=2026-11-02f" width="1408" height="1408"/><g class="pg-dots"></g></svg>
+  <span><b>Looking for one plant?</b>
+    <p>The map shows every plant we have placed in the garden, with a card for each one.</p>
+    <span class="go">Open the garden map →</span></span>
+</a>
+  </div>
+</section>
+
+<section class="lc-sec" id="learn">
+  <h2>How it works</h2>
+  <div class="words"><p>A butterfly garden has to feed two animals: the butterfly and the caterpillar it was.</p></div>
+  <!-- Each slot becomes a link to a Park Story once it is written. -->
   <div class="lc-photos">
-    <div class="lc-slot">General photo of the garden</div>
-    <div class="lc-slot">General photo of the garden</div>
-    <div class="lc-slot">General photo of the garden</div>
+    <div class="lc-slot"><b>Host plants.</b> A Park Story: why a caterpillar eats only certain leaves.</div>
+    <div class="lc-slot"><b>Nectar plants.</b> A Park Story: what the adults drink, and when.</div>
+    <div class="lc-slot"><b>From caterpillar to butterfly.</b> A Park Story: egg, caterpillar, chrysalis, wings.</div>
   </div>
 </section>
 
 <section class="lc-sec" id="story">
   <h2>How the garden grew</h2>
+  <!-- The butterfly-garden-team Park Story (an idea in The Dirt) can be linked here once it is written. -->
   <div class="lc-slot"><b>The volunteers' story.</b> How the garden got going, who planted what, what worked and what didn't.</div>
   <div class="lc-box">
     <h3>A certified Monarch Waystation</h3>
@@ -52,23 +86,13 @@
   </div>
 </section>
 
-<section class="lc-sec" id="map" aria-label="Map of the Butterfly Garden">
-  <h2>What's growing here</h2>
-  <div class="words"><p>The gold dots are the plants we have placed on the map so far. Tap one to see what it is.</p></div>
-  <div class="lm-body">
-    <div class="lm-stage" id="stage" tabindex="0"></div>
-    <div>
-      <div class="lm-card" id="card">Loading the map…</div>
-      <p class="lm-note">Roads © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
-    </div>
+<section class="lc-sec" id="photos">
+  <h2>The garden</h2>
+  <div class="lc-photos">
+    <div class="lc-slot">General photo of the garden</div>
+    <div class="lc-slot">General photo of the garden</div>
+    <div class="lc-slot">General photo of the garden</div>
   </div>
-  <div class="lm-grid" id="grid"></div>
-</section>
-
-<section class="lc-sec" id="butterflies">
-  <h2>Butterflies in the park</h2>
-  <div class="words"><p>Butterflies and moths that have been photographed in the park. Each card opens its own page.</p></div>
-  <div class="lm-grid" id="wgrid"></div>
 </section>
 
 <div class="lc-links">
@@ -81,51 +105,18 @@
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
 <script src="js/photo-credits.js"></script>
-<script src="js/landing-map.js?v=2026-11-02"></script>
+<script src="js/landing-guide.js?v=2026-11-02"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 <script>
-// Snapshot of the placement pins in the Butterfly Garden (2 November 2026), already placed on
-// images/park-map.svg. The plants themselves (names, photos, teasers) are read live from plants.json.
+// The same snapshot of the garden's placement pins as butterfly-finder.html (2 November 2026); refresh the two together.
 var PINS = {"PSBP-00009":[[1177.8,444.5,"Butterfly Garden"]],"PSBP-00019":[[1171.2,485.6,"Butterfly Garden"]],"PSBP-00024":[[1200.7,463.0,"Butterfly Garden"]],"PSBP-00039":[[1194.6,524.6,"Butterfly Garden"]],"PSBP-00062":[[1202.3,435.4,"Butterfly Garden"]],"PSBP-00072":[[1183.3,430.2,"Butterfly Garden"]],"PSBP-00074":[[1180.0,523.4,"Butterfly Garden"]],"PSBP-00089":[[1233.6,489.9,"Butterfly Garden"]],"PSBP-00098":[[1201.4,433.1,"Butterfly Garden"]],"PSBP-00125":[[1128.1,539.9,"Butterfly Garden"]],"PSBP-00156":[[1152.9,457.1,"Butterfly Garden"],[1195.0,481.8,"Butterfly Garden"]],"PSBP-00163":[[1205.4,448.2,"Butterfly Garden"]],"PSBP-00366":[[1195.8,517.7,"Butterfly Garden"]],"PSBP-00414":[[1207.6,498.8,"Butterfly Garden"]],"PSBP-00415":[[1139.9,517.1,"Butterfly Garden"]],"PSBP-00437":[[1161.4,427.4,"Butterfly Garden"]]};
 
-// What a plant does for butterflies, in a few words: nectar, and whose caterpillars eat it.
-function role(p) {
-  // names only, and never a host the record itself marks as unverified
-  var hosts = (p.larval_species || []).filter(function (s) { return !/not verified/i.test(s); })
-    .map(function (s) { return String(s).replace(/\s*\(.*$/, ''); });
-  var bits = [];
-  if (p.nectar) bits.push('Nectar');
-  if (p.larval_host) bits.push(hosts.length ? 'caterpillars: ' + hosts.join(', ') : 'caterpillar host');
-  var s = bits.join(' · ');
-  return s ? s.charAt(0).toUpperCase() + s.slice(1) : p.origin_short;
-}
-
-LandingMap({
-  stage: document.getElementById('stage'),
-  card: document.getElementById('card'),
-  grid: document.getElementById('grid'),
-  viewBox: [1080, 375, 200, 200],     // the Butterfly Garden, beside the Pavilion
+LandingGuide({
   pins: PINS,
-  noun: 'plant',
-  tag: role
-});
-
-// The butterflies and moths: every published one, from wildlife.json.
-fetch('wildlife.json').then(function (r) { return r.json(); }).then(function (all) {
-  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  var g = document.getElementById('wgrid');
-  all.filter(function (w) { return w.theme === 'butterfly'; })
-    .sort(function (a, b) { return (b.tier === 'Feature') - (a.tier === 'Feature') || a.common.localeCompare(b.common); })
-    .forEach(function (w) {
-      var fit = /ND/.test(w.credit_license || '') ? ';background-size:contain' : '';
-      var a = document.createElement('a');
-      a.className = 'lm-sp'; a.href = w.page;
-      a.innerHTML = '<span class="ph" style="background-image:url(\'' + esc(w.photo_thumb || w.photo_web) +
-        '\');background-position:' + esc(w.focus || '50% 50%') + fit + '"></span><span class="tx"><b>' + esc(w.common) + '</b>' +
-        '<i class="sci">' + esc(w.sci) + '</i></span>' +
-        (w.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: w.credit_name, license: w.credit_license }) : '');
-      g.appendChild(a);
-    });
+  counts: {
+    plants: function (plants) { return plants.filter(function (p) { return PINS[p.id]; }).length + ' plants'; },
+    butterflies: function (plants, wildlife) { return wildlife.filter(function (w) { return w.theme === 'butterfly'; }).length + ' butterflies and moths'; }
+  }
 });
 </script>
 </body>

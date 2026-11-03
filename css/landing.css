@@ -1,11 +1,11 @@
-/* landing.css: the collection landing pages (rarefruit.html, butterfly.html).
-   The map and card follow palm-finder.html; the map here is one crop of the park, not the whole of it. */
+/* landing.css: the collection landing pages. Each collection has a guide (rarefruit.html, butterfly.html:
+   words and a few photos) and a finder (rarefruit-finder.html, butterfly-finder.html: the map and every
+   plant). The guide follows palms.html; the finder's map and card follow palm-finder.html, cropped to one
+   part of the park. */
 
 .lc-wrap{max-width:var(--wide);margin:0 auto;padding:0 16px}
 .lc-intro{max-width:var(--measure);margin:var(--s7) auto var(--s6)}
 .lc-intro p{font-size:var(--t-base);line-height:1.75;margin-bottom:var(--s4)}
-.lc-intro p:first-child{font-size:var(--t-md);color:var(--green-ink)}
-.lc-more-intro summary{font:700 var(--t-base)/1.4 var(--sans);color:var(--green);cursor:pointer;margin-bottom:var(--s3)}
 
 .lc-sec{padding:var(--s7) 0 var(--s4);border-bottom:1px solid var(--rule)}
 .lc-sec:last-of-type{border-bottom:0}
@@ -82,3 +82,48 @@
 .lc-photos .lc-slot{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;text-align:center;margin:0}
 
 .lc-links{display:flex;flex-wrap:wrap;gap:var(--s3);justify-content:center;margin:var(--s6) auto var(--s8)}
+
+/* ---- the guide: words, a few photos, a small map that opens the finder (as on palms.html) ---- */
+.pg-paths{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s5)}
+.pg-find{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:var(--s5);align-items:center;
+  max-width:var(--measure);margin:0 auto var(--s7);padding:var(--s4);background:var(--wash);border-radius:var(--r-lg);
+  color:inherit;text-decoration:none;transition:box-shadow .2s}
+.pg-find:hover{box-shadow:var(--lift-high);text-decoration:none}
+.pg-find:hover .go{text-decoration:underline;text-underline-offset:3px}
+.pg-find svg{display:block;width:100%;height:auto;max-height:320px;border-radius:var(--r);background:var(--sunk)}
+.pg-find b{display:block;font:600 var(--t-lg)/1.2 var(--serif);color:var(--green-ink)}
+.pg-find p{font-size:var(--t-base);line-height:1.6;color:var(--ink);margin-top:var(--s2)}
+.pg-find .go{display:inline-block;font-weight:700;color:var(--green);margin-top:var(--s3)}
+@media (max-width:560px){.pg-find{grid-template-columns:120px minmax(0,1fr);gap:var(--s4)}.pg-find b{font-size:var(--t-md)}}
+/* photo cards: three across, two on a tablet, one on a phone */
+.pg-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s5);margin-top:var(--s5)}
+@media (max-width:900px){.pg-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.pg-cards{grid-template-columns:1fr;gap:var(--s4)}}
+.pg-card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);
+  overflow:hidden;color:inherit;text-decoration:none;transition:box-shadow .2s,transform .2s}
+.pg-card:hover{box-shadow:var(--lift-high);transform:translateY(-2px);text-decoration:none}
+.pg-card:hover b,.pg-card:hover .go{text-decoration:underline;text-underline-offset:3px}
+.pg-card .ph{aspect-ratio:4/3;background:var(--sunk) center/cover no-repeat}
+.pg-card .tx{display:flex;flex-direction:column;flex:1;padding:var(--s4)}
+.pg-card .tag{align-self:flex-start;font:700 var(--t-cap)/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:var(--s2)}
+.pg-card b{font:600 var(--t-md)/1.25 var(--serif);color:var(--green-ink)}
+.pg-card .sci,.pg-card .from{display:block;font-size:var(--t-base);color:var(--ink-soft);margin-top:2px}
+.pg-card .story{font-size:var(--t-base);line-height:1.6;color:var(--ink);margin-top:var(--s3)}
+.pg-card .go{font-weight:700;color:var(--green);margin-top:var(--s3)}
+/* the credit, cut to what the licence asks for: the photographer and the licence badge */
+.pg-card .credit-plate{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:auto 0 0;padding:var(--s3) 0 0;border:0;background:none}
+.pg-card .credit-byline{flex-basis:auto}
+.pg-card .credit-eyebrow,.pg-card .credit-date,.pg-card .credit-src{display:none}
+/* on a phone, photos become rows (photo beside the words) so a section stays short */
+@media (max-width:560px){
+  .pg-cards .pg-card{display:grid;grid-template-columns:38% minmax(0,1fr)}
+  .pg-cards .ph{aspect-ratio:auto;min-height:100%}
+  .pg-cards .tx{padding:var(--s3)}
+  .pg-cards .story{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-top:var(--s2)}
+  .pg-cards .from,.pg-cards .go{display:none}
+}
+/* the line under a section that opens the finder */
+.pg-see{display:inline-block;margin-top:var(--s5);font:700 var(--t-base)/1.4 var(--sans);color:var(--green)}
+/* the finder's way back to the guide */
+.lc-back{font-weight:700;margin-bottom:var(--s4)}
+.lc-back a{color:var(--green)}

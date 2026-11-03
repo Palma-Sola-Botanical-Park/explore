@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/psbp.css">
-<link rel="stylesheet" href="css/landing.css?v=2026-11-02">
+<link rel="stylesheet" href="css/landing.css?v=2026-11-02b">
 </head>
 <body>
 <div id="nav-placeholder"></div>
@@ -29,30 +29,36 @@
 <div class="lc-intro">
   <p>Jackfruit, black sapote, dragon fruit, longan: the Rare Fruit Trail is a grove of tropical and subtropical fruit, planted and cared for by the Manatee Rare Fruit Council since 2008.</p>
   <p>We sit close to Tampa Bay, where a hard freeze is rare. That bit of warmth lets trees grow here that would struggle a few miles inland.</p>
-  <details class="lc-more-intro">
-    <summary>How the grove was made</summary>
+  <div class="pg-paths">
+    <a class="btn btn-green" href="#meet">Meet the fruit ↓</a>
+    <a class="btn btn-outline" href="rarefruit-finder.html">See the trail map →</a>
+  </div>
+</div>
+
+<a class="pg-find" href="rarefruit-finder.html" aria-label="Open the Rare Fruit Trail map">
+  <svg class="pg-map" viewBox="980 590 290 610" aria-hidden="true"><image href="images/park-map.svg?v=2026-11-02f" width="1408" height="1408"/><g class="pg-dots"></g></svg>
+  <span><b>Looking for one tree?</b>
+    <p>The map shows every fruit tree we have placed on the trail, with a card for each one.</p>
+    <span class="go">Open the trail map →</span></span>
+</a>
+
+<!-- Each section: words, up to three photos (data-picks, by PSBP ID, in order), and a link to the map.
+     Fruit groups (the avocados, the mangos) get sections of their own once the grove is walked with the Council. -->
+
+<section class="lc-sec" id="meet">
+  <h2>Three to meet first</h2>
+  <!-- Jackfruit, Longan, Pineapple -->
+  <div class="pg-cards" data-picks="PSBP-00132 PSBP-00126 PSBP-00130"></div>
+  <a class="pg-see" href="rarefruit-finder.html">See all <span data-count="fruit"></span> on the map →</a>
+</section>
+
+<section class="lc-sec" id="story">
+  <h2>How the grove was made</h2>
+  <div class="words">
     <p>For years there was talk of a fruit exhibit, but no group took it on. Then two things lined up: we found the money to clear an overgrown corner at the edge of the park, and the Council decided to put the surplus from its annual tree sale into planting it.</p>
     <p>Most of what stood there was diseased palms. They came out to give the ground full sun, and the fill was graded nearly level so it drains gently toward the pond and the ditches. Manatee County put in underground irrigation, fed with reclaimed water. Council volunteers spread more than a hundred truckloads of wood chips to hold back the weeds and keep the soil moist, and the Bradenton Kiwanis Club helped pay for and lay the shell walk.</p>
     <p>Some trees were donated and others the Council bought. A marker beside each one gives its common and botanical names, and the name of the donor.</p>
-  </details>
-</div>
-
-<section class="lc-sec lm-tall" id="map" aria-label="Map of the Rare Fruit Trail">
-  <h2>Walk the grove</h2>
-  <div class="words"><p>The gold dots are the trees we have placed on the map so far. More go on as we pin them.</p></div>
-  <div class="lm-body">
-    <div class="lm-stage" id="stage" tabindex="0"></div>
-    <div>
-      <div class="lm-card" id="card">Loading the map…</div>
-      <p class="lm-note">Roads © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
-    </div>
   </div>
-</section>
-
-<section class="lc-sec" id="fruit">
-  <h2>Every fruit on the trail</h2>
-  <div class="words"><p>Each card opens that tree's own page. A few of these grow elsewhere in the park as well, and the card says where.</p></div>
-  <div class="lm-grid" id="grid"></div>
 </section>
 
 <section class="lc-sec" id="mrfc">
@@ -75,27 +81,15 @@
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
 <script src="js/photo-credits.js"></script>
-<script src="js/landing-map.js?v=2026-11-02"></script>
+<script src="js/landing-guide.js?v=2026-11-02"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 <script>
-// Snapshot of the placement pins for every rare fruit plant (2 November 2026), already placed on
-// images/park-map.svg. The plants themselves (names, photos, teasers) are read live from plants.json.
+// The same snapshot of the rare fruit placement pins as rarefruit-finder.html (2 November 2026); refresh the two together.
 var PINS = {"PSBP-00080":[[631.0,715.5,"Shade Garden"],[1225.6,771.1,"Rare Fruit"]],"PSBP-00086":[[412.4,576.5,"Front Pond"],[1217.3,1157.3,"Rare Fruit"]],"PSBP-00126":[[1174.2,826.7,"Rare Fruit"]],"PSBP-00127":[[1192.3,673.4,"Rare Fruit"]],"PSBP-00128":[[1203.4,634.4,"Rare Fruit"]],"PSBP-00130":[[530.4,805.7,"Cacti and Succulents"],[1024.9,656.1,"Rare Fruit"]],"PSBP-00132":[[1107.8,646.6,"Rare Fruit"]],"PSBP-00621":[[1084.9,662.9,"Rare Fruit"]],"PSBP-00701":[[1101.0,330.7,"Pavilion Field"]],"PSBP-00723":[[1102.1,1024.9,"Rare Fruit"]]};
 
-LandingMap({
-  stage: document.getElementById('stage'),
-  card: document.getElementById('card'),
-  grid: document.getElementById('grid'),
-  viewBox: [980, 590, 290, 610],      // the Rare Fruit area: a tall, narrow strip
+LandingGuide({
   pins: PINS,
-  pick: function (p) { return p.rare_fruit === true; },
-  noun: 'fruit tree',
-  tag: function (p) {
-    var away = (PINS[p.id] || []).map(function (pin) { return pin[2]; })
-      .filter(function (a, i, arr) { return a && a !== 'Rare Fruit' && arr.indexOf(a) === i; });
-    var onTrail = (PINS[p.id] || []).some(function (pin) { return pin[2] === 'Rare Fruit'; });
-    return [p.origin_short].concat(away.length ? [(onTrail ? 'also at ' : 'at ') + away.join(', ')] : []).filter(Boolean).join(' · ');
-  }
+  counts: { fruit: function (plants) { return plants.filter(function (p) { return p.rare_fruit === true; }).length + ' fruit'; } }
 });
 </script>
 </body>
