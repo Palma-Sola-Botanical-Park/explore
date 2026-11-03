@@ -61,8 +61,13 @@
 @media (max-width:340px){.pc-media{grid-template-columns:1fr}.pc-photo{max-width:200px}}
 
 /* the areas */
-.pc-area{padding:var(--s7) 0 var(--s4);border-bottom:1px solid var(--rule);scroll-margin-top:calc(var(--nav-h) + 12px)}
-.pc-area:last-of-type{border-bottom:0}
+.pc-area{padding:var(--s7) 0;scroll-margin-top:calc(var(--nav-h) + 12px)}
+/* one band per area, pale green and sand in turn, edge to edge, so each block reads as its own place */
+.pc-area{clip-path:inset(0 -100vmax)}
+.pc-area:nth-of-type(even){background:var(--green-tint);box-shadow:0 0 0 100vmax var(--green-tint)}
+.pc-area:nth-of-type(odd){background:var(--sunk);box-shadow:0 0 0 100vmax var(--sunk)}
+.pg-areas-h{padding:var(--s7) 0 var(--s4)}
+.pg-areas-h h2{font-size:var(--t-xl);color:var(--green-ink)}
 .pc-area-head{display:flex;align-items:baseline;gap:var(--s4);flex-wrap:wrap;margin-bottom:var(--s3)}
 .pc-area h2{font-size:var(--t-xl);color:var(--green-ink)}
 /* the map, the card under it, and the list of palms in view (beside the map on a wide screen) */
@@ -213,7 +218,7 @@
 <div class="pc-intro">
   <p>More than ninety kinds of palm grow in this park. In Florida, palms are part of the scenery, and it’s easy to walk past them. Look closer: they come from Madagascar, New Caledonia, Fiji, Cuba and islands you may never have heard of, and each has something worth noticing.</p>
   <p>Our field guide shares what grows here, what makes each palm remarkable, and what we’re still learning. We keep planting, too, and we look for palms with a story to tell.</p>
-  <p>Start with one area and meet a few of its palms. We’ll change the picks from time to time, so there’s something new to notice on your next visit.</p>
+  <p>The guide below walks the park area by area. Start with one and meet a few of its palms. We’ll change the picks from time to time, so there’s something new to notice on your next visit.</p>
   <p><b>Better yet, help tell their stories.</b> A new flower, ripening fruit, an opening frond, a strange trunk: photograph it and post it on iNaturalist. A photo shared under a Creative Commons licence will join our collection, credited to you.</p>
   <div class="pg-paths">
     <a class="btn btn-green" href="#meet">Meet the palms ↓</a>
@@ -230,9 +235,11 @@
 
 <section class="pg-meet" id="meet" aria-labelledby="meet-h">
   <h2 id="meet-h">Three to meet first</h2>
-  <p>If you see only three palms today, make it these. All three are on Palm Alley, a short walk apart.</p>
+  <p>Right now: three island palms, all on Palm Alley, a short walk apart.</p>
   <div class="pg-cards" id="meet-cards"></div>
 </section>
+
+<div class="pg-areas-h"><h2>The palms, area by area</h2></div>
 
 <!-- Each area: the words are written here; up to three photos and a link to the finder follow,
      filled in from the palm list below (data-areas = placement area names). data-picks names the

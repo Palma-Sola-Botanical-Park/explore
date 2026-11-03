@@ -1,4 +1,4 @@
-/* landing-map.js: the small map on a collection landing page (rarefruit.html, butterfly.html).
+/* landing-map.js: the map on a collection's finder page (rarefruit-finder.html, butterfly-finder.html).
    A crop of images/park-map.svg (the same true-to-scale map palm-finder.html uses), a gold dot for
    each pinned plant, and a card under it showing the plant tapped. ‹ › step through them
    north to south. The page also gets a grid of every plant in the collection.
