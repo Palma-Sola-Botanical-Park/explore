@@ -386,7 +386,7 @@ const NAV_HTML = `
       <ul class="subnav">
         <li><a href="visit.html#getting-here">Getting here</a></li>
         <li><a href="visit.html#the-layout">Park Map</a></li>
-        <li><a href="visit.html#wander">Where to wander</a></li>
+        <li><a href="visit.html#wander">What’s here</a></li>
         <li><a href="visit.html#tours">Tours</a></li>
       </ul>
     </li>
@@ -442,7 +442,7 @@ const NAV_HTML = `
   <a href="visit.html" class="nm-top">Visit</a>
   <a href="visit.html#getting-here" class="nm-sub">Getting here</a>
   <a href="visit.html#the-layout" class="nm-sub">Park Map</a>
-  <a href="visit.html#wander" class="nm-sub">Where to wander</a>
+  <a href="visit.html#wander" class="nm-sub">What’s here</a>
   <a href="visit.html#tours" class="nm-sub">Tours</a>
   <a href="events.html" class="nm-top">Events</a>
   <a href="events.html#weeks" class="nm-sub">Next 2 Weeks</a>
@@ -493,7 +493,7 @@ const FOOTER_HTML = `
       <h4>Explore</h4>
       <ul>
         <li><a href="index.html#latelySection">Lately</a></li>
-        <li><a href="nature.html#plants">Plants &amp; Wildlife</a></li>
+        <li><a href="nature.html#plants">Every plant and animal</a></li>
         <li><a href="news.html">Park News</a></li>
       </ul>
     </div>
@@ -2655,6 +2655,16 @@ async function loadLately(targetId, opts) {
 
    Everything is wrapped defensively: this file is shared by every page on the
    site, so a failure here must never take a page down with it.
+
+   DOORWAYS (2026-11-03). The catalog is no longer the only way in. The palm
+   guide, the finders, the Butterfly, Rare Fruit and Wildlife pages each write
+   their own list when a card is tapped, through PSBPSeq.remember(), with their
+   own way back (`back`, `backLabel`, `backShort`). A direct arrival or a QR
+   scan walks the species' own doorway: a palm walks the palms and goes back to
+   the Palm Collection, a fruit tree the Rare Fruit Trail, an animal Wildlife.
+   A stored list is trusted only when the visitor is on the species it was
+   saved for, or one step from it (Previous / Next / the browser's back);
+   anything else would show an old list from earlier in the visit.
    ═══════════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -2670,6 +2680,29 @@ async function loadLately(targetId, opts) {
     var m = /(PSBP-\d{5})/.exec(location.pathname);
     return m ? m[1] : null;
   }
+
+  /* ── WRITE SIDE — the doorway pages ──────────────────────────────────────
+     PSBPSeq.remember({ list: [records with id, common or name, page],
+       current: 'PSBP-00282', label: 'Palm Alley', back: 'palms.html#palm-alley',
+       backLabel: 'Back to Palm Alley', backShort: 'Palm Alley' })
+     `page` and `back` are relative to the site root. */
+  window.PSBPSeq = {
+    remember: function (o) {
+      try {
+        var list = (o && o.list) || [];
+        if (!list.length) return;
+        save({
+          kind: /^wildlife\//.test(list[0].page || '') ? 'wild' : 'plant',
+          ids:   list.map(function (r) { return r.id; }),
+          names: list.map(function (r) { return r.common || r.name || r.id; }),
+          pages: list.map(function (r) { return r.page || ''; }),
+          label: o.label || '', from: '', hash: '', filters: null,
+          back: o.back || '', backLabel: o.backLabel || '', backShort: o.backShort || '',
+          current: o.current || null
+        });
+      } catch (e) {}
+    }
+  };
 
   /* ── WRITE SIDE — runs on nature.html ─────────────────────────────────── */
 
@@ -2726,6 +2759,7 @@ async function loadLately(targetId, opts) {
       label: activeLabel(kind),
       from: location.pathname.split('/').pop() || 'nature.html',
       hash: kind === 'plant' ? '#plants' : '#wildlife',
+      back: '', backLabel: '', backShort: '',
       filters: captureFilters(),
       current: clickedId || null,
       viaDrawer: !!viaDrawer        // left through the quick view panel, not a card
@@ -2881,6 +2915,11 @@ async function loadLately(targetId, opts) {
     }
 
     var ctx = (i + 1) + ' of ' + s.ids.length + (s.label ? ' · ' + s.label : '');
+    /* Where "Back" goes: the doorway that wrote the list, or the catalog with the
+       visitor's filters restored. */
+    var backHref  = s.back ? '../' + s.back : '../' + (s.from || 'nature.html') + '#restore';
+    var backLabel = s.backLabel || 'Back to the list';
+    s.current = id; save(s);                 // so Previous / Next stay trusted
     var html =
       '<nav class="seq-nav" aria-label="Species sequence">' +
         (prev >= 0
@@ -2888,9 +2927,9 @@ async function loadLately(targetId, opts) {
               '<span class="seq-dir">&larr; Previous</span>' +
               '<span class="seq-name">' + String(s.names[prev]) + '</span></a>'
           : '<span class="seq-btn seq-empty"></span>') +
-        '<a class="seq-back" href="../' + s.from + '#restore">' +
+        '<a class="seq-back" href="' + backHref + '">' +
           '<span class="seq-ctx">' + ctx + '</span>' +
-          '<span class="seq-back-label">Back to the list</span></a>' +
+          '<span class="seq-back-label">' + String(backLabel) + '</span></a>' +
         (next >= 0
           ? '<a class="seq-btn seq-next" href="' + href(next) + '">' +
               '<span class="seq-dir">Next &rarr;</span>' +
@@ -2910,7 +2949,10 @@ async function loadLately(targetId, opts) {
        list — on a QR arrival there is nothing to restore, and the plain link
        is exactly right. */
     var floater = document.querySelector('.plant-float-back, .wild-float-back');
-    if (floater) floater.setAttribute('href', '../' + s.from + '#restore');
+    if (floater) {
+      floater.setAttribute('href', backHref);
+      if (s.backShort) floater.textContent = '← ' + s.backShort;
+    }
 
     /* COMPACT TOP NAV (2026-09-07). The full bar ends the page; this is for a
        visitor who wants to keep moving through a filtered list without reading
@@ -2930,7 +2972,7 @@ async function loadLately(targetId, opts) {
               '<span class="seqt-dir">&larr; Prev</span>' +
               '<span class="seqt-name">' + String(s.names[prev]) + '</span></a>'
           : '<span class="seqt-btn seqt-empty"></span>') +
-        '<a class="seqt-back" href="../' + s.from + '#restore">' +
+        '<a class="seqt-back" href="' + backHref + '">' +
           '<span class="seqt-ctx">' + ctx + '</span></a>' +
         (next >= 0
           ? '<a class="seqt-btn seqt-next" href="' + href(next) + '">' +
@@ -3042,14 +3084,28 @@ async function loadLately(targetId, opts) {
       list = list.slice().sort(function (a, b) {
         return String(a.common || a.name || '').localeCompare(String(b.common || b.name || ''));
       });
-      if (!list.some(function (r) { return r.id === id; })) return;
+      var me = list.filter(function (r) { return r.id === id; })[0];
+      if (!me) return;
+      // The doorway this species belongs to (2026-11-03): its list, and its way back.
+      var door = { label: '', back: wild ? 'wildlife.html' : 'nature.html#plants',
+                   backLabel: wild ? 'Back to Wildlife' : 'Back to every plant',
+                   backShort: wild ? 'Wildlife' : 'All plants', pick: null };
+      if (!wild && me.rare_fruit === true) {
+        door = { label: 'Rare fruit', back: 'rarefruit.html', backLabel: 'Back to the Rare Fruit Trail',
+                 backShort: 'Rare Fruit Trail', pick: function (r) { return r.rare_fruit === true; } };
+      } else if (!wild && me.form === 'Palm & Cycad' && me.family === 'Arecaceae') {
+        door = { label: 'Palms', back: 'palms.html', backLabel: 'Back to the Palm Collection',
+                 backShort: 'Palm Collection', pick: function (r) { return r.form === 'Palm & Cycad' && r.family === 'Arecaceae'; } };
+      }
+      if (door.pick) list = list.filter(door.pick);
       save({
         kind: wild ? 'wild' : 'plant',
         ids:   list.map(function (r) { return r.id; }),
         names: list.map(function (r) { return r.common || r.name || r.id; }),
         pages: list.map(function (r) { return r.page || ''; }),
-        label: '', from: 'nature.html',
+        label: door.label, from: 'nature.html',
         hash: wild ? '#wildlife' : '#plants',
+        back: door.back, backLabel: door.backLabel, backShort: door.backShort,
         filters: null, current: id
       });
       done();
@@ -3060,8 +3116,11 @@ async function loadLately(targetId, opts) {
     try {
       var pid = idFromUrl();
       if (pid) {
-        var have = read();
-        if (have && have.ids && have.ids.indexOf(pid) >= 0) { buildNav(); }
+        var have = read(), fromSign = /[?&]src=sign\b/.test(location.search);
+        var at = have && have.ids ? have.ids.indexOf(pid) : -1;
+        var was = have && have.ids && have.current ? have.ids.indexOf(have.current) : -1;
+        var trusted = !fromSign && at >= 0 && (have.current === pid || (was >= 0 && Math.abs(was - at) === 1));
+        if (trusted) { buildNav(); }
         else { seqFromFeed(pid, buildNav); }
         return;
       }

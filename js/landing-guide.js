@@ -7,7 +7,13 @@
      <span data-count="fruit"></span>                                  filled with counts.fruit(plants, wildlife)
      <svg class="pg-map" viewBox="x y w h">…<g class="pg-dots"></g></svg>   the small map; a gold dot per pin
 
-   LandingGuide({ pins: { 'PSBP-00132': [[x, y, 'Rare Fruit'], …] }, counts: { fruit: function (plants, wildlife) { … } } }) */
+   LandingGuide({ pins: { 'PSBP-00132': [[x, y, 'Rare Fruit'], …] }, counts: { fruit: function (plants, wildlife) { … } },
+                  name: 'the Rare Fruit Trail', short: 'Rare Fruit Trail',
+                  lists: { meet: { label: 'Rare fruit', pick: function (r) { return r.rare_fruit === true; } } } })
+
+   Tapping a card tells the species page where it came from (PSBPSeq in site.js): Previous / Next walk
+   the section's photos first, then everything else its `lists` entry picks, A to Z; Back returns to
+   that section of this page, labelled "Back to <name>". */
 (function () {
   var NS = 'http://www.w3.org/2000/svg';
 
@@ -49,9 +55,21 @@
     ]).then(function (both) {
       var plants = both[0], wildlife = both[1], byId = {};
       plants.concat(wildlife).forEach(function (p) { byId[p.id] = p; });
+      var page = location.pathname.split('/').pop() || 'index.html';
       [].forEach.call(document.querySelectorAll('[data-picks]'), function (el) {
+        var picks = [];
         el.getAttribute('data-picks').split(/\s+/).forEach(function (id) {
-          if (byId[id]) el.appendChild(card(byId[id]));
+          if (byId[id]) { el.appendChild(card(byId[id])); picks.push(byId[id]); }
+        });
+        var sec = el.closest('section'), cfg = (o.lists || {})[sec && sec.id] || {};
+        var more = cfg.pick ? plants.concat(wildlife).filter(function (r) { return picks.indexOf(r) < 0 && cfg.pick(r); })
+          .sort(function (a, b) { return String(a.common).localeCompare(String(b.common)); }) : [];
+        var walk = picks.concat(more), h2 = sec && sec.querySelector('h2');
+        el.addEventListener('click', function (e) {
+          var a = e.target.closest('a.pg-card'); if (!a || !window.PSBPSeq) return;
+          PSBPSeq.remember({ list: walk, current: (walk.filter(function (r) { return r.page === a.getAttribute('href'); })[0] || {}).id,
+            label: cfg.label || (h2 ? h2.textContent : ''), back: page + (sec && sec.id ? '#' + sec.id : ''),
+            backLabel: 'Back to ' + (o.name || (h2 ? h2.textContent : 'the list')), backShort: o.short || o.name || '' });
         });
       });
       [].forEach.call(document.querySelectorAll('[data-count]'), function (el) {

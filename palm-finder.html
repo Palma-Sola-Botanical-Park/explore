@@ -540,7 +540,7 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
 
   // A small link back up to the map beside each area's name.
   areas.forEach(function (sec) {
-    sec.querySelector('.pc-area-head').insertAdjacentHTML('beforeend', '<a class="pc-up" href="#map">↑ Back to the map</a>');
+    sec.querySelector('.pc-area-head').insertAdjacentHTML('beforeend', '<a class="pc-up" href="#map">↑ Map view</a>');
   });
 
   // Cards under each section. A palm pinned in two sections appears in both.
@@ -585,6 +585,14 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
       grid.appendChild(a);
     });
     if (others.length) sec.appendChild(grid);
+    // Tapping a card tells the palm's page where it came from (PSBPSeq in site.js): Next walks
+    // this area's palms in the order shown, and Back returns to this area here.
+    var walk = feats.concat(others), name = sec.querySelector('h2').textContent;
+    sec.addEventListener('click', function (e) {
+      var a = e.target.closest('a.pc-palm, a.pc-feat'); if (!a || !window.PSBPSeq) return;
+      PSBPSeq.remember({ list: walk, current: (walk.filter(function (p) { return p.page === a.getAttribute('href'); })[0] || {}).id,
+        label: name, back: 'palm-finder.html#' + sec.id, backLabel: 'Back to ' + name, backShort: name });
+    });
   });
 
   // An area button filters the whole page: the map zooms to it, the list beside the map shows its
@@ -594,6 +602,11 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
   card.addEventListener('click', function (e) {
     var b = e.target.closest('.pc-step button');
     if (b) step(b.classList.contains('next') ? 1 : -1);
+    // "Read about this palm": Next walks the list beside the map, Back returns to the map view.
+    var a = e.target.closest('.pc-info a');
+    if (a && chosen && window.PSBPSeq) PSBPSeq.remember({ list: listBtns.map(function (x) { return x.p; }), current: chosen.id,
+      label: plistH.textContent.replace(/ · \d+ species$/, ''), back: 'palm-finder.html' + (current ? '#' + current : ''),
+      backLabel: 'Back to the map view', backShort: 'Map view' });
   });
   var t0 = null;
   card.addEventListener('touchstart', function (e) { var t = e.touches[0]; t0 = { x: t.clientX, y: t.clientY }; }, { passive: true });

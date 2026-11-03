@@ -398,9 +398,17 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
 
   var MEET = ['Spindle Palm', 'Teddy Bear Palm', 'Vanuatu Palm'];
   var meetCards = document.getElementById('meet-cards');
+  var meetList = [];
   MEET.forEach(function (n) {
     var p = PALMS.filter(function (q) { return q.name === n; })[0];
-    if (p) meetCards.appendChild(card(p));
+    if (p) { meetCards.appendChild(card(p)); meetList.push(p); }
+  });
+  // Tapping a card tells the palm's page where it came from: its Previous / Next walk this list,
+  // and its Back returns here (PSBPSeq in site.js).
+  meetCards.addEventListener('click', function (e) {
+    var a = e.target.closest('a.pg-card'); if (!a || !window.PSBPSeq) return;
+    PSBPSeq.remember({ list: meetList, current: (meetList.filter(function (p) { return p.page === a.getAttribute('href'); })[0] || {}).id,
+      label: 'Three to compare', back: 'palms.html#meet', backLabel: 'Back to the Palm Collection', backShort: 'Palm Collection' });
   });
 
   // Each area: up to three photos, then a link that opens the map on that area.
@@ -428,6 +436,15 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
     var see = document.createElement('a'); see.className = 'pg-see'; see.href = 'palm-finder.html#' + sec.id;
     see.textContent = 'View all ' + all.length + ' →';
     sec.appendChild(see);
+    // From a card here, Next walks every palm in the area: the photos first, then the rest A to Z.
+    var walk = picks.concat(all.filter(function (p) { return picks.indexOf(p) < 0; })
+      .sort(function (a, b) { return a.name.localeCompare(b.name); }));
+    var name = sec.querySelector('h2').textContent;
+    sec.addEventListener('click', function (e) {
+      var a = e.target.closest('a.pg-card'); if (!a || !window.PSBPSeq) return;
+      PSBPSeq.remember({ list: walk, current: (walk.filter(function (p) { return p.page === a.getAttribute('href'); })[0] || {}).id,
+        label: name, back: 'palms.html#' + sec.id, backLabel: 'Back to ' + name, backShort: name });
+    });
   });
 })();
 </script>

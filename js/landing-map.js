@@ -11,7 +11,9 @@
      pins:    { 'PSBP-00132': [[x, y, 'Rare Fruit'], …] }   a snapshot from placements.json,
      pick:    function (plant) → true for the plants this page is about (defaults to the pinned ones),
      noun:    'fruit tree' or 'plant', for the card's wording,
-     tag:     function (plant) → short line under the name in the grid (optional)
+     tag:     function (plant) → short line under the name in the grid (optional),
+     seq:     { label: 'Rare fruit', grid: 'rarefruit-finder.html#fruit', gridShort: 'Fruit list',
+                map: 'rarefruit-finder.html' }   where a species page's Back returns to (optional)
    }) */
 (function () {
   var NS = 'http://www.w3.org/2000/svg';
@@ -121,12 +123,26 @@
         if (Math.abs(dx) > 50 && Math.abs(dx) > 1.5 * Math.abs(dy)) step(dx < 0 ? 1 : -1);
       });
       intro();
+      // "Read about it" on the card: Next walks the map's order, Back returns to the map view.
+      o.card.addEventListener('click', function (e) {
+        var a = e.target.closest('.lm-info a');
+        if (a && chosen && o.seq && window.PSBPSeq) PSBPSeq.remember({ list: walk, current: chosen.id,
+          label: o.seq.label || '', back: o.seq.map, backLabel: 'Back to the map view', backShort: 'Map view' });
+      });
 
       // the grid: Feature plants first, then A to Z; each card says whether it is on the map
       if (o.grid) {
-        plants.slice().sort(function (a, b) {
+        var sorted = plants.slice().sort(function (a, b) {
           return (b.tier === 'Feature') - (a.tier === 'Feature') || a.common.localeCompare(b.common);
-        }).forEach(function (p) {
+        });
+        // A card in the grid: Next walks the grid's order, Back returns to the list.
+        o.grid.addEventListener('click', function (e) {
+          var a = e.target.closest('a.lm-sp');
+          if (a && o.seq && window.PSBPSeq) PSBPSeq.remember({ list: sorted,
+            current: (sorted.filter(function (p) { return p.page === a.getAttribute('href'); })[0] || {}).id,
+            label: o.seq.label || '', back: o.seq.grid, backLabel: 'Back to the list', backShort: o.seq.gridShort || 'List' });
+        });
+        sorted.forEach(function (p) {
           var a = document.createElement('a');
           a.className = 'lm-sp'; a.href = p.page;
           var line = o.tag ? o.tag(p) : p.origin_short;
