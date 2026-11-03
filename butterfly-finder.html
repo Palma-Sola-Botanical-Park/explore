@@ -61,7 +61,7 @@
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
 <script src="js/photo-credits.js"></script>
-<script src="js/landing-map.js?v=2026-11-02"></script>
+<script src="js/landing-map.js?v=2026-11-03"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 <script>
 // Snapshot of the placement pins in the Butterfly Garden (2 November 2026), already placed on
@@ -81,6 +81,7 @@ function role(p) {
 }
 
 LandingMap({
+  seq: { label: 'Butterfly Garden', grid: 'butterfly-finder.html#grid', gridShort: 'Plant list', map: 'butterfly-finder.html' },
   stage: document.getElementById('stage'),
   card: document.getElementById('card'),
   grid: document.getElementById('grid'),
@@ -94,9 +95,15 @@ LandingMap({
 fetch('wildlife.json').then(function (r) { return r.json(); }).then(function (all) {
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   var g = document.getElementById('wgrid');
-  all.filter(function (w) { return w.theme === 'butterfly'; })
-    .sort(function (a, b) { return (b.tier === 'Feature') - (a.tier === 'Feature') || a.common.localeCompare(b.common); })
-    .forEach(function (w) {
+  var bfs = all.filter(function (w) { return w.theme === 'butterfly'; })
+    .sort(function (a, b) { return (b.tier === 'Feature') - (a.tier === 'Feature') || a.common.localeCompare(b.common); });
+  // Tapping one: Next walks this list, Back returns to it (PSBPSeq in site.js).
+  g.addEventListener('click', function (e) {
+    var a = e.target.closest('a.lm-sp'); if (!a || !window.PSBPSeq) return;
+    PSBPSeq.remember({ list: bfs, current: (bfs.filter(function (w) { return w.page === a.getAttribute('href'); })[0] || {}).id,
+      label: 'Butterflies and moths', back: 'butterfly-finder.html#butterflies', backLabel: 'Back to the list', backShort: 'Butterflies' });
+  });
+  bfs.forEach(function (w) {
       var fit = /ND/.test(w.credit_license || '') ? ';background-size:contain' : '';
       var a = document.createElement('a');
       a.className = 'lm-sp'; a.href = w.page;

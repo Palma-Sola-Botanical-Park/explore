@@ -105,7 +105,7 @@
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
 <script src="js/photo-credits.js"></script>
-<script src="js/landing-guide.js?v=2026-11-02"></script>
+<script src="js/landing-guide.js?v=2026-11-03"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 <script>
 // The same snapshot of the garden's placement pins as butterfly-finder.html (2 November 2026); refresh the two together.
@@ -113,6 +113,11 @@ var PINS = {"PSBP-00009":[[1177.8,444.5,"Butterfly Garden"]],"PSBP-00019":[[1171
 
 LandingGuide({
   pins: PINS,
+  name: 'the Butterfly Garden', short: 'Butterfly Garden',
+  lists: {
+    butterflies: { label: 'Butterflies and moths', pick: function (r) { return r.theme === 'butterfly'; } },
+    plants:      { label: 'Butterfly Garden plants', pick: function (r) { return !!PINS[r.id]; } }
+  },
   counts: {
     plants: function (plants) { return plants.filter(function (p) { return PINS[p.id]; }).length + ' plants'; },
     butterflies: function (plants, wildlife) { return wildlife.filter(function (w) { return w.theme === 'butterfly'; }).length + ' butterflies and moths'; }

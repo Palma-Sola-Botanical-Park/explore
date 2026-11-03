@@ -164,13 +164,22 @@
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
 <script src="js/photo-credits.js"></script>
-<script src="js/landing-guide.js?v=2026-11-02"></script>
+<script src="js/landing-guide.js?v=2026-11-03"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 <script>
 function themeCount(theme, noun) {
   return function (plants, wildlife) { return wildlife.filter(function (w) { return w.theme === theme; }).length + ' ' + noun; };
 }
+function theme(t) { return function (r) { return r.theme === t; }; }
 LandingGuide({
+  name: 'Wildlife', short: 'Wildlife',
+  lists: {
+    birds:       { label: 'Birds', pick: theme('bird') },
+    visitors:    { label: 'Birds', pick: theme('bird') },
+    butterflies: { label: 'Butterflies and moths', pick: theme('butterfly') },
+    critters:    { label: 'Other wildlife', pick: theme('other') },
+    small:       { label: 'Other wildlife', pick: theme('other') }
+  },
   counts: {
     birds: themeCount('bird', 'birds'),
     butterflies: themeCount('butterfly', 'butterflies and moths'),
@@ -236,6 +245,9 @@ fetch('wildlife.json').then(function (r) { return r.json(); }).then(function (al
   }
   card.addEventListener('click', function (e) {
     if (e.target === card || e.target.closest('.ww-x')) return card.close();   // tap outside the card, or ×, closes it
+    // "Read about it": Next walks the wall in the order shown, Back returns to the wall.
+    if (e.target.closest('a.go') && window.PSBPSeq) PSBPSeq.remember({ list: list, current: list[at].id,
+      label: 'We want more', back: 'wildlife.html#more', backLabel: 'Back to Wildlife', backShort: 'Wildlife' });
     var b = e.target.closest('.ww-nav button');
     if (b) open(at + (b.classList.contains('next') ? 1 : -1));
   });

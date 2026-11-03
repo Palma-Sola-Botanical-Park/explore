@@ -81,7 +81,7 @@
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
 <script src="js/photo-credits.js"></script>
-<script src="js/landing-guide.js?v=2026-11-02"></script>
+<script src="js/landing-guide.js?v=2026-11-03"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 <script>
 // The same snapshot of the rare fruit placement pins as rarefruit-finder.html (2 November 2026); refresh the two together.
@@ -89,6 +89,8 @@ var PINS = {"PSBP-00080":[[631.0,715.5,"Shade Garden"],[1225.6,771.1,"Rare Fruit
 
 LandingGuide({
   pins: PINS,
+  name: 'the Rare Fruit Trail', short: 'Rare Fruit Trail',
+  lists: { meet: { label: 'Rare fruit', pick: function (r) { return r.rare_fruit === true; } } },
   counts: { fruit: function (plants) { return plants.filter(function (p) { return p.rare_fruit === true; }).length + ' fruit'; } }
 });
 </script>
