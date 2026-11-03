@@ -1,5 +1,5 @@
 /* landing-map.js: the small map on a collection landing page (rarefruit.html, butterfly.html).
-   A crop of images/park-map.svg (the same true-to-scale map palms.html uses), a gold dot for
+   A crop of images/park-map.svg (the same true-to-scale map palm-finder.html uses), a gold dot for
    each pinned plant, and a card under it showing the plant tapped. ‹ › step through them
    north to south. The page also gets a grid of every plant in the collection.
 
@@ -15,7 +15,7 @@
    }) */
 (function () {
   var NS = 'http://www.w3.org/2000/svg';
-  var MAP = 'images/park-map.svg?v=2026-11-02f';   // keep in step with palms.html
+  var MAP = 'images/park-map.svg?v=2026-11-02f';   // keep in step with palm-finder.html and palms.html
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function plate(p) {
