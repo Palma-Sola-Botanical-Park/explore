@@ -24,6 +24,7 @@
     <h1>The Butterfly Garden</h1>
     <p>Flowers for the butterflies, leaves for their caterpillars, and a certified Monarch Waystation.</p>
   </div>
+  <div class="page-hero-credit"></div>
 </div>
 
 <div class="lc-wrap">
@@ -33,6 +34,10 @@
     <p>Nectar and host plants chosen to pull butterflies through the season, and to feed the caterpillars that become them. Come on a warm, still morning.</p>
     <!-- Seasonal: rewrite as the year turns (first written 2026-11-03, for fall). -->
     <p>Fall is a great time to visit the Butterfly Garden. Summer is a double whammy here: the rains make everything in a butterfly garden grow faster than anyone can keep up with, and the grueling heat keeps a lot of volunteers away. Now the heat has broken, the rains are easing (we hope), and our snowbird volunteers are back and putting the garden in shape. You’ll see the difference.</p>
+    <div class="pg-paths">
+      <a class="btn btn-green" href="#butterflies">Meet the butterflies ↓</a>
+      <a class="btn btn-outline" href="butterfly-finder.html">Explore the garden →</a>
+    </div>
   </div>
   <!-- From the media library: PM-000056 -->
   <figure class="lc-fig" data-by="Randall Carter" data-license="CC-BY-NC"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/media/PM-000056/v1/web.jpg" alt="The path into the garden, past the little free library"><figcaption>The path into the garden, past the little free library</figcaption></figure>
@@ -67,7 +72,7 @@
 
 <section class="lc-sec" id="learn">
   <h2>How it works</h2>
-  <div class="words"><p>A butterfly garden has to feed two animals: the butterfly and the caterpillar it was.</p></div>
+  <div class="words"><p>A butterfly garden has to feed the same insect twice: first as a very hungry caterpillar, then again as a butterfly.</p></div>
   <!-- Each card: a few words, a note that its Park Story is coming, and four photos from the species
        galleries (credits resolved through display_name()). Link each card's title to its story once written. -->
   <div class="hw-cards">
@@ -112,8 +117,9 @@
 </section>
 
 <div class="lc-links">
-  <a class="btn btn-outline" href="nature.html?filter=butterfly">Every butterfly plant in the park →</a>
-  <a class="btn btn-outline" href="nature.html?wtheme=butterfly">Every butterfly in the park →</a>
+  <a class="btn btn-outline" href="nature.html?filter=butterfly">Every butterfly plant in the catalog →</a>
+  <a class="btn btn-outline" href="nature.html?wtheme=butterfly">Every butterfly in the catalog →</a>
+  <a class="btn btn-outline" href="wildlife.html">Wildlife in the Park →</a>
 </div>
 
 </div>
@@ -127,6 +133,15 @@
 // The same snapshot of the garden's placement pins as butterfly-finder.html (2 November 2026); refresh the two together.
 var PINS = {"PSBP-00009":[[1177.8,444.5,"Butterfly Garden"]],"PSBP-00019":[[1171.2,485.6,"Butterfly Garden"]],"PSBP-00024":[[1200.7,463.0,"Butterfly Garden"]],"PSBP-00039":[[1194.6,524.6,"Butterfly Garden"]],"PSBP-00062":[[1202.3,435.4,"Butterfly Garden"]],"PSBP-00072":[[1183.3,430.2,"Butterfly Garden"]],"PSBP-00074":[[1180.0,523.4,"Butterfly Garden"]],"PSBP-00089":[[1233.6,489.9,"Butterfly Garden"]],"PSBP-00098":[[1201.4,433.1,"Butterfly Garden"]],"PSBP-00125":[[1128.1,539.9,"Butterfly Garden"]],"PSBP-00156":[[1152.9,457.1,"Butterfly Garden"],[1195.0,481.8,"Butterfly Garden"]],"PSBP-00163":[[1205.4,448.2,"Butterfly Garden"]],"PSBP-00366":[[1195.8,517.7,"Butterfly Garden"]],"PSBP-00414":[[1207.6,498.8,"Butterfly Garden"]],"PSBP-00415":[[1139.9,517.1,"Butterfly Garden"]],"PSBP-00437":[[1161.4,427.4,"Butterfly Garden"]]};
 
+// Banner: one of a few butterflies not already pictured further down the page (the path photo it
+// used to show now sits beside the intro). White Peacock, Eastern Giant Swallowtail, Cassius Blue, Polydamas Swallowtail
+var HERO = ['PSBP-99974', 'PSBP-90006', 'PSBP-99953', 'PSBP-90034'];
+fetch('wildlife.json').then(function (r) { return r.json(); }).then(function (all) {
+  var pool = all.filter(function (w) { return HERO.indexOf(w.id) >= 0 && w.photo_web && !/ND/.test(w.credit_license || ''); });
+  if (window.heroRotate) heroRotate(pool.map(function (w) {
+    return { img: w.photo_web, credit: '© ' + w.credit_name + ' (' + w.credit_license + '), via iNaturalist' };
+  }));
+});
 LandingGuide({
   pins: PINS,
   name: 'the Butterfly Garden', short: 'Butterfly Garden',

@@ -154,6 +154,7 @@
 .pg-find{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:var(--s5);align-items:center;
   max-width:var(--measure);margin:0 auto var(--s7);padding:var(--s4);background:var(--wash);border-radius:var(--r-lg);
   color:inherit;text-decoration:none;transition:box-shadow .2s}
+.pg-meet + .pg-find{margin-top:var(--s7)}
 .pg-find:hover{box-shadow:var(--lift-high);text-decoration:none}
 .pg-find:hover .go{text-decoration:underline;text-underline-offset:3px}
 .pg-find svg{display:block;width:100%;height:auto;border-radius:var(--r);background:var(--sunk)}
@@ -222,9 +223,16 @@
   <p><b>Better yet, help tell their stories.</b> A new flower, ripening fruit, an opening frond, a strange trunk: photograph it and post it on iNaturalist. A photo shared under a Creative Commons licence will join our collection, credited to you.</p>
   <div class="pg-paths">
     <a class="btn btn-green" href="#meet">Meet the palms ↓</a>
-    <a class="btn btn-outline" href="palm-finder.html">Find a palm on the map →</a>
+    <a class="btn btn-outline" href="palm-finder.html">Explore all palms →</a>
   </div>
 </div>
+
+
+<section class="pg-meet" id="meet" aria-labelledby="meet-h">
+  <h2 id="meet-h">Three to compare</h2>
+  <p>Right now: three island palms, all on Palm Alley, a short walk apart. Stand at each and spot what they share and what they don’t.</p>
+  <div class="pg-cards" id="meet-cards"></div>
+</section>
 
 <a class="pg-find" href="palm-finder.html" aria-label="Open the palm map">
   <svg id="minimap" viewBox="0 0 1408 1408" aria-hidden="true"><image href="images/park-map.svg?v=2026-11-02f" width="1408" height="1408"/><g id="minidots"></g></svg>
@@ -232,12 +240,6 @@
     <p>The map shows every palm we have pinned, with a search box and a walking order from the gate.</p>
     <span class="go">Open the palm map →</span></span>
 </a>
-
-<section class="pg-meet" id="meet" aria-labelledby="meet-h">
-  <h2 id="meet-h">Three to compare</h2>
-  <p>Right now: three island palms, all on Palm Alley, a short walk apart. Stand at each and spot what they share and what they don’t.</p>
-  <div class="pg-cards" id="meet-cards"></div>
-</section>
 
 <div class="pg-areas-h"><h2>The palms, area by area</h2></div>
 
@@ -327,8 +329,8 @@
 </section>
 
 <div class="pc-more">
-  Want them all in one list?<br>
   <a class="btn btn-outline" href="nature.html?form=Palm%20%26%20Cycad">Every palm in the catalog →</a>
+  <a class="btn btn-outline" href="rarefruit.html">The Rare Fruit Trail →</a>
 </div>
 
 </div>

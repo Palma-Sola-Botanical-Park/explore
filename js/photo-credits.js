@@ -121,8 +121,14 @@
            + '<span class="cc-mark">cc</span></span>';
     }
     var human = toks.join('-');
+    // What the licence allows, said plainly (2026-11-03: it said "free to share with credit" even on
+    // NC and ND photos, which leaves out the conditions those licences add).
+    var terms = 'free to share with credit';
+    if (toks.indexOf('NC') >= 0) terms += ', for non-commercial use only';
+    if (toks.indexOf('ND') >= 0) terms += ', unchanged';
+    if (toks.indexOf('SA') >= 0) terms += ', under the same licence';
     return '<span class="cc-badge" title="Creative Commons ' + esc(human)
-         + ' \u2014 some rights reserved, free to share with credit">'
+         + ' \u2014 some rights reserved, ' + terms + '">'
          + '<span class="cc-mark">cc</span>'
          + toks.map(function (t) { return '<span class="cc-term">' + esc(t) + '</span>'; }).join('')
          + '</span>';
