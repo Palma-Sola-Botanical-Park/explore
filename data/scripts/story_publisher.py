@@ -305,6 +305,12 @@ def link_card(b, reg, ctx):
                 f'<img src="{h(img)}" alt="" loading="lazy" style="object-position:{h(sp.get("focus") or "center")}">'
                 f'<span><span class="st-link-eyebrow">Species page</span><span class="st-link-title">{h(sp.get("common", ""))}</span>'
                 f'{f"<span class=st-link-text>{bold(text)}</span>" if text else ""}</span></a>')
+    if b.get("page"):
+        # A page on our own site, e.g. {"page": "get-involved.html#bright-futures", "title": "The Bright Futures
+        # program"} (2026-11-03). Relative to the site root, like every other link here.
+        return (f'<a class="st-link st-link-page" href="{rel}{h(b["page"])}">'
+                f'<span><span class="st-link-eyebrow">On our site</span><span class="st-link-title">{h(b.get("title") or b["page"])}</span>'
+                f'{f"<span class=st-link-text>{bold(text)}</span>" if text else ""}</span></a>')
     for kind, pool in (("story", ctx["stories"]), ("collection", ctx["collections"])):
         if b.get(kind):
             s = pool.get(b[kind])
@@ -377,7 +383,7 @@ def head(title, desc, rel, hero_url=""):
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{rel}css/psbp.css">
 <link rel="stylesheet" href="{rel}css/species-v2.css">
-<link rel="stylesheet" href="{rel}css/stories.css?v=3">
+<link rel="stylesheet" href="{rel}css/stories.css?v=4">
 </head>
 <body data-bands="on">
 <div id="nav-placeholder"></div>

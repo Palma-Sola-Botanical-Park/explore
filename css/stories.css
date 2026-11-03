@@ -106,6 +106,8 @@ video.st-video { aspect-ratio: auto; }
 .st-link-title { font-family: var(--serif); font-size: var(--t-md); font-weight: 700; color: var(--green-ink); line-height: 1.2; }
 .st-link-text { font-size: var(--t-base); color: var(--ink-soft); line-height: 1.5; }
 @media (max-width: 480px) { .st-link { grid-template-columns: 84px 1fr; } .st-link img { width: 84px; height: 64px; } }
+/* a link to a page on our own site has no picture, so the words take the whole card */
+.st-link.st-link-page, .st-link.st-link-page:hover { grid-template-columns: 1fr; }
 
 /* ── keep reading, and the credits roll ─────────────────────────────────── */
 .st-related { margin-top: 2.6rem; border-top: 1px solid var(--rule); padding-top: .6rem; }
