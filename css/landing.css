@@ -138,22 +138,33 @@
 .lc-fig{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;box-shadow:var(--lift)}
 .lc-fig img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;background:var(--sunk)}
 .lc-fig figcaption{padding:var(--s3) var(--s4);font-size:var(--t-base);line-height:1.45;color:var(--ink)}
-.lc-fig .by{display:block;color:var(--ink-soft)}
+/* the standard credit block, for the park's own photos: no "via iNaturalist" */
+.lc-fig .credit-plate{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s2);margin:var(--s2) 0 0;padding:0;border:0;background:none}
+.lc-fig .credit-byline{flex-basis:auto}
+.lc-fig .credit-src,.lc-fig .credit-date{display:none}
 .lc-photos .lc-fig img{aspect-ratio:4/3}
 /* words on the left, a column of photos on the right; on a phone the photos follow the words */
 .lc-split{display:grid;gap:var(--s5);grid-template-columns:minmax(0,1fr)}
 .lc-split .lc-figs{display:grid;gap:var(--s4)}
-@media (min-width:860px){.lc-split{grid-template-columns:minmax(0,var(--measure)) minmax(0,380px);justify-content:start;gap:var(--s7);align-items:start}}
-/* "How it works" cards: words on the left, four photos on the right; stacked on a phone */
-.hw-cards{display:grid;gap:var(--s5);margin-top:var(--s5)}
-.hw-card{display:grid;gap:var(--s5);grid-template-columns:minmax(0,1fr);align-items:center;background:var(--surface);
-  border:1px solid var(--rule);border-radius:var(--r);padding:var(--s5);box-shadow:var(--lift)}
-@media (min-width:760px){.hw-card{grid-template-columns:minmax(0,1fr) minmax(0,340px)}}
-.hw-tx h3{font-size:var(--t-lg);color:var(--green-ink);margin-bottom:var(--s2)}
-.hw-tx p{font-size:var(--t-base);line-height:1.65;color:var(--ink);margin-bottom:var(--s3)}
+@media (min-width:860px){.lc-split{grid-template-columns:minmax(0,var(--measure)) minmax(0,300px);justify-content:start;gap:var(--s6);align-items:start}}
+/* an intro with a photo beside it: wider than a plain intro, still centred */
+.lc-intro.lc-split{max-width:calc(var(--measure) + 300px + var(--s6))}
+.lc-split > .lc-box{margin-top:0}
+.lc-split > .lc-slot{margin-top:0}
+.lc-split + .lc-split{margin-top:var(--s6)}
+/* "How it works" cards: three in a row, each with its four photos as a strip across the top,
+   then the words; one per row on a phone */
+.hw-cards{display:grid;gap:var(--s4);margin-top:var(--s5);grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:860px){.hw-cards{grid-template-columns:minmax(0,1fr)}}
+.hw-card{display:flex;flex-direction:column;gap:var(--s3);background:var(--surface);
+  border:1px solid var(--rule);border-radius:var(--r);padding:var(--s4);box-shadow:var(--lift)}
+.hw-card > div:last-child{display:contents}
+.hw-mont{order:-1}
+.hw-tx h3{font-size:var(--t-md);color:var(--green-ink);margin-bottom:var(--s2)}
+.hw-tx p{font-size:var(--t-base);line-height:1.6;color:var(--ink);margin-bottom:var(--s2)}
 .hw-tx .hw-soon{color:var(--ink-soft);font-style:italic;margin-bottom:0}
-.hw-mont{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.hw-mont{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
 .hw-mont a{display:block;aspect-ratio:1/1;border-radius:var(--r-sm);overflow:hidden;background:var(--sunk)}
 .hw-mont img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .2s}
 .hw-mont a:hover img{transform:scale(1.06)}
-.hw-by{font-size:var(--t-base);color:var(--ink-soft);margin-top:var(--s2)}
+.hw-by{order:1;margin-top:auto;padding-top:var(--s2);border-top:1px solid var(--rule);font-size:var(--t-base);line-height:1.4;color:var(--ink-soft)}

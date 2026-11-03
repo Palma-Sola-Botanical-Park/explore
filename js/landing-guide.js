@@ -35,6 +35,12 @@
 
   window.LandingGuide = function (o) {
     o = o || {};
+    // Photos of the place (media library): the standard credit block from data-by / data-license.
+    [].forEach.call(document.querySelectorAll('figure.lc-fig[data-by]'), function (f) {
+      var cap = f.querySelector('figcaption');
+      if (cap && window.PSBPPhotos) cap.insertAdjacentHTML('beforeend',
+        PSBPPhotos.creditPlate({ by: f.getAttribute('data-by'), license: f.getAttribute('data-license') || '' }));
+    });
     // the small map: every pin as a gold dot, sized to the crop
     [].forEach.call(document.querySelectorAll('svg.pg-map'), function (svg) {
       var vb = svg.getAttribute('viewBox').split(/\s+/).map(Number), g = svg.querySelector('.pg-dots');
