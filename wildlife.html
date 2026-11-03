@@ -14,10 +14,9 @@
 <style>
 /* the tips beside one random photo; on a phone the photo drops below, wider and shorter */
 .tips-grid{display:grid;gap:var(--s5);grid-template-columns:minmax(0,1fr)}
-@media (min-width:860px){.tips-grid{grid-template-columns:minmax(0,1fr) minmax(0,400px);align-items:start}}
+@media (min-width:860px){.tips-grid{grid-template-columns:minmax(0,var(--measure)) minmax(0,420px);justify-content:start;gap:var(--s7);align-items:start}}
 .tips-photo{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;box-shadow:var(--lift)}
-.tips-photo img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:var(--sunk)}
-@media (max-width:859px){.tips-photo img{aspect-ratio:16/9}}
+.tips-photo img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;background:var(--sunk)}
 .tips-photo figcaption{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s3);padding:var(--s3) var(--s4)}
 .tips-photo figcaption a{font:600 var(--t-md)/1.25 var(--serif);color:var(--green-ink)}
 .tips-photo .credit-plate{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:0;padding:0;border:0;background:none}
@@ -188,18 +187,19 @@ LandingGuide({
   }
 });
 // Hero: one of a hand-picked set of strong photos, never an ND licence. The photo beside the
-// tips is another random one from a second set (animals without a card further down), never
-// the hero's animal.
+// tips is a random Helen Lewis photo of an animal not already pictured on the page (no card
+// further down, not the hero), shown whole, uncropped (Randy, 2026-11-03).
 // Roseate Spoonbill, Anhinga, Great Blue Heron, Osprey, River Otter, Eastern Screech-Owl, Belted Kingfisher, American White Pelican
 var HERO = ['PSBP-99987', 'PSBP-99998', 'PSBP-99993', 'PSBP-99982', 'PSBP-90032', 'PSBP-99979', 'PSBP-90046', 'PSBP-99981'];
-// Belted Kingfisher, Osprey, Great Egret, Little Blue Heron, Wood Stork, Pileated Woodpecker,
-// Black-bellied Whistling-Duck, Ruby-throated Hummingbird, Red-shouldered Hawk, Blue Jay
-var TIPS = ['PSBP-90046', 'PSBP-99982', 'PSBP-99995', 'PSBP-99942', 'PSBP-99992', 'PSBP-99969', 'PSBP-90001', 'PSBP-99938', 'PSBP-99945', 'PSBP-99965'];
 fetch('wildlife.json').then(function (r) { return r.json(); }).then(function (all) {
   var pool = all.filter(function (w) { return HERO.indexOf(w.id) >= 0 && w.photo_web && !/ND/.test(w.credit_license || ''); });
   var hero = pool[Math.floor(Math.random() * pool.length)];
   if (hero && window.heroRotate) heroRotate([{ img: hero.photo_web, credit: '© ' + hero.credit_name + ' (' + hero.credit_license + '), via iNaturalist' }]);
-  var tips = all.filter(function (w) { return TIPS.indexOf(w.id) >= 0 && w.photo_web && !/ND/.test(w.credit_license || '') && w !== hero; });
+  var onPage = [];
+  [].forEach.call(document.querySelectorAll('[data-picks]'), function (el) { onPage = onPage.concat(el.getAttribute('data-picks').split(/\s+/)); });
+  var tips = all.filter(function (w) {
+    return w.credit_name === 'Helen Lewis' && w.photo_web && !/ND/.test(w.credit_license || '') && w !== hero && onPage.indexOf(w.id) < 0;
+  });
   var tp = tips[Math.floor(Math.random() * tips.length)], fig = document.getElementById('tipsPhoto');
   if (tp && fig) {
     var img = fig.querySelector('img');
