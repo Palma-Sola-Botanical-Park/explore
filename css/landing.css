@@ -130,5 +130,17 @@
 .lc-back a{color:var(--green)}
 /* the finder's quiet way back up to its map, for someone who landed on the list */
 .lc-up{display:inline-block;font:600 var(--t-base)/1.4 var(--sans);color:var(--green)}
-/* a full-width tinted band, to set one section off from the next (as the areas on palms.html) */
-.lc-band{background:var(--green-tint);box-shadow:0 0 0 100vmax var(--green-tint);clip-path:inset(0 -100vmax);border-bottom:0}
+/* Sections alternate cream and light green, edge to edge, so each reads as its own block
+   (as the areas on palms.html). Every second section gets the band. */
+.lc-band,.lc-wrap > .lc-sec:nth-of-type(even){background:var(--green-tint);box-shadow:0 0 0 100vmax var(--green-tint);clip-path:inset(0 -100vmax)}
+.lc-wrap > .lc-sec{border-bottom:0}
+/* a photo of the place itself (from the media library), with a short caption and the photographer */
+.lc-fig{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;box-shadow:var(--lift)}
+.lc-fig img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;background:var(--sunk)}
+.lc-fig figcaption{padding:var(--s3) var(--s4);font-size:var(--t-base);line-height:1.45;color:var(--ink)}
+.lc-fig .by{display:block;color:var(--ink-soft)}
+.lc-photos .lc-fig img{aspect-ratio:4/3}
+/* words on the left, a column of photos on the right; on a phone the photos follow the words */
+.lc-split{display:grid;gap:var(--s5);grid-template-columns:minmax(0,1fr)}
+.lc-split .lc-figs{display:grid;gap:var(--s4)}
+@media (min-width:860px){.lc-split{grid-template-columns:minmax(0,var(--measure)) minmax(0,380px);justify-content:start;gap:var(--s7);align-items:start}}
