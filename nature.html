@@ -1497,7 +1497,9 @@ loadINat();
    it from the data and clearFilters() resets it — but is visually hidden and
    mirrored into these buttons. site.js is untouched. */
 #plantForm { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.form-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .6rem 0 0; width: 100%; }
+.form-row { display: flex; flex-wrap: wrap; gap: .35rem; margin: .6rem 0 0; width: 100%; }
+.form-row .filter-btn { padding-left: .7rem; padding-right: .7rem; }
+.form-row .fcount { margin-left: .3rem; }
 
 /* MOBILE: collapse the rail behind one button (2026-08-25).
 
@@ -1608,11 +1610,20 @@ loadINat();
       sel.parentNode.insertBefore(row, sel.nextSibling);
     }
     row.innerHTML = '';
-    Array.prototype.forEach.call(sel.options, function (opt) {
+    // "All" first, then the forms from most plants to fewest. Labels are shortened
+    // ("Palm & Cycad" shows as "Palm/Cycad") so the row fits on fewer lines; the filter
+    // value stays the form's real name.
+    var total = {};
+    PLANTS.forEach(function (p) { total[p.form] = (total[p.form] || 0) + 1; });
+    var opts = Array.prototype.slice.call(sel.options).sort(function (a, b) {
+      if (!a.value || !b.value) return a.value ? 1 : -1;
+      return (total[b.value] || 0) - (total[a.value] || 0) || a.value.localeCompare(b.value);
+    });
+    opts.forEach(function (opt) {
       var b = document.createElement('button');
       b.className = 'filter-btn';
       b.dataset.form = opt.value;
-      b.textContent = opt.value || 'All forms';
+      b.textContent = opt.value ? opt.value.replace(/\s*&\s*/g, '/') : 'All';
       b.addEventListener('click', function () {
         setPlantForm(_activeForm === opt.value ? '' : opt.value);
       });
