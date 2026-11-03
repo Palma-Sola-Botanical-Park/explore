@@ -70,6 +70,8 @@
 .pc-area:last-of-type{border-bottom:0}
 .pc-area-head{display:flex;align-items:baseline;gap:var(--s4);flex-wrap:wrap;margin-bottom:var(--s3)}
 .pc-area h2{font-size:var(--t-xl);color:var(--green-ink)}
+/* the quiet way back up to the map, for someone who landed on an area from the guide */
+.pc-up{font:600 var(--t-base)/1.4 var(--sans);color:var(--green)}
 /* the map, the card under it, and the list of palms in view (beside the map on a wide screen) */
 .pc-body{display:grid;gap:var(--s3);grid-template-areas:"stage" "card" "list";grid-template-columns:minmax(0,1fr)}
 .pc-body .pc-stage{grid-area:stage}
@@ -535,6 +537,11 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
       (p.teaser ? '<p>' + esc(p.teaser) + '</p>' : '') +
       '<a href="' + esc(p.page) + '">Read about this palm →</a></div>';
   }
+
+  // A small link back up to the map beside each area's name.
+  areas.forEach(function (sec) {
+    sec.querySelector('.pc-area-head').insertAdjacentHTML('beforeend', '<a class="pc-up" href="#map">↑ Back to the map</a>');
+  });
 
   // Cards under each section. A palm pinned in two sections appears in both.
   areas.forEach(function (sec) {

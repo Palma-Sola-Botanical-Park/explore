@@ -8,6 +8,7 @@
 .lc-intro p{font-size:var(--t-base);line-height:1.75;margin-bottom:var(--s4)}
 
 .lc-sec{padding:var(--s7) 0 var(--s4);border-bottom:1px solid var(--rule)}
+.lc-sec,.lm-grid{scroll-margin-top:calc(var(--nav-h) + 12px)}
 .lc-sec:last-of-type{border-bottom:0}
 .lc-sec h2{font-size:var(--t-xl);color:var(--green-ink);margin-bottom:var(--s3)}
 .lc-sec .words{max-width:var(--measure)}
@@ -127,3 +128,5 @@
 /* the finder's way back to the guide */
 .lc-back{font-weight:700;margin-bottom:var(--s4)}
 .lc-back a{color:var(--green)}
+/* the finder's quiet way back up to its map, for someone who landed on the list */
+.lc-up{display:inline-block;font:600 var(--t-base)/1.4 var(--sans);color:var(--green)}
