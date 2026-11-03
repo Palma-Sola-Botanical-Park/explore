@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/psbp.css">
-<link rel="stylesheet" href="css/landing.css?v=2026-11-03c">
+<link rel="stylesheet" href="css/landing.css?v=2026-11-03d">
 </head>
 <body>
 <!-- TEMPLATE (2026-11-02): the dashed boxes are slots waiting for the volunteers' story and
@@ -64,11 +64,27 @@
 <section class="lc-sec" id="learn">
   <h2>How it works</h2>
   <div class="words"><p>A butterfly garden has to feed two animals: the butterfly and the caterpillar it was.</p></div>
-  <!-- Each slot becomes a link to a Park Story once it is written. -->
-  <div class="lc-photos">
-    <div class="lc-slot"><b>Host plants.</b> A Park Story: why a caterpillar eats only certain leaves.</div>
-    <div class="lc-slot"><b>Nectar plants.</b> A Park Story: what the adults drink, and when.</div>
-    <div class="lc-slot"><b>From caterpillar to butterfly.</b> A Park Story: egg, caterpillar, chrysalis, wings.</div>
+  <!-- Each card: a few words, a note that its Park Story is coming, and four photos from the species
+       galleries (credits resolved through display_name()). Link each card's title to its story once written. -->
+  <div class="hw-cards">
+    <div class="hw-card">
+      <div class="hw-tx"><h3>Host plants</h3>
+        <p>Most caterpillars eat the leaves of only a few kinds of plant, so a butterfly lays her eggs only where her young can eat. No host plant, no butterflies.</p>
+        <p class="hw-soon">A Park Story with the details is on its way.</p></div>
+      <div><div class="hw-mont"><a href="wildlife/PSBP-99971-Zebra-Longwing.html" title="Zebra Longwing caterpillar, photo Pammy63 (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/366237756/v1/thumb.jpg" alt="Zebra Longwing caterpillar"></a><a href="wildlife/PSBP-99970-Gulf-Fritillary.html" title="Gulf Fritillary caterpillar, photo Pammy63 (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/366238094/v1/thumb.jpg" alt="Gulf Fritillary caterpillar"></a><a href="wildlife/PSBP-99973-Cloudless-Sulphur.html" title="Cloudless Sulphur caterpillar, photo Pammy63 (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/366238636/v1/thumb.jpg" alt="Cloudless Sulphur caterpillar"></a><a href="wildlife/PSBP-90034-Polydamas-Swallowtail.html" title="Polydamas Swallowtail caterpillar, photo Sherry Nigro (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/741355731/v1/thumb.jpg" alt="Polydamas Swallowtail caterpillar"></a></div><p class="hw-by">Photos: Pammy63, Sherry Nigro (CC BY-NC), via iNaturalist</p></div>
+    </div>
+    <div class="hw-card">
+      <div class="hw-tx"><h3>Nectar plants</h3>
+        <p>Grown butterflies drink nectar, and different flowers open at different times. A good butterfly garden keeps something blooming through the seasons.</p>
+        <p class="hw-soon">A Park Story with the details is on its way.</p></div>
+      <div><div class="hw-mont"><a href="wildlife/PSBP-90006-Eastern-Giant-Swallowtail.html" title="Eastern Giant Swallowtail at a lantana, photo Helen Lewis (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/733898889/v1/thumb.jpg" alt="Eastern Giant Swallowtail at a lantana"></a><a href="wildlife/PSBP-99970-Gulf-Fritillary.html" title="Gulf Fritillary at a flower, photo Helen Lewis (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/734148659/v1/thumb.jpg" alt="Gulf Fritillary at a flower"></a><a href="wildlife/PSBP-99912-Monk-Skipper.html" title="Monk Skipper at a flower, photo Helen Lewis (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/737872728/v1/thumb.jpg" alt="Monk Skipper at a flower"></a><a href="wildlife/PSBP-99994-Monarch.html" title="Monarch at a bottlebrush, photo Helen Lewis (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/737880682/v1/thumb.jpg" alt="Monarch at a bottlebrush"></a></div><p class="hw-by">Photos: Helen Lewis (CC BY-NC), via iNaturalist</p></div>
+    </div>
+    <div class="hw-card">
+      <div class="hw-tx"><h3>From caterpillar to butterfly</h3>
+        <p>Egg, caterpillar, chrysalis, wings. A monarch makes the whole change in about a month.</p>
+        <p class="hw-soon">A Park Story with the details is on its way.</p></div>
+      <div><div class="hw-mont"><a href="wildlife/PSBP-99994-Monarch.html" title="Monarch caterpillar, photo Patty (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/750476818/v1/thumb.jpg" alt="Monarch caterpillar"></a><a href="wildlife/PSBP-99994-Monarch.html" title="Monarch chrysalis, photo Christine Leamon (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/681100726/v1/thumb.jpg" alt="Monarch chrysalis"></a><a href="wildlife/PSBP-99994-Monarch.html" title="Monarch, newly winged, photo Christine Leamon (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/681100713/v1/thumb.jpg" alt="Monarch, newly winged"></a><a href="wildlife/PSBP-99994-Monarch.html" title="Monarch at the flowers, photo Rob Carr (CC-BY-NC)"><img loading="lazy" src="https://pub-895c4e39efa04b698caca4bce36ba281.r2.dev/inat/681681099/v1/thumb.jpg" alt="Monarch at the flowers"></a></div><p class="hw-by">Photos: Patty, Christine Leamon, Rob Carr (CC BY-NC), via iNaturalist</p></div>
+    </div>
   </div>
 </section>
 

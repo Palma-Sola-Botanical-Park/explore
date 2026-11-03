@@ -144,3 +144,16 @@
 .lc-split{display:grid;gap:var(--s5);grid-template-columns:minmax(0,1fr)}
 .lc-split .lc-figs{display:grid;gap:var(--s4)}
 @media (min-width:860px){.lc-split{grid-template-columns:minmax(0,var(--measure)) minmax(0,380px);justify-content:start;gap:var(--s7);align-items:start}}
+/* "How it works" cards: words on the left, four photos on the right; stacked on a phone */
+.hw-cards{display:grid;gap:var(--s5);margin-top:var(--s5)}
+.hw-card{display:grid;gap:var(--s5);grid-template-columns:minmax(0,1fr);align-items:center;background:var(--surface);
+  border:1px solid var(--rule);border-radius:var(--r);padding:var(--s5);box-shadow:var(--lift)}
+@media (min-width:760px){.hw-card{grid-template-columns:minmax(0,1fr) minmax(0,340px)}}
+.hw-tx h3{font-size:var(--t-lg);color:var(--green-ink);margin-bottom:var(--s2)}
+.hw-tx p{font-size:var(--t-base);line-height:1.65;color:var(--ink);margin-bottom:var(--s3)}
+.hw-tx .hw-soon{color:var(--ink-soft);font-style:italic;margin-bottom:0}
+.hw-mont{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.hw-mont a{display:block;aspect-ratio:1/1;border-radius:var(--r-sm);overflow:hidden;background:var(--sunk)}
+.hw-mont img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .2s}
+.hw-mont a:hover img{transform:scale(1.06)}
+.hw-by{font-size:var(--t-base);color:var(--ink-soft);margin-top:var(--s2)}
