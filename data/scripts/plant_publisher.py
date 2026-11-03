@@ -229,6 +229,9 @@ def build_plants_json_entry(species, hero):
         "credit": hero_credit["credit_login"],
         "credit_name": hero_credit["credit_name"],
         "credit_license": hero_credit["credit_license"],
+        # The day the card's photo was taken (2026-11-03). Most park photos are under six months
+        # old, and the landing pages show the date beside the photographer to say so.
+        "credit_date": ((hero or {}).get("observed_on") or "")[:10],
         # `credit_line` is NOT emitted — the pre-joined string. Every consumer
         # builds its own from credit_name + credit_license, so this was a third
         # copy nothing read. Removed 2026-09-08.

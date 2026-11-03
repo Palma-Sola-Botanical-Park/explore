@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/psbp.css">
-<link rel="stylesheet" href="css/landing.css?v=2026-11-03g">
+<link rel="stylesheet" href="css/landing.css?v=2026-11-03h">
 </head>
 <body>
 <div id="nav-placeholder"></div>
@@ -61,7 +61,7 @@
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
 <script src="js/photo-credits.js"></script>
-<script src="js/landing-map.js?v=2026-11-03"></script>
+<script src="js/landing-map.js?v=2026-11-03b"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 <script>
 // Snapshot of the placement pins in the Butterfly Garden (2 November 2026), already placed on
@@ -110,7 +110,7 @@ fetch('wildlife.json').then(function (r) { return r.json(); }).then(function (al
       a.innerHTML = '<span class="ph" style="background-image:url(\'' + esc(w.photo_thumb || w.photo_web) +
         '\');background-position:' + esc(w.focus || '50% 50%') + fit + '"></span><span class="tx"><b>' + esc(w.common) + '</b>' +
         '<i class="sci">' + esc(w.sci) + '</i></span>' +
-        (w.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: w.credit_name, license: w.credit_license }) : '');
+        (w.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: w.credit_name, license: w.credit_license, date: w.credit_date }) : '');
       g.appendChild(a);
     });
 });

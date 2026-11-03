@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/psbp.css">
-<link rel="stylesheet" href="css/landing.css?v=2026-11-03g">
+<link rel="stylesheet" href="css/landing.css?v=2026-11-03h">
 <style>
 /* the tips beside one random photo; on a phone the photo drops below, wider and shorter */
 .tips-grid{display:grid;gap:var(--s5);grid-template-columns:minmax(0,1fr)}
@@ -21,7 +21,7 @@
 .tips-photo figcaption a{font:600 var(--t-md)/1.25 var(--serif);color:var(--green-ink)}
 .tips-photo .credit-plate{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:0;padding:0;border:0;background:none}
 .tips-photo .credit-byline{flex-basis:auto}
-.tips-photo .credit-eyebrow,.tips-photo .credit-date,.tips-photo .credit-src{display:none}
+.tips-photo .credit-eyebrow,.tips-photo .credit-src{display:none}
 .tips-photo[hidden]{display:none}
 /* "We want more": a wall of every animal found so far; tap one for its card */
 .ww-sub{font-size:var(--t-base);color:var(--ink);max-width:var(--measure);margin-bottom:var(--s4)}
@@ -165,7 +165,7 @@
 <div id="footer-placeholder"></div>
 <script src="js/site.js"></script>
 <script src="js/photo-credits.js"></script>
-<script src="js/landing-guide.js?v=2026-11-03b"></script>
+<script src="js/landing-guide.js?v=2026-11-03c"></script>
 <script>if (typeof injectShared === 'function') { injectShared({ inatBar: false }); }</script>
 <script>
 function themeCount(theme, noun) {
@@ -207,7 +207,7 @@ fetch('wildlife.json').then(function (r) { return r.json(); }).then(function (al
     var img = fig.querySelector('img');
     img.src = tp.photo_web; img.alt = tp.common; img.style.objectPosition = tp.focus || '50% 50%';
     fig.querySelector('figcaption').innerHTML = '<a href="' + tp.page + '">' + tp.common + '</a>' +
-      (tp.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: tp.credit_name, license: tp.credit_license }) : '');
+      (tp.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: tp.credit_name, license: tp.credit_license, date: tp.credit_date }) : '');
     fig.hidden = false;
   }
 });
@@ -240,7 +240,7 @@ fetch('wildlife.json').then(function (r) { return r.json(); }).then(function (al
       '<div class="tx"><b>' + esc(w.common) + '</b>' + (w.sci ? '<i class="sci">' + esc(w.sci) + '</i>' : '') +
       (w.teaser ? '<p>' + esc(w.teaser) + '</p>' : '') +
       '<a class="go" href="' + esc(w.page) + '">Read about it →</a>' +
-      (w.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: w.credit_name, license: w.credit_license }) : '') +
+      (w.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: w.credit_name, license: w.credit_license, date: w.credit_date }) : '') +
       '<div class="ww-nav"><button type="button" class="prev" aria-label="Previous">‹</button>' +
       '<button type="button" class="next" aria-label="Next">›</button></div></div>';
     if (!card.open) card.showModal();

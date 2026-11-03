@@ -28,7 +28,7 @@
       (p.origin_short ? '<span class="from">' + esc(p.origin_short) + '</span>' : '') +
       (p.teaser ? '<span class="story">' + esc(p.teaser) + '</span>' : '') +
       '<span class="go">Read about it →</span>' +
-      (p.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: p.credit_name, license: p.credit_license }) : '') +
+      (p.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: p.credit_name, license: p.credit_license, date: p.credit_date }) : '') +
       '</span>';
     return a;
   }

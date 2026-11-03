@@ -21,7 +21,7 @@
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function plate(p) {
-    return p.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: p.credit_name, license: p.credit_license }) : '';
+    return p.credit_name && window.PSBPPhotos ? PSBPPhotos.creditPlate({ by: p.credit_name, license: p.credit_license, date: p.credit_date }) : '';
   }
   function fit(p) { return /ND/.test(p.credit_license || '') ? ';background-size:contain' : ''; }
   function sciLine(p) { return p.sci && p.sci !== p.common ? '<i class="sci">' + esc(p.sci) + '</i>' : ''; }
