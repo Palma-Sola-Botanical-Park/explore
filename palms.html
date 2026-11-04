@@ -145,8 +145,9 @@
   .pc-grid{grid-template-columns:1fr 1fr;gap:var(--s3)}
   .pc-palm .tx{padding:var(--s2) var(--s3) var(--s3)}
 }
-.pc-more{max-width:var(--measure);margin:var(--s6) auto var(--s8);text-align:center;font-size:var(--t-base);color:var(--ink-soft)}
-.pc-more .btn{margin-top:var(--s3)}
+.pc-more{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s3);max-width:var(--wide);margin:var(--s6) auto var(--s8)}
+/* on a phone the four "more to explore" buttons sit two by two */
+@media (max-width:560px){nav.pc-more{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}nav.pc-more .btn{justify-content:center;text-align:center;padding-left:var(--s2);padding-right:var(--s2)}}
 
 /* ---- the guide: words and a few photos per area; the map and search are on palm-finder.html ---- */
 .pg-paths{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s5)}
@@ -329,10 +330,13 @@
   </div>
 </section>
 
-<div class="pc-more">
-  <a class="btn btn-outline" href="nature.html?form=Palm%20%26%20Cycad">Every palm in the catalog →</a>
-  <a class="btn btn-outline" href="rarefruit.html">The Rare Fruit Trail →</a>
-</div>
+<!-- The way on: this collection, then the other three doorways (same order on every page). -->
+<nav class="pc-more" aria-label="More to explore">
+  <a class="btn btn-green" href="palm-finder.html">See every palm →</a>
+  <a class="btn btn-outline" href="rarefruit.html">Rare Fruit Trail →</a>
+  <a class="btn btn-outline" href="wildlife.html">Wildlife →</a>
+  <a class="btn btn-outline" href="butterfly.html">Butterfly Garden →</a>
+</nav>
 
 </div>
 

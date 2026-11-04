@@ -170,3 +170,6 @@
 .hw-mont img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .2s}
 .hw-mont a:hover img{transform:scale(1.06)}
 .hw-by{order:1;margin-top:auto;padding-top:var(--s2);border-top:1px solid var(--rule);font-size:var(--t-base);line-height:1.4;color:var(--ink-soft)}
+
+/* on a phone the four "more to explore" buttons sit two by two */
+@media (max-width:560px){nav.lc-links{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}nav.lc-links .btn{justify-content:center;text-align:center;padding-left:var(--s2);padding-right:var(--s2)}}
