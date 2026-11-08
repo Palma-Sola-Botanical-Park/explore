@@ -17,7 +17,7 @@
    }) */
 (function () {
   var NS = 'http://www.w3.org/2000/svg';
-  var MAP = 'images/park-map.svg?v=2026-11-02f';   // keep in step with palm-finder.html and palms.html
+  var MAP = 'images/park-map.svg?v=2026-11-07b';   // keep in step with palm-finder.html and palms.html
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function plate(p) {

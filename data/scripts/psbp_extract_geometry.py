@@ -100,6 +100,14 @@ def main():
     if not a.write:
         print(f"\n  Dry run. Add --write to create {os.path.relpath(OUT, REPO)}")
         return 0
+    # Since the 2026-11-07 map review the master carries reviewed shapes, surfaces and a walks
+    # layer the KML never had. Re-extracting would erase them, so refuse.
+    if os.path.exists(OUT):
+        with open(OUT, encoding="utf-8") as fh:
+            if "walks" in json.load(fh):
+                print(f"\n  {os.path.relpath(OUT, REPO)} holds the reviewed map (walks layer); "
+                      "re-extracting would erase it. Not written.")
+                return 1
     with open(OUT, "w", encoding="utf-8") as fh:
         json.dump(data, fh, indent=1, ensure_ascii=False)
         fh.write("\n")

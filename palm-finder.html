@@ -293,7 +293,7 @@ var PALMS = [{"id":"PSBP-00291","name":"African Oil Palm","sci":"Elaeis guineens
   var svg = document.getElementById('svg'), dotsG = document.getElementById('dots');
 
   // The base map is a generated SVG; inline it so it takes the page's fonts.
-  fetch('images/park-map.svg?v=2026-11-02f')   // bump when the map is rebuilt, or browsers keep the old one
+  fetch('images/park-map.svg?v=2026-11-07b')   // bump when the map is rebuilt, or browsers keep the old one
    .then(function (r) { return r.text(); }).then(function (t) {
     var root = new DOMParser().parseFromString(t, 'image/svg+xml').documentElement;
     var base = document.getElementById('basemap');
