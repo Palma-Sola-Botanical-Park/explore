@@ -1411,12 +1411,12 @@ async function loadEventsPage(opts){
 
     buildEventFilters(filtersEl, [agendaEl]);
 
-    // FULL CALENDAR — every dated event/closure from the 1st of this month on,
-    // NO weekly class instances (those live in the schedule rail). Grouped
-    // scrolling list, with its own category / kid-friendly filter.
-    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    // FULL CALENDAR — every dated event/closure from today on, NO weekly class
+    // instances (those live in the schedule rail). Filtered after expanding
+    // multi-day runs, so one that started earlier keeps its remaining days.
+    // Grouped scrolling list, with its own category / kid-friendly filter.
     const monthItems = _expandMultiDay(allItems)
-      .filter(i => i.date >= monthStart)
+      .filter(i => i.date >= today)
       .filter(notSuppressed).sort(_byDateThenTime);
     const groups = _groupByMonth(monthItems);
     if (listEl) listEl.innerHTML = groups.length
