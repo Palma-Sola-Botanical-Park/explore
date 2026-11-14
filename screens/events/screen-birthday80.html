@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>80th Birthday — family photo show</title>
+<link rel="icon" type="image/png" href="../../images/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Oswald:wght@400;500;600&family=Source+Sans+3:wght@400;600;700&family=Yellowtail&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="event-deck.css">
+<link rel="stylesheet" href="event-birthday90.css">
+<!-- 80th birthday photo show, 2026-11-14. Same look as the 90th prototype
+     (event-birthday90.css), its own small player: it loads ONE photo ahead,
+     so a hundred-plus photos never sit in the mini PC's memory at once.
+
+     THE PHOTOS AND THE LIST ARE NOT IN THE REPO (a family's pictures and
+     names; the repo is public). They live in the folder birthday80-local/
+     beside this page, which is gitignored:
+        birthday80-local/photos.js     the list: file, part, caption, year
+        birthday80-local/photos/*.jpg  TV-size photos
+     Copy that folder to C:\PSBP\repo\screens\events\ on each PC.
+
+     Play order, every loop: part a (opening) in order, part b (the dated
+     photos) in order, the family card, then part c shuffled, with a
+     "Happy 80th" card every 25 photos and at the end.
+
+     A photo that will not load is skipped, never shown broken.
+     No folder: a card says the photos are not on this computer.
+
+     ?speed=5 fast preview · ?start=N begin at item N of the first loop -->
+<style>
+  .b8-photo .bd-print{--mw:78vw;--mh:70vh}
+  .b8-photo.tall .bd-print{--mh:76vh}
+  .b8-photo .bd-cap{font-size:clamp(1.3rem,3.4vmin,3rem);max-width:min(100%,120vmin);margin:1.4vmin auto 0}
+  .b8-photo .bd-cap.long{font-size:clamp(1.2rem,3vmin,2.6rem);font-style:normal;line-height:1.3}
+  .b8-photo .bd-ribbon{font-size:clamp(1.1rem,2.9vmin,2.4rem)}
+  .b8-photo .bd-ribbon b{font-size:1.4em}
+  .slide{transition:opacity 1.4s ease}
+  .b8-card .bd-names{grid-template-columns:repeat(var(--cols,3),minmax(0,1fr))}
+  .b8-card .bd-names div{font-family:var(--display);font-size:clamp(1.6rem,5vmin,4.4rem);color:var(--navy);text-align:center}
+  .b8-card .bd-kicker{margin:5vmin 0 0}
+  .b8-card .bd-kicker:first-of-type{margin-top:0}
+  .b8-note .bd-body{max-width:120vmin}
+</style>
+</head>
+<body>
+<div class="frame"></div>
+<div class="deck"><div class="slide" id="s0"></div><div class="slide" id="s1"></div></div>
+<div id="bar"></div>
+<script src="birthday80-local/photos.js"></script>
+<script>
+(function(){
+  var Q = new URLSearchParams(location.search);
+  var SPEED = Math.max(0.1, parseFloat(Q.get('speed')) || 1);
+  var D = window.BIRTHDAY80 || null;
+  var DIR = 'birthday80-local/photos/';
+  var SECS = { a:14, b:9, c:8, card:11, note:30 };
+  var STAR = '<svg class="bd-star t1" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 0C53 37 63 47 100 50C63 53 53 63 50 100C47 63 37 53 0 50C37 47 47 37 50 0Z"/></svg>';
+  var DRULE = '<div class="bd-drule"><b></b></div>';
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function deco(k){ return '<div class="bd-deco bd-deco-' + k + '"><i class="s1"></i><i class="s2"></i><i class="s3"></i>' + STAR + '</div>'; }
+  function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function and(list){ return list.length < 2 ? (list[0] || '') : list.slice(0, -1).join(', ') + ' & ' + list[list.length - 1]; }
+
+  /* ---- cards (words only) ---- */
+  function happy(){
+    var n = esc(D.name || '');
+    return { secs: SECS.card, html: deco('a') + '<div class="bd-center"><div class="bd-script coral">Happy 80th,</div>'
+      + '<div class="bd-title"><span class="bd-name">' + n + '!</span></div>' + DRULE
+      + '<div class="bd-body">With love from all of us.</div></div>' };
+  }
+  function family(){
+    var f = D.family || {}, kids = f.kids || [], gk = f.grandkids || [];
+    if (!kids.length && !gk.length) return null;
+    function grid(names){ return '<div class="bd-names" style="--cols:' + Math.min(4, names.length) + '">'
+      + names.map(function(x){ return '<div>' + esc(x) + '</div>'; }).join('') + '</div>'; }
+    return { secs: SECS.card + 3, html: deco('b') + '<div class="bd-center">'
+      + (kids.length ? '<div class="bd-kicker">' + (kids.length > 1 ? 'His kids' : 'His kid') + '</div>' + grid(kids) : '')
+      + (gk.length ? '<div class="bd-kicker">' + (gk.length > 1 ? 'His grandkids' : 'His grandkid') + '</div>' + grid(gk) : '')
+      + '</div>' };
+  }
+  function note(text){
+    return { secs: SECS.note, html: deco('c') + '<div class="bd-center b8-note"><div class="bd-kicker">80th birthday photo show</div>'
+      + '<div class="bd-body">' + text + '</div></div>', cls: 'b8-note' };
+  }
+
+  /* ---- one photo on its mat ---- */
+  function photoHtml(p, ar){
+    var u = esc(DIR + p.file), cap = p.caption ? esc(p.caption) : '';
+    var long = cap.length > 60 ? ' long' : '';
+    var tilt = ((p._i % 3) - 1) * 1.1;                   // -1.1, 0, 1.1 degrees, gently varied
+    return '<div class="bd-hero"><div class="bd-print" style="--ar:' + ar.toFixed(4) + ';--tilt:' + tilt + 'deg">'
+      + '<div class="bd-pic"><img class="soft" src="' + u + '" alt=""><img class="main" src="' + u + '" alt="' + (cap || 'Family photo') + '"></div>'
+      + (cap ? '<div class="bd-cap' + long + '">' + cap + '</div>' : '') + '</div></div>'
+      + (p.year ? '<div class="bd-ribbon"><b>' + esc(p.year) + '</b></div>' : '');
+  }
+
+  /* ---- the running order for one loop ---- */
+  function loop(){
+    var ph = (D.photos || []).map(function(p, i){ p._i = i; return p; });
+    var part = function(x){ return ph.filter(function(p){ return p.part === x; }); };
+    var out = [];
+    part('a').forEach(function(p){ out.push({ photo:p, secs:SECS.a }); });
+    part('b').forEach(function(p){ out.push({ photo:p, secs:SECS.b }); });
+    var fam = family(); if (fam) out.push(fam);
+    shuffle(part('c')).forEach(function(p, i){
+      if (i && i % 25 === 0) out.push(happy());
+      out.push({ photo:p, secs:SECS.c });
+    });
+    out.push(happy());
+    return out;
+  }
+
+  /* ---- player: two slides, the next one built while the current one shows ---- */
+  var slides = [document.getElementById('s0'), document.getElementById('s1')], front = 0;
+  var bar = document.getElementById('bar'), queue = [], timer;
+
+  function render(item, done){
+    if (!item.photo){ done(item); return; }
+    var im = new Image(), t = setTimeout(fail, 20000);
+    function fail(){ clearTimeout(t); im.onload = im.onerror = null; console.warn('Birthday deck: skipped ' + item.photo.file); done(null); }
+    im.onload = function(){
+      clearTimeout(t);
+      if (!im.naturalWidth) return fail();
+      var ar = im.naturalWidth / im.naturalHeight;
+      done({ secs: item.secs, html: photoHtml(item.photo, ar), cls: 'b8-photo' + (ar < 1 ? ' tall' : '') });
+    };
+    im.onerror = fail;
+    im.src = DIR + item.photo.file;
+  }
+  function next(){
+    if (!queue.length) queue = loop();
+    var item = queue.shift();
+    render(item, function(ready){
+      if (!ready){ next(); return; }                   // a photo that would not load: on to the next
+      var back = slides[1 - front];
+      back.className = 'slide ' + (ready.cls || 'b8-card');
+      back.innerHTML = '<div class="bg"></div>' + ready.html;
+      // let the new photo decode before it fades in
+      var img = back.querySelector('img.main');
+      (img && img.decode ? img.decode().catch(function(){}) : Promise.resolve()).then(function(){ show(back, ready.secs); });
+    });
+  }
+  function show(el, secs){
+    var dwell = secs / SPEED;
+    slides[front].classList.remove('on');
+    el.classList.add('on'); front = slides.indexOf(el);
+    bar.classList.remove('run'); bar.style.transitionDuration = '0s'; bar.style.width = '0';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      bar.classList.add('run'); bar.style.transitionDuration = dwell + 's'; bar.style.width = '100%'; }); });
+    clearTimeout(timer); timer = setTimeout(next, dwell * 1000);
+  }
+
+  if (!D || !(D.photos || []).length){
+    var n = note('The photos are not on this computer yet. Put the <b>birthday80-local</b> folder next to this page, in screens\\events.');
+    slides[0].className = 'slide on b8-card'; slides[0].innerHTML = '<div class="bg"></div>' + n.html;
+    return;
+  }
+  queue = loop();
+  var start = Math.max(0, parseInt(Q.get('start'), 10) || 0);
+  queue = queue.slice(Math.min(start, queue.length - 1));
+  if (SPEED !== 1) console.log('Birthday deck at ' + SPEED + 'x');
+  next();
+})();
+</script>
+</body>
+</html>
