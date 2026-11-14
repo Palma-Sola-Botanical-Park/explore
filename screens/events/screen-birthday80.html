@@ -40,6 +40,10 @@
   .b8-card .bd-kicker{margin:5vmin 0 0}
   .b8-card .bd-kicker:first-of-type{margin-top:0}
   .b8-note .bd-body{max-width:120vmin}
+  .b8-card .bd-script{font-size:clamp(3rem,15vmin,13rem)}
+  .b8-card .bd-title{font-size:clamp(3.4rem,19vmin,16rem)}
+  .b8-card .bd-drule{width:44vmin;margin:4vmin auto}
+  .b8-card .bd-body{font-size:clamp(1.6rem,4.6vmin,3.8rem)}
 </style>
 </head>
 <body>
@@ -89,7 +93,7 @@
     var u = esc(DIR + p.file), cap = p.caption ? esc(p.caption) : '';
     var long = cap.length > 60 ? ' long' : '';
     var tilt = ((p._i % 3) - 1) * 1.1;                   // -1.1, 0, 1.1 degrees, gently varied
-    return '<div class="bd-hero"><div class="bd-print" style="--ar:' + ar.toFixed(4) + ';--tilt:' + tilt + 'deg">'
+    return deco('abc'[p._i % 3]) + '<div class="bd-hero"><div class="bd-print" style="--ar:' + ar.toFixed(4) + ';--tilt:' + tilt + 'deg">'
       + '<div class="bd-pic"><img class="soft" src="' + u + '" alt=""><img class="main" src="' + u + '" alt="' + (cap || 'Family photo') + '"></div>'
       + (cap ? '<div class="bd-cap' + long + '">' + cap + '</div>' : '') + '</div></div>'
       + (p.year ? '<div class="bd-ribbon"><b>' + esc(p.year) + '</b></div>' : '');
@@ -136,9 +140,12 @@
       var back = slides[1 - front];
       back.className = 'slide ' + (ready.cls || 'b8-card');
       back.innerHTML = '<div class="bg"></div>' + ready.html;
-      // let the new photo decode before it fades in
-      var img = back.querySelector('img.main');
-      (img && img.decode ? img.decode().catch(function(){}) : Promise.resolve()).then(function(){ show(back, ready.secs); });
+      // let the new photo decode before it fades in, but never wait more than 2.5 s
+      // (a hidden or occluded browser can hold decode() back indefinitely)
+      var img = back.querySelector('img.main'), went = false;
+      function go(){ if (!went){ went = true; show(back, ready.secs); } }
+      if (img && img.decode) img.decode().then(go, go); else go();
+      setTimeout(go, 2500);
     });
   }
   function show(el, secs){
