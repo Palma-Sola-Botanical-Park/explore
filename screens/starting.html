@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palma Sola Botanical Park — starting up</title>
+<!--
+  Start-up screen for the office and galleria TVs.
+  Edge opens this page from the PC's own disk at login, so it shows at once,
+  before the local controller is running. Every two seconds it asks the
+  controller; when it answers, the page hands over to the TV show.
+  ?demo=8  pretends the controller answers after 8 seconds, then opens the Normal deck.
+-->
+<style>
+@font-face{font-family:"Playfair Display";src:url("../fonts/PlayfairDisplay-Regular.ttf") format("truetype");font-weight:400}
+@font-face{font-family:"Playfair Display";src:url("../fonts/PlayfairDisplay-Italic.ttf") format("truetype");font-weight:400;font-style:italic}
+:root{
+  --green-deep:#1a3a1f;--green-mid:#2d6a35;--gold:#c5922a;--gold-light:#eabc5a;--cream:#faf8f3;
+}
+html,body{margin:0;height:100%;overflow:hidden;cursor:none}
+body{
+  background:radial-gradient(ellipse at 50% 40%, var(--green-mid) 0%, var(--green-deep) 70%);
+  color:var(--cream);
+  font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+}
+.logo{width:min(56vw,92vh);height:auto;opacity:0;animation:rise 1.6s ease-out .2s forwards}
+.name{display:none;font-family:"Playfair Display",Georgia,serif;font-size:9vmin;font-weight:400;margin:0;line-height:1.1}
+.logo-missing .logo{display:none}
+.logo-missing .name{display:block}
+.status{
+  margin-top:6vmin;font-family:"Playfair Display",Georgia,serif;font-style:italic;
+  font-size:5.4vmin;color:var(--gold-light);opacity:0;animation:rise 1.6s ease-out 1s forwards;
+}
+.dots span{display:inline-block;animation:blink 1.8s infinite both}
+.dots span:nth-child(2){animation-delay:.3s}
+.dots span:nth-child(3){animation-delay:.6s}
+.later{margin-top:2.4vmin;font-size:3.4vmin;color:var(--cream);opacity:0;transition:opacity 2s}
+.later.show{opacity:.8}
+.demo{
+  position:fixed;top:0;left:0;right:0;padding:1.2vmin;background:var(--gold);color:var(--green-deep);
+  font-size:max(17px,2.6vmin);font-weight:700;letter-spacing:.06em;display:none
+}
+.is-demo .demo{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:none}}
+@keyframes blink{0%,100%{opacity:.15}40%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="demo" id="demo">DEMO: pretending the TV computer is starting up</div>
+<img class="logo" src="../images/white_PSBP_logo.png" alt="Palma Sola Botanical Park"
+     onerror="document.body.classList.add('logo-missing')">
+<h1 class="name">Palma Sola Botanical Park</h1>
+<div class="status">System is starting up<span class="dots"><span>.</span><span>.</span><span>.</span></span></div>
+<div class="later" id="later">This can take a minute or two.</div>
+<script>
+(function () {
+  var TARGET = 'http://localhost:8000/display';   // the kiosk's normal address
+  var params = new URLSearchParams(location.search);
+  var demo = parseFloat(params.get('demo'));
+  var started = Date.now();
+
+  // After a minute and a half, a quiet second line, so nobody thinks it has stalled.
+  setTimeout(function () { document.getElementById('later').classList.add('show'); }, 90000);
+
+  if (demo > 0) {
+    document.body.classList.add('is-demo');
+    setTimeout(function () { location.replace('screen.html'); }, demo * 1000);
+    return;
+  }
+
+  function check() {
+    var ctl = window.AbortController ? new AbortController() : null;
+    var timer = ctl && setTimeout(function () { ctl.abort(); }, 1500);
+    // no-cors: we cannot read the answer, only learn that the controller answered.
+    fetch(TARGET, { mode: 'no-cors', cache: 'no-store', signal: ctl && ctl.signal })
+      .then(function () { location.replace(TARGET); })
+      .catch(function () { setTimeout(check, 2000); })
+      .then(function () { if (timer) clearTimeout(timer); });
+  }
+  // Give the logo a moment on screen even when the controller is already up.
+  setTimeout(check, 2500);
+})();
+</script>
+</body>
+</html>
