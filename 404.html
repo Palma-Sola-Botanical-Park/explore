@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page not found · Palma Sola Botanical Park</title>
+<!--
+  GitHub Pages shows this page for any address it cannot find, at that address.
+  Old palmasolabp.org (WordPress) addresses are looked up in MOVED below and
+  forwarded to the page that now does the same job. Anything else gets the
+  friendly not-found page.
+
+  This page can be served at any depth (/news/, /project/plumeria/), so plain
+  relative links would break. SITE works out the site's root from the address
+  (/explore/ on github.io, / on a custom domain) and every link is built from it.
+  Styles are inline for the same reason.
+
+  A species page in MOVED that is later renamed simply falls through to the
+  not-found page; update its line here when that happens.
+-->
+<script>
+(function () {
+  var parts = location.pathname.split('/').filter(Boolean);
+  var onGithubIo = /\.github\.io$/i.test(location.hostname);
+  var SITE = onGithubIo && parts.length ? '/' + parts[0] + '/' : '/';
+  var rest = onGithubIo ? parts.slice(1) : parts;
+  var slug = rest.join('/').toLowerCase().replace(/\/index\.html?$/, '');
+
+  var EVENTS = 'events.html', NEWS = 'news.html', MEMBER = 'get-involved.html#member',
+      DONATE = 'get-involved.html#donate', VOLUNTEER = 'get-involved.html#volunteer',
+      VENUE = 'venue.html#rentals', NATURE = 'nature.html';
+
+  var MOVED = {
+    // ── Old WordPress pages ──
+    'visit': 'visit.html',
+    'events': EVENTS, 'calendar': EVENTS, 'classes': EVENTS,
+    'news': NEWS, 'park-news': NEWS,
+    'donate': DONATE,
+    'members': MEMBER, 'shop': MEMBER, 'cart': MEMBER, 'checkout': MEMBER, 'my-account': MEMBER,
+    'volunteer': VOLUNTEER, 'volunteer-form': VOLUNTEER, 'thank-you': VOLUNTEER,
+    'venue-rentals': VENUE,
+    'about': 'contact.html#story', 'contact': 'contact.html',
+    'sponsors': 'contact.html#community-links',
+
+    // ── Old WordPress posts (nearly all were events) ──
+    'rent-the-park': VENUE,
+    'butterflies-return-to-the-park': 'butterfly.html',
+    'the-giving-challenge': DONATE,
+    'garden-workdays': VOLUNTEER, 'gardening-work-day': VOLUNTEER, 'july-gardening-workday': VOLUNTEER,
+    'horticultural-classes-workshops': EVENTS, 'florida-native-gardening-sept-21': EVENTS,
+    'yoga-in-the-park': EVENTS, 'eat-local-week-oct-14-21': EVENTS,
+    'flower-power-family-fun-day': EVENTS, 'plant-more-sale-oct-22': EVENTS,
+    'plant-shed-summer-sale': EVENTS, 'reasoner-heritage-day-mar-24-2024': EVENTS,
+    'garden-party-april-13': EVENTS, 'art-consignment-information': EVENTS,
+    'mothers-day-tea-may-9': EVENTS, 'memorial-day-at-the-tea-tree-cafe': EVENTS,
+    'art-reception-may-23rd': EVENTS, 'pop-up-musical-motion-june-25': EVENTS,
+    'painting-whimsical-flowers-in-palma-sola': EVENTS, 'macrame-air-plant-hanger-workshop': EVENTS,
+    'the-cornament': EVENTS, 'night-for-nature': EVENTS, 'watercolor-painting-class': EVENTS,
+    'botanical-harmony': EVENTS, 'nature-photography-contest': EVENTS,
+    'ennye-gallery-presents': EVENTS, 'florida-highwaymen': EVENTS,
+    'art-in-the-park-january-feb': EVENTS, 'spring-plant-more-sale': EVENTS,
+    'florida-history-presentation': EVENTS, 'garden-party': EVENTS,
+    'rare-fruit-tree-sale': EVENTS, 'art-in-the-park-may': EVENTS, 'art-in-the-park-june': EVENTS,
+    'summer-fun-nature-classes': EVENTS, 'shona-stone-sculptures': EVENTS, 'bonsai-classes': EVENTS,
+    'water-painting-class-dragon-fruit-aug-27': EVENTS, 'art-in-the-park-august': EVENTS,
+    'winter-nights-under-the-lights-dec-2025': EVENTS, 'florida-highwayman-exhibit-and-sale': EVENTS,
+    'spring-plants-and-more-sale': EVENTS, 'garden-party-april-11': EVENTS,
+    'art-in-the-park-september': EVENTS, 'nature-photo-contest': EVENTS,
+    'art-in-the-park-november': EVENTS, 'painting-and-a-picnic': EVENTS,
+    'art-in-the-park-november-2': EVENTS, 'art-in-the-park-december': EVENTS,
+    'walk-talk-learn': EVENTS, 'art-in-the-park-january': EVENTS, 'zumba-in-the-park': EVENTS,
+    'fall-plant-garden-festival-oct-4-26': EVENTS, 'winter-nights-under-the-lights-dec-17-20-26': EVENTS,
+    'groovin-in-the-gardens': EVENTS, 'a-midsummer-nights-dream': EVENTS, 'art-in-the-park': EVENTS,
+    'volunteer-appreciation-luncheon': EVENTS, 'cuban-coffee-midnight-floridita': EVENTS,
+
+    // ── Old shop products ──
+    'product/acorn-single-membership': MEMBER, 'product/sapling-dual-membership': MEMBER,
+    'product/live-oak-family-membership': MEMBER, 'product/live-oak-large-family-membership': MEMBER,
+    'product/oak-hammock-donor': MEMBER, 'product/oak-hammock-legacy': MEMBER,
+    'product-category/memberships': MEMBER,
+
+    // ── Old plant gallery: the two that match a species page exactly ──
+    'project/red-silk-cotton-tree': 'plants/PSBP-00102-Red-Silk-Cotton-Tree.html',
+    'project/giant-milkweed': 'plants/PSBP-00039-Giant-Milkweed.html',
+
+    // ── Old categories ──
+    'category/news': NEWS, 'category/media': NEWS, 'category/park-information': 'visit.html',
+    'category/events': EVENTS, 'category/past-events': EVENTS, 'category/classes': EVENTS,
+    'category/past-classes': EVENTS, 'category/archived': EVENTS
+  };
+
+  var target = MOVED[slug];
+  // Whole groups: any other old ticket or class product, any other old plant gallery item.
+  if (!target && /^product(-category)?\//.test(slug)) target = EVENTS;
+  if (!target && /^project\//.test(slug) && slug !== 'project/maecenas-feugiat') target = NATURE;
+
+  if (target) {
+    location.replace(SITE + target);
+    return;
+  }
+  window.PSBP_SITE = SITE;
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root { --green-deep:#1a3a1f; --green-mid:#2d6a35; --gold:#c5922a; --gold-light:#eabc5a; --cream:#faf8f3; --t-base:17px; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--cream); color:#2a2a2a; font-family:'Source Sans 3',system-ui,sans-serif;
+  font-size:var(--t-base); line-height:1.65; }
+header { background:var(--green-deep); color:#fff; padding:2.6rem 1rem 2.4rem; text-align:center; }
+header .name { font-family:'Playfair Display',Georgia,serif; color:var(--gold-light); font-size:var(--t-base);
+  letter-spacing:.04em; text-decoration:none; }
+header h1 { font-family:'Playfair Display',Georgia,serif; font-weight:700; font-size:clamp(1.9rem,6vw,2.6rem);
+  margin:.6rem 0 .5rem; }
+header p { margin:0 auto; max-width:34rem; color:rgba(255,255,255,.85); font-size:var(--t-base); }
+main { max-width:38rem; margin:0 auto; padding:2.2rem 1rem 3rem; }
+main h2 { font-family:'Playfair Display',Georgia,serif; color:var(--green-deep); font-size:1.4rem; margin:0 0 1rem; }
+.links { list-style:none; margin:0; padding:0; display:grid; gap:.6rem; }
+.links a { display:block; background:#fff; border:1px solid #e4dfd2; border-radius:10px; padding:.85rem 1rem;
+  color:var(--green-deep); text-decoration:none; font-weight:600; font-size:var(--t-base); }
+.links a span { display:block; font-weight:400; color:#5a5a5a; font-size:var(--t-base); }
+.links a:hover, .links a:focus { border-color:var(--gold); }
+.note { margin-top:2rem; color:#5a5a5a; font-size:var(--t-base); }
+.note a { color:var(--green-mid); }
+</style>
+</head>
+<body>
+<header>
+  <a class="name" data-href="index.html" href="#">Palma Sola Botanical Park</a>
+  <h1>We couldn't find that page</h1>
+  <p>Our website is new, so an old link may have brought you here. Everything is still here, just in a new place.</p>
+</header>
+<main>
+  <h2>Where would you like to go?</h2>
+  <ul class="links">
+    <li><a data-href="index.html" href="#">Home<span>What's happening at the park this week</span></a></li>
+    <li><a data-href="visit.html" href="#">Visit<span>Hours, directions and what to see</span></a></li>
+    <li><a data-href="events.html" href="#">Events and classes<span>What's coming up</span></a></li>
+    <li><a data-href="nature.html" href="#">Plants and wildlife<span>Everything growing and living in the park</span></a></li>
+    <li><a data-href="get-involved.html" href="#">Get involved<span>Donate, join or volunteer</span></a></li>
+    <li><a data-href="venue.html" href="#">Weddings and rentals<span>Hold your event in the gardens</span></a></li>
+    <li><a data-href="news.html" href="#">News<span>Stories and newsletters</span></a></li>
+    <li><a data-href="contact.html" href="#">Contact us<span>Who we are and how to reach us</span></a></li>
+  </ul>
+  <p class="note">Still can't find it? <a data-href="contact.html" href="#">Tell us what you were looking for</a> and we'll point you to it.</p>
+</main>
+<script>
+document.querySelectorAll('[data-href]').forEach(function (a) {
+  a.href = (window.PSBP_SITE || '/') + a.getAttribute('data-href');
+});
+</script>
+</body>
+</html>
