@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<title>Holiday lights power plan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+:root{--green:#1a3a1f;--mid:#2d6a35;--gold:#c5922a;--cream:#faf8f3;--rule:#d9d4c6;--ink:#22261f;--soft:#5d6257;--red:#b3261e}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font:17px/1.4 -apple-system,"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:var(--cream);display:flex;overflow:hidden}
+#map{flex:1;min-width:0;height:100%}
+#side{width:440px;height:100%;overflow-y:auto;border-left:1px solid var(--rule);padding:0 0 40px;background:#fff}
+
+#side section{padding:14px 16px 18px;border-bottom:1px solid #cfc9b8}
+#side section h2{margin:0 0 8px;border:0;padding:0}
+.s-top{background:#fff}.s-add{background:#faf3dc}.s-sel{background:#e2edf8}.s-brk{background:#e5f1e0}.s-tot{background:#fbe8d5}.s-led{background:#ece5f5}.s-view{background:#eeeeea}
+h1{font-size:22px;margin:0;color:var(--green)}
+h2{font-size:19px;margin:22px 0 8px;color:var(--green);border-top:1px solid var(--rule);padding-top:14px}
+#status{color:var(--soft);margin:2px 0 0}
+#status.bad{color:var(--red);font-weight:600}
+button{font:inherit;padding:7px 11px;border:1px solid #b9b3a2;border-radius:7px;background:#fff;color:var(--ink);cursor:pointer}
+button:hover{background:#f1eee4}
+button.on{background:var(--green);color:#fff;border-color:var(--green)}
+button.danger{color:var(--red);border-color:#d8a8a4}
+.btns{display:flex;flex-wrap:wrap;gap:7px}
+label{display:block;margin:10px 0 3px;color:var(--soft)}
+input[type=text],input[type=number],select,textarea{font:inherit;width:100%;padding:7px 9px;border:1px solid #b9b3a2;border-radius:7px;background:#fff;color:var(--ink)}
+textarea{min-height:64px;resize:vertical}
+.row{display:flex;gap:10px}.row>div{flex:1 1 0;min-width:0}
+.check{display:flex;align-items:center;gap:8px;margin:12px 0 0;color:var(--ink)}
+.check input{width:20px;height:20px}
+.hint{color:var(--soft);margin:6px 0 0}
+#adding{display:none;background:var(--gold);color:#fff;padding:9px 12px;border-radius:7px;margin-top:10px;font-weight:600}
+table{border-collapse:collapse;width:100%}
+td,th{text-align:left;padding:7px 6px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{color:var(--soft);font-weight:600}
+td.n,th.n{text-align:right;white-space:nowrap}
+tr.pick{cursor:pointer}tr.pick:hover{background:#f1eee4}
+.bar{height:9px;background:#e6e1d3;border-radius:5px;margin-top:5px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--mid)}
+.bar.warn i{background:var(--gold)}.bar.over i{background:var(--red)}
+.over-t{color:var(--red);font-weight:600}
+
+.pin{display:flex;align-items:center;justify-content:center;font:700 13px/1 -apple-system,Arial,sans-serif;color:#fff;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.55),0 1px 4px rgba(0,0,0,.5)}
+.pin.panel{background:#d01c1c;border-radius:3px}
+.pin.post{background:#8a5a2b;border-radius:3px}
+.pin.building{background:#111;border-radius:50%}
+.pin.load{border-radius:50%}
+.pin.unconf{border-style:dashed;border-color:#ffd24a}
+.pin.sel{box-shadow:0 0 0 4px #39c0ff,0 1px 4px rgba(0,0,0,.5)}
+.lm{font:600 13px/1.1 -apple-system,Arial,sans-serif;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000;white-space:nowrap;pointer-events:none}
+.key span{display:inline-flex;align-items:center;gap:6px;margin:0 14px 6px 0}
+.key .pin{width:20px;height:20px;position:static;font-size:11px}
+.cordlab{font:700 14px/1.1 -apple-system,Arial,sans-serif;padding:2px 5px;border-radius:5px;border:1px solid #333;background:#fff;color:#111;box-shadow:none}
+.cordlab:before{display:none}.cordlab.buy{background:#e0201b;color:#fff;border-color:#7d0f0c}.cordlab.heavy{background:#1565c0;color:#fff;border-color:#0b3a73}
+#addbtns{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+#addbtns button{display:flex;align-items:center;gap:9px;text-align:left;padding:7px 9px;line-height:1.2}
+#addbtns .pin{width:24px;height:24px;flex:none;font-size:12px;font-style:normal;position:static}
+
+body.sheet{display:block;background:#fff;padding:18px 24px;overflow:auto}
+body.sheet #map,body.sheet #side{display:none}
+#sheet{display:none}body.sheet #sheet{display:block}
+#sheet svg{width:100%;max-width:900px;border:1px solid #999;display:block;margin:8px 0 16px}
+#sheet td,#sheet th{border:1px solid #999;padding:9px 8px}
+#sheet td.blank{width:17%}
+.tags{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.tag{border:1px dashed #555;padding:14px 16px;break-inside:avoid;font-size:17px;line-height:1.35}
+.tag b{display:block;font-size:22px;margin-bottom:4px}.tag span{display:block}
+.tag em{display:block;font-style:normal;font-weight:700;font-size:24px;margin:6px 0 2px}
+@media print{.noprint{display:none}#sheet svg{max-width:100%}tr{break-inside:avoid}}
+.demo{background:#b3261e;color:#fff;font-weight:700;padding:10px 16px}
+.tiles{display:flex;gap:8px;margin:14px 0 0}
+.tiles div{flex:1 1 0;min-width:0;background:#fff;border:1px solid #b9b3a2;border-radius:7px;padding:6px 10px}
+.tiles span{display:block;color:var(--soft)}
+.tiles b{font-size:23px;color:var(--green)}
+h3{font-size:18px;margin:18px 0 4px;color:var(--green)}
+ol.lst{margin:4px 0 8px;padding-left:28px}
+ol.lst li{margin:7px 0}
+ol.lst button{padding:3px 9px;margin-left:6px}
+.ed{background:#fff;border:1px solid #b9b3a2;border-radius:7px;padding:2px 10px 10px;margin:6px 0 4px}
+.warn-t{color:#b00020;font-weight:700;margin:2px 0}
+#undo,#vview,#newc,.s-brk,.s-tot,.s-led,#vsheet,#vhook,#vcords,#cordsum,#cordlist,#adding{display:none !important}
+#viewbtns{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+#viewbtns button{display:flex;align-items:center;gap:9px;text-align:left;padding:7px 9px;line-height:1.2}
+#viewbtns .pin{width:24px;height:24px;flex:none;font-size:12px;font-style:normal;position:static}
+#viewbtns button.on .pin{box-shadow:0 0 0 1px #fff}
+#modebtns{display:flex;gap:7px;margin-top:10px}#modebtns button{flex:1;font-weight:600}
+#data{display:none;flex:1;min-width:0;height:100%;overflow-y:auto;padding:22px 28px 60px;background:#fff}
+body.datamode #map{display:none}body.datamode #data{display:block}
+#data h2{border:0;padding:0;margin:30px 0 8px;font-size:22px}#data h2:first-child{margin-top:0}
+#data table{margin-bottom:8px}#data tr.pick td{cursor:pointer}
+#data .lead{font-size:19px;margin:4px 0 12px}
+#data .sub td{background:#f4f1e8;font-weight:700;color:var(--green)}
+.big{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 4px}
+.big div{flex:1 1 150px;background:#f4f1e8;border-radius:8px;padding:10px 14px}
+.big span{display:block;color:var(--soft)}.big b{font-size:28px;color:var(--green)}
+.ro p{margin:6px 0}.ro ul{margin:4px 0 8px;padding-left:22px}.ro li{margin:4px 0}
+#data tr.pick:hover td{background:#f1eee4}#data tr.cur td{background:#e2edf8}
+@media (max-width:760px){body{flex-direction:column}#map{flex:none;width:100%;height:50%}#side{flex:1;width:100%;height:auto;min-height:0;border-left:0;border-top:1px solid var(--rule);box-sizing:border-box}body.datamode #data{flex:none;width:100%;height:55%;box-sizing:border-box;padding:14px 12px 30px;overflow-x:auto}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="data"></div>
+<div id="side">
+  <section class="s-top">
+  <h1>Holiday lights power plan</h1>
+  <p id="status">Loading…</p>
+  <div class="btns"><button id="undo" disabled>Undo last change</button><button id="vview">Open the viewer</button></div>
+  <div id="modebtns"><button id="mmap" class="on">Map</button><button id="mdata">Data</button></div>
+
+  </section>
+  <section class="s-add">
+  <h2>Select to view</h2>
+  <div id="viewbtns"></div>
+  <div id="adding"></div>
+  <p class="hint">Pick one to make it stand out on the map, or to list it in Data. Click any pin or line of a table for its details.</p>
+
+  </section>
+  <section class="s-sel">
+  <h2>Selected</h2>
+  <div id="form"><p class="hint">Nothing selected.</p></div>
+
+  </section>
+  <section class="s-brk">
+  <h2>Breakers</h2>
+  <div id="breakers"></div>
+  <div class="btns" style="margin-top:10px"><button id="newc">New breaker</button></div>
+
+  </section>
+  <section class="s-tot">
+  <h2>Totals</h2>
+  <div id="totals"></div>
+
+  </section>
+  <section class="s-led">
+  <h2>Assumptions per load type</h2>
+  <div id="ledset"></div>
+
+  </section>
+  <section class="s-view">
+  <h2>View</h2>
+  <div class="btns">
+    <button id="vsat" class="on">Satellite</button><button id="vmap">Park map</button>
+    <button id="vsheet">Breaker walk sheet</button>
+    <button id="vhook">Contractor hookup sheet</button>
+    <button id="vcords">Cords on hand</button>
+  </div>
+  <div id="cordsum"></div>
+  <div class="key" style="margin-top:14px">
+    <span><i class="pin panel"></i>breaker panel</span>
+    <span><i class="pin post"></i>outlet post</span>
+    <span><i class="pin building"></i>outlets on a building</span>
+    <span><i class="pin load" style="background:#c5922a"></i>something that uses power</span>
+    <span><i class="pin load" style="background:#2b2b2b;border-radius:3px">+</i>splitter</span>
+    <span><i style="display:inline-block;width:26px;height:7px;background:#0a7d32;border:1px solid #777;border-radius:3px"></i>run of lights, up to 175 ft</span>
+    <span><i style="display:inline-block;width:26px;height:7px;background:#3ddc68;border:1px solid #777;border-radius:3px"></i>175 to 225 ft</span>
+    <span><i style="display:inline-block;width:26px;height:7px;background:#c8f7b4;border:1px solid #777;border-radius:3px"></i>over 225 ft</span>
+    <span><i class="pin post unconf"></i>dashed edge: not checked yet</span>
+  </div>
+  <div id="cordlist"></div>
+  </section>
+</div>
+
+<div id="sheet"></div>
+
+<script>
+var VIEW = {"doc": {"meta": {"led": {"mini_w": 30, "big_ft": 65, "fc_ft": 60}, "updated": "2026-11-22T11:33:35", "cords": [{"item": "1", "len": 72, "ga": 16, "outs": 3, "color": "Green", "est": false}, {"item": "2", "len": 50, "ga": 14, "outs": 1, "color": "Red/black", "est": false}, {"item": "3", "len": 100, "ga": 14, "outs": 1, "color": "Red", "est": false}, {"item": "4", "len": 48, "ga": 14, "outs": 1, "color": "Red/black", "est": false}, {"item": "5", "len": 48, "ga": 14, "outs": 1, "color": "Red", "est": false}, {"item": "6", "len": 48, "ga": 12, "outs": 1, "color": "Yellow", "est": false}, {"item": "7", "len": 95, "ga": 12, "outs": 1, "color": "Orange", "est": false}, {"item": "8", "len": 90, "ga": 12, "outs": 1, "color": "Yellow", "est": false}, {"item": "9", "len": 95, "ga": 12, "outs": 1, "color": "White", "est": false}, {"item": "10", "len": 40, "ga": 14, "outs": 1, "color": "Pink", "est": false}, {"item": "11", "len": 45, "ga": 14, "outs": 1, "color": "Orange", "est": false}, {"item": "18", "len": 12, "ga": 16, "outs": 3, "color": "Green", "est": false}, {"item": "19", "len": 12, "ga": 16, "outs": 3, "color": "Green", "est": false}, {"item": "20", "len": 12, "ga": 16, "outs": 3, "color": "Green", "est": false}, {"item": "21", "len": 12, "ga": 16, "outs": 3, "color": "Green", "est": false}, {"item": "22", "len": 12, "ga": 16, "outs": 3, "color": "Green", "est": false}, {"item": "23", "len": 12, "ga": 16, "outs": 3, "color": "Green", "est": false}, {"item": "24", "len": 90, "ga": 12, "outs": 1, "color": "Orange", "est": false}, {"item": "41", "len": 12, "ga": 12, "outs": 3, "color": "Black", "est": false}, {"item": "42", "len": 12, "ga": 12, "outs": 3, "color": "Black", "est": false}, {"item": "43", "len": 32, "ga": 16, "outs": 1, "color": "Green", "est": false}, {"item": "44", "len": 12, "ga": 16, "outs": 1, "color": "Blue", "est": false}, {"item": "45", "len": 90, "ga": 16, "outs": 1, "color": "Dark green", "est": false}, {"item": "46", "len": 45, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "47", "len": 70, "ga": 12, "outs": 1, "color": "Orange/gray", "est": false}, {"item": "49", "len": 50, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "50", "len": 20, "ga": 16, "outs": 1, "color": "Yellow", "est": false}, {"item": "51", "len": 75, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "52", "len": 45, "ga": 16, "outs": 1, "color": "Green", "est": false}, {"item": "53", "len": 75, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "54", "len": 45, "ga": 16, "outs": 1, "color": "Yellow, ribbed", "est": false}, {"item": "55", "len": 32, "ga": 16, "outs": 1, "color": "Yellow", "est": false}, {"item": "56", "len": 16, "ga": 16, "outs": 3, "color": "Orange", "est": false}, {"item": "57", "len": 50, "ga": 16, "outs": 1, "color": "Dark green", "est": false}, {"item": "58", "len": 12, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "59", "len": 32, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "60", "len": 32, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "61", "len": 20, "ga": 16, "outs": 3, "color": "Orange", "est": false}, {"item": "62", "len": 20, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "63", "len": 8, "ga": 16, "outs": 1, "color": "Green", "est": false}, {"item": "64", "len": 32, "ga": 16, "outs": 3, "color": "Green", "est": false}, {"item": "65", "len": 95, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "66", "len": 40, "ga": 16, "outs": 1, "color": "Black", "est": false}, {"item": "67", "len": 30, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "68", "len": 20, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "69", "len": 10, "ga": 16, "outs": 1, "color": "Black", "est": false}, {"item": "70", "len": 20, "ga": 14, "outs": 1, "color": "Pink/black", "est": false}, {"item": "71", "len": 20, "ga": 16, "outs": 3, "color": "Green", "est": false}, {"item": "72", "len": 18, "ga": 16, "outs": 1, "color": "Orange", "est": false}, {"item": "73", "len": 9, "ga": 16, "outs": 3, "color": "Red", "est": false}, {"item": "74", "len": 60, "ga": 16, "outs": 1, "color": "Green", "est": false}, {"item": "75", "len": 32, "ga": 16, "outs": 1, "color": "Green", "est": false}, {"item": "76", "len": 25, "ga": 14, "outs": 3, "color": "Red", "est": false}, {"item": "81", "len": 50, "ga": 16, "outs": 1, "color": "Green", "est": true}, {"item": "82", "len": 50, "ga": 16, "outs": 1, "color": "Green", "est": true}, {"item": "83", "len": 20, "ga": 16, "outs": 1, "color": "Green x3, orange/black, pink/white", "est": true}, {"item": "84", "len": 20, "ga": 16, "outs": 1, "color": "Green x3, orange/black, pink/white", "est": true}, {"item": "85", "len": 20, "ga": 16, "outs": 1, "color": "Green x3, orange/black, pink/white", "est": true}, {"item": "86", "len": 20, "ga": 16, "outs": 1, "color": "Green x3, orange/black, pink/white", "est": true}, {"item": "87", "len": 20, "ga": 16, "outs": 1, "color": "Green x3, orange/black, pink/white", "est": true}, {"item": "91", "len": 10, "ga": 16, "outs": 1, "color": "Black", "est": true}], "cord_plan": {"L64": ["7", "6"], "L18": ["3", "70"], "L11": ["8", "11"], "L13": ["24"], "L16": ["47"], "L14": ["4"], "L17": ["5"], "L15": ["10"], "L82": ["41"], "L3": ["76"], "L65": ["2"]}, "accessories": [{"items": "77-78", "type": "Splitter cords", "qty": 2, "outs": 3, "ga": "12", "len": "2", "color": "Yellow", "note": "Monster Power Block, lighted end"}, {"items": "12-13", "type": "Splitter cords", "qty": 2, "outs": 3, "ga": "14?", "len": "1.3", "color": "Black", "note": "Gauge is a guess"}, {"items": "14-17", "type": "Splitter cords", "qty": 4, "outs": 3, "ga": "14?", "len": "3?", "color": "Yellow", "note": "Length and gauge are guesses. One has a dirty outlet end"}, {"items": "39", "type": "Splitter cords", "qty": 1, "outs": 3, "ga": "", "len": "", "color": "Orange, black Power Block head", "note": "Length and gauge not known"}, {"items": "40", "type": "Y-splitter cord", "qty": 1, "outs": 2, "ga": "16?", "len": "2 to 3", "color": "Black", "note": ""}, {"items": "32-33", "type": "Taps, no cord", "qty": 2, "outs": 5, "ga": "", "len": "", "color": "Red/black", "note": "Reset breaker, weather resistant"}, {"items": "34", "type": "Taps, no cord", "qty": 1, "outs": 5, "ga": "", "len": "", "color": "Yellow", "note": "Ace, power light and reset breaker"}, {"items": "25-31", "type": "Taps, no cord", "qty": 7, "outs": 3, "ga": "", "len": "", "color": "Green", "note": ""}, {"items": "35-36", "type": "Taps, no cord", "qty": 2, "outs": 3, "ga": "", "len": "", "color": "Orange", "note": "One has rusty blades: clean or retire"}, {"items": "37-38", "type": "Taps, no cord", "qty": 2, "outs": 3, "ga": "", "len": "", "color": "Green", "note": "Flip-down outlet covers"}, {"items": "79-80", "type": "Taps, no cord", "qty": 2, "outs": 3, "ga": "", "len": "", "color": "Black/gray", "note": "Keep to medium loads"}]}, "panels": [{"id": "P1", "name": "Nursery panel", "lat": 27.5138211, "lng": -82.6607025, "confirmed": false}, {"id": "P2", "name": "Galleria panel", "lat": 27.5138179, "lng": -82.6596514, "confirmed": false}, {"id": "P3", "name": "Office panel (inside)", "lat": 27.5137008, "lng": -82.6599202, "confirmed": false}, {"id": "P4", "name": "Office panel (southeast corner)", "lat": 27.5136099, "lng": -82.6598381, "confirmed": true}, {"id": "P5", "name": "Pavilion panel", "lat": 27.5138059, "lng": -82.6592459, "confirmed": false}], "circuits": [{"id": "C4", "name": "Event Lawn posts", "panel_id": "P4", "breaker_label": "Event Lawn posts", "amps": 20, "confirmed": true}, {"id": "C6", "name": "Nursery Red", "panel_id": "P1", "breaker_label": "Red", "amps": 20, "confirmed": false}, {"id": "C7", "name": "Nursery Blue", "panel_id": "P1", "breaker_label": "Blue", "amps": 20, "confirmed": false}, {"id": "C8", "name": "Nursery Green", "panel_id": "P1", "breaker_label": "Green", "amps": 20, "confirmed": false}, {"id": "C9", "name": "Pavilion to posts 7 and 6 (Butterfly Garden, Palm Alley)", "panel_id": "P5", "breaker_label": "Pavilion to Post8", "amps": 20, "confirmed": false}, {"id": "C10", "name": "Pavilion high outlet southeast", "panel_id": "P5", "breaker_label": "", "amps": 20, "confirmed": false}, {"id": "C11", "name": "Pavilion to Restroom", "panel_id": "P5", "breaker_label": "Restroom", "amps": 20, "confirmed": false}, {"id": "C12", "name": "Pavilion to northwest outlet", "panel_id": "P5", "breaker_label": "Pavilion northwest", "amps": 20, "confirmed": false}, {"id": "C13", "name": "Streetlights north (posts 1 to 5)", "panel_id": "P2", "breaker_label": "", "amps": 20, "confirmed": false}, {"id": "C14", "name": "Galleria to northeast outlet", "panel_id": "P2", "breaker_label": "", "amps": 20, "confirmed": false}, {"id": "C15", "name": "Galleria to southeast outlet", "panel_id": "P2", "breaker_label": "", "amps": 20, "confirmed": false}, {"id": "C16", "name": "Galleria to southwest outlet", "panel_id": "P2", "breaker_label": "", "amps": 20, "confirmed": false}, {"id": "C17", "name": "Office to east outlet", "panel_id": "P3", "breaker_label": "", "amps": 20, "confirmed": false}, {"id": "C18", "name": "Office to west outlet", "panel_id": "P3", "breaker_label": "", "amps": 20, "confirmed": false}, {"id": "C19", "name": "Galleria to northwest outlet", "panel_id": "P2", "breaker_label": "", "amps": 20, "confirmed": false}, {"id": "C20", "name": "Office to south outlet", "panel_id": "P3", "breaker_label": "", "amps": 20, "confirmed": false}, {"id": "C21", "name": "Streetlight west (posts 8)", "panel_id": "P2", "breaker_label": "Unknown", "amps": 20, "confirmed": false}, {"id": "C22", "name": "THEORETICAL Streetlights west (Posts 9, 10)", "panel_id": "P3", "breaker_label": "Unknown", "amps": 20, "confirmed": false}], "outlets": [{"id": "O1", "name": "Parking lot, northwest", "kind": "post", "receptacles": 2, "lat": 27.5142719, "lng": -82.6601013, "circuit_id": "C13", "confirmed": false}, {"id": "O2", "name": "Welcome Garden, north", "kind": "post", "receptacles": 2, "lat": 27.5141676, "lng": -82.6598851, "circuit_id": "C13", "confirmed": false}, {"id": "O3", "name": "Welcome Garden, south", "kind": "post", "receptacles": 2, "lat": 27.5140577, "lng": -82.6597455, "circuit_id": "C13", "confirmed": false}, {"id": "O4", "name": "Welcome Garden, east", "kind": "post", "receptacles": 2, "lat": 27.5141235, "lng": -82.6597343, "circuit_id": "C13", "confirmed": false}, {"id": "O5", "name": "Arch, north side", "kind": "post", "receptacles": 2, "lat": 27.5140767, "lng": -82.6595987, "circuit_id": "C13", "confirmed": false}, {"id": "O6", "name": "Palm Alley", "kind": "post", "receptacles": 2, "lat": 27.5140751, "lng": -82.6591758, "circuit_id": "C9", "confirmed": false, "fed_from": "O7"}, {"id": "O7", "name": "Butterfly Garden, east end", "kind": "post", "receptacles": 2, "lat": 27.5138177, "lng": -82.6590961, "circuit_id": "C9", "confirmed": false}, {"id": "O8", "name": "Chalice Vine Post", "kind": "post", "receptacles": 2, "lat": 27.5137833, "lng": -82.6600047, "circuit_id": "C21", "confirmed": false}, {"id": "O9", "name": "Heliconia Area Post", "kind": "post", "receptacles": 2, "lat": 27.5137151, "lng": -82.6601032, "circuit_id": "C22", "confirmed": false}, {"id": "O10", "name": "Santa Crushed Shell Area Post", "kind": "post", "receptacles": 2, "lat": 27.5136348, "lng": -82.6603061, "circuit_id": "C22", "confirmed": false}, {"id": "O11", "name": "Hibiscus, south of Office", "kind": "post", "receptacles": 2, "lat": 27.5133938, "lng": -82.6597789, "circuit_id": "C4", "confirmed": false}, {"id": "O12", "name": "Bird of Paradise", "kind": "post", "receptacles": 2, "lat": 27.5133089, "lng": -82.6599467, "circuit_id": "C4", "confirmed": false, "fed_from": "O11"}, {"id": "O13", "name": "Event Lawn, pond side", "kind": "post", "receptacles": 2, "lat": 27.5134325, "lng": -82.6596196, "circuit_id": "C4", "confirmed": false, "fed_from": "O11"}, {"id": "O14", "name": "Serenity Garden", "kind": "post", "receptacles": 2, "lat": 27.5131381, "lng": -82.6596499, "circuit_id": "C4", "confirmed": false, "fed_from": "O11"}, {"id": "O15", "name": "Nursery Post, 99th Street side", "kind": "post", "receptacles": 2, "lat": 27.5138396, "lng": -82.6607746, "circuit_id": "C6", "confirmed": false}, {"id": "O16", "name": "Green nursery outlet", "kind": "building", "receptacles": 1, "lat": 27.5137923, "lng": -82.660704, "circuit_id": "C8", "confirmed": false}, {"id": "O17", "name": "Galleria northwest outlet", "kind": "building", "receptacles": 2, "lat": 27.5139001, "lng": -82.6597979, "circuit_id": "C19", "confirmed": false}, {"id": "O18", "name": "Office south outlet", "kind": "building", "receptacles": 7, "lat": 27.513594, "lng": -82.6598851, "circuit_id": "C20", "confirmed": false}, {"id": "O19", "name": "Pavilion", "kind": "building", "receptacles": 6, "lat": 27.5138547, "lng": -82.6593465, "circuit_id": "C12", "confirmed": false}, {"id": "O20", "name": "Galleria northeast outlet", "kind": "building", "receptacles": 1, "lat": 27.5139018, "lng": -82.6596329, "circuit_id": "C14", "confirmed": true}, {"id": "O21", "name": "Galleria southeast outlet", "kind": "building", "receptacles": 1, "lat": 27.5137897, "lng": -82.6596323, "circuit_id": "C15", "confirmed": true}, {"id": "O22", "name": "Office east outlet", "kind": "building", "receptacles": 1, "lat": 27.513652, "lng": -82.6598273, "circuit_id": "C17", "confirmed": true}, {"id": "O23", "name": "Office west outlet", "kind": "building", "receptacles": 1, "lat": 27.5136672, "lng": -82.6599183, "circuit_id": "C18", "confirmed": true}, {"id": "O24", "name": "Building outlet", "kind": "building", "receptacles": 1, "lat": 27.5136697, "lng": -82.6592004, "circuit_id": "C11", "confirmed": true}, {"id": "O25", "name": "Building outlet", "kind": "building", "receptacles": 1, "lat": 27.5137832, "lng": -82.6592308, "circuit_id": "C10", "confirmed": true}, {"id": "O26", "name": "Red Bathroom outlet", "kind": "building", "receptacles": 2, "lat": 27.5137067, "lng": -82.6606181, "circuit_id": "C6", "confirmed": true}, {"id": "O27", "name": "Blue Nursery outlet", "kind": "building", "receptacles": 2, "lat": 27.5138428, "lng": -82.6606681, "circuit_id": "C7", "confirmed": true}, {"id": "O28", "name": "Galleria southwest outlet", "kind": "building", "receptacles": 2, "lat": 27.5137757, "lng": -82.6598111, "circuit_id": "C16", "confirmed": true}, {"id": "O29", "name": "Barney Battery", "kind": "post", "receptacles": 2, "lat": 27.5142736, "lng": -82.66075, "circuit_id": null, "confirmed": true}], "loads": [{"id": "L1", "name": "Island of Misfit Toys", "kind": "attraction", "watts": 200, "qty": 1, "measured": false, "lat": 27.5141673, "lng": -82.6598579, "outlet_id": "O2", "done": 0, "done_on": "2026-11-21", "v2": true, "runs": [{"name": "Island of Misfit Toys", "type": "other", "watts": 200}]}, {"id": "L2", "name": "Candy Cane Lane, front", "kind": "attraction", "watts": 100, "qty": 1, "measured": false, "lat": 27.5142382, "lng": -82.6601155, "outlet_id": "O1", "v2": true, "runs": [{"name": "Candy Cane Lane, front", "type": "mini", "bulbs": 1650}]}, {"id": "L3", "name": "Grinch", "kind": "attraction", "watts": 400, "qty": 1, "measured": false, "lat": 27.5131297, "lng": -82.6597116, "outlet_id": "O14", "v2": true, "runs": [{"name": "Grinch", "type": "other", "watts": 400}]}, {"id": "L5", "name": "Santa Workshop", "kind": "attraction", "watts": 200, "qty": 1, "measured": false, "lat": 27.5141223, "lng": -82.6595141, "outlet_id": "O5", "v2": true, "runs": [{"name": "Santa Workshop", "type": "mini", "bulbs": 1650}]}, {"id": "L6", "name": "Fairy Garden", "kind": "attraction", "watts": 200, "qty": 1, "measured": false, "lat": 27.5135913, "lng": -82.6600264, "outlet_id": "L79", "v2": true, "runs": [{"name": "Fairy Garden", "type": "mini", "bulbs": 2500}]}, {"id": "L7", "name": "Christmas Tree Decorating", "kind": "attraction", "watts": 250, "qty": 1, "measured": false, "lat": 27.5138428, "lng": -82.6593022, "outlet_id": "O19", "v2": true, "runs": [{"name": "Christmas Tree Decorating", "type": "other", "watts": 250}]}, {"id": "L8", "name": "Food Court 1", "kind": "attraction", "watts": 150, "qty": 1, "measured": false, "lat": 27.5134148, "lng": -82.6599752, "outlet_id": "L65", "v2": true, "runs": [{"name": "Food Court 1", "type": "foodcourt", "count": 150}]}, {"id": "L9", "name": "Food Court 2", "kind": "attraction", "watts": 100, "qty": 1, "measured": false, "lat": 27.5140397, "lng": -82.6592412, "outlet_id": "O6", "done": 0, "done_on": "2026-11-21", "v2": true, "runs": [{"name": "Food Court 2", "type": "foodcourt", "count": 100}]}, {"id": "L10", "name": "Sidewalk light 1", "kind": "contractor", "watts": 155, "qty": 1, "measured": false, "lat": 27.5143577, "lng": -82.659092, "outlet_id": "L64", "v2": true, "runs": [{"name": "Sidewalk light 1", "type": "sidewalk", "count": 3}]}, {"id": "L11", "name": "Sidewalk light 2", "kind": "contractor", "watts": 155, "qty": 1, "measured": false, "lat": 27.5143527, "lng": -82.6594066, "outlet_id": "L63", "v2": true, "runs": [{"name": "Sidewalk light 2", "type": "sidewalk", "count": 3}]}, {"id": "L12", "name": "Sidewalk light 3", "kind": "contractor", "watts": 155, "qty": 1, "measured": false, "lat": 27.5143517, "lng": -82.6599367, "outlet_id": "L83", "v2": true, "runs": [{"name": "Sidewalk light 3", "type": "sidewalk", "count": 3}]}, {"id": "L13", "name": "Sidewalk light 4", "kind": "contractor", "watts": 155, "qty": 1, "measured": false, "lat": 27.5143397, "lng": -82.6603291, "outlet_id": "O1", "v2": true, "runs": [{"name": "Sidewalk light 4", "type": "sidewalk", "count": 3}]}, {"id": "L14", "name": "Sidewalk light 5", "kind": "contractor", "watts": 155, "qty": 1, "measured": false, "lat": 27.5143237, "lng": -82.6606426, "outlet_id": "O29", "v2": true, "runs": [{"name": "Sidewalk light 5", "type": "sidewalk", "count": 3}]}, {"id": "L15", "name": "Sidewalk light 6", "kind": "contractor", "watts": 155, "qty": 1, "measured": false, "lat": 27.5142046, "lng": -82.660814, "outlet_id": "O29", "v2": true, "runs": [{"name": "Sidewalk light 6", "type": "sidewalk", "count": 3}]}, {"id": "L16", "name": "Sidewalk light 7", "kind": "contractor", "watts": 155, "qty": 1, "measured": false, "lat": 27.5139706, "lng": -82.6608321, "outlet_id": "O15", "v2": true, "runs": [{"name": "Sidewalk light 7", "type": "sidewalk", "count": 3}]}, {"id": "L17", "name": "Sidewalk light 8", "kind": "contractor", "watts": 155, "qty": 1, "measured": false, "lat": 27.5137436, "lng": -82.6608309, "outlet_id": "O15", "v2": true, "runs": [{"name": "Sidewalk light 8", "type": "sidewalk", "count": 3}]}, {"id": "L18", "name": "Sidewalk light 9", "kind": "contractor", "watts": 155, "qty": 1, "measured": false, "lat": 27.5134765, "lng": -82.6608355, "outlet_id": "L104", "v2": true, "runs": [{"name": "Sidewalk light 9", "type": "sidewalk", "count": 3}]}, {"id": "L19", "name": "Sponsor sign light 1", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5132386, "lng": -82.659675, "outlet_id": "O14", "v2": true, "runs": [{"name": "Sponsor sign light 1", "type": "uplight", "count": 1}]}, {"id": "L20", "name": "Sponsor sign Luminaire Entry", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5131592, "lng": -82.6597751, "outlet_id": "L111", "v2": true, "runs": [{"name": "Sponsor sign Luminaire Entry", "type": "uplight", "count": 1}]}, {"id": "L21", "name": "Sponsor sign Misfit Toys Entrance", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5140605, "lng": -82.6597072, "outlet_id": "O4", "v2": true, "runs": [{"name": "Sponsor sign Misfit Toys Entrance", "type": "uplight", "count": 1}]}, {"id": "L22", "name": "Sponsor sign Misfit Toys Exit", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5140248, "lng": -82.6599982, "outlet_id": "O3", "v2": true, "runs": [{"name": "Sponsor sign Misfit Toys Exit", "type": "uplight", "count": 1}]}, {"id": "L23", "name": "Sponsor sign Santa Workshop Enter", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5140688, "lng": -82.6594779, "outlet_id": "O5", "v2": true, "runs": [{"name": "Sponsor sign Santa Workshop Enter", "type": "uplight", "count": 1}]}, {"id": "L24", "name": "Sponsor sign Santa Workshop exit", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5142008, "lng": -82.6593921, "outlet_id": "L63", "v2": true, "runs": [{"name": "Sponsor sign Santa Workshop exit", "type": "uplight", "count": 1}]}, {"id": "L25", "name": "Sponsor sign light 7", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.513894, "lng": -82.6593223, "outlet_id": "O19", "v2": true, "runs": [{"name": "Sponsor sign light 7", "type": "uplight", "count": 1}]}, {"id": "L26", "name": "Sponsor sign light 8", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5137774, "lng": -82.6593277, "outlet_id": "O25", "v2": true, "runs": [{"name": "Sponsor sign light 8", "type": "uplight", "count": 1}]}, {"id": "L27", "name": "Sponsor sign Luminaire Exit", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5136079, "lng": -82.6591876, "outlet_id": "O24", "v2": true, "runs": [{"name": "Sponsor sign Luminaire Exit", "type": "uplight", "count": 1}]}, {"id": "L28", "name": "Sponsor sign light 10", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5131701, "lng": -82.6597566, "outlet_id": "L111", "v2": true, "runs": [{"name": "Sponsor sign light 10", "type": "uplight", "count": 1}]}, {"id": "L29", "name": "Sponsor sign Shade Garden Entry", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5136513, "lng": -82.6600452, "outlet_id": "L79", "v2": true, "runs": [{"name": "Sponsor sign Shade Garden Entry", "type": "uplight", "count": 1}]}, {"id": "L30", "name": "Sponsor sign Shade Garden Exit", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5135015, "lng": -82.6600274, "outlet_id": "L65", "v2": true, "runs": [{"name": "Sponsor sign Shade Garden Exit", "type": "uplight", "count": 1}]}, {"id": "L31", "name": "Sponsor sign Candy Cane Lane Entry", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5142534, "lng": -82.6597723, "outlet_id": "L105", "done": 0, "done_on": "2026-11-21", "v2": true, "runs": [{"name": "Sponsor sign Candy Cane Lane Entry", "type": "uplight", "count": 1}]}, {"id": "L32", "name": "Sponsor sign Candy Cane Lane Exit", "kind": "sponsor", "watts": 30, "qty": 1, "measured": false, "lat": 27.5136293, "lng": -82.6606267, "outlet_id": "L104", "v2": true, "runs": [{"name": "Sponsor sign Candy Cane Lane Exit", "type": "uplight", "count": 1}]}, {"id": "L33", "name": "Train", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5138636, "lng": -82.6604329, "outlet_id": "L84", "runs": [{"lat": 27.513922, "lng": -82.6604503, "via": []}], "v2": true}, {"id": "L34", "name": "Heliconia", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5137176, "lng": -82.6600928, "outlet_id": "O9", "runs": [{"lat": 27.5137235, "lng": -82.6600567, "bulbs": 450}, {"lat": 27.5136756, "lng": -82.6602303, "bulbs": 650}], "v2": true}, {"id": "L35", "name": "Reclinata", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5136386, "lng": -82.66018, "outlet_id": "O9", "runs": [{"lat": 27.5135974, "lng": -82.6601914, "via": [{"lat": 27.5136192, "lng": -82.6601393}, {"lat": 27.5135831, "lng": -82.6601525}, {"lat": 27.5135545, "lng": -82.6601649}], "bulbs": 750}, {"lat": 27.5135561, "lng": -82.6601513, "via": [{"lat": 27.5136385, "lng": -82.6601521}, {"lat": 27.5136187, "lng": -82.6601664}, {"lat": 27.5135978, "lng": -82.6601736}, {"lat": 27.5135759, "lng": -82.6601593}], "type": "large", "big": true, "strings": 1.5}], "v2": true}, {"id": "L36", "name": "Santa area", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5136608, "lng": -82.6603174, "outlet_id": "O10", "runs": [{"lat": 27.5135721, "lng": -82.6604048, "via": [{"lat": 27.513636, "lng": -82.6603545}, {"lat": 27.5135755, "lng": -82.6603858}, {"lat": 27.5135763, "lng": -82.660475}, {"lat": 27.5135805, "lng": -82.660456}, {"lat": 27.5135738, "lng": -82.6604844}, {"lat": 27.5135688, "lng": -82.6605565}, {"lat": 27.5135755, "lng": -82.6604731}]}], "v2": true}, {"id": "L37", "name": "Office south", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5135216, "lng": -82.659972, "outlet_id": "L65", "runs": [{"lat": 27.513561, "lng": -82.659807, "via": [{"lat": 27.5135195, "lng": -82.6599423}, {"lat": 27.5135345, "lng": -82.6599412}, {"lat": 27.5135395, "lng": -82.6599299}, {"lat": 27.5135295, "lng": -82.659931}, {"lat": 27.5135245, "lng": -82.659913}, {"lat": 27.5135445, "lng": -82.6599073}, {"lat": 27.5135365, "lng": -82.6599006}, {"lat": 27.5135285, "lng": -82.6599006}, {"lat": 27.5135255, "lng": -82.6598927}, {"lat": 27.5135375, "lng": -82.659869}, {"lat": 27.5135475, "lng": -82.6598724}, {"lat": 27.513547, "lng": -82.6598633}, {"lat": 27.513533, "lng": -82.6598633}, {"lat": 27.5135305, "lng": -82.6598498}, {"lat": 27.513544, "lng": -82.6598459}, {"lat": 27.51356, "lng": -82.6598459}, {"lat": 27.5135475, "lng": -82.6598301}, {"lat": 27.5135495, "lng": -82.6598041}], "bulbs": 1500}], "v2": true}, {"id": "L38", "name": "Office East", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5137117, "lng": -82.6598036, "outlet_id": "O28", "runs": [{"lat": 27.5137143, "lng": -82.6597685, "via": []}, {"lat": 27.5135788, "lng": -82.6598045, "via": []}], "v2": true}, {"id": "L39", "name": "Bridge", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5138114, "lng": -82.6596191, "outlet_id": "O21", "runs": [{"lat": 27.5137958, "lng": -82.6595959, "via": [{"lat": 27.513824, "lng": -82.6595399}, {"lat": 27.5138047, "lng": -82.6595342}]}, {"lat": 27.5137302, "lng": -82.6594138, "via": [{"lat": 27.5138278, "lng": -82.6595447}, {"lat": 27.5137979, "lng": -82.6595342}, {"lat": 27.5137429, "lng": -82.6594996}, {"lat": 27.5136991, "lng": -82.6594527}, {"lat": 27.5137243, "lng": -82.6593972}, {"lat": 27.5137492, "lng": -82.6594019}, {"lat": 27.5137504, "lng": -82.6594366}, {"lat": 27.513774, "lng": -82.6594588}, {"lat": 27.5137904, "lng": -82.6594745}, {"lat": 27.5137614, "lng": -82.6594882}, {"lat": 27.5137344, "lng": -82.6594522}]}], "v2": true}, {"id": "L40", "name": "Pavilion bed 1", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.5139154, "lng": -82.6596207, "outlet_id": "O20", "runs": [{"lat": 27.5140103, "lng": -82.6595788}, {"lat": 27.5139666, "lng": -82.6596594}, {"lat": 27.5138699, "lng": -82.659612}], "v2": true}, {"id": "L41", "name": "Pavilion bed 2", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5139514, "lng": -82.659318, "outlet_id": "O19", "runs": [{"lat": 27.5139943, "lng": -82.6593996, "bulbs": 500}], "v2": true}, {"id": "L42", "name": "Gazebo 1", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5142214, "lng": -82.6593872, "outlet_id": "L63", "runs": [{"lat": 27.5141937, "lng": -82.6595039, "bulbs": 550}], "v2": true}, {"id": "L43", "name": "Gazebo 2", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5141709, "lng": -82.6593806, "outlet_id": "L63", "runs": [{"lat": 27.5141238, "lng": -82.659466, "bulbs": 450}], "v2": true}, {"id": "L44", "name": "Gazebo 3", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5140919, "lng": -82.6596082, "outlet_id": "O5", "runs": [{"lat": 27.5140793, "lng": -82.6595124}, {"lat": 27.5142761, "lng": -82.6596224}], "v2": true}, {"id": "L45", "name": "Poinciana tree plus others", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5142534, "lng": -82.6601355, "outlet_id": "O1", "runs": [{"lat": 27.5139893, "lng": -82.660143, "via": [{"lat": 27.5142265, "lng": -82.660181}, {"lat": 27.5142029, "lng": -82.660181}, {"lat": 27.5141861, "lng": -82.6601867}, {"lat": 27.5141726, "lng": -82.6602018}, {"lat": 27.5141592, "lng": -82.6601943}, {"lat": 27.5141777, "lng": -82.6601867}, {"lat": 27.5140852, "lng": -82.6602075}, {"lat": 27.5140616, "lng": -82.6602018}, {"lat": 27.5140902, "lng": -82.6601905}, {"lat": 27.5140986, "lng": -82.6602208}, {"lat": 27.5140751, "lng": -82.6602208}, {"lat": 27.5140717, "lng": -82.6601848}, {"lat": 27.5140145, "lng": -82.6601639}, {"lat": 27.5139876, "lng": -82.6601582}, {"lat": 27.5140011, "lng": -82.6601449}, {"lat": 27.5140027, "lng": -82.6601772}, {"lat": 27.5140179, "lng": -82.6601772}], "bulbs": 1500}, {"lat": 27.5139977, "lng": -82.6601364, "via": [{"lat": 27.5142138, "lng": -82.660163}, {"lat": 27.5141533, "lng": -82.6602151}, {"lat": 27.5141028, "lng": -82.6601933}, {"lat": 27.5140296, "lng": -82.6601838}], "bulbs": 1000}], "done": 0, "done_on": "2026-11-21", "v2": true}, {"id": "L46", "name": "Butterfly garden", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5137975, "lng": -82.6590961, "outlet_id": "O7", "runs": [{"lat": 27.5138724, "lng": -82.6590809, "via": [{"lat": 27.5137386, "lng": -82.6591056}, {"lat": 27.5137328, "lng": -82.6590847}, {"lat": 27.5137445, "lng": -82.6590724}, {"lat": 27.5137824, "lng": -82.6590696}, {"lat": 27.5138, "lng": -82.659061}, {"lat": 27.5138185, "lng": -82.6590525}, {"lat": 27.5138539, "lng": -82.6590487}], "bulbs": 800}, {"lat": 27.5139363, "lng": -82.6590591, "via": [{"lat": 27.5137933, "lng": -82.6590904}, {"lat": 27.5138295, "lng": -82.6590809}, {"lat": 27.5138589, "lng": -82.6590885}, {"lat": 27.5138993, "lng": -82.6590971}, {"lat": 27.5139287, "lng": -82.6590952}, {"lat": 27.513964, "lng": -82.6590923}, {"lat": 27.5139649, "lng": -82.6590828}, {"lat": 27.5139582, "lng": -82.6590478}, {"lat": 27.5139245, "lng": -82.6590212}, {"lat": 27.5138892, "lng": -82.6590231}, {"lat": 27.5138825, "lng": -82.659043}, {"lat": 27.5139069, "lng": -82.6590563}]}], "v2": true}, {"id": "L47", "name": "Big Pond", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5137513, "lng": -82.6596006, "outlet_id": "O21", "runs": [{"lat": 27.5135023, "lng": -82.6595987, "via": [{"lat": 27.5137126, "lng": -82.6595959}, {"lat": 27.5136983, "lng": -82.6596054}, {"lat": 27.5136857, "lng": -82.6596148}, {"lat": 27.5136747, "lng": -82.6596054}, {"lat": 27.513636, "lng": -82.6596158}, {"lat": 27.5136083, "lng": -82.6596082}, {"lat": 27.5135856, "lng": -82.6596167}, {"lat": 27.5135948, "lng": -82.6596262}, {"lat": 27.5135831, "lng": -82.6596234}, {"lat": 27.5135645, "lng": -82.6596139}, {"lat": 27.5135267, "lng": -82.659611}, {"lat": 27.5134964, "lng": -82.6596167}, {"lat": 27.5134922, "lng": -82.6596035}, {"lat": 27.5134712, "lng": -82.6596025}, {"lat": 27.513483, "lng": -82.6596196}, {"lat": 27.5134762, "lng": -82.6596205}]}], "v2": true}, {"id": "L48", "name": "Jatropha tree plus", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5138089, "lng": -82.660345, "outlet_id": "L112", "runs": [{"lat": 27.5136852, "lng": -82.6605124, "via": [{"lat": 27.5137269, "lng": -82.6604522}, {"lat": 27.5137487, "lng": -82.6604332}, {"lat": 27.5137437, "lng": -82.6604124}, {"lat": 27.5137286, "lng": -82.6604294}, {"lat": 27.5137504, "lng": -82.6604503}, {"lat": 27.5137588, "lng": -82.6604199}, {"lat": 27.5137538, "lng": -82.6603972}, {"lat": 27.5137757, "lng": -82.6603593}, {"lat": 27.5137639, "lng": -82.6603517}, {"lat": 27.5137891, "lng": -82.6603706}, {"lat": 27.5137857, "lng": -82.6603479}, {"lat": 27.5137723, "lng": -82.6603327}]}], "v2": true}, {"id": "L50", "name": "Back fence", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5138429, "lng": -82.6608372, "outlet_id": "O15", "runs": [{"lat": 27.514245, "lng": -82.6607329, "via": [{"lat": 27.5139085, "lng": -82.6608258}, {"lat": 27.5140448, "lng": -82.6608012}, {"lat": 27.514144, "lng": -82.6607936}, {"lat": 27.5142365, "lng": -82.6607765}], "bulbs": 1000}, {"lat": 27.5136815, "lng": -82.6605736, "via": [{"lat": 27.5137672, "lng": -82.6608182}, {"lat": 27.5136747, "lng": -82.660805}, {"lat": 27.5136747, "lng": -82.6607594}, {"lat": 27.513673, "lng": -82.6607025}], "bulbs": 1100}], "done": 85, "done_on": "2026-11-21", "v2": true, "readings": [{"date": "2026-11-21", "watts": 103.8, "pct": 85, "amps": 0.865}]}, {"id": "L51", "name": "Front fence", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5143392, "lng": -82.6599467, "outlet_id": "O1", "runs": [{"lat": 27.5143459, "lng": -82.6597855}, {"lat": 27.5143122, "lng": -82.6607566}], "v2": true}, {"id": "L52", "name": "Pavilion bed 3", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5138598, "lng": -82.6593806, "outlet_id": "O19", "runs": [{"lat": 27.51379, "lng": -82.6593749, "bulbs": 400}], "v2": true}, {"id": "L53", "name": "Hibiscus Island", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5133972, "lng": -82.6597988, "outlet_id": "O11", "runs": [{"lat": 27.5133896, "lng": -82.6599136, "bulbs": 600}, {"lat": 27.5133728, "lng": -82.6597599, "bulbs": 800}], "v2": true}, {"id": "L54", "name": "Paradise Island", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5133215, "lng": -82.659942, "outlet_id": "O12", "runs": [{"lat": 27.5132971, "lng": -82.6599828, "bulbs": 350}, {"lat": 27.5132988, "lng": -82.6599145, "bulbs": 350}], "done": 0, "done_on": "2026-11-21", "v2": true}, {"id": "L55", "name": "Screw Pine Island", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5134678, "lng": -82.6600492, "outlet_id": "L65", "runs": [{"lat": 27.513467, "lng": -82.6600634, "via": [{"lat": 27.5134502, "lng": -82.6600397}, {"lat": 27.5134712, "lng": -82.6600283}, {"lat": 27.5134746, "lng": -82.660015}, {"lat": 27.5134661, "lng": -82.660015}, {"lat": 27.5134535, "lng": -82.6600236}, {"lat": 27.5134594, "lng": -82.6600074}], "bulbs": 600}, {"lat": 27.5134744, "lng": -82.6600537, "via": [{"lat": 27.5134581, "lng": -82.6600553}, {"lat": 27.51345, "lng": -82.6600541}, {"lat": 27.5134684, "lng": -82.660005}, {"lat": 27.513479, "lng": -82.6600222}], "type": "large", "big": true, "strings": 2}], "v2": true, "done": 0, "done_on": "2026-11-21"}, {"id": "L56", "name": "Turks Turban", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5135254, "lng": -82.6600743, "outlet_id": "L80", "runs": [{"lat": 27.5135107, "lng": -82.6600833, "via": [{"lat": 27.5135999, "lng": -82.6600776}, {"lat": 27.5136302, "lng": -82.6600933}, {"lat": 27.5136003, "lng": -82.6601004}, {"lat": 27.5135814, "lng": -82.6600975}, {"lat": 27.5135772, "lng": -82.660089}, {"lat": 27.5135645, "lng": -82.6600985}, {"lat": 27.5135528, "lng": -82.6600918}, {"lat": 27.5135452, "lng": -82.6600805}, {"lat": 27.5135301, "lng": -82.6600937}, {"lat": 27.5135284, "lng": -82.6600767}, {"lat": 27.5135149, "lng": -82.6600662}]}], "v2": true}, {"id": "L57", "name": "Galleria and Office", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5138892, "lng": -82.6598301, "outlet_id": "O17", "runs": [{"lat": 27.5139657, "lng": -82.6597742, "via": [{"lat": 27.5139548, "lng": -82.6598263}]}, {"lat": 27.5139346, "lng": -82.6599031, "via": [{"lat": 27.5138833, "lng": -82.6598766}]}], "v2": true}, {"id": "L58", "name": "Welcome Island", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5141827, "lng": -82.6600008, "outlet_id": "O2", "runs": [{"lat": 27.5141491, "lng": -82.6600122, "via": [{"lat": 27.5141768, "lng": -82.6600605}, {"lat": 27.5141079, "lng": -82.6600861}, {"lat": 27.5140473, "lng": -82.6600311}, {"lat": 27.514102, "lng": -82.6600093}], "bulbs": 1000}, {"lat": 27.5140574, "lng": -82.6600036, "via": [{"lat": 27.5141516, "lng": -82.6600321}, {"lat": 27.5141878, "lng": -82.6600463}, {"lat": 27.51416, "lng": -82.6600824}, {"lat": 27.5141407, "lng": -82.6600539}, {"lat": 27.5140835, "lng": -82.6600814}, {"lat": 27.5140944, "lng": -82.6600397}, {"lat": 27.514049, "lng": -82.6600549}], "bulbs": 1500}], "done": 0, "done_on": "2026-11-21", "v2": true}, {"id": "L59", "name": "Statues", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5141386, "lng": -82.6591833, "outlet_id": "O6", "runs": [{"lat": 27.5141816, "lng": -82.6591946, "via": [{"lat": 27.514213, "lng": -82.6591777}, {"lat": 27.5142063, "lng": -82.6592213}, {"lat": 27.514176, "lng": -82.6592175}, {"lat": 27.5141491, "lng": -82.6592156}]}], "v2": true}, {"id": "L60", "name": "Front Fence 2", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5143383, "lng": -82.6590961, "outlet_id": "L64", "runs": [{"lat": 27.5143307, "lng": -82.6589757}, {"lat": 27.5143215, "lng": -82.6596091, "via": [{"lat": 27.5143257, "lng": -82.6592772}, {"lat": 27.5143215, "lng": -82.659447}], "bulbs": 1000}], "v2": true, "done": 15, "done_on": "2026-11-21"}, {"id": "L61", "name": "Big Pond 2", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5134145, "lng": -82.6596017, "outlet_id": "O13", "runs": [{"lat": 27.5131374, "lng": -82.6595622, "via": [{"lat": 27.5133815, "lng": -82.6595927}, {"lat": 27.5133275, "lng": -82.659578}, {"lat": 27.5133045, "lng": -82.6595893}, {"lat": 27.5132955, "lng": -82.6595769}, {"lat": 27.5133025, "lng": -82.6595577}, {"lat": 27.5133115, "lng": -82.6595611}, {"lat": 27.5132845, "lng": -82.6595949}, {"lat": 27.5132755, "lng": -82.6595668}, {"lat": 27.5132205, "lng": -82.6595656}, {"lat": 27.5132045, "lng": -82.6595724}, {"lat": 27.5132165, "lng": -82.6595453}, {"lat": 27.5132185, "lng": -82.6595803}, {"lat": 27.5131364, "lng": -82.6595453}, {"lat": 27.5131054, "lng": -82.6595419}, {"lat": 27.5131224, "lng": -82.6595577}, {"lat": 27.5131234, "lng": -82.6595307}]}], "v2": true}, {"id": "L62", "name": "PhotoOp", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.513916, "lng": -82.6595356, "outlet_id": "O20", "runs": [{"lat": 27.5140027, "lng": -82.6595162}, {"lat": 27.5138942, "lng": -82.6594897}, {"lat": 27.5139556, "lng": -82.6594783}], "v2": true}, {"id": "L63", "name": "Splitter Pavilion field", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5142004, "lng": -82.6593787, "outlet_id": "O6", "sockets": 3}, {"id": "L64", "name": "Splitter Sidewalk Lights Northeast", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5143509, "lng": -82.6591113, "outlet_id": "O6", "sockets": 3}, {"id": "L65", "name": "Splitter Shade Garden Exit", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5135166, "lng": -82.6599894, "outlet_id": "O18", "sockets": 3}, {"id": "L66", "name": "Cypress pond trees", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.51316, "lng": -82.6597561, "outlet_id": "L111", "runs": [{"lat": 27.5131936, "lng": -82.6598491, "via": []}], "v2": true}, {"id": "L67", "name": "Galleria back", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5137403, "lng": -82.6596215, "outlet_id": "O21", "runs": [{"lat": 27.5137134, "lng": -82.6596784, "via": []}], "v2": true}, {"id": "L69", "name": "Bottle brush and more", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5138116, "lng": -82.6603347, "outlet_id": "L112", "runs": [{"lat": 27.5139573, "lng": -82.6600937, "via": [{"lat": 27.5138276, "lng": -82.6602851}, {"lat": 27.5138356, "lng": -82.6602547}, {"lat": 27.5138581, "lng": -82.6602398}, {"lat": 27.5138513, "lng": -82.6602227}, {"lat": 27.5138406, "lng": -82.6602423}, {"lat": 27.5138429, "lng": -82.6602094}, {"lat": 27.5138631, "lng": -82.660198}, {"lat": 27.5138699, "lng": -82.6601582}, {"lat": 27.5138884, "lng": -82.6601525}, {"lat": 27.5138884, "lng": -82.6601298}, {"lat": 27.5139119, "lng": -82.6600918}, {"lat": 27.5139153, "lng": -82.6601089}, {"lat": 27.5139254, "lng": -82.6600899}, {"lat": 27.5139439, "lng": -82.6601013}, {"lat": 27.5139338, "lng": -82.6600729}, {"lat": 27.5139422, "lng": -82.6600463}, {"lat": 27.5139674, "lng": -82.6600615}, {"lat": 27.513959, "lng": -82.6600425}], "bulbs": 2000}, {"lat": 27.5139666, "lng": -82.6600767, "via": [{"lat": 27.5138438, "lng": -82.6602853}, {"lat": 27.513869, "lng": -82.6602075}, {"lat": 27.5139035, "lng": -82.6601307}, {"lat": 27.5139262, "lng": -82.660053}], "bulbs": 1500}], "v2": true}, {"id": "L70", "name": "Fireworks2 A", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.5134828, "lng": -82.6596747, "outlet_id": "O13", "runs": [{"lat": 27.5134828, "lng": -82.6596627, "via": [], "bulbs": 1500}, {"lat": 27.5134445, "lng": -82.659673, "via": [], "bulbs": 1750}, {"lat": 27.5135211, "lng": -82.6596765, "via": [], "bulbs": 1750}], "v2": true}, {"id": "L71", "name": "Fireworks1 A", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.5135808, "lng": -82.6597376, "outlet_id": "L82", "runs": [{"lat": 27.5135808, "lng": -82.6597496, "via": [], "bulbs": 1500}, {"lat": 27.5136191, "lng": -82.6597399, "via": [], "bulbs": 1750}, {"lat": 27.5135425, "lng": -82.6597354, "via": [], "bulbs": 1750}], "v2": true}, {"id": "L72", "name": "Fireworks3", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.5133044, "lng": -82.6597224, "outlet_id": "O11", "runs": [{"lat": 27.5132934, "lng": -82.6597224, "via": [], "bulbs": 750}, {"lat": 27.5133151, "lng": -82.6597859, "via": [], "bulbs": 1000}, {"lat": 27.5133492, "lng": -82.6596844, "via": [], "bulbs": 1000}], "v2": true}, {"id": "L73", "name": "Giant Milkweed", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5137899, "lng": -82.6599868, "outlet_id": "O8", "runs": [{"lat": 27.5137706, "lng": -82.6600349, "via": [{"lat": 27.513816, "lng": -82.6599173}, {"lat": 27.5138715, "lng": -82.6599363}, {"lat": 27.5138497, "lng": -82.6599932}, {"lat": 27.5138278, "lng": -82.659978}], "bulbs": 800}], "v2": true}, {"id": "L75", "name": "Front Gate", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5142618, "lng": -82.6597486, "outlet_id": "L105", "runs": [{"lat": 27.5143476, "lng": -82.6597106, "via": [{"lat": 27.5142517, "lng": -82.6597011}, {"lat": 27.5143064, "lng": -82.6597116}, {"lat": 27.5142887, "lng": -82.6597476}], "bulbs": 850}], "done": 0, "done_on": "2026-11-21", "v2": true}, {"id": "L76", "name": "Fireworks1 B", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.513466, "lng": -82.6597309, "outlet_id": "L82", "runs": [{"lat": 27.513466, "lng": -82.6597429, "via": [], "bulbs": 1500}, {"lat": 27.5135043, "lng": -82.6597332, "via": [], "bulbs": 1750}, {"lat": 27.5134277, "lng": -82.6597287, "via": [], "bulbs": 1750}], "v2": true}, {"id": "L77", "name": "Fireworks2 B", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.5135976, "lng": -82.65968, "outlet_id": "L82", "runs": [{"lat": 27.5135976, "lng": -82.659668, "via": [], "bulbs": 1500}, {"lat": 27.5135593, "lng": -82.6596782, "via": [], "bulbs": 1750}, {"lat": 27.5136251, "lng": -82.6596831, "via": [], "bulbs": 1750}], "v2": true}, {"id": "L78", "name": "Tunnels", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.513467, "lng": -82.6599107, "outlet_id": "L65", "runs": [{"lat": 27.5134544, "lng": -82.6598225, "via": [{"lat": 27.5134434, "lng": -82.6598936}, {"lat": 27.5134661, "lng": -82.6598804}, {"lat": 27.5134476, "lng": -82.6598718}, {"lat": 27.5134746, "lng": -82.6598538}, {"lat": 27.5134485, "lng": -82.6598434}, {"lat": 27.513467, "lng": -82.6598216}], "bulbs": 750}], "v2": true}, {"id": "L79", "name": "Splitter 4", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5136209, "lng": -82.660015, "outlet_id": "O23", "sockets": 3}, {"id": "L80", "name": "Splitter 5", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5135317, "lng": -82.6600643, "outlet_id": "L65", "sockets": 3}, {"id": "L81", "name": "Galleria-office", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5137765, "lng": -82.6598396, "outlet_id": "O28", "runs": [{"lat": 27.5138185, "lng": -82.659868, "via": [{"lat": 27.5138127, "lng": -82.6598377}, {"lat": 27.513837, "lng": -82.659832}, {"lat": 27.5138631, "lng": -82.6598367}, {"lat": 27.5138598, "lng": -82.6598481}, {"lat": 27.5138387, "lng": -82.6598633}], "bulbs": 450}, {"lat": 27.5138, "lng": -82.6598756, "via": [{"lat": 27.5137672, "lng": -82.6598728}, {"lat": 27.5137672, "lng": -82.6599117}, {"lat": 27.5137622, "lng": -82.659942}, {"lat": 27.5137311, "lng": -82.6599705}, {"lat": 27.5137731, "lng": -82.6599363}, {"lat": 27.5137799, "lng": -82.6598823}], "bulbs": 600}], "v2": true}, {"id": "L82", "name": "Splitter 6", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5135696, "lng": -82.659741, "outlet_id": "O22", "sockets": 3}, {"id": "L83", "name": "Splitter 7", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5143316, "lng": -82.6599287, "outlet_id": "O1", "sockets": 3}, {"id": "L84", "name": "Splitter 8", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5138626, "lng": -82.6604498, "outlet_id": "O27", "sockets": 3}, {"id": "L85", "name": "Paurotis by Restroom Ramp", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5136596, "lng": -82.6592132, "outlet_id": "O24", "runs": [{"lat": 27.5137336, "lng": -82.6593423, "via": [{"lat": 27.5136495, "lng": -82.659251}, {"lat": 27.5136535, "lng": -82.6592893}, {"lat": 27.5136795, "lng": -82.6592995}, {"lat": 27.5137126, "lng": -82.6593029}, {"lat": 27.5137326, "lng": -82.6593051}, {"lat": 27.5137436, "lng": -82.659322}, {"lat": 27.5137446, "lng": -82.6593457}, {"lat": 27.5137426, "lng": -82.6593593}, {"lat": 27.5137286, "lng": -82.6593593}, {"lat": 27.5137206, "lng": -82.6593491}, {"lat": 27.5137266, "lng": -82.6593209}]}], "v2": true}, {"id": "L87", "name": "Yews toward Cactus-Succulent", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.513624, "lng": -82.6603087, "outlet_id": "O10", "runs": [{"lat": 27.5134907, "lng": -82.6602745, "via": [{"lat": 27.5136026, "lng": -82.660306}, {"lat": 27.5135978, "lng": -82.6602886}, {"lat": 27.513593, "lng": -82.6603114}, {"lat": 27.5135883, "lng": -82.6603141}, {"lat": 27.5135788, "lng": -82.6603141}, {"lat": 27.5135312, "lng": -82.660306}, {"lat": 27.5135139, "lng": -82.6602819}, {"lat": 27.5135092, "lng": -82.6602698}, {"lat": 27.5134967, "lng": -82.6602691}, {"lat": 27.5134812, "lng": -82.6602691}, {"lat": 27.5134729, "lng": -82.6602698}, {"lat": 27.5134569, "lng": -82.6602732}, {"lat": 27.5134794, "lng": -82.6602738}]}], "v2": true}, {"id": "L88", "name": "Lit tree or area 46", "kind": "lights", "watts": 100, "qty": 1, "measured": false, "lat": 27.5143287, "lng": -82.6599171, "outlet_id": "L83", "runs": [{"lat": 27.5143067, "lng": -82.659848, "via": [{"lat": 27.5143269, "lng": -82.6598641}, {"lat": 27.5143233, "lng": -82.6598293}, {"lat": 27.5143156, "lng": -82.6598031}, {"lat": 27.5143043, "lng": -82.6598098}, {"lat": 27.5142877, "lng": -82.6598259}, {"lat": 27.5142823, "lng": -82.6598386}, {"lat": 27.5142954, "lng": -82.6598816}, {"lat": 27.5143085, "lng": -82.6598869}], "bulbs": 800}], "done": 0, "done_on": "2026-11-21", "v2": true}, {"id": "L89", "name": "Contractor tree Poinciana 1 Serenity", "kind": "tree", "watts": 100, "qty": 1, "measured": false, "lat": 27.5131255, "lng": -82.6596556, "outlet_id": "O14", "v2": true, "runs": [{"name": "Contractor tree Poinciana 1 Serenity", "type": "mini", "bulbs": 1650}]}, {"id": "L90", "name": "Contractor tree Baobab Serenity", "kind": "tree", "watts": 100, "qty": 1, "measured": false, "lat": 27.5130633, "lng": -82.6597049, "outlet_id": "O14", "v2": true, "runs": [{"name": "Contractor tree Baobab Serenity", "type": "mini", "bulbs": 1650}]}, {"id": "L91", "name": "Contractor tree 3", "kind": "tree", "watts": 100, "qty": 1, "measured": false, "lat": 27.5131322, "lng": -82.6597533, "outlet_id": "O14", "v2": true, "runs": [{"name": "Contractor tree 3", "type": "mini", "bulbs": 1650}]}, {"id": "L92", "name": "Contractor tree 4", "kind": "tree", "watts": 60, "qty": 1, "measured": false, "lat": 27.5139397, "lng": -82.659226, "outlet_id": "O6", "v2": true, "runs": [{"name": "Contractor tree 4", "type": "mini", "bulbs": 1100}]}, {"id": "L93", "name": "Contractor tree 5", "kind": "tree", "watts": 60, "qty": 1, "measured": false, "lat": 27.5139666, "lng": -82.6592289, "outlet_id": "O6", "v2": true, "runs": [{"name": "Contractor tree 5", "type": "mini", "bulbs": 1100}]}, {"id": "L94", "name": "Contractor tree 6", "kind": "tree", "watts": 60, "qty": 1, "measured": false, "lat": 27.5140002, "lng": -82.6592279, "outlet_id": "O6", "v2": true, "runs": [{"name": "Contractor tree 6", "type": "mini", "bulbs": 1100}]}, {"id": "L95", "name": "Contractor tree 7", "kind": "tree", "watts": 60, "qty": 1, "measured": false, "lat": 27.514033, "lng": -82.6592232, "outlet_id": "O6", "v2": true, "runs": [{"name": "Contractor tree 7", "type": "mini", "bulbs": 1100}]}, {"id": "L96", "name": "Contractor tree 8", "kind": "tree", "watts": 60, "qty": 1, "measured": false, "lat": 27.5140675, "lng": -82.6592232, "outlet_id": "O6", "v2": true, "runs": [{"name": "Contractor tree 8", "type": "mini", "bulbs": 1100}]}, {"id": "L97", "name": "Royal Palm in Hibiscus Island", "kind": "tree", "watts": 60, "qty": 1, "measured": false, "lat": 27.5133997, "lng": -82.6599088, "outlet_id": "O11", "v2": true, "runs": [{"name": "Royal Palm in Hibiscus Island", "type": "mini", "bulbs": 1100}]}, {"id": "L98", "name": "Galleria Oak", "kind": "tree", "watts": 100, "qty": 1, "measured": false, "lat": 27.5139304, "lng": -82.6598652, "outlet_id": "O17", "done": 0, "done_on": "2026-11-21", "v2": true, "runs": [{"name": "Galleria Oak", "type": "mini", "bulbs": 1650}]}, {"id": "L99", "name": "Mexican Fan Palm", "kind": "tree", "watts": 100, "qty": 1, "measured": false, "lat": 27.5141297, "lng": -82.6594043, "outlet_id": "L63", "v2": true, "runs": [{"name": "Mexican Fan Palm", "type": "mini", "bulbs": 1650}]}, {"id": "L100", "name": "Contractor tree 12", "kind": "tree", "watts": 60, "qty": 1, "measured": false, "lat": 27.5140885, "lng": -82.6592213, "outlet_id": "O6", "done": 0, "done_on": "2026-11-21", "v2": true, "runs": [{"name": "Contractor tree 12", "type": "mini", "bulbs": 1100}]}, {"id": "L101", "name": "Contractor tree 13", "kind": "tree", "watts": 60, "qty": 1, "measured": false, "lat": 27.5141129, "lng": -82.6592203, "outlet_id": "O6", "done": 0, "done_on": "2026-11-21", "v2": true, "runs": [{"name": "Contractor tree 13", "type": "mini", "bulbs": 1100}]}, {"id": "L102", "name": "Contractor tree 14", "kind": "tree", "watts": 60, "qty": 1, "measured": false, "lat": 27.5139027, "lng": -82.6592251, "outlet_id": "O7", "v2": true, "runs": [{"name": "Contractor tree 14", "type": "mini", "bulbs": 1100}]}, {"id": "L103", "name": "Candy Cane Lane, back", "kind": "attraction", "watts": 100, "qty": 1, "measured": false, "lat": 27.5136335, "lng": -82.6606393, "outlet_id": "L104", "v2": true, "runs": [{"name": "Candy Cane Lane, back", "type": "mini", "bulbs": 1650}]}, {"id": "L104", "name": "Splitter 10", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.513647, "lng": -82.660639, "outlet_id": "O16", "sockets": 3}, {"id": "L105", "name": "Splitter 11", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5142727, "lng": -82.6597675, "outlet_id": "L83", "sockets": 3}, {"id": "L106", "name": "Deck lights 1", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.5136604, "lng": -82.659823, "outlet_id": "O22", "v2": true, "runs": [{"name": "Lit tree or area 46", "type": "other", "watts": 100}, {"lat": 27.5136083, "lng": -82.659823, "via": []}, {"lat": 27.5137096, "lng": -82.6599567, "via": [{"lat": 27.5137441, "lng": -82.6598235}, {"lat": 27.5137462, "lng": -82.659932}]}]}, {"id": "L107", "name": "Deck lights 2", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5137841, "lng": -82.6598135, "outlet_id": "O28", "v2": true, "runs": [{"name": "Lit tree or area 47", "type": "other", "watts": 100}, {"lat": 27.5137315, "lng": -82.6596423, "via": [{"lat": 27.5137492, "lng": -82.6598154}, {"lat": 27.5137286, "lng": -82.65974}, {"lat": 27.5137046, "lng": -82.6597386}, {"lat": 27.513705, "lng": -82.6597007}, {"lat": 27.5137281, "lng": -82.6597045}]}]}, {"id": "L108", "name": "Deck lights 3", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.5137967, "lng": -82.6596295, "outlet_id": "O21", "v2": true, "runs": [{"name": "Lit tree or area 48", "type": "other", "watts": 100}, {"lat": 27.5137424, "lng": -82.6596305, "via": []}, {"lat": 27.5139552, "lng": -82.65963, "via": []}]}, {"id": "L109", "name": "Deck lights 4", "kind": "lights", "watts": 100, "qty": 2, "measured": false, "lat": 27.5139136, "lng": -82.6596357, "outlet_id": "O20", "v2": true, "runs": [{"name": "Lit tree or area 49", "type": "other", "watts": 100}, {"lat": 27.513959, "lng": -82.6597651, "via": [{"lat": 27.5139565, "lng": -82.659639}, {"lat": 27.5139573, "lng": -82.6596893}, {"lat": 27.5139708, "lng": -82.6596912}, {"lat": 27.5139691, "lng": -82.6597462}]}]}, {"id": "L110", "name": "Deck lights 5", "kind": "lights", "watts": 100, "qty": 3, "measured": false, "lat": 27.5139014, "lng": -82.6598097, "outlet_id": "O17", "v2": true, "runs": [{"name": "Lit tree or area 50", "type": "other", "watts": 100}, {"lat": 27.5137929, "lng": -82.6598145, "via": []}, {"lat": 27.5139548, "lng": -82.6596935, "via": [{"lat": 27.5139535, "lng": -82.6598059}]}]}, {"id": "L111", "name": "Splitter 12", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5131512, "lng": -82.6597632, "outlet_id": "O14", "sockets": 3}, {"id": "L112", "name": "Splitter 12", "kind": "splitter", "watts": 0, "qty": 1, "measured": false, "lat": 27.5138038, "lng": -82.6603351, "outlet_id": "L84", "sockets": 3}]}, "rev": 0, "landmarks": []};
+var N = 27.5155, W = -82.662, MLAT = 111320, MLNG = 98800;
+var SVG_SCALE = 5.71351, SVG_X = 82.6, SVG_Y = 94.7, SVG_W = 1408;
+var VOLTS = 120, SHARE = 0.8;
+var KINDS = {
+  contractor: {label: 'Sidewalk light', color: '#c5922a', letter: 'C', watts: 155},
+  tree:       {label: 'Contractor tree', color: '#d2531a', letter: 'T', watts: 100},
+  sponsor:    {label: 'Sponsor sign light', color: '#7a3fb0', letter: 'S', watts: 30},
+  attraction: {label: 'Attraction', color: '#c2185b', letter: 'A', watts: 200},
+  lights:     {label: 'Lit tree or area', color: '#2d8a3a', letter: 'L', watts: 100},
+  other:      {label: 'Other load', color: '#3f6fb0', letter: 'O', watts: 100},
+  splitter:   {label: 'Splitter', color: '#2b2b2b', letter: '+', watts: 0}
+};
+var RUN_WARN = 175, RUN_MAX = 225;
+function runCol(f) { return f > RUN_MAX ? '#c8f7b4' : f > RUN_WARN ? '#3ddc68' : '#0a7d32'; }
+var doc = null, rev = null, landmarks = [], sel = null, adding = null, addingRun = null, runDraft = null, dead = false;
+var map, layer, lines, names, sat, overlay;
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function feet(a, b) { return Math.hypot((a.lat - b.lat) * MLAT, (a.lng - b.lng) * MLNG) * 3.2808; }
+function byId(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return null; }
+function nextId(list, prefix) { var m = 0; list.forEach(function (x) { var n = parseInt(String(x.id).slice(prefix.length), 10); if (n > m) m = n; }); return prefix + (m + 1); }
+function num(n) { return Math.round(n).toLocaleString('en-US'); }
+var LED_DEF = {mini_bulbs: 500, mini_w: 24, mini_ft: 110, mini_max: 2000, big_bulbs: 100, big_w: 10, big_ft: 0, big_max: 3, fc_bulbs: 20, fc_w: 20, fc_ft: 0, sw_bulbs: 3, sw_w: 156, up_bulbs: 1, up_w: 30};
+function led(k) { var m = (doc && doc.meta && doc.meta.led) || {}; return Number(m[k]) > 0 ? Number(m[k]) : LED_DEF[k]; }
+var ROWT = {mini: {label: 'mini'}, large: {label: 'large'}, foodcourt: {label: 'food court', k: 'fc'}, uplight: {label: 'uplight', k: 'up'}, sidewalk: {label: 'sidewalk', k: 'sw'}, other: {label: 'other'}};
+function rowType(r) { return ROWT[r.type] ? r.type : r.big ? 'large' : 'mini'; }
+function bigStrings(l, r) { if (Number(r.strings) > 0) return Number(r.strings); return l && r.lat != null && led('big_ft') > 0 ? Math.max(1, Math.ceil(runFt(l, r) / led('big_ft'))) : 1; }
+function unitCount(l, r, k) { if (Number(r.count) > 0) return Number(r.count); var f = k === 'fc' ? led('fc_ft') : 0; return (r.lat != null && f > 0 ? Math.max(1, Math.ceil(runFt(l, r) / f)) : 1) * led(k + '_bulbs'); }
+function rowSet(r) { var t = rowType(r); return t === 'mini' ? Number(r.bulbs) > 0 : t === 'large' ? Number(r.strings) > 0 : t === 'other' ? true : Number(r.count) > 0; }
+function rowCount(l, r) { var t = rowType(r); return t === 'mini' ? runBulbs(l, r) : t === 'large' ? Math.round(bigStrings(l, r) * led('big_bulbs')) : t === 'other' ? (Number(r.watts) || 0) : unitCount(l, r, ROWT[t].k); }
+function setCount(r, c) { var t = rowType(r); c = Number(c) > 0 ? Number(c) : 0;
+  if (t === 'mini') { if (c) r.bulbs = c; else delete r.bulbs; } else if (t === 'large') { r.big = true; if (c) r.strings = c / led('big_bulbs'); else delete r.strings; } else if (t === 'other') r.watts = c; else if (c) r.count = c; else delete r.count; }
+function setType(l, r, t) { var w = Math.round(runW(l, r)); delete r.bulbs; delete r.big; delete r.strings; delete r.count; delete r.watts; r.type = t;
+  if (t === 'large') r.big = true; else if (t === 'other') r.watts = w; }
+function rowLights(l, r) { var t = rowType(r); return t === 'other' ? 0 : rowCount(l, r); }
+function rowTxt(l, r) { var t = rowType(r), c = rowCount(l, r);
+  return t === 'other' ? num(c) + ' watts, other' : num(c) + (c === 1 ? ' light, ' : ' lights, ') + ROWT[t].label; }
+function ampsTxt(w) { var a = w / VOLTS; return a >= 10 ? String(Math.round(a)) : a >= 1 ? (Math.round(a * 10) / 10).toFixed(1) : (Math.round(a * 100) / 100).toFixed(2); }
+function ensureRows(l) { if (l.kind === 'splitter' || l.v2) return; l.v2 = true; if ((l.runs || []).length) return;
+  var w = Number(l.watts) || 0, q = Number(l.qty) || 1; if (!(w * q > 0)) return;
+  l.runs = [l.kind === 'contractor' && w === 155 ? {name: l.name, type: 'sidewalk', count: 3 * q} : l.kind === 'sponsor' && w === 30 ? {name: l.name, type: 'uplight', count: q} : /food court/i.test(l.name || '') ? {name: l.name, type: 'foodcourt', count: Math.round(w * q * led('fc_bulbs') / led('fc_w'))} : {name: l.name, type: 'other', watts: w * q}]; }
+var formFor = null, editRow = null, addRd = false;
+function runBulbs(l, r) { if (rowType(r) !== 'mini') return 0; if (Number(r.bulbs) > 0) return Number(r.bulbs); if (r.lat == null) return 0; var half = led('mini_bulbs') / 2; return Math.max(1, Math.ceil(runFt(l, r) / (led('mini_ft') / 2))) * half; }
+function runStrings(r) { return Number(r.strings) > 0 ? Number(r.strings) : 1; }
+function runW(l, r) { var t = rowType(r); return t === 'large' ? bigStrings(l, r) * led('big_w') : t === 'mini' ? runBulbs(l, r) * led('mini_w') / led('mini_bulbs') : t === 'other' ? (Number(r.watts) || 0) : rowCount(l, r) * led(ROWT[t].k + '_w') / led(ROWT[t].k + '_bulbs'); }
+function runOver(l, r) { var t = rowType(r); if (t !== 'mini' && t !== 'large') return false; return r.big ? bigStrings(l, r) > led('big_max') : runBulbs(l, r) > led('mini_max'); }
+function byRuns(l) { return l.kind !== 'splitter' && (l.v2 || (l.runs || []).length > 0); }
+var EARLY = 50;
+function lastR(it) { var rs = (it.readings || []).filter(function (r) { return r.date && Number(r.watts) > 0; }); if (!rs.length) return null; return rs.slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; }).pop(); }
+function rPct(r) { var p = Number(r.pct); return p > 0 && p <= 100 ? p : 100; }
+function proj(r) { return Number(r.watts) / (rPct(r) / 100); }
+function estW(l) { if (l.kind === 'splitter') return 0; if (byRuns(l)) return (l.runs || []).reduce(function (t, r) { return t + runW(l, r); }, 0); return (Number(l.watts) || 0) * (Number(l.qty) || 1); }
+function loadW(l) { if (l.kind === 'splitter') return 0; var r = lastR(l); return r ? proj(r) : estW(l); }
+function doneOf(l) { var d = Number(l.done); return d > 0 ? Math.min(100, d) : 0; }
+function measuredLed() { var w = 0, b = 0, n = 0; doc.loads.forEach(function (l) { var r = lastR(l), rs = l.runs || []; if (l.kind !== 'lights' || !r || !rs.length || !rs.every(function (x) { return !x.big && Number(x.bulbs) > 0; })) return; w += proj(r); b += rs.reduce(function (t, x) { return t + Number(x.bulbs); }, 0); n++; }); return n ? {n: n, bulbs: b, per: w / b * led('mini_bulbs')} : null; }
+var showCords = false, SLACK = 1.2;
+function buySize(f) { return f <= 15 ? 15 : f <= 25 ? 25 : f <= 50 ? 50 : f <= 75 ? 75 : f <= 100 ? 100 : 125; }
+function cordPlan() {
+  var pool = ((doc.meta && doc.meta.cords) || []).map(function (c) { return {c: c, used: false}; }), lock = (doc.meta && doc.meta.cord_plan) || {}, out = {}, needs = [];
+  function take(item) { for (var i = 0; i < pool.length; i++) if (!pool[i].used && pool[i].c.item === String(item)) { pool[i].used = true; return pool[i].c; } return null; }
+  doc.loads.forEach(function (l) { var p = parentOf(l); if (!p || l.kind === 'tree') return; var f = feet(l, p); if (f < 6) { out[l.id] = {none: true}; return; }
+    var got = (lock[l.id] || []).map(take).filter(Boolean);
+    if (got.length) out[l.id] = {cords: got, need: f * SLACK, locked: true}; else needs.push({l: l, need: f * SLACK}); });
+  needs.sort(function (a, b) { return b.need - a.need; }).forEach(function (n) {
+    var best = null; pool.forEach(function (x) { if (!x.used && x.c.len >= n.need && (!best || x.c.len < best.c.len)) best = x; });
+    if (best) { best.used = true; out[n.l.id] = {cords: [best.c], need: n.need}; } else out[n.l.id] = {buy: buySize(n.need), need: n.need}; });
+  out._spare = pool.filter(function (x) { return !x.used; }).map(function (x) { return x.c; });
+  return out;
+}
+function cordName(c) { return '#' + c.item + ' · ' + num(c.len) + ' ft · ' + c.ga + '-gauge' + (c.outs > 1 ? ' · ' + c.outs + ' outlets' : '') + (c.color ? ' · ' + c.color.toLowerCase() : ''); }
+function drawCordList(plan) {
+  var el = document.getElementById('cordlist'); if (!el) return; if (!showCords || !plan) { el.innerHTML = ''; return; }
+  var cords = (doc.meta && doc.meta.cords) || [], acc = (doc.meta && doc.meta.accessories) || [], by = {}, h = '';
+  doc.loads.forEach(function (l) { var a = plan[l.id]; if (a && a.cords) a.cords.forEach(function (c) { by[c.item] = l.name; }); });
+  var gs = {}; cords.forEach(function (c) { (gs[c.ga] = gs[c.ga] || []).push(c); });
+  Object.keys(gs).sort(function (a, b) { return a - b; }).forEach(function (g) {
+    var list = gs[g].slice().sort(function (a, b) { return b.len - a.len || Number(a.item) - Number(b.item); }), ft = list.reduce(function (t, c) { return t + c.len; }, 0);
+    h += '<h3>' + esc(g) + '-gauge cords · ' + list.length + ' · ' + num(ft) + ' ft</h3><table><tr><th>Item</th><th class="n">Feet</th><th>Cord</th><th>Used for</th></tr>' +
+      list.map(function (c) { return '<tr><td>#' + esc(c.item) + '</td><td class="n">' + num(c.len) + (c.est ? '?' : '') + '</td><td>' + esc(String(c.color || '').toLowerCase()) + (c.outs > 1 ? ', ' + c.outs + ' outlets' : '') + '</td><td>' + (by[c.item] ? esc(by[c.item]) : '<span class="hint">spare</span>') + '</td></tr>'; }).join('') + '</table>'; });
+  var ts = {}, order = []; acc.forEach(function (a) { if (!ts[a.type]) { ts[a.type] = []; order.push(a.type); } ts[a.type].push(a); });
+  order.forEach(function (t) { var n = ts[t].reduce(function (x, a) { return x + (Number(a.qty) || 1); }, 0);
+    h += '<h3>' + esc(t) + ' · ' + n + '</h3><table><tr><th>Item</th><th class="n">How many</th><th class="n">Outlets</th><th>What it is</th></tr>' +
+      ts[t].map(function (a) { return '<tr><td>#' + esc(a.items) + '</td><td class="n">' + (a.qty || 1) + '</td><td class="n">' + (a.outs || '') + '</td><td>' + esc(String(a.color || '').toLowerCase()) + (a.len ? ', ' + esc(a.len) + ' ft' : '') + (a.ga ? ', ' + esc(a.ga) + '-gauge' : '') + (a.note ? '<br><span class="hint">' + esc(a.note) + '</span>' : '') + '</td></tr>'; }).join('') + '</table>'; });
+  el.innerHTML = '<h2 style="margin-top:18px;border-top:1px solid #cfc9b8;padding-top:14px">Cord inventory</h2><p class="hint">Everything on the shelf. A question mark after the feet means the length is a guess. "Used for" is the map\'s own pick of which cord goes where.</p>' + h;
+}
+function drawCordSum(plan) {
+  drawCordList(plan);
+  var el = document.getElementById('cordsum'); if (!showCords) { el.innerHTML = ''; return; }
+  if (!((doc.meta && doc.meta.cords) || []).length) { el.innerHTML = '<p class="hint">No cord inventory is loaded yet.</p>'; return; }
+  var buy = {}, nb = 0, used = 0, heavy = 0; doc.loads.forEach(function (l) { var a = plan[l.id]; if (!a) return; if (a.buy) { buy[a.buy] = (buy[a.buy] || 0) + 1; nb++; } else if (a.cords) { used += a.cords.length; a.cords.forEach(function (c) { if (c.ga <= 14) heavy++; }); } });
+  var sp = plan._spare.slice().sort(function (a, b) { return b.len - a.len; });
+  el.innerHTML = '<p style="margin:12px 0 4px"><b>Cords on hand</b> · ' + used + ' of ' + doc.meta.cords.length + ' in use, ' + heavy + ' of them 12- or 14-gauge.</p>' +
+    '<p style="margin:4px 0"><b>To buy: ' + nb + '</b>' + (nb ? ' · ' + Object.keys(buy).sort(function (a, b) { return b - a; }).map(function (k) { return buy[k] + ' × ' + (k === '125' ? 'over 100' : k) + ' ft'; }).join(', ') : '') + '</p>' +
+    '<p style="margin:4px 0"><b>Spare: ' + sp.length + '</b>' + (sp.length ? ' · ' + sp.map(function (c) { return '#' + c.item + ' ' + num(c.len) + ' ft'; }).join(', ') : '') + '</p>' +
+    '<p class="hint"><span style="color:#1565c0;font-weight:700">Blue</span> is a 12- or 14-gauge cord you own, <span style="color:#00857c;font-weight:700">teal</span> a 16-gauge one, <span style="color:#e0201b;font-weight:700">red dashes</span> one to buy. Point at a line for the cord. Lengths are the straight line plus a fifth for slack.</p>';
+}
+function today() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function showDate(s) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? Number(m[2]) + '/' + Number(m[3]) : esc(s); }
+function readingsHtml(it, planW, isCheck) {
+  var rs = it.readings || [], last = lastR(it), h = '<label>Meter readings</label>';
+  if (last) {
+    var f = proj(last), early = rPct(last) < EARLY;
+    h += '<p style="margin:4px 0;font-weight:700">' + (isCheck
+      ? 'Read ' + num(last.watts) + ' watts at ' + rPct(last) + '% done, so about ' + num(f) + ' watts when finished. The pins plugged in here add up to ' + num(planW) + '.'
+      : 'Finished load from the latest reading: ' + num(f) + ' watts. The map\'s own estimate was ' + num(planW) + '.') + '</p>' +
+      (early ? '<p style="margin:4px 0;color:#9a5b00;font-weight:700">Early reading: under ' + EARLY + '% done, so treat ' + num(f) + ' as a rough guess.</p>' : '') +
+      (isCheck && planW > 0 && Math.abs(f - planW) > Math.max(30, planW * 0.25) ? '<p style="margin:4px 0;color:#b00020;font-weight:700">That is ' + num(Math.abs(f - planW)) + ' watts ' + (f > planW ? 'more' : 'less') + ' than the pins say. One of the guesses is off.</p>' : '');
+  }
+  rs.forEach(function (r, i) { h += '<p style="margin:4px 0">' + showDate(r.date) + ' · ' + (r.amps ? r.amps + ' amps, ' : '') + num(r.watts) + ' watts at ' + rPct(r) + '% done' + (rPct(r) < 100 ? ' → ' + num(proj(r)) + ' finished' : '') + (rPct(r) < EARLY ? ' · early' : '') + (r === last ? ' · <b>latest</b>' : '') + (r.note ? '<br><span class="hint">' + esc(r.note) + '</span>' : '') + ' <button data-rdrm="' + i + '">Remove</button></p>'; });
+  h += '<div class="row"><div><label>Date</label><input type="date" id="rd-date" value="' + today() + '" style="font:inherit;width:100%;padding:6px 8px;border:1px solid #b9b3a2;border-radius:7px"></div><div><label>Watts</label><input type="number" min="0" id="rd-w" placeholder="or use amps"></div></div>' +
+    '<div class="row"><div><label>Amps on the clamp</label><input type="number" min="0" step="0.01" id="rd-a" placeholder="turns into watts"></div><div><label class="check" style="margin-top:30px"><input type="checkbox" id="rd-x10">Read on the x10 loop</label></div></div>' +
+    '<div class="row"><div><label>% done that day</label><input type="number" min="1" max="100" id="rd-pct" value="100"></div><div><label>Note</label><input type="text" id="rd-note" placeholder="what is still to come"></div></div>' +
+    '<div class="btns"><button id="rd-add">Add this reading</button></div>' +
+    '<p class="hint">' + (isCheck ? 'A reading here is a check on the pins plugged in. It does not change any pin.' : 'The latest reading replaces the estimate for this pin. Older readings stay as history.') + ' If more will be added later, say how much was built that day: 120 watts at 50% counts as 240.</p>';
+  return h;
+}
+function parentOf(l) { if (!l.outlet_id) return null; var o = byId(doc.outlets, l.outlet_id); if (o) return o; var sp = byId(doc.loads, l.outlet_id); return sp && sp.kind === 'splitter' && sp !== l ? sp : null; }
+function chain(l) { var out = [], cur = l, n = 0; while (cur && n++ < 25) { var p = parentOf(cur); if (!p) break; out.push(p); if (byId(doc.outlets, p.id) === p) break; cur = p; } return out; }
+function rootOutlet(l) { var c = chain(l), last = c[c.length - 1]; return last && byId(doc.outlets, last.id) === last ? last : null; }
+function outletW(o) { return doc.loads.filter(function (l) { return rootOutlet(l) === o; }).reduce(function (s, l) { return s + loadW(l); }, 0); }
+function runPts(l, r) { return [l].concat(r.via || []).concat([r]); }
+function runFt(l, r) { if (r.lat == null) return 0; var p = runPts(l, r), t = 0; for (var i = 1; i < p.length; i++) t += feet(p[i - 1], p[i]); return t; }
+function through(sp) { return doc.loads.filter(function (l) { return chain(l).indexOf(sp) >= 0; }); }
+function budget(c) { return (Number(c.amps) || 20) * VOLTS * SHARE; }
+
+function setStatus(t, bad) { var s = document.getElementById('status'); s.textContent = t; s.className = bad ? 'bad' : ''; }
+
+var saving = false, again = false;
+function save() {
+  return;
+  if (dead) return;
+  if (saving) { again = true; return; }
+  saving = true;
+  fetch('/api/save', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({doc: doc, rev: rev})})
+    .then(function (r) { return r.json().then(function (j) { return {ok: r.ok, j: j}; }); })
+    .then(function (x) {
+      if (!x.ok) { dead = true; setStatus(x.j.error || 'Save failed.', true); return; }
+      rev = x.j.rev; setStatus('Saved ' + new Date().toLocaleTimeString([], {hour: 'numeric', minute: '2-digit', second: '2-digit'}));
+    })
+    .catch(function () { setStatus('Not saved: the power map window was closed. Double-click "Open Power Map" again, then reload.', true); })
+    .then(function () { saving = false; if (again) { again = false; save(); } });
+}
+var undoStack = [], lastSnap = null;
+function undoLabel() { var b = document.getElementById('undo'); if (b) { b.disabled = !undoStack.length; b.textContent = undoStack.length ? 'Undo last change (' + undoStack.length + ')' : 'Undo last change'; } }
+function changed() { if (lastSnap) { undoStack.push(lastSnap); if (undoStack.length > 60) undoStack.shift(); } lastSnap = JSON.stringify(doc); undoLabel(); draw(); save(); }
+function undo() {
+  if (!undoStack.length || dead) return;
+  setAdding(null); lastSnap = undoStack.pop(); doc = JSON.parse(lastSnap); sel = null; undoLabel(); draw(); save();
+  setStatus('Undone. Saving…');
+}
+
+
+function icon(cls, text, size, style) {
+  return L.divIcon({className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2],
+    html: '<div class="pin ' + cls + '" style="width:' + size + 'px;height:' + size + 'px;' + (style || '') + '">' + esc(text) + '</div>'});
+}
+var showKind = 'all', mode = 'map';
+function shown(type, item) { return showKind === 'all' || showKind === 'cords' || (showKind === 'panel' || showKind === 'outlet' ? type === showKind : type === 'load' && item.kind === showKind); }
+function marker(item, type, ic, title) {
+  var m = L.marker([item.lat, item.lng], {icon: ic, draggable: false, title: title});
+  m.on('click', function () { sel = {type: type, id: item.id}; draw(); });
+  m.on('dragend', function () { var p = m.getLatLng(); item.lat = +p.lat.toFixed(7); item.lng = +p.lng.toFixed(7); sel = {type: type, id: item.id}; changed(); });
+  m.addTo(layer); if (!shown(type, item)) m.setOpacity(.22);
+}
+function isSel(type, id) { return sel && sel.type === type && sel.id === id ? ' sel' : ''; }
+
+function draw() {
+  doc.loads.forEach(ensureRows);
+  layer.clearLayers(); lines.clearLayers();
+  doc.circuits.forEach(function (c) {
+    var outs = doc.outlets.filter(function (o) { return o.circuit_id === c.id; }), p = byId(doc.panels, c.panel_id);
+    outs.forEach(function (o, i) {
+      var prev = i > 0 ? outs[i - 1] : null, up = prev, n = 0; while (up && up !== o && n++ < 25) up = byId(doc.outlets, up.fed_from);
+      var from = byId(doc.outlets, o.fed_from) || (prev && up !== o ? prev : p);
+      if (!from || from === o) return;
+      var pts = [[from.lat, from.lng], [o.lat, o.lng]];
+      L.polyline(pts, {color: '#fff', weight: 5, opacity: .7}).addTo(lines); L.polyline(pts, {color: '#111', weight: 3, dashArray: '2 7'}).addTo(lines);
+    });
+  });
+  var cplan = showCords ? cordPlan() : null; drawCordSum(cplan);
+  doc.loads.forEach(function (l) {
+    var o = parentOf(l);
+    if (cplan && o && l.kind !== 'tree') {
+      var a = cplan[l.id] || {none: true}, seg = [[l.lat, l.lng], [o.lat, o.lng]];
+      if (a.none) L.polyline(seg, {color: '#888', weight: 2}).addTo(lines);
+      else { var hv = a.cords && a.cords.some(function (c) { return c.ga <= 14; }), col = a.buy ? '#e0201b' : hv ? '#1565c0' : '#00a39a';
+        L.polyline(seg, {color: '#fff', weight: 8, opacity: .85}).addTo(lines);
+        L.polyline(seg, {color: col, weight: a.buy ? 4 : hv ? 5 : 3.5, dashArray: a.buy ? '8 7' : null}).addTo(lines)
+          .bindTooltip(a.buy ? 'buy ' + (a.buy === 125 ? '100+' : a.buy) : a.cords.map(function (c) { return '#' + c.item; }).join('+'), {permanent: true, direction: 'center', className: 'cordlab' + (a.buy ? ' buy' : hv ? ' heavy' : '')})
+          .bindPopup('<b>' + esc(l.name) + '</b><br>needs about ' + num(a.need) + ' ft<br>' + (a.buy ? 'No spare cord reaches: buy a ' + (a.buy === 125 ? '100 ft and join a short one' : a.buy + ' ft') : a.cords.map(cordName).join('<br>') + (a.locked ? '<br><i>picked by hand</i>' : ''))); }
+    } else
+    if (o && l.kind !== 'tree') L.polyline([[l.lat, l.lng], [o.lat, o.lng]], {color: '#ffb000', weight: 2.5}).addTo(lines);
+    (l.runs || []).forEach(function (r, i) {
+      if (r.lat == null) return;
+      var col = runCol(runFt(l, r)), tip = l.name + ', run ' + (i + 1) + ': ' + num(runFt(l, r)) + ' ft';
+      var path = runPts(l, r).map(function (q) { return [q.lat, q.lng]; });
+      var fo = shown('load', l) ? 1 : .18; L.polyline(path, {color: '#fff', weight: 9, opacity: .9 * fo}).addTo(lines);
+      L.polyline(path, {color: col, weight: 6, opacity: fo}).addTo(lines);
+      (r.via || []).concat([r]).forEach(function (pt, j, all) {
+        var end = j === all.length - 1, size = end ? 14 : 10;
+        var m = L.marker([pt.lat, pt.lng], {draggable: false, title: tip + (end ? '' : ' (bend)'),
+          icon: L.divIcon({className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2], html: '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #000;background:' + col + '"></div>'})});
+        m.on('click', function () { if (addingRun) return; sel = {type: 'load', id: l.id}; draw(); });
+        m.on('dragend', function () { var q = m.getLatLng(); pt.lat = +q.lat.toFixed(7); pt.lng = +q.lng.toFixed(7); sel = {type: 'load', id: l.id}; changed(); });
+        m.addTo(layer); if (fo < 1) m.setOpacity(.22);
+      });
+    });
+  });
+  doc.panels.forEach(function (p) { marker(p, 'panel', icon('panel' + (p.confirmed ? '' : ' unconf') + isSel('panel', p.id), p.id, 28), p.name); });
+  doc.outlets.forEach(function (o) { marker(o, 'outlet', icon((o.kind === 'building' ? 'building' : 'post') + (o.confirmed ? '' : ' unconf') + isSel('outlet', o.id), o.id.slice(1), 26), o.name); });
+  doc.loads.forEach(function (l) { var k = KINDS[l.kind] || KINDS.other; marker(l, 'load', icon('load' + isSel('load', l.id), k.letter, l.kind === 'splitter' ? 20 : 24, 'background:' + k.color + (l.kind === 'splitter' ? ';border-radius:3px' : '')), l.name); });
+  drawForm(); drawBreakers(); drawTotals(); drawData();
+}
+
+
+function field(label, html) { return '<label>' + label + '</label>' + html; }
+function text(key, v) { return '<input type="text" data-k="' + key + '" value="' + esc(v) + '">'; }
+function number(key, v) { return '<input type="number" min="0" data-k="' + key + '" data-num="1" value="' + esc(v) + '">'; }
+function check(key, v, label) { return '<label class="check"><input type="checkbox" data-k="' + key + '"' + (v ? ' checked' : '') + '>' + label + '</label>'; }
+function select(key, v, opts) { return '<select data-k="' + key + '">' + opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (String(o[0]) === String(v == null ? '' : v) ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; }
+function notes(v) { return field('Notes', '<textarea data-k="notes">' + esc(v) + '</textarea>'); }
+
+function drawFormEdit() {
+  var el = document.getElementById('form');
+  if (!sel) { el.innerHTML = '<p class="hint">Nothing selected.</p>'; return; }
+  var list = {panel: doc.panels, outlet: doc.outlets, load: doc.loads, circuit: doc.circuits}[sel.type], it = byId(list, sel.id);
+  if (!it) { sel = null; return drawForm(); }
+  var h = '';
+  if (sel.type === 'panel') {
+    h = '<p><b>Breaker panel ' + esc(it.id) + '</b></p>' + field('Name', text('name', it.name)) + check('confirmed', it.confirmed, 'I have checked this spot') + notes(it.notes);
+  } else if (sel.type === 'outlet') {
+    var copts = [['', 'Breaker not known yet']].concat(doc.circuits.map(function (c) { return [c.id, c.name || c.id]; }));
+    h = '<p><b>Outlet ' + esc(it.id.slice(1)) + '</b> · ' + num(outletW(it)) + ' watts plugged in</p>' + field('Name', text('name', it.name)) +
+      '<div class="row"><div>' + field('Kind', select('kind', it.kind, [['post', 'Post'], ['building', 'On a building']])) + '</div><div>' + field('Outlets here', number('receptacles', it.receptacles)) + '</div></div>' +
+      field('Breaker', select('circuit_id', it.circuit_id, copts)) +
+      (it.circuit_id ? field('Line comes from', select('fed_from', it.fed_from, [['', 'Automatic (the outlet before it)']].concat(doc.outlets.filter(function (o) { return o.circuit_id === it.circuit_id && o !== it; }).map(function (o) { return [o.id, o.id.slice(1) + ' ' + o.name]; })))) : '') + check('confirmed', it.confirmed, 'I have checked this spot') + readingsHtml(it, outletW(it), true) + notes(it.notes);
+  } else if (sel.type === 'load') {
+    var isSp = it.kind === 'splitter', below = isSp ? through(it) : [];
+    var cands = doc.outlets.map(function (o) { return {o: o, ft: feet(it, o), sp: false}; })
+      .concat(doc.loads.filter(function (x) { return x.kind === 'splitter' && x !== it && below.indexOf(x) < 0; }).map(function (x) { return {o: x, ft: feet(it, x), sp: true}; }))
+      .sort(function (a, b) { return a.ft - b.ft; });
+    var oopts = cands.map(function (x) { return [x.o.id, num(x.ft) + ' ft · ' + (x.sp ? 'splitter: ' + x.o.name : x.o.id.slice(1) + ' ' + x.o.name)]; });
+    var po = parentOf(it), root = rootOutlet(it), runs = it.runs || [];
+    var head = isSp ? '<p><b>Splitter</b> · ' + below.filter(function (x) { return parentOf(x) === it; }).length + ' of ' + (Number(it.sockets) || 3) + ' sockets used · ' + num(below.reduce(function (t, x) { return t + loadW(x); }, 0)) + ' watts through it</p>'
+      : '<p><b>' + esc((KINDS[it.kind] || KINDS.other).label) + '</b> · ' + num(loadW(it)) + ' watts</p>';
+    if (isSp) {
+    h = head + '<p class="hint">' + (po ? num(feet(it, po)) + ' ft of cord to ' + esc(po.name) + (root && root !== po ? ', which ends at outlet ' + esc(root.id.slice(1) + ' ' + root.name) : '') + '.' : 'Not plugged in yet.') +
+      (isSp ? ' Put this pin where the 3-way or 6-way will sit, then plug nearby pins into it.' : ' Put this pin where its plug end will be, not in the middle of the feature.') + '</p>' +
+      field('Name', text('name', it.name)) + field('Kind', select('kind', it.kind, Object.keys(KINDS).map(function (k) { return [k, KINDS[k].label]; }))) +
+      (isSp ? field('Sockets on it', number('sockets', it.sockets || 3))
+        : '<div class="row"><div><label>% done</label><input type="number" min="0" max="100" step="5" id="dn" value="' + (it.done != null ? esc(it.done) : '') + '" placeholder="not started"></div><div><p class="hint" style="margin-top:28px">' + (it.done != null && it.done_on ? 'as of ' + showDate(it.done_on) : 'How far along this is. Your own note; it goes nowhere.') + '</p></div></div>' +
+          (byRuns(it) ? '<p class="hint">' + (lastR(it) ? 'Watts come from the latest meter reading below; the light runs still set the bulb counts.' : 'Watts are added up from the light runs below.') + '</p>'
+            : '<div class="row"><div>' + field(lastR(it) ? 'Watts each (estimate)' : 'Watts each', number('watts', it.watts)) + '</div><div>' + field('How many', number('qty', it.qty)) + '</div></div>')) +
+      field('Plugged into (nearest first)', select('outlet_id', it.outlet_id, [['', 'Not plugged in yet']].concat(oopts)));
+    if (!isSp) {
+      h += '<label>Light runs from this plug end</label>';
+      runs.forEach(function (r, i) { var f = runFt(it, r), nb = (r.via || []).length; h += '<p style="margin:4px 0"><i style="display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid #333;margin-right:6px;background:' + runCol(f) + '"></i>Run ' + (i + 1) + ': ' + num(f) + ' ft' + (nb ? ' · ' + nb + (nb === 1 ? ' bend' : ' bends') : '') + (f > RUN_MAX ? ' · over ' + RUN_MAX : f > RUN_WARN ? ' · over ' + RUN_WARN : '') + ' · ' + num(runW(it, r)) + ' watts <button data-rm="' + i + '">Remove</button></p>' +
+        '<div class="row" style="margin:0 0 4px 18px"><div>' + (r.big ? '<label>Strings of large bulbs</label><input type="number" min="1" data-rk="strings" data-ri="' + i + '" value="' + runStrings(r) + '">'
+          : '<label>Mini bulbs on this chain</label><input type="number" min="0" step="50" data-rk="bulbs" data-ri="' + i + '" value="' + (Number(r.bulbs) > 0 ? r.bulbs : '') + '" placeholder="' + runBulbs(it, r) + ' from the length">') +
+        '</div><div><label class="check" style="margin-top:22px"><input type="checkbox" data-rk="big" data-ri="' + i + '"' + (r.big ? ' checked' : '') + '>Large bulbs</label></div></div>' +
+        (runOver(it, r) ? '<p style="margin:0 0 8px 18px;color:#b00020;font-weight:700">Too many for one chain: the limit is ' + (r.big ? led('big_max') + ' strings of large bulbs' : num(led('mini_max')) + ' mini bulbs') + '. Add a splitter and start a second run.</p>' : ''); });
+      h += '<div class="btns"><button id="addrun">Draw a run of lights</button></div><p class="hint">Click it, then click along the path of the lights: each click adds a bend, and the last click is the end. Press Esc when you reach the end. Dark green is up to ' + RUN_WARN + ' ft along the path, medium green up to ' + RUN_MAX + ', light green is longer. Drag any dot to adjust. Each run is one chain plugged end to end. Leave the bulbs box empty for a plain run; fill it in for a wrapped tree.</p>';
+    }
+    h += readingsHtml(it, isSp ? below.reduce(function (t, x) { return t + loadW(x); }, 0) : estW(it), isSp) + notes(it.notes);
+    } else {
+      if (formFor !== it.id) { formFor = it.id; editRow = null; addRd = false; }
+      var lastM = lastR(it), wNow = loadW(it), nLights = runs.reduce(function (t, r) { return t + rowLights(it, r); }, 0), rds = it.readings || [];
+      h = field('Name', text('name', it.name)) + field('Type', select('kind', it.kind, Object.keys(KINDS).map(function (k) { return [k, KINDS[k].label]; }))) +
+        field('Plugged into', select('outlet_id', it.outlet_id, [['', 'Not plugged in yet']].concat(oopts))) +
+        '<h3 style="margin-bottom:0">When finished</h3><div class="tiles" style="margin-top:6px"><div><span>Lights</span><b>' + (nLights ? num(nLights) : '–') + '</b></div><div><span>Watts</span><b>' + num(wNow) + '</b></div><div><span>Amps</span><b>' + ampsTxt(wNow) + '</b></div></div>' +
+        (function () { var dn = it.done != null ? Number(it.done) : lastM ? rPct(lastM) : null, part = dn != null && dn < 100;
+          var st = dn === 0 ? '<p style="margin:10px 0 0;font-weight:700;color:#9a5b00">Not started yet.</p>' : part ? '<p style="margin:10px 0 0;font-weight:700;color:#9a5b00">Not finished yet: ' + dn + '% done' + (it.done_on ? ' as of ' + showDate(it.done_on) : '') + '.</p>' : dn != null ? '<p style="margin:10px 0 0;font-weight:700;color:#1a3a1f">Finished.</p>' : '';
+          return st + '<p class="hint">' + (lastM ? 'Measured ' + num(lastM.watts) + ' watts (' + ampsTxt(Number(lastM.watts)) + ' amps) on ' + showDate(lastM.date) + ' at ' + rPct(lastM) + '% done' + (rPct(lastM) < 100 ? ', so about ' + num(proj(lastM)) + ' watts when finished' : '') + '. The runs add up to ' + num(estW(it)) + ' watts.' : 'Estimates, added up from the runs.') + '</p>'; })();
+      h += '<h3>Runs</h3>' + (runs.length ? '<ol class="lst">' : '<p class="hint">None yet.</p>');
+      runs.forEach(function (r, i) {
+        var t = rowType(r), f = runFt(it, r), drawn = r.lat != null;
+        h += '<li>' + (drawn ? '<i style="display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid #333;margin-right:6px;background:' + runCol(f) + '"></i>' : '') +
+          '<b>' + esc(r.name || 'Run ' + (i + 1)) + '</b>: ' + rowTxt(it, r) + ' <button data-ed="' + i + '">' + (editRow === i ? 'Close' : 'Edit') + '</button>' +
+          (runOver(it, r) ? '<p class="warn-t">Too many for one chain: the limit is ' + (r.big ? led('big_max') * 100 + ' large' : num(led('mini_max')) + ' mini') + ' lights. Start a second run.</p>' : '');
+        if (editRow === i) h += '<div class="ed">' +
+          '<label>Name</label><input type="text" data-rw="name" data-ri="' + i + '" value="' + esc(r.name || '') + '" placeholder="Run ' + (i + 1) + '">' +
+          '<div class="row"><div><label>Type</label><select data-rw="type" data-ri="' + i + '">' + Object.keys(ROWT).map(function (k) { return '<option value="' + k + '"' + (k === t ? ' selected' : '') + '>' + ROWT[k].label + '</option>'; }).join('') + '</select></div>' +
+          '<div><label>' + (t === 'other' ? 'Watts' : 'Lights') + '</label><input type="number" min="0" data-rw="count" data-ri="' + i + '" value="' + (rowSet(r) ? rowCount(it, r) : '') + '"' + (rowSet(r) ? '' : ' placeholder="' + rowCount(it, r) + (drawn && (t === 'mini' || (t === 'large' && led('big_ft') > 0) || (t === 'foodcourt' && led('fc_ft') > 0)) ? ' from the length' : '') + '"') + '></div></div>' +
+          '<p class="hint">' + num(runW(it, r)) + ' watts' + (drawn ? ' · ' + num(f) + ' ft drawn on the map' + (f > RUN_MAX ? ', over ' + RUN_MAX : '') : ' · no line on the map') + '</p>' +
+          '<div class="btns" style="margin-top:8px"><button class="danger" data-rm="' + i + '">Remove this run</button></div></div>';
+        h += '</li>';
+      });
+      h += (runs.length ? '</ol>' : '') + '<div class="btns"><button id="addrow">Add a row</button><button id="addrun">Draw a run of lights</button></div>';
+      h += '<h3>Completion</h3><div class="row"><div><input type="number" min="0" max="100" step="5" id="dn" value="' + (it.done != null ? esc(it.done) : '') + '" placeholder="not started"></div><div><p style="margin:8px 0 0">percent done' + (it.done != null && it.done_on ? ', as of ' + showDate(it.done_on) : '') + '</p></div></div>';
+      h += '<h3>Measurements</h3>' + (rds.length ? '<ol class="lst">' : '<p class="hint">None yet.</p>');
+      rds.forEach(function (r, i) { h += '<li>' + showDate(r.date) + ' · ' + num(r.watts) + ' watts · ' + ampsTxt(Number(r.watts)) + ' amps · ' + rPct(r) + '% done <button data-rdrm="' + i + '">Remove</button></li>'; });
+      h += (rds.length ? '</ol>' : '');
+      h += addRd ? '<div class="ed"><div class="row"><div><label>Date</label><input type="date" id="rd-date" value="' + today() + '" style="font:inherit;width:100%;padding:6px 8px;border:1px solid #b9b3a2;border-radius:7px"></div><div><label>% done that day</label><input type="number" min="1" max="100" id="rd-pct" value="' + (it.done > 0 ? esc(it.done) : 100) + '"></div></div>' +
+          '<div class="row"><div><label>Amps on the clamp</label><input type="number" min="0" step="0.01" id="rd-a"></div><div><label>or watts</label><input type="number" min="0" id="rd-w"></div></div>' +
+          '<label class="check"><input type="checkbox" id="rd-x10">Read on the x10 side of the splitter</label>' +
+          '<label>Note</label><input type="text" id="rd-note" placeholder="what is still to come">' +
+          '<div class="btns" style="margin-top:10px"><button id="rd-add">Save this measurement</button><button id="rd-cancel">Cancel</button></div></div>'
+        : '<div class="btns"><button id="rd-open">Add a measurement</button></div>';
+      h += notes(it.notes);
+    }
+  } else {
+    h = '<p><b>Breaker</b> · ' + esc(it.id) + '</p>' + field('Name', text('name', it.name)) +
+      '<div class="row"><div>' + field('Breaker number or label', text('breaker_label', it.breaker_label)) + '</div><div>' + field('Amps', number('amps', it.amps)) + '</div></div>' +
+      field('Panel', select('panel_id', it.panel_id, [['', 'Not known yet']].concat(doc.panels.map(function (p) { return [p.id, p.name]; })))) +
+      check('confirmed', it.confirmed, 'Tested by flipping the breaker') + notes(it.notes);
+  }
+  el.innerHTML = h + '<div class="btns" style="margin-top:14px"><button class="danger" id="del">Delete</button><button id="unsel">Done</button></div>';
+  [].forEach.call(el.querySelectorAll('[data-k]'), function (inp) {
+    inp.addEventListener('change', function () {
+      var k = inp.getAttribute('data-k'), v = inp.type === 'checkbox' ? inp.checked : inp.value;
+      if (inp.getAttribute('data-num')) v = v === '' ? 0 : Number(v);
+      if ((k === 'circuit_id' || k === 'outlet_id' || k === 'panel_id' || k === 'fed_from') && v === '') v = null;
+      it[k] = v; changed();
+    });
+  });
+  [].forEach.call(el.querySelectorAll('[data-rk]'), function (inp) {
+    inp.addEventListener('change', function () {
+      var r = it.runs[Number(inp.getAttribute('data-ri'))], k = inp.getAttribute('data-rk'); if (!r) return;
+      if (k === 'big') { if (inp.checked) { r.big = true; if (!r.strings) r.strings = 1; } else { delete r.big; delete r.strings; } }
+      else if (inp.value === '' || !(Number(inp.value) > 0)) delete r[k]; else r[k] = Number(inp.value);
+      changed();
+    });
+  });
+  [].forEach.call(el.querySelectorAll('[data-ed]'), function (b) { b.onclick = function () { var i = Number(b.getAttribute('data-ed')); editRow = editRow === i ? null : i; drawForm(); }; });
+  [].forEach.call(el.querySelectorAll('[data-rw]'), function (inp) {
+    inp.addEventListener('change', function () {
+      var r = it.runs[Number(inp.getAttribute('data-ri'))], k = inp.getAttribute('data-rw'); if (!r) return;
+      if (k === 'name') { if (inp.value.trim()) r.name = inp.value.trim(); else delete r.name; }
+      else if (k === 'type') setType(it, r, inp.value);
+      else setCount(r, inp.value);
+      changed();
+    });
+  });
+  var arow = document.getElementById('addrow');
+  if (arow) arow.onclick = function () { it.runs = it.runs || []; it.runs.push({type: 'other', watts: 0}); editRow = it.runs.length - 1; changed(); };
+  var ro = document.getElementById('rd-open'); if (ro) ro.onclick = function () { addRd = true; drawForm(); };
+  var rc = document.getElementById('rd-cancel'); if (rc) rc.onclick = function () { addRd = false; drawForm(); };
+  var dn = document.getElementById('dn');
+  if (dn) dn.onchange = function () {
+    if (dn.value === '') { delete it.done; delete it.done_on; }
+    else { it.done = Math.max(0, Math.min(100, Math.round(Number(dn.value) || 0))); it.done_on = today(); }
+    changed();
+  };
+  var ra = document.getElementById('rd-add');
+  if (ra) ra.onclick = function () {
+    var w = Number(document.getElementById('rd-w').value), p = Number(document.getElementById('rd-pct').value), dt = document.getElementById('rd-date').value || today();
+    var amps = Number(document.getElementById('rd-a').value); if (amps > 0 && document.getElementById('rd-x10').checked) amps = amps / 10;
+    if (!(w > 0) && amps > 0) w = Math.round(amps * VOLTS * 10) / 10;
+    if (!(w > 0)) { alert('Type the watts, or the amps the clamp meter showed.'); return; }
+    if (!(p > 0 && p <= 100)) { alert('Percent done is a number from 1 to 100.'); return; }
+    var r = {date: dt, watts: w, pct: p}, n = document.getElementById('rd-note').value.trim(); if (n) r.note = n;
+    if (amps > 0 && !(Number(document.getElementById('rd-w').value) > 0)) r.amps = Math.round(amps * 1000) / 1000;
+    it.readings = it.readings || []; it.readings.push(r); addRd = false;
+    if (sel.type === 'load' && it.kind !== 'splitter' && (!it.done_on || dt >= it.done_on)) { it.done = p; it.done_on = dt; }
+    changed();
+  };
+  [].forEach.call(el.querySelectorAll('[data-rdrm]'), function (b) { b.onclick = function () { it.readings.splice(Number(b.getAttribute('data-rdrm')), 1); if (!it.readings.length) delete it.readings; changed(); }; });
+  var ar = document.getElementById('addrun');
+  if (ar) ar.onclick = function () { setAdding(null); addingRun = it.id; var a = document.getElementById('adding'); a.style.display = 'block'; a.innerHTML = 'Click along the path of the lights. Each click adds a bend. <button id="finrun" style="margin-left:8px">Finish run</button> or press Esc.'; document.getElementById('finrun').onclick = function () { setAdding(null); draw(); }; document.getElementById('map').style.cursor = 'crosshair'; };
+  [].forEach.call(el.querySelectorAll('[data-rm]'), function (b) { b.onclick = function () { it.runs.splice(Number(b.getAttribute('data-rm')), 1); editRow = null; if (it.runs.length) it.qty = it.runs.length; changed(); }; });
+  document.getElementById('unsel').onclick = function () { sel = null; draw(); };
+  document.getElementById('del').onclick = function () {
+    if (!confirm('Delete "' + (it.name || it.id) + '"?')) return;
+    list.splice(list.indexOf(it), 1);
+    if (sel.type === 'outlet' || sel.type === 'load') doc.loads.forEach(function (l) { if (l.outlet_id === it.id) l.outlet_id = null; });
+    if (sel.type === 'outlet') doc.outlets.forEach(function (o) { if (o.fed_from === it.id) o.fed_from = null; });
+    if (sel.type === 'circuit') doc.outlets.forEach(function (o) { if (o.circuit_id === it.id) o.circuit_id = null; });
+    if (sel.type === 'panel') doc.circuits.forEach(function (c) { if (c.panel_id === it.id) c.panel_id = null; });
+    sel = null; changed();
+  };
+}
+
+function kindName(l) { return (KINDS[l.kind] || KINDS.other).label; }
+function lightsOf(l) { return (l.runs || []).reduce(function (t, r) { return t + rowLights(l, r); }, 0); }
+function circuitOf(o) { return o ? byId(doc.circuits, o.circuit_id) : null; }
+function circuitW(c) { return doc.outlets.filter(function (o) { return o.circuit_id === c.id; }).reduce(function (t, o) { return t + outletW(o); }, 0); }
+function outName(o) { return 'Outlet ' + o.id.slice(1) + ', ' + o.name; }
+function whereTxt(l) { var po = parentOf(l), root = rootOutlet(l); if (!po) return 'Not plugged in yet'; return root ? (root !== po ? esc(po.name) + ', then ' : '') + esc(outName(root)) : esc(po.name); }
+function brkTxt(l) { var c = circuitOf(rootOutlet(l)); return c ? esc(c.name || c.id) : rootOutlet(l) ? 'its own supply' : ''; }
+function stateTxt(l) { var last = lastR(l), dn = l.done != null ? Number(l.done) : last ? rPct(last) : null; return dn == null ? '' : dn === 0 ? 'Not started' : dn < 100 ? dn + '% done' : 'Finished'; }
+function onList(ls) { return ls.length ? '<ul>' + ls.map(function (l) { return '<li>' + esc(l.name) + ' · ' + (lightsOf(l) ? num(lightsOf(l)) + ' lights · ' : '') + num(loadW(l)) + ' watts</li>'; }).join('') + '</ul>' : '<p class="hint">Nothing plugged in.</p>'; }
+function tiles(n, w) { return '<div class="tiles" style="margin-top:6px"><div><span>Lights</span><b>' + (n ? num(n) : '–') + '</b></div><div><span>Watts</span><b>' + num(w) + '</b></div><div><span>Amps</span><b>' + ampsTxt(w) + '</b></div></div>'; }
+function drawForm() {
+  var el = document.getElementById('form');
+  if (!sel) { el.innerHTML = '<p class="hint">Nothing selected. Click a pin on the map, or a line in a table.</p>'; return; }
+  var list = sel.type === 'panel' ? doc.panels : sel.type === 'outlet' ? doc.outlets : sel.type === 'circuit' ? doc.circuits : doc.loads, it = byId(list, sel.id), h = '';
+  if (!it) { sel = null; el.innerHTML = '<p class="hint">Nothing selected.</p>'; return; }
+  if (sel.type === 'load' && it.kind !== 'splitter') {
+    var last = lastR(it), w = loadW(it), st = stateTxt(it), rds = it.readings || [], runs = it.runs || [];
+    h = '<h3 style="margin-top:0;font-size:20px">' + esc(it.name) + '</h3><p>' + esc(kindName(it)) + '</p><p><b>Plugged into:</b> ' + whereTxt(it) + (brkTxt(it) ? '<br><b>Breaker:</b> ' + brkTxt(it) : '') + '</p>' +
+      '<h3 style="margin-bottom:0">When finished</h3>' + tiles(lightsOf(it), w) +
+      (st ? '<p style="margin-top:10px;font-weight:700;color:' + (st === 'Finished' ? '#1a3a1f' : '#9a5b00') + '">' + st + (st !== 'Finished' && it.done_on ? ' as of ' + showDate(it.done_on) : '') + '</p>' : '') +
+      (last ? '<p class="hint">Measured ' + num(last.watts) + ' watts on ' + showDate(last.date) + ' at ' + rPct(last) + '% done' + (rPct(last) < 100 ? ', so about ' + num(proj(last)) + ' when finished' : '') + '.</p>' : '<p class="hint">An estimate, not measured yet.</p>') +
+      (runs.length ? '<h3>Runs</h3><ol class="lst">' + runs.map(function (r, i) { return '<li><b>' + esc(r.name || 'Run ' + (i + 1)) + '</b>: ' + rowTxt(it, r) + (r.lat != null ? ' · ' + num(runFt(it, r)) + ' ft' : '') + '</li>'; }).join('') + '</ol>' : '') +
+      (rds.length ? '<h3>Measurements</h3><ol class="lst">' + rds.map(function (r) { return '<li>' + showDate(r.date) + ' · ' + num(r.watts) + ' watts · ' + ampsTxt(Number(r.watts)) + ' amps · ' + rPct(r) + '% done</li>'; }).join('') + '</ol>' : '');
+  } else if (sel.type === 'load') {
+    var below = through(it);
+    h = '<h3 style="margin-top:0;font-size:20px">' + esc(it.name) + '</h3><p>Splitter</p><p><b>Plugged into:</b> ' + whereTxt(it) + '</p>' + tiles(below.reduce(function (t, x) { return t + lightsOf(x); }, 0), below.reduce(function (t, x) { return t + loadW(x); }, 0)) + '<h3>Through it</h3>' + onList(below.filter(function (x) { return x.kind !== 'splitter'; }));
+  } else if (sel.type === 'outlet') {
+    var c = circuitOf(it), on = doc.loads.filter(function (l) { return rootOutlet(l) === it && l.kind !== 'splitter'; }), ow = outletW(it);
+    h = '<h3 style="margin-top:0;font-size:20px">' + esc(outName(it)) + '</h3><p>' + (it.kind === 'building' ? 'Outlet on a building' : 'Outlet post') + '</p><p><b>Breaker:</b> ' + (c ? esc(c.name || c.id) : 'its own supply') + '</p>' +
+      tiles(on.reduce(function (t, x) { return t + lightsOf(x); }, 0), ow) + '<h3>Plugged in here</h3>' + onList(on);
+  } else if (sel.type === 'circuit') {
+    var outs = doc.outlets.filter(function (o) { return o.circuit_id === it.id; }), cw = circuitW(it), p = byId(doc.panels, it.panel_id), ons = doc.loads.filter(function (l) { var r = rootOutlet(l); return r && r.circuit_id === it.id && l.kind !== 'splitter'; });
+    h = '<h3 style="margin-top:0;font-size:20px">' + esc(it.name || it.id) + '</h3><p>Breaker' + (p ? ' in the ' + esc(p.name) : '') + '</p><p><b>' + num(cw) + ' of ' + num(budget(it)) + ' watts</b> (' + Math.round(cw / budget(it) * 100) + '% of its budget)</p>' + bar(cw, budget(it)) +
+      '<h3>Outlets</h3><ul>' + outs.map(function (o) { return '<li>' + esc(outName(o)) + ' · ' + num(outletW(o)) + ' watts</li>'; }).join('') + '</ul><h3>Everything on it</h3>' + onList(ons);
+  } else {
+    var cs = doc.circuits.filter(function (c) { return c.panel_id === it.id; });
+    h = '<h3 style="margin-top:0;font-size:20px">' + esc(it.name) + '</h3><p>Breaker panel ' + esc(it.id) + '</p><h3>Breakers</h3>' + (cs.length ? '<ul>' + cs.map(function (c) { return '<li>' + esc(c.name || c.id) + ' · ' + num(circuitW(c)) + ' of ' + num(budget(c)) + ' watts</li>'; }).join('') + '</ul>' : '<p class="hint">None listed.</p>');
+  }
+  el.innerHTML = '<div class="ro">' + h + '</div><div class="btns" style="margin-top:14px"><button id="unsel">Done</button></div>';
+  document.getElementById('unsel').onclick = function () { sel = null; draw(); };
+}
+function pickRow(type, id) { return ' class="pick' + (sel && sel.type === type && sel.id === id ? ' cur' : '') + '" data-t="' + type + '" data-id="' + esc(id) + '"'; }
+function drawData() {
+  var el = document.getElementById('data'); if (!el) return;
+  var real = doc.loads.filter(function (l) { return l.kind !== 'splitter'; }), h = '';
+  function loadRows(ls) { return ls.map(function (l) { return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td>' + whereTxt(l) + '</td><td>' + brkTxt(l) + '</td><td>' + stateTxt(l) + '</td></tr>'; }).join(''); }
+  var LH = '<tr><th>Name</th><th class="n">Lights</th><th class="n">Watts</th><th class="n">Amps</th><th>Plugged into</th><th>Breaker</th><th>Progress</th></tr>';
+  function sums(ls) { var n = ls.reduce(function (t, l) { return t + lightsOf(l); }, 0), w = ls.reduce(function (t, l) { return t + loadW(l); }, 0); return '<div class="big"><div><span>How many</span><b>' + ls.length + '</b></div><div><span>Lights</span><b>' + (n ? num(n) : '–') + '</b></div><div><span>Watts</span><b>' + num(w) + '</b></div><div><span>Amps</span><b>' + ampsTxt(w) + '</b></div></div>'; }
+  function breakerTable() { var t = '<table><tr><th>Breaker</th><th>Panel</th><th class="n">Watts</th><th class="n">Budget</th><th style="width:28%">Of budget</th></tr>';
+    doc.circuits.slice().sort(function (a, b) { return circuitW(b) - circuitW(a); }).forEach(function (c) { var w = circuitW(c), p = byId(doc.panels, c.panel_id); t += '<tr' + pickRow('circuit', c.id) + '><td>' + esc(c.name || c.id) + '</td><td>' + (p ? esc(p.name) : '') + '</td><td class="n">' + num(w) + '</td><td class="n">' + num(budget(c)) + '</td><td>' + Math.round(w / budget(c) * 100) + '%' + bar(w, budget(c)) + '</td></tr>'; });
+    doc.outlets.filter(function (o) { return !o.circuit_id && outletW(o) > 0; }).forEach(function (o) { var w = outletW(o), b = 20 * VOLTS * SHARE; t += '<tr' + pickRow('outlet', o.id) + '><td>' + esc(o.name) + '</td><td>its own supply</td><td class="n">' + num(w) + '</td><td class="n">' + num(b) + '</td><td>' + Math.round(w / b * 100) + '%' + bar(w, b) + '</td></tr>'; });
+    return t + '</table><p class="hint">Each breaker\'s budget is 80 percent of what it can carry: 1,920 watts on a 20-amp breaker.</p>'; }
+  function outletTable(os) { var t = '<table><tr><th>What</th><th class="n">Lights</th><th class="n">Watts</th><th class="n">Amps</th><th>Progress</th></tr>';
+    os.forEach(function (o) { var on = real.filter(function (l) { return rootOutlet(l) === o; }), c = circuitOf(o);
+      t += '<tr class="sub pick" data-t="outlet" data-id="' + esc(o.id) + '"><td colspan="5">' + esc(outName(o)) + ' · ' + (c ? esc(c.name || c.id) : 'its own supply') + ' · ' + num(outletW(o)) + ' watts</td></tr>' +
+        (on.length ? on.map(function (l) { var po = parentOf(l); return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + (po && po !== o ? ' <span class="hint">by way of ' + esc(po.name) + '</span>' : '') + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td>' + stateTxt(l) + '</td></tr>'; }).join('') : '<tr><td colspan="5"><span class="hint">Nothing plugged in.</span></td></tr>'); });
+    return t + '</table>'; }
+  if (showKind === 'all') {
+    var allW = real.reduce(function (t, l) { return t + loadW(l); }, 0), allN = real.reduce(function (t, l) { return t + lightsOf(l); }, 0),
+      fin = real.filter(function (l) { return stateTxt(l) === 'Finished'; }).length, going = real.filter(function (l) { return /% done/.test(stateTxt(l)); }).length;
+    h += '<h2>The big picture</h2><div class="big"><div><span>Lights</span><b>' + num(allN) + '</b></div><div><span>Watts</span><b>' + num(allW) + '</b></div><div><span>Amps</span><b>' + ampsTxt(allW) + '</b></div><div><span>Things to light</span><b>' + real.length + '</b></div></div>' +
+      '<p class="lead">' + fin + ' finished, ' + going + ' under way, ' + (real.length - fin - going) + ' not started.</p>';
+    h += '<h2>By breaker</h2>' + breakerTable();
+    h += '<h2>By type</h2><table><tr><th>Type</th><th class="n">How many</th><th class="n">Lights</th><th class="n">Watts</th><th class="n">Amps</th></tr>' +
+      Object.keys(KINDS).filter(function (k) { return k !== 'splitter'; }).map(function (k) { var ls = real.filter(function (l) { return l.kind === k; }); if (!ls.length) return ''; var w = ls.reduce(function (t, l) { return t + loadW(l); }, 0), n = ls.reduce(function (t, l) { return t + lightsOf(l); }, 0); return '<tr><td>' + esc(KINDS[k].label) + '</td><td class="n">' + ls.length + '</td><td class="n">' + (n ? num(n) : '') + '</td><td class="n">' + num(w) + '</td><td class="n">' + ampsTxt(w) + '</td></tr>'; }).join('') + '</table>';
+    h += '<h2>Progress</h2><table><tr><th>Name</th><th>Type</th><th>Progress</th><th>Plugged into</th></tr>' +
+      real.slice().sort(function (a, b) { return doneOf(a) - doneOf(b) || String(a.name).localeCompare(String(b.name), undefined, {numeric: true}); }).map(function (l) { return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + '</td><td>' + esc(kindName(l)) + '</td><td>' + (stateTxt(l) || 'Not started') + '</td><td>' + whereTxt(l) + '</td></tr>'; }).join('') + '</table>';
+    h += '<h2>What plugs in where</h2>' + outletTable(doc.outlets.filter(function (o) { return outletW(o) > 0; }));
+    var TY = [['mini', 'Mini', true], ['big', 'Large', true], ['fc', 'Food court', true], ['sw', 'Sidewalk light', false], ['up', 'Uplight', false]];
+    h += '<h2>What the numbers rest on</h2><table><tr><th>Type of light</th><th class="n">Bulbs in one</th><th class="n">Watts</th><th class="n">Amps</th><th class="n">Feet it covers</th></tr>' +
+      TY.map(function (x) { return '<tr><td>' + x[1] + '</td><td class="n">' + num(led(x[0] + '_bulbs')) + '</td><td class="n">' + led(x[0] + '_w') + '</td><td class="n">' + ampsTxt(led(x[0] + '_w')) + '</td><td class="n">' + (x[2] && led(x[0] + '_ft') > 0 ? led(x[0] + '_ft') : '') + '</td></tr>'; }).join('') + '</table>' +
+      '<p class="hint">Each line is one string, roll, strand or fixture. These are working estimates with some buffer, adjusted as real measurements come in. No more than ' + num(led('mini_max')) + ' mini bulbs, or ' + led('big_max') + ' strings of large bulbs, plugged end to end on one chain.</p>';
+  } else if (showKind === 'cords') {
+    h += '<h2>Cords on hand</h2>' + document.getElementById('cordsum').innerHTML + document.getElementById('cordlist').innerHTML;
+  } else if (showKind === 'panel') {
+    h += '<h2>Breaker panels and breakers</h2>' + breakerTable();
+  } else if (showKind === 'outlet') {
+    h += '<h2>Outlets</h2>' + outletTable(doc.outlets);
+  } else if (showKind === 'splitter') {
+    var sps = doc.loads.filter(function (l) { return l.kind === 'splitter'; });
+    h += '<h2>Splitters</h2><table><tr><th>Name</th><th>Plugged into</th><th class="n">Things on it</th><th class="n">Watts through it</th></tr>' + sps.map(function (sp) { var b = through(sp).filter(function (x) { return x.kind !== 'splitter'; }); return '<tr' + pickRow('load', sp.id) + '><td>' + esc(sp.name) + '</td><td>' + whereTxt(sp) + '</td><td class="n">' + b.length + '</td><td class="n">' + num(b.reduce(function (t, x) { return t + loadW(x); }, 0)) + '</td></tr>'; }).join('') + '</table>';
+  } else {
+    var ls = real.filter(function (l) { return l.kind === showKind; }).sort(function (a, b) { return String(a.name).localeCompare(String(b.name), undefined, {numeric: true}); });
+    h += '<h2>' + esc(({lights: 'Lit trees and areas'})[showKind] || KINDS[showKind].label + 's') + '</h2>' + sums(ls) + '<table>' + LH + loadRows(ls) + '</table>';
+  }
+  el.innerHTML = h;
+  [].forEach.call(el.querySelectorAll('tr.pick'), function (tr) { tr.onclick = function () { sel = {type: tr.getAttribute('data-t'), id: tr.getAttribute('data-id')}; var y = el.scrollTop; draw(); el.scrollTop = y; showForm(); }; });
+}
+function showForm() { document.getElementById('form').scrollIntoView({block: 'center', behavior: 'smooth'}); }
+function bar(w, b) { var pct = b ? w / b * 100 : 0; return '<div class="bar' + (pct > 100 ? ' over' : pct > 80 ? ' warn' : '') + '"><i style="width:' + Math.min(100, pct) + '%"></i></div>'; }
+function drawBreakers() {
+  var h = '<table><tr><th>Breaker</th><th>Outlets</th><th class="n">Watts of budget</th></tr>';
+  var groups = doc.panels.map(function (p) { return {p: p, cs: doc.circuits.filter(function (c) { return c.panel_id === p.id; })}; });
+  groups.push({p: null, cs: doc.circuits.filter(function (c) { return !byId(doc.panels, c.panel_id); })});
+  groups.forEach(function (g) {
+    if (!g.p && !g.cs.length) return;
+    var gw = g.cs.reduce(function (s, c) { return s + doc.outlets.filter(function (o) { return o.circuit_id === c.id; }).reduce(function (t, o) { return t + outletW(o); }, 0); }, 0);
+    h += '<tr><td colspan="3" style="background:#e9efe4;font-weight:700;color:#1a3a1f">' + (g.p ? esc(g.p.id + ' · ' + g.p.name) : 'No panel picked yet') +
+      ' <span style="font-weight:400">· ' + g.cs.length + (g.cs.length === 1 ? ' breaker' : ' breakers') + ' · ' + num(gw) + ' watts</span></td></tr>';
+    if (!g.cs.length) h += '<tr><td colspan="3"><span class="hint">No breakers listed.</span></td></tr>';
+    g.cs.forEach(row);
+  });
+  function row(c) {
+    var outs = doc.outlets.filter(function (o) { return o.circuit_id === c.id; }), w = outs.reduce(function (s, o) { return s + outletW(o); }, 0), b = budget(c);
+    h += '<tr class="pick" data-c="' + esc(c.id) + '"><td>' + esc(c.name || c.id) + '' + '</td><td>' + outs.map(function (o) { return o.id.slice(1); }).join(', ') +
+      '</td><td class="n' + (w > b ? ' over-t' : '') + '">' + num(w) + ' of ' + num(b) + bar(w, b) + '</td></tr>';
+  }
+  var loose = doc.outlets.filter(function (o) { return !o.circuit_id; }), own = 20 * VOLTS * SHARE, idle = [];
+  loose.forEach(function (o) {
+    var w = outletW(o);
+    if (!w) { idle.push(o.id.slice(1)); return; }
+    h += '<tr><td colspan="3" style="background:#e9efe4;font-weight:700;color:#1a3a1f">' + esc(o.name) + ' <span style="font-weight:400">· its own supply · ' + num(w) + ' watts</span></td></tr>';
+    h += '<tr><td>' + esc(o.id.slice(1) + ' ' + o.name) + '<br><span class="hint">own breaker, assumed</span></td><td>' + o.id.slice(1) + '</td><td class="n' + (w > own ? ' over-t' : '') + '">' + num(w) + ' of ' + num(own) + bar(w, own) + '</td></tr>';
+  });
+  if (idle.length) h += '<tr><td>Each on its own breaker, assumed; nothing plugged in</td><td>' + idle.join(', ') + '</td><td class="n">0</td></tr>';
+  document.getElementById('breakers').innerHTML = h + '</table><p class="hint">Budget is 80 percent of the breaker: 1,920 watts on 20 amps. Click a breaker to see what is on it.</p>';
+  [].forEach.call(document.querySelectorAll('#breakers tr.pick'), function (tr) { tr.onclick = function () { sel = {type: 'circuit', id: tr.getAttribute('data-c')}; draw(); showForm(); }; });
+}
+function drawTotals() {
+  var all = doc.loads.reduce(function (s, l) { return s + loadW(l); }, 0), real = doc.loads.filter(function (l) { return l.kind !== 'splitter'; }), un = real.filter(function (l) { return !rootOutlet(l) && loadW(l) > 0; }),
+    longRuns = 0, warnRuns = 0, overRuns = 0, litW = 0, bulbs = 0,
+    guess = real.filter(function (l) { return !l.measured && !lastR(l); }).length,
+    readPins = real.filter(function (l) { return lastR(l); }), earlyPins = readPins.filter(function (l) { return rPct(lastR(l)) < EARLY; }).length,
+    readOut = doc.outlets.filter(function (o) { return lastR(o); }).length,
+    unc = doc.panels.concat(doc.outlets).filter(function (x) { return !x.confirmed; }).length, cord = 0;
+  doc.loads.forEach(function (l) { var o = parentOf(l); if (o && l.kind !== 'tree') cord += feet(l, o);    (l.runs || []).forEach(function (r) { var f = runFt(l, r); if (f > RUN_MAX) longRuns++; else if (f > RUN_WARN) warnRuns++; if (runOver(l, r)) overRuns++; if (rowType(r) === 'mini' || rowType(r) === 'large') litW += runW(l, r); if (!r.big) bulbs += runBulbs(l, r); }); });
+  document.getElementById('totals').innerHTML = '<table>' +
+    '<tr><td>Everything that uses power</td><td class="n">' + real.length + ' pins · ' + num(all) + ' watts</td></tr>' +
+    '<tr><td>Not reaching an outlet yet</td><td class="n">' + un.length + '</td></tr>' +
+    '<tr><td>Splitters</td><td class="n">' + (doc.loads.length - real.length) + '</td></tr>' +
+    '<tr><td>Light runs ' + RUN_WARN + ' to ' + RUN_MAX + ' ft (medium green)</td><td class="n">' + warnRuns + '</td></tr>' +
+    '<tr><td>Light runs over ' + RUN_MAX + ' ft (light green)</td><td class="n">' + longRuns + '</td></tr>' +
+    '<tr><td>Chains over the bulb limit</td><td class="n"' + (overRuns ? ' style="color:#b00020;font-weight:700"' : '') + '>' + overRuns + '</td></tr>' +
+    '<tr><td>All the light runs together</td><td class="n">' + num(bulbs) + ' mini bulbs · ' + num(litW) + ' watts</td></tr>' +
+    '<tr><td>Watts still a guess</td><td class="n">' + guess + '</td></tr>' +
+    '<tr><td>Pins with a meter reading</td><td class="n">' + readPins.length + (earlyPins ? ' · ' + earlyPins + ' early' : '') + '</td></tr>' +
+    '<tr><td>Outlets with a meter reading</td><td class="n">' + readOut + '</td></tr>' +
+    '<tr><td>Cord, straight-line</td><td class="n">' + num(cord) + ' ft</td></tr>' +
+    '<tr><td>Panels and outlets not checked yet</td><td class="n">' + unc + '</td></tr></table>';
+  var TY = [['mini', 'Mini', true], ['big', 'Large', true], ['fc', 'Food court', true], ['sw', 'Sidewalk', false], ['up', 'Uplight', false]];
+  function ledIn(k, w) { return '<input type="number" min="0" step="any" data-led="' + k + '" value="' + (led(k) > 0 ? led(k) : '') + '" style="width:' + (w || 62) + 'px;padding:5px 4px;text-align:right">'; }
+  document.getElementById('ledset').innerHTML = '<table><tr><th>Type</th><th class="n">Bulbs</th><th class="n">Watts</th><th class="n">Amps</th><th class="n">Feet</th></tr>' +
+    TY.map(function (x) { return '<tr><td>' + x[1] + '</td><td class="n">' + ledIn(x[0] + '_bulbs') + '</td><td class="n">' + ledIn(x[0] + '_w') + '</td><td class="n">' + ampsTxt(led(x[0] + '_w')) + '</td><td class="n">' + (x[2] ? ledIn(x[0] + '_ft') : '') + '</td></tr>'; }).join('') + '</table>' +
+    '<p class="hint">Each line is one of the thing you buy: a string, a roll, a strand, a fixture. Bulbs on it, the watts it draws, and the feet it covers. Leave feet empty if you do not know. Change a number and every pin is worked out again.</p>' +
+    '<table><tr><td>Most mini bulbs on one chain</td><td class="n">' + ledIn('mini_max', 90) + '</td></tr><tr><td>Most large strings on one chain</td><td class="n">' + ledIn('big_max', 90) + '</td></tr></table>' +
+    (function () { var m = measuredLed(); if (!m) return '<p class="hint">Measured so far: nothing yet. Put a meter reading on a lit pin and type the bulb count on each of its runs, and the real watts per string will show here.</p>';
+      var per = Math.round(m.per * 10) / 10;
+      return '<p style="margin:8px 0 4px"><b>Measured so far: ' + per + ' watts for ' + led('mini_bulbs') + ' bulbs</b>, from ' + m.n + (m.n === 1 ? ' pin' : ' pins') + ' and ' + num(m.bulbs) + ' bulbs. The figure above is ' + led('mini_w') + '.' + (m.n < 3 ? ' Only ' + m.n + ' so far, so it may still move.' : '') + '</p>' +
+        (Math.abs(per - led('mini_w')) >= 0.1 ? '<div class="btns"><button id="useled">Use ' + per + ' for every light run</button></div>' : ''); })();
+  var ul = document.getElementById('useled'); if (ul) ul.onclick = function () { var m = measuredLed(); if (!m) return; doc.meta = doc.meta || {}; doc.meta.led = doc.meta.led || {}; doc.meta.led.mini_w = Math.round(m.per * 10) / 10; changed(); };
+  [].forEach.call(document.querySelectorAll('[data-led]'), function (inp) { inp.onchange = function () { var k = inp.getAttribute('data-led'); doc.meta = doc.meta || {}; doc.meta.led = doc.meta.led || {}; if (!(Number(inp.value) > 0)) { if (!/_ft$/.test(k) || doc.meta.led[k] == null) { draw(); return; } delete doc.meta.led[k]; } else doc.meta.led[k] = Number(inp.value); changed(); }; });
+}
+
+
+var ADD = [['panel', 'Breaker panel'], ['post', 'Outlet post'], ['building', 'Outlet on a building']].concat(Object.keys(KINDS).map(function (k) { return [k, KINDS[k].label]; }));
+function setAdding(k) {
+  adding = k; addingRun = null; runDraft = null;
+  [].forEach.call(document.querySelectorAll('#addbtns button'), function (b) { b.className = b.getAttribute('data-a') === k ? 'on' : ''; });
+  var a = document.getElementById('adding');
+  a.style.display = k ? 'block' : 'none';
+  if (k) a.textContent = 'Click the map to place each one. Press Esc when done.';
+  document.getElementById('map').style.cursor = k ? 'crosshair' : '';
+}
+function addAt(ll) {
+  var lat = +ll.lat.toFixed(7), lng = +ll.lng.toFixed(7), it;
+  if (adding === 'panel') { it = {id: nextId(doc.panels, 'P'), name: 'Panel', lat: lat, lng: lng, confirmed: true, notes: ''}; doc.panels.push(it); sel = {type: 'panel', id: it.id}; }
+  else if (adding === 'post' || adding === 'building') { it = {id: nextId(doc.outlets, 'O'), name: adding === 'post' ? 'Post' : 'Building outlet', kind: adding, receptacles: 2, lat: lat, lng: lng, circuit_id: null, confirmed: true, notes: ''}; doc.outlets.push(it); sel = {type: 'outlet', id: it.id}; }
+  else { var k = KINDS[adding], n = doc.loads.filter(function (l) { return l.kind === adding; }).length + 1;
+    it = {id: nextId(doc.loads, 'L'), name: k.label + ' ' + n, kind: adding, watts: k.watts, qty: 1, measured: false, lat: lat, lng: lng, outlet_id: null, notes: ''}; if (adding === 'splitter') it.sockets = 3; doc.loads.push(it); sel = {type: 'load', id: it.id}; }
+  changed();
+}
+
+
+function px(it) { return [(((it.lng - W) * MLNG) - SVG_X) * SVG_SCALE, (((N - it.lat) * MLAT) - SVG_Y) * SVG_SCALE]; }
+function drawSheet() {
+  var s = '<p class="noprint"><button onclick="window.print()">Print</button> <button onclick="location.href=\'/\'">Back to the map</button></p>' +
+    '<h1>Breaker walk sheet</h1><p>Plug a lamp or radio into each outlet. Flip one breaker off at a time and write down which outlets go dead together. Printed ' + new Date().toLocaleString() + '.</p>' +
+    '<svg viewBox="0 0 ' + SVG_W + ' ' + SVG_W + '"><image href="park-map.svg" width="' + SVG_W + '" height="' + SVG_W + '"/>';
+  doc.panels.forEach(function (p) { var q = px(p); s += '<rect x="' + (q[0] - 15) + '" y="' + (q[1] - 15) + '" width="30" height="30" fill="#d01c1c" stroke="#fff" stroke-width="2"/><text x="' + q[0] + '" y="' + (q[1] + 6) + '" text-anchor="middle" font-size="17" font-weight="700" fill="#fff" font-family="Arial">' + esc(p.id) + '</text>'; });
+  doc.outlets.forEach(function (o) { var q = px(o); s += (o.kind === 'building' ? '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="15" fill="#111" stroke="#fff" stroke-width="2"/>' : '<rect x="' + (q[0] - 14) + '" y="' + (q[1] - 14) + '" width="28" height="28" fill="#8a5a2b" stroke="#fff" stroke-width="2"/>') + '<text x="' + q[0] + '" y="' + (q[1] + 6) + '" text-anchor="middle" font-size="17" font-weight="700" fill="#fff" font-family="Arial">' + esc(o.id.slice(1)) + '</text>'; });
+  s += '</svg><table><tr><th>Panel</th><th>Where</th><th>Number of breakers</th><th>Notes</th></tr>';
+  doc.panels.forEach(function (p) { s += '<tr><td><b>' + esc(p.id) + '</b></td><td>' + esc(p.name) + '</td><td class="blank"></td><td class="blank"></td></tr>'; });
+  s += '</table><br><table><tr><th>Outlet</th><th>Where</th><th>Kind</th><th>Works?</th><th>Panel and breaker</th><th>Dies together with</th></tr>';
+  doc.outlets.forEach(function (o) { s += '<tr><td><b>' + esc(o.id.slice(1)) + '</b></td><td>' + esc(o.name) + '</td><td>' + (o.kind === 'building' ? 'building, ' + (o.receptacles || 1) : 'post') + '</td><td class="blank"></td><td class="blank"></td><td class="blank"></td></tr>'; });
+  for (var i = 0; i < 6; i++) s += '<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';
+  document.getElementById('sheet').innerHTML = s + '</table><p>Blank rows are for outlets that are not on the map yet.</p>';
+}
+
+
+function drawHookup() {
+  var trees = doc.loads.filter(function (l) { return l.kind === 'tree'; }).sort(function (a, b) { return String(a.name).localeCompare(String(b.name), undefined, {numeric: true}); });
+  var s = '<p class="noprint"><button onclick="window.print()">Print</button> <button onclick="location.href=\'/\'">Back to the map</button></p>' +
+    '<h1>Tree lighting: where to plug in</h1>';
+  if (!trees.length) { document.getElementById('sheet').innerHTML = s + '<p>No contractor trees are on the map yet. Add one with the "Contractor tree" button, put the pin where its plug end will be, and pick its outlet.</p>'; return; }
+  s += '<p>Each numbered orange circle is a tree. The table below says which outlet each one uses; outlets are the numbered squares (posts) and black circles (on a building). Please use only the outlet listed for each tree: the others are spoken for. Printed ' + new Date().toLocaleString() + '.</p>' +
+    '<svg viewBox="0 0 ' + SVG_W + ' ' + SVG_W + '"><image href="park-map.svg" width="' + SVG_W + '" height="' + SVG_W + '"/>';
+  var used = [];
+  trees.forEach(function (t) { var r = rootOutlet(t); if (r && used.indexOf(r) < 0) used.push(r); });
+  used.forEach(function (o) { var q = px(o); s += (o.kind === 'building' ? '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="15" fill="#111" stroke="#fff" stroke-width="2"/>' : '<rect x="' + (q[0] - 14) + '" y="' + (q[1] - 14) + '" width="28" height="28" fill="#8a5a2b" stroke="#fff" stroke-width="2"/>') + '<text x="' + q[0] + '" y="' + (q[1] + 6) + '" text-anchor="middle" font-size="17" font-weight="700" fill="#fff" font-family="Arial">' + esc(o.id.slice(1)) + '</text>'; });
+  trees.forEach(function (t, i) { var q = px(t); s += '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="16" fill="#d2531a" stroke="#fff" stroke-width="2"/><text x="' + q[0] + '" y="' + (q[1] + 6) + '" text-anchor="middle" font-size="17" font-weight="700" fill="#fff" font-family="Arial">' + (i + 1) + '</text>'; });
+  s += '</svg><table><tr><th>Tree</th><th>Name</th><th>Plug into</th><th>Notes</th></tr>';
+  trees.forEach(function (t, i) {
+    var c = chain(t), r = rootOutlet(t);
+    var sp = c.filter(function (x) { return x !== r; }).map(function (x) { return x.name; });
+    s += '<tr><td><b>' + (i + 1) + '</b></td><td>' + esc(t.name) + '</td><td>' + (r ? '<b>Outlet ' + esc(r.id.slice(1)) + '</b>, ' + esc(r.name) + (r.kind === 'building' ? ' (on the building)' : ' (post)') + (sp.length ? '<br>by way of ' + esc(sp.join(', then ')) : '') : '<b>Not decided yet</b>') + '</td><td>' + esc(t.notes || '') + '</td></tr>';
+  });
+  document.getElementById('sheet').innerHTML = s + '</table>';
+}
+
+
+function drawTags() {
+  var per = led('mini_bulbs') / 2, s = '<p class="noprint"><button onclick="window.print()">Print</button> <button onclick="location.href=\'/\'">Back to the map</button></p>' +
+    '<h1>Chain limit tags</h1><p>One tag for each chain of lights. Cut them apart and tape each one at the plug end. If a feature needs more lights than its tag allows, add a splitter at the outlet and start a second chain. Printed ' + new Date().toLocaleString() + '.</p><div class="tags">';
+  doc.loads.forEach(function (l) {
+    var root = rootOutlet(l);
+    (l.runs || []).forEach(function (r, i) {
+      if (r.lat == null || (rowType(r) !== 'mini' && rowType(r) !== 'large')) return;
+      var many = l.runs.length > 1;
+      s += '<div class="tag"><b>' + esc(l.name) + (many ? ', chain ' + (i + 1) + ' of ' + l.runs.length : '') + '</b>' +
+        '<span>' + (root ? 'Plugs in at outlet ' + esc(root.id.slice(1) + ', ' + root.name) : 'Not plugged in on the map yet') + ' · about ' + num(runFt(l, r)) + ' feet</span>' +
+        (r.big ? '<span>Plan: ' + bigStrings(l, r) + (bigStrings(l, r) === 1 ? ' string' : ' strings') + ' of large bulbs</span><em>STOP at ' + led('big_max') + ' strings of large bulbs</em>'
+          : '<span>Plan: about ' + num(runBulbs(l, r)) + ' mini bulbs</span><em>STOP at ' + num(led('mini_max')) + ' mini bulbs</em><span>That is ' + Math.floor(led('mini_max') / per) + ' strings of ' + per + ', or ' + Math.floor(led('mini_max') / led('mini_bulbs')) + ' strings of ' + led('mini_bulbs') + '.</span>') +
+        '</div>';
+    });
+  });
+  document.getElementById('sheet').innerHTML = s + '</div>';
+}
+
+
+Promise.resolve(VIEW).then(function (d) {
+  doc = d.doc; rev = d.rev; landmarks = d.landmarks || []; lastSnap = JSON.stringify(doc);
+  if (/sheet/.test(location.search)) { document.body.className = 'sheet'; drawSheet(); return; }
+  if (/hookup/.test(location.search)) { document.body.className = 'sheet'; drawHookup(); return; }
+  if (/tags/.test(location.search)) { document.body.className = 'sheet'; drawTags(); return; }
+  map = L.map('map', {maxZoom: 22, zoomSnap: .25}).setView([27.51355, -82.65992], 18.5);
+  window.scrollTo(0, 0); document.getElementById('map').addEventListener('scroll', function () { this.scrollTop = 0; this.scrollLeft = 0; });
+  sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {maxZoom: 22, maxNativeZoom: 19, attribution: 'Imagery © Esri'}).addTo(map);
+  var s = N - (SVG_Y + SVG_W / SVG_SCALE) / MLAT, n = N - SVG_Y / MLAT, w = W + SVG_X / MLNG, e = W + (SVG_X + SVG_W / SVG_SCALE) / MLNG;
+  overlay = L.imageOverlay('park-map.svg', [[s, w], [n, e]]);
+  lines = L.layerGroup().addTo(map); layer = L.layerGroup().addTo(map); names = L.layerGroup();
+  landmarks.forEach(function (m) { L.marker([m.lat, m.lng], {interactive: false, icon: L.divIcon({className: 'lm', html: esc(m.name), iconSize: [0, 0]})}).addTo(names); });
+  map.on('click', function (ev) {
+    if (addingRun) { var l = byId(doc.loads, addingRun), pt = {lat: +ev.latlng.lat.toFixed(7), lng: +ev.latlng.lng.toFixed(7)};
+      if (!l) { setAdding(null); return; }
+      if (!runDraft) { runDraft = {lat: pt.lat, lng: pt.lng, via: []}; (l.runs = l.runs || []).push(runDraft); l.qty = l.runs.length; }
+      else { runDraft.via.push({lat: runDraft.lat, lng: runDraft.lng}); runDraft.lat = pt.lat; runDraft.lng = pt.lng; }
+      sel = {type: 'load', id: l.id}; changed();
+      return; }
+    if (adding) addAt(ev.latlng);
+  });
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') setAdding(null);
+    if ((ev.metaKey || ev.ctrlKey) && !ev.shiftKey && ev.key.toLowerCase() === 'z' && !/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || '')) { ev.preventDefault(); undo(); } });
+  var pinchZ = null;
+  function magnified() { return window.visualViewport && window.visualViewport.scale > 1.01; }
+  document.addEventListener('gesturestart', function (ev) { if (magnified()) { pinchZ = null; return; } ev.preventDefault(); pinchZ = ev.target && ev.target.closest && ev.target.closest('#map') ? map.getZoom() : null; });
+  document.addEventListener('gesturechange', function (ev) { if (magnified()) return; ev.preventDefault(); if (pinchZ == null || !(ev.scale > 0)) return;
+    var box = document.getElementById('map').getBoundingClientRect(), z = Math.max(15, Math.min(22, pinchZ + Math.log(ev.scale) / Math.LN2));
+    map.setZoomAround(L.point(ev.clientX - box.left, ev.clientY - box.top), Math.round(z * 4) / 4, {animate: false}); });
+  document.addEventListener('gestureend', function (ev) { if (!magnified()) ev.preventDefault(); pinchZ = null; });
+  function fitShown() { var vv = window.visualViewport, b = document.body; if (!vv || b.className === 'sheet') return;
+    if (vv.scale > 1.01) { b.style.position = 'fixed'; b.style.left = vv.offsetLeft + 'px'; b.style.top = vv.offsetTop + 'px'; b.style.width = vv.width + 'px'; b.style.height = vv.height + 'px'; }
+    else { b.style.position = b.style.left = b.style.top = b.style.width = b.style.height = ''; }
+    map.invalidateSize(); }
+  if (window.visualViewport) { window.visualViewport.addEventListener('resize', fitShown); window.visualViewport.addEventListener('scroll', fitShown); fitShown(); }
+  document.getElementById('undo').onclick = undo;
+  document.getElementById('vview').onclick = function () { window.open('/view', '_blank'); };
+  var PL = {lights: 'Lit trees and areas'};
+  var VB = [['all', 'Everything'], ['panel', 'Breaker panels'], ['outlet', 'Outlets']].concat(Object.keys(KINDS).filter(function (k) { return doc.loads.some(function (l) { return l.kind === k; }); }).map(function (k) { return [k, PL[k] || KINDS[k].label + 's']; })).concat([['cords', 'Cords on hand']]);
+  document.getElementById('viewbtns').innerHTML = VB.map(function (a) { var k = KINDS[a[0]];
+    var pin = k ? '<i class="pin load" style="background:' + k.color + (a[0] === 'splitter' ? ';border-radius:3px' : '') + '">' + k.letter + '</i>' : a[0] === 'panel' ? '<i class="pin panel"></i>' : a[0] === 'outlet' ? '<i class="pin post"></i>' : a[0] === 'cords' ? '<i style="display:inline-block;width:24px;height:6px;border-radius:3px;background:#1565c0;flex:none"></i>' : '';
+    return '<button data-v="' + a[0] + '"' + (a[0] === 'all' ? ' class="on"' : '') + '>' + pin + '<span>' + a[1] + '</span></button>'; }).join('');
+  [].forEach.call(document.querySelectorAll('#viewbtns button'), function (b) { b.onclick = function () { showKind = b.getAttribute('data-v'); showCords = showKind === 'cords';
+    [].forEach.call(document.querySelectorAll('#viewbtns button'), function (x) { x.className = x === b ? 'on' : ''; }); draw(); document.getElementById('data').scrollTop = 0; }; });
+  function setMode(m) { mode = m; document.body.className = m === 'data' ? 'datamode' : ''; document.getElementById('mmap').className = m === 'map' ? 'on' : ''; document.getElementById('mdata').className = m === 'data' ? 'on' : ''; if (m === 'map') setTimeout(function () { map.invalidateSize(); }, 0); }
+  document.getElementById('mmap').onclick = function () { setMode('map'); };
+  document.getElementById('mdata').onclick = function () { setMode('data'); };
+  document.getElementById('newc').onclick = function () { var c = {id: nextId(doc.circuits, 'C'), name: 'Breaker ' + (doc.circuits.length + 1), panel_id: null, breaker_label: '', amps: 20, confirmed: false, notes: ''}; doc.circuits.push(c); sel = {type: 'circuit', id: c.id}; changed(); showForm(); };
+  function view(mapOn) { if (mapOn) { map.removeLayer(sat); overlay.addTo(map); } else { map.removeLayer(overlay); sat.addTo(map); }
+    document.getElementById('vmap').className = mapOn ? 'on' : ''; document.getElementById('vsat').className = mapOn ? '' : 'on'; }
+  document.getElementById('vsat').onclick = function () { view(false); };
+  document.getElementById('vmap').onclick = function () { view(true); };
+  document.getElementById('vsheet').onclick = function () { window.open('/?sheet=1', '_blank'); };
+  document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
+  document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
+  setStatus('The plan as of November 22, 2026, 11:39 AM. Look only: nothing here can be changed.');
+  draw();
+}).catch(function (e) { setStatus('Could not load: ' + e, true); });
+</script>
+</body>
+</html>
