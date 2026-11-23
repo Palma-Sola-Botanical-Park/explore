@@ -384,8 +384,12 @@ function darkDiag() {
   var sus = common.filter(function (n) { return !live[nodeKey(n)]; }), oth = function (n) { return underOf(n).filter(function (l) { return !darkSet[l.id]; }); };
   var ci = -1; for (var i = 0; i < sus.length; i++) { if (oth(sus[i]).length) break; ci = i; }
   var cnt = sus.map(function (n) { return underOf(n).length; }), lo = Math.max(ci, 0); while (lo > 0 && cnt[lo - 1] === cnt[ci]) lo--;
-  var top = sus.length ? sus[lo] : null, same = ci > lo ? sus.slice(lo + 1, ci + 1) : [], askN = sus.length ? (ci < 0 ? sus[0] : sus[ci + 1] || null) : null;
-  return {same: same, ls: ls, chains: chains, live: live, common: common, sus: sus, ok: common.filter(function (n) { return live[nodeKey(n)]; }), ci: ci, top: top, askN: askN, askL: askN ? oth(askN) : []};
+  var top = sus.length ? sus[lo] : null, same = ci > lo ? sus.slice(lo + 1, ci + 1) : [], base = Math.max(ci, 0);
+  var askL = sus.length && ci < 0 ? oth(sus[0]) : [];
+  var upI = -1; for (var j = base + 1; j < sus.length; j++) if (cnt[j] > cnt[base]) { upI = j; break; }
+  var upN = upI < 0 ? null : sus[upI], below = {}; if (upN) underOf(sus[base]).forEach(function (l) { below[l.id] = 1; });
+  var upL = upN ? oth(upN).filter(function (l) { return !below[l.id]; }) : [];
+  return {same: same, ls: ls, chains: chains, live: live, common: common, sus: sus, ok: common.filter(function (n) { return live[nodeKey(n)]; }), ci: ci, top: top, askL: askL, upN: upN, upL: upL};
 }
 function darkFeed() {
   feed = {}; darkAsk = {}; var d = darkDiag(), path = [];
@@ -405,9 +409,9 @@ function darkFeed() {
   }
   if (!d.ls.length) { darkTop = null; return path; }
   if (d.sus.length) {
-    var upto = d.sus.indexOf(d.askN || d.top);
+    var upto = d.sus.indexOf(d.upN || d.top);
     d.sus.forEach(function (n, i) { if (n.t !== 'circuit' && i <= Math.max(upto, d.sus.indexOf(d.top))) feed[nodeKey(n)] = 1; });
-    d.askL.forEach(function (l) { if (!litSet[l.id]) darkAsk[l.id] = 1; });
+    d.askL.concat(d.upL).forEach(function (l) { if (!litSet[l.id]) darkAsk[l.id] = 1; });
     var top = d.top, pn = top.t === 'circuit' ? byId(doc.panels, top.it.panel_id) : null, at = pn ? {t: 'panel', it: pn} : top;
     feed[nodeKey(at)] = 2;
     lab(at, pn ? 'Check the breaker here first' : 'Check here first', 'herelab');
@@ -450,12 +454,14 @@ function drawDark() {
   h += '<div class="btns"><button id="dkclear">Start over</button></div>';
   if (d.ls.length === 1) h += '<h3>First, at the lights</h3><div class="fix plain"><p>Is the plug pushed in? Is the small fuse in the first plug blown? Has one dead string taken the rest of the chain with it?</p></div>';
   if (d.sus.length) {
-    var top = d.top, full = d.ci >= 0, askList = function (up) { return '<p class="q"><b>' + (up ? 'Is anything else on it still on? One is enough to say no.' : 'Also on it (' + d.askL.length + '), ringed with a ? on the map. Are these out too?') + '</b></p><ul class="dkl">' + d.askL.slice(0, 8).map(function (l) { return '<li><span>' + esc(l.name) + '</span><span class="two"><button data-dk="out" data-id="' + esc(l.id) + '">Out too</button><button data-dk="lit" data-id="' + esc(l.id) + '">Still on</button></span></li>'; }).join('') + '</ul>' + (d.askL.length > 8 ? '<p class="hint">And ' + (d.askL.length - 8) + ' more, all ringed with a ? on the map.</p>' : ''); };
+    var top = d.top, full = d.ci >= 0, rows = function (ls) { return '<ul class="dkl">' + ls.slice(0, 8).map(function (l) { return '<li><span>' + esc(l.name) + '</span><span class="two"><button data-dk="out" data-id="' + esc(l.id) + '">Out too</button><button data-dk="lit" data-id="' + esc(l.id) + '">Still on</button></span></li>'; }).join('') + '</ul>' + (ls.length > 8 ? '<p class="hint">And ' + (ls.length - 8) + ' more, all ringed with a ? on the map.</p>' : ''); };
+    var upName = d.upN ? esc(nodeName(d.upN)) : '', upKind = d.upN ? DK_KIND[d.upN.t].toLowerCase() : '';
     h += '<h3>' + (full ? 'Everything on this is out. Check here first' : d.ls.length > 1 ? 'They all run through this' : 'Then check here') + '</h3><div class="fix">' + node(top, true) +
       (full && d.same.length ? '<p class="q"><b>If that does not bring them back,</b> the same lights also run through:</p><ol class="dko">' + d.same.map(function (n) { return '<li>' + node(n, false) + '</li>'; }).join('') + '</ol>' : '') +
-      (full ? '' : askList(false) + '<p class="hint">If any of them is still on, this has power and the fault is nearer the lights. Only if all of them are out is it this, or something above it.</p>') + '</div>';
-    if (full && d.askN) h += '<h3>Should you go further up?</h3><div class="fix plain"><p>Next up is the ' + DK_KIND[d.askN.t].toLowerCase() + ' <b>' + esc(nodeName(d.askN)) + '</b>. Only go there if everything on it is out.</p>' + askList(true) + '</div>';
-    if (full && !d.askN) h += '<p class="hint">Nothing above this is on the map. If it checks out, the feed to it may be down.</p>';
+      (full ? '' : '<p class="q"><b>Also on it (' + d.askL.length + '), ringed with a ? on the map. Are these out too?</b></p>' + rows(d.askL) + '<p class="hint">If any of them is still on, this has power and the fault is nearer the lights.</p>') + '</div>';
+    if (d.upN && d.upL.length) h += '<h3>' + (full ? 'Should you go further up?' : 'Look one step up too') + '</h3><div class="fix plain"><p>Next up is the ' + upKind + ' <b>' + upName + '</b>. These are on it too, ringed with a ? on the map.</p>' +
+      '<p class="q"><b>' + (full ? 'Is any of them still on? One is enough: then it has power, stay where you are.' : 'Is any of them out? One is enough: then the trouble is at the ' + upKind + ', not lower down.') + '</b></p>' + rows(d.upL) + '</div>';
+    if (full && !d.upN) h += '<p class="hint">Nothing above this is on the map. If it checks out, the feed to it may be down.</p>';
     if (d.ok.length) h += '<p class="hint">Has power, skip: ' + d.ok.map(function (n) { return esc(nodeName(n)); }).join('; ') + '.</p>';
   } else if (d.ok.length) {
     h += '<h3>The supply is fine</h3><div class="fix plain"><p><b>' + esc(nodeName(d.ok[0])) + '</b> has power, because ' + esc(d.live[nodeKey(d.ok[0])].name) + ' is still on.</p><p>The trouble is between it and ' + (d.ls.length > 1 ? 'each of the things you marked' : 'the lights') + ': a plug, a cord, or the small fuse in the first plug.</p><p>On the map, the yellow line is the cord to follow.' + (d.ok[0].t === 'load' || d.ok[0].t === 'outlet' ? ' The green ring is ' + esc(nodeName(d.ok[0])) + '.' : '') + '</p></div>';
@@ -1055,7 +1061,7 @@ Promise.resolve(VIEW).then(function (d) {
   document.getElementById('vsheet').onclick = function () { window.open('/?sheet=1', '_blank'); };
   document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
   document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
-  setStatus('The plan as of November 22, 2026, 8:11 PM. Look only: nothing here can be changed.');
+  setStatus('The plan as of November 22, 2026, 8:17 PM. Look only: nothing here can be changed.');
   draw();
 }).catch(function (e) { setStatus('Could not load: ' + e, true); });
 </script>
