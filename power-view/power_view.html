@@ -142,6 +142,11 @@ body.datamode #vsat,body.datamode #vmap,body.datamode .s-view>h2,body.datamode .
 .pin.spl::before,.pin.spl::after{content:'';position:absolute;z-index:-1;clip-path:polygon(50% 0,100% 100%,0 100%)}.pin.spl::before{inset:0;background:#fff}.pin.spl::after{inset:5px 4px 2.5px 4px;background:#111}
 .key .pin.spl,#viewbtns .pin.spl{width:26px;height:26px;flex:none}
 .ro h3.sh{display:flex;align-items:center;gap:12px}.ro h3.sh .pin{margin-left:auto;width:36px;height:36px;flex:none;font-size:17px;font-style:normal}.ro h3.sh .pin:not(.spl){position:static}.ro h3.sh .cbar{margin-left:auto;width:36px;height:9px;border-radius:5px;background:#1565c0;flex:none}
+#viewbtns .vhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 9px}#viewbtns .vhead h2{margin:0;border:0;padding:0}#viewbtns .vhead button{width:auto;padding:7px 16px;font-weight:600}
+#viewbtns .vcols{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}#viewbtns .vl{font-weight:700;padding-left:7px;border-left:5px solid #0a7d32;color:var(--green);margin:0 0 6px}#viewbtns .vl.sup{border-left-color:#8a5a2b}
+#viewbtns .vcols button{width:100%;margin:0 0 5px;padding:5px 8px;min-height:40px;font-weight:400}
+.tot{margin:6px 0 2px;line-height:1.5}.tot b{font-size:20px;color:var(--green)}
+table.kl{margin-top:8px;width:100%}table.kl th,table.kl td{padding:4px 4px;line-height:1.25}table.kl th:first-child,table.kl td:first-child{padding-left:0}table.kl td.n,table.kl th.n{padding-right:0;padding-left:10px}
 .tyk{cursor:pointer}.xmas .ty.cur,.xmas .big div.cur{box-shadow:0 0 0 3px #e8c99a,0 0 0 6px #5a1f26}
 .ty{background:#f4f1e8;border-radius:8px;padding:10px 14px;margin:0 0 8px}
 .ty h3{display:flex;align-items:center;gap:9px;margin:0 0 6px;font-size:20px}.ty .pin{width:26px;height:26px;flex:none;font-size:13px;font-style:normal;position:static}
@@ -164,10 +169,9 @@ body.datamode #vsat,body.datamode #vmap,body.datamode .s-view>h2,body.datamode .
   </section>
   <section class="s-dark" id="darkpanel"></section>
   <section class="s-add">
-  <h2>Select to view</h2>
   <div id="viewbtns"></div>
   <div id="adding"></div>
-  <p class="hint">Pick one to make it stand out on the map, or to list it in Data. Click any pin or line of a table for its details.</p>
+  <p class="hint">Tap a symbol to show only that type. Tap any pin or line of a table for its details.</p>
 
   </section>
   <section class="s-sel">
@@ -397,9 +401,9 @@ function fitKind() {
 function drawChip() {
   var c = document.getElementById('filterchip');
   if (!c) { c = document.createElement('div'); c.id = 'filterchip'; document.getElementById('map').appendChild(c); if (window.L && L.DomEvent) L.DomEvent.disableClickPropagation(c); }
-  var on = document.querySelector('#viewbtns button.on span');
+  var on = document.querySelector('#viewbtns button.on');
   if (dark || showKind === 'all' || !on) { c.style.display = 'none'; return; }
-  c.style.display = 'flex'; c.innerHTML = '<span>Showing only: <b>' + esc(on.textContent) + '</b></span><button>Show everything</button>';
+  c.style.display = 'flex'; c.innerHTML = '<span>Showing only: <b>' + esc(on.getAttribute('title')) + '</b></span><button>Show everything</button>';
   c.querySelector('button').onclick = function () { var b = document.querySelector('#viewbtns button[data-v="all"]'); if (b) b.click(); };
 }
 var PHONE = window.matchMedia ? matchMedia('(max-width:760px)') : {matches: false};
@@ -805,7 +809,7 @@ function supTxt(l) {
 }
 function stateTxt(l) { var last = lastR(l), dn = l.done != null ? Number(l.done) : last ? rPct(last) : null; return dn == null ? '' : dn === 0 ? 'Not started' : dn < 100 ? dn + '% done' : 'Finished'; }
 function onList(ls) { return ls.length ? '<ul>' + ls.map(function (l) { return '<li>' + esc(l.name) + ' · ' + (lightsOf(l) ? num(lightsOf(l)) + ' lights · ' : '') + num(loadW(l)) + ' watts</li>'; }).join('') + '</ul>' : '<p class="hint">Nothing plugged in.</p>'; }
-function tiles(n, w) { return '<div class="tiles" style="margin-top:6px"><div><span>Lights</span><b>' + (n ? num(n) : '–') + '</b></div><div><span>Watts</span><b>' + num(w) + '</b></div><div><span>Amps</span><b>' + ampsTxt(w) + '</b></div></div>'; }
+function tiles(n, w) { return '<p class="tot">' + (n ? '<b>' + num(n) + '</b> light' + (n === 1 ? '' : 's') + ' · ' : '') + '<b>' + num(w) + '</b> watts · <b>' + ampsTxt(w) + '</b> amps</p>'; }
 function selIcon(type, id) {
   var lp = function (k) { var kk = KINDS[k] || KINDS.other; return '<i class="pin load" style="background:' + kk.color + '">' + kk.letter + '</i>'; };
   if (type === 'kind') return id === 'panel' ? '<i class="pin panel"></i>' : id === 'circuit' ? '<i class="pin load" style="background:#4a4a4a;border-radius:3px">B</i>' : id === 'outlet' ? '<i class="pin post"></i>' : id === 'splitter' ? '<i class="pin load spl"></i>' : id === 'cords' ? '<i class="cbar"></i>' : lp(id);
@@ -817,45 +821,45 @@ function drawForm() {
   var el = document.getElementById('form');
   if (!sel) { el.innerHTML = '<p class="hint">Nothing selected. Click a pin on the map, or a line in a table.</p>'; return; }
   if (sel.type === 'kind') {
-    var kid = sel.id, kk = KINDS[kid], SUPN = {panel: 'Breaker panels', circuit: 'Breakers', outlet: 'Outlets', splitter: 'Splitters', cords: 'Cords'}, kt = '', ksub = '', ktop = '', krows = [], klist = 'Each one';
-    var t3 = function (arr) { return '<div class="tiles" style="margin-top:6px">' + arr.map(function (x) { return '<div><span>' + x[0] + '</span><b>' + x[1] + '</b></div>'; }).join('') + '</div>'; };
+    var kid = sel.id, kk = KINDS[kid], SUPN = {panel: 'Breaker panels', circuit: 'Breakers', outlet: 'Outlets', splitter: 'Splitters', cords: 'Cords'}, kt = '', ksub = '', ktop = '', krows = [], kcols = [], klist = 'Each one';
+    var t3 = function (arr) { return '<p class="tot">' + arr.map(function (x) { return '<b>' + x[1] + '</b> ' + x[0].toLowerCase(); }).join(' · ') + '</p>'; };
     var byName = function (a, b) { return String(a.name).localeCompare(String(b.name), undefined, {numeric: true}); };
     if (kid === 'panel') {
       var allW = doc.circuits.reduce(function (t, c) { return t + circuitW(c); }, 0);
       kt = SUPN.panel; ksub = 'Power supply · ' + doc.panels.length + ' in all'; ktop = t3([['Breakers', doc.circuits.length], ['Watts', num(allW)], ['Amps', ampsTxt(allW)]]);
-      krows = doc.panels.map(function (p) { var cs = doc.circuits.filter(function (c) { return c.panel_id === p.id; }), w = cs.reduce(function (t, c) { return t + circuitW(c); }, 0); return goTo('panel', p, p.name) + ' · ' + cs.length + ' breaker' + (cs.length === 1 ? '' : 's') + ' · ' + num(w) + ' watts'; });
+      krows = doc.panels.map(function (p) { var cs = doc.circuits.filter(function (c) { return c.panel_id === p.id; }), w = cs.reduce(function (t, c) { return t + circuitW(c); }, 0); return [goTo('panel', p, p.name), cs.length, num(w)]; }); kcols = ['Breakers', 'Watts'];
     } else if (kid === 'circuit') {
       var cs2 = doc.circuits.slice().sort(function (a, b) { return circuitW(b) - circuitW(a); }), cW = cs2.reduce(function (t, c) { return t + circuitW(c); }, 0);
       kt = SUPN.circuit; ksub = 'Power supply · ' + cs2.length + ' in all'; klist = 'Each one, fullest first';
       ktop = t3([['In use', cs2.filter(function (c) { return circuitW(c) > 0; }).length], ['Watts', num(cW)], ['Fullest', cs2.length ? Math.round(circuitW(cs2[0]) / budget(cs2[0]) * 100) + '%' : '–']]);
-      krows = cs2.map(function (c) { return goTo('circuit', c, c.name || c.id) + ' · ' + num(circuitW(c)) + ' watts · ' + Math.round(circuitW(c) / budget(c) * 100) + '% of budget'; });
+      krows = cs2.map(function (c) { return [goTo('circuit', c, c.name || c.id), num(circuitW(c)), Math.round(circuitW(c) / budget(c) * 100) + '%']; }); kcols = ['Watts', 'Of budget'];
     } else if (kid === 'outlet') {
       var os2 = doc.outlets.slice().sort(function (a, b) { return outletW(b) - outletW(a); }), oW = os2.reduce(function (t, o) { return t + outletW(o); }, 0);
       kt = SUPN.outlet; ksub = 'Power supply · ' + os2.length + ' in all'; klist = 'Each one, busiest first';
       ktop = t3([['In use', os2.filter(function (o) { return outletW(o) > 0; }).length], ['Watts', num(oW)], ['Amps', ampsTxt(oW)]]);
-      krows = os2.map(function (o) { return goTo('outlet', o, outName(o)) + ' · ' + (outletW(o) ? num(outletW(o)) + ' watts' : 'nothing plugged in'); });
+      krows = os2.map(function (o) { return [goTo('outlet', o, outName(o)), outletW(o) ? num(outletW(o)) : '–']; }); kcols = ['Watts'];
     } else if (kid === 'splitter') {
       var sp2 = doc.loads.filter(function (l) { return l.kind === 'splitter'; }).sort(byName), sw2 = function (x) { return through(x).filter(function (y) { return y.kind !== 'splitter'; }).reduce(function (t, y) { return t + loadW(y); }, 0); };
       kt = SUPN.splitter; ksub = 'Power supply · ' + sp2.length + ' in all'; ktop = '';
-      krows = sp2.map(function (x) { return goTo('load', x, x.name) + ' · ' + num(sw2(x)) + ' watts through it'; });
+      krows = sp2.map(function (x) { return [goTo('load', x, x.name), num(sw2(x))]; }); kcols = ['Watts'];
     } else if (kid === 'cords') {
       var cp2 = cordPlan(), cl = doc.loads.filter(function (l) { return cp2[l.id] && !cp2[l.id].none; }).sort(function (a, b) { return cp2[b.id].need - cp2[a.id].need; });
       kt = SUPN.cords; ksub = 'Power supply · ' + cl.length + ' in all'; klist = 'Each one, longest first';
       ktop = t3([['Feet, with slack', num(cl.reduce(function (t, l) { return t + cp2[l.id].need; }, 0))], ['To buy', cl.filter(function (l) { return cp2[l.id].buy; }).length]]);
-      krows = cl.map(function (l) { return 'To ' + goTo('load', l, l.name) + ' · ' + num(cp2[l.id].need) + ' ft'; });
+      krows = cl.map(function (l) { return ['To ' + goTo('load', l, l.name), num(cp2[l.id].need)]; }); kcols = ['Feet'];
     } else {
       var kl = doc.loads.filter(function (l) { return l.kind === kid; }).sort(byName);
       if (!kk || !kl.length) { sel = null; el.innerHTML = '<p class="hint">Nothing selected.</p>'; return; }
       kt = KNAME[kid] || kk.label + 's'; ksub = 'Display type · ' + kl.length + ' in all';
       ktop = tiles(kl.reduce(function (t, x) { return t + lightsOf(x); }, 0), kl.reduce(function (t, x) { return t + loadW(x); }, 0));
-      krows = kl.map(function (l) { return goTo('load', l, l.name) + ' · ' + (lightsOf(l) ? num(lightsOf(l)) + (lightsOf(l) === 1 ? ' light · ' : ' lights · ') : '') + num(loadW(l)) + ' watts'; });
+      krows = kl.map(function (l) { return [goTo('load', l, l.name), lightsOf(l) ? num(lightsOf(l)) : '', num(loadW(l))]; }); kcols = ['Lights', 'Watts'];
     }
     el.innerHTML = '<div class="ro"><h3 style="margin-top:0;font-size:20px">' + esc(kt) + '</h3><p>' + ksub + '</p>' + ktop +
-      '<h3>' + klist + '</h3><ul>' + krows.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ul></div>' +
-      '<div class="btns" style="margin-top:14px"><button id="konly">Show only these</button><button id="unsel">Clear selection</button></div>';
+      '<table class="kl"><tr><th>' + klist + '</th>' + kcols.map(function (c) { return '<th class="n">' + c + '</th>'; }).join('') + '</tr>' + krows.map(function (r) { return '<tr><td>' + r[0] + '</td>' + r.slice(1).map(function (v) { return '<td class="n">' + v + '</td>'; }).join('') + '</tr>'; }).join('') + '</table></div>' +
+      '<div class="btns" style="margin-top:14px">' + (showKind === kid ? '' : '<button id="konly">Show only these</button>') + '<button id="unsel">Clear selection</button></div>';
     selHead(el);
     document.getElementById('unsel').onclick = function () { sel = null; draw(); };
-    document.getElementById('konly').onclick = function () { var b = document.querySelector('#viewbtns button[data-v="' + kid + '"]'); if (b) b.click(); };
+    if (document.getElementById('konly')) document.getElementById('konly').onclick = function () { var b = document.querySelector('#viewbtns button[data-v="' + kid + '"]'); if (b) b.click(); };
     [].forEach.call(el.querySelectorAll('a.go'), function (a) { a.onclick = function (e) { e.preventDefault(); sel = {type: a.getAttribute('data-t'), id: a.getAttribute('data-id')}; draw(); }; });
     return;
   }
@@ -1226,13 +1230,12 @@ Promise.resolve(VIEW).then(function (d) {
   var SUP = [['panel', 'Breaker panels'], ['circuit', 'Breakers'], ['outlet', 'Outlets'], ['splitter', 'Splitters'], ['cords', 'Cords']];
   function vbtn(a) { var k = KINDS[a[0]];
     var pin = a[0] === 'splitter' ? '<i class="pin load spl"></i>' : k ? '<i class="pin load" style="background:' + k.color + '">' + k.letter + '</i>' : a[0] === 'panel' ? '<i class="pin panel"></i>' : a[0] === 'outlet' ? '<i class="pin post"></i>' : a[0] === 'circuit' ? '<i class="pin load" style="background:#4a4a4a;border-radius:3px">B</i>' : a[0] === 'cords' ? '<i style="display:inline-block;width:24px;height:6px;border-radius:3px;background:#1565c0;flex:none"></i>' : '';
-    return '<button data-v="' + a[0] + '"' + (a[0] === 'all' ? ' class="on"' : '') + '>' + pin + '<span>' + a[1] + '</span></button>'; }
-  document.getElementById('viewbtns').innerHTML = vbtn(['all', 'Everything']) +
-    '<h3 class="grp lod">Power loads</h3><p class="hint">What uses the power: the show itself.</p><div class="vg">' + LK.map(vbtn).join('') + '</div>' +
-    '<h3 class="grp sup">Power supply</h3><p class="hint">What brings the power to the lights.</p><div class="vg">' + SUP.map(vbtn).join('') + '</div>';
+    return '<button data-v="' + a[0] + '" title="' + a[1] + '"' + (a[0] === 'all' ? ' class="on"' : '') + '>' + pin + '<span>' + (VSHORT[a[0]] || a[1]) + '</span></button>'; }
+  var VSHORT = {lights: 'Lit areas', tree: 'Contractor trees', sponsor: 'Sign lights', contractor: 'Sidewalk lights', attraction: 'Attractions', panel: 'Panels', circuit: 'Breakers', outlet: 'Outlets', splitter: 'Splitters', cords: 'Cords'};
+  document.getElementById('viewbtns').innerHTML = '<div class="vhead"><h2>Select to view</h2>' + vbtn(['all', 'Everything']) + '</div>' +
+    '<div class="vcols"><div><div class="vl lod">Loads</div>' + LK.map(vbtn).join('') + '</div><div><div class="vl sup">Supply</div>' + SUP.map(vbtn).join('') + '</div></div>';
   [].forEach.call(document.querySelectorAll('#viewbtns button'), function (b) { b.onclick = function () { showKind = b.getAttribute('data-v'); showCords = showKind === 'cords';
-    if (sel) { var si = byId({panel: doc.panels, outlet: doc.outlets, circuit: doc.circuits, load: doc.loads}[sel.type] || [], sel.id);
-      if (!si || !(sel.type === 'circuit' ? showKind === 'all' || showKind === 'circuit' || showKind === 'panel' : shown(sel.type, si))) sel = null; }
+    sel = showKind === 'all' ? (sel && sel.type === 'kind' ? null : sel) : {type: 'kind', id: showKind};
     [].forEach.call(document.querySelectorAll('#viewbtns button'), function (x) { x.className = x === b ? 'on' : ''; }); draw(); document.getElementById('data').scrollTop = 0;
     if (mode === 'map') fitKind(); else fitPending = true; }; });
   function setMode(m) { mode = m; dark = m === 'dark'; if (dark) sel = null; document.body.className = m === 'data' ? 'datamode' : dark ? 'darkmode' : '';
@@ -1257,7 +1260,7 @@ Promise.resolve(VIEW).then(function (d) {
   document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
   document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
   document.getElementById('vwork').onclick = function () { window.open('/?todo=1', '_blank'); };
-  setStatus('The plan as of November 23, 2026, 1:04 PM. Look only: nothing here can be changed.');
+  setStatus('The plan as of November 23, 2026, 1:30 PM. Look only: nothing here can be changed.');
   draw();
 }).catch(function (e) { setStatus('Could not load: ' + e, true); });
 </script>
