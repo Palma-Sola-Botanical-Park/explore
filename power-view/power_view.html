@@ -141,6 +141,7 @@ body.datamode #vsat,body.datamode #vmap,body.datamode .s-view>h2,body.datamode .
 .pin.spl{background:transparent!important;border:0;border-radius:4px;position:relative!important;isolation:isolate}.pin.spl:not(.sel):not(.feed):not(.live){box-shadow:none}
 .pin.spl::before,.pin.spl::after{content:'';position:absolute;z-index:-1;clip-path:polygon(50% 0,100% 100%,0 100%)}.pin.spl::before{inset:0;background:#fff}.pin.spl::after{inset:5px 4px 2.5px 4px;background:#111}
 .key .pin.spl,#viewbtns .pin.spl{width:26px;height:26px;flex:none}
+.ro h3.sh{display:flex;align-items:center;gap:12px}.ro h3.sh .pin{margin-left:auto;width:36px;height:36px;flex:none;font-size:17px;font-style:normal}.ro h3.sh .pin:not(.spl){position:static}.ro h3.sh .cbar{margin-left:auto;width:36px;height:9px;border-radius:5px;background:#1565c0;flex:none}
 .tyk{cursor:pointer}.xmas .ty.cur,.xmas .big div.cur{box-shadow:0 0 0 3px #e8c99a,0 0 0 6px #5a1f26}
 .ty{background:#f4f1e8;border-radius:8px;padding:10px 14px;margin:0 0 8px}
 .ty h3{display:flex;align-items:center;gap:9px;margin:0 0 6px;font-size:20px}.ty .pin{width:26px;height:26px;flex:none;font-size:13px;font-style:normal;position:static}
@@ -805,6 +806,13 @@ function supTxt(l) {
 function stateTxt(l) { var last = lastR(l), dn = l.done != null ? Number(l.done) : last ? rPct(last) : null; return dn == null ? '' : dn === 0 ? 'Not started' : dn < 100 ? dn + '% done' : 'Finished'; }
 function onList(ls) { return ls.length ? '<ul>' + ls.map(function (l) { return '<li>' + esc(l.name) + ' · ' + (lightsOf(l) ? num(lightsOf(l)) + ' lights · ' : '') + num(loadW(l)) + ' watts</li>'; }).join('') + '</ul>' : '<p class="hint">Nothing plugged in.</p>'; }
 function tiles(n, w) { return '<div class="tiles" style="margin-top:6px"><div><span>Lights</span><b>' + (n ? num(n) : '–') + '</b></div><div><span>Watts</span><b>' + num(w) + '</b></div><div><span>Amps</span><b>' + ampsTxt(w) + '</b></div></div>'; }
+function selIcon(type, id) {
+  var lp = function (k) { var kk = KINDS[k] || KINDS.other; return '<i class="pin load" style="background:' + kk.color + '">' + kk.letter + '</i>'; };
+  if (type === 'kind') return id === 'panel' ? '<i class="pin panel"></i>' : id === 'circuit' ? '<i class="pin load" style="background:#4a4a4a;border-radius:3px">B</i>' : id === 'outlet' ? '<i class="pin post"></i>' : id === 'splitter' ? '<i class="pin load spl"></i>' : id === 'cords' ? '<i class="cbar"></i>' : lp(id);
+  var it = byId({panel: doc.panels, outlet: doc.outlets, circuit: doc.circuits, load: doc.loads}[type] || [], id); if (!it) return '';
+  return type === 'panel' ? '<i class="pin panel"></i>' : type === 'circuit' ? '<i class="pin load" style="background:#4a4a4a;border-radius:3px">B</i>' : type === 'outlet' ? '<i class="pin ' + (it.kind === 'building' ? 'building' : 'post') + '">' + esc(it.id.slice(1)) + '</i>' : it.kind === 'splitter' ? '<i class="pin load spl"></i>' : lp(it.kind);
+}
+function selHead(el) { var h = el.querySelector('h3'), ic = sel ? selIcon(sel.type, sel.id) : ''; if (h && ic) { h.className = 'sh'; h.insertAdjacentHTML('beforeend', ic); } }
 function drawForm() {
   var el = document.getElementById('form');
   if (!sel) { el.innerHTML = '<p class="hint">Nothing selected. Click a pin on the map, or a line in a table.</p>'; return; }
@@ -845,6 +853,7 @@ function drawForm() {
     el.innerHTML = '<div class="ro"><h3 style="margin-top:0;font-size:20px">' + esc(kt) + '</h3><p>' + ksub + '</p>' + ktop +
       '<h3>' + klist + '</h3><ul>' + krows.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ul></div>' +
       '<div class="btns" style="margin-top:14px"><button id="konly">Show only these</button><button id="unsel">Clear selection</button></div>';
+    selHead(el);
     document.getElementById('unsel').onclick = function () { sel = null; draw(); };
     document.getElementById('konly').onclick = function () { var b = document.querySelector('#viewbtns button[data-v="' + kid + '"]'); if (b) b.click(); };
     [].forEach.call(el.querySelectorAll('a.go'), function (a) { a.onclick = function (e) { e.preventDefault(); sel = {type: a.getAttribute('data-t'), id: a.getAttribute('data-id')}; draw(); }; });
@@ -878,6 +887,7 @@ function drawForm() {
   el.innerHTML = '<div class="ro">' + h + '</div><div class="btns" style="margin-top:14px"><button id="unsel">Clear selection</button></div>';
   document.getElementById('unsel').onclick = function () { sel = null; draw(); };
   [].forEach.call(el.querySelectorAll('a.go'), function (a) { a.onclick = function (e) { e.preventDefault(); sel = {type: a.getAttribute('data-t'), id: a.getAttribute('data-id')}; draw(); }; });
+  selHead(el);
   var h3 = el.querySelector('h3'); if (h3 && photoOf(it)) h3.insertAdjacentHTML('afterend', '<p>' + photoLink(it, 'See a photo of it') + '</p>');
 }
 var KNAME = {tree: 'Contractor trees', contractor: 'Sidewalk lights', lights: 'Lit trees and areas', attraction: 'Attractions', sponsor: 'Sponsor sign lights'};
@@ -1247,7 +1257,7 @@ Promise.resolve(VIEW).then(function (d) {
   document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
   document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
   document.getElementById('vwork').onclick = function () { window.open('/?todo=1', '_blank'); };
-  setStatus('The plan as of November 23, 2026, 12:58 PM. Look only: nothing here can be changed.');
+  setStatus('The plan as of November 23, 2026, 1:04 PM. Look only: nothing here can be changed.');
   draw();
 }).catch(function (e) { setStatus('Could not load: ' + e, true); });
 </script>
