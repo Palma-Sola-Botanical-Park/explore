@@ -883,9 +883,9 @@ function drawData() {
     Object.keys(KINDS).forEach(function (k) { if (k !== 'splitter' && TORD.indexOf(k) < 0) TORD.push(k); });
     h += '<div class="xmas"><div class="hero"><i>Winter Nights Under the Lights</i><b>' + num(allN) + '</b><span>lights</span></div>' +
       tl([['Displays', real.length], ['Watts', num(allW)], ['Amps', ampsTxt(allW)]]).replace('class="big"', 'class="big three"');
-    h += '<h2>What the lights are on</h2>' + TORD.map(function (k) { var ls = real.filter(function (l) { return l.kind === k; }); if (!ls.length) return ''; var w = sumW(ls), n = ls.reduce(function (t, l) { return t + lightsOf(l); }, 0);
+    h += '<h2>Displays overview</h2>' + TORD.map(function (k) { var ls = real.filter(function (l) { return l.kind === k; }); if (!ls.length) return ''; var w = sumW(ls), n = ls.reduce(function (t, l) { return t + lightsOf(l); }, 0);
       return '<div class="ty"><h3><i class="pin load" style="background:' + KINDS[k].color + '">' + KINDS[k].letter + '</i>' + esc(TNAME[k] || KINDS[k].label + 's') + '</h3><div class="f"><div><span>Count</span><b>' + ls.length + '</b></div><div><span>Lights</span><b>' + (n ? num(n) : '–') + '</b></div><div><span>Watts</span><b>' + num(w) + '</b></div><div><span>Amps</span><b>' + ampsTxt(w) + '</b></div></div></div>'; }).join('');
-    h += '<div class="eyebrow sup">Power supply</div><h2>What it takes to power it</h2>' + tl([['Panels', doc.panels.length], ['Breakers', doc.circuits.length], ['Outlets', doc.outlets.length], ['Splitters', sps.length], ['Cords', runsC.length], ['Feet of cord', num(cordFt)]]);
+    h += '<h2>What it takes to power it</h2>' + tl([['Panels', doc.panels.length], ['Breakers', doc.circuits.length], ['Outlets', doc.outlets.length], ['Splitters', sps.length], ['Cords', runsC.length], ['Feet of cord', num(cordFt)]]);
     function oRows(o) { var on = onO(o);
       return sub(['outlet', o.id], esc(outName(o)), '', on, null, 1) +
         on.map(function (l) { var po = parentOf(l); return '<tr' + pickRow('load', l.id) + '><td class="ld">' + esc(l.name) + (po && po !== o ? ' <span class="hint">by way of ' + esc(po.name) + '</span>' : '') + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td></tr>'; }).join(''); }
@@ -1196,7 +1196,7 @@ Promise.resolve(VIEW).then(function (d) {
   document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
   document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
   document.getElementById('vwork').onclick = function () { window.open('/?todo=1', '_blank'); };
-  setStatus('The plan as of November 23, 2026, 11:01 AM. Look only: nothing here can be changed.');
+  setStatus('The plan as of November 23, 2026, 11:08 AM. Look only: nothing here can be changed.');
   draw();
 }).catch(function (e) { setStatus('Could not load: ' + e, true); });
 </script>
