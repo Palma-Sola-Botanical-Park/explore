@@ -1058,7 +1058,6 @@ Promise.resolve(VIEW).then(function (d) {
   doc = d.doc; rev = d.rev; landmarks = d.landmarks || []; lastSnap = JSON.stringify(doc);
   if (/sheet/.test(location.search)) { document.body.className = 'sheet'; drawSheet(); return; }
   if (/hookup/.test(location.search)) { document.body.className = 'sheet'; drawHookup(); return; }
-  if (/todo/.test(location.search)) { document.body.className = 'sheet'; doc.loads.forEach(ensureRows); drawWork(); return; }
   if (/tags/.test(location.search)) { document.body.className = 'sheet'; drawTags(); return; }
   map = L.map('map', {maxZoom: 22, zoomSnap: .25}).setView([27.51355, -82.65992], 18.5);
   window.scrollTo(0, 0); document.getElementById('map').addEventListener('scroll', function () { this.scrollTop = 0; this.scrollLeft = 0; });
