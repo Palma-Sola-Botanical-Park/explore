@@ -136,6 +136,7 @@ td.thru div{padding:1px 0}td.thru div+div{border-top:1px solid #e6e1d3;margin-to
 .band{background:#24503a;margin:-22px -28px 14px;padding:16px 28px 15px;border-bottom:4px solid #5a1f26}
 .band .eyebrow,.band .eyebrow.sup,.band .eyebrow.lod{color:#e8c99a;border-left-color:#c9a24a;margin-top:0}#data .band h2{color:#f7f2e6;font-family:'Playfair Display',Georgia,serif;font-size:28px;margin:4px 0 0}
 #data>.big div{background:#f7f2e6;border:1.5px solid #c9a24a}#data>.big span{color:#34453b}#data>.big b{color:#5a1f26}
+body.datamode #vsat,body.datamode #vmap,body.datamode .s-view>h2,body.datamode .s-view>.btns{display:none}
 .ty{background:#f4f1e8;border-radius:8px;padding:10px 14px;margin:0 0 8px}
 .ty h3{display:flex;align-items:center;gap:9px;margin:0 0 6px;font-size:20px}.ty .pin{width:26px;height:26px;flex:none;font-size:13px;font-style:normal;position:static}
 .ty .f{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ty .f span{display:block;color:var(--soft)}.ty .f b{font-size:24px;color:var(--green)}
@@ -203,7 +204,6 @@ td.thru div{padding:1px 0}td.thru div+div{border-top:1px solid #e6e1d3;margin-to
     <span><i style="display:inline-block;width:26px;height:7px;background:#0a7d32;border:1px solid #777;border-radius:3px"></i>run of lights, up to 175 ft</span>
     <span><i style="display:inline-block;width:26px;height:7px;background:#3ddc68;border:1px solid #777;border-radius:3px"></i>175 to 225 ft</span>
     <span><i style="display:inline-block;width:26px;height:7px;background:#c8f7b4;border:1px solid #777;border-radius:3px"></i>over 225 ft</span>
-    <span><i class="pin post unconf"></i>dashed edge: not checked yet</span>
   </div>
   <div id="cordlist"></div>
   </section>
@@ -483,7 +483,7 @@ var DK_DO = {load: 'Is it plugged in at both ends? Has it got wet? Unplug it and
 function drawDark() {
   var el = document.getElementById('darkpanel'); if (!el) return;
   if (!dark) { el.innerHTML = ''; return; }
-  var d = darkDiag(), h = '<h2>What&#39;s dark?</h2><p>Pick what a tap on the map marks, then tap the lights. Tap one again to undo.</p>' +
+  var d = darkDiag(), h = '<h2>This page troubleshoots outages</h2><p><b>Tap each light on the map that is out.</b> The page then shows where to check first.</p><p>See one that is still working? Press <b>Marking: STILL ON</b>, then tap it. Tap any light a second time to unmark it.</p>' +
     '<div class="brush"><button data-br="out"' + (darkBrush === 'out' ? ' class="on out"' : '') + '>Marking: OUT</button><button data-br="lit"' + (darkBrush === 'lit' ? ' class="on lit"' : '') + '>Marking: STILL ON</button></div>' +
     '<p class="dkey"><span><i class="pin load dk">L</i>out</span><span><i class="pin load lt" style="background:#0a7d32">L</i>still on</span><span><i class="pin load ask" style="background:#0a7d32">L</i>look at this one</span></p>';
   function wire() { [].forEach.call(el.querySelectorAll('button[data-br]'), function (b) { b.onclick = function () { darkBrush = b.getAttribute('data-br'); draw(); }; }); }
@@ -588,8 +588,8 @@ function draw() {
       });
     });
   });
-  doc.panels.forEach(function (p) { marker(p, 'panel', icon('panel' + (p.confirmed ? '' : ' unconf') + isSel('panel', p.id), p.id, 28), p.name); });
-  doc.outlets.forEach(function (o) { marker(o, 'outlet', icon((o.kind === 'building' ? 'building' : 'post') + (o.confirmed ? '' : ' unconf') + isSel('outlet', o.id), o.id.slice(1), 26), o.name); });
+  doc.panels.forEach(function (p) { marker(p, 'panel', icon('panel' + '' + isSel('panel', p.id), p.id, 28), p.name); });
+  doc.outlets.forEach(function (o) { marker(o, 'outlet', icon((o.kind === 'building' ? 'building' : 'post') + '' + isSel('outlet', o.id), o.id.slice(1), 26), o.name); });
   doc.loads.forEach(function (l) { var k = KINDS[l.kind] || KINDS.other; marker(l, 'load', icon('load' + isSel('load', l.id), k.letter, l.kind === 'splitter' ? 20 : 24, 'background:' + k.color + (l.kind === 'splitter' ? ';border-radius:3px' : '')), l.name); });
   drawForm(); drawBreakers(); drawTotals(); drawData(); drawDark(); drawChip();
 }
@@ -1196,7 +1196,7 @@ Promise.resolve(VIEW).then(function (d) {
   document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
   document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
   document.getElementById('vwork').onclick = function () { window.open('/?todo=1', '_blank'); };
-  setStatus('The plan as of November 23, 2026, 11:08 AM. Look only: nothing here can be changed.');
+  setStatus('The plan as of November 23, 2026, 11:17 AM. Look only: nothing here can be changed.');
   draw();
 }).catch(function (e) { setStatus('Could not load: ' + e, true); });
 </script>
