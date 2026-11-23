@@ -137,6 +137,10 @@ td.thru div{padding:1px 0}td.thru div+div{border-top:1px solid #e6e1d3;margin-to
 .band .eyebrow,.band .eyebrow.sup,.band .eyebrow.lod{color:#e8c99a;border-left-color:#c9a24a;margin-top:0}#data .band h2{color:#f7f2e6;font-family:'Playfair Display',Georgia,serif;font-size:28px;margin:4px 0 0}
 #data>.big div{background:#f7f2e6;border:1.5px solid #c9a24a}#data>.big span{color:#34453b}#data>.big b{color:#5a1f26}
 body.datamode #vsat,body.datamode #vmap,body.datamode .s-view>h2,body.datamode .s-view>.btns{display:none}
+.pin.building{border-radius:3px}
+.pin.spl{background:transparent!important;border:0;border-radius:4px;position:relative!important;isolation:isolate}.pin.spl:not(.sel):not(.feed):not(.live){box-shadow:none}
+.pin.spl::before,.pin.spl::after{content:'';position:absolute;z-index:-1;clip-path:polygon(50% 0,100% 100%,0 100%)}.pin.spl::before{inset:0;background:#fff}.pin.spl::after{inset:5px 4px 2.5px 4px;background:#111}
+.key .pin.spl,#viewbtns .pin.spl{width:26px;height:26px;flex:none}
 .ty{background:#f4f1e8;border-radius:8px;padding:10px 14px;margin:0 0 8px}
 .ty h3{display:flex;align-items:center;gap:9px;margin:0 0 6px;font-size:20px}.ty .pin{width:26px;height:26px;flex:none;font-size:13px;font-style:normal;position:static}
 .ty .f{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ty .f span{display:block;color:var(--soft)}.ty .f b{font-size:24px;color:var(--green)}
@@ -198,9 +202,9 @@ body.datamode #vsat,body.datamode #vmap,body.datamode .s-view>h2,body.datamode .
   <div class="key" style="margin-top:14px">
     <span><i class="pin panel"></i>breaker panel</span>
     <span><i class="pin post"></i>outlet post</span>
-    <span><i class="pin building"></i>outlets on a building</span>
-    <span><i class="pin load" style="background:#c5922a"></i>something that uses power</span>
-    <span><i class="pin load" style="background:#2b2b2b;border-radius:3px">+</i>splitter</span>
+    <span><i class="pin building"></i>outlet on a building</span>
+    <span><i class="pin load spl"></i>splitter</span>
+    <span><i class="pin load" style="background:#0a7d32"></i><i class="pin load" style="background:#c5922a;margin-left:-6px"></i>any circle is a load: lights that use power</span>
     <span><i style="display:inline-block;width:26px;height:7px;background:#0a7d32;border:1px solid #777;border-radius:3px"></i>run of lights, up to 175 ft</span>
     <span><i style="display:inline-block;width:26px;height:7px;background:#3ddc68;border:1px solid #777;border-radius:3px"></i>175 to 225 ft</span>
     <span><i style="display:inline-block;width:26px;height:7px;background:#c8f7b4;border:1px solid #777;border-radius:3px"></i>over 225 ft</span>
@@ -590,7 +594,7 @@ function draw() {
   });
   doc.panels.forEach(function (p) { marker(p, 'panel', icon('panel' + '' + isSel('panel', p.id), p.id, 28), p.name); });
   doc.outlets.forEach(function (o) { marker(o, 'outlet', icon((o.kind === 'building' ? 'building' : 'post') + '' + isSel('outlet', o.id), o.id.slice(1), 26), o.name); });
-  doc.loads.forEach(function (l) { var k = KINDS[l.kind] || KINDS.other; marker(l, 'load', icon('load' + isSel('load', l.id), k.letter, l.kind === 'splitter' ? 20 : 24, 'background:' + k.color + (l.kind === 'splitter' ? ';border-radius:3px' : '')), l.name); });
+  doc.loads.forEach(function (l) { var k = KINDS[l.kind] || KINDS.other; marker(l, 'load', icon('load' + (l.kind === 'splitter' ? ' spl' : '') + isSel('load', l.id), l.kind === 'splitter' ? '' : k.letter, l.kind === 'splitter' ? 30 : 24, l.kind === 'splitter' ? '' : 'background:' + k.color), l.name); });
   drawForm(); drawBreakers(); drawTotals(); drawData(); drawDark(); drawChip();
 }
 
@@ -1164,7 +1168,7 @@ Promise.resolve(VIEW).then(function (d) {
   var LK = LORD.concat(Object.keys(KINDS).filter(function (k) { return LORD.indexOf(k) < 0; })).filter(function (k) { return k !== 'splitter' && doc.loads.some(function (l) { return l.kind === k; }); }).map(function (k) { return [k, PL[k] || KINDS[k].label + 's']; });
   var SUP = [['panel', 'Breaker panels'], ['circuit', 'Breakers'], ['outlet', 'Outlets'], ['splitter', 'Splitters'], ['cords', 'Cords']];
   function vbtn(a) { var k = KINDS[a[0]];
-    var pin = k ? '<i class="pin load" style="background:' + k.color + (a[0] === 'splitter' ? ';border-radius:3px' : '') + '">' + k.letter + '</i>' : a[0] === 'panel' ? '<i class="pin panel"></i>' : a[0] === 'outlet' ? '<i class="pin post"></i>' : a[0] === 'circuit' ? '<i class="pin load" style="background:#4a4a4a;border-radius:3px">B</i>' : a[0] === 'cords' ? '<i style="display:inline-block;width:24px;height:6px;border-radius:3px;background:#1565c0;flex:none"></i>' : '';
+    var pin = a[0] === 'splitter' ? '<i class="pin load spl"></i>' : k ? '<i class="pin load" style="background:' + k.color + '">' + k.letter + '</i>' : a[0] === 'panel' ? '<i class="pin panel"></i>' : a[0] === 'outlet' ? '<i class="pin post"></i>' : a[0] === 'circuit' ? '<i class="pin load" style="background:#4a4a4a;border-radius:3px">B</i>' : a[0] === 'cords' ? '<i style="display:inline-block;width:24px;height:6px;border-radius:3px;background:#1565c0;flex:none"></i>' : '';
     return '<button data-v="' + a[0] + '"' + (a[0] === 'all' ? ' class="on"' : '') + '>' + pin + '<span>' + a[1] + '</span></button>'; }
   document.getElementById('viewbtns').innerHTML = vbtn(['all', 'Everything']) +
     '<h3 class="grp lod">Power loads</h3><p class="hint">What uses the power: the show itself.</p><div class="vg">' + LK.map(vbtn).join('') + '</div>' +
@@ -1196,7 +1200,7 @@ Promise.resolve(VIEW).then(function (d) {
   document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
   document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
   document.getElementById('vwork').onclick = function () { window.open('/?todo=1', '_blank'); };
-  setStatus('The plan as of November 23, 2026, 11:17 AM. Look only: nothing here can be changed.');
+  setStatus('The plan as of November 23, 2026, 12:38 PM. Look only: nothing here can be changed.');
   draw();
 }).catch(function (e) { setStatus('Could not load: ' + e, true); });
 </script>
