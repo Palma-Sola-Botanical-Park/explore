@@ -348,6 +348,14 @@ function marker(item, type, ic, title) {
   m.addTo(layer); if (feed[type + ':' + item.id]) m.setZIndexOffset(200000); else if (dark) { if (type === 'load' && (darkSet[item.id] || litSet[item.id])) m.setZIndexOffset(150000); else if (type === 'load' && darkAsk[item.id]) m.setZIndexOffset(120000); } else if (!shown(type, item)) m.setOpacity(.22); else if (showKind !== 'all' && showKind !== 'cords') m.setZIndexOffset(100000);
 }
 var feed = {};
+var fitPending = false;
+function fitKind() {
+  fitPending = false; if (showKind === 'all' || showKind === 'cords') return;
+  var pts = [], add = function (x) { if (x && x.lat != null) pts.push([x.lat, x.lng]); };
+  doc.panels.forEach(function (x) { if (shown('panel', x)) add(x); }); doc.outlets.forEach(function (x) { if (shown('outlet', x)) add(x); });
+  doc.loads.forEach(function (l) { if (!shown('load', l)) return; add(l); (l.runs || []).forEach(function (r) { (r.via || []).forEach(add); add(r); }); });
+  if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(.12), {maxZoom: 20});
+}
 function drawChip() {
   var c = document.getElementById('filterchip');
   if (!c) { c = document.createElement('div'); c.id = 'filterchip'; document.getElementById('map').appendChild(c); if (window.L && L.DomEvent) L.DomEvent.disableClickPropagation(c); }
@@ -1024,10 +1032,13 @@ Promise.resolve(VIEW).then(function (d) {
     '<h3 class="grp sup">Power supply</h3><p class="hint">What brings the power to the lights.</p><div class="vg">' + SUP.map(vbtn).join('') + '</div>' +
     '<h3 class="grp lod">Power loads</h3><p class="hint">What uses the power: the show itself.</p><div class="vg">' + LK.map(vbtn).join('') + '</div>';
   [].forEach.call(document.querySelectorAll('#viewbtns button'), function (b) { b.onclick = function () { showKind = b.getAttribute('data-v'); showCords = showKind === 'cords';
-    [].forEach.call(document.querySelectorAll('#viewbtns button'), function (x) { x.className = x === b ? 'on' : ''; }); draw(); document.getElementById('data').scrollTop = 0; }; });
+    if (sel) { var si = byId({panel: doc.panels, outlet: doc.outlets, circuit: doc.circuits, load: doc.loads}[sel.type] || [], sel.id);
+      if (!si || !(sel.type === 'circuit' ? showKind === 'all' || showKind === 'circuit' || showKind === 'panel' : shown(sel.type, si))) sel = null; }
+    [].forEach.call(document.querySelectorAll('#viewbtns button'), function (x) { x.className = x === b ? 'on' : ''; }); draw(); document.getElementById('data').scrollTop = 0;
+    if (mode === 'map') fitKind(); else fitPending = true; }; });
   function setMode(m) { mode = m; dark = m === 'dark'; if (dark) sel = null; document.body.className = m === 'data' ? 'datamode' : dark ? 'darkmode' : '';
     ['map', 'data', 'dark'].forEach(function (k) { document.getElementById('m' + k).className = m === k ? 'on' : ''; });
-    draw(); document.getElementById('side').scrollTop = 0; if (m !== 'data') setTimeout(function () { map.invalidateSize(); }, 0); }
+    draw(); document.getElementById('side').scrollTop = 0; if (m !== 'data') setTimeout(function () { map.invalidateSize(); if (m === 'map' && fitPending) fitKind(); }, 0); }
   document.getElementById('mdark').onclick = function () { setMode(dark ? 'map' : 'dark'); };
   function placeModes() { var mb = document.getElementById('modebtns'), home = document.querySelector('#side .s-top');
     if (PHONE.matches) document.body.insertBefore(mb, document.body.firstChild); else if (home) home.appendChild(mb);
@@ -1044,7 +1055,7 @@ Promise.resolve(VIEW).then(function (d) {
   document.getElementById('vsheet').onclick = function () { window.open('/?sheet=1', '_blank'); };
   document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
   document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
-  setStatus('The plan as of November 22, 2026, 8:01 PM. Look only: nothing here can be changed.');
+  setStatus('The plan as of November 22, 2026, 8:11 PM. Look only: nothing here can be changed.');
   draw();
 }).catch(function (e) { setStatus('Could not load: ' + e, true); });
 </script>
