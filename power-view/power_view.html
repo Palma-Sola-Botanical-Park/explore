@@ -141,6 +141,7 @@ body.datamode #vsat,body.datamode #vmap,body.datamode .s-view>h2,body.datamode .
 .pin.spl{background:transparent!important;border:0;border-radius:4px;position:relative!important;isolation:isolate}.pin.spl:not(.sel):not(.feed):not(.live){box-shadow:none}
 .pin.spl::before,.pin.spl::after{content:'';position:absolute;z-index:-1;clip-path:polygon(50% 0,100% 100%,0 100%)}.pin.spl::before{inset:0;background:#fff}.pin.spl::after{inset:5px 4px 2.5px 4px;background:#111}
 .key .pin.spl,#viewbtns .pin.spl{width:26px;height:26px;flex:none}
+.tyk{cursor:pointer}.xmas .ty.cur{box-shadow:0 0 0 3px #e8c99a,0 0 0 6px #5a1f26}
 .ty{background:#f4f1e8;border-radius:8px;padding:10px 14px;margin:0 0 8px}
 .ty h3{display:flex;align-items:center;gap:9px;margin:0 0 6px;font-size:20px}.ty .pin{width:26px;height:26px;flex:none;font-size:13px;font-style:normal;position:static}
 .ty .f{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ty .f span{display:block;color:var(--soft)}.ty .f b{font-size:24px;color:var(--green)}
@@ -807,6 +808,19 @@ function tiles(n, w) { return '<div class="tiles" style="margin-top:6px"><div><s
 function drawForm() {
   var el = document.getElementById('form');
   if (!sel) { el.innerHTML = '<p class="hint">Nothing selected. Click a pin on the map, or a line in a table.</p>'; return; }
+  if (sel.type === 'kind') {
+    var kk = KINDS[sel.id], kl = doc.loads.filter(function (l) { return l.kind === sel.id; }).sort(function (a, b) { return String(a.name).localeCompare(String(b.name), undefined, {numeric: true}); });
+    if (!kk || !kl.length) { sel = null; el.innerHTML = '<p class="hint">Nothing selected.</p>'; return; }
+    var kid = sel.id;
+    el.innerHTML = '<div class="ro"><h3 style="margin-top:0;font-size:20px">' + esc(KNAME[kid] || kk.label + 's') + '</h3><p>Display type · ' + kl.length + ' in all</p>' +
+      tiles(kl.reduce(function (t, x) { return t + lightsOf(x); }, 0), kl.reduce(function (t, x) { return t + loadW(x); }, 0)) +
+      '<h3>Each one</h3><ul>' + kl.map(function (l) { return '<li>' + goTo('load', l, l.name) + ' · ' + (lightsOf(l) ? num(lightsOf(l)) + (lightsOf(l) === 1 ? ' light · ' : ' lights · ') : '') + num(loadW(l)) + ' watts</li>'; }).join('') + '</ul></div>' +
+      '<div class="btns" style="margin-top:14px"><button id="konly">Show only these</button><button id="unsel">Clear selection</button></div>';
+    document.getElementById('unsel').onclick = function () { sel = null; draw(); };
+    document.getElementById('konly').onclick = function () { var b = document.querySelector('#viewbtns button[data-v="' + kid + '"]'); if (b) b.click(); };
+    [].forEach.call(el.querySelectorAll('a.go'), function (a) { a.onclick = function (e) { e.preventDefault(); sel = {type: a.getAttribute('data-t'), id: a.getAttribute('data-id')}; draw(); }; });
+    return;
+  }
   var list = sel.type === 'panel' ? doc.panels : sel.type === 'outlet' ? doc.outlets : sel.type === 'circuit' ? doc.circuits : doc.loads, it = byId(list, sel.id), h = '';
   if (!it) { sel = null; el.innerHTML = '<p class="hint">Nothing selected.</p>'; return; }
   if (sel.type === 'load' && it.kind !== 'splitter') {
@@ -837,11 +851,13 @@ function drawForm() {
   [].forEach.call(el.querySelectorAll('a.go'), function (a) { a.onclick = function (e) { e.preventDefault(); sel = {type: a.getAttribute('data-t'), id: a.getAttribute('data-id')}; draw(); }; });
   var h3 = el.querySelector('h3'); if (h3 && photoOf(it)) h3.insertAdjacentHTML('afterend', '<p>' + photoLink(it, 'See a photo of it') + '</p>');
 }
+var KNAME = {tree: 'Contractor trees', contractor: 'Sidewalk lights', lights: 'Lit trees and areas', attraction: 'Attractions', sponsor: 'Sponsor sign lights'};
 var openG = {}, gkeys = [];
 function gall(keys) { gkeys = keys; var all = keys.length && keys.every(function (k) { return openG[k]; }); return '<div class="btns gall"><button id="gall">' + (all ? 'Collapse all' : 'Expand all') + '</button></div>'; }
 function pickRow(type, id) { return ' class="pick' + (sel && sel.type === type && sel.id === id ? ' cur' : '') + '" data-t="' + type + '" data-id="' + esc(id) + '"'; }
 function drawData() {
   var el = document.getElementById('data'); if (!el) return;
+  var ampsTxt = showKind === 'all' ? function (w) { return (Math.round(w / VOLTS * 10) / 10).toFixed(1); } : window.ampsTxt;
   var real = doc.loads.filter(function (l) { return l.kind !== 'splitter'; }), h = '';
   function loadRows(ls) { return ls.map(function (l) { return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="thru">' + thru(l) + '</td></tr>'; }).join(''); }
   function thru(l) { var c = chainOf(l).filter(function (n) { return n.t !== 'panel'; }); if (!c.length) return '<span class="hint">Not plugged in yet</span>';
@@ -888,7 +904,7 @@ function drawData() {
     h += '<div class="xmas"><div class="hero"><i>Winter Nights Under the Lights</i><b>' + num(allN) + '</b><span>lights</span></div>' +
       tl([['Displays', real.length], ['Watts', num(allW)], ['Amps', ampsTxt(allW)]]).replace('class="big"', 'class="big three"');
     h += '<h2>Displays overview</h2>' + TORD.map(function (k) { var ls = real.filter(function (l) { return l.kind === k; }); if (!ls.length) return ''; var w = sumW(ls), n = ls.reduce(function (t, l) { return t + lightsOf(l); }, 0);
-      return '<div class="ty"><h3><i class="pin load" style="background:' + KINDS[k].color + '">' + KINDS[k].letter + '</i>' + esc(TNAME[k] || KINDS[k].label + 's') + '</h3><div class="f"><div><span>Count</span><b>' + ls.length + '</b></div><div><span>Lights</span><b>' + (n ? num(n) : '–') + '</b></div><div><span>Watts</span><b>' + num(w) + '</b></div><div><span>Amps</span><b>' + ampsTxt(w) + '</b></div></div></div>'; }).join('');
+      return '<div class="ty tyk' + (sel && sel.type === 'kind' && sel.id === k ? ' cur' : '') + '" data-k="' + k + '"><h3><i class="pin load" style="background:' + KINDS[k].color + '">' + KINDS[k].letter + '</i>' + esc(TNAME[k] || KINDS[k].label + 's') + '</h3><div class="f"><div><span>Count</span><b>' + ls.length + '</b></div><div><span>Lights</span><b>' + (n ? num(n) : '–') + '</b></div><div><span>Watts</span><b>' + num(w) + '</b></div><div><span>Amps</span><b>' + ampsTxt(w) + '</b></div></div></div>'; }).join('');
     h += '<h2>What it takes to power it</h2>' + tl([['Panels', doc.panels.length], ['Breakers', doc.circuits.length], ['Outlets', doc.outlets.length], ['Splitters', sps.length], ['Cords', runsC.length], ['Feet of cord', num(cordFt)]]);
     function oRows(o) { var on = onO(o);
       return sub(['outlet', o.id], esc(outName(o)), '', on, null, 1) +
@@ -901,7 +917,7 @@ function drawData() {
     h += '</table><p class="hint">Each breaker\'s budget is 80 percent of what it can carry: 1,920 watts on a 20-amp breaker.</p>';
     var TY = [['mini', 'Mini', true], ['big', 'Large', true], ['fc', 'Food court', true], ['sw', 'Sidewalk light', false], ['up', 'Uplight', false]];
     h += '<h2>What the numbers rest on</h2><table><tr><th>Type of light</th><th class="n">Bulbs in one</th><th class="n">Watts</th><th class="n">Amps</th><th class="n">Feet it covers</th></tr>' +
-      TY.map(function (x) { return '<tr><td>' + x[1] + '</td><td class="n">' + num(led(x[0] + '_bulbs')) + '</td><td class="n">' + led(x[0] + '_w') + '</td><td class="n">' + ampsTxt(led(x[0] + '_w')) + '</td><td class="n">' + (x[2] && led(x[0] + '_ft') > 0 ? led(x[0] + '_ft') : '') + '</td></tr>'; }).join('') + '</table>' +
+      TY.map(function (x) { return '<tr><td>' + x[1] + '</td><td class="n">' + num(led(x[0] + '_bulbs')) + '</td><td class="n">' + led(x[0] + '_w') + '</td><td class="n">' + window.ampsTxt(led(x[0] + '_w')) + '</td><td class="n">' + (x[2] && led(x[0] + '_ft') > 0 ? led(x[0] + '_ft') : '') + '</td></tr>'; }).join('') + '</table>' +
       '<p class="hint">Each line is one string, roll, strand or fixture. These are working estimates with some buffer, adjusted as real measurements come in. No more than ' + num(led('mini_max')) + ' mini bulbs, or ' + led('big_max') + ' strings of large bulbs, plugged end to end on one chain.</p></div>';
   } else if (showKind === 'cords') {
     h += head('sup', 'Cords') + tl([['How many', runsC.length], ['Feet, with slack', num(cordFt)], ['On hand', ((doc.meta && doc.meta.cords) || []).length], ['To buy', toBuy]]) +
@@ -943,6 +959,7 @@ function drawData() {
   }
   el.innerHTML = h;
   [].forEach.call(el.querySelectorAll('button.tg'), function (b) { b.onclick = function (e) { e.stopPropagation(); var k = b.getAttribute('data-g'), y = el.scrollTop; if (openG[k]) delete openG[k]; else openG[k] = 1; drawData(); el.scrollTop = y; }; });
+  [].forEach.call(el.querySelectorAll('.tyk'), function (c) { c.onclick = function () { sel = {type: 'kind', id: c.getAttribute('data-k')}; var y = el.scrollTop; draw(); el.scrollTop = y; showForm(); }; });
   var ga = document.getElementById('gall');
   if (ga) ga.onclick = function () { var all = gkeys.every(function (k) { return openG[k]; }), y = el.scrollTop; gkeys.forEach(function (k) { if (all) delete openG[k]; else openG[k] = 1; }); drawData(); el.scrollTop = y; };
   [].forEach.call(el.querySelectorAll('tr.pick'), function (tr) { tr.onclick = function () { sel = {type: tr.getAttribute('data-t'), id: tr.getAttribute('data-id')}; var y = el.scrollTop; draw(); el.scrollTop = y; showForm(); }; });
@@ -1200,7 +1217,7 @@ Promise.resolve(VIEW).then(function (d) {
   document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
   document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
   document.getElementById('vwork').onclick = function () { window.open('/?todo=1', '_blank'); };
-  setStatus('The plan as of November 23, 2026, 12:38 PM. Look only: nothing here can be changed.');
+  setStatus('The plan as of November 23, 2026, 12:53 PM. Look only: nothing here can be changed.');
   draw();
 }).catch(function (e) { setStatus('Could not load: ' + e, true); });
 </script>
