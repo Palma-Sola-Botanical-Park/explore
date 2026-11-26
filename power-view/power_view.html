@@ -870,8 +870,8 @@ function drawForm() {
     } else if (kid === 'circuit') {
       var cs2 = doc.circuits.slice().sort(function (a, b) { return circuitW(b) - circuitW(a); }), cW = cs2.reduce(function (t, c) { return t + circuitW(c); }, 0);
       kt = SUPN.circuit; ksub = 'Power supply · ' + cs2.length + ' in all'; klist = 'Each one, fullest first';
-      ktop = t3([['In use', cs2.filter(function (c) { return circuitW(c) > 0; }).length], ['Watts', num(cW)], ['Fullest', cs2.length ? Math.round(circuitW(cs2[0]) / budget(cs2[0]) * 100) + '%' : '–']]);
-      krows = cs2.map(function (c) { return [goTo('circuit', c, c.name || c.id), num(circuitW(c)), Math.round(circuitW(c) / budget(c) * 100) + '%']; }); kcols = ['Watts', 'Of budget'];
+      ktop = t3([['In use', cs2.filter(function (c) { return circuitW(c) > 0; }).length], ['Amps', ampsTxt(cW)], ['Fullest, of ' + (cs2.length ? capOf(budget(cs2[0])) : 20), cs2.length ? amps1(circuitW(cs2[0])) : '–']]);
+      krows = cs2.map(function (c) { return [goTo('circuit', c, c.name || c.id), amps1(circuitW(c)), num(circuitW(c))]; }); kcols = ['Amps of 20', 'Watts'];
     } else if (kid === 'outlet') {
       var os2 = doc.outlets.slice().sort(function (a, b) { return outletW(b) - outletW(a); }), oW = os2.reduce(function (t, o) { return t + outletW(o); }, 0);
       kt = SUPN.outlet; ksub = 'Power supply · ' + os2.length + ' in all'; klist = 'Each one, busiest first';
@@ -921,11 +921,11 @@ function drawForm() {
       tiles(on.reduce(function (t, x) { return t + lightsOf(x); }, 0), ow) + '<h3>Plugged in here</h3>' + onList(on);
   } else if (sel.type === 'circuit') {
     var outs = doc.outlets.filter(function (o) { return o.circuit_id === it.id; }), cw = circuitW(it), p = byId(doc.panels, it.panel_id), ons = doc.loads.filter(function (l) { var r = rootOutlet(l); return r && r.circuit_id === it.id && l.kind !== 'splitter'; });
-    h = '<h3 style="margin-top:0;font-size:20px">' + esc(it.name || it.id) + '</h3><p>Breaker' + (p ? ' in the ' + esc(p.name) : '') + '</p><p><b>' + num(cw) + ' of ' + num(budget(it)) + ' watts</b> (' + Math.round(cw / budget(it) * 100) + '% of its budget)</p>' + bar(cw, budget(it)) +
+    h = '<h3 style="margin-top:0;font-size:20px">' + esc(it.name || it.id) + '</h3><p>Breaker' + (p ? ' in the ' + esc(p.name) : '') + '</p><p><b>' + ofAmps(cw, budget(it)) + '</b> (' + num(cw) + ' watts)</p>' + barB(cw, budget(it)) +
       '<h3>Outlets</h3><ul>' + outs.map(function (o) { return '<li>' + esc(outName(o)) + ' · ' + num(outletW(o)) + ' watts</li>'; }).join('') + '</ul><h3>Everything on it</h3>' + onList(ons);
   } else {
     var cs = doc.circuits.filter(function (c) { return c.panel_id === it.id; });
-    h = '<h3 style="margin-top:0;font-size:20px">' + esc(it.name) + '</h3><p>Breaker panel ' + esc(it.id) + '</p><h3>Breakers</h3>' + (cs.length ? '<ul>' + cs.map(function (c) { return '<li>' + esc(c.name || c.id) + ' · ' + num(circuitW(c)) + ' of ' + num(budget(c)) + ' watts</li>'; }).join('') + '</ul>' : '<p class="hint">None listed.</p>');
+    h = '<h3 style="margin-top:0;font-size:20px">' + esc(it.name) + '</h3><p>Breaker panel ' + esc(it.id) + '</p><h3>Breakers</h3>' + (cs.length ? '<ul>' + cs.map(function (c) { return '<li>' + esc(c.name || c.id) + ' · ' + ofAmps(circuitW(c), budget(c)) + '</li>'; }).join('') + '</ul>' : '<p class="hint">None listed.</p>');
   }
   el.innerHTML = '<div class="ro">' + h + '</div><div class="btns" style="margin-top:14px"><button id="unsel">Clear selection</button></div>';
   document.getElementById('unsel').onclick = function () { sel = null; draw(); };
@@ -946,14 +946,14 @@ function drawData() {
     return c.map(function (n) { return '<div>' + esc(nodeName(n)) + '</div>'; }).join('') + (c[c.length - 1].t === 'outlet' ? '<div class="hint">its own supply</div>' : ''); }
   var LH = '<tr><th>Name</th><th class="n">Lights</th><th class="n">Watts</th><th class="n">Amps</th><th>Powered through</th></tr>';
   function sums(ls) { var n = ls.reduce(function (t, l) { return t + lightsOf(l); }, 0), w = ls.reduce(function (t, l) { return t + loadW(l); }, 0); return '<div class="big"><div><span>How many</span><b>' + ls.length + '</b></div><div><span>Lights</span><b>' + (n ? num(n) : '–') + '</b></div><div><span>Watts</span><b>' + num(w) + '</b></div><div><span>Amps</span><b>' + ampsTxt(w) + '</b></div></div>'; }
-  function breakerTable() { var t = '<table><tr><th>Breaker</th><th>Panel</th><th class="n">Watts</th><th class="n">Budget</th><th style="width:28%">Of budget</th></tr>';
-    doc.circuits.slice().sort(function (a, b) { return circuitW(b) - circuitW(a); }).forEach(function (c) { var w = circuitW(c), p = byId(doc.panels, c.panel_id); t += '<tr' + pickRow('circuit', c.id) + '><td>' + esc(c.name || c.id) + '</td><td>' + (p ? esc(p.name) : '') + '</td><td class="n">' + num(w) + '</td><td class="n">' + num(budget(c)) + '</td><td>' + Math.round(w / budget(c) * 100) + '%' + bar(w, budget(c)) + '</td></tr>'; });
-    doc.outlets.filter(function (o) { return !o.circuit_id && outletW(o) > 0; }).forEach(function (o) { var w = outletW(o), b = 20 * VOLTS * SHARE; t += '<tr' + pickRow('outlet', o.id) + '><td>' + esc(o.name) + '</td><td>its own supply</td><td class="n">' + num(w) + '</td><td class="n">' + num(b) + '</td><td>' + Math.round(w / b * 100) + '%' + bar(w, b) + '</td></tr>'; });
-    return t + '</table><p class="hint">Each breaker\'s budget is 80 percent of what it can carry: 1,920 watts on a 20-amp breaker.</p>'; }
-  function outletTable(os) { var t = '<table><tr><th>What</th><th class="n">Watts</th><th class="n">Amps</th><th class="n">Lights</th></tr>';
+  function breakerTable() { var t = '<table><tr><th>Breaker</th><th>Panel</th><th class="n">Amps</th><th class="n">Watts</th><th style="width:28%">Limit</th></tr>';
+    doc.circuits.slice().sort(function (a, b) { return circuitW(b) - circuitW(a); }).forEach(function (c) { var w = circuitW(c), p = byId(doc.panels, c.panel_id); t += '<tr' + pickRow('circuit', c.id) + '><td>' + esc(c.name || c.id) + '</td><td>' + (p ? esc(p.name) : '') + '</td><td class="n">' + amps1(w) + '</td><td class="n">' + num(w) + '</td><td>' + capOf(budget(c)) + ' amps' + barB(w, budget(c)) + '</td></tr>'; });
+    doc.outlets.filter(function (o) { return !o.circuit_id && outletW(o) > 0; }).forEach(function (o) { var w = outletW(o), b = 20 * VOLTS * SHARE; t += '<tr' + pickRow('outlet', o.id) + '><td>' + esc(o.name) + '</td><td>its own supply</td><td class="n">' + amps1(w) + '</td><td class="n">' + num(w) + '</td><td>' + capOf(b) + ' amps' + barB(w, b) + '</td></tr>'; });
+    return t + '</table><p class="hint">Every breaker here is a 20-amp breaker. A bar turns gold past 16 amps, the most to plan on when lights stay on for hours, and red past 20.</p>'; }
+  function outletTable(os) { var t = '<table><tr><th>What</th><th class="n">Amps</th><th class="n">Watts</th><th class="n">Lights</th></tr>';
     os.slice().sort(function (a, b) { return String(a.name || '').localeCompare(String(b.name || '')); }).forEach(function (o) { var on = onO(o), c = circuitOf(o);
       t += sub(['outlet', o.id], esc(outName(o)), c ? esc(c.name || c.id) : 'its own supply', on, null, 1) +
-        (on.length ? on.map(function (l) { var po = parentOf(l); return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + (po && po !== o ? ' <span class="hint">by way of ' + esc(po.name) + '</span>' : '') + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td></tr>'; }).join('') : '<tr><td colspan="4"><span class="hint">Nothing plugged in.</span></td></tr>'); });
+        (on.length ? on.map(function (l) { var po = parentOf(l); return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + (po && po !== o ? ' <span class="hint">by way of ' + esc(po.name) + '</span>' : '') + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td></tr>'; }).join('') : '<tr><td colspan="4"><span class="hint">Nothing plugged in.</span></td></tr>'); });
     return t + '</table>'; }
   function tl(arr) { return '<div class="big">' + arr.map(function (a) { return '<div><span>' + a[0] + '</span><b>' + a[1] + '</b></div>'; }).join('') + '</div>'; }
   function head(g, t) { return '<div class="band"><div class="eyebrow ' + g + '">' + (g === 'sup' ? 'Power supply' : 'Power loads') + '</div><h2>' + t + '</h2></div>'; }
@@ -962,16 +962,16 @@ function drawData() {
   var KS = Object.keys(KINDS).filter(function (k) { return k !== 'splitter' && real.some(function (l) { return l.kind === k; }); });
   function icons(ls) { return '<div class="pk">' + KS.map(function (k) { var n = ls.filter(function (l) { return l.kind === k; }).length; return '<span' + (n ? '' : ' class="z"') + ' title="' + esc(KINDS[k].label) + '"><i class="pin load" style="background:' + KINDS[k].color + '">' + KINDS[k].letter + '</i>' + n + '</span>'; }).join('') + '</div>'; }
   function sub(pick, name, under, ls, mid, span) { var w = sumW(ls);
-    return '<tr class="sub' + (pick ? ' pick" data-t="' + pick[0] + '" data-id="' + esc(pick[1]) : '') + '"><td><div class="pn">' + name + (under ? '<span>' + under + '</span>' : '') + '</div></td><td class="bx"><div class="pb"><span>Watts</span><b>' + num(w) + '</b></div></td><td class="bx"><div class="pb"><span>Amps</span><b>' + ampsTxt(w) + '</b></div></td>' + (mid == null ? '' : '<td>' + mid + '</td>') + '<td' + (span > 1 ? ' colspan="' + span + '"' : '') + '>' + icons(ls) + '</td></tr>'; }
+    return '<tr class="sub' + (pick ? ' pick" data-t="' + pick[0] + '" data-id="' + esc(pick[1]) : '') + '"><td><div class="pn">' + name + (under ? '<span>' + under + '</span>' : '') + '</div></td><td class="bx"><div class="pb"><span>Amps</span><b>' + ampsTxt(w) + '</b></div></td><td class="bx"><div class="pb"><span>Watts</span><b>' + num(w) + '</b></div></td>' + (mid == null ? '' : '<td>' + mid + '</td>') + '<td' + (span > 1 ? ' colspan="' + span + '"' : '') + '>' + icons(ls) + '</td></tr>'; }
   function onO(o) { return real.filter(function (l) { return rootOutlet(l) === o; }); }
   function grp(key, n, pick, name, under, ls, extra, subRow, kids) {
     var sign = openG[key] ? '&minus;' : '+', lab = openG[key] ? 'Close' : 'Open';
     if (!PHONE.matches) return subRow.replace('<div class="pn">', '<div class="pn hasg"><button class="tg" data-g="' + esc(key) + '" aria-label="' + lab + '">' + sign + '</button>') + (openG[key] ? kids : '');
     var w = sumW(ls);
     return '<tr class="sub cmp' + (pick ? ' pick" data-t="' + pick[0] + '" data-id="' + esc(pick[1]) : '') + '"><td colspan="' + n + '"><div class="cw"><button class="tg" data-g="' + esc(key) + '" aria-label="' + lab + '">' + sign + '</button><div class="cn"><div class="nm">' + name + '</div>' + (under ? '<div class="un">' + under + '</div>' : '') +
-      '<div class="cv"><b>' + num(w) + '</b> watts &middot; <b>' + ampsTxt(w) + '</b> amps</div>' + extra + icons(ls) + '</div></div></td></tr>' + (openG[key] ? kids : ''); }
-  function cbar(w, b) { return '<div class="cb"><b>' + Math.round(w / b * 100) + '%</b> of budget' + bar(w, b) + '</div>'; }
-  function pctOf(w, b) { return Math.round(w / b * 100) + '% of budget'; }
+      '<div class="cv"><b>' + ampsTxt(w) + '</b> amps &middot; <b>' + num(w) + '</b> watts</div>' + extra + icons(ls) + '</div></div></td></tr>' + (openG[key] ? kids : ''); }
+  function cbar(w, b) { return '<div class="cb"><b>' + amps1(w) + '</b> of ' + capOf(b) + ' amps' + barB(w, b) + '</div>'; }
+  function pctOf(w, b) { return ofAmps(w, b); }
   function onC(c) { return real.filter(function (l) { var r = rootOutlet(l); return r && r.circuit_id === c.id; }); }
   function sumW(ls) { return ls.reduce(function (t, l) { return t + loadW(l); }, 0); }
   function upName(l) { var po = parentOf(l); return !po ? 'Not plugged in yet' : byId(doc.outlets, po.id) === po ? esc(outName(po)) : esc(po.name); }
@@ -991,13 +991,13 @@ function drawData() {
       return '<div class="tyk' + (sel && sel.type === 'kind' && sel.id === x[0] ? ' cur' : '') + '" data-k="' + x[0] + '"><span>' + x[1] + '</span><b>' + x[2] + '</b></div>'; }).join('') + '</div>';
     function oRows(o) { var on = onO(o);
       return sub(['outlet', o.id], esc(outName(o)), '', on, null, 1) +
-        on.map(function (l) { var po = parentOf(l); return '<tr' + pickRow('load', l.id) + '><td class="ld">' + esc(l.name) + (po && po !== o ? ' <span class="hint">by way of ' + esc(po.name) + '</span>' : '') + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td></tr>'; }).join(''); }
-    function bRow(pick, name, under, w, bud) { return '<tr class="brk pick" data-t="' + pick[0] + '" data-id="' + esc(pick[1]) + '"><td colspan="4"><div class="bw"><div class="bn">' + name + '</div><div class="bu">' + under + '</div><div class="bp"><b>' + Math.round(w / bud * 100) + '% used</b><span>' + num(w) + ' of ' + num(bud) + ' watts</span></div>' + bar(w, bud) + '</div></td></tr>'; }
-    h += '</div><div class="detail"><h2>What plugs in where</h2><table class="pw"><tr><th>What</th><th class="n">Watts</th><th class="n">Amps</th><th class="n">Lights</th></tr>';
+        on.map(function (l) { var po = parentOf(l); return '<tr' + pickRow('load', l.id) + '><td class="ld">' + esc(l.name) + (po && po !== o ? ' <span class="hint">by way of ' + esc(po.name) + '</span>' : '') + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td></tr>'; }).join(''); }
+    function bRow(pick, name, under, w, bud) { return '<tr class="brk pick" data-t="' + pick[0] + '" data-id="' + esc(pick[1]) + '"><td colspan="4"><div class="bw"><div class="bn">' + name + '</div><div class="bu">' + under + '</div><div class="bp"><b>' + ofAmps(w, bud) + '</b><span>' + num(w) + ' watts</span></div>' + barB(w, bud) + '</div></td></tr>'; }
+    h += '</div><div class="detail"><h2>What plugs in where</h2><table class="pw"><tr><th>What</th><th class="n">Amps</th><th class="n">Watts</th><th class="n">Lights</th></tr>';
     doc.circuits.slice().sort(function (a, b) { return circuitW(b) - circuitW(a); }).forEach(function (c) { var pn = byId(doc.panels, c.panel_id), os = doc.outlets.filter(function (o) { return o.circuit_id === c.id && outletW(o) > 0; });
       h += bRow(['circuit', c.id], esc(c.name || c.id), 'Breaker' + (pn ? ' in the ' + esc(pn.name) : ''), circuitW(c), budget(c)) + (os.length ? os.map(oRows).join('') : '<tr><td colspan="4" class="ld"><span class="hint">Nothing plugged in.</span></td></tr>'); });
     own.forEach(function (o) { h += bRow(['outlet', o.id], esc(o.name), 'Its own supply, not on a breaker panel', outletW(o), 20 * VOLTS * SHARE) + oRows(o); });
-    h += '</table><p class="hint">Each breaker\'s budget is 80 percent of what it can carry: 1,920 watts on a 20-amp breaker.</p>';
+    h += '</table><p class="hint">Every breaker here is a 20-amp breaker. A bar turns gold past 16 amps, the most to plan on when lights stay on for hours, and red past 20.</p>';
     var TY = [['mini', 'Mini', true], ['big', 'Large', true], ['fc', 'Food court', true], ['sw', 'Sidewalk light', false], ['up', 'Uplight', false]];
     h += '<h2>What the numbers rest on</h2><table><tr><th>Type of light</th><th class="n">Bulbs in one</th><th class="n">Watts</th><th class="n">Amps</th><th class="n">Feet it covers</th></tr>' +
       TY.map(function (x) { return '<tr><td>' + x[1] + '</td><td class="n">' + num(led(x[0] + '_bulbs')) + '</td><td class="n">' + led(x[0] + '_w') + '</td><td class="n">' + window.ampsTxt(led(x[0] + '_w')) + '</td><td class="n">' + (x[2] && led(x[0] + '_ft') > 0 ? led(x[0] + '_ft') : '') + '</td></tr>'; }).join('') + '</table>' +
@@ -1011,32 +1011,32 @@ function drawData() {
       document.getElementById('cordsum').innerHTML + document.getElementById('cordlist').innerHTML;
   } else if (showKind === 'panel') {
     h += head('sup', 'Breaker panels') + tl([['How many', doc.panels.length], ['Breakers', doc.circuits.length], ['Watts', num(totW)], ['Amps', ampsTxt(totW)]]) +
-      gall(doc.panels.map(function (p) { return 'panel:' + p.id; }).concat(own.length ? ['own'] : [])) + '<table class="gt c5"><colgroup><col><col class="cw1"><col class="cw1"><col class="cb1"><col class="ci1"></colgroup><tr><th>Breaker</th><th class="n">Watts</th><th class="n">Amps</th><th>Of budget</th><th>Loads</th></tr>';
+      gall(doc.panels.map(function (p) { return 'panel:' + p.id; }).concat(own.length ? ['own'] : [])) + '<table class="gt c5"><colgroup><col><col class="cw1"><col class="cw1"><col class="cb1"><col class="ci1"></colgroup><tr><th>Breaker</th><th class="n">Amps</th><th class="n">Watts</th><th>Limit</th><th>Loads</th></tr>';
     function pUnder(p, cs) { return cs.length + ' breaker' + (cs.length === 1 ? '' : 's'); }
     function pName(p) { return '<div class="pnm">' + esc(p.name) + ((p.slots || []).length ? '<button class="opp" data-pp="' + esc(p.id) + '">Open panel</button>' : '') + '</div>'; }
     doc.panels.forEach(function (p) { var cs = doc.circuits.filter(function (c) { return c.panel_id === p.id; }).sort(function (a, b) { return circuitW(b) - circuitW(a); }), all = []; cs.forEach(function (c) { all = all.concat(onC(c)); });
       h += grp('panel:' + p.id, 5, ['panel', p.id], pName(p), pUnder(p, cs), all, '', sub(['panel', p.id], pName(p), pUnder(p, cs), all, '', 1),
-        (cs.length ? cs.map(function (c) { var w = circuitW(c); return '<tr' + pickRow('circuit', c.id) + '><td>' + esc(c.name || c.id) + '</td><td class="n">' + num(w) + '</td><td class="n">' + ampsTxt(w) + '</td><td>' + Math.round(w / budget(c) * 100) + '%' + bar(w, budget(c)) + '</td><td>' + icons(onC(c)) + '</td></tr>'; }).join('') : '<tr><td colspan="5"><span class="hint">No breakers listed.</span></td></tr>')); });
+        (cs.length ? cs.map(function (c) { var w = circuitW(c); return '<tr' + pickRow('circuit', c.id) + '><td>' + esc(c.name || c.id) + '</td><td class="n">' + ampsTxt(w) + '</td><td class="n">' + num(w) + '</td><td>' + capOf(budget(c)) + ' amps' + barB(w, budget(c)) + '</td><td>' + icons(onC(c)) + '</td></tr>'; }).join('') : '<tr><td colspan="5"><span class="hint">No breakers listed.</span></td></tr>')); });
     if (own.length) { var ownL = []; own.forEach(function (o) { ownL = ownL.concat(onO(o)); });
-      h += grp('own', 5, null, 'Its own supply', 'not on a panel', ownL, '', sub(null, 'Its own supply', 'not on a panel', ownL, '', 1), own.map(function (o) { var w = outletW(o), b = 20 * VOLTS * SHARE; return '<tr' + pickRow('outlet', o.id) + '><td>' + esc(o.name) + '</td><td class="n">' + num(w) + '</td><td class="n">' + ampsTxt(w) + '</td><td>' + Math.round(w / b * 100) + '%' + bar(w, b) + '</td><td>' + icons(onO(o)) + '</td></tr>'; }).join('')); }
-    h += '</table><p class="hint">Each breaker\'s budget is 80 percent of what it can carry: 1,920 watts on a 20-amp breaker.</p>';
+      h += grp('own', 5, null, 'Its own supply', 'not on a panel', ownL, '', sub(null, 'Its own supply', 'not on a panel', ownL, '', 1), own.map(function (o) { var w = outletW(o), b = 20 * VOLTS * SHARE; return '<tr' + pickRow('outlet', o.id) + '><td>' + esc(o.name) + '</td><td class="n">' + ampsTxt(w) + '</td><td class="n">' + num(w) + '</td><td>' + capOf(b) + ' amps' + barB(w, b) + '</td><td>' + icons(onO(o)) + '</td></tr>'; }).join('')); }
+    h += '</table><p class="hint">Every breaker here is a 20-amp breaker. A bar turns gold past 16 amps, the most to plan on when lights stay on for hours, and red past 20.</p>';
   } else if (showKind === 'circuit') {
-    h += head('sup', 'Breakers') + tl([['How many', doc.circuits.length], ['In use', doc.circuits.filter(function (c) { return circuitW(c) > 0; }).length], ['Watts', num(totW)], ['Fullest', Math.round(fullest * 100) + '%']]) +
-      gall(doc.circuits.map(function (c) { return 'circuit:' + c.id; }).concat(own.map(function (o) { return 'outlet:' + o.id; }))) + '<table class="gt c6"><colgroup><col><col class="cw1"><col class="cw1"><col class="cl1"><col class="ct1"><col class="cp1"></colgroup><tr><th>What</th><th class="n">Watts</th><th class="n">Amps</th><th class="n">Lights</th><th>Type</th><th>Plugged into</th></tr>';
-    function cRows(ls) { return ls.length ? ls.slice().sort(function (a, b) { return loadW(b) - loadW(a); }).map(function (l) { return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td><td>' + esc(kindName(l)) + '</td><td>' + whereTxt(l) + '</td></tr>'; }).join('') : '<tr><td colspan="6"><span class="hint">Nothing on it.</span></td></tr>'; }
+    h += head('sup', 'Breakers') + tl([['How many', doc.circuits.length], ['In use', doc.circuits.filter(function (c) { return circuitW(c) > 0; }).length], ['Amps', ampsTxt(totW)], ['Fullest, of 20 amps', (Math.round(fullest * SHARE * 20 * 10) / 10).toFixed(1)]]) +
+      gall(doc.circuits.map(function (c) { return 'circuit:' + c.id; }).concat(own.map(function (o) { return 'outlet:' + o.id; }))) + '<table class="gt c6"><colgroup><col><col class="cw1"><col class="cw1"><col class="cl1"><col class="ct1"><col class="cp1"></colgroup><tr><th>What</th><th class="n">Amps</th><th class="n">Watts</th><th class="n">Lights</th><th>Type</th><th>Plugged into</th></tr>';
+    function cRows(ls) { return ls.length ? ls.slice().sort(function (a, b) { return loadW(b) - loadW(a); }).map(function (l) { return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td><td>' + esc(kindName(l)) + '</td><td>' + whereTxt(l) + '</td></tr>'; }).join('') : '<tr><td colspan="6"><span class="hint">Nothing on it.</span></td></tr>'; }
     doc.circuits.slice().sort(function (a, b) { return circuitW(b) - circuitW(a); }).forEach(function (c) { var w = circuitW(c), p = byId(doc.panels, c.panel_id);
       h += grp('circuit:' + c.id, 6, ['circuit', c.id], esc(c.name || c.id), p ? esc(p.name) : 'unknown panel', onC(c), cbar(w, budget(c)), sub(['circuit', c.id], esc(c.name || c.id), (p ? esc(p.name) : 'unknown panel') + ' · ' + pctOf(w, budget(c)), onC(c), null, 3), cRows(onC(c))); });
     own.forEach(function (o) { h += grp('outlet:' + o.id, 6, ['outlet', o.id], esc(o.name), 'its own supply, not on a panel', onO(o), cbar(outletW(o), 20 * VOLTS * SHARE), sub(['outlet', o.id], esc(o.name), 'its own supply, not on a panel · ' + pctOf(outletW(o), 20 * VOLTS * SHARE), onO(o), null, 3), cRows(onO(o))); });
-    h += '</table><p class="hint">Each breaker\'s budget is 80 percent of what it can carry: 1,920 watts on a 20-amp breaker.</p>';
+    h += '</table><p class="hint">Every breaker here is a 20-amp breaker. A bar turns gold past 16 amps, the most to plan on when lights stay on for hours, and red past 20.</p>';
   } else if (showKind === 'outlet') {
     h += head('sup', 'Outlets') + tl([['How many', doc.outlets.length], ['In use', doc.outlets.filter(function (o) { return outletW(o) > 0; }).length], ['Watts', num(totW)], ['Amps', ampsTxt(totW)]]) + outletTable(doc.outlets);
   } else if (showKind === 'splitter') {
     var viaS = real.filter(function (l) { return chain(l).some(function (x) { return x.kind === 'splitter'; }); });
     h += head('sup', 'Splitters') + tl([['How many', sps.length], ['Loads on them', viaS.length], ['Watts', num(sumW(viaS))], ['Amps', ampsTxt(sumW(viaS))]]) +
-      '<table class="c5"><tr><th>What</th><th class="n">Watts</th><th class="n">Amps</th><th class="n">Lights</th><th>Type</th></tr>';
+      '<table class="c5"><tr><th>What</th><th class="n">Amps</th><th class="n">Watts</th><th class="n">Lights</th><th>Type</th></tr>';
     sps.slice().sort(function (a, b) { return String(a.name).localeCompare(String(b.name), undefined, {numeric: true}); }).forEach(function (sp) { var b = through(sp).filter(function (x) { return x.kind !== 'splitter'; }), c = circuitOf(rootOutlet(sp));
       h += sub(['load', sp.id], esc(sp.name), 'plugged into ' + upName(sp) + (c ? ' · ' + esc(c.name || c.id) : ''), b, null, 2) +
-        (b.length ? b.map(function (l) { var po = parentOf(l); return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + (po && po !== sp ? ' <span class="hint">by way of ' + esc(po.name) + '</span>' : '') + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td><td>' + esc(kindName(l)) + '</td></tr>'; }).join('') : '<tr><td colspan="5"><span class="hint">Nothing plugged in.</span></td></tr>'); });
+        (b.length ? b.map(function (l) { var po = parentOf(l); return '<tr' + pickRow('load', l.id) + '><td>' + esc(l.name) + (po && po !== sp ? ' <span class="hint">by way of ' + esc(po.name) + '</span>' : '') + '</td><td class="n">' + ampsTxt(loadW(l)) + '</td><td class="n">' + num(loadW(l)) + '</td><td class="n">' + (lightsOf(l) ? num(lightsOf(l)) : '') + '</td><td>' + esc(kindName(l)) + '</td></tr>'; }).join('') : '<tr><td colspan="5"><span class="hint">Nothing plugged in.</span></td></tr>'); });
     h += '</table>';
   } else {
     var ls = real.filter(function (l) { return l.kind === showKind; }).sort(function (a, b) { return String(a.name).localeCompare(String(b.name), undefined, {numeric: true}); });
@@ -1065,14 +1065,18 @@ function slotHint(c) {
     num(all.reduce(function (w, x) { return w + circuitW(x); }, 0)) + ' of ' + num(slotBudget(s));
   return '<br><span class="hint">' + esc(t) + '</span>';
 }
+function capOf(b) { return Math.round(b / VOLTS / SHARE); }
+function amps1(w) { return (Math.round(w / VOLTS * 10) / 10).toFixed(1); }
+function ofAmps(w, b) { return amps1(w) + ' of ' + capOf(b) + ' amps'; }
+function barB(w, b) { return bar(w, capOf(b) * VOLTS); }
 function ppLook(p, s) {
   var ours = onSlot(p, s), w = ours.reduce(function (t, c) { return t + circuitW(c); }, 0), amps = Number(s.amps) > 0 ? s.amps + ' amp' : 'two-pole';
   var h = '<div class="pp-card" id="pp-form"><h3>Position ' + esc(s.n) + ', ' + (s.col === 'L' ? 'left' : 'right') + ' column</h3><p>The panel says: <b>' + esc(s.label || 'no label') + '</b> · ' + esc(amps) + '</p>';
   if (!ours.length) h += '<p>None of our lights are on this breaker.</p>';
   else {
-    h += '<p class="' + (w > slotBudget(s) ? 'pp-warn' : 'pp-ok') + '">' + num(w) + ' watts, ' + ampsTxt(w) + ' amps: ' + Math.round(100 * w / slotBudget(s)) + '% of its ' + num(slotBudget(s)) + ' watt budget.</p>';
+    h += '<p class="' + (w > slotBudget(s) ? 'pp-warn' : 'pp-ok') + '">' + ofAmps(w, slotBudget(s)) + ' (' + num(w) + ' watts).</p>';
     ours.forEach(function (c) { var os = doc.outlets.filter(function (o) { return o.circuit_id === c.id; });
-      h += '<p style="margin-bottom:4px"><b>' + esc(c.name || c.id) + '</b></p><table><tr><th>Outlet</th><th style="text-align:right">Watts</th></tr>' + (os.length ? os.map(function (o) { return '<tr><td>' + esc(o.name) + '</td><td style="text-align:right">' + num(outletW(o)) + '</td></tr>'; }).join('') : '<tr><td colspan="2">No outlets listed.</td></tr>') + '</table>'; });
+      h += '<p style="margin-bottom:4px"><b>' + esc(c.name || c.id) + '</b></p><table><tr><th>Outlet</th><th style="text-align:right">Amps</th></tr>' + (os.length ? os.map(function (o) { return '<tr><td>' + esc(o.name) + '</td><td style="text-align:right">' + amps1(outletW(o)) + '</td></tr>'; }).join('') : '<tr><td colspan="2">No outlets listed.</td></tr>') + '</table>'; });
   }
   if (s.inside) h += '<p style="margin-top:10px">Also feeds inside: ' + esc(s.inside) + '</p>';
   return h + '<div class="btns" style="margin-top:10px"><button id="pp-done">Close this breaker</button></div></div>';
@@ -1097,7 +1101,7 @@ function drawPP() {
     g += '<div class="pp-lab ' + s.col + cls + '" data-s="' + esc(s.id) + '" style="grid-column:' + (s.col === 'L' ? 1 : 4) + ';grid-row:' + s.row + ' / span ' + span + '">' +
       '<span class="w"><span class="pp-no">' + esc(s.n) + '</span> ' + esc(s.label || 'no label') + '</span>' +
       ours.map(function (c) { return '<span class="ours">' + esc(c.name || c.id) + '</span>'; }).join('') +
-      (ours.length ? '<span>' + num(w) + ' W · ' + Math.round(100 * w / slotBudget(s)) + '%</span>' : '') +
+      (ours.length ? '<span>' + ofAmps(w, slotBudget(s)) + '</span>' : '') +
       (s.inside ? '<span>Also: ' + esc(s.inside) + '</span>' : '') + '</div>' +
       '<div class="pp-brk' + cls + '" data-s="' + esc(s.id) + '" style="grid-column:' + (s.col === 'L' ? 2 : 3) + ';grid-row:' + s.row + ' / span ' + span + '">' +
       '<span class="pp-tog">' + (Number(s.amps) > 0 ? esc(s.amps) : '2P') + '</span>' + (s.dot ? '<span class="pp-dot" style="background:' + esc(s.dot) + '"></span>' : '') + '</div>';
@@ -1129,7 +1133,7 @@ function drawPP() {
   if (mine.length) {
     h += '<table><tr><th>Our breaker</th><th>Position</th><th></th></tr>';
     mine.forEach(function (c) { var at = slotOfCircuit(c);
-      h += '<tr><td>' + esc(c.name || c.id) + '<br>' + num(circuitW(c)) + ' W</td><td>' + (at ? esc(at.n + ', ' + at.label) : '<span class="pp-warn">not placed yet</span>') + '</td><td>' +
+      h += '<tr><td>' + esc(c.name || c.id) + '<br>' + amps1(circuitW(c)) + ' amps</td><td>' + (at ? esc(at.n + ', ' + at.label) : '<span class="pp-warn">not placed yet</span>') + '</td><td>' +
         (at ? '<button data-show="' + esc(at.id) + '">Show on panel</button>' : '') + '</td></tr>'; });
     h += '</table>';
   } else h += '<p>None of our lights are on this panel.</p>';
@@ -1401,7 +1405,7 @@ Promise.resolve(VIEW).then(function (d) {
   document.getElementById('vcords').onclick = function () { showCords = !showCords; this.className = showCords ? 'on' : ''; draw(); };
   document.getElementById('vhook').onclick = function () { window.open('/?hookup=1', '_blank'); };
   document.getElementById('vwork').onclick = function () { window.open('/?todo=1', '_blank'); };
-  setStatus('The plan as of November 25, 2026, 10:06 PM. Look only: nothing here can be changed.');
+  setStatus('The plan as of November 25, 2026, 10:15 PM. Look only: nothing here can be changed.');
   draw();
 }).catch(function (e) { setStatus('Could not load: ' + e, true); });
 </script>
